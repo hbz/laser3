@@ -22,20 +22,24 @@ class PackageDetailsController {
     def contextService
     def taskService
     def addressbookService
+    def docstoreService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
     @Secured(['ROLE_USER'])
     def index() {
-        redirect controller: 'packageDetails', action: 'list', params: params
-        return // ----- deprecated
+        //redirect controller: 'packageDetails', action: 'list', params: params
+
 
         def result = [:]
         result.user = springSecurityService.getCurrentUser()
         params.max = result.user.defaultPageSize
 
         if (springSecurityService.isLoggedIn()) {
-            params.rectype = "Package" // Tells ESSearchService what to look for
+            //params.rectype = "Package" // Tells ESSearchService what to look for
+            //Change to GOKB ElasticSearch
+            params.esgokb = "Package"
+            params.sort = "name"
             if(params.q == "")  params.remove('q');
 
             if(params.search.equals("yes")){
@@ -44,7 +48,37 @@ class PackageDetailsController {
                 params.remove("search")
             }
 
+            def old_q = params.q
+            def old_sort = params.sort
+
             result =  ESSearchService.search(params)
+            result.tippcount = []
+            if(params.esgokb) {
+
+                result.hits.each {
+                    def bais = new ByteArrayInputStream((byte[]) (GlobalRecordInfo.findByIdentifier(it.id).record))
+                    def ins = new ObjectInputStream(bais);
+                    def rec_info = ins.readObject()
+                    ins.close()
+                    result.tippcount.add(rec_info.tipps.size())
+                }
+            }
+
+            if(result.index != 'gokb')
+            {
+                params.remove("esgokb")
+                redirect controller: 'packageDetails', action: 'list'
+                return
+            }
+            //Double-Quoted search strings wont display without this
+            params.q = old_q?.replace("\"","&quot;")
+
+            if(! old_q ) {
+                params.remove('q')
+            }
+            if(! old_sort ) {
+                params.remove('sort')
+            }
         }
         result
     }
@@ -108,28 +142,28 @@ class PackageDetailsController {
 
 
       withFormat {
-        html {
-          result.packageInstanceList = Subscription.executeQuery("select p ${base_qry}", qry_params, [max:result.max, offset:result.offset]);
-          result
-        }
-        csv {
-           response.setHeader("Content-disposition", "attachment; filename=\"packages.csv\"")
-           response.contentType = "text/csv"
-           def packages = Subscription.executeQuery("select p ${base_qry}", qry_params) 
-           def out = response.outputStream
-	   log.debug('colheads');
-           out.withWriter { writer ->
-             writer.write('Package Name, Creation Date, Last Modified, Identifier\n');
-             packages.each { 
-               log.debug(it);
-               writer.write("${it.name},${it.dateCreated},${it.lastUpdated},${it.identifier}\n")
-             }
-             writer.write("END");
-             writer.flush();
-             writer.close();
-           }
-           out.close()
-        }
+          html {
+              result.packageInstanceList = Subscription.executeQuery("select p ${base_qry}", qry_params, [max:result.max, offset:result.offset]);
+              result
+          }
+          csv {
+              response.setHeader("Content-disposition", "attachment; filename=\"packages.csv\"")
+              response.contentType = "text/csv"
+              def packages = Subscription.executeQuery("select p ${base_qry}", qry_params)
+              def out = response.outputStream
+              log.debug('colheads');
+              out.withWriter { writer ->
+                  writer.write('Package Name, Creation Date, Last Modified, Identifier\n');
+                  packages.each {
+                      log.debug(it);
+                      writer.write("${it.name},${it.dateCreated},${it.lastUpdated},${it.identifier}\n")
+                  }
+                  writer.write("END");
+                  writer.flush();
+                  writer.close();
+              }
+              out.close()
+          }
       }
     }
 
@@ -609,14 +643,7 @@ select s from Subscription as s where
 
         log.debug("deleteDocuments ${params}");
 
-        params.each { p ->
-            if (p.key.startsWith('_deleteflag"@.') ) {
-                def docctx_to_delete = p.key.substring(12);
-                log.debug("Looking up docctx ${docctx_to_delete} for delete");
-                def docctx = DocContext.get(docctx_to_delete)
-                docctx.status = RefdataCategory.lookupOrCreate('Document Context Status','Deleted');
-            }
-        }
+        docstoreService.unifiedDeleteDocuments(params)
 
         redirect controller: 'packageDetails', action:params.redirectAction, id:params.instanceId
     }
@@ -919,7 +946,20 @@ select s from Subscription as s where
         result.packageInstance = Package.get(params.id)
         result.editable=isEditable()
 
-        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.packageInstance)
+        if (params.deleteId) {
+            def dTask = Task.get(params.deleteId)
+            if (dTask && dTask.creator.id == result.user.id) {
+                try {
+                    flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label', default: 'Task'), dTask.title])
+                    dTask.delete(flush: true)
+                }
+                catch (Exception e) {
+                    flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
+                }
+            }
+        }
+
+        result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.packageInstance, params)
         log.debug(result.taskInstanceList)
 
         result

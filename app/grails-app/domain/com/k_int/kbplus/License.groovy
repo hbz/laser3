@@ -360,7 +360,7 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
         log.debug("Send pending change to ${dl.id}");
         def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
         ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.license."+changeDocument.prop,locale.toString())
-        def description = messageSource.getMessage('default.accept.change.ie',null,locale)
+        def description = messageSource.getMessage('default.accept.change.license',null,locale)
         if(contentItemDesc){
             description = contentItemDesc.content
         }else{
@@ -368,11 +368,11 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
             if( defaultMsg)
                 description = defaultMsg.content
         }
-        def propName = changeDocument.name?:changeDocument.prop
+        def propName = changeDocument.name ? ((messageSource.getMessage("license.${changeDocument.name}",null,locale))?:(changeDocument.name)) : (messageSource.getMessage("license.${changeDocument.prop}",null,locale)?:(changeDocument.prop))
         changeNotificationService
         .registerPendingChange('license',
                               dl,
-                              "<b>${propName}</b> changed from <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> to <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> on the template license. " + description,
+                              "<b>${propName}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Vertragsvorlage geändert. " + description,
                               dl.getLicensee(),
                               [
                                 changeTarget:"com.k_int.kbplus.License:${dl.id}",

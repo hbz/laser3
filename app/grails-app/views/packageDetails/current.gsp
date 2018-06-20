@@ -4,7 +4,7 @@
     <head>
         <meta name="layout" content="semanticUI">
         <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}" />
-        <title><g:message code="default.edit.label" args="[entityName]" /></title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'package', default:'Package Details')}</title>
     </head>
     <body>
         <semui:breadcrumbs>
@@ -99,7 +99,7 @@
         </semui:filter>
 
         <g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
-
+            <g:if test="${editable}">
           <table class="ui celled la-table table ignore-floatThead la-bulk-header">
 
             <thead>
@@ -110,7 +110,7 @@
               </th>
 
               <th colspan="7">
-                <g:if test="${editable}">
+
                   <select id="bulkOperationSelect" name="bulkOperation" class="input-xxlarge">
                     <option value="edit">${message(code:'package.show.batch.edit.label', default:'Batch Edit Selected Rows Using the following values')}</option>
                     <option value="remove">${message(code:'package.show.batch.remove.label', default:'Batch Remove Selected Rows')}</option>
@@ -144,13 +144,14 @@
                   </table>
                   <button name="BatchSelectedBtn" value="on" onClick="return confirmSubmit()" class="ui button">${message(code:'default.button.apply_batch.label')} (${message(code:'default.selected.label')})</button>
                   <button name="BatchAllBtn" value="on" onClick="return confirmSubmit()" class="ui button">${message(code:'default.button.apply_batch.label')} (${message(code:'package.show.batch.allInFL', default:'All in filtered list')})</button>
-                </g:if>
+
               </th>
             </tr>
 
             </thead>
                 <tbody></tbody>
           </table>
+            </g:if>
 
             <table class="ui celled la-table table">
                 <thead>
@@ -247,7 +248,7 @@
 
             <semui:form>
                 <g:form class="ui form" controller="ajax" action="addToCollection">
-                  <fieldset>
+
                     <legend><h3 class="ui header">${message(code:'package.show.title.add', default:'Add A Title To This Package')}</h3></legend>
                     <input type="hidden" name="__context" value="${packageInstance.class.name}:${packageInstance.id}"/>
                     <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.TitleInstancePackagePlatform"/>
@@ -255,15 +256,18 @@
 
                     <!-- N.B. this should really be looked up in the controller and set, not hard coded here -->
                     <input type="hidden" name="status" value="com.k_int.kbplus.RefdataValue:29"/>
-
-                    <label>${message(code:'package.show.title.add.title', default:'Title To Add')}</label>
-                    <g:simpleReferenceTypedown class="input-xxlarge" style="width:350px;" name="title" baseClass="com.k_int.kbplus.TitleInstance"/><br/>
-                    <span class="help-block"></span>
-                    <label>${message(code:'package.show.title.add.platform', default:'Platform For Added Title')}</label>
-                    <g:simpleReferenceTypedown class="input-large" style="width:350px;" name="platform" baseClass="com.k_int.kbplus.Platform"/><br/>
-                    <span class="help-block"></span>
+                      <div class="two fluid fields">
+                          <div class="field">
+                            <label>${message(code:'package.show.title.add.title', default:'Title To Add')}</label>
+                            <g:simpleReferenceTypedown class="input-xxlarge" style="width:350px;" name="title" baseClass="com.k_int.kbplus.TitleInstance"/>
+                          </div>
+                          <div class="field">
+                            <label>${message(code:'package.show.title.add.platform', default:'Platform For Added Title')}</label>
+                            <g:simpleReferenceTypedown class="input-large" style="width:350px;" name="platform" baseClass="com.k_int.kbplus.Platform"/>
+                          </div>
+                      </div>
                     <button type="submit" class="ui button">${message(code:'package.show.title.add.submit', default:'Add Title...')}</button>
-                  </fieldset>
+
                 </g:form>
             </semui:form>
 
@@ -273,7 +277,7 @@
       </div>
 
 
-    <g:render template="enhanced_select" contextPath="../templates" />
+    <%-- <g:render template="enhanced_select" contextPath="../templates" /> --%>
     <g:render template="orgLinksModal" 
               contextPath="../templates" 
               model="${[roleLinks:packageInstance?.orgs,parent:packageInstance.class.name+':'+packageInstance.id,property:'orgs',recip_prop:'pkg']}" />

@@ -5,7 +5,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.details.label', default:'Subscription Details')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'subscription.details.label', default:'Subscription Details')}</title>
   </head>
   <body>
 
@@ -138,8 +138,17 @@
 
                       <th colspan="2">
                         <g:set var="selected_label" value="${message(code:'default.selected.label')}" />
-
-                          <select id="bulkOperationSelect" name="bulkOperation">
+<%--
+                            <div class="ui radio checkbox">
+                                <input name="bulkOperation" value="edit" tabindex="0" class="hidden" type="radio">
+                                <label>${message(code:'default.edit.label', args:[selected_label], default:'Edit Selected')}</label>
+                            </div>
+                            <div class="ui radio checkbox">
+                                <input name="bulkOperation" value="remove" tabindex="0" class="hidden" type="radio">
+                                <label>${message(code:'default.remove.label', args:[selected_label], default:'Remove Selected')}</label>
+                            </div>
+--%>
+                          <select id="bulkOperationSelect" name="bulkOperation" style="width:50%; float:left">
                             <option value="edit">${message(code:'default.edit.label', args:[selected_label], default:'Edit Selected')}</option>
                             <option value="remove">${message(code:'default.remove.label', args:[selected_label], default:'Remove Selected')}</option>
                           </select>
@@ -183,7 +192,7 @@
                     </g:if> <br/>
                   <g:each in="${ie?.tipp?.title?.ids.sort{it.identifier.ns.ns}}" var="title_id">
                     <g:if test="${title_id.identifier.ns.ns.toLowerCase() != 'originediturl'}">
-                      ${title_id.identifier.ns.ns}:<strong>${title_id.identifier.value}</strong>
+                      ${title_id.identifier.ns.ns}: <strong>${title_id.identifier.value}</strong>
                     </g:if>
                   </g:each>
                   <br/>
@@ -191,7 +200,11 @@
                   eISSN:<strong>${ie?.tipp?.title?.getIdentifierValue('eISSN') ?: ' - '}</strong><br/>-->
                    ${message(code:'default.access.label', default:'Access')}: ${ie.availabilityStatus?.getI10n('value')}<br/>
                    ${message(code:'tipp.coverageNote', default:'Coverage Note')}: ${ie.coverageNote?:(ie.tipp?.coverageNote ?: '')}<br/>
-                   ${message(code:'tipp.platform', default:'Platform')}: ${ie.tipp?.platform.name ?: message(code:'default.unknown')}
+                    ${message(code:'tipp.platform', default:'Platform')}:
+                    <g:if test="${ie.tipp?.platform.name}">
+                        <g:link controller="platform" action="show" id="${ie.tipp?.platform.id}">${ie.tipp?.platform.name}</g:link>
+                    </g:if>
+                    <g:else>${message(code:'default.unknown')}</g:else>
                    <g:if test="${ie.availabilityStatus?.value=='Expected'}">
                      ${message(code:'default.on', default:'on')} <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ie.accessStartDate}"/>
                    </g:if>

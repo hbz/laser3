@@ -1299,3 +1299,7 @@ a.ui.basic.label:hover {
 .ui.massive.label {
   font-size: 1.71428571rem;
 }
+.finance_index .ui.ribbon.label {
+  left: calc(-2.8rem);
+  top: -22px;
+}

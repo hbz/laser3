@@ -92,9 +92,9 @@ class FilterService {
         queryParams << 'Consortium'
 
         if (query.size() > 0) {
-            query = "select o from Org as o, Combo as c where " + query.join(" and ") + " and c.fromOrg = o and c.toOrg = ? and c.type.value = ? order by LOWER(o.name) asc"
+            query = "select o from Org as o, Combo as c where " + query.join(" and ") + " and c.fromOrg = o and c.toOrg = ? and c.type.value = ? " + " order by " + params.sort?:"LOWER(o.sortname)" + params.order?:"asc"
         } else {
-            query = "select o from Org as o, Combo as c where c.fromOrg = o and c.toOrg = ? and c.type.value = ? order by LOWER(o.name) asc"
+            query = "select o from Org as o, Combo as c where c.fromOrg = o and c.toOrg = ? and c.type.value = ? " + " order by " + params.sort?:"LOWER(o.sortname)" + params.order?:"asc"
         }
 
         result.query = query
@@ -131,9 +131,9 @@ class FilterService {
         }
 
         if (query.size() > 0) {
-            query = " and " + query.join(" and ") + " order by t.endDate desc"
+            query = " and " + query.join(" and ") + " order by " + params.sort?:"t.endDate"+ params.order?:"desc"
         } else {
-            query = " order by t.endDate desc"
+            query = " order by " + params.sort?:"t.endDate"+ params.order?:"desc"
         }
 
         result.query = query

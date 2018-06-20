@@ -1,7 +1,7 @@
 <!-- _filter.gsp -->
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 
-<g:if test="${false}"><!-- TMP::IGNOREFILTER -->
+<g:if test="${false}"><!-- TMP::IGNORE LEGACY FILTER -->
 
 %{--AJAX rendered messages--}%
 <g:if test="${info}">
@@ -193,38 +193,79 @@
 
 </semui:filter>
 
-</g:if><!-- TMP::IGNOREFILTER -->
+</g:if><!-- TMP::IGNORE LEGACY FILTER -->
 
-    <table id="costTable" class="ui celled sortable table table-tworow la-table floatThead">
+<g:if test="${costItemSubList.size() > 1}">%{-- global finance view --}%
 
-        <thead>
-            <tr>
-                <th>Preis in EUR</th>
-                <th>Kategorie</th>
-                <th>Komponente</th>
-                <th>Status</th>
-                <th class="three wide">Bezeichnung</th>
-                <th>Datum von</th>
-                <th>Datum bis</th>
-                <th>Aktionen</th>
-            </tr>
-        </thead>
-        <tbody>
-            %{--Empty result set--}%
-            <g:if test="${cost_item_count==0}">
-                <tr><td colspan="8" style="text-align:center">&nbsp;<br/><g:if test="${msg}">${msg}</g:if><g:else>No Cost Items Found</g:else><br/>&nbsp;</td></tr>
-            </g:if>
-            <g:else>
-            %{--Two rows of data per CostItem, separated for readability--}%
-                <g:render template="filter_data" model="[editable: editable, cost_items: cost_items]"></g:render>
-            </g:else>
-        </tbody>
+    <%-- <semui:filter>
+        <g:form action="index" method="get" class="ui form">
+            <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
+        </g:form>
+    </semui:filter> --%>
 
-    </table>
+    <div class="ui styled fluid accordion">
+</g:if>
 
+<g:each in="${costItemSubList}" var="subListItem" status="i">
 
+    <g:if test="${costItemSubList.size() > 1}">
+        <div class="title">
+            <i class="dropdown icon"></i>
+            ${subListItem.key != 'clean' ? subListItem.key : 'Ohne konkrete Zuordnung'}
+            <span class="sumOfCosts_${i}" style="position:absolute;right:30px"></span>
+        </div>
+        <div class="content">
+    </g:if>
 
-    <%--
+        <g:set var="cost_items" value="${subListItem.value}" />
+
+        <table id="costTable_${i}" class="ui celled sortable table table-tworow la-table floatThead">
+
+            <thead>
+                <tr>
+                    <th>${message(code:'financials.costInLocalCurrency')}</th>
+                    <th class="three wide">${message(code:'financials.newCosts.costTitle')}</th>
+                    <%-- <th>${message(code:'financials.costItemCategory')}</th> --%>
+                    <th>${message(code:'financials.costItemComponent')}</th>
+                    <th>${message(code:'financials.costItemStatus')}</th>
+                    <th>${message(code:'financials.dateFrom')}</th>
+                    <th>${message(code:'financials.dateTo')}</th>
+                    <th>Aktionen</th>
+                </tr>
+            </thead>
+            <tbody>
+                %{--Empty result set--}%
+                <g:if test="${cost_item_count == 0}">
+                    <tr><td colspan="7" style="text-align:center">&nbsp;<br/>
+                        <g:if test="${msg}">${msg}</g:if><g:else>${message(code:'finance.result.filtered.empty')}</g:else><br/>&nbsp;
+                    </td></tr>
+                </g:if>
+                <g:else>
+                    <g:render template="filter_data" model="[editable: editable, cost_items: cost_items]"></g:render>
+                </g:else>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>
+                        <strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}: <span class="sumOfCosts_${i}"></span></strong>
+                    </th>
+                </tr>
+            </tfoot>
+        </table>
+
+    <g:if test="${costItemSubList.size() > 1}">
+        </div>
+    </g:if>
+</g:each>
+
+<g:if test="${costItemSubList.size() > 1}">%{-- global finance view --}%
+    <div class="title">
+        <strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}:<span id="totalCost" style="position:absolute;right:30px"></span></strong>
+    </div>
+    </div>
+</g:if>
+
+<%--
         <table id="costTable" class="ui striped celled la-rowspan table table-tworow">
 
             <thead>
@@ -296,10 +337,6 @@
 
         </table>
  --%>
-
-<br />
-<br />
-<br />
 
 <%--
 <div id="paginationWrapper" class="pagination">

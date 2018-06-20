@@ -5,17 +5,20 @@
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'person.label', default: 'Person')}"/>
     <title><g:message code="default.show.label" args="[entityName]"/></title>
+
 </head>
 
 <body>
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.institutions.all_orgs" controller="organisations" action="index" />
-
+    <g:message code="default.show.label" args="[entityName]" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui header"><semui:headerIcon/><g:message code="default.show.label" args="[entityName]"/></h1>
-
+<h1 class="ui header"><semui:headerIcon/>
+${personInstance?.contactType?.getI10n('value')  ? personInstance?.contactType?.getI10n('value') +': ' :  ' ' }
+${personInstance?.contactType == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type') ? personInstance?.last_name : personInstance?.first_name?:'' + ' ' + personInstance?.last_name}
+</h1>
 <g:render template="nav" contextPath="."/>
 
 <semui:messages data="${flash}"/>
@@ -60,7 +63,7 @@
                     <dl><dt><g:message code="person.contacts.label" default="Contacts"/></dt>
                         <dd>
                             <ul>
-                                <g:each in="${personInstance.contacts}" var="c">
+                                <g:each in="${personInstance.contacts.sort{it.content}}" var="c">
                                     <li>
                                         <g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
                                     </li>
@@ -68,7 +71,7 @@
                             </ul>
                             <g:if test="${editable}">
                                 <input class="ui button" type="button" data-semui="modal" href="#contactFormModal"
-                                       value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}">
+                                       value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label', default: 'Contacts')])}">
                                 <g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
                             </g:if>
                         </dd></dl>
@@ -76,7 +79,7 @@
                     <dl><dt><g:message code="person.addresses.label" default="Addresses"/></dt>
                         <dd>
                             <ul>
-                                <g:each in="${personInstance.addresses}" var="a">
+                                <g:each in="${personInstance.addresses.sort{it.type?.getI10n('value')}}" var="a">
                                     <li>
                                         <g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
                                     </li>

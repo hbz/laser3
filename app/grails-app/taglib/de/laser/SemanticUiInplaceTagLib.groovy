@@ -30,10 +30,6 @@ class SemanticUiInplaceTagLib {
             def default_empty = message(code:'default.button.edit.label')
             def data_link     = null
 
-            if (attrs.type == "date") {
-               //out << '<div class="ui calendar datepicker">'
-            }
-
             out << "<span id=\"${id}\" class=\"xEditableValue ${attrs.class ?: ''}\""
 
             if (attrs.type == "date") {
@@ -43,7 +39,7 @@ class SemanticUiInplaceTagLib {
                 out << " data-viewformat=\"${df}\""
                 out << " data-template=\"${df}\""
 
-                default_empty = message(code:'default.date.format.notime').toLowerCase()
+                default_empty = message(code:'default.date.format.notime.normal')
 
             } else {
                 out << " data-type=\"${attrs.type?:'text'}\""
@@ -72,28 +68,26 @@ class SemanticUiInplaceTagLib {
             }
 
             out << " data-url=\"${data_link}\""
-            out << ">"
 
-
-            if (attrs.type == "date") {
-                //out << '</div>'
-            }
-
-            if (body) {
-                out << body()
-            }
-            else {
+            if (! body) {
+                def oldValue = ''
                 if (attrs.owner[attrs.field] && attrs.type=='date') {
                     def sdf = new java.text.SimpleDateFormat(attrs.format?: message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
-                    out << sdf.format(attrs.owner[attrs.field])
+                    oldValue = sdf.format(attrs.owner[attrs.field])
                 }
                 else {
                     if ((attrs.owner[attrs.field] == null) || (attrs.owner[attrs.field].toString().length()==0)) {
                     }
                     else {
-                        out << attrs.owner[attrs.field].encodeAsHTML()
+                        oldValue = attrs.owner[attrs.field].encodeAsHTML()
                     }
                 }
+                out << " data-oldvalue=\"${oldValue}\">"
+                out << oldValue
+            }
+            else {
+                out << ">"
+                out << body()
             }
             out << "</span>"
         }
@@ -179,7 +173,7 @@ class SemanticUiInplaceTagLib {
             out << " data-viewformat=\"${df}\""
             out << " data-template=\"${df}\""
 
-            default_empty = message(code:'default.date.format.notime').toLowerCase()
+            default_empty = message(code:'default.date.format.notime.normal')
 
             if (attrs.language) {
                 out << " data-datepicker=\"{ 'language': '${attrs.language}' }\" language=\"${attrs.language}\""

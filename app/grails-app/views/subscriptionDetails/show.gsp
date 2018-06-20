@@ -46,12 +46,14 @@
 
         <g:render template="nav" />
 
-    <g:if test="${subscriptionInstance.instanceOf}">
+    <g:if test="${subscriptionInstance.instanceOf && (contextOrg == subscriptionInstance.getConsortia())}">
         <div class="ui negative message">
             <div class="header"><g:message code="myinst.subscriptionDetails.message.attention" /></div>
             <p>
-                <g:message code="myinst.subscriptionDetails.message.SubscriptionView" /> ${subscriptionInstance.getAllSubscribers()}.
-                <g:message code="myinst.subscriptionDetails.message.ConsortialView" /><g:link controller="subscriptionDetails" action="show" id="${subscriptionInstance.instanceOf.id}"><g:message code="myinst.subscriptionDetails.message.here" /></g:link>.
+                <g:message code="myinst.subscriptionDetails.message.SubscriptionView" />
+                    <span class="ui label">${subscriptionInstance.getAllSubscribers()?.collect{itOrg -> itOrg.name}.join(',')}</span>.
+                <g:message code="myinst.subscriptionDetails.message.ConsortialView" />
+                    <g:link controller="subscriptionDetails" action="show" id="${subscriptionInstance.instanceOf.id}"><g:message code="myinst.subscriptionDetails.message.here" /></g:link>.
             </p>
         </div>
     </g:if>
@@ -60,13 +62,13 @@
             <div class="inline-lists">
                 <dl>
                     <g:if test="${subscriptionInstance.globalUID}">
-                        <dt><g:message code="subscription.globalUID.label" default="Global UID" /></dt>
+                        <dt class="control-label"><g:message code="subscription.globalUID.label" default="Global UID" /></dt>
                         <dd>
                             <g:fieldValue bean="${subscriptionInstance}" field="globalUID"/>
                         </dd>
                     </g:if>
 
-                    <dt>
+                    <dt class="control-label">
                         <g:message code="org.ids.label" default="Ids" />
                         (<g:annotatedLabel owner="${subscriptionInstance}" property="ids">${message(code:'subscription.identifiers.label', default:'Subscription Identifiers')}</g:annotatedLabel>)
                     </dt>
@@ -113,11 +115,11 @@
                     <div class="ui card la-time-card">
                         <div class="content">
                             <dl>
-                                <dt>${message(code:'subscription.startDate.label', default:'Start Date')}</dt>
+                                <dt class="control-label">${message(code:'subscription.startDate.label', default:'Start Date')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="startDate" type="date"/></dd>
                             </dl>
                             <dl>
-                                <dt>${message(code:'subscription.endDate.label', default:'End Date')}</dt>
+                                <dt class="control-label">${message(code:'subscription.endDate.label', default:'End Date')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="endDate" type="date"/></dd>
                             </dl>
                             <% /*
@@ -127,7 +129,7 @@
                             </dl>
                             */ %>
                             <dl>
-                                <dt>${message(code:'subscription.manualCancellationlDate.label', default:'Manual Cancellation Date')}</dt>
+                                <dt class="control-label">${message(code:'subscription.manualCancellationlDate.label', default:'Manual Cancellation Date')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
                             </dl>
 
@@ -136,11 +138,11 @@
                     <div class="ui card">
                         <div class="content">
                             <dl>
-                                <dt>${message(code:'subscription.details.status', default:'Status')}</dt>
+                                <dt class="control-label">${message(code:'subscription.details.status', default:'Status')}</dt>
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status' /></dd>
                             </dl>
                             <dl>
-                                <dt>${message(code:'subscription.details.type', default:'Type')}</dt>
+                                <dt class="control-label">${message(code:'subscription.details.type', default:'Type')}</dt>
                                 <dd>
                                     <%-- TODO: subscribers may not edit type, but admins and yoda --%>
                                     <g:if test="${subscriptionInstance.getAllSubscribers().contains(contextOrg)}">
@@ -151,9 +153,9 @@
                                     </g:else>
                                 </dd>
                             </dl>
-                            <g:if test="${subscriptionInstance.instanceOf}">
+                            <g:if test="${subscriptionInstance.instanceOf && (contextOrg == subscriptionInstance.getConsortia())}">
                                 <dl>
-                                    <dt>${message(code:'subscription.isInstanceOfSub.label')}</dt>
+                                    <dt class="control-label">${message(code:'subscription.isInstanceOfSub.label')}</dt>
                                     <dd>
                                         <g:link controller="subscriptionDetails" action="show" id="${subscriptionInstance.instanceOf.id}">${subscriptionInstance.instanceOf}</g:link>
                                     </dd>
@@ -165,17 +167,25 @@
 
                 <div class="ui card">
                         <div class="content">
-                            <dl>
-                                <dt>${message(code:'subscription.packages.label')}</dt>
-                                <dd>
-                                    <g:each in="${subscriptionInstance.packages}" var="sp">
+                            <g:each in="${subscriptionInstance.packages}" var="sp">
+                            <table class="ui la-selectable table">
+                                <colgroup>
+                                    <col width="130" />
+                                    <col width="300" />
+                                    <col width="430"/>
+                                </colgroup>
+                                <tr>
+                                <th scope="row" class="control-label">${message(code:'subscription.packages.label')}</th>
+                                <td>
+
 
                                         <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
 
                                         <g:if test="${sp.pkg?.contentProvider}">
                                             (${sp.pkg?.contentProvider?.name})
                                         </g:if>
-
+                                </td>
+                                <td>
                                         <g:if test="${editable}">
 
                                             <div class="ui mini icon buttons">
@@ -185,24 +195,30 @@
                                             </div>
                                             <br />
                                         </g:if>
-
-                                    </g:each>
-                                </dd>
-                            </dl>
+                                </td>
+                            </table>
+                            </g:each>
                             <dl>
-                                <dt>${message(code:'license')}</dt>
+                                <dt class="control-label la-width-122">${message(code:'license')}</dt>
                                 <dd>
-                                        <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
-                                        <g:if test="${subscriptionInstance.owner != null}">
+
+                                        <g:if test="${subscriptionInstance.owner == null}">
+                                            <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
+                                        </g:if>
+                                        <g:else><g:link controller="licenseDetails" action="show" id="${subscriptionInstance.owner.id}">
+                                                    ${subscriptionInstance.owner}
+                                                </g:link>
+                                        </g:else>
+                                       %{-- <g:if test="${subscriptionInstance.owner != null}">
                                             [<g:link controller="licenseDetails" action="show" id="${subscriptionInstance.owner.id}">
                                                 <i class="icon-share-alt"></i> ${message(code:'default.button.show.label', default:'Show')}
                                             </g:link>]
-                                        </g:if>
+                                        </g:if>--}%
 
                                         <br/><br/>
                                         <g:if test="${editable}">
                                             <g:if test="${subscriptionInstance.owner == null}">
-                                                <g:link  controller="myInstitution" class="ui button" action="cleanLicense" params="[sub: subscriptionInstance.id]">${message(code:'license.add.blank')}
+                                                <g:link  controller="myInstitution" class="ui button" action="addLicense" params="[sub: subscriptionInstance.id, subName: subscriptionInstance.name]">${message(code:'license.add.blank')}
                                                 </g:link>
                                             </g:if>
                                         </g:if>
@@ -336,12 +352,12 @@
                     <div class="ui card la-dl-no-table">
                         <div class="content">
                             <dl>
-                                <dt>${message(code:'financials.label', default:'Financials')}</dt>
+                                <dt class="control-label">${message(code:'financials.label', default:'Financials')}</dt>
                                 <dd>
                                     <table class="ui single line  table">
                                         <thead>
                                         <tr>
-                                            <th>${message(code:'financials.costItemCategory')}</th>
+                                            <th class="la-column-nowrap">${message(code:'financials.costItemCategory')}</th>
                                             <th>${message(code:'financials.costItemElement')}</th>
                                             <th>${message(code:'financials.costInLocalCurrency')}</th>
                                             <th>${message(code:'financials.costItemStatus', default:'Status')}</th>
@@ -350,7 +366,7 @@
                                         <tbody>
                                             <g:each in="${subscriptionInstance.costItems}" var="ci">
                                                 <tr>
-                                                    <td>${ci.costItemCategory?.getI10n('value')}</td>
+                                                    <td class="la-column-nowrap">${ci.costItemCategory?.getI10n('value')}</td>
                                                     <td>${ci.costItemElement?.getI10n('value')}</td>
                                                     <td>${ci.costInLocalCurrency} ${RefdataCategory.lookupOrCreate('Currency','EUR').getI10n('value')}</td>
                                                     <td>${ci.costItemStatus?.getI10n('value')}</td>
@@ -395,12 +411,12 @@
                     <div class="content">
                     <g:if test="${subscriptionInstance.costItems}">
                             <dl>
-                                <dt>${message(code:'subscription.details.costPerUse.header')}</dt>
+                                <dt class="control-label">${message(code:'subscription.details.costPerUse.header')}</dt>
                                 <dd><g:formatNumber number="${totalCostPerUse}" type="currency" currencyCode="${currencyCode}" maxFractionDigits="2" minFractionDigits="2" roundingMode="HALF_UP"/></dd>
                             </dl>
                     </g:if>
                         <dl>
-                            <dt>${message(code:'default.usage.label')}</dt>
+                            <dt class="control-label">${message(code:'default.usage.label')}</dt>
                             <dd>
                                 <table class="ui celled la-table table">
                                     <thead>
@@ -423,6 +439,7 @@
                                                     module="statistics"
                                                     controller="default"
                                                     action="select"
+                                                    target="_blank"
                                                     params="[mode        : usageMode,
                                                              packages    : subscription.getCommaSeperatedPackagesIsilList(),
                                                              institutions: statsWibid,

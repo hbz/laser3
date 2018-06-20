@@ -282,7 +282,13 @@
                         moreLink: '<a href="#">[ ${message(code:'default.button.show.label')} ]</a>',
                         lessLink: '<a href="#">[ ${message(code:'default.button.hide.label')} ]</a>'
                     })
-                })
+                });
+                $('.xEditableManyToOne').editable({
+                }).on('hidden', function() {
+                        location.reload();
+                 });
+
+
             })
         </r:script>
 

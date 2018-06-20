@@ -5,7 +5,7 @@
   <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
-    <title>${message(code:'laser', default:'LAS:eR')} <g:message code="default.show.label" args="[entityName]" /></title>
+    <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="default.show.label" args="[entityName]" /></title>
   </head>
   <body>
 
@@ -24,7 +24,7 @@
         
 			<g:if test="${orgInstance?.addresses}">
 				<dt><g:message code="org.addresses.label" default="Addresses" /></dt>
-				<g:each in="${orgInstance?.addresses}" var="a">
+				<g:each in="${orgInstance?.addresses.sort{it.type?.getI10n('value')}}" var="a">
 					<g:if test="${a.org}">
 						<g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
 					</g:if>

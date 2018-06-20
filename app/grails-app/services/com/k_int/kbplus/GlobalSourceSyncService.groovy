@@ -363,7 +363,7 @@ class GlobalSourceSyncService {
 
         changeNotificationService.registerPendingChange('pkg',
                 ctx,
-                "New TIPP for ${title_instance.title} from ${plat_instance.name}",
+                "Eine neue Verknüpfung (TIPP) für den Titel ${title_instance.title} mit der Plattform ${plat_instance.name}",
                 null,
                 [
                         newObjectClass: "com.k_int.kbplus.TitleInstancePackagePlatform",
@@ -406,7 +406,7 @@ class GlobalSourceSyncService {
 
           }
           if ("${chg.field}" == "coverage") {
-            changetext = changetext ? changetext + ", coverage: (Start Date:${tipp.coverage[0].startDate}, Start Volume:${tipp.coverage[0].startVolume}, Start Issue:${tipp.coverage[0].startIssue}, End Date:${tipp.coverage[0].endDate} , End Volume:${tipp.coverage[0].endVolume}, End Issue:${tipp.coverage[0].endIssue}, Embargo:${tipp.coverage[0].embargo}, Coverage Depth:${tipp.coverage[0].coverageDepth}, Coverage Note:${tipp.coverage[0].coverageNote})" : "Coverage: (Start Date:${tipp.coverage[0].startDate}, Start Volume:${tipp.coverage[0].startVolume}, Start Issue:${tipp.coverage[0].startIssue}, End Date:${tipp.coverage[0].endDate} , End Volume:${tipp.coverage[0].endVolume}, End Issue:${tipp.coverage[0].endIssue}, Embargo:${tipp.coverage[0].embargo}, Coverage Depth:${tipp.coverage[0].coverageDepth}, Coverage Note:${tipp.coverage[0].coverageNote})"
+            changetext = changetext ? changetext + ", Coverage: (Start Date:${tipp.coverage[0].startDate}, Start Volume:${tipp.coverage[0].startVolume}, Start Issue:${tipp.coverage[0].startIssue}, End Date:${tipp.coverage[0].endDate} , End Volume:${tipp.coverage[0].endVolume}, End Issue:${tipp.coverage[0].endIssue}, Embargo:${tipp.coverage[0].embargo}, Coverage Depth:${tipp.coverage[0].coverageDepth}, Coverage Note:${tipp.coverage[0].coverageNote})" : "Coverage: (Start Date:${tipp.coverage[0].startDate}, Start Volume:${tipp.coverage[0].startVolume}, Start Issue:${tipp.coverage[0].startIssue}, End Date:${tipp.coverage[0].endDate} , End Volume:${tipp.coverage[0].endVolume}, End Issue:${tipp.coverage[0].endIssue}, Embargo:${tipp.coverage[0].embargo}, Coverage Depth:${tipp.coverage[0].coverageDepth}, Coverage Note:${tipp.coverage[0].coverageNote})"
             change_doc.put("startDate", tipp.coverage[0].startDate)
             change_doc.put("startVolume", tipp.coverage[0].startVolume)
             change_doc.put("startIssue", tipp.coverage[0].startIssue)
@@ -418,7 +418,7 @@ class GlobalSourceSyncService {
             change_doc.put("coverageNote", tipp.coverage[0].coverageNote)
           }
           if ("${chg.field}" == "hostPlatformURL") {
-            changetext = changetext ? changetext + ", url: ${tipp.url}" : "url: ${tipp.url}"
+            changetext = changetext ? changetext + ", Url: ${tipp.url}" : "Url: ${tipp.url}"
             change_doc.put("hostPlatformURL", tipp.url)
 
           }
@@ -427,7 +427,7 @@ class GlobalSourceSyncService {
         if (change_doc) {
           changeNotificationService.registerPendingChange('pkg',
                   ctx,
-                  "A tipp/coverage update for \"${title_of_tipp_to_update.title}\", ${changetext}, status: ${TippStatus}",
+                  "Eine TIPP/Coverage Änderung für den Titel \"${title_of_tipp_to_update.title}\", ${changetext}, Status: ${TippStatus}",
                   null,
                   [
                           changeTarget: "com.k_int.kbplus.TitleInstancePackagePlatform:${db_tipp.id}",
@@ -460,7 +460,7 @@ class GlobalSourceSyncService {
 
         changeNotificationService.registerPendingChange('pkg',
                 ctx,
-                "A tipp status update for \"${title_of_tipp_to_update.title}\", status: ${TippStatus}",
+                "Eine Änderung des Status der Verknüpfung (TIPP) für den Titel \"${title_of_tipp_to_update.title}\", Status: ${TippStatus}",
                 null,
                 [
                         changeTarget: "com.k_int.kbplus.TitleInstancePackagePlatform:${db_tipp.id}",
@@ -568,7 +568,7 @@ class GlobalSourceSyncService {
               title      : [
                       name       : tip.title.name.text(),
                       identifiers: [],
-                      titleType: tip.mediumByTypClass.text()
+                      titleType: tip.title.mediumByTypClass.text()
               ],
               status     : tip.status?.text() ?: 'Current',
               titleId    : tip.title.'@id'.text(),
@@ -720,6 +720,7 @@ class GlobalSourceSyncService {
   def intOAI(sync_job_id) {
 
     log.debug("internalOAI processing ${sync_job_id}");
+    new EventLog(event:'kbplus.doOAISync', message:"internalOAI processing ${sync_job_id}", tstp:new Date(System.currentTimeMillis())).save(flush:true)
 
     def sync_job = GlobalRecordSource.get(sync_job_id)
     int rectype = sync_job.rectype.longValue()
@@ -869,12 +870,14 @@ class GlobalSourceSyncService {
     catch ( Exception e ) {
       log.error("Problem",e);
       log.error("Problem running job ${sync_job_id}, conf=${cfg}",e);
+      new EventLog(event:'kbplus.doOAISync', message:"Problem running job ${sync_job_id}, conf=${cfg}", tstp:new Date(System.currentTimeMillis())).save(flush:true)
       log.debug("Reset sync job haveUpTo");
       sync_job.haveUpTo = olddate
       sync_job.save(flush: true);
     }
     finally {
       log.debug("internalOAISync completed for job ${sync_job_id}");
+      new EventLog(event:'kbplus.doOAISync', message:"internalOAISync completed for job ${sync_job_id}", tstp:new Date(System.currentTimeMillis())).save(flush:true)
     }
   }
 

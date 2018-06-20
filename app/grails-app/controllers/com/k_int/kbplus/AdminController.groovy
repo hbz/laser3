@@ -354,6 +354,18 @@ class AdminController {
     result
   }
 
+  @Secured(['ROLE_ADMIN'])
+  def eventLog() {
+    def result = [:]
+
+    params.sort = 'tstp'
+    params.order = 'desc'
+
+    result.eventlogs = EventLog.list(params)
+
+    result
+  }
+
   @Secured(['ROLE_YODA'])
   def dataCleanse() {
     // Sets nominal platform
@@ -850,9 +862,8 @@ class AdminController {
     @Secured(['ROLE_ADMIN'])
     def manageRefdatas() {
 
-        def rdvMap = [:]
-        /*
-        TODO: tmp commit
+        def attrMap = [:]
+        def rdvList = []
 
         grailsApplication.getArtefacts("Domain").toList().each { dc ->
             log.debug(dc)
@@ -863,24 +874,29 @@ class AdminController {
             dc.clazz.declaredFields
                 .findAll{ it -> ! it.synthetic}
                 .findAll{ it -> it.type.name == 'com.k_int.kbplus.RefdataValue'}
+                .sort()
                 .each { df ->
                     def query = "SELECT DISTINCT ${df.name} FROM ${dc.name}"
                     log.debug(query)
 
                     def rdvs = SystemAdmin.executeQuery(query)
-                    dcMap << ["${df.name}": rdvs.collect{ it -> "${it.id}:${it.value}"}]
 
+                    dcMap << ["${df.name}": rdvs.collect{ it -> "${it.id}:${it.value}"}.sort()]
+
+                    rdvs.each{ it  ->
+                        rdvList << it.id
+                    }
                 }
             if (! dcMap.isEmpty()) {
-                rdvMap << ["${dc}": dcMap]
+                attrMap << ["${dc}": dcMap]
             }
         }
-        */
 
         render view: 'manageRefdatas', model: [
                 editable    : true,
                 rdCategories: RefdataCategory.where{}.sort('desc'),
-                rdvMap: rdvMap
+                attrMap     : attrMap.sort(),
+                rdvList     : rdvList.sort()
         ]
   }
 }

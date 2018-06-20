@@ -5,7 +5,7 @@
 <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'license.label', default: 'License')}" />
-    <title>${message(code:'laser', default:'LAS:eR')} <g:message code="license" default="License"/></title>
+    <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="license" default="License"/></title>
     <r:require module="annotations" />
     <g:javascript src="properties.js"/>
 </head>
@@ -15,7 +15,7 @@
 
     <h1 class="ui header"><semui:headerIcon />
 
-        ${license.licensee?.name}
+        %{--${license.licensee?.name}--}%
         ${message(code:'license.details.type', args:["${license.type?.getI10n('value')}"], default:'License')} :
         <semui:xEditable owner="${license}" field="reference" id="reference"/>
     </h1>

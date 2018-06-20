@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta name="layout" content="semanticUI"/>
-<title>${message(code:'laser', default:'LAS:eR')} Logfile</title>
+<title>${message(code:'laser', default:'LAS:eR')} : Logfile</title>
 <r:script type="JavaScript" >
   var initScroll = false;
 

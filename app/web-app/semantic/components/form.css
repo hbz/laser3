@@ -137,7 +137,7 @@
   resize: vertical;
 }
 .ui.form textarea:not([rows]) {
-  height: 12em;
+  height: 8em;
   min-height: 8em;
   max-height: 24em;
 }
@@ -1090,9 +1090,8 @@
   margin-top: 0!important;
   margin-bottom: 0!important;
 }
-.ui.form .fields .field.la-modal-fieldset-no-margin .field {
-  padding-left: 15px;
-  padding-right: 15px;
+.ui.form .fields .field.la-modal-fieldset-no-margin .la-exchange-rate input {
+  vertical-align: middle;
 }
 .ui.form .fields .field.la-modal-fieldset-margin {
   margin-left: 15px;
@@ -1102,9 +1101,12 @@
   background: #fffaf5;
   padding: 15px;
 }
-.ui.form .fields .field.la-modal-fieldset-margin .field {
-  padding-left: 15px;
-  padding-right: 15px;
+.ui.form .fields .field.la-modal-fieldset-margin-right {
+  margin-right: 15px;
+  margin-top: 0!important;
+  margin-bottom: 0!important;
+  background: #fffaf5;
+  padding: 15px;
 }
 .ui.form .fields:last-child .field.la-modal-fieldset-margin .field,
 .ui.form .fields:last-child .field.la-modal-fieldset-no-margin .field {
@@ -1137,4 +1139,21 @@ input#spotlightSearch[type="search"] {
 }
 .ui.input > input#spotlightSearch:focus {
   border-color: #DCDDDE;
+}
+.ui.form .la-account-currency .field {
+  margin: 0;
+  white-space: nowrap;
+}
+.ui.form .la-account-currency .field input {
+  width: 82%;
+}
+.ui.form .field > .selection.dropdown.la-currency {
+  margin-left: -17px;
+  width: 105%;
+}
+.ui.form .fields.la-fields-no-margin-button .field {
+  margin: 0;
+}
+.ui.form .la-select2-fixed-width {
+  width: 356.938px;
 }

@@ -13,11 +13,15 @@ class GenericOIDService {
   
       def domain_class=null;
   
-      if ( oid_components[0].startsWith("com.k_int.kbplus") )
-        domain_class = grailsApplication.getArtefact('Domain',oid_components[0])
-      else
-        domain_class = grailsApplication.getArtefact('Domain',"com.k_int.kbplus.${oid_components[0]}")
-  
+      if ( oid_components[0].startsWith("com.k_int") ) {
+        domain_class = grailsApplication.getArtefact('Domain', oid_components[0])
+      }
+      else if ( oid_components[0].startsWith("de.laser") ) {
+        domain_class = grailsApplication.getArtefact('Domain', ${oid_components[0]})
+      }
+      else {
+        domain_class = grailsApplication.getArtefact('Domain', "com.k_int.kbplus.${oid_components[0]}")
+      }
   
       if ( domain_class ) {
         result = domain_class.getClazz().get(oid_components[1])

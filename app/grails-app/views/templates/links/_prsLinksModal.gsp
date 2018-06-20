@@ -10,7 +10,7 @@
                 <th>Person</th>
                 <th>Organisation</th>
                 <th>Verantwortlichkeit</th>
-                <th>${message(code:'title.edit.actions.label')}</th>
+                <th>${message(code:'default.actions')}</th>
             </tr>
             </thead>
             <tbody>

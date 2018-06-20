@@ -3,7 +3,7 @@
     <g:set var="rowspan" value="2"/>
 </g:if>
 
-<table class="ui sortable celled la-table table ignore-floatThead la-bulk-header">
+<table class="ui sortable celled la-table table">
     <thead>
     <tr>
         <g:if test="${tmplShowCheckbox}">
@@ -12,7 +12,7 @@
             </th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('name')}">
-            <th rowspan="${rowspan}">${message(code: 'org.name.label', default: 'Name')}</th>
+            <g:sortableColumn title="${message(code: 'org.name.label', default: 'Name')}" property="lower(o.name)" rowspan="${rowspan}"/>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('identifier')}">
             <th rowspan="${rowspan}">Identifier</th>
@@ -73,21 +73,17 @@
             </g:if>
             <td>
                 <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
-                    <g:if test="${org.shortname}">
-                        ${fieldValue(bean: org, field: "shortname")}
-                    </g:if>
-                    <g:else>
-                        ${fieldValue(bean: org, field: "name")}
-                    </g:else>
+                        ${fieldValue(bean: org, field: "name")} <br>
+                        <g:if test="${org.shortname}">
+                            (${fieldValue(bean: org, field: "shortname")})
+                        </g:if>
                 </g:if>
                 <g:else>
                     <g:link controller="organisations" action="show" id="${org.id}">
+                        ${fieldValue(bean: org, field: "name")} <br>
                         <g:if test="${org.shortname}">
-                            ${fieldValue(bean: org, field: "shortname")}
+                            (${fieldValue(bean: org, field: "shortname")})
                         </g:if>
-                        <g:else>
-                            ${fieldValue(bean: org, field: "name")}
-                        </g:else>
                     </g:link>
                 </g:else>
             </td>

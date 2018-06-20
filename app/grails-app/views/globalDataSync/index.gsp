@@ -72,7 +72,7 @@
             <g:sortableColumn property="globalRecordInfoStatus"
                               title="${message(code: 'package.globalRecordInfoStatus.label')}"/>
             <th>${message(code: 'globalDataSync.tippscount')}</th>
-            <th>${message(code: 'globalDataSync.actions.label')}</th>
+            <th>${message(code: 'default.actions')}</th>
         </tr>
         </thead>
         <tbody>

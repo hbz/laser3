@@ -21,9 +21,11 @@
   padding: 15px;
   margin-top: 0!important;
   margin-bottom: 0!important;
-  .field {
-    padding-left: 15px;
-    padding-right: 15px;
+  .la-exchange-rate {
+
+    input {
+      vertical-align: middle;
+    }
   }
 }
 .ui.form .fields .field.la-modal-fieldset-margin {
@@ -33,10 +35,13 @@
   margin-bottom: 0!important;
   background: #fffaf5;
   padding: 15px;
-  .field {
-    padding-left: 15px;
-    padding-right: 15px;
-  }
+}
+.ui.form .fields .field.la-modal-fieldset-margin-right {
+  margin-right: 15px;
+  margin-top: 0!important;
+  margin-bottom: 0!important;
+  background: #fffaf5;
+  padding: 15px;
 }
 .ui.form .fields:last-child .field.la-modal-fieldset-margin .field,
 .ui.form .fields:last-child .field.la-modal-fieldset-no-margin .field{
@@ -77,3 +82,28 @@ input#spotlightSearch[type="search"] {
 .ui.input > input#spotlightSearch:focus  {
   border-color: @lightGrey;
 }
+
+// Account Currency
+.ui.form .la-account-currency {
+  .field {
+    margin: 0;
+    white-space: nowrap;
+     input {
+      width: 82%;
+    }
+  }
+}
+.ui.form .field>.selection.dropdown.la-currency {
+  margin-left: -17px;
+  width: 105%;
+}
+.ui.form {
+  .fields.la-fields-no-margin-button .field{
+    margin: 0;
+  }
+}
+//select2 is not caring about the width of container around
+.ui.form .la-select2-fixed-width {
+          width: 356.938px;
+}
+

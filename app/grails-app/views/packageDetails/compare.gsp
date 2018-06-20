@@ -243,7 +243,7 @@
 	</tbody>
 </table>
 
- <semui:paginate action="compare" controller="packageDetails" params="${params}" first="first" last="Last" maxsteps="${max}" total="${unionListSize}" />
+ <semui:paginate action="compare" controller="packageDetails" params="${params}" first="first" last="Last" max="${max}" total="${unionListSize}" />
 
 </g:if>
 </div>
@@ -269,7 +269,7 @@
         placeholder: "${message(code:'package.compare.search.ph', default:'Type package name...')}",
         minimumInputLength: 1,
         formatInputTooShort: function () {
-            return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+            return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
         },
         ajax: { 
             url: '<g:createLink controller='ajax' action='lookup'/>',

@@ -1,20 +1,40 @@
 
-0.5-pre
+0.5.1
 
-STILL IN PROGRESS
+- added public overview for refdata values and properties
+- minor style and markup changes
+- bugfix: setting default org role target for new persons
+- bugfix: now exporting entire set of subscriptions
+- bugfix: creation and editing of tasks
+- bugfix: removed closed tasks from dashboard
+- bugfix: multiple modals for adding and editing cost items
+- bugfix: finished deletion of cost items
+- bugfix: editing of notes
+- bugfix: improved org selection at profile
 
-- splitted titles into three derived objects: books, databases and journals
+0.5
+
+- splitted titles into derived objects: books, databases and journals
 - added new roles for consortia context: subscriber_consortial and licensee_consortial
 - added views and functionality for managing consortia members
 - added predefined constraints for adding orgRoles to objects
-- reworked views and functionality for tasks
+- complete rework of finance views and functionality
+- integrated connection to statistic server
 - reworked views and templates for managing persons, contacts and addresses
+- reworked tasks (views and functionality)
 - added list views for providers
-- reworked various ui elements and views
+- improved various search forms and filter
+- reworked various modals
+- reworked a great number of views and ui elements
 - removed legacy stylesheets
 - more translations
 - fixed a great number of bugs
+- reworked refdata vocabulary
 - upgrade to semantic-ui 2.3.1
+
+0.4.6
+
+- added imprint and dsvgo links
 
 0.4.5
 

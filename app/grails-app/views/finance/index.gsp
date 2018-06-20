@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/html">
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : Financial Information</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'subscription.details.financials.label')}</title>
 
 </head>
 <body>
@@ -28,9 +28,9 @@
 
 <semui:controlButtons>
     <semui:exportDropdown>
-        <semui:exportDropdownItem>
-            <a class="item" data-mode="all" class="export" style="cursor: pointer">CSV Cost Items</a>
-        </semui:exportDropdownItem>
+        %{--<semui:exportDropdownItem>--}%
+            %{--<a class="item" data-mode="all" class="export" style="cursor: pointer">CSV Cost Items</a>--}%
+    %{--</semui:exportDropdownItem>--}%
         <%--
         <semui:exportDropdownItem>
             <a data-mode="sub" class="disabled export" style="cursor: pointer">CSV Costs by Subscription</a>
@@ -49,21 +49,61 @@
 </semui:controlButtons>
 
 <g:if test="${fixedSubscription}">
-    <h1 class="ui header"><semui:headerIcon />${fixedSubscription}</h1>
+    <h1 class="ui header"><semui:headerIcon />${message(code:'subscription.details.financials.label')} für ${fixedSubscription}</h1>
     <g:render template="../subscriptionDetails/nav" model="${[subscriptionInstance:fixedSubscription, params:(params << [id:fixedSubscription.id])]}"/> <%-- mapping="subfinance" params="${[sub:params.id]} --%>
 </g:if>
 <g:else>
-    <h1 class="ui header"><semui:headerIcon />${institution.name}</h1>
+    <h1 class="ui header"><semui:headerIcon />${message(code:'subscription.details.financials.label')} für ${institution.name}</h1>
 </g:else>
 
 <div class="ui grid">
     <div class="column">
-        <button class="ui button" type="submit" data-semui="modal" href="#recentlyAdded_modal" id="showHideRecent">${message(code:'financials.recentCosts')}</button>
+        <%--<button class="ui button" type="submit" data-semui="modal" href="#recentlyAdded_modal" id="showHideRecent">${message(code:'financials.recentCosts')}</button>--%>
 
         <g:if test="${editable}">
             <%--<button class="ui button pull-right" type="submit" id="BatchSelectedBtn" title="${g.message(code: 'financials.filtersearch.deleteAll')}" value="remove">Remove Selected</button>--%>
-            <button class="ui button pull-right" data-semui="modal" href="#costItem_createModal" id="addNew">${message(code:'financials.addNewCost')}</button>
-            <g:render template="ajaxModal" model="['tmplId':'costItem_createModal']"/>
+
+            <button class="ui button pull-right" id="addNew">${message(code:'financials.addNewCost')}</button>
+
+            <script>
+                var isClicked = false;
+                $('#addNew').on('click', function(event) {
+                    // prevent 2 Clicks open 2 Modals
+                    if (!isClicked) {
+                        isClicked = true;
+                        $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
+                        $('#dynamicModalContainer').empty()
+                        $.ajax({
+                            url: "<g:createLink controller='finance' action='editCostItem'/>",
+                            data: {
+                                sub: "${fixedSubscription?.id}"
+                            }
+                        }).done(function (data) {
+                            $('#dynamicModalContainer').html(data);
+
+                            $('#dynamicModalContainer .ui.modal').modal({
+                                onVisible: function () {
+                                    r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
+                                    r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
+
+                                    ajaxPostFunc()
+                                },
+                                detachable: true,
+                                closable: true,
+                                transition: 'scale',
+                                onApprove: function () {
+                                    $(this).find('.ui.form').submit();
+                                    return false;
+                                }
+                            }).modal('show');
+                        })
+                        setTimeout(function () {
+                            isClicked = false;
+                        }, 800);
+                    }
+                })
+            </script>
+
         </g:if>
     </div>
 </div>
@@ -73,7 +113,7 @@
     <div class="ui grid">
         <div class="sixteen wide column">
 
-            <div id="userError" hidden="">
+            <%--<div id="userError" hidden="">
                 <table class="ui celled la-table table">
                     <thead>
                     <tr><th>Problem/Update</th>
@@ -81,28 +121,55 @@
                     </thead>
                     <tbody><tr></tr></tbody>
                 </table>
-            </div>
+            </div>--%>
+
+            <%
+                // WORKAROUND; grouping costitems by subscription
+                def costItemSubList = ["clean":[]]
+                (cost_items?.collect{it.sub}).each{ item ->
+                    if (item) {
+                        costItemSubList << ["${item.name}": []]
+                    }
+                }
+                cost_items.each{ item ->
+                    if (item.sub) {
+                        costItemSubList.get("${item.sub?.name}").add(item)
+                    }
+                    else {
+                        costItemSubList.get('clean').add(item)
+                    }
+                }
+                costItemSubList = costItemSubList.findAll{ ! it.value.isEmpty() }
+            %>
 
             <div id="filterTemplateWrapper" class="wrapper">
                 <div id="filterTemplate">
-                    <g:render template="filter" />
+
+                    <g:render template="filter" model="['costItemSubList': costItemSubList]"/>
+
                 </div>
             </div>
 
+            <br />
+            <br />
+            <br />
+
+            <%--
             <button class="ui button pull-right" data-offset="#jumpMark_top" title="Select this button to go back to the top of the page" id="top">${message(code:'financials.backToTop')}</button>
+            --%>
 
         </div><!-- .sixteen -->
     </div><!-- .grid -->
 
 <r:script>
-    var financeRecentConstroller = {
+    var financeRecentController = {
 
         pullJob : null,
 
         go : function() {
             console.log("go")
-            financeRecentConstroller.recentCostItems( null ); // pulls latest cost items
-            financeRecentConstroller.pullJob = setInterval( financeRecentConstroller.costItemsPresent, 60 * 1000 ); // Recently updated code block
+            financeRecentController.recentCostItems( null ); // pulls latest cost items
+            financeRecentController.pullJob = setInterval( financeRecentController.costItemsPresent, 60 * 1000 ); // Recently updated code block
         },
 
         recentCostItems : function(to) {
@@ -122,7 +189,7 @@
                 })
                 .fail(function(jqXHR, textStatus, errorThrown ) {
                     console.log('Unable to perform recent cost update ... ', errorThrown);
-                    clearTimeout(financeRecentConstroller.pullJob);
+                    clearTimeout(financeRecentController.pullJob);
                 });
         },
 
@@ -144,21 +211,68 @@
                 })
                     .fail(function( jqXHR, textStatus, errorThrown ) {
                         errorHandling(textStatus, 'Recent Cost Updates', errorThrown);
-                        clearTimeout(financeRecentConstroller.pullJob);
+                        clearTimeout(financeRecentController.pullJob);
                         $('#recentModalWrapper', '#showHideRecent').remove();
                     })
                     .done(function(data) {
                         if(data.count > 0) {
-                            financeRecentConstroller.recentCostItems(renderedDateTo);
+                            financeRecentController.recentCostItems(renderedDateTo);
                         }
                     });
             }
         }
+    }
 
+    var financeHelper = {
+
+        calcSumOfCosts : function () {
+            var totalcost = 0
+            $('table[id^=costTable]').each( function() {
+                var result = 0
+                $(this).find('tbody tr span.costInLocalCurrency').each( function() {
+                    result += parseFloat($(this).attr('data-costInLocalCurrency'))
+                })
+                var socClass = $(this).find('span[class^=sumOfCosts]').attr('class')
+                console.log(socClass)
+                $('.' + socClass).text(
+                    Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(result)
+                )
+                totalcost += result
+            })
+              $('#totalCost').text(Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(totalcost))
+        }
     }
 
     $(document).ready(function() {
-        financeRecentConstroller.go()
+        financeRecentController.go()
+        financeHelper.calcSumOfCosts()
+    })
+
+         $('table[id^=costTable] .x .button:not(.negative)').on('click', function(e) {
+        e.preventDefault()
+
+        $.ajax({
+            url: $(this).attr('href')
+        }).done( function(data) {
+            $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
+            $('#dynamicModalContainer').empty().html(data);
+
+            $('#dynamicModalContainer .ui.modal').modal({
+                onVisible: function () {
+                    r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
+                    r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
+
+                    ajaxPostFunc()
+                },
+                detachable: true,
+                closable: true,
+                transition: 'scale',
+                onApprove : function() {
+                    $(this).find('.ui.form').submit();
+                    return false;
+                }
+            }).modal('show');
+        })
     })
 </r:script>
 

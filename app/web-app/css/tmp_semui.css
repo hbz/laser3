@@ -184,12 +184,14 @@ body.yoda_appSecurity .secInfoWrapper .ROLE_API_DATAMANAGER {
     font-style: italic;
 }
 body.yoda_appSecurity .secInfoWrapper .ROLE_ORG_EDITOR {
-    color: #8B4513;
-}
+     color: #8B4513;
+ }
 body.yoda_appSecurity .secInfoWrapper .ROLE_PACKAGE_EDITOR {
     color: #8B4513;
 }
-
+body.yoda_appSecurity .secInfoWrapper .ROLE_ORG_COM_EDITOR {
+    color: #8B4513;
+}
 
 /* dashboard tasks */
 
@@ -246,8 +248,12 @@ body.myInstitution_dashboard .ui.tab .item span {
 .ui table.la-bulk-header thead {
     background: white;
 }
-.ui table.la-bulk-header thead tr td {
+.ui table.la-bulk-header thead tr {
+}
+.ui table.la-bulk-header thead tr td,
+.ui table.la-bulk-header thead tr th {
     line-height: 1rem;
+    border-bottom: 3px solid #e6eaef;
 }
 
 /* hotfix aside.metaboxContent */
@@ -261,4 +267,17 @@ aside.metaboxContent + .metaboxContent-spacer {
     height: 64px;
     margin: 1rem 0;
     padding: 1em 0;
+}
+
+/* hotfix - finance */
+
+.ui.form .la-account-currency .field .calc {
+    float: left;
+}
+
+
+/* hotfix - visible elements with class hidden */
+
+.hidden {
+    display: none !important;
 }

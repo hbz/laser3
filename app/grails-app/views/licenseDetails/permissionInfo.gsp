@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'license.label', default:'License')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'license.label', default:'License')}</title>
 </head>
 
 <body>
@@ -11,15 +11,12 @@
 
     <h1 class="ui header"><semui:headerIcon />
 
-      ${license.licensee?.name} ${license.type?.getI10n("value")} ${message(code:'license.label', default:'License')} : ${license.reference}
+        %{--${license.licensee?.name}--}%
+        ${message(code:'license.details.type', args:["${license.type?.getI10n('value')}"], default:'License')} :
+        <semui:xEditable owner="${license}" field="reference" id="reference"/>
     </h1>
 
     <g:render template="nav" />
-
-    <div>
-      <h2 class="ui header">${message(code:'license.permissionInfo.perms', default:'Permissions for user')}</h2>
-      <table  class="ui celled la-table table">
-      </table>
 
       <h2 class="ui header">${message(code:'subscription.details.permissionInfo.orgs_granted', default:'The following organisations are granted the listed permissions from this license')}</h2>
       <table class="ui celled la-table table">
@@ -87,8 +84,6 @@
           </g:if>
         </g:each>
       </table>
-   
-    </div>
 
 
 </body>

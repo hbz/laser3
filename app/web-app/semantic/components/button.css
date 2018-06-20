@@ -3680,3 +3680,15 @@
          Button Overrides
 *******************************/
 
+.ui.la-selectable.table .button {
+  opacity: 0;
+}
+.ui.la-selectable.table :hover .button {
+  opacity: 1;
+}
+.ui.la-selectable.table .button:focus {
+  opacity: 1;
+}
+.la-width-122 {
+  width: 122px;
+}

@@ -29,6 +29,7 @@ class OrgRole {
        title column:'or_title_fk'
    startDate column:'or_start_date'
      endDate column:'or_end_date'
+         org sort: 'name', order: 'asc'
   }
 
   static constraints = {

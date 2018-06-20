@@ -49,3 +49,20 @@
     font-weight: 700;
   }
 }
+/* only for menu items in role yoda or admin */
+
+
+.ui.secondary.pointing.menu .item.la-role-admin {
+  color: @blue;
+  font-style: italic;
+  &.active {
+    border-color: @blue;
+  }
+}
+.ui.secondary.pointing.menu .item.la-role-yoda {
+  color: @green;
+  font-style: italic;
+  &.active {
+    border-color: @green;
+  }
+}

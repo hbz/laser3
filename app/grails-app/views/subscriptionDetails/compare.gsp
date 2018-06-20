@@ -232,7 +232,7 @@
         placeholder: "${message(code:'subscription.compare.search.ph', default:'Type subscription name...')}",
         minimumInputLength: 1,
         formatInputTooShort: function () {
-            return "${message(code:'select2.minChars.note', default:'Pleaser enter 1 or more character')}";
+            return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
         },
         ajax: { 
             url: '<g:createLink controller='ajax' action='lookup'/>',

@@ -105,10 +105,12 @@
                             <i class="dropdown icon"></i>
 
                             <div class="menu">
-                                <g:link class="item" controller="packageDetails" action="index">${message(code:'menu.institutions.all_pkg')}</g:link>
-                                <g:link class="item" controller="titleDetails" action="index">${message(code:'menu.institutions.all_titles')}</g:link>
-                                <g:link class="item" controller="organisations" action="index">${message(code:'menu.institutions.all_orgs')}</g:link>
-                                <g:link class="item" controller="organisations" action="listProvider">${message(code:'menu.institutions.all_provider')}</g:link>
+                                    <g:link class="item" controller="packageDetails" action="index">${message(code:'menu.institutions.all_pkg')}</g:link>
+                                    <g:link class="item" controller="titleDetails" action="index">${message(code:'menu.institutions.all_titles')}</g:link>
+                                <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
+                                    <g:link class="item" controller="organisations" action="index">${message(code:'menu.institutions.all_orgs')}</g:link>
+                                </sec:ifAnyGranted>
+                                    <g:link class="item" controller="organisations" action="listProvider">${message(code:'menu.institutions.all_provider')}</g:link>
 
                                 <%--<div class="divider"></div>
 
@@ -158,7 +160,7 @@
 
                                 <div class="divider"></div>
 
-                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="cleanLicense" message="license.add.blank" />
+                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="addLicense" message="license.add.blank" />
 
                                 <semui:securedMainNavItem affiliation="INST_USER" controller="licenseCompare" action="index" message="menu.institutions.comp_lic" />
 
@@ -211,7 +213,9 @@
 
                                 <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />
 
-                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageAffiliationRequests" message="menu.institutions.affiliation_requests" />
+                                <g:set var="newAffiliationRequests1" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatusAndOrg(0, contextService.getOrg(), [sort:'dateRequested']).size()}" />
+                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageAffiliationRequests" message="menu.institutions.affiliation_requests" newAffiliationRequests="${newAffiliationRequests1}" />
+
 
                                 <g:if test="${contextService.getOrg().orgType?.value == 'Consortium'}">
                                     <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.manage_consortia" />
@@ -272,7 +276,7 @@
                             <g:link class="item" controller="subscriptionImport" action="importSubscriptionWorksheet" params="${[dm:'true']}">${message(code:'menu.datamanager.imp_sub_work')}</g:link>
                             <g:link class="item" controller="dataManager" action="changeLog">${message(code:'menu.datamanager.changelog')}</g:link><div class="divider"></div>
                             </sec:ifAnyGranted>
-                            
+
                             <g:link class="item" controller="globalDataSync" action="index" >${message(code:'menu.datamanager.global_data_sync')}</g:link>
 
                             <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN">
@@ -309,6 +313,7 @@
                                     <g:link class="item" controller="yoda" action="appConfig">App Config</g:link>
 
                                     <g:link class="item" controller="yoda" action="appSecurity">App Security</g:link>
+                                    <g:link class="item" controller="admin" action="eventLog">Event Log</g:link>
 
                                     <div class="divider"></div>
 
@@ -320,6 +325,7 @@
                                     <g:link class="item" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">Run Full ES Index Reset</g:link>
                                     <g:link class="item" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">Start ES Index Update</g:link>
                                     <%--<g:link class="item" controller="yoda" action="logViewer">Log Viewer</g:link>--%>
+                                    <g:link class="item" controller="yoda" action="manageESSources" >Manage ES Source</g:link>
 
                                     <div class="divider"></div>
 
@@ -342,7 +348,7 @@
                             <g:link class="item" controller="admin" action="showAffiliations">Show Affiliations</g:link>
                             <g:link class="item" controller="admin" action="allNotes">All Notes</g:link>
                             <g:link class="item" controller="userDetails" action="list">User Details</g:link>
-                            <g:link class="item" controller="admin" action="statsSync" onclick="return confirm('${message(code:'confirm.start.StatsSync')}')">Run Stats Sync</g:link>
+                            <g:link class="item" controller="usage">Manage Usage Stats</g:link>
                             <% /* g:link class="item" controller="admin" action="forumSync">Run Forum Sync</g:link */ %>
                             <% /* g:link class="item" controller="admin" action="juspSync">Run JUSP Sync</g:link */ %>
                             <g:link class="item" controller="admin" action="forceSendNotifications">Send Pending Notifications</g:link>
@@ -397,10 +403,10 @@
                 <sec:ifLoggedIn>
                     <div id="mainSearch" class="ui category search">
                         <div class="ui icon input">
-                            <input  type="search" id="spotlightSearch" class="prompt" placeholder="Suche nach .." type="text">
+                            <input  type="search" id="spotlightSearch" class="prompt" placeholder="Suche nach .. (ganzes Wort)" type="text">
                             <i id="btn-search"  class="search icon"></i>
                         </div>
-                        <div class="results"></div>
+                        <div class="results" style="overflow-y:scroll;max-height: 400px;min-height: content-box;"></div>
                     </div>
 
                     <g:if test="${contextUser}">
@@ -423,9 +429,10 @@
                                 </g:if>
 
                                 <div class="divider"></div>
-
                                 <g:link class="item" controller="profile" action="index">${message(code:'menu.user.profile')}</g:link>
                                 <g:link class="item" controller="profile" action="help">${message(code:'menu.user.help')}</g:link>
+                                <g:link class="item" controller="profile" action="properties">${message(code: 'menu.user.properties', default: 'Properties and Refdatas')}</g:link>
+                                <a href="https://www.hbz-nrw.de/datenschutz" class="item" target="_blank" >${message(code:'dse')}</a>
                                 <%--<g:link class="item" controller="profile" action="errorReport">${message(code:'menu.user.errorReport')}</g:link>--%>
 
                                 <div class="divider"></div>
@@ -502,7 +509,7 @@
                     ;
                 </script>
                 </g:if>
-                <semui:editableLabel editable="${editable}" />
+                <%--semui:editableLabel editable="${editable}" /--%>
             </div>
         </div>
     </div><!-- Context Bar -->

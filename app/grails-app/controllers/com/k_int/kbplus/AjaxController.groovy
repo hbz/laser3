@@ -10,6 +10,7 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 @Secured(['permitAll']) // TODO
 class AjaxController {
 
+    def genericOIDService
     def contextService
     def taskService
 
@@ -71,6 +72,24 @@ class AjaxController {
             cols:['name'],
             format:'map'
     ],
+    "CommercialOrgs" : [
+            domain:'Org',
+            countQry:"select count(o) from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like ? ",
+            rowQry:"select o from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like ?  order by o.name asc",
+            qryParams:[
+                    [
+                            param:'sSearch',
+                            clos:{ value ->
+                                def result = '%'
+                                if ( value && ( value.length() > 0 ) )
+                                    result = "%${value.trim().toLowerCase()}%"
+                                result
+                            }
+                    ]
+            ],
+            cols:['name'],
+            format:'map'
+    ]
   ]
 
   @Secured(['ROLE_USER'])
@@ -444,9 +463,77 @@ class AjaxController {
     }
   }
 
+    /**
+     * Copied legacy sel2RefdataSearch(), but uses OID.
+     *
+     * @return
+     */
+    def refdataSearchByOID() {
+        def result = []
+        def rdc = genericOIDService.resolveOID(params.oid)
+
+        def config = [
+                domain:'RefdataValue',
+                countQry:"select count(rdv) from RefdataValue as rdv where rdv.owner.id='${rdc?.id}'",
+                rowQry:"select rdv from RefdataValue as rdv where rdv.owner.id='${rdc?.id}'",
+                qryParams:[],
+                cols:['value'],
+                format:'simple'
+        ]
+
+        def query_params = []
+        config.qryParams.each { qp ->
+            if (qp?.clos) {
+                query_params.add(qp.clos(params[qp.param]?:''));
+            }
+            else if(qp?.value) {
+                params."${qp.param}" = qp?.value
+            }
+            else {
+                query_params.add(params[qp.param]);
+            }
+        }
+
+        def cq = RefdataValue.executeQuery(config.countQry, query_params);
+        def rq = RefdataValue.executeQuery(config.rowQry,
+                query_params,
+                [max:params.iDisplayLength?:100, offset:params.iDisplayStart?:0]);
+
+        rq.each { it ->
+            def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
+
+            if ( it instanceof I10nTranslatableAbstract) {
+                result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
+            }
+            else {
+                def objTest = rowobj[config.cols[0]]
+                if (objTest) {
+                    def no_ws = objTest.replaceAll(' ','');
+                    def local_text = message(code:"refdata.${no_ws}", default:"${objTest}");
+                    result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${local_text}"])
+                }
+            }
+        }
+
+        if(result)
+        {
+            result.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
+        }
+
+        withFormat {
+            html {
+                result
+            }
+            json {
+                render result as JSON
+            }
+        }
+    }
+
+    @Deprecated
   def sel2RefdataSearch() {
 
-    // log.debug("sel2RefdataSearch params: ${params}");
+    log.debug("sel2RefdataSearch params: ${params}");
     
     def result = []
     //we call toString in case we got a GString
@@ -503,8 +590,10 @@ class AjaxController {
     else {
       log.error("No config for refdata search ${params.id}");
     }
-
-      def test = result
+      if(result)
+      {
+          result.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
+      }
 
     withFormat {
       html {
@@ -521,22 +610,43 @@ class AjaxController {
         def owner  = resolveOID(params.parent?.split(":"))
         def rel    = RefdataValue.get(params.orm_orgRole)
 
+
+
         def orgIds = params.list('orm_orgoid')
         orgIds.each{ oid ->
             def org_to_link = resolveOID(oid.split(":"))
+            def duplicateOrgRole = false
 
-            def new_link = new OrgRole(org:org_to_link, roleType:rel)
-            new_link[params.recip_prop] = owner
-
-            if (new_link.save(flush:true)) {
-                // log.debug("Org link added")
+            if(params.recip_prop == 'sub')
+            {
+                duplicateOrgRole = OrgRole.findAllBySubAndRoleTypeAndOrg(owner, rel, org_to_link) ? true : false
             }
-            else {
-                log.error("Problem saving new org link ..")
-                new_link.errors.each { e ->
-                    log.error(e)
+            if(params.recip_prop == 'pkg')
+            {
+                duplicateOrgRole = OrgRole.findAllByPkgAndRoleTypeAndOrg(owner, rel, org_to_link) ? true : false
+            }
+            if(params.recip_prop == 'lic')
+            {
+                duplicateOrgRole = OrgRole.findAllByLicAndRoleTypeAndOrg(owner, rel, org_to_link) ? true : false
+            }
+            if(params.recip_prop == 'title')
+            {
+                duplicateOrgRole = OrgRole.findAllByTitleAndRoleTypeAndOrg(owner, rel, org_to_link) ? true : false
+            }
+
+            if(!duplicateOrgRole) {
+                def new_link = new OrgRole(org: org_to_link, roleType: rel)
+                new_link[params.recip_prop] = owner
+
+                if (new_link.save(flush: true)) {
+                    // log.debug("Org link added")
+                } else {
+                    log.error("Problem saving new org link ..")
+                    new_link.errors.each { e ->
+                        log.error(e)
+                    }
+                    //flash.error = message(code: 'default.error')
                 }
-                //flash.error = message(code: 'default.error')
             }
         }
         redirect(url: request.getHeader('referer'))
@@ -930,6 +1040,7 @@ class AjaxController {
     def domain_class = grailsApplication.getArtefact('Domain',params.baseClass)
     if ( domain_class ) {
       result.values = domain_class.getClazz().refdataFind(params);
+      result.values.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
     }
     else {
       log.error("Unable to locate domain class ${params.baseClass}");
@@ -951,6 +1062,7 @@ class AjaxController {
     def domain_class = grailsApplication.getArtefact('Domain', params.baseClass)
     if (domain_class) {
       result.values = domain_class.getClazz().refdataFind2(params);
+      result.values.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
     }
     else {
       log.error("Unable to locate domain class ${params.baseClass}");
@@ -1110,40 +1222,58 @@ class AjaxController {
   }
 
     @Secured(['ROLE_USER'])
-  def editableSetValue() {
-    log.debug("editableSetValue ${params}");
-    def target_object = resolveOID2(params.pk)
-    
-    if ( target_object ) {
-      if ( params.type=='date' ) {
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
-        if( params.value && params.value.size() > 0 ){
-          def parsed_date = sdf.parse(params.value)
-          target_object."${params.name}" = parsed_date
-        } 
-        else {
-          target_object."${params.name}" = null
+    def editableSetValue() {
+        log.debug("editableSetValue ${params}");
+        def target_object = resolveOID2(params.pk)
+        def result = null
+
+        if ( target_object ) {
+            if ( params.type=='date' ) {
+                def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+
+                def backup = target_object."${params.name}"
+                try {
+                    if( params.value && params.value.size() > 0 ) {
+                        // parse new date
+                        def parsed_date = sdf.parse(params.value)
+                        target_object."${params.name}" = parsed_date
+                    }
+                    else {
+                        // delete existing date
+                        target_object."${params.name}" = null
+                    }
+                    target_object.save(failOnError: true, flush: true);
+                }
+                catch(Exception e) {
+                    target_object."${params.name}" = backup
+                    log.error(e)
+                }
+                finally {
+                    if (target_object."${params.name}") {
+                        result = (target_object."${params.name}").format(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+                    }
+                }
+            }
+            else {
+                def binding_properties = [:]
+                binding_properties[params.name] = params.value
+                bindData(target_object, binding_properties)
+                // target_object."${params.name}" = params.value
+                target_object.save(failOnError: true, flush: true);
+
+                result = target_object."${params.name}"
+            }
         }
-      }
-      else {
-        def binding_properties = [:]
-        binding_properties[ params.name ] = params.value
-        bindData(target_object, binding_properties)
-        // target_object."${params.name}" = params.value
-      }
-        target_object.save(failOnError:true,flush:true);
 
+        response.setContentType('text/plain')
+
+        def outs = response.outputStream
+
+        outs << result
+
+        outs.flush()
+        outs.close()
     }
-
-    response.setContentType('text/plain')
-
-    def outs = response.outputStream
-
-    outs << target_object."${params.name}"
-    
-    outs.flush()
-    outs.close()
-  }
 
     @Secured(['ROLE_USER'])
     def removeUserRole() {

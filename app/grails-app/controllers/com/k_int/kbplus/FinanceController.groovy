@@ -21,8 +21,7 @@ class FinanceController {
 
     private final def ci_count        = 'select count(ci.id) from CostItem as ci '
     private final def ci_select       = 'select ci from CostItem as ci '
-    private final def admin_role      = Role.findByAuthority('INST_ADM')
-    private final def editor_role      = Role.findByAuthority('INST_EDITOR')
+    private final def user_role        = Role.findByAuthority('INST_USER')
     private final def defaultCurrency = RefdataCategory.lookupOrCreate('Currency','EUR')
     private final def maxAllowedVals  = [10,20,50,100,200] //in case user has strange default list size, plays hell with UI
     //private final def defaultInclSub  = RefdataCategory.lookupOrCreate('YN','Yes') //Owen is to confirm this functionality
@@ -39,11 +38,11 @@ class FinanceController {
 
     private boolean isFinanceAuthorised(Org org, User user) {
 
-        accessService.checkMinUserOrgRole(user, org, editor_role)
+        accessService.checkMinUserOrgRole(user, org, user_role)
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def index() {
       log.debug("FinanceController::index() ${params}");
 
@@ -67,6 +66,11 @@ class FinanceController {
         result.inSubMode   = params.sub ? true : false
         if (result.inSubMode)
         {
+            // WORKAROUND to filter by costItem.sub
+            params.filterMode = "ON"
+            params.subscriptionFilter = "${params.sub}"
+            // WORKAROUND to filter by costItem.sub
+
             result.fixedSubscription = params.int('sub')? Subscription.get(params.sub) : null
             if (!result.fixedSubscription) {
                 log.error("Financials in FIXED subscription mode, sent incorrect subscription ID: ${params?.sub}")
@@ -112,7 +116,7 @@ class FinanceController {
      */
     private def setupQueryData(result, params, user) {
         //Setup params
-        result.editable    =  accessService.checkMinUserOrgRole(user, result.institution, editor_role)
+        result.editable    =  accessService.checkMinUserOrgRole(user, result.institution, user_role)
         request.setAttribute("editable", result.editable) //editable Taglib doesn't pick up AJAX request, REQUIRED!
         result.filterMode  =  params.filterMode?: "OFF"
         result.info        =  [] as List
@@ -161,8 +165,17 @@ class FinanceController {
         {
             log.debug("FinanceController::index()  -- Performing filtering processing...")
             def qryOutput = filterQuery(result, params, result.wildcard)
+
+            // WORKAROUND: DISABLE FALLBACK! WOULD VIEW ALL COSTITEMS ON LICENSE_VIEW
+
+            cost_item_qry_params.addAll(qryOutput.fqParams)
+            result.cost_items      =  CostItem.executeQuery(ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy, cost_item_qry_params, params);
+            result.cost_item_count =  CostItem.executeQuery(ci_count + cost_item_qry + qryOutput.qry_string, cost_item_qry_params).first();
+            log.debug("FinanceController::index()  -- Performed filtering process... ${result.cost_item_count} result(s) found")
+
+            // WORKAROUND: DISABLE FALLBACK! WOULD VIEW ALL COSTITEMS ON LICENSE_VIEW
+            /*
             if (qryOutput.filterCount == 0 || !qryOutput.qry_string) //Nothing found from filtering!
-            {
                 result.info.add([status:message(code: 'financials.result.filtered.info', args: [message(code: 'financials.result.filtered.mode')]),
                                  msg:message(code: 'finance.result.filtered.empty')])
                 result.filterMode =  "OFF" //SWITCHING BACK!!! ...Since nothing has been found, informed user!
@@ -175,6 +188,8 @@ class FinanceController {
                 result.cost_item_count =  CostItem.executeQuery(ci_count + cost_item_qry + qryOutput.qry_string, cost_item_qry_params).first();
                 log.debug("FinanceController::index()  -- Performed filtering process... ${result.cost_item_count} result(s) found")
             }
+            */
+            // WORKAROUND: DISABLE FALLBACK! WOULD VIEW ALL COSTITEMS ON LICENSE_VIEW
             result.info.addAll(qryOutput.failed)
             result.info.addAll(qryOutput.valid)
         }
@@ -189,7 +204,8 @@ class FinanceController {
         }
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def financialsExport()  {
         log.debug("Financial Export :: ${params}")
 
@@ -527,15 +543,20 @@ class FinanceController {
         fqResult.filterCount = CostItem.executeQuery(countCheck,fqResult.fqParams).first()
         if (fqResult.failed.size() > 0 || fqResult.filterCount == 0)
         {
-            fqResult.failed.add([status: message(code: 'financials.result.filtered.info', args: [message(code: 'financials.result.filtered.nomatch')]),
-                                 msg: message(code: 'financials.result.filtered.invalid')])
-            fqResult.qry_string = ""
-            fqResult.fqParams.clear()
-            params.remove('orderNumberFilter')
-            params.remove('invoiceNumberFilter')
-            if (!result.inSubMode)
-                params.remove('subscriptionFilter')
-            params.remove('packageFilter')
+            // WORKAROUND: ACCEPT EMPTY RESULTS
+
+            //fqResult.failed.add([status: message(code: 'financials.result.filtered.info', args: [message(code: 'financials.result.filtered.nomatch')]),
+            //                     msg: message(code: 'financials.result.filtered.invalid')])
+            //fqResult.qry_string = ""
+            //fqResult.fqParams.clear()
+            //params.remove('orderNumberFilter')
+            //params.remove('invoiceNumberFilter')
+            //if (!result.inSubMode)
+            //    params.remove('subscriptionFilter')
+            //params.remove('packageFilter')
+
+            fqResult.fqParams.remove(0) // NEW ADDED DUE WORKAROUND
+            // WORKAROUND: ACCEPT EMPTY RESULTS
         }
         else
             fqResult.fqParams.remove(0) //already have this where necessary in the index method!
@@ -588,21 +609,48 @@ class FinanceController {
             ]
     ]
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def editCostItem() {
         def result = [:]
 
         //TODO: copied from index()
         result.inSubMode = params.sub ? true : false
         if (result.inSubMode) {
-            result.fixedSubscription = params.int('sub')? Subscription.get(params.sub) : null
+            result.fixedSubscription = params.int('sub') ? Subscription.get(params.sub) : null
         }
         result.costItem = CostItem.findById(params.id)
 
         render(template: "/finance/ajaxModal", model: result)
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def deleteCostItem() {
+        def result = [:]
+        def user = User.get(springSecurityService.principal.id)
+        def institution = contextService.getOrg()
+        if (!isFinanceAuthorised(institution, user)) {
+            response.sendError(403)
+            return
+        }
+
+        def ci = CostItem.findByIdAndOwner(params.id, institution)
+        if (ci) {
+            def cigs = CostItemGroup.findAllByCostItem(ci)
+
+            cigs.each { item ->
+                item.delete()
+                log.debug("deleting CostItemGroup: " + item)
+            }
+            log.debug("deleting CostItem: " + ci)
+            ci.delete()
+        }
+        redirect(controller: 'myInstitution', action: 'finance')
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def newCostItem() {
 
         def dateFormat      = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
@@ -646,7 +694,9 @@ class FinanceController {
         if (params.newPackage?.contains("com.k_int.kbplus.SubscriptionPackage:"))
         {
             try {
-                pkg = SubscriptionPackage.load(params.newPackage.split(":")[1])
+                if (params.newPackage.split(":")[1] != 'null') {
+                    pkg = SubscriptionPackage.load(params.newPackage.split(":")[1])
+                }
             } catch (Exception e) {
                 log.error("Non-valid sub-package sent ${params.newPackage}",e)
             }
@@ -783,6 +833,13 @@ class FinanceController {
                 }
 
                 if (bc != null) {
+                    // WORKAROUND ERMS-337: only support ONE budgetcode per costitem
+                    def existing = CostItemGroup.executeQuery(
+                            "SELECT DISTINCT cig.id FROM CostItemGroup AS cig JOIN cig.costItem AS ci JOIN cig.budgetCode AS bc WHERE ci = ? AND bc.owner = ? AND bc IS NOT ?",
+                            [costItem, budgetOwner, bc] );
+                    existing.each { id ->
+                        CostItemGroup.get(id).delete()
+                    }
                     if (! CostItemGroup.findByCostItemAndBudgetCode(costItem, bc)) {
                         result.add(new CostItemGroup(costItem: costItem, budgetCode: bc).save(flush: true))
                     }
@@ -794,7 +851,8 @@ class FinanceController {
     }
 
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def getRecentCostItems() {
         def dateTimeFormat     = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
         def  institution       = contextService.getOrg()
@@ -811,7 +869,8 @@ class FinanceController {
     }
 
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def newCostItemsPresent() {
         def dateTimeFormat  = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
         def institution = contextService.getOrg()
@@ -827,7 +886,8 @@ class FinanceController {
         render(text: builder.toString(), contentType: "text/json", encoding: "UTF-8")
     }
 
-    @Secured(['ROLE_ADMIN'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def delete() {
         log.debug("FinanceController::delete() ${params}");
 
@@ -884,7 +944,7 @@ class FinanceController {
     }
 
 
-    @Secured(['ROLE_ADMIN'])
+    @Secured(['ROLE_USER'])
     def financialRef() {
         log.debug("Financials :: financialRef - Params: ${params}")
 
@@ -995,7 +1055,8 @@ class FinanceController {
         result
     }
 
-    @Secured(['ROLE_ADMIN'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def removeBC() {
         log.debug("Financials :: remove budget code - Params: ${params}")
         def result      = [:]
@@ -1032,7 +1093,8 @@ class FinanceController {
         render result as JSON
     }
 
-    @Secured(['ROLE_USER'])
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def createCode() {
         def result      = [:]
         def user        = springSecurityService.currentUser

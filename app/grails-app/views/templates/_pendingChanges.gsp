@@ -1,4 +1,4 @@
- <g:if test="${processingpc}">
+<g:if test="${processingpc}">
      <bootstrap:alert class="alert-warning"><g:message code="pendingchange.inprogress"/></bootstrap:alert>
 </g:if>
 <g:if test="${pendingChanges?.size() > 0}">

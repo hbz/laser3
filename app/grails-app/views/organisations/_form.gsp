@@ -44,7 +44,7 @@
 	<g:textField name="url" maxlength="512" value="${orgInstance?.urlGov}"/>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'fteStudents', 'error')}">
+%{--<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'fteStudents', 'error')}">
 	<label for="fteStudents">
 		<g:message code="org.fteStudents.label" default="Fte Students" />
 	</label>
@@ -56,7 +56,7 @@
 		<g:message code="org.fteStaff.label" default="Fte Staff" />
 	</label>
 	<g:field name="fteStaff" type="number" value="${orgInstance?.fteStaff}" required=""/>
-</div>
+</div>--}%
 
 <% /*
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'impId', 'error')} ">

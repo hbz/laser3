@@ -89,7 +89,7 @@
                       ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}
                     </g:link>
                     <g:if test="${l.subscriptions && ( l.subscriptions.size() > 0 )}">
-                        <g:each in="${l.subscriptions}" var="sub">
+                        <g:each in="${l.subscriptions.sort{it.name}}" var="sub">
                           <g:if test="${sub.status?.value != 'Deleted'}">
                               <div class="la-flexbox">
                                   <i class="icon folder open outline la-list-icon"></i>
@@ -107,13 +107,15 @@
                   <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.endDate}"/></td>
                   <td class="x">
                     <g:if test="${editable}">
-                        <g:link controller="myInstitution" action="actionLicenses" params="${[baselicense:l.id, 'copy-license':'Y']}" class="ui icon positive button">
+                        <g:link controller="myInstitution" action="actionLicenses" params="${[baselicense:l.id, 'copy-license':'Y']}" class="ui icon button">
                             <i class="copy icon"></i>
                         </g:link>
-                        <g:link controller="myInstitution" action="actionLicenses" onclick="return confirm('${message(code:'license.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}?')"
-                            params="${[baselicense:l.id,'delete-license':'Y']}" class="ui icon negative button">
-                            <i class="trash alternate icon"></i>
-                        </g:link>
+                        <g:if test="${! l.subscriptions}">
+                            <g:link controller="myInstitution" action="actionLicenses" onclick="return confirm('${message(code:'license.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}?')"
+                                params="${[baselicense:l.id,'delete-license':'Y']}" class="ui icon negative button">
+                                <i class="trash alternate icon"></i>
+                            </g:link>
+                        </g:if>
                     </g:if>
                   </td>
                 </tr>

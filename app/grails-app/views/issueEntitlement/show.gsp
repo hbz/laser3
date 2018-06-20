@@ -98,7 +98,7 @@
 
 <br/>
 
-<h6 class="ui header"><strong>${message(code:'issueEntitlement.subscription_access.label', default:'Access through subscription')}</strong> : ${issueEntitlementInstance.subscription.name}</h6>
+<h3 class="ui header"><strong>${message(code:'issueEntitlement.subscription_access.label', default:'Access through subscription')}</strong> : ${issueEntitlementInstance.subscription.name}</h3>
 
 <table class="ui celled la-table table">
   <thead>
@@ -136,7 +136,7 @@
 
 <br/>
 
-<h6 class="ui header"><strong>${message(code:'issueEntitlement.package_defaults.label', default:'Defaults from package')}</strong> : ${issueEntitlementInstance.tipp.pkg.name}</h6>
+<h3 class="ui header"><strong>${message(code:'issueEntitlement.package_defaults.label', default:'Defaults from package')}</strong> : ${issueEntitlementInstance.tipp.pkg.name}</h3>
 
 <table class="ui celled la-table table">
   <thead>
@@ -179,6 +179,7 @@
                      module="statistics"
                      controller="default"
                      action="select"
+                     target="_blank"
                      params="[mode:usageMode,
                               packages:issueEntitlementInstance.subscription.getCommaSeperatedPackagesIsilList(),
                               institutions:statsWibid
@@ -187,7 +188,7 @@
         <i class="chart bar outline icon"></i>
     </laser:statsLink>
 </span>
-<h6 class="ui header">${message(code:'default.usage.header')}</h6>
+<h3 class="ui header">${message(code:'default.usage.header')}</h3>
 <table class="ui celled la-table table">
     <thead>
     <tr>
@@ -209,6 +210,7 @@
                             module="statistics"
                             controller="default"
                             action="select"
+                            target="_blank"
                             params="[mode        : usageMode,
                                      packages    : issueEntitlementInstance.subscription.getCommaSeperatedPackagesIsilList(),
                                      institutions: statsWibid,
@@ -223,7 +225,7 @@
     </g:each>
     </tbody>
 </table>
-<h6 class="ui">${message(code: 'default.usage.licenseGrid.header')}</h6>
+<h3 class="ui">${message(code: 'default.usage.licenseGrid.header')}</h3>
 <table class="ui celled la-table table">
     <thead>
     <tr>
@@ -251,7 +253,7 @@
 
   <br/>
 
-  <h6 class="ui header"><strong><g:message code="titleInstance.tipps.label" default="Occurrences of this title against Packages / Platforms" /></strong></h6>
+  <h3 class="ui header"><strong><g:message code="titleInstance.tipps.label" default="Occurrences of this title against Packages / Platforms" /></strong></h3>
 
 
   <semui:filter>
@@ -309,7 +311,10 @@
 
 
 <div id="magicArea">
+
+<g:if test="${grailsApplication.config.showDebugInfo}">
 <g:render template="coreAssertionsModal" contextPath="../templates" model="${[tipID:-1,coreDates:[]]}"/>
+</g:if>
 </div>
 <r:script language="JavaScript">
 function hideModal(){

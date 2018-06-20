@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="mmbootstrap"/>
-    <title>${message(code:'laser', default:'LAS:eR')} App Info</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : App Info</title>
   </head>
 
   <body>

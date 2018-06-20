@@ -23,9 +23,7 @@ databaseChangeLog = {
 	include file: 'changelog-140.groovy'
 	include file: 'changelog-150.groovy'
 
-	// to release branch 0.4.5
-	include file: 'changelog-155.groovy'
-
-    // to release branch 0.5
-    include file: 'changelog-160.groovy'
+	// to release branch 0.4.5 & 0.5
+	include file: 'changelog-160.groovy'
+	include file: 'changelog-165.groovy'
 }

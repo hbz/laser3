@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'subscription.label', default:'Subscription')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'subscription.label', default:'Subscription')}</title>
 </head>
 <body>
 
@@ -20,6 +20,8 @@
     <semui:messages data="${flash}" />
 
     <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList]}"/>
+
+    <g:render template="/templates/tasks/modal_create"  model="${[ownobj:subscriptionInstance, owntp:'subscription']}"/>
 
 </body>
 </html>

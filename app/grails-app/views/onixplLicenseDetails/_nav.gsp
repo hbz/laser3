@@ -7,7 +7,7 @@
     <semui:subNavItem controller="onixplLicenseDetails" action="permissionInfo" params="${[id:params.id]}" text="Additional Information" />
 
     <sec:ifAnyGranted roles="ROLE_ADMIN">
-        <semui:subNavItem controller="onixplLicenseDetails" action="history" params="${[id:params.id]}" text="History" />
+        <semui:subNavItem controller="onixplLicenseDetails" action="history" params="${[id:params.id]}" class="la-role-admin" text="History" />
     </sec:ifAnyGranted>
 </semui:subNav>
 

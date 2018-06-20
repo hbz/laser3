@@ -870,9 +870,9 @@ financialImportTSVLoaderMappings = [
   ],
   cols: [
  /* [colname:'InvoiceId', gormMappingPath:'invoice.invoiceNumber', desc:''], */
-    [colname:'SubscriptionId', desc:'Used to match to an existing KB+ subscription - must contain the KB+ Subscription Reference to match. Subscriptions are matched using references from JC Namespace'],
+    [colname:'SubscriptionId', desc:'Used to match to an existing LAS:eR subscription - must contain the KB+ Subscription Reference to match. Subscriptions are matched using references from JC Namespace'],
  /* [colname:'JC_OrderNumber', desc:''], */
-    [colname:'InvoiceNumber', desc:'Used to match this line item to an existing KB+ Invoice. Line must first match an organisation via InstitutionId, then this is matched on Invoice Reference. If none found, a new invoice will be created'],
+    [colname:'InvoiceNumber', desc:'Used to match this line item to an existing LAS:eR Invoice. Line must first match an organisation via InstitutionId, then this is matched on Invoice Reference. If none found, a new invoice will be created'],
     [colname:'PoNumber', desc:''],
     [colname:'IssuedDate', desc:''],
     [colname:'DueDate', desc:''],

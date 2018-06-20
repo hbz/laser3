@@ -88,6 +88,7 @@ aside.ui.accordion .title:not(.ui) {
         height: 70px;
     }
     .logo {
+        height: 50px;
         width: 144px;
         padding-right: 2rem;
 
@@ -183,6 +184,7 @@ aside.ui.accordion .title:not(.ui) {
             background-color:#d7c4b2!important;
             color:#544e48!important;
             font-weight:400!important;
+            width: 100%;
         }
         .la-eye-catcher-header {
             display: flex!important;
@@ -243,8 +245,9 @@ aside.ui.accordion .title:not(.ui) {
 }
 /* EDITABLE OVERWRITE */
 /* Sorry for the !important - overwriting Javascript of the Editable-Javascript */
-
-.la-time-card {
+.ui.two.cards>.card.la-time-card {
+    //fixing rounding bug in IE Edge
+    margin-right:0.99em;
     .editable-input input[type=text]{
         padding-right: 1em!important;
         width: 8rem!important;
@@ -476,6 +479,7 @@ body[class*="organisation"] {
     text-decoration: inherit;
     text-align: center;
     backface-visibility: hidden;
+    z-index: 80;
     &:before {
         content: "\f2ed";
     }

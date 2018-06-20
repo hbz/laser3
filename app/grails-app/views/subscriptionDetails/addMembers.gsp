@@ -54,12 +54,12 @@
         <div class="ui two fields">
             <g:set value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Status')}" var="rdcSubStatus"/>
             <div class="field">
-                <label>Status</label>
+                <label>Status </label>
                 <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubStatus)}" class="ui dropdown"
                           optionKey="id"
                           optionValue="${{ it.getI10n('value') }}"
                           name="subStatus"
-                          value="${com.k_int.kbplus.RefdataValue.findByValue('Under Consideration')?.id}"/>
+                          value="${com.k_int.kbplus.RefdataValue.findByValueAndOwner('Current', rdcSubStatus)?.id}"/>
             </div>
 
             <div class="field">

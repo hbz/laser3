@@ -62,7 +62,7 @@ class OrganisationsController {
       result
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
     def list() {
 
         def result = [:]
@@ -123,7 +123,7 @@ class OrganisationsController {
         }
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
+    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR','ROLE_ORG_COM_EDITOR'])
     def createProvider() {
 
                 def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
@@ -141,7 +141,7 @@ class OrganisationsController {
                     redirect ( action:'findProviderMatchesMatches' )
                 }
     }
-    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
+    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR','ROLE_ORG_COM_EDITOR'])
     def findProviderMatches() {
 
         def result=[:]
@@ -158,7 +158,16 @@ class OrganisationsController {
         result.user = User.get(springSecurityService.principal.id)
         def orgInstance = Org.get(params.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
+        def orgType = RefdataValue.getByValueAndCategory('Provider','OrgType')
+
+        //IF ORG is a Provider
+        if(orgInstance.sector == orgSector || orgType == orgInstance.orgType)
+        {
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_COM_EDITOR')
+        }else {
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        }
 
       if (!orgInstance) {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
@@ -206,7 +215,7 @@ class OrganisationsController {
 
         def mandatories = []
         result.user?.authorizedOrgs?.each{ org ->
-            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Org Property", true, org)
+            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Organisation Property", true, org)
             if(ppd){
                 mandatories << ppd
             }
@@ -246,7 +255,7 @@ class OrganisationsController {
 
         def mandatories = []
         result.user?.authorizedOrgs?.each{ org ->
-            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Org Property", true, org)
+            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Organisation Property", true, org)
             if(ppd){
                 mandatories << ppd
             }
@@ -302,7 +311,7 @@ class OrganisationsController {
       result
     }
 
-    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
+    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR','ROLE_ORG_COM_EDITOR'])
     def edit() {
         redirect controller: 'organisations', action: 'show', params: params
         return
@@ -401,6 +410,18 @@ class OrganisationsController {
 
         result.orgInstance = orgInstance
         result.visiblePersons = addressbookService.getAllVisiblePersons(result.user, orgInstance)
+
+        result
+    }
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def numbers() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+
+        result.orgInstance = contextService.getOrg()
+        result.numbersInstanceList = Numbers.findAllByOrg(contextService.getOrg(), [sort: 'type'])
 
         result
     }

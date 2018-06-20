@@ -281,6 +281,7 @@ class BootStrap {
 
         def packageEditorRole = Role.findByAuthority('ROLE_PACKAGE_EDITOR') ?: new Role(authority: 'ROLE_PACKAGE_EDITOR', roleType: 'global').save(failOnError: true)
         def orgEditorRole     = Role.findByAuthority('ROLE_ORG_EDITOR')     ?: new Role(authority: 'ROLE_ORG_EDITOR', roleType: 'global').save(failOnError: true)
+        def orgComRole     = Role.findByAuthority('ROLE_ORG_COM_EDITOR')     ?: new Role(authority: 'ROLE_ORG_COM_EDITOR', roleType: 'global').save(failOnError: true)
 
         // Institutional Roles
 
@@ -776,6 +777,7 @@ class BootStrap {
         RefdataCategory.loc('License.Arc.HostingRestriction',               [en: 'Hosting Restriction', de: 'Hostingrecht Einschränkung'])
         RefdataCategory.loc('License.Arc.HostingSolution',                  [en: 'Hosting Solution', de: 'Hostingrecht Lösung'])
         RefdataCategory.loc('Package Status',                               [en: 'Package Status', de: 'Paketstatus'])
+        RefdataCategory.loc('Number Type',                               [en: 'Number Type', de: 'Zahlen-Typ'])
         // refdata values
 
         RefdataValue.loc('YN',   [en: 'Yes', de: 'Ja'])
@@ -960,6 +962,7 @@ class BootStrap {
         RefdataValue.loc('Subscription Status',      [en: 'Under Consideration', de: 'Entscheidung steht aus'])
         RefdataValue.loc('Subscription Status',      [en: 'Under Consortial Examination',   de: 'Wird konsortial geprüft'])
         RefdataValue.loc('Subscription Status',      [en: 'Under Institutional Examination',   de: 'Wird institutionell geprüft'])
+        RefdataValue.loc('Subscription Status',      [en: 'Test Access',   de: 'Testzugriff'])
 		
 		RefdataValue.loc('Subscription Type',      [en: 'Alliance Licence', de: 'Allianzlizenz'])
 		RefdataValue.loc('Subscription Type',      [en: 'National Licence', de: 'Nationallizenz'])
@@ -1043,6 +1046,11 @@ class BootStrap {
         RefdataValue.loc('License.Arc.HostingSolution',      [en: 'CLOCKSS', de: 'CLOCKSS'])
         RefdataValue.loc('License.Arc.HostingSolution',      [en: 'Portico', de: 'Portico'])
 
+        RefdataValue.loc('Number Type',      [en: 'Students', de: 'Studenten'])
+        RefdataValue.loc('Number Type',      [en: 'Scientific staff', de: 'wissenschaftliches Personal'])
+        RefdataValue.loc('Number Type',      [en: 'User', de: 'Nutzer'])
+        RefdataValue.loc('Number Type',      [en: 'Population', de: 'Einwohner'])
+
     }
 
     def setupOnixPlRefdata = {
@@ -1097,26 +1105,60 @@ class BootStrap {
         RefdataCategory.loc('CostItemCategory',
                 [en: 'CostItemCategory', de: 'CostItemCategory'])
 
-        RefdataValue.loc('CostItemCategory', [en: 'Price', de: 'Preis'])
-        RefdataValue.loc('CostItemCategory', [en: 'Bank Charge', de: 'Bank Charge'])
-        RefdataValue.loc('CostItemCategory', [en: 'Refund', de: 'Erstattung'])
-        RefdataValue.loc('CostItemCategory', [en: 'Other', de: 'Andere'])
+        //RefdataValue.loc('CostItemCategory', [en: 'Price', de: 'Preis'])
+        //RefdataValue.loc('CostItemCategory', [en: 'Bank Charge', de: 'Bank Charge'])
+        //RefdataValue.loc('CostItemCategory', [en: 'Refund', de: 'Erstattung'])
+        //RefdataValue.loc('CostItemCategory', [en: 'Other', de: 'Andere'])
 
         RefdataCategory.loc('CostItemElement',
                 [en: 'CostItemElement', de: 'CostItemElement'])
 
-        RefdataValue.loc('CostItemElement', [en: 'Admin Fee', de: 'Admin Fee'])
-        RefdataValue.loc('CostItemElement', [en: 'Content', de: 'Content'])
-        RefdataValue.loc('CostItemElement', [en: 'Platform', de: 'Platform'])
-        RefdataValue.loc('CostItemElement', [en: 'Other', de: 'Andere'])
-
+        //RefdataValue.loc('CostItemElement', [en: 'Admin Fee', de: 'Admin Fee'])
+        //RefdataValue.loc('CostItemElement', [en: 'Content', de: 'Content'])
+        //RefdataValue.loc('CostItemElement', [en: 'Platform', de: 'Platform'])
+        //RefdataValue.loc('CostItemElement', [en: 'Other', de: 'Andere'])
+        
+        RefdataValue.loc('CostItemElement', [key: 'price: list price', en: 'price: list price', de: 'Preis: Listenpreis'])
+        RefdataValue.loc('CostItemElement', [key: 'price: provider price', en: 'price: provider price', de: 'Preis: Anbieterpreis'])
+        RefdataValue.loc('CostItemElement', [key: 'price: consortial price', en: 'price: consortial price', de: 'Preis: Konsortialpreis'])
+        RefdataValue.loc('CostItemElement', [key: 'price: final price', en: 'price: final price', de: 'Preis: Endpreis'])
+        RefdataValue.loc('CostItemElement', [key: 'price: other', en: 'price: other', de: 'Preis: Sonstige'])
+        
+        RefdataValue.loc('CostItemElement', [key: 'discount: consortial discount', en: 'discount: consortial discount', de: 'Rabatt: Konsortialrabatt'])
+        RefdataValue.loc('CostItemElement', [key: 'discount: alliance licence discount', en: 'discount: alliance licence discount', de: 'Rabatt für Allianzlizenz'])
+        RefdataValue.loc('CostItemElement', [key: 'discount: single payment discount', en: 'discount: single payment discount', de: 'Rabatt für eine Rechnung via Konsortium'])
+        RefdataValue.loc('CostItemElement', [key: 'discount: multiyear discount', en: 'discount: multiyear discount', de: 'Rabatt für Mehrjahresvertrag'])
+        RefdataValue.loc('CostItemElement', [key: 'discount: quantity discount', en: 'discount: quantity discount', de: 'Rabatt: Mengenrabatt'])
+        RefdataValue.loc('CostItemElement', [key: 'discount: early pay discount', en: 'discount: early pay discount', de: 'Rabatt: Frühzahlerrabatt'])
+        RefdataValue.loc('CostItemElement', [key: 'discount: other', en: 'discount: other', de: 'Rabatt: Sonstige'])
+        
+        RefdataValue.loc('CostItemElement', [key: 'refund: currency rate', en: 'refund: currency rate', de: 'Erstattung: Kursgutschrift'])
+        RefdataValue.loc('CostItemElement', [key: 'refund: OA', en: 'refund: OA', de: 'Erstattung: Open-Acces-Gutschrift'])
+        RefdataValue.loc('CostItemElement', [key: 'refund: retransfer', en: 'refund: retransfer', de: 'Erstattung: Rücküberweisung'])
+        RefdataValue.loc('CostItemElement', [key: 'refund: system downtime', en: 'refund: system downtime', de: 'Erstattung: Ersatz für Ausfallzeiten'])
+        RefdataValue.loc('CostItemElement', [key: 'refund: other', en: 'refund: other', de: 'Erstattung: Sonstige'])
+        
+        RefdataValue.loc('CostItemElement', [key: 'additionalclaim: currency rate', en: 'additionalclaim: currency rate', de: 'Nachforderung aus Kursdifferenz'])
+        RefdataValue.loc('CostItemElement', [key: 'additionalclaim: other', en: 'additionalclaim: other', de: 'Nachforderung: Sonstige'])
+        
+        RefdataValue.loc('CostItemElement', [key: 'fee: bank charge', en: 'fee: bank charge', de: 'Gebühr: Bankgebühr'])
+        RefdataValue.loc('CostItemElement', [key: 'fee: invoicing', en: 'fee: invoicing', de: 'Gebühr: Rechnungsstellungsgebühr'])
+        RefdataValue.loc('CostItemElement', [key: 'fee: administration', en: 'fee: administration', de: 'Gebühr: Verwaltungsgebühr'])
+        RefdataValue.loc('CostItemElement', [key: 'fee: technical access', en: 'fee: technical access', de: 'Gebühr: Plattformgebühr'])
+        RefdataValue.loc('CostItemElement', [key: 'fee: setup', en: 'fee: setup', de: 'Gebühr: SetUp-Gebühr'])
+        RefdataValue.loc('CostItemElement', [key: 'fee: other', en: 'fee: other', de: 'Gebühr: Sonstige'])
+        
+        RefdataValue.loc('CostItemElement', [key: 'tax: purchase tax 19', en: 'tax: purchase tax 19%', de: 'Steuer: Umsatzsteuer 19%'])
+        RefdataValue.loc('CostItemElement', [key: 'tax: purchase tax 7', en: 'tax: purchase tax 7%', de: 'Steuer: Umsatzsteuer 7%'])
+        RefdataValue.loc('CostItemElement', [key: 'tax: source tax', en: 'tax:  source tax', de: 'Steuer: Quellensteuer'])
+               
         RefdataCategory.loc('CostItemStatus',
                 [en: 'CostItemStatus', de: 'CostItemStatus'])
 
-        RefdataValue.loc('CostItemStatus', [en: 'Estimate', de: 'Schätzung'])
-        RefdataValue.loc('CostItemStatus', [en: 'Commitment', de: 'Commitment'])
-        RefdataValue.loc('CostItemStatus', [en: 'Actual', de: 'Fest'])
-        RefdataValue.loc('CostItemStatus', [en: 'Other', de: 'Andere'])
+        RefdataValue.loc('CostItemStatus', [en: 'Estimate', de: 'geschätzt'])
+        RefdataValue.loc('CostItemStatus', [en: 'Commitment', de: 'zugesagt'])
+        RefdataValue.loc('CostItemStatus', [en: 'Actual', de: 'feststehend'])
+        RefdataValue.loc('CostItemStatus', [en: 'Other', de: 'Sonstige'])
 
         // TODO locCategory
         RefdataValue.loc('Document Context Status',
@@ -1234,9 +1276,13 @@ class BootStrap {
         RefdataCategory.loc('TaxType',
                 [en: 'TaxType', de: 'TaxType'])
 
-        RefdataValue.loc('TaxType', [en: 'On Invoice', de: 'Auf Rechnung'])
-        RefdataValue.loc('TaxType', [en: 'Self Declared', de: 'Überweisung'])
-        RefdataValue.loc('TaxType', [en: 'Other', de: 'Andere'])
+        //RefdataValue.loc('TaxType', [en: 'On Invoice', de: 'Auf Rechnung'])
+        //RefdataValue.loc('TaxType', [en: 'Self Declared', de: 'Überweisung'])
+        //RefdataValue.loc('TaxType', [en: 'Other', de: 'Andere'])
+        RefdataValue.loc('TaxType', [en: 'taxable', de: 'steuerbar'])
+        RefdataValue.loc('TaxType', [en: 'not taxable', de: 'nicht steuerbar'])
+        RefdataValue.loc('TaxType', [en: 'taxable tax-exempt', de: 'steuerbar steuerbefreit'])
+        RefdataValue.loc('TaxType', [en: 'not applicable', de: 'nicht anwendbar'])
 
         RefdataCategory.loc(RefdataCategory.TI_STATUS,
                 [en: RefdataCategory.TI_STATUS, de: RefdataCategory.TI_STATUS])

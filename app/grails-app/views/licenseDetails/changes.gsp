@@ -2,20 +2,21 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'license.label', default:'License')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'license.label', default:'License')}</title>
 </head>
 <body>
     <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
     <h1 class="ui header"><semui:headerIcon />
 
-        ${license.licensee?.name} ${license.type?.value} License : ${license.reference}
+    %{--${license.licensee?.name}--}%
+    ${message(code:'license.details.type', args:["${license.type?.getI10n('value')}"], default:'License')} :
+    <semui:xEditable owner="${license}" field="reference" id="reference"/>
     </h1>
 
     <g:render template="nav" />
 
-    <div>
-      <h3 class="ui header">${message(code:'license.nav.todo_history', default:'ToDo History')}</h3>
+
       <table  class="ui celled la-table table">
           <thead>
             <tr>
@@ -41,7 +42,6 @@
 
         <semui:paginate  action="todoHistory" controller="licenseDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${todoHistoryLinesTotal}" />
 
-    </div>
 
 </body>
 </html>
