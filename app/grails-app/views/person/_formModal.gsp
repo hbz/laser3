@@ -241,16 +241,27 @@
             if($("#contactType option:selected").text() == "${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type').getI10n('value')}") {
                 $("label[for='last_name']").text("Benenner");
                 $(".la-person").hide();
+                $("[name='roleType']").prop( "disabled", true );
+                $("[name='gender']").prop( "disabled", true );
+                $("[name='middle_name']").prop( "disabled", true );
+                $("[name='first_name']").prop( "disabled", true );
+                $("#person_gender").find(".dropdown").addClass("disabled");
+                $("#roleType").find(".dropdown").addClass("disabled");
             }
             else {
                 $(".la-person").show();
                 $("label[for='last_name']").text("Nachname");
-
+                $("[name='roleType']").prop( "disabled", false );
+                $("[name='gender']").prop( "disabled", false );
+                $("[name='middle_name']").prop( "disabled", false );
+                $("[name='first_name']").prop( "disabled", false );
+                $("#person_gender").find(".dropdown").removeClass("disabled");
+                $("#roleType").find(".dropdown").removeClass("disabled");
             }
         };
         changeKindOfContact();
 
-        $("#contactType").on('change', function() {
+        $('#contactType').on('change', function() {
             changeKindOfContact();
             }
         );
