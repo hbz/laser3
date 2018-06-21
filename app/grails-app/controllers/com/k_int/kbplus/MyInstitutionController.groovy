@@ -38,6 +38,7 @@ class MyInstitutionController {
     def contextService
     def taskService
     def filterService
+    def propertyService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -208,12 +209,16 @@ class MyInstitutionController {
             date_restriction = sdf.parse(params.validOn)
         }
 
-        def propFilterList = PropertyDefinition.findAllWhere(descr: PropertyDefinition.LIC_PROP)
-          result.custom_prop_types = propFilterList.collectEntries{
-          [(it.getI10n('name')) : it.type + "&&" + it.refdataCategory]
-          //We do this for the interface, so we can display select box when we are working with refdata.
-          //Its possible there is another way
-        }
+        result.propList =
+                PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
+                        defList: [PropertyDefinition.LIC_PROP, PropertyDefinition.LIC_OA_PROP, PropertyDefinition.LIC_ARC_PROP],
+                    ] // public properties
+                ) +
+                        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant = :tenant", [
+                                defList: [PropertyDefinition.LIC_PROP, PropertyDefinition.LIC_OA_PROP, PropertyDefinition.LIC_ARC_PROP],
+                                tenant: contextService.getOrg()
+                            ]// private properties
+                        )
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
@@ -237,13 +242,10 @@ class MyInstitutionController {
             result.keyWord = params['keyword-search'].toLowerCase()
         }
 
-        if ( (params.propertyFilter != null) && params.propertyFilter.trim().length() > 0 ) {
-            def propDef = PropertyDefinition.findByName(params.propertyFilterType)
-            def propQuery = buildPropertySearchQuery(params, propDef)
-            qry += propQuery.query
-            qry_params += propQuery.queryParam
-            result.propertyFilterType = params.propertyFilterType
-            result.propertyFilter = params.propertyFilter
+        // eval property filter
+
+        if (params.filterPropDef) {
+            (qry, qry_params) = propertyService.evalFilterQuery(params, qry, 'l', qry_params)
         }
 
         if (date_restriction) {
@@ -258,7 +260,7 @@ class MyInstitutionController {
             qry += " order by l.reference asc"
         }
 
-        log.debug("currentLicense query=${qry}, params=${qry_params}");
+        //log.debug("currentLicense query=${qry}, params=${qry_params}");
 
         result.licenseCount = License.executeQuery("select count(l) ${qry}", qry_params)[0];
         result.licenses = License.executeQuery("select l ${qry}", qry_params, [max: result.max, offset: result.offset]);
@@ -559,48 +561,10 @@ from Subscription as s where (
             qry_params.put('name_filter', "%${params.q.trim().toLowerCase()}%");
         }
 
-        // property filter
+        // eval property filter
 
         if (params.filterPropDef) {
-            def pd = genericOIDService.resolveOID(params.filterPropDef)
-
-            if (pd.tenant) {
-                base_qry += " and exists ( select scp from s.privateProperties as scp where scp.type = :propDef "
-            } else {
-                base_qry += " and exists ( select scp from s.customProperties as scp where scp.type = :propDef "
-            }
-            qry_params.put('propDef', pd)
-
-
-            if (params.filterProp) {
-
-                switch (pd.type) {
-                    case RefdataValue.toString():
-                        base_qry += " and scp.refValue= :prop "
-                        def pdValue = genericOIDService.resolveOID(params.filterProp)
-                        qry_params.put('prop', pdValue)
-
-                        break
-                    case Integer.toString():
-                        base_qry += " and scp.intValue = :prop "
-                        qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
-                        break
-                    case String.toString():
-                        base_qry += " and scp.stringValue = :prop "
-                        qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
-                        break
-                    case BigDecimal.toString():
-                        base_qry += " and scp.decValue = :prop "
-                        qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
-                        break
-                    case Date.toString():
-                        base_qry += " and scp.dateValue = :prop "
-                        qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
-                        break
-                }
-            }
-
-            base_qry += " ) "
+            (base_qry, qry_params) = propertyService.evalFilterQuery(params, base_qry, 's', qry_params)
         }
 
         if (date_restriction) {
@@ -631,7 +595,7 @@ from Subscription as s where (
             base_qry += " order by LOWER(s.name) asc"
         }
 
-        log.debug("query: ${base_qry} && params: ${qry_params}")
+        //log.debug("query: ${base_qry} && params: ${qry_params}")
 
         result.num_sub_rows = Subscription.executeQuery("select count(s) " + base_qry, qry_params)[0]
         result.subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params, [max: result.max, offset: result.offset]);

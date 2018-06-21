@@ -31,13 +31,15 @@
 
     <semui:filter class="license-searches">
         <form class="ui form">
-            <div class="fields">
-                <div class="field">
-                  <semui:datepicker label="license.valid_on" name="validOn" placeholder="default.date.label" value="${validOn}" />
-                </div>
+            <div class="four fields">
+
                 <div class="field">
                     <label>${message(code:'license.search.by_ref', default:'Search by Reference')}</label>
                     <input type="text" name="keyword-search" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params['keyword-search']?:''}" />
+                </div>
+
+                <div class="field">
+                    <semui:datepicker label="license.valid_on" name="validOn" placeholder="default.date.label" value="${validOn}" />
                 </div>
                 <%--
                 <div class="field">
@@ -55,12 +57,15 @@
                     <label>&nbsp;</label>
                     <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.searchreset.label')}</a>
                 </div> --%>
+
+                <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
+            </div>
+
+            <div class="fields">
                 <div class="field">
-                    <label>&nbsp;</label>
                     <a href="${request.forwardURI}" class="ui reset primary primary button">${message(code:'default.button.reset.label')}</a>
                 </div>
                 <div class="field">
-                    <label>&nbsp;</label>
                     <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}" />
                 </div>
             </div><!--.fields-->
