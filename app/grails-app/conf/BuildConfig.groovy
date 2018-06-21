@@ -103,7 +103,9 @@ grails.project.dependency.resolution = {
         runtime 'org.apache.commons:commons-exec:1.3'
         compile 'org.apache.httpcomponents:httpcore:4.4.3'
 
+        compile 'org.apache.httpcomponents:httpmime:4.5.1' // upgrade for MultipartEntityBuilder
         compile 'org.apache.httpcomponents:httpclient:4.5.1'
+
         test 'org.hamcrest:hamcrest-all:1.3'
         test("org.seleniumhq.selenium:selenium-htmlunit-driver:$seleniumHtmlunitDriverVersion") {
             exclude 'xml-apis'

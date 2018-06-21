@@ -8,6 +8,8 @@ import org.apache.log4j.RollingFileAppender
 grails.project.groupId  = appName // change this to alter the default package name and Maven publishing destination
 grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 
+laserSystemId = 'local'
+
 //localauth = true
 
 // pilot version
@@ -29,6 +31,8 @@ grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 //aggr_es_index		= 'laser'
 //aggr_es_hostname	= 'localhost'
 
+// JIRA-CONFIG
+
 // FEATURE-CONFIG
 //feature.eBooks = true
 //feature.issnl = true
@@ -36,6 +40,8 @@ feature_finance = false
 //feature.notifications = true
 //globalDataSyncJobActiv = true
 //AdminReminderJobActiv = true
+
+
 
 // Database Migration Plugin
 grails.plugin.databasemigration.updateOnStart = false

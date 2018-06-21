@@ -14,6 +14,7 @@ class ProfileController {
 
     def springSecurityService
     def passwordEncoder
+    def errorReportService
 
     @Secured(['ROLE_USER'])
     def index() {
@@ -27,6 +28,22 @@ class ProfileController {
     def errorReport() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
+
+        if (params.sendErrorReport) {
+            def data = [
+                meta:       params.meta,
+                contact:    params.contact,
+                described:  params.described,
+                expected:   params.expected,
+                info:       params.info
+            ]
+            result.sendingStatus = (errorReportService.sendReportAsAttachement(data) ? 'ok' : 'fail')
+        }
+
+        result.described = params.described
+        result.expected = params.expected
+        result.info = params.info
+
         result
     }
 
