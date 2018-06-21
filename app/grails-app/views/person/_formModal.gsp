@@ -22,7 +22,7 @@
                                   value="${personInstance?.contactType?.id}"
                                   />
                 </div>
-                <div id="roleType" class="field fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')} ">
+                <div id="roleType" class="field fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')} la-person">
                     <label for="roleType">
                         ${com.k_int.kbplus.RefdataCategory.findByDesc('Person Position').getI10n('desc')}
 
@@ -48,7 +48,7 @@
 
                 </div>
 
-                <div id="person_middle_name" class="field wide six fieldcontain ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} ">
+                <div id="person_middle_name" class="field wide six fieldcontain ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} la-person">
                     <label for="middle_name">
                         <g:message code="person.middle_name.label" default="Middlename" />
 
@@ -63,14 +63,14 @@
         <div class="field">
             <div class="two fields">
 
-                <div id="person_first_name" class="field wide ten fieldcontain ${hasErrors(bean: personInstance, field: 'first_name', 'error')}">
+                <div id="person_first_name" class="field wide ten fieldcontain ${hasErrors(bean: personInstance, field: 'first_name', 'error')} la-person">
                     <label for="first_name">
                         <g:message code="person.first_name.label" default="Firstname" />
                     </label>
                     <g:textField name="first_name" required="" value="${personInstance?.first_name}"/>
                 </div>
 
-                <div id="person_gender" class="field wide six fieldcontain ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">
+                <div id="person_gender" class="field wide six fieldcontain ${hasErrors(bean: personInstance, field: 'gender', 'error')} la-person">
                     <label for="gender">
                         <g:message code="person.gender.label" default="Gender" />
                     </label>
@@ -236,51 +236,25 @@
                 }
              }
         });
-        var x = $("#contactType option:selected").text();
-        var y = "${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type').getI10n('value')}";
-        if(x == y)
-            {
+        var changeKindOfContact = function() {
+
+            if($("#contactType option:selected").text() == "${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type').getI10n('value')}") {
                 $("label[for='last_name']").text("Benenner");
-                $("#roleType").hide();
-                $("#roleType").prop( "disabled", true );
-                $("#person_gender").hide();
-                $("#gender").prop( "disabled", true );
-                $("#person_first_name").hide();
-                $("#person_middle_name").hide();
+                $(".la-person").hide();
             }
+            else {
+                $(".la-person").show();
+                $("label[for='last_name']").text("Nachname");
+
+            }
+        };
+        changeKindOfContact();
+
         $("#contactType").on('change', function() {
-             x = $("#contactType option:selected").text();
-             y = "${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type').getI10n('value')}";
-            if(x == y)
-            {
-
-                $("label[for='last_name']").text("Benenner");
-
-
-                $("#person_gender").hide();
-                $("#gender").prop( "disabled", true );
-
-                $("#first_name").val('');
-                $("#person_first_name").hide();
-
-
-                $("#middle_name").val('');
-                $("#person_middle_name").hide();
-
-
-                $("#roleType").hide();
-                $("#roleType").prop( "disabled", true );
-            }
-            else
-                {
-                        $("label[for='last_name']").text("Nachname");
-                        $("#roleType").show();
-                        $("#person_gender").show();
-                        $("#person_first_name").show();
-                        $("#person_middle_name").show();
-                }
+            changeKindOfContact();
             }
         );
+
 
     </r:script>
 
