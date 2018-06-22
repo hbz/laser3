@@ -963,7 +963,7 @@ class BootStrap {
         RefdataValue.loc('Subscription Status',      [en: 'Under Consortial Examination',   de: 'Wird konsortial geprüft'])
         RefdataValue.loc('Subscription Status',      [en: 'Under Institutional Examination',   de: 'Wird institutionell geprüft'])
         RefdataValue.loc('Subscription Status',      [en: 'Test Access',   de: 'Testzugriff'])
-		
+
 		RefdataValue.loc('Subscription Type',      [en: 'Alliance Licence', de: 'Allianzlizenz'])
 		RefdataValue.loc('Subscription Type',      [en: 'National Licence', de: 'Nationallizenz'])
 		RefdataValue.loc('Subscription Type',      [en: 'Local Licence', de: 'Lokale Lizenz'])
@@ -1051,6 +1051,19 @@ class BootStrap {
         RefdataValue.loc('Number Type',      [en: 'User', de: 'Nutzer'])
         RefdataValue.loc('Number Type',      [en: 'Population', de: 'Einwohner'])
 
+        RefdataValue.loc('Access Method',      [key: 'ip4', en: 'IPv4', de: 'IPv4'])
+        RefdataValue.loc('Access Method',      [key: 'ip6', en: 'IPv6', de: 'IPv6'])
+        RefdataValue.loc('Access Method',      [key: 'proxy', en: 'Proxy', de: 'Proxy'])
+        RefdataValue.loc('Access Method',      [key: 'shibb', en: 'Shibboleth', de: 'Shibboleth'])
+        RefdataValue.loc('Access Method',      [key: 'up', en: 'Username/Password', de: 'Benutzername/Passwort'])
+        RefdataValue.loc('Access Method',      [key: 'oa', en: 'Open Athens', de: 'OpenAthens'])
+        RefdataValue.loc('Access Method',      [key: 'ref', en: 'Referrer', de: 'Referrer'])
+
+        RefdataValue.loc('Access Method IP',      [en: 'IPv4', de: 'IPv4'])
+        RefdataValue.loc('Access Method IP',      [en: 'IPv6', de: 'IPv6'])
+
+        RefdataValue.loc('Access Point Type',      [key: 'ip', en: 'IP', de: 'IP'])
+        RefdataValue.loc('Access Point Type',      [key: 'shibb', en: 'Shibboleth', de: 'Shibboleth'])
     }
 
     def setupOnixPlRefdata = {
@@ -1117,13 +1130,13 @@ class BootStrap {
         //RefdataValue.loc('CostItemElement', [en: 'Content', de: 'Content'])
         //RefdataValue.loc('CostItemElement', [en: 'Platform', de: 'Platform'])
         //RefdataValue.loc('CostItemElement', [en: 'Other', de: 'Andere'])
-        
+
         RefdataValue.loc('CostItemElement', [key: 'price: list price', en: 'price: list price', de: 'Preis: Listenpreis'])
         RefdataValue.loc('CostItemElement', [key: 'price: provider price', en: 'price: provider price', de: 'Preis: Anbieterpreis'])
         RefdataValue.loc('CostItemElement', [key: 'price: consortial price', en: 'price: consortial price', de: 'Preis: Konsortialpreis'])
         RefdataValue.loc('CostItemElement', [key: 'price: final price', en: 'price: final price', de: 'Preis: Endpreis'])
         RefdataValue.loc('CostItemElement', [key: 'price: other', en: 'price: other', de: 'Preis: Sonstige'])
-        
+
         RefdataValue.loc('CostItemElement', [key: 'discount: consortial discount', en: 'discount: consortial discount', de: 'Rabatt: Konsortialrabatt'])
         RefdataValue.loc('CostItemElement', [key: 'discount: alliance licence discount', en: 'discount: alliance licence discount', de: 'Rabatt für Allianzlizenz'])
         RefdataValue.loc('CostItemElement', [key: 'discount: single payment discount', en: 'discount: single payment discount', de: 'Rabatt für eine Rechnung via Konsortium'])
@@ -1131,27 +1144,27 @@ class BootStrap {
         RefdataValue.loc('CostItemElement', [key: 'discount: quantity discount', en: 'discount: quantity discount', de: 'Rabatt: Mengenrabatt'])
         RefdataValue.loc('CostItemElement', [key: 'discount: early pay discount', en: 'discount: early pay discount', de: 'Rabatt: Frühzahlerrabatt'])
         RefdataValue.loc('CostItemElement', [key: 'discount: other', en: 'discount: other', de: 'Rabatt: Sonstige'])
-        
+
         RefdataValue.loc('CostItemElement', [key: 'refund: currency rate', en: 'refund: currency rate', de: 'Erstattung: Kursgutschrift'])
         RefdataValue.loc('CostItemElement', [key: 'refund: OA', en: 'refund: OA', de: 'Erstattung: Open-Acces-Gutschrift'])
         RefdataValue.loc('CostItemElement', [key: 'refund: retransfer', en: 'refund: retransfer', de: 'Erstattung: Rücküberweisung'])
         RefdataValue.loc('CostItemElement', [key: 'refund: system downtime', en: 'refund: system downtime', de: 'Erstattung: Ersatz für Ausfallzeiten'])
         RefdataValue.loc('CostItemElement', [key: 'refund: other', en: 'refund: other', de: 'Erstattung: Sonstige'])
-        
+
         RefdataValue.loc('CostItemElement', [key: 'additionalclaim: currency rate', en: 'additionalclaim: currency rate', de: 'Nachforderung aus Kursdifferenz'])
         RefdataValue.loc('CostItemElement', [key: 'additionalclaim: other', en: 'additionalclaim: other', de: 'Nachforderung: Sonstige'])
-        
+
         RefdataValue.loc('CostItemElement', [key: 'fee: bank charge', en: 'fee: bank charge', de: 'Gebühr: Bankgebühr'])
         RefdataValue.loc('CostItemElement', [key: 'fee: invoicing', en: 'fee: invoicing', de: 'Gebühr: Rechnungsstellungsgebühr'])
         RefdataValue.loc('CostItemElement', [key: 'fee: administration', en: 'fee: administration', de: 'Gebühr: Verwaltungsgebühr'])
         RefdataValue.loc('CostItemElement', [key: 'fee: technical access', en: 'fee: technical access', de: 'Gebühr: Plattformgebühr'])
         RefdataValue.loc('CostItemElement', [key: 'fee: setup', en: 'fee: setup', de: 'Gebühr: SetUp-Gebühr'])
         RefdataValue.loc('CostItemElement', [key: 'fee: other', en: 'fee: other', de: 'Gebühr: Sonstige'])
-        
+
         RefdataValue.loc('CostItemElement', [key: 'tax: purchase tax 19', en: 'tax: purchase tax 19%', de: 'Steuer: Umsatzsteuer 19%'])
         RefdataValue.loc('CostItemElement', [key: 'tax: purchase tax 7', en: 'tax: purchase tax 7%', de: 'Steuer: Umsatzsteuer 7%'])
         RefdataValue.loc('CostItemElement', [key: 'tax: source tax', en: 'tax:  source tax', de: 'Steuer: Quellensteuer'])
-               
+
         RefdataCategory.loc('CostItemStatus',
                 [en: 'CostItemStatus', de: 'CostItemStatus'])
 

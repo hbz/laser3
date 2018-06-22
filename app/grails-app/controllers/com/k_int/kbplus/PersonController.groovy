@@ -73,7 +73,7 @@ class PersonController {
 
         [
             personInstance: personInstance,
-            editable: addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser())
+            editable: true
         ] // TODO
     }
 

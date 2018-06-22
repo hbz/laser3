@@ -205,4 +205,27 @@ class PlatformController {
             redirect action: 'show', id: params.id
         }
     }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def accessMethods() {
+        def editable
+        def platformInstance = Platform.get(params.id)
+        if (!platformInstance) {
+            flash.message = message(code: 'default.not.found.message',
+                    args: [message(code: 'platform.label', default: 'Platform'), params.id])
+            redirect action: 'list'
+            return
+        }
+
+        def platformAccessMethodList = PlatformAccessMethod.findAllByPlatf(platformInstance);
+
+        editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
+
+        if (!params.filter) {
+            params.filter = 'all'
+        }
+
+        [platformInstance: platformInstance, platformAccessMethodList: platformAccessMethodList, editable: editable, params: params]
+    }
+
 }

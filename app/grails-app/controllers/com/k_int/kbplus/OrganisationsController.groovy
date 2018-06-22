@@ -425,4 +425,32 @@ class OrganisationsController {
 
         result
     }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def accessPoints() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        def orgInstance = Org.get(params.id)
+
+        if ( SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') ) {
+          result.editable = true
+        }
+        else {
+          result.editable = permissionHelperService.hasUserWithRole(result.user, orgInstance, 'INST_ADM')
+        }
+
+        if (!orgInstance) {
+          flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+          redirect action: 'list'
+          return
+        }
+
+        def orgAccessPointList = OrgAccessPoint.findAllByOrg(orgInstance)
+        result.orgAccessPointList = orgAccessPointList
+
+        result.editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
+        result.orgInstance = orgInstance
+
+      result
+    }
 }

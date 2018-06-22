@@ -17,4 +17,7 @@
 
     <semui:subNavItem controller="organisations" action="addressbook" params="${[id: params.id]}"
                       message="menu.institutions.addressbook"/>
+    <semui:subNavItem controller="organisations" action="accessPoints" params="${[id:params.id]}"
+                      message="org.nav.accessPoints" />
+
 </semui:subNav>

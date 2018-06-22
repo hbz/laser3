@@ -134,6 +134,7 @@ grails.project.dependency.resolution = {
 
         compile group: 'org.codehaus.groovy', name: 'groovy-ant', version: '2.4.14'
 
+        compile 'org.apache.commons:commons-lang3:3.7'
     }
 
     plugins {

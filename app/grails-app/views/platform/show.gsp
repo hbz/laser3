@@ -28,6 +28,8 @@
             <g:else>${platformInstance.name}</g:else>
           </h1>
 
+        <g:render template="nav" contextPath="." />
+
         <semui:messages data="${flash}" />
 
         <fieldset class="inline-lists">

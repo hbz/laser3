@@ -1,7 +1,5 @@
 <%@ page import="com.k_int.kbplus.Platform" %>
 
-
-
 <div class="field fieldcontain ${hasErrors(bean: platformInstance, field: 'name', 'error')} ">
 	<label for="name">
 		<g:message code="platform.name.label" default="Name" />
