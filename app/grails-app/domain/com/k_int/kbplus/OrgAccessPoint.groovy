@@ -1,8 +1,5 @@
 package com.k_int.kbplus
 import de.laser.domain.BaseDomainComponent
-import inet.ipaddr.IPAddress
-import inet.ipaddr.IPAddressString
-import org.apache.commons.validator.routines.InetAddressValidator
 import ubfr.IpRange
 import ubfr.IpRangeCollection
 
@@ -36,13 +33,14 @@ class OrgAccessPoint extends BaseDomainComponent {
     
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
+        name(unique: ['organisation'])
   }
     
     static getAllRefdataValues(String category) {
         RefdataCategory.getAllRefdataValues(category)
     }
 
-    String[] getCidr() {
+    String[] getIpv4Cidr() {
 
         IpRangeCollection ipRanges = new IpRangeCollection();
         for (data in accessPointData) {
@@ -53,5 +51,10 @@ class OrgAccessPoint extends BaseDomainComponent {
 
         return ipRanges.toCidr()
     }
+
+    String[] getIpv6Cidr() {
+        return [""];
+    }
+
 
 }

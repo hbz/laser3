@@ -1,8 +1,5 @@
 package com.k_int.kbplus
 
-import inet.ipaddr.AddressStringException
-import inet.ipaddr.IPAddress
-import inet.ipaddr.IPAddressString
 import org.apache.commons.net.util.SubnetUtils
 import org.codehaus.groovy.grails.validation.routines.InetAddressValidator
 import org.springframework.dao.DataIntegrityViolationException
@@ -108,7 +105,7 @@ class AccessPointController {
 
         switch (request.method) {
             case 'GET':
-                [accessPointInstance: orgAccessPoint, accessPointDataList: accessPointDataList, orgId: orgId, ip: params.ip]
+                [accessPointInstance: orgAccessPoint, accessPointDataList: accessPointDataList, orgId: orgId, ip: params.ip, editable: true]
                 break
             case 'POST':
                 orgAccessPoint.properties = params;
@@ -130,7 +127,7 @@ class AccessPointController {
 
             def accessPointData = new AccessPointData(params)
             accessPointData.orgAccessPoint = orgAccessPoint
-            accessPointData.datatype="IP"
+            accessPointData.datatype=RefdataValue.getByValueAndCategory('ip', 'Access Point Type').value;
             accessPointData.data = params.ip
             accessPointData.save(flush: true)
 
@@ -175,7 +172,7 @@ class AccessPointController {
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def edit_shibboleth() {
+    def edit_shibb() {
         def accessPointInstance = OrgAccessPoint.get(params.id)
 
         def org = accessPointInstance.org;

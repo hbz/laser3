@@ -446,7 +446,6 @@ class OrganisationsController {
         }
 
         def orgAccessPointList = OrgAccessPoint.findAllByOrg(orgInstance)
-
         result.orgAccessPointList = orgAccessPointList
 
         result.editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')

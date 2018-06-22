@@ -10,62 +10,47 @@
 	<body>
 
             <div>
+                <g:render template="breadcrumb" model="${[ accessPointInstance:accessPointInstance, params:params ]}"/>
                 <h1 class="ui header"><g:message code="default.edit.label" args="[entityName]" /></h1>
                 <semui:messages data="${flash}" />
                 <g:form class="ui form" url="[controller: 'accessPoint', action: 'addIP']" id="${accessPointInstance.id}" method="POST">
                     <g:hiddenField name="id" value="${accessPointInstance?.id}" />
-                    <div class="inline-lists">
-                        <dl>
-                            <dt><label for="name">
-                                    <g:message code="accessPoint.name" default="Name" id="name"/>
-                                </label>
-                            </dt>
-                            <dd>
-                                ${accessPointInstance.name}
-                            </dd>
-                            <br /><br />
 
-                            <dt>
-                                <label for="accessMethod">
-                                    <g:message code="accessMethod.label" default="Access Method" />
-                                </label>
-                            </dt>
-                            <dd>
-                                ${accessPointInstance.accessMethod}
-                                <g:hiddenField name="accessMethod" value="${accessPointInstance.accessMethod.id}"/>
-                            </dd>
-                            <br /><br />
-                            <dt>
-                                <label>
-                                    <g:message code="accessPoint.ipv4.range" default="IPv4 Range" />
-                                </label>
-                            </dt>
-                            <dd>
-                                <div class="one field">
-                                    <div class="field wide twelve fieldcontain">
-                                        <g:each in="${accessPointInstance.getCidr()}" var="ipv4Range">
-                                            <div >${ipv4Range}</div>
+                    <div class="la-inline-lists">
+                        <div class="ui card">
+                            <div class="content">
+                                <dl>
+                                    <dt><g:message code="org.name.label" default="Name" /></dt>
+                                    <dd><semui:xEditable owner="${accessPointInstance}" field="name"/></dd>
+                                </dl>
+                                <dl>
+                                    <dt><g:message code="accessMethod.label" default="Access Method" /></dt>
+                                    <dd>
+                                        ${accessPointInstance.accessMethod.getI10n('value')}
+                                        <g:hiddenField name="accessMethod" value="${accessPointInstance.accessMethod.id}"/>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt><g:message code="accessPoint.ipv4.range" default="IPv4 Range" /></dt>
+                                    <dd>
+                                        <g:each in="${accessPointInstance.getIpv4Cidr()}" var="ipv4Ranges">
+                                            <div >${ipv4Ranges}</div>
                                         </g:each>
-                                    </div>
-                                </div>
-                            </dd>
-                            <dt>
-                                <label>
-                                    <g:message code="accessPoint.ipv6.range" default="IPv6 Range" />
-                                </label>
-                            </dt>
-                            <dd>
-                                <div class="one field">
-                                    <div class="field wide twelve fieldcontain">
-                                        <div >TODO</div>
-                                    </div>
-                                </div>
-                            </dd>
-                        </dl>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt><g:message code="accessPoint.ipv6.range" default="IPv6 Range" /></dt>
+                                    <dd>
+                                        <g:each in="${accessPointInstance.getIpv6Cidr()}" var="ipv6Range">
+                                            <div >${ipv4Ranges}</div>
+                                        </g:each>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div><!-- .card -->
                     </div>
 
-
-                    <table class="ui celled striped table">
+                    <table  class="ui celled la-table table">
                         <thead>
                         <tr>
                             <g:sortableColumn property="ipData" title="${message(code: 'accessPoint.ip.data', default: 'IP or IP Range')}" />
@@ -91,7 +76,7 @@
                                 </div>
                             </td>
                             <td class="center aligned">
-                                <input type="Submit" class="ui tiny button" value="${message(code:'accessPoint.button.new', default:'Add')}" onClick="this.form.submit()"class="ui button"/>
+                                <input type="Submit" class="ui tiny button" value="${message(code:'accessPoint.button.add', default:'Add')}" onClick="this.form.submit()"class="ui button"/>
                             </td>
                         </tr>
                         </tbody>
@@ -99,8 +84,10 @@
                 </g:form>
 
                 <div class="ui segment form-actions">
-                    <g:link class="ui button" action="accessPoints" controller="organisations" id="${orgId}" >${message(code:'acessPoint.button.back', default:'Back')}</g:link>
-                    <g:link class="ui negative button" action="delete" controller="accessPoint" id="${accessPointInstance.id}" >${message(code:'default.button.delete.label', default:'Delete')}</g:link>
+                    <g:link class="ui button" action="accessPoints" controller="organisations" id="${orgId}" >${message(code:'accessPoint.button.back', default:'Back')}</g:link>
+                    <g:link class="ui negative button" action="delete" controller="accessPoint"
+                            id="${accessPointInstance.id}" onclick="return confirm('${message(code: 'accessPoint.details.delete.confirm', args: [(accessPointInstance.name ?: 'this access point')])}')"
+                    >${message(code:'default.button.delete.label', default:'Delete')}</g:link>
                 </div>
 		</div>
 	</body>

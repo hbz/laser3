@@ -1051,22 +1051,19 @@ class BootStrap {
         RefdataValue.loc('Number Type',      [en: 'User', de: 'Nutzer'])
         RefdataValue.loc('Number Type',      [en: 'Population', de: 'Einwohner'])
 
-        RefdataValue.loc('Access Method',      [en: 'IPv4', de: 'IPv4'])
-        RefdataValue.loc('Access Method',      [en: 'IPv6', de: 'IPv6'])
-        RefdataValue.loc('Access Method',      [en: 'Proxy', de: 'Proxy'])
-        RefdataValue.loc('Access Method',      [en: 'Shibboleth', de: 'Shibboleth'])
-        RefdataValue.loc('Access Method',      [en: 'Username/Password', de: 'Benutzername/Passwort'])
-        RefdataValue.loc('Access Method',      [en: 'Open Athens', de: 'OpenAthens'])
-        RefdataValue.loc('Access Method',      [en: 'Referrer', de: 'Referrer'])
+        RefdataValue.loc('Access Method',      [key: 'ip4', en: 'IPv4', de: 'IPv4'])
+        RefdataValue.loc('Access Method',      [key: 'ip6', en: 'IPv6', de: 'IPv6'])
+        RefdataValue.loc('Access Method',      [key: 'proxy', en: 'Proxy', de: 'Proxy'])
+        RefdataValue.loc('Access Method',      [key: 'shibb', en: 'Shibboleth', de: 'Shibboleth'])
+        RefdataValue.loc('Access Method',      [key: 'up', en: 'Username/Password', de: 'Benutzername/Passwort'])
+        RefdataValue.loc('Access Method',      [key: 'oa', en: 'Open Athens', de: 'OpenAthens'])
+        RefdataValue.loc('Access Method',      [key: 'ref', en: 'Referrer', de: 'Referrer'])
 
         RefdataValue.loc('Access Method IP',      [en: 'IPv4', de: 'IPv4'])
         RefdataValue.loc('Access Method IP',      [en: 'IPv6', de: 'IPv6'])
 
-        RefdataValue.loc('Access Point Type',      [en: 'IP', de: 'IP'])
-        RefdataValue.loc('Access Point Type',      [en: 'Shibboleth', de: 'Shibboleth'])
-        RefdataValue.loc('Access Point Type',      [en: 'Username/Password', de: 'Benutzername/Passwort'])
-        RefdataValue.loc('Access Point Type',      [en: 'Open Athens', de: 'OpenAthens'])
-        RefdataValue.loc('Access Point Type',      [en: 'Referrer', de: 'Referrer'])
+        RefdataValue.loc('Access Point Type',      [key: 'ip', en: 'IP', de: 'IP'])
+        RefdataValue.loc('Access Point Type',      [key: 'shibb', en: 'Shibboleth', de: 'Shibboleth'])
     }
 
     def setupOnixPlRefdata = {
