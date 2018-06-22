@@ -28,7 +28,10 @@ class Platform extends BaseDomainComponent {
 
 
   static mappedBy = [tipps: 'platform']
-  static hasMany = [tipps: TitleInstancePackagePlatform]
+  static hasMany = [
+      tipps: TitleInstancePackagePlatform,
+      oapp: OrgAccessPointLink
+  ]
 
   static mapping = {
                 id column:'plat_id'

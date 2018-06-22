@@ -13,6 +13,7 @@ import com.k_int.kbplus.auth.*;
 class PlatformController {
 
     def springSecurityService
+    def contextService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -226,6 +227,103 @@ class PlatformController {
         }
 
         [platformInstance: platformInstance, platformAccessMethodList: platformAccessMethodList, editable: editable, params: params]
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def link() {
+        def result = [:]
+        def platformInstance = Platform.get(params.id)
+        if (!platformInstance) {
+            flash.message = message(code: 'default.not.found.message',
+                args: [message(code: 'platform.label', default: 'Platform'), params.id])
+            redirect action: 'list'
+            return
+        }
+        def selectedInstitution = contextService.getOrg()
+
+        def authorizedOrgs = contextService.getUser().getAuthorizedOrgs()
+        def hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
+            hql += "where ap.org =:institution and oapl.active=true"
+        def results = OrgAccessPointLink.executeQuery(hql,[institution : selectedInstitution])
+        def accessPointList = OrgAccessPoint.findAllByOrg(selectedInstitution)
+
+        result.accessPointLinks = results
+        result.platformInstance = platformInstance
+        result.institution = authorizedOrgs
+        result.accessPointList = accessPointList
+        result.selectedInstitution = selectedInstitution.id
+        result
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def dynamicLink(){
+        def result = [:]
+        def platformInstance = Platform.get(params.platform_id)
+        if (!platformInstance) {
+            flash.message = message(code: 'default.not.found.message',
+                args: [message(code: 'platform.label', default: 'Platform'), params.platform_id])
+            redirect action: 'list'
+            return
+        }
+        def authorizedOrgs = contextService.getUser().getAuthorizedOrgs()
+        def selectedInstitution =  contextService.getOrg()
+        if (params.institution_id){
+            selectedInstitution = Org.get(params.institution_id)
+        }
+        def hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
+        hql += "where ap.org =:institution and oapl.active=true"
+        def results = OrgAccessPointLink.executeQuery(hql,[institution : selectedInstitution])
+        def accessPointList = OrgAccessPoint.findAllByOrg(selectedInstitution)
+
+        result.accessPointLinks = results
+        result.platformInstance = platformInstance
+        result.institution = authorizedOrgs
+        result.accessPointList = accessPointList
+        result.selectedInstitution = selectedInstitution
+        result
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def linkAccessPoint() {
+        def apInstance = null
+        if (params.AccessPoints){
+            apInstance = OrgAccessPoint.get(params.AccessPoints)
+            if (!apInstance) {
+                flash.error = 'No valid Accesspoint id given'
+                redirect action: 'link', params: [id:params.id]
+                return
+            }
+        }
+        // save link
+        def aopl = new OrgAccessPointLink()
+        aopl.active = true
+        aopl.oap = apInstance
+        aopl.platform = Platform.get(params.platform_id)
+        if (! aopl.save()) {
+            log.debug("Error saving AccessPoint for platform")
+            log.debug(aopl.errors)
+            return
+            // TODO flash
+        }
+
+        redirect action: 'link', params: [id:params.platform_id]
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def removeAccessPoint() {
+        // update active aopl, set active=false
+        def aoplInstance = OrgAccessPointLink.get(params.oapl_id)
+        aoplInstance.active = false
+        if (! aoplInstance.save()) {
+            log.debug("Error updateing AccessPoint for platform")
+            log.debug(aopl.errors)
+            // TODO flash
+        }
+        redirect action: 'link', params: [id:params.id]
     }
 
 }
