@@ -281,7 +281,7 @@ class PlatformController {
         result.platformInstance = platformInstance
         result.institution = authorizedOrgs
         result.accessPointList = accessPointList
-        result.selectedInstitution = selectedInstitution
+        result.selectedInstitution = selectedInstitution.id
         result
     }
 
