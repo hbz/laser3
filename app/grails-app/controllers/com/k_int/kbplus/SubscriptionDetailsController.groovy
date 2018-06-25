@@ -1272,7 +1272,7 @@ AND l.status.value != 'Deleted' order by l.reference
     params.max = user?.getDefaultPageSize()?:25
 
     //Change to GOKB ElasticSearch
-    params.esgokb = "Package"
+    //params.esgokb = "Package" // TODO disabled
     params.sort = "name"
 
     result.putAll(ESSearchService.search(params))

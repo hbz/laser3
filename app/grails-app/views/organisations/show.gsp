@@ -96,7 +96,7 @@
 
                 <div class="ui card">
                     <div class="content">
-                        <g:if test="${orgInstance.orgType != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider','OrgType')}">
+                        <g:if test="${orgInstance.orgType != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'OrgType')}">
                         <dl>
                             <dt><g:message code="org.sector.label" default="Sector" /></dt>
                             <dd>
@@ -133,7 +133,7 @@
 
                 <div class="ui card">
                     <div class="content">
-                    <g:if test="${orgInstance.orgType != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider','OrgType')}">
+                    <g:if test="${orgInstance.orgType != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'OrgType')}">
                         <dl>
                             <dt><g:message code="org.libraryType.label" default="Library Type" /></dt>
                             <dd>
@@ -219,17 +219,19 @@
                                     </g:each>
                                 </div>
                                 <g:if test="${editable}">
-                                    <input class="ui button"
-                                           value="${message(code: 'person.create_new.contactPerson.label')}"
-                                           data-semui="modal"
-                                           href="#personFormModal" />
+                                    <g:if test="${ ! SpringSecurityUtils.ifAnyGranted('ROLE_ORG_COM_EDITOR') }">
+                                        <input class="ui button"
+                                               value="${message(code: 'person.create_new.contactPerson.label')}"
+                                               data-semui="modal"
+                                               href="#personFormModal" />
 
-                                    <g:render template="/person/formModal"
-                                              model="['tenant': contextOrg,
-                                                      'org': orgInstance,
-                                                      'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
-                                                      presetFunctionType: RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),
-                                                      tmplHideResponsibilities: true]"/>
+                                        <g:render template="/person/formModal"
+                                                  model="['tenant': contextOrg,
+                                                          'org': orgInstance,
+                                                          'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
+                                                          presetFunctionType: RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),
+                                                          tmplHideResponsibilities: true]"/>
+                                    </g:if>
                                 </g:if>
                             </dd>
                         </dl>
