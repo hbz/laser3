@@ -282,7 +282,7 @@ class PlatformController {
         result.institution = authorizedOrgs
         result.accessPointList = accessPointList
         result.selectedInstitution = selectedInstitution.id
-        result
+        render(view: "_dynamicLink", model: result)
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
