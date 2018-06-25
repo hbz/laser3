@@ -1,5 +1,3 @@
-
-<%@ page import="com.k_int.kbplus.accessMethod" %>
 <!doctype html>
 <html>
 	<head>
