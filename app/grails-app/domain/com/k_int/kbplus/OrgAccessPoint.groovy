@@ -21,7 +21,8 @@ class OrgAccessPoint extends BaseDomainComponent {
     ]
 
     static hasMany = [
-            accessPointData : AccessPointData
+            accessPointData : AccessPointData,
+            oapp: OrgAccessPointLink
     ]
     
     static mapping = {
@@ -56,5 +57,14 @@ class OrgAccessPoint extends BaseDomainComponent {
         return [""];
     }
 
-
+    def hasActiveLink() {
+        def active = false
+        def oapps = this.oapp
+        oapps.each {
+            if (it.active){
+                active = true
+            }
+        }
+        active
+    }
 }
