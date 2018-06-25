@@ -31,7 +31,7 @@
 <semui:messages data="${flash}" />
 <g:render template="nav" />
 <div id="dynamicUpdate">
-  <g:render template="dynamicLink" model="result" />
+  <g:render template="apLinkContent" model="result" />
 </div>
 <r:script language="JavaScript">
     function selectAll() {

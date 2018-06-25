@@ -9,9 +9,9 @@
                           optionValue="name"
                           value="${selectedInstitution} "
                           onchange="${remoteFunction (
-                                  action: 'dynamicLink',
+                                  action: 'dynamicApLink',
                                   params: '{platform_id:'+platformInstance.id+', institution_id:this.value}',
-                                  update: [success: 'dynamicUpdate', failure: 'ohno'],
+                                  update: [success: 'dynamicUpdate', failure: 'failure'],
                           )}"/>
             </div>
             <div class="field">

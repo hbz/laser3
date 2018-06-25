@@ -3,11 +3,8 @@ package com.k_int.kbplus
 import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.springframework.dao.DataIntegrityViolationException
-import grails.converters.*
-import org.elasticsearch.groovy.common.xcontent.*
-import groovy.xml.MarkupBuilder
 import grails.plugin.springsecurity.annotation.Secured
-import com.k_int.kbplus.auth.*;
+import com.k_int.kbplus.auth.*
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PlatformController {
@@ -258,7 +255,7 @@ class PlatformController {
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-    def dynamicLink(){
+    def dynamicApLink(){
         def result = [:]
         def platformInstance = Platform.get(params.platform_id)
         if (!platformInstance) {
@@ -282,7 +279,7 @@ class PlatformController {
         result.institution = authorizedOrgs
         result.accessPointList = accessPointList
         result.selectedInstitution = selectedInstitution.id
-        render(view: "_dynamicLink", model: result)
+        render(view: "_apLinkContent", model: result)
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
