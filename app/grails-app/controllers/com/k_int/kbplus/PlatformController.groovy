@@ -295,17 +295,23 @@ class PlatformController {
             }
         }
         // save link
-        def aopl = new OrgAccessPointLink()
-        aopl.active = true
-        aopl.oap = apInstance
-        aopl.platform = Platform.get(params.platform_id)
-        if (! aopl.save()) {
-            log.debug("Error saving AccessPoint for platform")
-            log.debug(aopl.errors)
-            return
-            // TODO flash
+        def oapl = new OrgAccessPointLink()
+        oapl.active = true
+        oapl.oap = apInstance
+        oapl.platform = Platform.get(params.platform_id)
+        def existingActiveAP = OrgAccessPointLink.findAll {
+            active == true && platform == oapl.platform && oap == apInstance
         }
-
+        if (!existingActiveAP.isEmpty()){
+            flash.error = "Existing active AccessPoint for platform"
+            redirect action: 'link', params: [id:params.platform_id]
+            return
+        }
+        if (! oapl.save()) {
+            flash.error = "Existing active AccessPoint for platform"
+            redirect action: 'link', params: [id:params.platform_id]
+            return
+        }
         redirect action: 'link', params: [id:params.platform_id]
     }
 
