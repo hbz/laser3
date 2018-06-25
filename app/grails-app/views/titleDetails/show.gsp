@@ -88,12 +88,13 @@
 
             <div class="twelve wide column">
 
-              <h3 class="ui header">${message(code:'default.status.label')}:
-                <semui:xEditableRefData owner="${ti}" field="status" config='${RefdataCategory.TI_STATUS}'/>
-                <br>${message(code:'title.type.label')}: ${ti.type.getI10n('value')}
+              <h3 class="ui header">
+                ${message(code:'title.type.label')}: ${ti.type.getI10n('value')}
               </h3>
 
-            </div><!-- .eight -->
+                ${message(code:'default.status.label')}: <semui:xEditableRefData owner="${ti}" field="status" config='${RefdataCategory.TI_STATUS}'/>
+
+            </div><!-- .twelve -->
 
             <div class="twelve wide column">
 
@@ -108,7 +109,7 @@
                   </bootstrap:alert>
               </g:each>
 
-            </div><!-- .eight -->
+            </div><!-- .twelve -->
         </div><!-- .grid -->
 
           <h3 class="ui header">${message(code:'title.edit.orglink')}</h3>
@@ -140,12 +141,13 @@
               </tbody>
             </table>
 
+        %{--
             <g:render template="orgLinks" contextPath="../templates" model="${[roleLinks:ti?.orgs,editmode:editable]}" />
 
             <g:render template="orgLinksModal"
                 contextPath="../templates"
                 model="${[linkType:ti?.class?.name,roleLinks:ti?.orgs,parent:ti.class.name+':'+ti.id,property:'orgLinks',recip_prop:'title']}" />
-
+        --}%
             <h3 class="ui header">${message(code: 'title.show.history.label')}</h3>
 
             <table class="ui celled la-table table">
@@ -213,11 +215,11 @@
               </table>
 */ %>
 
-            <g:form id="${params.id}" controller="titleDetails" action="batchUpdate" class="ui form">
-              <table class="ui celled la-rowspan table" >
+            %{--<g:form id="${params.id}" controller="titleDetails" action="batchUpdate" class="ui form"> BULK_REMOVE --}%
+              <table class="ui celled la-rowspan table">
                   <thead>
                     <tr>
-                      <th rowspan="2"></th>
+                  %{--<th rowspan="2"></th> BULK_REMOVE --}%
                       <th>${message(code:'tipp.platform')}</th><th>${message(code:'tipp.package')}</th>
                       <th>${message(code:'tipp.start')}</th>
                       <th>${message(code:'tipp.end')}</th>
@@ -228,6 +230,8 @@
                       <th colspan="6">${message(code:'tipp.coverageNote')}</th>
                     </tr>
                   </thead>
+
+                %{-- BULK_REMOVE
                 <g:if test="${editable}">
                   <tr>
                     <td rowspan="2"><input type="checkbox" name="checkall" onClick="javascript:$('.bulkcheck').attr('checked', true);"/></td>
@@ -293,10 +297,11 @@
                     </td>
                   </tr>
                 </g:if>
+                --}%
   
                 <g:each in="${ti.tipps}" var="t">
                   <tr>
-                    <td rowspan="2"><g:if test="${editable}"><input type="checkbox" name="_bulkflag.${t.id}" class="bulkcheck"/></g:if></td>
+                    %{--<td rowspan="2"><g:if test="${editable}"><input type="checkbox" name="_bulkflag.${t.id}" class="bulkcheck"/></g:if></td> BULK_REMOVE --}%
                     <td><g:link controller="platform" action="show" id="${t.platform.id}">${t.platform.name}</g:link></td>
                     <td>
                         <div class="la-flexbox">
@@ -320,7 +325,7 @@
                   </tr>
                 </g:each>
               </table>
-            </g:form>
+            %{--</g:form> BULK_REMOVE--}%
 
             <br><br>
 
