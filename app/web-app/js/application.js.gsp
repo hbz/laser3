@@ -120,9 +120,12 @@ r2d2 = {
         $('.table.ignore-floatThead').floatThead('destroy');
 
         // modals
-        $("*[data-semui=modal]").click(function() {
+        $("*[data-semui='modal']").click(function() {
+            console.log("hier");
             $($(this).attr('href') + '.ui.modal').modal({
+
                 onVisible: function() {
+
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
                 },
                 detachable: true,
@@ -143,10 +146,10 @@ r2d2 = {
         $.fn.editableform.buttons = '<button type="submit" class="ui icon button editable-submit"><i class="check icon"></i></button>' +
             '<button type="button" class="ui icon button editable-cancel"><i class="times icon"></i></button>'
         $.fn.editableform.template =
-            '<form class="test form-inline editableform">' +
+            '<form class="ui form form-inline editableform">' +
             '	<div class="control-group">' +
-            '		<div class="ui calendar datepicker">' +
-            '			<div class="ui input left icon editable-input">' +
+            '		<div class="ui calendar xEditable-datepicker">' +
+            '			<div class="ui input right icon editable-input">' +
             '			</div>' +
             '			<div class="editable-buttons">' +
             '			</div>' +
@@ -189,6 +192,9 @@ r2d2 = {
                 console.log(params)
             }
         }).on('shown', function() {
+            if ($(this).attr('data-format')) {
+                $(ctxSel + ' .xEditable-datepicker').calendar(r2d2.configs.datepicker);
+            }
             $(".table").trigger('reflow')
         }).on('hidden', function() {
             $(".table").trigger('reflow')
@@ -265,10 +271,8 @@ r2d2 = {
         $(ctxSel + ' .ui.checkbox').not('#la-advanced').checkbox();
 
         // datepicker
+        $(ctxSel + ' .datepicker').calendar(r2d2.configs.datepicker);
 
-        $( "body" ).click(function() {
-            $(ctxSel + ' .datepicker').calendar(r2d2.configs.datepicker);
-        });
         // dropdowns
         $(ctxSel + ' .ui.dropdown').dropdown({
             duration: 150,

@@ -250,6 +250,7 @@ aside.ui.accordion .title:not(.ui) {
     margin-right:0.99em;
     .editable-input input[type=text]{
         padding-right: 1em!important;
+        padding-left: 0.5em!important;
         width: 8rem!important;
     }
 }
