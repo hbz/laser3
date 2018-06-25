@@ -90,7 +90,7 @@
                     <div class="item">
                         <div class="icon">
                             <i class="alarm outline icon"></i>
-                            <span class="badge badge-warning">${todo.num_changes}</span>
+                            <span class="ui label yellow">${todo.num_changes}</span>
                         </div>
                         <div class="message">
                             <p>

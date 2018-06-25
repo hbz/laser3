@@ -32,7 +32,7 @@
                         <g:link controller="licenseDetails" action="show" id="${todo.item_with_changes.id}">${message(code:'license')}: ${todo.item_with_changes.toString()}</g:link>
                       </g:else>
                     </strong><br/>
-                    <span class="badge badge-warning">${todo.num_changes}</span> 
+                    <span class="ui label yellow">${todo.num_changes}</span>
                     <span>${message(code:'myinst.change_from', default:'Change(s) between')} <g:formatDate date="${todo.earliest}" format="yyyy-MM-dd hh:mm a"/></span>
                     <span>${message(coe:'myinst.change_to', default:'and')} <g:formatDate date="${todo.latest}" format="yyyy-MM-dd hh:mm a"/></span><br/>
                   </td>

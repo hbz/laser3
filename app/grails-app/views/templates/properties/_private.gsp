@@ -35,10 +35,10 @@
                     <td class="la-column-nowrap">
                         ${prop.type.getI10n('name')}
                         <g:if test="${prop.type.mandatory}">
-                            <span class="badge badge-warning" title="${message(code: 'default.mandatory.tooltip')}"> &#8252; </span>
+                            <span class="ui label yellow" title="${message(code: 'default.mandatory.tooltip')}"> &#8252; </span>
                         </g:if>
                         <g:if test="${prop.type.multipleOccurrence}">
-                            <span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
+                            <span class="ui label blue" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
                         </g:if>
                     </td>
                     <td>

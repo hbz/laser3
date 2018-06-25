@@ -73,8 +73,17 @@ class FinanceController {
             }
         }
 
-        //Grab the financial data
-        financialData(result,params,user)
+            //Grab the financial data
+            financialData(result,params,user)
+
+            flash.error = null
+            flash.message = null
+
+            if (result.foundMatches) {
+                flash.message = "Felder mit potentiellen Treffern bleiben gesetzt."
+            } else if (params.get('submit')) {
+                flash.error = "Keine Treffer. Der Filter wird zurückgesetzt."
+            }
 
           // prepare filter dropdowns
           def myCostItems = result.fixedSubscription ?
@@ -170,6 +179,7 @@ class FinanceController {
             // WORKAROUND: DISABLE FALLBACK! WOULD VIEW ALL COSTITEMS ON LICENSE_VIEW
 
             cost_item_qry_params   << qryOutput.fqParams
+            result.foundMatches    =  cost_item_qry_params.size() > 1 // used for flash
             result.cost_items      =  CostItem.executeQuery(ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy, cost_item_qry_params, params);
             result.cost_item_count =  CostItem.executeQuery(ci_count + cost_item_qry + qryOutput.qry_string, cost_item_qry_params).first();
             log.debug("FinanceController::index()  -- Performed filtering process... ${result.cost_item_count} result(s) found")

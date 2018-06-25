@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat
 import static groovyx.net.http.ContentType.*
 import groovyx.gpars.GParsPool
 
-
 class StatsSyncService {
 
     static final THREAD_POOL_SIZE = 4

@@ -56,6 +56,8 @@
     <h1 class="ui header"><semui:headerIcon />${message(code:'subscription.details.financials.label')} für ${institution.name}</h1>
 </g:else>
 
+<semui:messages data="${flash}" />
+
 <div class="ui grid">
     <div class="column">
         <%--<button class="ui button" type="submit" data-semui="modal" href="#recentlyAdded_modal" id="showHideRecent">${message(code:'financials.recentCosts')}</button>--%>

@@ -68,9 +68,10 @@
                 </div>
             </div>
 
-            <input type="hidden" name="meta" value="sys:${grailsApplication.config.laserSystemId}">
+            <input type="hidden" name="meta" value="system:${grailsApplication.config.laserSystemId}">
+            <input type="hidden" name="meta" value="build:${grailsApplication.metadata['repository.revision.number']}">
             <input type="hidden" name="meta" value="user:${contextService.getUser()?.id}">
-            <input type="hidden" name="meta" value="ctx::${contextService.getOrg()?.id}">
+            <input type="hidden" name="meta" value="ctx:${contextService.getOrg()?.id}">
 
             <input type="hidden" name="contact" value="${contextService.getUser().display} (${contextService.getUser().username}), ${contextService.getUser().email}">
 

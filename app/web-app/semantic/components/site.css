@@ -459,6 +459,7 @@ aside.ui.accordion .title:not(.ui) {
 }
 .ui.two.cards > .card.la-time-card .editable-input input[type=text] {
   padding-right: 1em!important;
+  padding-left: 0.5em!important;
   width: 8rem!important;
 }
 .la-advanced-view {

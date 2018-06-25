@@ -11,7 +11,6 @@ class FilterService {
 
     def springSecurityService
 
-
     def getOrgQuery(params) {
         def result = [:]
         def query = []

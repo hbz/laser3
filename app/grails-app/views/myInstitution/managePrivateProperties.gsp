@@ -47,13 +47,13 @@
                                     <td>
                                         ${ppd.name}
                                         <g:if test="${ppd.softData}">
-                                            <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+                                            <span class="ui label" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
                                         </g:if>
                                         <g:if test="${ppd.mandatory}">
-                                            <span class="badge badge-warning" title="${message(code: 'default.mandatory.tooltip')}"> &#8252; </span>
+                                            <span class="ui label yellow" title="${message(code: 'default.mandatory.tooltip')}"> &#8252; </span>
                                         </g:if>
                                         <g:if test="${ppd.multipleOccurrence}">
-                                            <span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
+                                            <span class="ui label blue" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
                                         </g:if>
                                     </td>
                                     <td><semui:xEditable owner="${pdI10nName}" field="valueDe" /></td>
