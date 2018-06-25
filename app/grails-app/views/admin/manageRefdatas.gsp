@@ -54,15 +54,13 @@ ${rdvList.join(", ")}
                             <th>Value (Key)</th>
                             <th>DE</th>
                             <th>EN</th>
+                            <th></th>
                         </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>
                                     ${fieldValue(bean: rdc, field: "desc")}
-                                    <g:if test="${rdc.softData}">
-                                        <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
-                                    </g:if>
                                 </td>
                                 <td></td>
                                 <td>
@@ -71,9 +69,14 @@ ${rdvList.join(", ")}
                                 <td>
                                     <strong><semui:xEditable owner="${rdcI10n}" field="valueEn" /></strong>
                                 </td>
+                                <td>
+                                    <g:if test="${rdc.softData}">
+                                        <span class="ui label" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+                                    </g:if>
+                                </td>
                             </tr>
 
-                            <g:each in="${RefdataValue.findAllByOwner(rdc, [sort: 'value'])}" var="rdv">
+                            <g:each in="${RefdataValue.findAllByOwner(rdc)}" var="rdv">
                                 <tr>
                                     <td></td>
                                     <td>
@@ -84,16 +87,23 @@ ${rdvList.join(", ")}
                                             <span data-position="top left" data-tooltip="Dieser Wert wird bisher nicht verwendet (ID:${rdv.id})"
                                                   style="font-style:italic; color:lightsteelblue;">${rdv.value}</span>
                                         </g:else>
-
-                                        <g:if test="${rdv.softData}">
-                                            <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
-                                        </g:if>
                                     </td>
                                     <td>
                                         <semui:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueDe" />
                                     </td>
                                     <td>
                                         <semui:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueEn" />
+                                    </td>
+                                    <td class="x">
+                                        <g:if test="${rdv.softData}">
+                                            <span class="ui label" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+                                        </g:if>
+                                        <g:if test="${rdv.softData && ! rdvList?.contains(rdv.id)}">
+                                            <g:link controller="admin" action="manageRefdatas"
+                                                    params="${[cmd: 'deleteRefdataValue', rdv: 'com.k_int.kbplus.RefdataValue:' + rdv.id]}" class="ui icon negative button">
+                                                <i class="trash alternate icon"></i>
+                                            </g:link>
+                                        </g:if>
                                     </td>
                                 </tr>
                             </g:each>

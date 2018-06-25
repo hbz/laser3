@@ -19,6 +19,7 @@ class AdminController {
   def enrichmentService
   def sessionFactory
   def tsvSuperlifterService
+    def genericOIDService
 
   def docstoreService
   def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
@@ -865,8 +866,24 @@ class AdminController {
         def attrMap = [:]
         def rdvList = []
 
+        if (params.cmd == 'deleteRefdataValue') {
+            def rdv = genericOIDService.resolveOID(params.rdv)
+
+            if (rdv) {
+                if (rdv.softData) {
+                    try {
+                        rdv.delete(flush:true)
+                        flash.message = "${params.rdv} wurde gelöscht."
+                    }
+                    catch(Exception e) {
+                        flash.error = "${params.rdv} konnte nicht gelöscht werden."
+                    }
+                }
+            }
+        }
+
         grailsApplication.getArtefacts("Domain").toList().each { dc ->
-            log.debug(dc)
+            //log.debug(dc)
 
             //def dcInst = grailsApplication.getArtefact("Domain", dc.fullName)
             def dcMap = [:]
@@ -877,7 +894,7 @@ class AdminController {
                 .sort()
                 .each { df ->
                     def query = "SELECT DISTINCT ${df.name} FROM ${dc.name}"
-                    log.debug(query)
+                    //log.debug(query)
 
                     def rdvs = SystemAdmin.executeQuery(query)
 

@@ -41,10 +41,10 @@
                             <td>
                                 <!-- ${pd.id} -->
                                 <g:if test="${pd.softData}">
-                                    <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+                                    <span class="ui label" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
                                 </g:if>
                                 <g:if test="${pd.multipleOccurrence}">
-                                    <span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
+                                    <span class="ui label blue" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
                                 </g:if>
                             </td>
                         </tr>
@@ -86,7 +86,7 @@
                     </td>
                     <td>
                         <g:if test="${rdc.softData}">
-                            <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+                            <span class="ui label" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
                         </g:if>
                     </td>
                 </tr>
@@ -107,7 +107,7 @@
                             </g:if>
 
                             <g:if test="${rdv.softData}">
-                                <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+                                <span class="ui label" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
                             </g:if>
                         </td>
                     </tr>
