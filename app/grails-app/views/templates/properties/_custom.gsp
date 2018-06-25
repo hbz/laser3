@@ -32,7 +32,9 @@
                     <td class="la-column-nowrap">
                         ${prop.type.getI10n('name')}
                         <g:if test="${prop.type.multipleOccurrence}">
-                            <span class="ui label blue" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
+                            <span data-position="top right" data-tooltip="${message(code:'default.multipleOccurrence.tooltip')}">
+                                <i class="list icon grey"></i>
+                            </span>
                         </g:if>
                     </td>
                     <td>

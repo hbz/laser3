@@ -21,6 +21,9 @@ class AdminController {
   def tsvSuperlifterService
     def genericOIDService
 
+    def refdataService
+    def propertyService
+
   def docstoreService
   def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
   def executorService
@@ -846,25 +849,27 @@ class AdminController {
     ]
   }
 
-  @Secured(['ROLE_ADMIN'])
-  def managePropertyDefinitions() {
+    @Secured(['ROLE_ADMIN'])
+    def managePropertyDefinitions() {
 
-    def propDefs = [:]
-    PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
-      def itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
-      propDefs << ["${it}": itResult]
-    }
-    render view: 'managePropertyDefinitions', model: [
+        def propDefs = [:]
+        PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
+            def itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
+            propDefs << ["${it}": itResult]
+        }
+
+        def (usedPdList, attrMap) = propertyService.getUsageDetails()
+
+        render view: 'managePropertyDefinitions', model: [
               editable    : true,
               propertyDefinitions: propDefs,
+              attrMap     : attrMap,
+              usedPdList  : usedPdList
             ]
-  }
+    }
 
     @Secured(['ROLE_ADMIN'])
     def manageRefdatas() {
-
-        def attrMap = [:]
-        def rdvList = []
 
         if (params.cmd == 'deleteRefdataValue') {
             def rdv = genericOIDService.resolveOID(params.rdv)
@@ -882,38 +887,13 @@ class AdminController {
             }
         }
 
-        grailsApplication.getArtefacts("Domain").toList().each { dc ->
-            //log.debug(dc)
-
-            //def dcInst = grailsApplication.getArtefact("Domain", dc.fullName)
-            def dcMap = [:]
-
-            dc.clazz.declaredFields
-                .findAll{ it -> ! it.synthetic}
-                .findAll{ it -> it.type.name == 'com.k_int.kbplus.RefdataValue'}
-                .sort()
-                .each { df ->
-                    def query = "SELECT DISTINCT ${df.name} FROM ${dc.name}"
-                    //log.debug(query)
-
-                    def rdvs = SystemAdmin.executeQuery(query)
-
-                    dcMap << ["${df.name}": rdvs.collect{ it -> "${it.id}:${it.value}"}.sort()]
-
-                    rdvs.each{ it  ->
-                        rdvList << it.id
-                    }
-                }
-            if (! dcMap.isEmpty()) {
-                attrMap << ["${dc}": dcMap]
-            }
-        }
+        def (usedRdvList, attrMap) = refdataService.getUsageDetails()
 
         render view: 'manageRefdatas', model: [
                 editable    : true,
                 rdCategories: RefdataCategory.where{}.sort('desc'),
-                attrMap     : attrMap.sort(),
-                rdvList     : rdvList.sort()
+                attrMap     : attrMap,
+                usedRdvList : usedRdvList
         ]
   }
 }

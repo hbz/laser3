@@ -47,13 +47,19 @@
                                     <td>
                                         ${ppd.name}
                                         <g:if test="${ppd.softData}">
-                                            <span class="ui label" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+                                            <span data-position="top right" data-tooltip="${message(code:'default.softData.tooltip')}">
+                                                <i class="tint icon teal"></i>
+                                            </span>
                                         </g:if>
                                         <g:if test="${ppd.mandatory}">
-                                            <span class="ui label yellow" title="${message(code: 'default.mandatory.tooltip')}"> &#8252; </span>
+                                            <span data-position="top right" data-tooltip="${message(code:'default.mandatory.tooltip')}">
+                                                <i class="star icon yellow"></i>
+                                            </span>
                                         </g:if>
                                         <g:if test="${ppd.multipleOccurrence}">
-                                            <span class="ui label blue" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
+                                            <span data-position="top right" data-tooltip="${message(code:'default.multipleOccurrence.tooltip')}">
+                                                <i class="list icon grey"></i>
+                                            </span>>
                                         </g:if>
                                     </td>
                                     <td><semui:xEditable owner="${pdI10nName}" field="valueDe" /></td>

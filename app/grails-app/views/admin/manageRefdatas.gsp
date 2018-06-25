@@ -15,19 +15,20 @@
 
         <semui:messages data="${flash}" />
 
-        <semui:card>
+
             <div class="content ui form">
-                <div class="field">
-                    <button class="ui button" value="" href="#addRefdataValueModal" data-semui="modal">${message(code:'refdataValue.create_new.label')}</button>
-                </div>
-                <div class="field">
-                    <button class="ui button" value="" href="#addRefdataCategoryModal" data-semui="modal">${message(code:'refdataCategory.create_new.label')}</button>
+                <div class="fields">
+                    <div class="field">
+                        <button class="ui button" value="" href="#addRefdataValueModal" data-semui="modal">${message(code:'refdataValue.create_new.label')}</button>
+                    </div>
+                    <div class="field">
+                        <button class="ui button" value="" href="#addRefdataCategoryModal" data-semui="modal">${message(code:'refdataCategory.create_new.label')}</button>
+                    </div>
                 </div>
             </div>
-        </semui:card>
 
 <%--<pre>
-${rdvList.join(", ")}
+${usedRdvList.join(", ")}
 
 <g:each in="${attrMap}" var="objs">
     ${objs.key}
@@ -71,7 +72,9 @@ ${rdvList.join(", ")}
                                 </td>
                                 <td>
                                     <g:if test="${rdc.softData}">
-                                        <span class="ui label" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+                                        <span data-position="top right" data-tooltip="${message(code:'default.softData.tooltip')}">
+                                            <i class="tint icon teal"></i>
+                                        </span>
                                     </g:if>
                                 </td>
                             </tr>
@@ -80,7 +83,7 @@ ${rdvList.join(", ")}
                                 <tr>
                                     <td></td>
                                     <td>
-                                        <g:if test="${rdvList?.contains(rdv.id)}">
+                                        <g:if test="${usedRdvList?.contains(rdv.id)}">
                                             ${rdv.value}
                                         </g:if>
                                         <g:else>
@@ -96,9 +99,11 @@ ${rdvList.join(", ")}
                                     </td>
                                     <td class="x">
                                         <g:if test="${rdv.softData}">
-                                            <span class="ui label" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+                                            <span data-position="top right" data-tooltip="${message(code:'default.softData.tooltip')}">
+                                                <i class="tint icon teal"></i>
+                                            </span>
                                         </g:if>
-                                        <g:if test="${rdv.softData && ! rdvList?.contains(rdv.id)}">
+                                        <g:if test="${rdv.softData && ! usedRdvList?.contains(rdv.id)}">
                                             <g:link controller="admin" action="manageRefdatas"
                                                     params="${[cmd: 'deleteRefdataValue', rdv: 'com.k_int.kbplus.RefdataValue:' + rdv.id]}" class="ui icon negative button">
                                                 <i class="trash alternate icon"></i>

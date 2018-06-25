@@ -35,10 +35,14 @@
                     <td class="la-column-nowrap">
                         ${prop.type.getI10n('name')}
                         <g:if test="${prop.type.mandatory}">
-                            <span class="ui label yellow" title="${message(code: 'default.mandatory.tooltip')}"> &#8252; </span>
+                            <span data-position="top right" data-tooltip="${message(code:'default.mandatory.tooltip')}">
+                                <i class="star icon yellow"></i>
+                            </span>
                         </g:if>
                         <g:if test="${prop.type.multipleOccurrence}">
-                            <span class="ui label blue" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
+                            <span data-position="top right" data-tooltip="${message(code:'default.multipleOccurrence.tooltip')}">
+                                <i class="list icon grey"></i>
+                            </span>
                         </g:if>
                     </td>
                     <td>
