@@ -83,7 +83,7 @@
 									<g:select id="nsType" name="nsType"
 									        from="${IdentifierNamespace.getAVAILABLE_NSTYPES()}"
                                             value="${identifierNamespaceInstance.nsType}"
-									        noSelection="['null': '']"/>
+									        noSelection="['': '']"/>
 								</div>
 
 								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'hide', 'error')} ">
