@@ -3,10 +3,12 @@
 
 - added usage statistics for refdata values and property definitions
 - added property filter for subscription and licenses
+- added cost items filter for finance
 - added page for error reporting with jira binding
 - added modal dialog for editing notes
 - reworked view for creating licenses
 - added new org role agency with depending functionality
+- reworked org role templates
 - added datepicker support for inline editing (xeditable)
 - bugfix: xsl export current subscriptions
 - bugfix: incorrect type for identifier namespaces via frontend

@@ -59,7 +59,7 @@
                                         <g:if test="${ppd.multipleOccurrence}">
                                             <span data-position="top right" data-tooltip="${message(code:'default.multipleOccurrence.tooltip')}">
                                                 <i class="redo icon orange"></i>
-                                            </span>>
+                                            </span>
                                         </g:if>
                                     </td>
                                     <td><semui:xEditable owner="${pdI10nName}" field="valueDe" /></td>

@@ -637,16 +637,12 @@ from Subscription as s where (
             def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
-
             HSSFWorkbook wb = new HSSFWorkbook();
 
             HSSFSheet sheet = wb.createSheet(g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions"));
 
-
-
             //the following three statements are required only for HSSF
             sheet.setAutobreaks(true);
-
 
             //the header row: centered text in 48pt font
             Row headerRow = sheet.createRow(0);
@@ -654,7 +650,6 @@ from Subscription as s where (
             titles.eachWithIndex { titlesName, index ->
                 Cell cell = headerRow.createCell(index);
                 cell.setCellValue(titlesName);
-
             }
 
             //freeze the first row
@@ -704,10 +699,14 @@ from Subscription as s where (
                 cell.setCellValue(new HSSFRichTextString(agencyname));
 
                 cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(sdf.format(sub.startDate)));
+                if (sub.startDate) {
+                    cell.setCellValue(new HSSFRichTextString(sdf.format(sub.startDate)));
+                }
 
                 cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(sdf.format(sub.endDate)));
+                if (sub.endDate) {
+                    cell.setCellValue(new HSSFRichTextString(sdf.format(sub.endDate)));
+                }
 
                 cell = row.createCell(cellnum++);
                 cell.setCellValue(new HSSFRichTextString(sub.type?.getI10n("value")));
