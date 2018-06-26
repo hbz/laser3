@@ -171,8 +171,10 @@
                 <td  style="white-space:nowrap">${title_coverage_info.latest ?: message(code:'myinst.currentTitles.to_current', default:'To Current')}</td>
                 <td>
                   <g:each in="${title_coverage_info.ies}" var="ie">
-                      <p>
-                        <g:link controller="subscriptionDetails" action="index" id="${ie.subscription.id}">${ie.subscription.name}</g:link>:
+                        <i class="icon folder open outline la-list-icon"></i>
+                        <g:link controller="subscriptionDetails" action="index" id="${ie.subscription.id}">${ie.subscription.name}</g:link>
+                        <br />
+
                         <g:if test="${ie.startVolume}">${message(code:'tipp.volume.short', default:'Vol.')} ${ie.startVolume}</g:if>
                         <g:if test="${ie.startIssue}">${message(code:'tipp.issue.short', default:'Iss.')} ${ie.startIssue}</g:if>
                         <g:formatDate format="yyyy" date="${ie.startDate}"/>
@@ -182,7 +184,7 @@
                         <g:formatDate format="yyyy" date="${ie.endDate}"/>
                         <br />
                         <g:link controller="issueEntitlement" action="show" id="${ie.id}">${message(code:'myinst.currentTitles.full_ie', default:'Full Issue Entitlement Details')}</g:link>
-                      </p>
+
                   </g:each>
                 </td>
               </tr>
