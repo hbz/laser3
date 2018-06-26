@@ -58,7 +58,7 @@
                                         </g:if>
                                         <g:if test="${ppd.multipleOccurrence}">
                                             <span data-position="top right" data-tooltip="${message(code:'default.multipleOccurrence.tooltip')}">
-                                                <i class="list icon grey"></i>
+                                                <i class="redo icon orange"></i>
                                             </span>>
                                         </g:if>
                                     </td>

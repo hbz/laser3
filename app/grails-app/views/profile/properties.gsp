@@ -30,6 +30,7 @@
                     <th>DE</th>
                     <th>EN</th>
                     <th></th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -38,6 +39,17 @@
                         <tr>
                             <td>${pdI10nName.valueDe}</td>
                             <td>${pdI10nName.valueEn}</td>
+                            <td>
+                                <g:set var="pdRdc" value="${pd.type?.split('\\.').last()}"/>
+                                <g:if test="${'RefdataValue'.equals(pdRdc)}">
+                                    <span data-position="top right" data-tooltip="${pd.refdataCategory}">
+                                        <small>${pd.type?.split('\\.').last()}</small>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <small>${pd.type?.split('\\.').last()}</small>
+                                </g:else>
+                            </td>
                             <td>
                                 <g:if test="${! usedPdList?.contains(pd.id)}">
                                     <span data-position="top right" data-tooltip="Dieser Wert wird bisher nicht verwendet (ID:${pd.id})">
@@ -52,7 +64,7 @@
                                 </g:if>
                                 <g:if test="${pd.multipleOccurrence}">
                                     <span data-position="top right" data-tooltip="${message(code:'default.multipleOccurrence.tooltip')}">
-                                        <i class="list icon grey"></i>
+                                        <i class="redo icon orange"></i>
                                     </span>
                                 </g:if>
                             </td>

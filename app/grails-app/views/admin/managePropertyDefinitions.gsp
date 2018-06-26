@@ -47,6 +47,8 @@ ${usedPdList.join(", ")}
                             <th>${message(code:'propertyDefinition.name.label', default:'Name')}</th>
                             <th>Name (DE)</th>
                             <th>Name (EN)</th>
+                            <th></th>
+                            <th></th>
                             <!--<th>DE: Description</th>
                             <th>EN: Description</th>-->
                         </tr>
@@ -54,7 +56,7 @@ ${usedPdList.join(", ")}
                         <tbody>
                             <g:each in="${entry.value}" var="pd">
                                 <g:set var="pdI10nName"  value="${I10nTranslation.createI10nOnTheFly(pd, 'name')}" />
-                                <!--<g:set var="pdI10nDescr" value="${I10nTranslation.createI10nOnTheFly(pd, 'descr')}" />-->
+                                <%--<g:set var="pdI10nDescr" value="${I10nTranslation.createI10nOnTheFly(pd, 'descr')}" />--%>
                                 <tr>
                                     <td>
                                         <g:if test="${usedPdList?.contains(pd.id)}">
@@ -64,7 +66,25 @@ ${usedPdList.join(", ")}
                                             <span data-position="top left" data-tooltip="Dieser Wert wird bisher nicht verwendet (ID:${pd.id})"
                                                   style="font-style:italic; color:lightsteelblue;">${fieldValue(bean: pd, field: "name")}</span>
                                         </g:else>
-
+                                    </td>
+                                    <td>
+                                        <semui:xEditable owner="${pdI10nName}" field="valueDe" />
+                                    </td>
+                                    <td>
+                                        <semui:xEditable owner="${pdI10nName}" field="valueEn" />
+                                    </td>
+                                    <td>
+                                        <g:set var="pdRdc" value="${pd.type?.split('\\.').last()}"/>
+                                        <g:if test="${'RefdataValue'.equals(pdRdc)}">
+                                            <span data-position="top right" data-tooltip="${pd.refdataCategory}">
+                                                <small>${pd.type?.split('\\.').last()}</small>
+                                            </span>
+                                        </g:if>
+                                        <g:else>
+                                            <small>${pd.type?.split('\\.').last()}</small>
+                                        </g:else>
+                                    </td>
+                                    <td>
                                         <g:if test="${pd.softData}">
                                             <span data-position="top right" data-tooltip="${message(code:'default.softData.tooltip')}">
                                                 <i class="tint icon teal"></i>
@@ -72,14 +92,14 @@ ${usedPdList.join(", ")}
                                         </g:if>
                                         <g:if test="${pd.multipleOccurrence}">
                                             <span data-position="top right" data-tooltip="${message(code:'default.multipleOccurrence.tooltip')}">
-                                                <i class="list icon grey"></i>
+                                                <i class="redo icon orange"></i>
                                             </span>
                                         </g:if>
                                     </td>
-                                    <td><semui:xEditable owner="${pdI10nName}" field="valueDe" /></td>
-                                    <td><semui:xEditable owner="${pdI10nName}" field="valueEn" /></td>
-                                    <!--<td><semui:xEditable owner="${pdI10nDescr}" field="valueDe" /></td>
-                                    <td><semui:xEditable owner="${pdI10nDescr}" field="valueEn" /></td>-->
+                                    <%--
+                                    <td><semui:xEditable owner="${pdI10nDescr}" field="valueDe" /></td>
+                                    <td><semui:xEditable owner="${pdI10nDescr}" field="valueEn" /></td>
+                                    --%>
                                 </tr>
                             </g:each>
 
