@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.*;
+import com.k_int.kbplus.auth.*
+import grails.plugin.springsecurity.SpringSecurityUtils;
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import au.com.bytecode.opencsv.CSVReader
@@ -21,6 +22,7 @@ class AdminController {
   def tsvSuperlifterService
     def genericOIDService
 
+    def contextService
     def refdataService
     def propertyService
 
@@ -884,6 +886,29 @@ class AdminController {
                         flash.error = "${params.rdv} konnte nicht gelöscht werden."
                     }
                 }
+            }
+        }
+        else if (params.cmd == 'replaceRefdataValue') {
+            if (SpringSecurityUtils.ifAnyGranted('ROLE_YODA')) {
+                def rdvFrom = genericOIDService.resolveOID(params.xcgRdvFrom)
+                def rdvTo = genericOIDService.resolveOID(params.xcgRdvTo)
+
+                if (rdvFrom && rdvTo && rdvFrom.owner == rdvTo.owner) {
+
+                    try {
+                        def count = refdataService.replaceRefdataValues(rdvFrom, rdvTo)
+
+                        flash.message = "${count} Vorkommen von ${params.xcgRdvFrom} wurden durch ${params.xcgRdvTo} ersetzt."
+                    }
+                    catch (Exception e) {
+                        log.error(e)
+                        flash.error = "${params.xcgRdvFrom} konnte nicht durch ${params.xcgRdvTo} ersetzt werden."
+                    }
+
+                }
+            }
+            else {
+                flash.error = "Keine ausreichenden Rechte!"
             }
         }
 
