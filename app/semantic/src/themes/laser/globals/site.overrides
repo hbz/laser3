@@ -85,7 +85,7 @@ aside.ui.accordion .title:not(.ui) {
         border: none !important;
     }
     .la-fixed-menu {
-        height: 70px;
+        height: 50px;
     }
     .logo {
         height: 50px;
