@@ -709,10 +709,10 @@ from Subscription as s where (
                 }
 
                 cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(sub.type?.getI10n("value")));
+                cell.setCellValue(new HSSFRichTextString(sub.status?.getI10n("value")));
 
                 cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(sub.status?.getI10n("value")));
+                cell.setCellValue(new HSSFRichTextString(sub.type?.getI10n("value")));
 
                 rownum++
             }
