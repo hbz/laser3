@@ -652,13 +652,12 @@ body[class*="organisation"] .ui.label.la-object .icon:before {
           transform: rotate(45deg) scale(1) !important;
   opacity: 1;
 }
-.ui.table .editableform .control-group {
+.editableform .control-group {
   background-color: #f4f8f9;
   padding: 10px;
   -webkit-box-shadow: 1px 1px 2px 1px rgba(20, 20, 20, 0.3);
           box-shadow: 1px 1px 2px 1px rgba(20, 20, 20, 0.3);
   position: relative;
-  left: -20px;
 }
 .editableform .control-group select,
 .editableform .control-group input {
@@ -686,4 +685,16 @@ body[class*="organisation"] .ui.label.la-object .icon:before {
 }
 .editable-clear-x:before {
   content: "\f2ed";
+}
+.ui.table .editable-container.editable-inline {
+  position: absolute;
+  z-index: 100;
+  margin-top: -29px;
+  margin-left: -3px;
+}
+dd .editable-container.editable-inline {
+  position: absolute;
+  z-index: 100;
+  margin-top: -20px;
+  margin-left: -3px;
 }
