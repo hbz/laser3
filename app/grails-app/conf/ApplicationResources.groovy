@@ -1,5 +1,11 @@
 modules = {
 
+    overrides {
+        'jquery' {
+            resource id:'js', url:'js/jquery-3.2.1.min.js'
+        }
+    }
+
     annotations {
         dependsOn 'semanticUI'
 

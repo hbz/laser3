@@ -1,4 +1,8 @@
 
+between ..
+
+- removed needless copy of jquery-plugin
+
 0.6
 
 - added usage statistics for refdata values and property definitions

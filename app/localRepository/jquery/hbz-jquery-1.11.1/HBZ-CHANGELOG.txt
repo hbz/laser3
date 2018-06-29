@@ -1,6 +1,0 @@
-
-
-Changed:
-
-added jquery-3.1.1.min.js
-added jquery-3.1.1.min.map
