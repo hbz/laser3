@@ -409,16 +409,17 @@
             <g:if test="${usage}">
                 <div class="ui card la-dl-no-table">
                     <div class="content">
-                    <g:if test="${subscriptionInstance.costItems}">
+                        <g:if test="${subscriptionInstance.costItems}">
                             <dl>
                                 <dt class="control-label">${message(code:'subscription.details.costPerUse.header')}</dt>
                                 <dd><g:formatNumber number="${totalCostPerUse}" type="currency" currencyCode="${currencyCode}" maxFractionDigits="2" minFractionDigits="2" roundingMode="HALF_UP"/></dd>
                             </dl>
                     </g:if>
+                        <div class="ui divider"></div>
                         <dl>
                             <dt class="control-label">${message(code:'default.usage.label')}</dt>
                             <dd>
-                                <table class="ui celled la-table table">
+                                <table class="ui la-table-small celled la-table-inCard table">
                                     <thead>
                                     <tr>
                                         <th>${message(code: 'default.usage.reportType')}</th>
@@ -454,8 +455,13 @@
                                     </g:each>
                                     </tbody>
                                 </table>
-                                <h6 class="ui">${message(code: 'default.usage.licenseGrid.header')}</h6>
-                                <table class="ui celled la-table table">
+                            </dd>
+                        </dl>
+                        <div class="ui divider"></div>
+                        <dl>
+                            <dt class="control-label">${message(code: 'default.usage.licenseGrid.header')}</dt>
+                            <dd>
+                                <table class="ui la-table-small celled la-table-inCard table">
                                     <thead>
                                     <tr>
                                         <th>${message(code: 'default.usage.reportType')}</th>
