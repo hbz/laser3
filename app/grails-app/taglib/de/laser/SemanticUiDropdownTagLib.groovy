@@ -18,7 +18,7 @@ class SemanticUiDropdownTagLib {
     def controlButtons = { attrs, body ->
 
 
-        out << '<div class="ui icon buttons la-float-right">'
+        out << '<div class="ui icon buttons la-ctrls la-float-right">'
         out <<   body()
         out << '</div>'
     }
@@ -91,7 +91,11 @@ class SemanticUiDropdownTagLib {
             )
         }
         else {
-            out << linkBody
+            out << '<a href="#" class="' + aClass + '"'
+            if (attrs.id) { // e.g. binding js events
+                out << ' id="' + attrs.id + '">'
+            }
+            out << linkBody + '</a>'
         }
     }
 }
