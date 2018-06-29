@@ -62,7 +62,7 @@
                     <td>
                         <semui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}" />
                     </td>
-                    <td>
+                    <td class="x">
                         <g:if test="${overwriteEditable == true}">
                             <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
                             <g:remoteLink controller="ajax" action="deletePrivateProperty"

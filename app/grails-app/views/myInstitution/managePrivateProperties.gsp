@@ -65,7 +65,7 @@
                                     <td><semui:xEditable owner="${pdI10nName}" field="valueDe" /></td>
                                     <td><semui:xEditable owner="${pdI10nName}" field="valueEn" /></td>
                                     <td>${ppd.countUsages()}</td>
-                                    <td>
+                                    <td class="x">
                                         <g:if test="${ppd.countUsages()==0}">
                                             <g:link action="managePrivateProperties" params="[cmd:'delete', deleteIds: ppd?.id]" class="ui icon negative button">
                                             <i class="trash alternate icon"></i>

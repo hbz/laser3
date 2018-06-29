@@ -62,7 +62,7 @@
                     <td>
                         <semui:xEditable owner="${prop}" type="textarea" field="note"/>
                     </td>
-                    <td>  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
+                    <td class="x">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
                         <g:if test="${editable == true}">
                             <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
                             <g:remoteLink controller="ajax" action="deleteCustomProperty"
