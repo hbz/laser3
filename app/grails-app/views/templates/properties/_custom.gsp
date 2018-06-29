@@ -13,6 +13,13 @@
 </g:if>
 <table class="ui la-table-small la-table-inCard table">
     <g:if test="${ownobj.customProperties}">
+        <colgroup>
+            <col style="width: 229px;">
+            <col style="width: 96px;">
+            <col style="width: 109px;">
+            <col style="width: 298px;">
+            <col style="width: 76px;">
+        </colgroup>
         <thead>
             <tr>
                 <th class="la-column-nowrap" >${message(code:'property.table.property')}</th>

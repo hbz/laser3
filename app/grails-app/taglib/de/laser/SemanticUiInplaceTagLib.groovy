@@ -30,7 +30,7 @@ class SemanticUiInplaceTagLib {
             def default_empty = message(code:'default.button.edit.label')
             def data_link     = null
 
-            out << "<span id=\"${id}\" class=\"xEditableValue ${attrs.class ?: ''}\""
+            out << "<a href=\"#\" id=\"${id}\" class=\"xEditableValue ${attrs.class ?: ''}\""
 
             if (attrs.type == "date") {
                 out << " data-type=\"text\"" // combodate | date
@@ -89,7 +89,7 @@ class SemanticUiInplaceTagLib {
                 out << ">"
                 out << body()
             }
-            out << "</span>"
+            out << "</a>"
         }
         // !editable
         else {
@@ -138,15 +138,15 @@ class SemanticUiInplaceTagLib {
                 }
 
                 // Output an editable link
-                out << "<span id=\"${id}\" class=\"xEditableManyToOne\" " + dataValue +
+                out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne\" " + dataValue +
                         "data-pk=\"${oid}\" data-type=\"select\" data-name=\"${attrs.field}\" data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"
 
                 // Here we can register different ways of presenting object references. The most pressing need to be
-                // outputting a span containing an icon for refdata fields.
+                // outputting a a containing an icon for refdata fields.
 
                 out << renderObjectValue(attrs.owner[attrs.field])
 
-                out << "</span></span>"
+                out << "</a></span>"
             }
             else {
                 out << renderObjectValue(attrs.owner[attrs.field])
