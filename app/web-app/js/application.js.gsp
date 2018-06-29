@@ -155,6 +155,8 @@ r2d2 = {
             '		</div>' +
             '	</div>' +
             '</form>'
+        $.fn.editableform.loading =
+            '<div class="ui active inline loader"></div>'
 
         // TODO $.fn.datepicker.defaults.language = gspLocale
     },
