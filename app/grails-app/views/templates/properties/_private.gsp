@@ -35,10 +35,14 @@
                     <td class="la-column-nowrap">
                         ${prop.type.getI10n('name')}
                         <g:if test="${prop.type.mandatory}">
-                            <span class="ui label yellow" title="${message(code: 'default.mandatory.tooltip')}"> &#8252; </span>
+                            <span data-position="top right" data-tooltip="${message(code:'default.mandatory.tooltip')}">
+                                <i class="star icon yellow"></i>
+                            </span>
                         </g:if>
                         <g:if test="${prop.type.multipleOccurrence}">
-                            <span class="ui label blue" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
+                            <span data-position="top right" data-tooltip="${message(code:'default.multipleOccurrence.tooltip')}">
+                                <i class="redo icon orange"></i>
+                            </span>
                         </g:if>
                     </td>
                     <td>
@@ -58,7 +62,7 @@
                     <td>
                         <semui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}" />
                     </td>
-                    <td>
+                    <td class="x">
                         <g:if test="${overwriteEditable == true}">
                             <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
                             <g:remoteLink controller="ajax" action="deletePrivateProperty"

@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.*;
+import com.k_int.kbplus.auth.*
+import grails.plugin.springsecurity.SpringSecurityUtils;
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import au.com.bytecode.opencsv.CSVReader
@@ -20,6 +21,10 @@ class AdminController {
   def sessionFactory
   def tsvSuperlifterService
     def genericOIDService
+
+    def contextService
+    def refdataService
+    def propertyService
 
   def docstoreService
   def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
@@ -846,25 +851,27 @@ class AdminController {
     ]
   }
 
-  @Secured(['ROLE_ADMIN'])
-  def managePropertyDefinitions() {
+    @Secured(['ROLE_ADMIN'])
+    def managePropertyDefinitions() {
 
-    def propDefs = [:]
-    PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
-      def itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
-      propDefs << ["${it}": itResult]
-    }
-    render view: 'managePropertyDefinitions', model: [
+        def propDefs = [:]
+        PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
+            def itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
+            propDefs << ["${it}": itResult]
+        }
+
+        def (usedPdList, attrMap) = propertyService.getUsageDetails()
+
+        render view: 'managePropertyDefinitions', model: [
               editable    : true,
               propertyDefinitions: propDefs,
+              attrMap     : attrMap,
+              usedPdList  : usedPdList
             ]
-  }
+    }
 
     @Secured(['ROLE_ADMIN'])
     def manageRefdatas() {
-
-        def attrMap = [:]
-        def rdvList = []
 
         if (params.cmd == 'deleteRefdataValue') {
             def rdv = genericOIDService.resolveOID(params.rdv)
@@ -881,39 +888,37 @@ class AdminController {
                 }
             }
         }
+        else if (params.cmd == 'replaceRefdataValue') {
+            if (SpringSecurityUtils.ifAnyGranted('ROLE_YODA')) {
+                def rdvFrom = genericOIDService.resolveOID(params.xcgRdvFrom)
+                def rdvTo = genericOIDService.resolveOID(params.xcgRdvTo)
 
-        grailsApplication.getArtefacts("Domain").toList().each { dc ->
-            //log.debug(dc)
+                if (rdvFrom && rdvTo && rdvFrom.owner == rdvTo.owner) {
 
-            //def dcInst = grailsApplication.getArtefact("Domain", dc.fullName)
-            def dcMap = [:]
+                    try {
+                        def count = refdataService.replaceRefdataValues(rdvFrom, rdvTo)
 
-            dc.clazz.declaredFields
-                .findAll{ it -> ! it.synthetic}
-                .findAll{ it -> it.type.name == 'com.k_int.kbplus.RefdataValue'}
-                .sort()
-                .each { df ->
-                    def query = "SELECT DISTINCT ${df.name} FROM ${dc.name}"
-                    //log.debug(query)
-
-                    def rdvs = SystemAdmin.executeQuery(query)
-
-                    dcMap << ["${df.name}": rdvs.collect{ it -> "${it.id}:${it.value}"}.sort()]
-
-                    rdvs.each{ it  ->
-                        rdvList << it.id
+                        flash.message = "${count} Vorkommen von ${params.xcgRdvFrom} wurden durch ${params.xcgRdvTo} ersetzt."
                     }
+                    catch (Exception e) {
+                        log.error(e)
+                        flash.error = "${params.xcgRdvFrom} konnte nicht durch ${params.xcgRdvTo} ersetzt werden."
+                    }
+
                 }
-            if (! dcMap.isEmpty()) {
-                attrMap << ["${dc}": dcMap]
+            }
+            else {
+                flash.error = "Keine ausreichenden Rechte!"
             }
         }
+
+        def (usedRdvList, attrMap) = refdataService.getUsageDetails()
 
         render view: 'manageRefdatas', model: [
                 editable    : true,
                 rdCategories: RefdataCategory.where{}.sort('desc'),
-                attrMap     : attrMap.sort(),
-                rdvList     : rdvList.sort()
+                attrMap     : attrMap,
+                usedRdvList : usedRdvList
         ]
   }
 }

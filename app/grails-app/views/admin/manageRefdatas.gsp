@@ -15,19 +15,20 @@
 
         <semui:messages data="${flash}" />
 
-        <semui:card>
+
             <div class="content ui form">
-                <div class="field">
-                    <button class="ui button" value="" href="#addRefdataValueModal" data-semui="modal">${message(code:'refdataValue.create_new.label')}</button>
-                </div>
-                <div class="field">
-                    <button class="ui button" value="" href="#addRefdataCategoryModal" data-semui="modal">${message(code:'refdataCategory.create_new.label')}</button>
+                <div class="fields">
+                    <div class="field">
+                        <button class="ui button" value="" href="#addRefdataValueModal" data-semui="modal">${message(code:'refdataValue.create_new.label')}</button>
+                    </div>
+                    <div class="field">
+                        <button class="ui button" value="" href="#addRefdataCategoryModal" data-semui="modal">${message(code:'refdataCategory.create_new.label')}</button>
+                    </div>
                 </div>
             </div>
-        </semui:card>
 
 <%--<pre>
-${rdvList.join(", ")}
+${usedRdvList.join(", ")}
 
 <g:each in="${attrMap}" var="objs">
     ${objs.key}
@@ -71,7 +72,9 @@ ${rdvList.join(", ")}
                                 </td>
                                 <td>
                                     <g:if test="${rdc.softData}">
-                                        <span class="ui label" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+                                        <span data-position="top right" data-tooltip="${message(code:'default.softData.tooltip')}">
+                                            <i class="tint icon teal"></i>
+                                        </span>
                                     </g:if>
                                 </td>
                             </tr>
@@ -80,7 +83,7 @@ ${rdvList.join(", ")}
                                 <tr>
                                     <td></td>
                                     <td>
-                                        <g:if test="${rdvList?.contains(rdv.id)}">
+                                        <g:if test="${usedRdvList?.contains(rdv.id)}">
                                             ${rdv.value}
                                         </g:if>
                                         <g:else>
@@ -96,9 +99,20 @@ ${rdvList.join(", ")}
                                     </td>
                                     <td class="x">
                                         <g:if test="${rdv.softData}">
-                                            <span class="ui label" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+                                            <span data-position="top right" data-tooltip="${message(code:'default.softData.tooltip')}">
+                                                <i class="tint icon teal"></i>
+                                            </span>
                                         </g:if>
-                                        <g:if test="${rdv.softData && ! rdvList?.contains(rdv.id)}">
+
+                                        <span data-position="top right" data-tooltip="${message(code:'refdataValue.exchange.label')}">
+                                            <button class="ui icon button" href="#replaceRefdataValueModal" data-semui="modal"
+                                                    data-xcg-rdv="${rdv.class.name}:${rdv.id}"
+                                                    data-xcg-rdc="${rdc.class.name}:${rdc.id}"
+                                                    data-xcg-debug="${rdv.getI10n('value')} (${rdv.value})"
+                                            ><i class="exchange icon"></i></button>
+                                        </span>
+
+                                        <g:if test="${rdv.softData && ! usedRdvList?.contains(rdv.id)}">
                                             <g:link controller="admin" action="manageRefdatas"
                                                     params="${[cmd: 'deleteRefdataValue', rdv: 'com.k_int.kbplus.RefdataValue:' + rdv.id]}" class="ui icon negative button">
                                                 <i class="trash alternate icon"></i>
@@ -114,9 +128,64 @@ ${rdvList.join(", ")}
             </g:each>
         </div>
 
+        <semui:modal id="replaceRefdataValueModal" message="refdataValue.exchange.label" editmodal="editmodal">
+            <g:form class="ui form" url="[controller: 'admin', action: 'manageRefdatas']">
+                <input type="hidden" name="cmd" value="replaceRefdataValue"/>
+                <input type="hidden" name="xcgRdvFrom" value=""/>
+
+                <p>
+                    <strong>WARNUNG</strong>
+                </p>
+
+                <p>
+                    Alle Vorkommnisse von <strong class="xcgInfo"></strong> in der Datenbank durch folgenden Wert ersetzen:
+                </p>
+
+                <div class="field">
+                    <label for="xcgRdvTo">&nbsp;</label>
+                    <select id="xcgRdvTo"></select>
+                </div>
+
+            </g:form>
+
+            <r:script>
+                    $('button[data-xcg-rdv]').on('click', function(){
+
+                        var rdv = $(this).attr('data-xcg-rdv');
+                        var rdc = $(this).attr('data-xcg-rdc');
+
+                        $('#replaceRefdataValueModal .xcgInfo').text($(this).attr('data-xcg-debug'));
+                        $('#replaceRefdataValueModal input[name=xcgRdvFrom]').attr('value', rdv);
+
+                         $.ajax({
+                            url: '<g:createLink controller="ajax" action="refdataSearchByOID"/>' + '?oid=' + rdc + '&format=json',
+                            success: function (data) {
+                                var select = '<option></option>';
+                                for (var index = 0; index < data.length; index++) {
+                                    var option = data[index];
+                                    if (option.value != rdv) {
+                                        select += '<option value="' + option.value + '">' + option.text + '</option>';
+                                    }
+                                }
+                                select = '<select id="xcgRdvTo" name="xcgRdvTo" class="ui search selection dropdown">' + select + '</select>';
+
+                                $('label[for=xcgRdvTo]').next().replaceWith(select);
+
+                                $('#xcgRdvTo').dropdown({
+                                    duration: 150,
+                                    transition: 'fade'
+                                });
+
+                            }, async: false
+                        });
+                    })
+            </r:script>
+
+        </semui:modal>
+
         <semui:modal id="addRefdataValueModal" message="refdataValue.create_new.label">
 
-            <g:form class="ui form" id="create_cust_prop" url="[controller: 'ajax', action: 'addRefdataValue']" >
+            <g:form class="ui form" url="[controller: 'ajax', action: 'addRefdataValue']">
                 <input type="hidden" name="reloadReferer" value="/admin/manageRefdatas"/>
 
                 <div class="field">
@@ -137,7 +206,7 @@ ${rdvList.join(", ")}
 
         <semui:modal id="addRefdataCategoryModal" message="refdataCategory.create_new.label">
 
-            <g:form class="ui form" id="create_cust_prop" url="[controller: 'ajax', action: 'addRefdataCategory']" >
+            <g:form class="ui form" url="[controller: 'ajax', action: 'addRefdataCategory']">
                 <input type="hidden" name="reloadReferer" value="/admin/manageRefdatas"/>
 
                 <div class="field">

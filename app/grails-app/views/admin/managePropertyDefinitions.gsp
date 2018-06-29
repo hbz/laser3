@@ -15,13 +15,24 @@
 
 		<semui:messages data="${flash}" />
 
-		<semui:card>
+
             <div class="content ui form">
-                <div class="field">
-                    <button class="ui button" value="" href="#addPropertyDefinitionModal" data-semui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
+                <div class="fields">
+                    <div class="field">
+                        <button class="ui button" value="" href="#addPropertyDefinitionModal" data-semui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
+                    </div>
                 </div>
             </div>
-		</semui:card>
+
+<%--<pre>
+${usedPdList.join(", ")}
+
+<g:each in="${attrMap}" var="objs">
+    ${objs.key}
+    <g:each in="${objs.value}" var="attrs">    ${attrs}
+    </g:each>
+</g:each>
+</pre>--%>
 
 		<div class="ui styled fluid accordion">
 			<g:each in="${propertyDefinitions}" var="entry">
@@ -36,6 +47,8 @@
                             <th>${message(code:'propertyDefinition.name.label', default:'Name')}</th>
                             <th>Name (DE)</th>
                             <th>Name (EN)</th>
+                            <th></th>
+                            <th></th>
                             <!--<th>DE: Description</th>
                             <th>EN: Description</th>-->
                         </tr>
@@ -43,22 +56,50 @@
                         <tbody>
                             <g:each in="${entry.value}" var="pd">
                                 <g:set var="pdI10nName"  value="${I10nTranslation.createI10nOnTheFly(pd, 'name')}" />
-                                <!--<g:set var="pdI10nDescr" value="${I10nTranslation.createI10nOnTheFly(pd, 'descr')}" />-->
+                                <%--<g:set var="pdI10nDescr" value="${I10nTranslation.createI10nOnTheFly(pd, 'descr')}" />--%>
                                 <tr>
                                     <td>
-                                        <!-- ${pd.id} -->
-                                        ${fieldValue(bean: pd, field: "name")}
+                                        <g:if test="${usedPdList?.contains(pd.id)}">
+                                            ${fieldValue(bean: pd, field: "name")}
+                                        </g:if>
+                                        <g:else>
+                                            <span data-position="top left" data-tooltip="Dieser Wert wird bisher nicht verwendet (ID:${pd.id})"
+                                                  style="font-style:italic; color:lightsteelblue;">${fieldValue(bean: pd, field: "name")}</span>
+                                        </g:else>
+                                    </td>
+                                    <td>
+                                        <semui:xEditable owner="${pdI10nName}" field="valueDe" />
+                                    </td>
+                                    <td>
+                                        <semui:xEditable owner="${pdI10nName}" field="valueEn" />
+                                    </td>
+                                    <td>
+                                        <g:set var="pdRdc" value="${pd.type?.split('\\.').last()}"/>
+                                        <g:if test="${'RefdataValue'.equals(pdRdc)}">
+                                            <span data-position="top right" data-tooltip="${pd.refdataCategory}">
+                                                <small>${pd.type?.split('\\.').last()}</small>
+                                            </span>
+                                        </g:if>
+                                        <g:else>
+                                            <small>${pd.type?.split('\\.').last()}</small>
+                                        </g:else>
+                                    </td>
+                                    <td>
                                         <g:if test="${pd.softData}">
-                                            <span class="ui label" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+                                            <span data-position="top right" data-tooltip="${message(code:'default.softData.tooltip')}">
+                                                <i class="tint icon teal"></i>
+                                            </span>
                                         </g:if>
                                         <g:if test="${pd.multipleOccurrence}">
-                                            <span class="ui label blue" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
+                                            <span data-position="top right" data-tooltip="${message(code:'default.multipleOccurrence.tooltip')}">
+                                                <i class="redo icon orange"></i>
+                                            </span>
                                         </g:if>
                                     </td>
-                                    <td><semui:xEditable owner="${pdI10nName}" field="valueDe" /></td>
-                                    <td><semui:xEditable owner="${pdI10nName}" field="valueEn" /></td>
-                                    <!--<td><semui:xEditable owner="${pdI10nDescr}" field="valueDe" /></td>
-                                    <td><semui:xEditable owner="${pdI10nDescr}" field="valueEn" /></td>-->
+                                    <%--
+                                    <td><semui:xEditable owner="${pdI10nDescr}" field="valueDe" /></td>
+                                    <td><semui:xEditable owner="${pdI10nDescr}" field="valueEn" /></td>
+                                    --%>
                                 </tr>
                             </g:each>
 

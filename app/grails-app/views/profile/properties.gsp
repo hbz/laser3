@@ -30,6 +30,7 @@
                     <th>DE</th>
                     <th>EN</th>
                     <th></th>
+                    <th></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -39,12 +40,32 @@
                             <td>${pdI10nName.valueDe}</td>
                             <td>${pdI10nName.valueEn}</td>
                             <td>
-                                <!-- ${pd.id} -->
+                                <g:set var="pdRdc" value="${pd.type?.split('\\.').last()}"/>
+                                <g:if test="${'RefdataValue'.equals(pdRdc)}">
+                                    <span data-position="top right" data-tooltip="${pd.refdataCategory}">
+                                        <small>${pd.type?.split('\\.').last()}</small>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <small>${pd.type?.split('\\.').last()}</small>
+                                </g:else>
+                            </td>
+                            <td>
+                                <g:if test="${! usedPdList?.contains(pd.id)}">
+                                    <span data-position="top right" data-tooltip="Dieser Wert wird bisher nicht verwendet (ID:${pd.id})">
+                                        <i class="info circle icon grey"></i>
+                                    </span>
+                                </g:if>
+
                                 <g:if test="${pd.softData}">
-                                    <span class="ui label" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+                                    <span data-position="top right" data-tooltip="${message(code:'default.softData.tooltip')}">
+                                        <i class="tint icon teal"></i>
+                                    </span>
                                 </g:if>
                                 <g:if test="${pd.multipleOccurrence}">
-                                    <span class="ui label blue" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
+                                    <span data-position="top right" data-tooltip="${message(code:'default.multipleOccurrence.tooltip')}">
+                                        <i class="redo icon orange"></i>
+                                    </span>
                                 </g:if>
                             </td>
                         </tr>
@@ -86,7 +107,9 @@
                     </td>
                     <td>
                         <g:if test="${rdc.softData}">
-                            <span class="ui label" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+                            <span data-position="top right" data-tooltip="${message(code:'default.softData.tooltip')}">
+                                <i class="tint icon teal"></i>
+                            </span>
                         </g:if>
                     </td>
                 </tr>
@@ -100,14 +123,16 @@
                             ${I10nTranslation.createI10nOnTheFly(rdv, 'value').valueEn}
                         </td>
                         <td>
-                            <g:if test="${! rdvList?.contains(rdv.id)}">
+                            <g:if test="${! usedRdvList?.contains(rdv.id)}">
                                 <span data-position="top right" data-tooltip="Dieser Wert wird bisher nicht verwendet (ID:${rdv.id})">
                                     <i class="info circle icon grey"></i>
                                 </span>
                             </g:if>
 
                             <g:if test="${rdv.softData}">
-                                <span class="ui label" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+                                <span data-position="top right" data-tooltip="${message(code:'default.softData.tooltip')}">
+                                    <i class="tint icon teal"></i>
+                                </span>
                             </g:if>
                         </td>
                     </tr>

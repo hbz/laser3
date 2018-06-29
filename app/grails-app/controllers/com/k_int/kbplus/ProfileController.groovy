@@ -15,6 +15,8 @@ class ProfileController {
     def springSecurityService
     def passwordEncoder
     def errorReportService
+    def refdataService
+    def propertyService
 
     @Secured(['ROLE_USER'])
     def index() {
@@ -303,46 +305,15 @@ class ProfileController {
             propDefs << ["${it}": itResult]
         }
 
-
-
-        def attrMap = [:]
-        def rdvList = []
-
-        grailsApplication.getArtefacts("Domain").toList().each { dc ->
-            log.debug(dc)
-
-            //def dcInst = grailsApplication.getArtefact("Domain", dc.fullName)
-            def dcMap = [:]
-
-            dc.clazz.declaredFields
-                    .findAll{ it -> ! it.synthetic}
-                    .findAll{ it -> it.type.name == 'com.k_int.kbplus.RefdataValue'}
-                    .sort()
-                    .each { df ->
-                def query = "SELECT DISTINCT ${df.name} FROM ${dc.name}"
-                log.debug(query)
-
-                def rdvs = SystemAdmin.executeQuery(query)
-
-                dcMap << ["${df.name}": rdvs.collect{ it -> "${it.id}:${it.value}"}.sort()]
-
-                rdvs.each{ it  ->
-                    rdvList << it.id
-                }
-            }
-            if (! dcMap.isEmpty()) {
-                attrMap << ["${dc}": dcMap]
-            }
-        }
-
-
+        def (usedRdvList, rdvAttrMap) = refdataService.getUsageDetails()
+        def (usedPdList,   pdAttrMap) = propertyService.getUsageDetails()
 
         render view: 'properties', model: [
                 editable    : false,
                 propertyDefinitions: propDefs,
                 rdCategories: RefdataCategory.where{}.sort('desc'),
-                attrMap     : attrMap.sort(),
-                rdvList     : rdvList.sort()
+                usedRdvList : usedRdvList,
+                usedPdList  : usedPdList
         ]
     }
 }

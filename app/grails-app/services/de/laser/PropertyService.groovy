@@ -1,6 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.SystemAdmin
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 
 class PropertyService {
@@ -52,6 +53,32 @@ class PropertyService {
         }
 
         return [base_qry, base_qry_params]
+    }
+
+    def getUsageDetails() {
+        def usedPdList  = []
+        def detailsMap = [:]
+
+        grailsApplication.getArtefacts("Domain").toList().each { dc ->
+
+            if (dc.shortName.endsWith('CustomProperty') || dc.shortName.endsWith('PrivateProperty')) {
+
+                log.debug( dc.shortName )
+                def query = "SELECT DISTINCT type FROM ${dc.name}"
+                log.debug(query)
+
+                def pds = SystemAdmin.executeQuery(query)
+                println pds
+                detailsMap << ["${dc.shortName}": pds.collect{ it -> "${it.id}:${it.type}:${it.descr}"}.sort()]
+
+                // ids of used property definitions
+                pds.each{ it ->
+                    usedPdList << it.id
+                }
+            }
+        }
+
+        [usedPdList.unique().sort(), detailsMap.sort()]
     }
 }
 
