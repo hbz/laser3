@@ -104,13 +104,15 @@ ${usedRdvList.join(", ")}
                                             </span>
                                         </g:if>
 
-                                        <span data-position="top right" data-tooltip="${message(code:'refdataValue.exchange.label')}">
-                                            <button class="ui icon button" href="#replaceRefdataValueModal" data-semui="modal"
-                                                    data-xcg-rdv="${rdv.class.name}:${rdv.id}"
-                                                    data-xcg-rdc="${rdc.class.name}:${rdc.id}"
-                                                    data-xcg-debug="${rdv.getI10n('value')} (${rdv.value})"
-                                            ><i class="exchange icon"></i></button>
-                                        </span>
+                                        <g:if test="${usedRdvList?.contains(rdv.id)}">
+                                            <span data-position="top right" data-tooltip="${message(code:'refdataValue.exchange.label')}">
+                                                <button class="ui icon button" href="#replaceRefdataValueModal" data-semui="modal"
+                                                        data-xcg-rdv="${rdv.class.name}:${rdv.id}"
+                                                        data-xcg-rdc="${rdc.class.name}:${rdc.id}"
+                                                        data-xcg-debug="${rdv.getI10n('value')} (${rdv.value})"
+                                                ><i class="exchange icon"></i></button>
+                                            </span>
+                                        </g:if>
 
                                         <g:if test="${rdv.softData && ! usedRdvList?.contains(rdv.id)}">
                                             <g:link controller="admin" action="manageRefdatas"
