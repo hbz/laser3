@@ -93,7 +93,7 @@
                     <div class="field">
                         <div class="ui radio checkbox">
                             <input id="radioresponsibleOrgEdit" type="radio" value="Org" name="responsible" tabindex="0" class="hidden" ${checked}>
-                            <label for="radioresponsibleOrgEdit">${message(code: 'task.responsibleOrg.label')}</label>
+                            <label for="radioresponsibleOrgEdit">${message(code: 'task.responsibleOrg.label')} <strong>${contextService?.org?.getDesignation()}</strong></label>
                         </div>
                     </div>
                     <g:if test="${taskInstance?.responsibleUser?.id}"><g:set var="checked" value="checked" /></g:if><g:else> <g:set var="checked" value="" /></g:else>
