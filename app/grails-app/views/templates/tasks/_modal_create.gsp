@@ -128,7 +128,7 @@
                     <div class="field">
                         <div class="ui radio checkbox">
                             <input id="radioresponsibleOrg" type="radio" value="Org" name="responsible" tabindex="0" class="hidden" checked="">
-                            <label for="radioresponsibleOrg">${message(code: 'task.responsibleOrg.label')} <strong>${contextOrg?.name}</strong></label>
+                            <label for="radioresponsibleOrg">${message(code: 'task.responsibleOrg.label')} <strong>${contextOrg?.name}</strong> </label>
                         </div>
                     </div>
 
