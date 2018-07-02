@@ -374,18 +374,21 @@
                                                     <g:if test="${link_cat.total > 10}">
                                                         <div class="item">
                                                             ${message(code:'default.paginate.offset', args:[(local_offset ?: 1),(local_offset ? (local_offset + 10 > link_cat.total ? link_cat.total : local_offset + 10) : 10), link_cat.total])}
-
+                                                        </div>
+                                                        <div class="item">
                                                             <g:if test="${local_offset}">
-                                                                </div>
-                                                                <div class="item">
                                                                 <g:set var="os_prev" value="${local_offset > 9 ? (local_offset - 10) : 0}" />
-                                                                <g:link controller="organisations" action="show" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_prev]}">${message(code:'default.paginate.prev', default:'Previous')}</g:link>
+                                                                <g:link controller="organisations" action="show" class="ui icon button tiny"
+                                                                    id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_prev]}">
+                                                                        <i class="left arrow icon"></i>
+                                                                </g:link>
                                                             </g:if>
                                                             <g:if test="${!local_offset || ( local_offset < (link_cat.total - 10) )}">
-                                                                </div>
-                                                                <div class="item">
                                                                 <g:set var="os_next" value="${local_offset ? (local_offset + 10) : 10}" />
-                                                                <g:link controller="organisations" action="show" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_next]}">${message(code:'default.paginate.next', default:'Next')}</g:link>
+                                                                <g:link controller="organisations" action="show" class="ui icon button tiny"
+                                                                    id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_next]}">
+                                                                        <i class="right arrow icon"></i>
+                                                                </g:link>
                                                             </g:if>
                                                         </div>
                                                     </g:if>

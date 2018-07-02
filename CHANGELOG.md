@@ -2,6 +2,7 @@
 0.6
 
 - added usage statistics for refdata values and property definitions
+- added functionality to replace refdata values
 - added property filter for subscription and licenses
 - added cost items filter for finance
 - added page for error reporting with jira binding
