@@ -34,11 +34,11 @@
                 </td>
                 <td>
                     <g:each in="${link.linkTarget.orgLinks}" var="orgRole">
-                        <g:if test="${orgRole.roleType.value in ['Licensee_Consortial', 'Licensee']}">
-                            <g:link controller="organisations" action="show" id="${orgRole.org.id}">
-                                ${orgRole.org.getDesignation()}
+                        <g:if test="${orgRole?.roleType.value in ['Licensee_Consortial', 'Licensee']}">
+                            <g:link controller="organisations" action="show" id="${orgRole?.org.id}">
+                                ${orgRole?.org.getDesignation()}
                             </g:link>
-                            , ${orgRole.roleType.getI10n('value')}
+                            , ${orgRole?.roleType.getI10n('value')}
                         </g:if>
                     </g:each>
                 </td>

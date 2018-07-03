@@ -73,7 +73,7 @@
 
         <semui:messages data="${flash}" />
 
-        <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':license]}"/>
+        <g:render template="/templates/pendingChanges" model="${['pendingChanges':pendingChanges, 'flash':flash, 'model':license]}"/>
 
         <div class="ui grid">
 
@@ -129,8 +129,10 @@
                                     <dt class="control-label">${message(code:'license.linktoLicense', default:'License Template')}</dt>
                                     <dd>
                                             <g:each in="${license?.incomingLinks}" var="il">
-                                                <g:link controller="licenseDetails" action="show" id="${il.fromLic.id}">${il.fromLic.reference} ${il.type?.value ?"("+il.type?.value+")":""}</g:link> -
+                                                <g:link controller="licenseDetails" action="show" id="${il.fromLic.id}">${il.fromLic.reference} ${il.type?.value ?"("+il.type?.value+")":""}</g:link>
+                                                <br />
                                                 ${message(code:'license.details.linktoLicense.pendingChange', default:'Automatically Accept Changes?')}
+                                                <br />
                                                 <semui:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
 
                                             </g:each>

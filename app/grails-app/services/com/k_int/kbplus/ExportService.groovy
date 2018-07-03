@@ -448,8 +448,8 @@ class ExportService {
 			addXMLElementInto(doc, licElem, "LicenceReference", license.reference)
 			addXMLElementInto(doc, licElem, "NoticePeriod", license.noticePeriod)
 			addXMLElementInto(doc, licElem, "LicenceURL", license.licenseUrl)
-			addXMLElementInto(doc, licElem, "LicensorRef", license.licensorRef)
-			addXMLElementInto(doc, licElem, "LicenseeRef", license.licenseeRef)
+			//addXMLElementInto(doc, licElem, "LicensorRef", license.licensorRef)
+			//addXMLElementInto(doc, licElem, "LicenseeRef", license.licenseeRef)
 			
 			addRelatedOrgsIntoXML(doc, licElem, license.orgLinks)
 			
