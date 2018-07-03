@@ -61,9 +61,22 @@
                           name="subStatus"
                           value="${com.k_int.kbplus.RefdataValue.findByValueAndOwner('Current', rdcSubStatus)?.id}"/>
             </div>
+        </div>
 
+        <div class="ui two fields">
             <div class="field">
-                <label>&nbsp;</label>
+                <div class="ui radio checkbox">
+                    <input class="hidden" type="radio" name="generateSlavedLics" value="multiple">
+                    <label>${message(code: 'myinst.emptySubscription.seperate_lics1', default: 'Generate seperated Licenses for ANY Consortia Members')}</label>
+                </div>
+                <div class="ui radio checkbox">
+                    <input class="hidden" type="radio" name="generateSlavedLics" value="one" checked="checked">
+                    <label>${message(code: 'myinst.emptySubscription.seperate_lics2', default: 'Generate one copied License for ALL Consortia Members')}</label>
+                </div>
+
+                <br />
+                <br />
+
                 <div class="ui checkbox">
                     <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked"
                            readonly="readonly">

@@ -50,7 +50,7 @@
 
         <br />
 
-        <table class="ui stripped table">
+        <table class="ui celled la-table table">
             <thead>
                 <tr>
                     <th>

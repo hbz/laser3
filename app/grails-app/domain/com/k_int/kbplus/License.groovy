@@ -134,7 +134,7 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
   def getLicensor() {
     def result = null;
     orgLinks.each { or ->
-      if ( or?.roleType?.value=='Licensor' )
+      if ( or?.roleType?.value in ['Licensor', 'Licensing Consortium'] )
         result = or.org;
     }
     result
@@ -623,4 +623,30 @@ AND lower(l.reference) LIKE (:ref)
       }
       result
   }
+
+    def getBaseCopy() {
+
+        def copy = new License(
+                //globalUID: globalUID,
+                status: status, // fk
+                type: type, // fk
+                reference: reference,
+                sortableReference: sortableReference,
+                licenseCategory: licenseCategory, // fk
+                isPublic: isPublic,
+                noticePeriod: noticePeriod,
+                licenseUrl: licenseUrl,
+                licenseType: licenseType,
+                licenseStatus: licenseStatus,
+                //impId: impId,
+                //lastmod: lastmod,
+                startDate: startDate,
+                endDate: endDate,
+                dateCreated: dateCreated,
+                lastUpdated: lastUpdated,
+                onixplLicense: onixplLicense // fk
+        )
+
+        copy
+    }
 }

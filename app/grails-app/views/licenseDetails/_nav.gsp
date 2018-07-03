@@ -1,8 +1,16 @@
 <% def accService = grailsApplication.mainContext.getBean("accessService") %>
 <g:set var="license" value="${com.k_int.kbplus.License.get(params.id)}"/>
 
+<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+
 <semui:subNav actionName="${actionName}">
     <semui:subNavItem controller="licenseDetails" action="show" params="${[id:params.id]}" message="license.nav.details" />
+
+    <%-- TODO: FIX ACCESS --%>
+    <g:if test="${ true || (license?.getLicensor()?.id == contextService.getOrg()?.id)}">
+        <semui:subNavItem controller="licenseDetails" action="links" params="${[id:params.id]}" message="license.details.incoming.childs" />
+    </g:if>
+
     <semui:subNavItem controller="licenseDetails" action="tasks" params="${[id:params.id]}" message="task.plural" />
     <semui:subNavItem controller="licenseDetails" action="documents" params="${[id:params.id]}" message="license.nav.docs" />
     <semui:subNavItem controller="licenseDetails" action="notes" params="${[id:params.id]}" message="license.nav.notes" />
