@@ -233,8 +233,12 @@ class BootStrap {
 
         // Roles
 
+        def or_lc_role            = RefdataValue.loc('Organisational Role', [en: 'Licensing Consortium', de:'Lizenzkonsortium'])
         def or_licensee_role      = RefdataValue.loc('Organisational Role', [en: 'Licensee', de: 'Lizenznehmer'])
         def or_licensee_cons_role = RefdataValue.loc('Organisational Role', [key: 'Licensee_Consortial', en: 'Consortial licensee', de: 'Konsortiallizenznehmer'])
+
+        OrgPermShare.assertPermShare(view_permission, or_lc_role)
+        OrgPermShare.assertPermShare(edit_permission, or_lc_role)
 
         OrgPermShare.assertPermShare(view_permission, or_licensee_role)
         OrgPermShare.assertPermShare(edit_permission, or_licensee_role)

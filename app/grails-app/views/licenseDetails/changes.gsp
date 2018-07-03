@@ -30,8 +30,10 @@
             <tr>
               <td>${hl.desc}</td>
               <td>${hl.status?.value?:'Pending'}
-                <g:if test="${((hl.status?.value=='Accepted')||(hl.status?.value=='Rejected'))}">
-                  ${message(code:'subscription.details.todo_history.by_on', args:[(hl.user?.display?:hl.user?.username)])} <g:formatDate formatName="default.date.format.notime" date="${hl.actionDate}"/>
+                <g:if test="${hl.status?.value in ['Accepted', 'Rejected']}">
+                    <br />
+                    ${message(code:'subscription.details.todo_history.by_on', args:[(hl.user?.display ?: hl.user?.username)])}
+                    <g:formatDate formatName="default.date.format.notime" date="${hl.actionDate}"/>
                 </g:if>
               </td>
               <td><g:formatDate formatName="default.date.format.notime" date="${hl.ts}"/></td>
