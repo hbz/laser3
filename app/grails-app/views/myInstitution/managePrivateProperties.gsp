@@ -47,19 +47,25 @@
                                     <td>
                                         ${ppd.name}
                                         <g:if test="${ppd.softData}">
-                                            <span class="badge" title="${message(code:'default.softData.tooltip')}"> &#8623; </span>
+                                            <span data-position="top right" data-tooltip="${message(code:'default.softData.tooltip')}">
+                                                <i class="tint icon teal"></i>
+                                            </span>
                                         </g:if>
                                         <g:if test="${ppd.mandatory}">
-                                            <span class="badge badge-warning" title="${message(code: 'default.mandatory.tooltip')}"> &#8252; </span>
+                                            <span data-position="top right" data-tooltip="${message(code:'default.mandatory.tooltip')}">
+                                                <i class="star icon yellow"></i>
+                                            </span>
                                         </g:if>
                                         <g:if test="${ppd.multipleOccurrence}">
-                                            <span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
+                                            <span data-position="top right" data-tooltip="${message(code:'default.multipleOccurrence.tooltip')}">
+                                                <i class="redo icon orange"></i>
+                                            </span>
                                         </g:if>
                                     </td>
                                     <td><semui:xEditable owner="${pdI10nName}" field="valueDe" /></td>
                                     <td><semui:xEditable owner="${pdI10nName}" field="valueEn" /></td>
                                     <td>${ppd.countUsages()}</td>
-                                    <td>
+                                    <td class="x">
                                         <g:if test="${ppd.countUsages()==0}">
                                             <g:link action="managePrivateProperties" params="[cmd:'delete', deleteIds: ppd?.id]" class="ui icon negative button">
                                             <i class="trash alternate icon"></i>

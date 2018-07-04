@@ -43,6 +43,7 @@
 
     <g:if test="${editable}">
         <semui:actionsDropdown>
+            <semui:actionsDropdownItem id="btnAddNewCostItem" message="financials.addNewCost" />
             <semui:actionsDropdownItem controller="myInstitution" action="financeImport" message="financials.action.financeImport" />
         </semui:actionsDropdown>
     </g:if>
@@ -56,6 +57,8 @@
     <h1 class="ui header"><semui:headerIcon />${message(code:'subscription.details.financials.label')} für ${institution.name}</h1>
 </g:else>
 
+<semui:messages data="${flash}" />
+
 <div class="ui grid">
     <div class="column">
         <%--<button class="ui button" type="submit" data-semui="modal" href="#recentlyAdded_modal" id="showHideRecent">${message(code:'financials.recentCosts')}</button>--%>
@@ -63,11 +66,9 @@
         <g:if test="${editable}">
             <%--<button class="ui button pull-right" type="submit" id="BatchSelectedBtn" title="${g.message(code: 'financials.filtersearch.deleteAll')}" value="remove">Remove Selected</button>--%>
 
-            <button class="ui button pull-right" id="addNew">${message(code:'financials.addNewCost')}</button>
-
             <script>
                 var isClicked = false;
-                $('#addNew').on('click', function(event) {
+                $('#btnAddNewCostItem').on('click', function(event) {
                     // prevent 2 Clicks open 2 Modals
                     if (!isClicked) {
                         isClicked = true;

@@ -1,9 +1,14 @@
+
 <g:if test="${processingpc}">
      <bootstrap:alert class="alert-warning"><g:message code="pendingchange.inprogress"/></bootstrap:alert>
 </g:if>
+
 <g:if test="${pendingChanges?.size() > 0}">
-    <div class="alert-warn">
-        <h6 class="ui header">${message(code:'template.pendingChanges', default:'There are pending change notifications')}</h6>
+    <div class="ui segment">
+        <h3 class="ui header">
+            ${message(code:'template.pendingChanges', default:'There are pending change notifications')}
+        </h3>
+
         <g:if test="${editable && !processingpc}">
             <g:link controller="pendingChange" action="acceptAll" params="[OID: model.class.name + ':' + model.id]"
                     class="ui positive button">
@@ -14,8 +19,10 @@
               ${message(code:'template.pendingChanges.reject_all', default:'Reject All')}
           </g:link>
         </g:if>
-        <br/>&nbsp;<br/>
-        <table class="ui celled la-table table">
+
+        <br /><br />
+
+        <table class="ui celled la-table la-table-small table">
           <thead>
             <tr>
               <th>${message(code:'default.info.label', default:'Info')}</th>

@@ -6,7 +6,6 @@ grails.project.target.level = 1.7
 grails.project.source.level = 1.7
 
 grails.plugin.location.'file-viewer' = "localRepository/file-viewer/hbz-file-viewer-0.3"
-grails.plugin.location.'jquery'      = "localRepository/jquery/hbz-jquery-1.11.1" // hbz-jquery-1.11.1
 
 // grails.project.fork = [
 //    test: [maxMemory: 768, minMemory: 64, debug: true, maxPerm: 256], // Removed ", daemon:true" because geb doesn't play nice with forked mode atm
@@ -103,7 +102,9 @@ grails.project.dependency.resolution = {
         runtime 'org.apache.commons:commons-exec:1.3'
         compile 'org.apache.httpcomponents:httpcore:4.4.3'
 
+        compile 'org.apache.httpcomponents:httpmime:4.5.1' // upgrade for MultipartEntityBuilder
         compile 'org.apache.httpcomponents:httpclient:4.5.1'
+
         test 'org.hamcrest:hamcrest-all:1.3'
         test("org.seleniumhq.selenium:selenium-htmlunit-driver:$seleniumHtmlunitDriverVersion") {
             exclude 'xml-apis'

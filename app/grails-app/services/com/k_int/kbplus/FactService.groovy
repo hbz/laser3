@@ -13,7 +13,7 @@ class FactService {
           'from Fact as f ' +
           'where f.factFrom >= :start and f.factTo <= :end and f.factType.value=:factType and exists ' +
           '(select 1 from IssueEntitlement as ie INNER JOIN ie.tipp as tipp ' +
-          'where ie.subscription= :sub  and tipp.title = f.relatedTitle)'
+          'where ie.subscription= :sub  and tipp.title = f.relatedTitle) and f.inst = :inst'
 
   static transactional = false
 
@@ -348,7 +348,9 @@ class FactService {
         start: sub.startDate,
         end  : sub.endDate,
         sub  : sub,
-        factType : factType])[0]
+        factType : factType,
+        inst : sub.subscriber]
+    )[0]
   }
 
   def generateExpandableMonthlyUsageGrid(title_id, org_id, supplier_id) {

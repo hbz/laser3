@@ -44,15 +44,13 @@ class FinanceController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def index() {
-      log.debug("FinanceController::index() ${params}");
+        log.debug("FinanceController::index() ${params}");
 
         def dateTimeFormat  = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
         def result = [:]
 
       try {
-
-        //Check nothing strange going on with financial data
-        result.institution =  contextService.getOrg()
+        result.institution = contextService.getOrg()
 
         def user =  User.get(springSecurityService.principal.id)
         if (!isFinanceAuthorised(result.institution, user)) {
@@ -75,10 +73,28 @@ class FinanceController {
             }
         }
 
-        //Grab the financial data
-        financialData(result,params,user)
+            //Grab the financial data
+            financialData(result,params,user)
 
-        result.isXHR = request.isXhr()
+            flash.error = null
+            flash.message = null
+
+            if (result.foundMatches) {
+                flash.message = "Felder mit potentiellen Treffern bleiben gesetzt."
+            } else if (params.get('submit')) {
+                flash.error = "Keine Treffer. Der Filter wird zurückgesetzt."
+            }
+
+          // prepare filter dropdowns
+          def myCostItems = result.fixedSubscription ?
+                    CostItem.findAllWhere(owner: result.institution, sub: result.fixedSubscription)
+                  : CostItem.findAllWhere(owner: result.institution)
+
+          result.allCIInvoiceNumbers = (myCostItems.collect{ it -> it?.invoice?.invoiceNumber }).findAll{ it }.unique().sort()
+          result.allCIOrderNumbers   = (myCostItems.collect{ it -> it?.order?.orderNumber }).findAll{ it }.unique().sort()
+          result.allCIBudgetCodes    = (myCostItems.collect{ it -> it?.budgetcodes?.value }).flatten().unique().sort()
+
+          result.isXHR = request.isXhr()
         //Other than first run, request will always be AJAX...
         if (result.isXHR) {
             log.debug("XHR Request");
@@ -163,6 +179,7 @@ class FinanceController {
             // WORKAROUND: DISABLE FALLBACK! WOULD VIEW ALL COSTITEMS ON LICENSE_VIEW
 
             cost_item_qry_params   << qryOutput.fqParams
+            result.foundMatches    =  cost_item_qry_params.size() > 1 // used for flash
             result.cost_items      =  CostItem.executeQuery(ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy, cost_item_qry_params, params);
             result.cost_item_count =  CostItem.executeQuery(ci_count + cost_item_qry + qryOutput.qry_string, cost_item_qry_params).first();
             log.debug("FinanceController::index()  -- Performed filtering process... ${result.cost_item_count} result(s) found")
@@ -432,24 +449,34 @@ class FinanceController {
         // usage:
         // filterParam = FORM.FIELD.name
         // hqlVar = DOMAINCLASS.attribute
-        // opt = refdata | budgetcode | value
+        // opt = value | refdata | budgetcode | <generic>
 
         Closure filterBy = { filterParam, hqlVar, opt ->
 
             if (params.get(filterParam)) {
                 def _query, _param
 
-                if (opt == 'refdata') {
+                // CostItem.attributes
+                if (opt == 'value') {
+                    _query = " AND ci.${hqlVar} ${hqlCompare} :${hqlVar} "
+                    _param = (wildcard) ? "%${params.get(filterParam)}%" : params.get(filterParam)
+                }
+                // CostItem.refdataValues
+                else if (opt == 'refdata') {
                     _query = " AND ci.${hqlVar} = :${hqlVar} "
                     _param = genericOIDService.resolveOID(params.get(filterParam))
                 }
+                // CostItem <- CostItemGroup -> Budgetcodes
                 else if (opt == 'budgetCode') {
-                    _query = " AND exists (select cig from CostItemGroup as cig where cig.costItem = ci and cig.budgetCode.value ${hqlCompare} :${hqlVar} ) "
-                    _param = (wildcard) ? "%${params.get(filterParam)}%" : params.get(filterParam)
+                    _query = " AND exists (select cig from CostItemGroup as cig where cig.costItem = ci and cig.budgetCode.value = :${hqlVar} ) "
+                    _param = params.get(filterParam)
                 }
+                // CostItem.<generic>.attributes
                 else {
-                    _query = " AND ci.${hqlVar} ${hqlCompare} :${hqlVar} "
-                    _param = (wildcard) ? "%${params.get(filterParam)}%" : params.get(filterParam)
+                    //_query = " AND ci.${opt}.${hqlVar} ${hqlCompare} :${hqlVar} "
+                    //_param = (wildcard) ? "%${params.get(filterParam)}%" : params.get(filterParam)
+                    _query = " AND ci.${opt}.${hqlVar} = :${hqlVar} "
+                    _param = params.get(filterParam)
                 }
 
                 def order = CostItem.executeQuery(count + _query, [owner: result.institution, (hqlVar): _param])
@@ -467,8 +494,8 @@ class FinanceController {
         }
 
         filterBy( 'filterCITitle', 'costTitle', 'value' )
-        filterBy( 'filterCIOrderNumber', 'orderNumber', 'value' )
-        filterBy( 'filterCIInvoiceNumber', 'invoiceNumber', 'value' )
+        filterBy( 'filterCIOrderNumber', 'orderNumber', 'order' )
+        filterBy( 'filterCIInvoiceNumber', 'invoiceNumber', 'invoice' )
 
         filterBy( 'filterCIElement', 'costItemElement', 'refdata' )
         filterBy( 'filterCIStatus', 'costItemStatus', 'refdata' )
@@ -494,8 +521,8 @@ class FinanceController {
             }
         }
         else if (params?.sub && result.inSubMode) {
-            fqResult.qry_string += " AND ci_sub_fk = "+params.sub
-            countCheck          += " AND ci_sub_fk = "+params.sub
+            fqResult.qry_string += " AND ci_sub_fk = " + params.sub
+            countCheck          += " AND ci_sub_fk = " + params.sub
         }
 
         if (params?.packageFilter?.startsWith("com.k_int.kbplus.SubscriptionPackage:")) {

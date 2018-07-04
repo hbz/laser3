@@ -13,6 +13,13 @@
 </g:if>
 <table class="ui la-table-small la-table-inCard table">
     <g:if test="${ownobj.customProperties}">
+        <colgroup>
+            <col style="width: 229px;">
+            <col style="width: 96px;">
+            <col style="width: 109px;">
+            <col style="width: 298px;">
+            <col style="width: 76px;">
+        </colgroup>
         <thead>
             <tr>
                 <th class="la-column-nowrap" >${message(code:'property.table.property')}</th>
@@ -32,7 +39,9 @@
                     <td class="la-column-nowrap">
                         ${prop.type.getI10n('name')}
                         <g:if test="${prop.type.multipleOccurrence}">
-                            <span class="badge badge-info" title="${message(code:'default.multipleOccurrence.tooltip')}"> &#9733; </span>
+                            <span data-position="top right" data-tooltip="${message(code:'default.multipleOccurrence.tooltip')}">
+                                <i class="redo icon orange"></i>
+                            </span>
                         </g:if>
                     </td>
                     <td>
@@ -60,7 +69,7 @@
                     <td>
                         <semui:xEditable owner="${prop}" type="textarea" field="note"/>
                     </td>
-                    <td>  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
+                    <td class="x">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
                         <g:if test="${editable == true}">
                             <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
                             <g:remoteLink controller="ajax" action="deleteCustomProperty"

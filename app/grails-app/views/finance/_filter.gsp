@@ -197,9 +197,16 @@
 
 </g:if><!-- TMP::IGNORE LEGACY FILTER -->
 
-
     <semui:filter>
-        <g:form method="get" class="ui form">
+        <%
+            def formUrl = [controller: 'myInstitution', action: 'finance']
+
+            if (fixedSubscription) {
+                formUrl = [mapping: 'subfinance', params: [sub: "${fixedSubscription?.id}"]]
+            }
+        %>
+
+        <g:form url="${formUrl}" method="get" class="ui form">
 
             <div class="three fields">
                 <div class="field">
@@ -233,23 +240,38 @@
             <div class="three fields">
                 <div class="field">
                     <label for="filterCIBudgetCode">${message(code:'financials.budgetCode')}</label>
-                    <input id="filterCIBudgetCode" name="filterCIBudgetCode" type="text" value="${params.filterCIBudgetCode}"/>
+                    <g:select id="filterCIBudgetCode" class="ui dropdown search selection"
+                              name="filterCIBudgetCode"
+                              from="${allCIBudgetCodes}"
+                              value="${params.filterCIBudgetCode}"
+                              noSelection="${['':'Alle ..']}"
+                        />
                 </div>
 
                 <div class="field">
                     <label>${message(code:'financials.invoice_number')}</label>
-                    <input id="filterCIInvoiceNumber" name="filterCIInvoiceNumber" type="text" value="${params.filterCIInvoiceNumber}" />
+                    <g:select id="filterCIInvoiceNumber" class="ui dropdown search selection"
+                              name="filterCIInvoiceNumber"
+                              from="${allCIInvoiceNumbers}"
+                              value="${params.filterCIInvoiceNumber}"
+                              noSelection="${['':'Alle ..']}"
+                        />
                 </div>
 
                 <div class="field">
                     <label>${message(code:'financials.order_number')}</label>
-                    <input type="text" name="filterCIOrderNumber" id="filterCIOrderNumber" value="${params.filterCIOrderNumber}" data-type="select"/>
+                    <g:select id="filterCIOrderNumber" class="ui dropdown search selection"
+                              name="filterCIOrderNumber"
+                              from="${allCIOrderNumbers}"
+                              value="${params.filterCIOrderNumber}"
+                              noSelection="${['':'Alle ..']}"
+                        />
                 </div>
             </div><!-- .three -->
 
             <div class="three fields">
                 <div class="field">
-                    <label>Wildcard-Suche</label>
+                    <label>Unscharfe Suche zulassen (im Feld Bezeichnung)</label>
                     <input type="checkbox" name="wildcard" value="on" <g:if test="${wildcard != 'off'}"> checked="checked"</g:if> />
                 </div>
 
@@ -258,11 +280,11 @@
 
                 <div class="field la-filter-search ">
                     <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-                    <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}">
+                    <input type="submit" name="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}">
                 </div>
             </div>
 
-            <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
+            <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/> %{-- TODO: REMOVE --}%
         </g:form>
     </semui:filter>
 

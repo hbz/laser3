@@ -721,17 +721,23 @@ class SubscriptionDetailsController {
             response.sendError(401); return
         }
 
-        def orgType   = RefdataValue.get(params.asOrgType)
-        def subStatus = RefdataValue.get(params.subStatus) ?: RefdataCategory.lookupOrCreate('Subscription Status', 'Current')
-        def role_sub  = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial')
-        def role_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
+        def orgType       = RefdataValue.get(params.asOrgType)
+        def subStatus     = RefdataValue.get(params.subStatus) ?: RefdataCategory.lookupOrCreate('Subscription Status', 'Current')
+
+        def role_sub      = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial')
+        def role_sub_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
+
+        def role_lic      = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial')
+        def role_lic_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensing Consortium')
+
         def role_provider = RefdataCategory.lookupOrCreate('Organisational Role', 'Provider')
-        def role_agency = RefdataCategory.lookupOrCreate('Organisational Role', 'Agency')
+        def role_agency   = RefdataCategory.lookupOrCreate('Organisational Role', 'Agency')
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
             if (orgType?.value == 'Consortium') {
                 def cons_members = []
+                def licenseCopy
 
                 params.list('selectedOrgs').each { it ->
                     def fo = Org.findById(Long.valueOf(it))
@@ -739,6 +745,30 @@ class SubscriptionDetailsController {
                 }
 
                 cons_members.each { cm ->
+
+                    def postfix = cm.get(0).shortname ?: cm.get(0).name
+
+                    if (result.subscriptionInstance.owner) {
+                        if (params.generateSlavedLics == 'multiple') {
+                            licenseCopy = result.subscriptionInstance.owner.getBaseCopy()
+
+                            licenseCopy.reference = licenseCopy.reference + " (${postfix})"
+                            licenseCopy.sortableReference = licenseCopy.sortableReference + " (${postfix})"
+                            licenseCopy.save()
+
+                            new Link(fromLic: result.subscriptionInstance.owner, toLic: licenseCopy).save()
+                            new OrgRole(org: result.institution, lic: licenseCopy, roleType: role_lic_cons).save()
+                        }
+                        else if (params.generateSlavedLics == 'one' && ! licenseCopy) {
+                            licenseCopy = result.subscriptionInstance.owner.getBaseCopy()
+                            licenseCopy.save()
+
+                            new Link(fromLic: result.subscriptionInstance.owner, toLic: licenseCopy).save()
+                            new OrgRole(org: result.institution, lic: licenseCopy, roleType: role_lic_cons).save()
+                        }
+
+                        new OrgRole(org: cm, lic: licenseCopy, roleType: role_lic).save()
+                    }
 
                     if (params.generateSlavedSubs == "Y") {
                         log.debug("Generating seperate slaved instances for consortia members")
@@ -748,7 +778,6 @@ class SubscriptionDetailsController {
 
                         log.debug("Package:${takePackage} IE:${takeIE}")
 
-                        def postfix = cm.get(0).shortname ?: cm.get(0).name
                         def cons_sub = new Subscription(
                                 type: result.subscriptionInstance.type?:"",
                                 status: subStatus,
@@ -762,7 +791,7 @@ class SubscriptionDetailsController {
                                 isSlaved: RefdataCategory.lookupOrCreate('YN', 'Yes'),
                                 isPublic: result.subscriptionInstance.isPublic,
                                 impId: java.util.UUID.randomUUID().toString(),
-                                owner: result.subscriptionInstance.owner
+                                owner: licenseCopy
                         )
 
                         cons_sub.save()
@@ -800,7 +829,7 @@ class SubscriptionDetailsController {
                             }
 
                             new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
-                            new OrgRole(org: result.institution, sub: cons_sub, roleType: role_cons).save()
+                            new OrgRole(org: result.institution, sub: cons_sub, roleType: role_sub_cons).save()
                         }
 
                         cons_sub?.errors.each { e ->
@@ -1272,7 +1301,7 @@ AND l.status.value != 'Deleted' order by l.reference
     params.max = user?.getDefaultPageSize()?:25
 
     //Change to GOKB ElasticSearch
-    params.esgokb = "Package"
+    //params.esgokb = "Package" // TODO disabled
     params.sort = "name"
 
     result.putAll(ESSearchService.search(params))

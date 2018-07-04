@@ -359,7 +359,8 @@ class Org extends BaseDomainComponent {
 
     @Override
     String toString() {
-        sector ? name + ', ' + sector?.getI10n('value') : "${name}"
+        //sector ? name + ', ' + sector?.getI10n('value') : "${name}"
+        name
     }
 
     def getPublicPersons() {

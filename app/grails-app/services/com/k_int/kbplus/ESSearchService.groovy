@@ -1,6 +1,9 @@
 package com.k_int.kbplus
 import org.elasticsearch.client.*
 import org.elasticsearch.client.Client
+import org.elasticsearch.client.transport.TransportClient
+import org.elasticsearch.common.settings.Settings
+import org.elasticsearch.common.transport.InetSocketTransportAddress
 import org.elasticsearch.index.IndexNotFoundException
 
 
@@ -30,11 +33,11 @@ class ESSearchService{
 
    def result = [:]
 
-   Client esclient = params.esgokb ? ESWrapperService.getGOKBClient() : ESWrapperService.getClient()
-   def index = params.esgokb ? (grailsApplication.config.aggr_es_gokb_index ?: "gokb") : (grailsApplication.config.aggr_es_index ?: ESWrapperService.ES_INDEX)
+   Client esclient = params.esgokb ? getClient('esgokb') : getClient()
+   def index = esclient.settings.indexName
    params = testIndexExist(esclient, params, field_map, index)
-   esclient = params.esgokb ? ESWrapperService.getGOKBClient() : ESWrapperService.getClient()
-   index = params.esgokb ? (grailsApplication.config.aggr_es_gokb_index ?: "gokb") : (grailsApplication.config.aggr_es_index ?: ESWrapperService.ES_INDEX)
+   esclient = params.esgokb ? getClient('esgokb') : getClient()
+   index = esclient.settings.indexName
 
     try {
       if ( (params.q && params.q.length() > 0) || params.rectype || params.esgokb) {
@@ -50,7 +53,7 @@ class ESSearchService{
         }
 
         log.debug("index:${index} query: ${query_str}");
-        def search1 = esclient.search{
+        def search = esclient.search{
                   indices index
                   source {
                     from = params.offset
@@ -99,16 +102,16 @@ class ESSearchService{
 
                 }.actionGet()
 
-        if ( search1 ) {
-          def search_hits = search1.hits
+        if ( search ) {
+          def search_hits = search.hits
           result.hits = search_hits.hits
           result.resultsTotal = search_hits.totalHits
           result.index = index
 
           // We pre-process the facet response to work around some translation issues in ES
-          if (search1.getAggregations()) {
+          if (search.getAggregations()) {
             result.facets = [:]
-            search1.getAggregations().each { entry ->
+            search.getAggregations().each { entry ->
               def facet_values = []
               entry.buckets.each { bucket ->
                 log.debug("Bucket: ${bucket}");
@@ -286,6 +289,40 @@ class ESSearchService{
       }
     }
     return params
+  }
+
+  def getClient(index) {
+    def esclient = null
+    def es_cluster_name = null
+    def es_index_name = null
+    def es_host = null
+
+    if(index == 'esgokb') {
+      es_cluster_name = grailsApplication.config.aggr_es_gokb_cluster ?: (ElasticsearchSource.findByIdentifier('gokb')?.cluster ?: "elasticsearch")
+      es_index_name = grailsApplication.config.aggr_es_gokb_index ?: (ElasticsearchSource.findByIdentifier('gokb')?.index ?: "gokb")
+      es_host = grailsApplication.config.aggr_es_gokb_hostname ?: (ElasticsearchSource.findByIdentifier('gokb')?.host ?: "localhost")
+    }else
+    {
+      es_cluster_name = grailsApplication.config.aggr_es_cluster  ?: 'elasticsearch'
+      es_index_name   = grailsApplication.config.aggr_es_index    ?: 'kbplus'
+      es_host         = grailsApplication.config.aggr_es_hostname ?: 'localhost'
+    }
+    log.debug("es_cluster = ${es_cluster_name}");
+    log.debug("es_index_name = ${es_index_name}");
+    log.debug("es_host = ${es_host}");
+
+    Settings settings = Settings.settingsBuilder()
+            .put("client.transport.sniff", true)
+            .put("cluster.name", es_cluster_name)
+            .put("indexName", es_index_name)
+            .build();
+
+    esclient = TransportClient.builder().settings(settings).build();
+
+    // add transport addresses
+    esclient.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(es_host), 9300 as int))
+
+    return esclient
   }
 
 }

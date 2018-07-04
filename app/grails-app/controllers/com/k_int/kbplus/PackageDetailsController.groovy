@@ -30,6 +30,7 @@ class PackageDetailsController {
     def index() {
         //redirect controller: 'packageDetails', action: 'list', params: params
 
+        //return; // bugfix erms-415
 
         def result = [:]
         result.user = springSecurityService.getCurrentUser()

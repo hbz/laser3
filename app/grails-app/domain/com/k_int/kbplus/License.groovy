@@ -23,6 +23,9 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
   
   static auditable = [ignore:['version','lastUpdated','pendingChanges']]
 
+    static controlledProperties =    ['licenseUrl', 'noticePeriod', 'reference', 'startDate', 'endDate']
+    static controlledRefProperties = ['isPublic' ]
+
   RefdataValue status
   RefdataValue type
 
@@ -134,7 +137,7 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
   def getLicensor() {
     def result = null;
     orgLinks.each { or ->
-      if ( or?.roleType?.value=='Licensor' )
+      if ( or?.roleType?.value in ['Licensor', 'Licensing Consortium'] )
         result = or.org;
     }
     result
@@ -284,9 +287,6 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
   def onChange = { oldMap,newMap ->
     log.debug("license onChange....${oldMap} || ${newMap}");
     def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
-    def controlledProperties = ['licenseUrl','licenseeRef','licensorRef','noticePeriod','reference', 'startDate', 'endDate']
-    def controlledRefProperties = [ 'isPublic' ]
-
 
     controlledProperties.each { cp ->
      // log.debug("MAP TYPE ${oldMap[cp]?.class} OLD MAP: ${oldMap[cp]} NEW MAP: ${newMap[cp]}")
@@ -360,7 +360,7 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
         log.debug("Send pending change to ${dl.id}");
         def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
         ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.license."+changeDocument.prop,locale.toString())
-        def description = messageSource.getMessage('default.accept.change.license',null,locale)
+        def description = messageSource.getMessage('default.accept.placeholder',null, locale)
         if(contentItemDesc){
             description = contentItemDesc.content
         }else{
@@ -623,4 +623,30 @@ AND lower(l.reference) LIKE (:ref)
       }
       result
   }
+
+    def getBaseCopy() {
+
+        def copy = new License(
+                //globalUID: globalUID,
+                status: status, // fk
+                type: type, // fk
+                reference: reference,
+                sortableReference: sortableReference,
+                licenseCategory: licenseCategory, // fk
+                isPublic: isPublic,
+                noticePeriod: noticePeriod,
+                licenseUrl: licenseUrl,
+                licenseType: licenseType,
+                licenseStatus: licenseStatus,
+                //impId: impId,
+                //lastmod: lastmod,
+                startDate: startDate,
+                endDate: endDate,
+                dateCreated: dateCreated,
+                lastUpdated: lastUpdated,
+                onixplLicense: onixplLicense // fk
+        )
+
+        copy
+    }
 }

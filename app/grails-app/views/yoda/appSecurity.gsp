@@ -28,7 +28,7 @@
     <div class="ui list">
         <div class="item">
             <span class="ROLE_PACKAGE_EDITOR">ROLE_PACKAGE_EDITOR</span> |
-            <span class="ROLE_ORG_EDITOR">ROLE_ORG_EDITOR</span>
+            <span class="ROLE_ORG_EDITOR">ROLE_ORG_EDITOR</span> |
             <span class="ROLE_ORG_COM_EDITOR">ROLE_ORG_COM_EDITOR</span>
         </div>
     </div>
