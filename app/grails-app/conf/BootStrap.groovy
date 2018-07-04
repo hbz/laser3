@@ -1063,7 +1063,15 @@ class BootStrap {
         RefdataValue.loc('Access Method IP',      [en: 'IPv6', de: 'IPv6'])
 
         RefdataValue.loc('Access Point Type',      [key: 'ip', en: 'IP', de: 'IP'])
-        RefdataValue.loc('Access Point Type',      [key: 'shibb', en: 'Shibboleth', de: 'Shibboleth'])
+        //RefdataValue.loc('Access Point Type',      [key: 'shibb', en: 'Shibboleth', de: 'Shibboleth'])
+
+        RefdataValue.loc('IPv4 Address Format',      [key: 'cidr',   en: 'IPv4 (CIDR)', de: 'IPv4 (CIDR)'])
+        RefdataValue.loc('IPv4 Address Format',      [key: 'ranges', en: 'IPv4 (Ranges)', de: 'IPv4 (Bereiche)'])
+        RefdataValue.loc('IPv4 Address Format',      [key: 'input', en: 'IPv4 (Input)', de: 'IPv4 (Eingabe)'])
+        RefdataValue.loc('IPv6 Address Format',      [key: 'cidr',   en: 'IPv6 (CIDR)', de: 'IPv6 (CIDR)'])
+        RefdataValue.loc('IPv6 Address Format',      [key: 'ranges', en: 'IPv6 (Ranges)', de: 'IPv6 (Bereiche)'])
+        RefdataValue.loc('IPv6 Address Format',      [key: 'input', en: 'IPv6 (Input)', de: 'IPv6 (Eingabe)'])
+
     }
 
     def setupOnixPlRefdata = {

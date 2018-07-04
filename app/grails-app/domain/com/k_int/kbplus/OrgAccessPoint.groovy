@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 import de.laser.domain.BaseDomainComponent
+import groovy.json.JsonSlurper
 import ubfr.IpRange
 import ubfr.IpRangeCollection
 
@@ -13,8 +14,10 @@ import groovy.util.logging.*
 class OrgAccessPoint extends BaseDomainComponent {
     
     String name
-    Org organisation
+    Org org
     RefdataValue accessMethod
+    Date dateCreated
+    Date lastUpdated
 
     static belongsTo = [
         org:Org
@@ -28,33 +31,45 @@ class OrgAccessPoint extends BaseDomainComponent {
     static mapping = {
         globalUID       column:'oar_guid'
         name            column:'oar_name'
-        org             column:'oar_organisation_fk'
+        org             column:'oar_org_fk'
         accessMethod    column:'oar_access_method_rv_fk'
     }
     
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        name(unique: ['organisation'])
+        name(unique: ['org'])
   }
     
     static getAllRefdataValues(String category) {
         RefdataCategory.getAllRefdataValues(category)
     }
 
-    String[] getIpv4Cidr() {
+    def String[] getIpRangeStrings(String datatype, String format) {
 
-        IpRangeCollection ipRanges = new IpRangeCollection();
+        def jsonSluper = new JsonSlurper()
+        def ipRanges = new IpRangeCollection()
+
         for (data in accessPointData) {
-            IpRange ipRange = IpRange.parseIpRange(data.data);
-            ipRanges.add(ipRange)
+            if (data.datatype == datatype) {
+                def o = jsonSluper.parseText(data.data)
+                IpRange ipRange = IpRange.parseIpRange(o.getAt('inputStr'))
+                ipRanges.add(ipRange)
+            }
         }
-        ipRanges = ipRanges.compact();
 
-        return ipRanges.toCidr()
-    }
-
-    String[] getIpv6Cidr() {
-        return [""];
+        switch (format) {
+            case 'cidr':
+                return ipRanges.compact().toCidrStrings()
+                break
+            case 'ranges':
+                return ipRanges.compact().toRangeStrings()
+                break
+            case 'input':
+                return ipRanges.toInputStrings()
+                break
+            default:
+                return []
+        }
     }
 
     def hasActiveLink() {

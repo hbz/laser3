@@ -1,7 +1,10 @@
 package com.k_int.kbplus
 
 import de.laser.domain.BaseDomainComponent
+import groovy.json.JsonSlurper
 import groovy.util.logging.Log4j
+import ubfr.IpRange
+import ubfr.IpRangeCollection
 
 @Log4j
 class AccessPointData extends BaseDomainComponent {
@@ -30,6 +33,10 @@ class AccessPointData extends BaseDomainComponent {
     static getAllRefdataValues(String category) {
         RefdataCategory.getAllRefdataValues(category)
     }
-    
-    
+
+    String getInputStr() {
+        def jsonSluper = new JsonSlurper();
+        return jsonSluper.parseText(data).getAt('inputStr');
+    }
+
 }
