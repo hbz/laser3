@@ -7,7 +7,7 @@ import grails.converters.*
 import org.elasticsearch.groovy.common.xcontent.*
 import groovy.xml.MarkupBuilder
 import grails.plugin.springsecurity.annotation.Secured
-import com.k_int.kbplus.auth.*;
+import com.k_int.kbplus.auth.*
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PlatformController {
@@ -30,7 +30,7 @@ class PlatformController {
 
         result.offset = params.offset ?: 0
 
-        def deleted_platform_status =  RefdataCategory.lookupOrCreate( 'Platform Status', 'Deleted' );
+        def deleted_platform_status =  RefdataCategory.lookupOrCreate( 'Platform Status', 'Deleted' )
         def qry_params = [deleted_platform_status]
 
         def base_qry = " from Platform as p where ( (p.status is null ) OR ( p.status = ? ) )"
@@ -218,13 +218,7 @@ class PlatformController {
             return
         }
 
-        def platformAccessMethodList = PlatformAccessMethod.findAllByPlatf(platformInstance);
-
-        editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
-
-        if (!params.filter) {
-            params.filter = 'all'
-        }
+        def platformAccessMethodList = PlatformAccessMethod.findAllByPlatf(platformInstance, [sort: ["accessMethod": 'asc', "validFrom" : 'asc']])
 
         [platformInstance: platformInstance, platformAccessMethodList: platformAccessMethodList, editable: editable, params: params]
     }
