@@ -28,9 +28,9 @@ class PackageDetailsController {
 
     @Secured(['ROLE_USER'])
     def index() {
-        redirect controller: 'packageDetails', action: 'list', params: params
+        //redirect controller: 'packageDetails', action: 'list', params: params
 
-        return; // bugfix erms-415
+        //return; // bugfix erms-415
 
         def result = [:]
         result.user = springSecurityService.getCurrentUser()

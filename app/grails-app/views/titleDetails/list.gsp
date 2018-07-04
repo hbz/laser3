@@ -55,6 +55,16 @@
                   </g:else>
                 </div><!-- .paginateButtons -->
 
+               <div class="ui icon negative message">
+                 <i class="exclamation triangle icon"></i>
+                 <div class="content">
+                   <div class="header">
+                     ${message(code: 'message.attantion')}
+                   </div>
+                   <p>${message(code: 'message.attantion.needTime')}</p>
+                 </div>
+               </div>
+
                 <div id="resultsarea">
                   <table class="ui sortable celled la-table table">
                     <thead>
