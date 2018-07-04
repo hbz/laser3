@@ -14,7 +14,7 @@ class AccessMethodController {
     def create() {
         params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
         
-        def sdf = java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
         if (params.validFrom) {
             params.validFrom = sdf.parse(params.validFrom)
         } else {
@@ -86,7 +86,7 @@ class AccessMethodController {
         def platf = accessMethod.getPlatf()
 
 
-        def sdf = java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
         if (params.validFrom) {
             params.validFrom = sdf.parse(params.validFrom)
         } else {
@@ -112,8 +112,5 @@ class AccessMethodController {
             flash.message = message(code: 'accessMethod.updated', args: [accessMethod.accessMethod.getI10n('value')])
             redirect controller: 'platform', action: 'accessMethods', id: platf.id
         }
-
     }
-
-
 }
