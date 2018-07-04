@@ -5,12 +5,12 @@ class ElasticsearchSource {
     String identifier
     String name
     String host
-    Boolean active
+    Boolean active = false
     Integer port = 9200
     String index
     String cluster
-    Boolean laser_es
-    Boolean gokb_es
+    Boolean laser_es = false
+    Boolean gokb_es = false
 
     static mapping = {
         id column:'ess_id'

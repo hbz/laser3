@@ -53,17 +53,6 @@ class PackageDetailsController {
             def old_sort = params.sort
 
             result =  ESSearchService.search(params)
-            result.tippcount = []
-            if(params.esgokb) {
-
-                result.hits.each {
-                    def bais = new ByteArrayInputStream((byte[]) (GlobalRecordInfo.findByIdentifier(it.id).record))
-                    def ins = new ObjectInputStream(bais);
-                    def rec_info = ins.readObject()
-                    ins.close()
-                    result.tippcount.add(rec_info.tipps.size())
-                }
-            }
 
             if(result.index != 'gokb')
             {
