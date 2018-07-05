@@ -38,6 +38,7 @@ class ESSearchService{
    params = testIndexExist(esclient, params, field_map, index)
    esclient = params.esgokb ? getClient('esgokb') : getClient()
    index = esclient.settings.indexName
+   result.host = esclient.settings().host
 
     try {
       if ( (params.q && params.q.length() > 0) || params.rectype || params.esgokb) {
@@ -287,6 +288,12 @@ class ESSearchService{
           params.rectype = "Package"
         }
       }
+      catch (Exception e) {
+        if (params.esgokb) {
+          params.remove("esgokb")
+          params.rectype = "Package"
+        }
+      }
     }
     return params
   }
@@ -315,6 +322,7 @@ class ESSearchService{
             .put("client.transport.sniff", true)
             .put("cluster.name", es_cluster_name)
             .put("indexName", es_index_name)
+            .put("host", es_host)
             .build();
 
     esclient = TransportClient.builder().settings(settings).build();

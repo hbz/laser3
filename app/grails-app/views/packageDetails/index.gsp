@@ -155,30 +155,42 @@
                     <thead>
                       <tr>
                       <g:sortableColumn property="sortname" title="${message(code:'package.show.pkg_name', default:'Package Name')}" params="${params}" />
-                      <th>${message(code:'package.compare.overview.tipps')}</th></tr>
+                      <th>${message(code:'package.show.status')}</th>
+                      <th>${message(code:'package.compare.overview.tipps')}</th>
+                      <th>${message(code:'package.content_provider')}</th>
+                      <th>${message(code:'package.nominalPlatform')}</th>
+                      <th>${message(code:'package.scope')}</th>
+                      </tr>
                     </thead>
                     <tbody>
-                      <g:each in="${hits}" var="hit" status="k">
+                      <g:each in="${hits}" var="hit">
                         <tr>
                           <td>
                             <g:if test="${com.k_int.kbplus.Package.findByImpId(hit.id)}">
                           <g:link controller="packageDetails" action="show" id="${com.k_int.kbplus.Package.findByImpId(hit.id).id}">${hit.getSource().name}</g:link>
                             </g:if>
-                              <g:else>${hit.getSource().name} <a target="_blank" href="#" ><i title="GOKB Link" class="external alternate icon"></i></a></g:else>
+                              <g:else>${hit.getSource().name} <a target="_blank" href="http://${host}/gokb/resource/show/${hit.id}" ><i title="GOKB Link" class="external alternate icon"></i></a></g:else>
                           </td>
+                            <td>${message(code: 'refdata.'+hit.getSource().status)}</td>
                           <td>
-                              <g:if test="${tippcount[k]}">
-                                <g:if test="${tippcount[k] == 1}">
+                              <g:if test="${hit.getSource().tippsCountCurrent}">
+                                <g:if test="${hit.getSource().tippsCountCurrent == 1}">
                                   ${message(code:'packageDetails.index.result.titles.single')}
                                 </g:if>
                                 <g:else>
-                                  ${message(code:'packageDetails.index.result.titles', args: [tippcount[k]])}
+                                  ${message(code:'packageDetails.index.result.titles', args: [hit.getSource().tippsCountCurrent])}
                                 </g:else>
                               </g:if>
                               <g:else>
                                   ${message(code:'packageDetails.index.result.titles.unknown', default:'Unknown number of TIPPs')}
                               </g:else>
                           </td>
+                            <td><g:if test="${com.k_int.kbplus.Org.findByName(hit.getSource().providerName)}"><g:link controller="organisations" action="show" id="${com.k_int.kbplus.Org.findByName(hit.getSource().providerName).id}">${hit.getSource().providerName}</g:link></g:if>
+                                <g:else>${hit.getSource().providerName}</g:else>
+                            </td>
+                            <td><g:if test="${com.k_int.kbplus.Platform.findByName(hit.getSource().platformName)}"><g:link controller="platform" action="show" id="${com.k_int.kbplus.Platform.findByName(hit.getSource().platformName).id}">${hit.getSource().platformName}</g:link></g:if>
+                                <g:else>${hit.getSource().platformName}</g:else></td>
+                            <td>${hit.getSource().scope}</td>
                         </tr>
                       </g:each>
                     </tbody>
