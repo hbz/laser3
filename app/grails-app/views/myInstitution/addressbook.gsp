@@ -21,7 +21,7 @@ import="com.k_int.kbplus.RefdataCategory"
             <semui:crumb message="menu.institutions.addressbook" class="active"/>
         </semui:breadcrumbs>
 
-        <h1 class="ui header"><semui:headerIcon />${institution?.name} - ${message(code:'menu.institutions.addressbook', default:'Addressbook')}</h1>
+        <h1 class="ui header"><semui:headerIcon />${institution?.name} - ${message(code:'menu.institutions.myAddressbook', default:'My Addressbook')}</h1>
 
         <semui:messages data="${flash}" />
 

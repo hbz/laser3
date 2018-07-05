@@ -16,5 +16,5 @@
                              message="org.nav.options" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
 
     <semui:subNavItem controller="organisations" action="addressbook" params="${[id: params.id]}"
-                      message="menu.institutions.addressbook"/>
+                      message="menu.institutions.myAddressbook"/>
 </semui:subNav>
