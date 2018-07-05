@@ -6,11 +6,12 @@ import groovy.util.logging.Log4j
 @Log4j
 class PlatformAccessMethod extends BaseDomainComponent {
 
-    //Platform platform
     Date validFrom
     Date validTo
     RefdataValue accessMethod       // RefdataCategory 'Access Method'
     Platform platf
+    Date dateCreated
+    Date lastUpdated
     
     static belongsTo = [
         platform:Platform,
