@@ -304,7 +304,7 @@ class ESSearchService{
     def es_cluster_name = null
     def es_index_name = null
     def es_host = null
-    def es_url = null
+    def es_url = ''
 
     if(index == 'esgokb') {
       es_cluster_name = grailsApplication.config.aggr_es_gokb_cluster ?: (ElasticsearchSource.findByIdentifier('gokb')?.cluster ?: "elasticsearch")
