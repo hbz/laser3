@@ -1273,6 +1273,7 @@ AND l.status.value != 'Deleted' order by l.reference
 
     //Change to GOKB ElasticSearch
     //params.esgokb = "Package" // TODO disabled
+    params.rectype ="Package"
     params.sort = "name"
 
     result.putAll(ESSearchService.search(params))
