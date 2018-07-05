@@ -288,6 +288,12 @@ class ESSearchService{
           params.rectype = "Package"
         }
       }
+      catch (Exception e) {
+        if (params.esgokb) {
+          params.remove("esgokb")
+          params.rectype = "Package"
+        }
+      }
     }
     return params
   }
