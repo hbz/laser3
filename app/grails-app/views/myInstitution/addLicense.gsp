@@ -50,7 +50,7 @@
 
     <semui:datepicker label="license.endDate" name="licenseEndDate" value="${params.licenseEndDate?:defaultEndYear}"/>
 
-    <input type="submit" class="ui button" value="${message(code: 'default.button.create.label', default: 'Create')}"/>
+    <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label', default: 'Create')}"/>
 </g:form>
 
 <hr>

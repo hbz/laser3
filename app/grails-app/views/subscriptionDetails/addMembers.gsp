@@ -74,7 +74,7 @@
 
         <br/>
         <g:if test="${cons_members}">
-            <input type="submit" class="ui button"
+            <input type="submit" class="ui button js-click-control"
                    value="${message(code: 'default.button.create.label', default: 'Create')}"/>
         </g:if>
     </g:form>
