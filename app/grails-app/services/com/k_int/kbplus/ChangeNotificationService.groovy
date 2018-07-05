@@ -3,7 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.*;
 import com.k_int.kbplus.*;
 import grails.converters.*
-
+import java.sql.Timestamp
 
 class ChangeNotificationService {
 
@@ -207,7 +207,28 @@ class ChangeNotificationService {
 
 
   def registerPendingChange(prop, target, desc, objowner, changeMap ) {
-    log.debug("Register pending change ${prop} ${target.class.name}:${target.id}");
+
+      log.debug("Register pending change ${prop} ${target.class.name}:${target.id}");
+
+      desc = desc.toString() // freeze string before altering referenced values
+
+      // JSON converts in UTC,
+      // we now add timezone delta to dates
+      // so that changedoc entries can be interpreted as local timezone entries
+
+      TimeZone currentTz = Calendar.getInstance().getTimeZone()
+      TimeZone utcTz = TimeZone.getTimeZone('UTC')
+
+      def deltaTz = (currentTz.getRawOffset() + currentTz.getDSTSavings()) - (utcTz.getRawOffset() + utcTz.getDSTSavings())
+
+      changeMap.changeDoc.each { k, v ->
+          if (k in ['old', 'new']) {
+              if (v instanceof Date || v instanceof Timestamp) {
+                  v.setTime(v.getTime() + deltaTz)
+              }
+          }
+      }
+
     def new_pending_change = new PendingChange()
     new_pending_change[prop] = target;
     def jsonChangeDocument = changeMap as JSON
@@ -216,6 +237,7 @@ class ChangeNotificationService {
     new_pending_change.owner = objowner
     new_pending_change.oid = "${target.class.name}:${target.id}"
     new_pending_change.ts = new Date();
+
     if ( new_pending_change.save(flush:true) ) {
     }
     else {

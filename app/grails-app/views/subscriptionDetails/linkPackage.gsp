@@ -169,7 +169,7 @@
                           <th>${message(code:'default.action.label', default:'Action')}</th></tr>
                     </thead>
                     <tbody>
-                      <g:each in="${hits}" var="hit" status="k">
+                      <g:each in="${hits}" var="hit" >
                           <g:if test="${!params.esgokb}">
                           <tr>
                               <td><g:link controller="packageDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().name} </g:link>(${hit.getSource()?.titleCount?:'0'} ${message(code:'title.plural', default:'Titles')})</td>
@@ -196,7 +196,7 @@
                           </g:if><g:else>
                           <tr>
                               <td>${hit.getSource().name}
-                              (${tippcount[k]?:'0'} ${message(code:'title.plural', default:'Titles')})
+                                  <br><b>(${hit.getSource().tippsCountCurrent?:'0'} ${message(code:'title.plural', default:'Titles')})</b>
                               </td>
 
                               <td>

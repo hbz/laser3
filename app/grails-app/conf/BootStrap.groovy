@@ -218,6 +218,9 @@ class BootStrap {
         log.debug("setIdentifierNamespace ..")
         setIdentifierNamespace()
 
+        log.debug("setESGOKB ..")
+        setESGOKB()
+
         log.debug("Init completed ..")
     }
 
@@ -1636,5 +1639,9 @@ No Host Platform URL Content
 
         }
 
+    }
+
+    def setESGOKB() {
+         ElasticsearchSource.findByIdentifier("gokb") ?: new ElasticsearchSource(name: 'GOKB ES', identifier: 'gokb', cluster: 'elasticsearch', index: 'gokb', host: '127.0.0.1', gokb_es: true)
     }
 }

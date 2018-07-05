@@ -1301,20 +1301,10 @@ AND l.status.value != 'Deleted' order by l.reference
     params.max = user?.getDefaultPageSize()?:25
 
     //Change to GOKB ElasticSearch
-    //params.esgokb = "Package" // TODO disabled
+    params.esgokb = "Package"
     params.sort = "name"
 
     result.putAll(ESSearchService.search(params))
-    if(params.esgokb) {
-            result.tippcount = []
-            result.hits.each {
-                def bais = new ByteArrayInputStream((byte[]) (GlobalRecordInfo.findByIdentifier(it.id).record))
-                def ins = new ObjectInputStream(bais);
-                def rec_info = ins.readObject()
-                ins.close()
-                result.tippcount.add(rec_info.tipps.size())
-            }
-    }
         result
     }
 

@@ -3040,6 +3040,46 @@ AND EXISTS (
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def budgetCodes() {
+        def result = setResultGenerics()
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_USER') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+
+        if (result.editable) {
+
+            flash.message = null
+            flash.error = null
+
+            if (params.cmd == "newBudgetCode") {
+                if (params.bc) {
+                    def bc = new BudgetCode(
+                            owner: result.institution,
+                            value: params.bc
+                    )
+                    if (bc.save()) {
+                        flash.message = "Neuer Budgetcode wurde angelegt."
+                    }
+                    else {
+                        flash.error = "Der neue Budgetcode konnte nicht angelegt werden."
+                    }
+
+                }
+            } else if (params.cmd == "deleteBudgetCode") {
+                def bc = genericOIDService.resolveOID(params.bc)
+
+                if (bc && bc.owner == result.institution) {
+                    bc.delete()
+                }
+            }
+
+        }
+        result.budgetCodes = BudgetCode.findAllByOwner(result.institution, [sort: 'value'])
+
+        result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def tasks() {
         def result = setResultGenerics()
 

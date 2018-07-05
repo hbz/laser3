@@ -65,7 +65,7 @@ class ErrorReportService {
         }
 
         def jb = new JsonBuilder(data)
-        def filename = grailsApplication.config.laserSystemId ?: 'Quelle unbekannt'
+        def filename = (grailsApplication.config.laserSystemId ?: 'Quelle unbekannt') + " - ${springSecurityService.getCurrentUser().email}"
 
         MultipartEntityBuilder meb = MultipartEntityBuilder.create()
         meb.addPart('file', new ByteArrayBody( jb.toPrettyString().getBytes(), filename ))

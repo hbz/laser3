@@ -50,7 +50,7 @@
                             <g:link controller="myInstitution" action="tasks">${message(code:'task.plural', default:'Tasks')}</g:link>
                         </div>
                         <div class="item">
-                            <g:link controller="myInstitution" action="addressbook">${message(code:'menu.institutions.addressbook')}</g:link>
+                            <g:link controller="myInstitution" action="addressbook">${message(code:'menu.institutions.myAddressbook')}</g:link>
                         </div>
 
                         <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
