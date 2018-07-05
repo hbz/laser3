@@ -50,11 +50,12 @@
 
         <br />
 
+        <h2><g:if test="${i==1}">${message(code:'subscriptionDetails.members.deleted')}</g:if> ${message(code:'subscriptionDetails.members.members')}</h2>
         <table class="ui stripped table">
             <thead>
                 <tr>
                     <th>
-                        <g:if test="${i==1}">Gelöschte</g:if> Teilnehmer
+                        <g:if test="${i==1}">${message(code:'subscriptionDetails.members.deleted')}</g:if> ${message(code:'subscriptionDetails.members.members')}
                     </th>
                     <th>${message(code:'person.contacts.label')}</th>
                     <th>${message(code:'default.startDate.label')}</th>
