@@ -34,6 +34,7 @@
                 $("#dynamicModalContainer .ui.modal").modal({
                     onVisible: function() {
                         $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
+                        ajaxPostFunc();
                     }
                 }).modal('show')
             }

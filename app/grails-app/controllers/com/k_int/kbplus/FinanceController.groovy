@@ -740,7 +740,7 @@ class FinanceController {
             newCostItem.costItemStatus      = cost_item_status
             newCostItem.billingCurrency     = billing_currency //Not specified default to GDP
             newCostItem.taxCode             = cost_tax_type
-            newCostItem.costDescription     = params.newDescription ? params.newDescription.trim()?.toLowerCase() : null
+            newCostItem.costDescription     = params.newDescription ? params.newDescription.trim() : null
             newCostItem.costTitle           = params.newCostTitle ?: null
             newCostItem.costInBillingCurrency = cost_billing_currency as Double
             newCostItem.costInLocalCurrency = cost_local_currency as Double
