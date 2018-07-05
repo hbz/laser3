@@ -11,8 +11,7 @@
     </head>
     <body>
     <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
-    <h1 class="ui header">
-        <semui:editableLabel editable="${editable}" />
+    <h1 class="ui header"><semui:headerIcon />
         ${orgInstance.name}
     </h1>
 
@@ -53,13 +52,16 @@
                         </tr>
                 </thead>
                 <tbody>
-                    <g:each in="${orgAccessPointList.sort{it.name+it.accessMethod}}" var="accessPoint">
+                    <g:each in="${orgAccessPointList}" var="accessPoint">
                         <tr>
                             <td>${accessPoint.name}</td>
                             <td>${accessPoint.accessMethod.getI10n('value')}</td>
                             <td>
-                                <g:each in="${accessPoint.getIpv4Cidr()}" var="ipv4Range">
+                                <g:each in="${accessPoint.getIpRangeStrings('ipv4', 'cidr')}" var="ipv4Range">
                                     <div >${ipv4Range}</div>
+                                </g:each>
+                                <g:each in="${accessPoint.getIpRangeStrings('ipv6', 'cidr')}" var="ipv6Range">
+                                    <div >${ipv6Range}</div>
                                 </g:each>
                             </td>
                             <td class="center aligned">
@@ -77,10 +79,10 @@
                     <tr>
                         <td>
                             <div class="${hasErrors(bean: accessPoint, field: 'name', 'error')} required ui form">
-                                <g:textField name="name" required="" value="${accessPoint?.name}"/>
+                                <g:textField name="name" required="" value="${accessPoint?.name}" />
                             </div>
                         </td>
-                        <td>
+                        <td colspan="2">
                             <laser:select class="ui dropdown values" id="accessMethod"
                                           name="accessMethod"
                                           from="${com.k_int.kbplus.OrgAccessPoint.getAllRefdataValues('Access Point Type')}"
@@ -88,7 +90,6 @@
                                           optionValue="value"
                             />
                         </td>
-                        <td></td>
                         <td class="center aligned">
                             <input type="hidden" name="orgId" value="${orgInstance.id}" />
                             <input type="Submit" class="ui tiny button" value="${message(code:'accessPoint.button.create', default:'Create')}" onClick="this.form.submit()"class="ui button"/>

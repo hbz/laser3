@@ -1,14 +1,14 @@
 package com.k_int.kbplus
 
+import de.uni_freiburg.ub.IpRange
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import org.apache.commons.net.util.SubnetUtils
 import org.codehaus.groovy.grails.validation.routines.InetAddressValidator
 import org.springframework.dao.DataIntegrityViolationException
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.*
 import grails.plugin.springsecurity.annotation.Secured
-import ubfr.Exception.InvalidRangeException
-import ubfr.IpRange
-import ubfr.IpRangeCollection
 
 class AccessPointController {
 
@@ -49,63 +49,72 @@ class AccessPointController {
             flash.error = message(code: 'accessPoint.duplicate.error', args: [params.name])
             redirect(url: request.getHeader('referer'), params: params)
         } else {
-            def accessPointInstance = new OrgAccessPoint(params);
+            def accessPoint = new OrgAccessPoint(params);
 
-            accessPointInstance.org = organisation
-            accessPointInstance.organisation = organisation
+            accessPoint.org = organisation
 
-            accessPointInstance.save(flush: true)
-            accessPointInstance.errors.toString()
+            accessPoint.save(flush: true)
+            accessPoint.errors.toString()
 
-            flash.message = message(code: 'accessPoint.create.message', args: [accessPointInstance.name])
-            redirect controller: 'accessPoint', action: 'edit_' + accessPointInstance.accessMethod.value.toLowerCase() , id: accessPointInstance.id
+            flash.message = message(code: 'accessPoint.create.message', args: [accessPoint.name])
+            redirect controller: 'accessPoint', action: 'edit_' + accessPoint.accessMethod.value.toLowerCase() , id: accessPoint.id
         }
 
     }
     
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def delete() {
-         def accessPointInstance = OrgAccessPoint.get(params.id)
+         def accessPoint = OrgAccessPoint.get(params.id)
         
-        def org = accessPointInstance.org;
+        def org = accessPoint.org;
         def orgId = org.id;
         
-        if (!accessPointInstance) {
+        if (!accessPoint) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label', default: 'Address'), params.id])
             redirect action: 'list'
             return
         }
 
         try {
-            accessPointInstance.delete(flush: true)
-            flash.message = message(code: 'default.deleted.message', args: [message(code: 'accessPoint.label', default: 'Access Point'), accessPointInstance.name])
+            accessPoint.delete(flush: true)
+            flash.message = message(code: 'default.deleted.message', args: [message(code: 'accessPoint.label', default: 'Access Point'), accessPoint.name])
             redirect controller: 'organisations', action: 'accessPoints', id: orgId
         }
         catch (DataIntegrityViolationException e) {
-            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label', default: 'Address'), accessPointInstance.id])
+            flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label', default: 'Address'), accessPoint.id])
             redirect action: 'show', id: params.id
-            coun   }
+        }
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def edit_ip() {
         def orgAccessPoint = OrgAccessPoint.get(params.id)
 
+        String ipv4Format = (params.ipv4Format) ? params.ipv4Format : 'cidr'
+        String ipv6Format = (params.ipv6Format) ? params.ipv6Format : 'cidr'
+        Boolean autofocus = (params.autofocus) ? true : false
+
+        //String ipv4Format = 'range'
+
         def org = orgAccessPoint.org;
         def orgId = org.id;
 
         def accessPointDataList = AccessPointData.findAllByOrgAccessPoint(orgAccessPoint);
 
-//        IpRangeCollection ipRanges = new IpRangeCollection();
-//        for (data in accessPointDataList) {
-//            IpRange ipRange = IpRange.parseIpRange(data.data);
-//            ipRanges.add(ipRange)
-//        }
-//        ipRanges = ipRanges.compact();
+        orgAccessPoint.getAllRefdataValues('IPv6 Address Formats')
+
+
+        def ipv4Ranges = orgAccessPoint.getIpRangeStrings('ipv4', ipv4Format)
+        def ipv6Ranges = orgAccessPoint.getIpRangeStrings('ipv6', ipv6Format)
 
         switch (request.method) {
             case 'GET':
-                [accessPointInstance: orgAccessPoint, accessPointDataList: accessPointDataList, orgId: orgId, ip: params.ip, editable: true]
+                [accessPoint: orgAccessPoint, accessPointDataList: accessPointDataList, orgId: orgId,
+                 ip: params.ip, editable: true,
+                 ipv4Ranges: ipv4Ranges, ipv4Format: ipv4Format,
+                 ipv6Ranges: ipv6Ranges, ipv6Format: ipv6Format,
+                        autofocus: autofocus
+                ]
                 break
             case 'POST':
                 orgAccessPoint.properties = params;
@@ -118,82 +127,43 @@ class AccessPointController {
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
 
-    def addIP() {
+    def addIpRange() {
         try {
-            IpRange.parseIpRange(params.ip)
+            def ipRange = IpRange.parseIpRange(params.ip)
             def orgAccessPoint = OrgAccessPoint.get(params.id)
             def org = orgAccessPoint.org;
             def orgId = org.id;
 
+            def jsonData = JsonOutput.toJson([
+                    inputStr : params.ip,
+                    startValue: ipRange.lowerLimit.toHexString(),
+                    endValue: ipRange.upperLimit.toHexString()]
+            )
+
             def accessPointData = new AccessPointData(params)
             accessPointData.orgAccessPoint = orgAccessPoint
-            accessPointData.datatype=RefdataValue.getByValueAndCategory('ip', 'Access Point Type').value;
-            accessPointData.data = params.ip
+            accessPointData.datatype= 'ip' + ipRange.getIpVersion()
+            accessPointData.data = jsonData
             accessPointData.save(flush: true)
 
-            redirect controller: 'accessPoint', action: 'edit_ip', id: params.id
+            orgAccessPoint.lastUpdated = new Date()
+            orgAccessPoint.save(flush: true)
+
+            redirect controller: 'accessPoint', action: 'edit_ip', id: params.id, params: [ipv4Format: params.ipv4Format, ipv6Format: params.ipv6Format, autofocus: true]
         } catch (InvalidRangeException) {
             flash.error = message(code: 'accessPoint.invalid.ip', args: [params.ip])
 
-            redirect controller: 'accessPoint', action: 'edit_ip', id: params.id, params: [ip: params.ip]
+            redirect controller: 'accessPoint', action: 'edit_ip', id: params.id, params: [ip: params.ip, ipv4Format: params.ipv4Format, ipv6Format: params.ipv6Format]
         }
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def deleteData() {
+    def deleteIpRange() {
         def accessPointData = AccessPointData.get(params.id)
-        def accessPointInstance = accessPointData.orgAccessPoint;
+        def accessPoint = accessPointData.orgAccessPoint;
         accessPointData.delete(flush: true)
 
-        redirect controller: 'accessPoint', action: 'edit_ip', id: accessPointInstance.id
-    }
-
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def edit_proxy() {
-        def accessPointInstance = OrgAccessPoint.get(params.id)
-
-        def org = accessPointInstance.org;
-        def orgId = org.id;
-
-        switch (request.method) {
-            case 'GET':
-                [accessPointInstance: accessPointInstance]
-                break
-            case 'POST':
-
-                accessPointInstance.properties = params;
-
-                accessPointInstance.save(flush: true)
-
-                //flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label', default: 'Person'), personInstance.id])
-                redirect controller: 'organisations', action: 'accessPoints', id: orgId
-                break
-        }
-    }
-
-    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-    def edit_shibb() {
-        def accessPointInstance = OrgAccessPoint.get(params.id)
-
-        def org = accessPointInstance.org;
-        def orgId = org.id;
-
-        switch (request.method) {
-            case 'GET':
-                [accessPointInstance: accessPointInstance]
-                break
-            case 'POST':
-
-                accessPointInstance.properties = params;
-
-                //accessPointInstance.org = Org.get(1)
-                //accessPointInstance.organisation = Org.get(1)
-                accessPointInstance.save(flush: true)
-
-                //flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label', default: 'Person'), personInstance.id])
-                redirect controller: 'organisations', action: 'accessPoints', id: orgId
-                break
-        }
+        redirect controller: 'accessPoint', action: 'edit_ip', id: accessPoint.id, params: [autofocus: true]
     }
 
 }

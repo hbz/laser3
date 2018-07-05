@@ -3,11 +3,8 @@ package com.k_int.kbplus
 import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.springframework.dao.DataIntegrityViolationException
-import grails.converters.*
-import org.elasticsearch.groovy.common.xcontent.*
-import groovy.xml.MarkupBuilder
 import grails.plugin.springsecurity.annotation.Secured
-import com.k_int.kbplus.auth.*;
+import com.k_int.kbplus.auth.*
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PlatformController {
@@ -30,7 +27,7 @@ class PlatformController {
 
         result.offset = params.offset ?: 0
 
-        def deleted_platform_status =  RefdataCategory.lookupOrCreate( 'Platform Status', 'Deleted' );
+        def deleted_platform_status =  RefdataCategory.lookupOrCreate( 'Platform Status', 'Deleted' )
         def qry_params = [deleted_platform_status]
 
         def base_qry = " from Platform as p where ( (p.status is null ) OR ( p.status = ? ) )"
@@ -218,13 +215,7 @@ class PlatformController {
             return
         }
 
-        def platformAccessMethodList = PlatformAccessMethod.findAllByPlatf(platformInstance);
-
-        editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
-
-        if (!params.filter) {
-            params.filter = 'all'
-        }
+        def platformAccessMethodList = PlatformAccessMethod.findAllByPlatf(platformInstance, [sort: ["accessMethod": 'asc', "validFrom" : 'asc']])
 
         [platformInstance: platformInstance, platformAccessMethodList: platformAccessMethodList, editable: editable, params: params]
     }
@@ -258,7 +249,7 @@ class PlatformController {
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-    def dynamicLink(){
+    def dynamicApLink(){
         def result = [:]
         def platformInstance = Platform.get(params.platform_id)
         if (!platformInstance) {
@@ -282,7 +273,7 @@ class PlatformController {
         result.institution = authorizedOrgs
         result.accessPointList = accessPointList
         result.selectedInstitution = selectedInstitution.id
-        result
+        render(view: "_apLinkContent", model: result)
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
@@ -298,17 +289,23 @@ class PlatformController {
             }
         }
         // save link
-        def aopl = new OrgAccessPointLink()
-        aopl.active = true
-        aopl.oap = apInstance
-        aopl.platform = Platform.get(params.platform_id)
-        if (! aopl.save()) {
-            log.debug("Error saving AccessPoint for platform")
-            log.debug(aopl.errors)
-            return
-            // TODO flash
+        def oapl = new OrgAccessPointLink()
+        oapl.active = true
+        oapl.oap = apInstance
+        oapl.platform = Platform.get(params.platform_id)
+        def existingActiveAP = OrgAccessPointLink.findAll {
+            active == true && platform == oapl.platform && oap == apInstance
         }
-
+        if (!existingActiveAP.isEmpty()){
+            flash.error = "Existing active AccessPoint for platform"
+            redirect action: 'link', params: [id:params.platform_id]
+            return
+        }
+        if (! oapl.save()) {
+            flash.error = "Existing active AccessPoint for platform"
+            redirect action: 'link', params: [id:params.platform_id]
+            return
+        }
         redirect action: 'link', params: [id:params.platform_id]
     }
 

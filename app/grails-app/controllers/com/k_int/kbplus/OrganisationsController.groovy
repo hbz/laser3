@@ -440,17 +440,15 @@ class OrganisationsController {
         }
 
         if (!orgInstance) {
-          flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
-          redirect action: 'list'
-          return
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+            redirect action: 'list'
+            return
         }
 
-        def orgAccessPointList = OrgAccessPoint.findAllByOrg(orgInstance)
+        def orgAccessPointList = OrgAccessPoint.findAllByOrg(orgInstance,  [sort: ["name": 'asc', "accessMethod" : 'asc']])
         result.orgAccessPointList = orgAccessPointList
-
-        result.editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
         result.orgInstance = orgInstance
 
-      result
+        result
     }
 }
