@@ -37,7 +37,14 @@
     <g:each in="${currentconf.keySet().sort()}" var="key">
         <div class="field">
             <label>${key}</label>
-            <g:textArea readonly="" rows="2" style="width:95%" name="key" value="${currentconf.get(key)}"/>
+
+            <g:if test="${key.equalsIgnoreCase('jira')}">
+                <g:textArea readonly="" rows="2" style="width:95%" name="key" value="=== C O N C E A L E D ==="/>
+            </g:if>
+            <g:else>
+                <g:textArea readonly="" rows="2" style="width:95%" name="key" value="${currentconf.get(key)}"/>
+            </g:else>
+
         </div>
     </g:each>
 </div>

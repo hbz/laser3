@@ -70,6 +70,7 @@
 
             <input type="hidden" name="meta" value="system:${grailsApplication.config.laserSystemId}">
             <input type="hidden" name="meta" value="build:${grailsApplication.metadata['repository.revision.number']}">
+            <input type="hidden" name="meta" value="date:${new Date()}">
             <input type="hidden" name="meta" value="user:${contextService.getUser()?.id}">
             <input type="hidden" name="meta" value="ctx:${contextService.getOrg()?.id}">
 
