@@ -13,7 +13,7 @@ class BudgetCode {
     }
 
     static constraints = {
-      owner (nullable:false, blank:false)
-      value (nullable:false, blank:false)
+        owner (nullable:false, blank:false)
+        value (nullable:false, blank:false, unique: 'owner')
     }
 }
