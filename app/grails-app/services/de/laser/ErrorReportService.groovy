@@ -68,7 +68,7 @@ class ErrorReportService {
         def filename = (grailsApplication.config.laserSystemId ?: 'Quelle unbekannt') + " - ${springSecurityService.getCurrentUser().email}"
 
         MultipartEntityBuilder meb = MultipartEntityBuilder.create()
-        meb.addPart('file', new ByteArrayBody( jb.toPrettyString().getBytes(), filename ))
+        meb.addPart('file', new ByteArrayBody( jb.toPrettyString().getBytes(), filename.replace('/', '') ))
         post.setEntity(meb.build())
 
         HttpClient client = HttpClientBuilder.create().build()
