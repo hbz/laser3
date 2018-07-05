@@ -15,7 +15,7 @@
 
         <semui:simpleForm action="processNewTemplateLicense" method="get" message="license.create.ref">
             <input type="text" name="reference"/>
-            <input class="ui button" type="submit" value="${message(code:'default.button.create.label', default:'Create')}"/>
+            <input class="ui button js-click-control" type="submit" value="${message(code:'default.button.create.label', default:'Create')}"/>
         </semui:simpleForm>
 
   </body>

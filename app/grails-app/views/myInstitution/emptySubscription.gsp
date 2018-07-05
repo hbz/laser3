@@ -56,7 +56,7 @@
                 <div id="dynHiddenValues"></div>
 
                 <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked" readonly="readonly">
-                <input id="submitterFallback" type="submit" class="ui button" value="${message(code:'default.button.create.label', default:'Create')}" />
+                <input id="submitterFallback" type="submit" class="ui button js-click-control" value="${message(code:'default.button.create.label', default:'Create')}" />
             </g:form>
         </semui:form>
         <g:if test="${orgType?.value == 'Consortium'}">

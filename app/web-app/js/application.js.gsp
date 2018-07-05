@@ -311,6 +311,21 @@ r2d2 = {
         $(ctxSel + ' .la-filter input[type=text]').change(function() {
             $(this).val().length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
         });
+
+        //
+        $(ctxSel + ' .js-click-control').click(function(e) {
+
+            var lastClicked = $(this).data("lastClicked");
+
+            if ( lastClicked ) {
+                if ((e.timeStamp - lastClicked) < 2000) {
+                    e.preventDefault();
+                }
+            }
+            $(this).data("lastClicked", e.timeStamp);
+
+        });
+
     }
 }
 
