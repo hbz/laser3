@@ -13,6 +13,7 @@
 - added datepicker support for inline editing (xeditable)
 - bugfix: xsl export current subscriptions
 - bugfix: incorrect type for identifier namespaces via frontend
+- and more bugfixes ..
 - variety of minor markup, stylesheet and wording changes
 
 0.5.1
