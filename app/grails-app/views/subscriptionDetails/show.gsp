@@ -405,82 +405,89 @@
                         </div>
                     </div>
                 </g:if>
-
-            <g:if test="${usage}">
-                <div class="ui card la-dl-no-table">
-                    <div class="content">
-                    <g:if test="${subscriptionInstance.costItems}">
+                <g:if test="${usage}">
+                    <div class="ui card la-dl-no-table">
+                        <div class="content">
+                            <g:if test="${subscriptionInstance.costItems}">
+                                <dl>
+                                    <dt class="control-label">${message(code: 'subscription.details.costPerUse.header')}</dt>
+                                    <dd><g:formatNumber number="${totalCostPerUse}" type="currency"
+                                                        currencyCode="${currencyCode}" maxFractionDigits="2"
+                                                        minFractionDigits="2" roundingMode="HALF_UP"/></dd>
+                                </dl>
+                            </g:if>
+                            <div class="ui divider"></div>
                             <dl>
-                                <dt class="control-label">${message(code:'subscription.details.costPerUse.header')}</dt>
-                                <dd><g:formatNumber number="${totalCostPerUse}" type="currency" currencyCode="${currencyCode}" maxFractionDigits="2" minFractionDigits="2" roundingMode="HALF_UP"/></dd>
+                                <dt class="control-label">${message(code: 'default.usage.label')}</dt>
+                                <dd>
+                                    <table class="ui la-table-small celled la-table-inCard table">
+                                        <thead>
+                                        <tr>
+                                            <th>${message(code: 'default.usage.reportType')}</th>
+                                            <g:each in="${x_axis_labels}" var="l">
+                                                <th>${l}</th>
+                                            </g:each>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <g:set var="counter" value="${0}"/>
+                                        <g:each in="${usage}" var="v">
+                                            <tr>
+                                                <td>${y_axis_labels[counter++]}</td>
+                                                <g:each in="${v}" status="i" var="v2">
+                                                    <td>
+                                                        <laser:statsLink
+                                                            base="${grailsApplication.config.statsApiUrl}"
+                                                            module="statistics"
+                                                            controller="default"
+                                                            action="select"
+                                                            target="_blank"
+                                                            params="[mode        : usageMode,
+                                                                     packages    : subscription.getCommaSeperatedPackagesIsilList(),
+                                                                     institutions: statsWibid,
+                                                                     years       : x_axis_labels[i]
+                                                            ]"
+                                                            title="Springe zu Statistik im Nationalen Statistikserver">
+                                                            ${v2}
+                                                        </laser:statsLink>
+                                                    </td>
+                                                </g:each>
+                                            </tr>
+                                        </g:each>
+                                        </tbody>
+                                    </table>
+                                </dd>
                             </dl>
-                    </g:if>
-                        <dl>
-                            <dt class="control-label">${message(code:'default.usage.label')}</dt>
-                            <dd>
-                                <table class="ui celled la-table table">
-                                    <thead>
-                                    <tr>
-                                        <th>${message(code: 'default.usage.reportType')}</th>
-                                        <g:each in="${x_axis_labels}" var="l">
-                                            <th>${l}</th>
-                                        </g:each>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <g:set var="counter" value="${0}"/>
-                                    <g:each in="${usage}" var="v">
+                            <div class="ui divider"></div>
+                            <dl>
+                                <dt class="control-label">${message(code: 'default.usage.licenseGrid.header')}</dt>
+                                <dd>
+                                    <table class="ui la-table-small celled la-table-inCard table">
+                                        <thead>
                                         <tr>
-                                            <td>${y_axis_labels[counter++]}</td>
-                                            <g:each in="${v}" status="i" var="v2">
-                                                <td>
-                                                <laser:statsLink
-                                                    base="${grailsApplication.config.statsApiUrl}"
-                                                    module="statistics"
-                                                    controller="default"
-                                                    action="select"
-                                                    target="_blank"
-                                                    params="[mode        : usageMode,
-                                                             packages    : subscription.getCommaSeperatedPackagesIsilList(),
-                                                             institutions: statsWibid,
-                                                             years: x_axis_labels[i]
-                                                    ]"
-                                                    title="Springe zu Statistik im Nationalen Statistikserver">
-                                                    ${v2}
-                                                </laser:statsLink>
-                                                </td>
+                                            <th>${message(code: 'default.usage.reportType')}</th>
+                                            <g:each in="${l_x_axis_labels}" var="l">
+                                                <th>${l}</th>
                                             </g:each>
                                         </tr>
-                                    </g:each>
-                                    </tbody>
-                                </table>
-                                <h6 class="ui">${message(code: 'default.usage.licenseGrid.header')}</h6>
-                                <table class="ui celled la-table table">
-                                    <thead>
-                                    <tr>
-                                        <th>${message(code: 'default.usage.reportType')}</th>
-                                        <g:each in="${l_x_axis_labels}" var="l">
-                                            <th>${l}</th>
+                                        </thead>
+                                        <tbody>
+                                        <g:set var="counter" value="${0}"/>
+                                        <g:each in="${lusage}" var="v">
+                                            <tr>
+                                                <td>${l_y_axis_labels[counter++]}</td>
+                                                <g:each in="${v}" var="v2">
+                                                    <td>${v2}</td>
+                                                </g:each>
+                                            </tr>
                                         </g:each>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <g:set var="counter" value="${0}"/>
-                                    <g:each in="${lusage}" var="v">
-                                        <tr>
-                                            <td>${l_y_axis_labels[counter++]}</td>
-                                            <g:each in="${v}" var="v2">
-                                                <td>${v2}</td>
-                                            </g:each>
-                                        </tr>
-                                    </g:each>
-                                    </tbody>
-                                </table>
-                            </dd>
-                        </dl>
+                                        </tbody>
+                                    </table>
+                                </dd>
+                            </dl>
+                        </div>
                     </div>
-                </div>
-            </g:if>
+                </g:if>
                 <div class="ui card la-dl-no-table">
                     <div class="content">
                         <h5 class="ui header">${message(code:'subscription.properties')}</h5>
