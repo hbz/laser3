@@ -11,6 +11,7 @@ class ElasticsearchSource {
     String cluster
     Boolean laser_es = false
     Boolean gokb_es = false
+    String url
 
     static mapping = {
         id column:'ess_id'
@@ -24,6 +25,7 @@ class ElasticsearchSource {
         cluster column: 'ess_cluster'
         laser_es column: 'ess_laser_es'
         gokb_es column: 'ess_gokb_es'
+        url column: 'ess_url'
     }
 
     static constraints = {
@@ -36,5 +38,6 @@ class ElasticsearchSource {
         cluster (nullable:true, blank:false)
         laser_es (nullable:true, blank:false)
         gokb_es (nullable:true, blank:false)
+        url (nullable:true, blank:false)
     }
 }

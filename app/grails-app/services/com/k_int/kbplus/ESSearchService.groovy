@@ -39,6 +39,7 @@ class ESSearchService{
    esclient = params.esgokb ? getClient('esgokb') : getClient()
    index = esclient.settings.indexName
    result.host = esclient.settings().host
+   result.es_host_url = esclient.settings().es_url
 
     try {
       if ( (params.q && params.q.length() > 0) || params.rectype || params.esgokb) {
@@ -303,11 +304,13 @@ class ESSearchService{
     def es_cluster_name = null
     def es_index_name = null
     def es_host = null
+    def es_url = null
 
     if(index == 'esgokb') {
       es_cluster_name = grailsApplication.config.aggr_es_gokb_cluster ?: (ElasticsearchSource.findByIdentifier('gokb')?.cluster ?: "elasticsearch")
       es_index_name = grailsApplication.config.aggr_es_gokb_index ?: (ElasticsearchSource.findByIdentifier('gokb')?.index ?: "gokb")
       es_host = grailsApplication.config.aggr_es_gokb_hostname ?: (ElasticsearchSource.findByIdentifier('gokb')?.host ?: "localhost")
+      es_url = grailsApplication.config.aggr_es_gokb_url ?: (ElasticsearchSource.findByIdentifier('gokb')?.url ?: "")
     }else
     {
       es_cluster_name = grailsApplication.config.aggr_es_cluster  ?: 'elasticsearch'
@@ -317,12 +320,14 @@ class ESSearchService{
     log.debug("es_cluster = ${es_cluster_name}");
     log.debug("es_index_name = ${es_index_name}");
     log.debug("es_host = ${es_host}");
+    log.debug("es_url = ${es_url}");
 
     Settings settings = Settings.settingsBuilder()
             .put("client.transport.sniff", true)
             .put("cluster.name", es_cluster_name)
             .put("indexName", es_index_name)
             .put("host", es_host)
+            .put("es_url", es_url)
             .build();
 
     esclient = TransportClient.builder().settings(settings).build();

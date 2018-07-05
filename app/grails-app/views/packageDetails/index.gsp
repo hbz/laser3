@@ -154,7 +154,7 @@
                   <table class="ui sortable celled la-table table">
                     <thead>
                       <tr>
-                      <g:sortableColumn property="sortname" title="${message(code:'package.show.pkg_name', default:'Package Name')}" params="${params}" />
+                      <g:sortableColumn property="name" title="${message(code:'package.show.pkg_name', default:'Package Name')}" params="${params}" />
                       <th>${message(code:'package.show.status')}</th>
                       <th>${message(code:'package.compare.overview.tipps')}</th>
                       <th>${message(code:'package.content_provider')}</th>
@@ -167,18 +167,31 @@
                         <tr>
                           <td>
                             <g:if test="${com.k_int.kbplus.Package.findByImpId(hit.id)}">
-                          <g:link controller="packageDetails" action="show" id="${com.k_int.kbplus.Package.findByImpId(hit.id).id}">${hit.getSource().name}</g:link>
+                                <g:link controller="packageDetails" action="show" id="${com.k_int.kbplus.Package.findByImpId(hit.id).id}">${hit.getSource().name}</g:link>
                             </g:if>
-                              <g:else>${hit.getSource().name} <a target="_blank" href="http://${host}/gokb/resource/show/${hit.id}" ><i title="GOKB Link" class="external alternate icon"></i></a></g:else>
+                              <g:else>
+                                  ${hit.getSource().name} <a target="_blank" href="${es_host_url ? es_host_url+'/gokb/resource/show/'+hit.id : '#'}" ><i title="GOKB Link" class="external alternate icon"></i></a>
+                              </g:else>
                           </td>
                             <td>${message(code: 'refdata.'+hit.getSource().status)}</td>
                           <td>
                               <g:if test="${hit.getSource().tippsCountCurrent}">
                                 <g:if test="${hit.getSource().tippsCountCurrent == 1}">
-                                  ${message(code:'packageDetails.index.result.titles.single')}
+                                    <g:if test="${com.k_int.kbplus.Package.findByImpId(hit.id)}">
+                                        <g:link controller="packageDetails" action="current" id="${com.k_int.kbplus.Package.findByImpId(hit.id).id}">${message(code:'packageDetails.index.result.titles.single')}</g:link>
+                                    </g:if>
+                                    <g:else>
+                                        ${message(code:'packageDetails.index.result.titles.single')}
+                                    </g:else>
                                 </g:if>
                                 <g:else>
-                                  ${message(code:'packageDetails.index.result.titles', args: [hit.getSource().tippsCountCurrent])}
+                                    <g:if test="${com.k_int.kbplus.Package.findByImpId(hit.id)}">
+                                        <g:link controller="packageDetails" action="current" id="${com.k_int.kbplus.Package.findByImpId(hit.id).id}">${message(code:'packageDetails.index.result.titles', args: [hit.getSource().tippsCountCurrent])}</g:link>
+                                    </g:if>
+                                    <g:else>
+                                        ${message(code:'packageDetails.index.result.titles', args: [hit.getSource().tippsCountCurrent])}
+                                    </g:else>
+
                                 </g:else>
                               </g:if>
                               <g:else>
