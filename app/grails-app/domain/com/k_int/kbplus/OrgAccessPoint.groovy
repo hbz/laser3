@@ -1,8 +1,8 @@
 package com.k_int.kbplus
 import de.laser.domain.BaseDomainComponent
 import groovy.json.JsonSlurper
-import ubfr.IpRange
-import ubfr.IpRangeCollection
+import de.uni_freiburg.ub.IpRange
+import de.uni_freiburg.ub.IpRangeCollection
 
 import javax.persistence.Transient
 import groovy.util.logging.Log4j

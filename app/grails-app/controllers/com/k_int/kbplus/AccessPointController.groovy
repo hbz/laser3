@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.uni_freiburg.ub.IpRange
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import org.apache.commons.net.util.SubnetUtils
@@ -8,9 +9,6 @@ import org.springframework.dao.DataIntegrityViolationException
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.*
 import grails.plugin.springsecurity.annotation.Secured
-import ubfr.Exception.InvalidRangeException
-import ubfr.IpRange
-import ubfr.IpRangeCollection
 
 class AccessPointController {
 

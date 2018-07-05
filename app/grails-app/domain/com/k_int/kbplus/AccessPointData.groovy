@@ -3,8 +3,6 @@ package com.k_int.kbplus
 import de.laser.domain.BaseDomainComponent
 import groovy.json.JsonSlurper
 import groovy.util.logging.Log4j
-import ubfr.IpRange
-import ubfr.IpRangeCollection
 
 @Log4j
 class AccessPointData extends BaseDomainComponent {
