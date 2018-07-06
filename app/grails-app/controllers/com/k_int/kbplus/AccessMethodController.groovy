@@ -31,7 +31,6 @@ class AccessMethodController {
             flash.error = message(code: 'accessMethod.dateValidationError', args: [message(code: 'accessMethod.label', default: 'Access Method'), accessMethod.accessMethod])
         } else {
 
-            accessMethod.platform = Platform.get(params.platfId)
             accessMethod.platf = Platform.get(params.platfId)
 
             accessMethod.accessMethod = RefdataValue.get(params.accessMethod)
@@ -98,7 +97,7 @@ class AccessMethodController {
             //params.validTo =sdf.parse(new Date().format( 'dd.MM.yyyy' ));
         }
 
-        if (params.validTo && params.validFrom && params.validTo.before(params.validFrom)) {
+        if (params.validTo == "" || params.validTo && params.validFrom && params.validTo.before(params.validFrom)) {
             flash.error = message(code: 'accessMethod.dateValidationError', args: [message(code: 'accessMethod.label', default: 'Access Method'), accessMethod.accessMethod])
             redirect controller: 'accessMethod', action: 'edit', id: accessMethod.id
         } else {
