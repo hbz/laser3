@@ -14,7 +14,7 @@ class PlatformAccessMethod extends BaseDomainComponent {
     Date lastUpdated
     
     static belongsTo = [
-        platform:Platform,
+        platf:Platform,
     ]
     
     static mapping = {
@@ -22,7 +22,7 @@ class PlatformAccessMethod extends BaseDomainComponent {
         validFrom       column:'pam_valid_from'
         validTo         column:'pam_valid_to'
         accessMethod    column:'pam_access_method_rv_fk'
-        platform        column:'pam_platf_fk'
+        platf           column:'pam_platf_fk'
     }
     
     static constraints = {
