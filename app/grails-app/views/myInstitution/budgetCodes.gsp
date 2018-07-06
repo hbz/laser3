@@ -31,35 +31,43 @@
         <thead>
             <tr>
                 <th>${message(code: 'financials.budgetCode')}</th>
-                <th>Verwendung in ${message(code: 'financials.costItem')}</th>
-                <th>Aktion</th>
+                <th>Beschreibung</th>
+                <th>Verwendung</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
             <g:each in="${budgetCodes}" var="bcode">
                 <tr>
-                    <td>${bcode.value}</td>
                     <td>
-                        <ul>
-                            <g:each in="${CostItemGroup.findAllByBudgetCode(bcode)}" var="cig">
+                        <semui:xEditable owner="${bcode}" field="value" />
+                    </td>
+                    <td>
+                        <semui:xEditable owner="${bcode}" field="descr" />
+                    </td>
+                    <td>
+                        <g:each in="${CostItemGroup.findAllByBudgetCode(bcode)}" var="cig">
 
-                                    <li>
-                                        <g:if test="${cig.costItem.costTitle}">
-                                            ${cig.costItem.costTitle}
-                                        </g:if>
-                                        <g:else>
-                                            ${cig.costItem.globalUID}
-                                        </g:else>
-                                        <g:if test="${cig.costItem.costDescription}">
-                                            /
-                                            ${cig.costItem.costDescription}
-                                        </g:if>
-                                    </li>
-
-                            </g:each>
-                        </ul>
+                                <g:if test="${cig.costItem.costTitle}">
+                                    ${cig.costItem.costTitle}
+                                </g:if>
+                                <g:else>
+                                    ${cig.costItem.globalUID}
+                                </g:else>
+                                <g:if test="${cig.costItem.costDescription}">
+                                    /
+                                    ${cig.costItem.costDescription}
+                                </g:if>
+                                <br />
+                        </g:each>
                     </td>
                     <td class="x">
+                        <g:if test="${CostItemGroup.findAllByBudgetCode(bcode)}">
+                            <g:link controller="myInstitution" action="finance"  class="ui icon button"
+                                    params="[filterCIBudgetCode: bcode.value]">
+                                <i class="share icon"></i>
+                            </g:link>
+                        </g:if>
                         <g:if test="${editable && ! CostItemGroup.findAllByBudgetCode(bcode)}">
                             <g:link controller="myInstitution" action="budgetCodes"
                                     params="${[cmd: 'deleteBudgetCode', bc: 'com.k_int.kbplus.BudgetCode:' + bcode.id]}" class="ui icon negative button">
@@ -75,12 +83,17 @@
 
     <semui:modal id="addBudgetCodeModal" message="budgetCode.create_new.label">
 
-        <g:form class="ui form" url="[controller: 'myInstitution', action: 'budgetCodes']">
+        <g:form class="ui form" url="[controller: 'myInstitution', action: 'budgetCodes']" method="POST">
             <input type="hidden" name="cmd" value="newBudgetCode"/>
 
             <div class="field">
-                <label class="property-label">Beschreibung</label>
+                <label>Beschreibung</label>
                 <input type="text" name="bc"/>
+            </div>
+
+            <div class="field">
+                <label>Beschreibung</label>
+                <textarea name="descr"></textarea>
             </div>
 
         </g:form>
