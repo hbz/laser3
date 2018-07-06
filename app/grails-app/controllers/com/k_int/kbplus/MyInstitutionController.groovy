@@ -3054,7 +3054,8 @@ AND EXISTS (
                 if (params.bc) {
                     def bc = new BudgetCode(
                             owner: result.institution,
-                            value: params.bc
+                            value: params.bc,
+                            descr: params.descr
                     )
                     if (bc.save()) {
                         flash.message = "Neuer Budgetcode wurde angelegt."
