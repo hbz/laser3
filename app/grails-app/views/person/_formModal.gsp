@@ -5,7 +5,6 @@
 
     <g:form class="ui form" id="create_person" url="[controller: 'person', action: 'create', params: [org_id: org.id]]" method="POST">
 
-
         <div class="field">
             <div class="two fields">
 
@@ -75,7 +74,7 @@
                         <g:message code="person.gender.label" default="Gender" />
                     </label>
                     <laser:select class="ui dropdown" id="gender" name="gender"
-                                  from="${com.k_int.kbplus.Person.getAllRefdataValues('Gender')}"
+                                  from="${com.k_int.kbplus.Person.getAllRefdataValues('Gender').sort{ a, b -> a.value.compareTo(b.value) }}"
                                   optionKey="id"
                                   optionValue="value"
                                   value="${personInstance?.gender?.id}"
