@@ -5,7 +5,6 @@
 
     <g:form class="ui form" id="create_person" url="[controller: 'person', action: 'create', params: [org_id: org.id]]" method="POST">
 
-
         <div class="field">
             <div class="two fields">
 
@@ -22,7 +21,7 @@
                                   value="${personInstance?.contactType?.id}"
                                   />
                 </div>
-                <div id="roleType" class="field fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')} la-person">
+                <div id="roleType" class="field fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')}">
                     <label for="roleType">
                         ${com.k_int.kbplus.RefdataCategory.findByDesc('Person Position').getI10n('desc')}
 
@@ -48,7 +47,7 @@
 
                 </div>
 
-                <div id="person_middle_name" class="field wide six fieldcontain ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} la-person">
+                <div id="person_middle_name" class="field wide six fieldcontain ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} ">
                     <label for="middle_name">
                         <g:message code="person.middle_name.label" default="Middlename" />
 
@@ -63,19 +62,19 @@
         <div class="field">
             <div class="two fields">
 
-                <div id="person_first_name" class="field wide ten fieldcontain ${hasErrors(bean: personInstance, field: 'first_name', 'error')} la-person">
+                <div id="person_first_name" class="field wide ten fieldcontain ${hasErrors(bean: personInstance, field: 'first_name', 'error')}">
                     <label for="first_name">
                         <g:message code="person.first_name.label" default="Firstname" />
                     </label>
                     <g:textField name="first_name" required="" value="${personInstance?.first_name}"/>
                 </div>
 
-                <div id="person_gender" class="field wide six fieldcontain ${hasErrors(bean: personInstance, field: 'gender', 'error')} la-person">
+                <div id="person_gender" class="field wide six fieldcontain ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">
                     <label for="gender">
                         <g:message code="person.gender.label" default="Gender" />
                     </label>
                     <laser:select class="ui dropdown" id="gender" name="gender"
-                                  from="${com.k_int.kbplus.Person.getAllRefdataValues('Gender')}"
+                                  from="${com.k_int.kbplus.Person.getAllRefdataValues('Gender').sort{ a, b -> a.value.compareTo(b.value) }}"
                                   optionKey="id"
                                   optionValue="value"
                                   value="${personInstance?.gender?.id}"
@@ -236,37 +235,36 @@
                 }
              }
         });
-        var changeKindOfContact = function() {
+        var fc = "${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type').getI10n('value')}";
 
-            if($("#contactType option:selected").text() == "${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type').getI10n('value')}") {
+        $("#contactType").on('change', function() {
+            changeForm( $("#contactType option:selected").text() == fc )
+        })
+
+        function changeForm(hide) {
+            if (hide) {
+                $("#roleType, #person_middle_name, #person_first_name, #person_gender").hide()
+
+                $("#roleType .dropdown, #person_gender .dropdown").addClass('disabled');
+                $("#roleType select, #person_gender select").attr('disabled', 'disabled');
+
+                $("#person_middle_name input, #person_first_name input").attr('disabled', 'disabled');
+
                 $("label[for='last_name']").text("Benenner");
-                $(".la-person").hide();
-                $("[name='roleType']").prop( "disabled", true );
-                $("[name='gender']").prop( "disabled", true );
-                $("[name='middle_name']").prop( "disabled", true );
-                $("[name='first_name']").prop( "disabled", true );
-                $("#person_gender").find(".dropdown").addClass("disabled");
-                $("#roleType").find(".dropdown").addClass("disabled");
             }
             else {
-                $(".la-person").show();
+                $("#roleType, #person_middle_name, #person_first_name, #person_gender").show()
+
+                $("#roleType .dropdown, #person_gender .dropdown").removeClass('disabled');
+                $("#roleType select, #person_gender select").removeAttr('disabled');
+
+                $("#person_middle_name input, #person_first_name input").removeAttr('disabled');
+
                 $("label[for='last_name']").text("Nachname");
-                $("[name='roleType']").prop( "disabled", false );
-                $("[name='gender']").prop( "disabled", false );
-                $("[name='middle_name']").prop( "disabled", false );
-                $("[name='first_name']").prop( "disabled", false );
-                $("#person_gender").find(".dropdown").removeClass("disabled");
-                $("#roleType").find(".dropdown").removeClass("disabled");
             }
-        };
-        changeKindOfContact();
+        }
 
-        $('#contactType').on('change', function() {
-            changeKindOfContact();
-            }
-        );
-
-
+        changeForm(true) // init
     </r:script>
 
 </semui:modal>
