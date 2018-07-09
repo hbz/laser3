@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person" %>
+<%@ page import="com.k_int.kbplus.License" %>
 <%@ page import="com.k_int.kbplus.RefdataValue" %>
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 
@@ -27,13 +27,13 @@
         </tr>
     </thead>
     <tbody>
-        <g:each in="${license.outgoinglinks}" var="link">
+        <g:each in="${License.findAllWhere(instanceOf: license)}" var="lic">
             <tr>
                 <td>
-                    <g:link controller="licenseDetails" action="show" id="${link.linkTarget.id}">${link.linkTarget.genericLabel}</g:link>
+                    <g:link controller="licenseDetails" action="show" id="${lic.id}">${lic.genericLabel}</g:link>
                 </td>
                 <td>
-                    <g:each in="${link.linkTarget.orgLinks}" var="orgRole">
+                    <g:each in="${lic.orgLinks}" var="orgRole">
                         <g:if test="${orgRole?.roleType.value in ['Licensee_Consortial', 'Licensee']}">
                             <g:link controller="organisations" action="show" id="${orgRole?.org.id}">
                                 ${orgRole?.org.getDesignation()}

@@ -22,6 +22,18 @@
 
         <g:render template="nav" />
 
+        <g:if test="${contextOrg == license.getLicensor()}">
+            <div class="ui negative message">
+                <div class="header"><g:message code="myinst.subscriptionDetails.message.attention" /></div>
+                <p>
+                    <g:message code="myinst.subscriptionDetails.message.SubscriptionView" />
+                    <span class="ui label">${license.getLicensee()?.collect{itOrg -> itOrg.name}?.join(',')}</span>.
+                <g:message code="myinst.subscriptionDetails.message.ConsortialView" />
+                <g:link controller="licenseDetails" action="show" id="${license.id}">TODO<g:message code="myinst.subscriptionDetails.message.here" /></g:link>.
+                </p>
+            </div>
+        </g:if>
+
         <semui:meta>
             <div class="inline-lists">
 
@@ -127,6 +139,8 @@
                                 --%>
                                 <dl>
                                     <dt class="control-label">${message(code:'license.linktoLicense', default:'License Template')}</dt>
+
+                                    %{-- refactoring: replace link table with instanceOf
                                     <dd>
                                             <g:each in="${license?.incomingLinks}" var="il">
                                                 <g:link controller="licenseDetails" action="show" id="${il.fromLic.id}">${il.fromLic.reference} ${il.type?.value ?"("+il.type?.value+")":""}</g:link>
@@ -136,6 +150,16 @@
                                                 <semui:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
 
                                             </g:each>
+                                    </dd>
+                                    --}%
+                                        <g:if test="${license.instanceOf}">
+                                            <g:link controller="licenseDetails" action="show" id="${license.instanceOf.id}">${license.instanceOf}</g:link>
+                                            <br />
+                                            ${message(code:'license.details.linktoLicense.pendingChange', default:'Automatically Accept Changes?')}
+                                            <br />
+                                            <semui:xEditableRefData owner="${license}" field="isSlaved" config='YN'/>
+
+                                        </g:if>
                                     </dd>
                                 </dl>
                             </div>

@@ -65,7 +65,10 @@ class LicenseDetailsController {
           }
 
           log.debug("pc result is ${result.pendingChanges}");
-          if (result.license.incomingLinks.find { it?.isSlaved?.value == "Yes" } && pendingChanges) {
+          // refactoring: replace link table with instanceOf
+          // if (result.license.incomingLinks.find { it?.isSlaved?.value == "Yes" } && pendingChanges) {
+
+          if (result.license.isSlaved?.value == "Yes" && pendingChanges) {
               log.debug("Slaved lincence, auto-accept pending changes")
               def changesDesc = []
               pendingChanges.each { change ->
