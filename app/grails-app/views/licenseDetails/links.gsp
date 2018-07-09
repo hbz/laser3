@@ -12,10 +12,17 @@
 
 <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-<h1 class="ui header">
-  <semui:headerIcon />
-  <semui:xEditable owner="${license}" field="reference" />
+%{-- <semui:controlButtons>
+    <g:render template="actions" />
+</semui:controlButtons> --}%
+
+<h1 class="ui header"><semui:headerIcon />
+%{--${license.licensee?.name}--}%
+${message(code:'license.details.type', args:["${license.type?.getI10n('value')}"], default:'License')} :
+<semui:xEditable owner="${license}" field="reference"/>
 </h1>
+
+
 
 <g:render template="nav" />
 
@@ -38,7 +45,7 @@
                             <g:link controller="organisations" action="show" id="${orgRole?.org.id}">
                                 ${orgRole?.org.getDesignation()}
                             </g:link>
-                            , ${orgRole?.roleType.getI10n('value')}
+                            , ${orgRole?.roleType.getI10n('value')} <br />
                         </g:if>
                     </g:each>
                 </td>

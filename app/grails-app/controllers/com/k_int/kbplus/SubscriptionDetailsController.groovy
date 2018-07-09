@@ -751,23 +751,28 @@ class SubscriptionDetailsController {
                     if (result.subscriptionInstance.owner) {
                         if (params.generateSlavedLics == 'multiple') {
                             licenseCopy = result.subscriptionInstance.owner.getBaseCopy()
+                            licenseCopy.instanceOf = result.subscriptionInstance.owner
 
                             licenseCopy.reference = licenseCopy.reference + " (${postfix})"
                             licenseCopy.sortableReference = licenseCopy.sortableReference + " (${postfix})"
                             licenseCopy.save()
 
-                            new Link(fromLic: result.subscriptionInstance.owner, toLic: licenseCopy).save()
                             new OrgRole(org: result.institution, lic: licenseCopy, roleType: role_lic_cons).save()
                         }
                         else if (params.generateSlavedLics == 'one' && ! licenseCopy) {
                             licenseCopy = result.subscriptionInstance.owner.getBaseCopy()
+                            licenseCopy.instanceOf = result.subscriptionInstance.owner
                             licenseCopy.save()
 
-                            new Link(fromLic: result.subscriptionInstance.owner, toLic: licenseCopy).save()
                             new OrgRole(org: result.institution, lic: licenseCopy, roleType: role_lic_cons).save()
                         }
+                        else if (params.generateSlavedLics == 'reference' && ! licenseCopy) {
+                            licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
+                        }
 
-                        new OrgRole(org: cm, lic: licenseCopy, roleType: role_lic).save()
+                        if (licenseCopy) {
+                            new OrgRole(org: cm, lic: licenseCopy, roleType: role_lic).save()
+                        }
                     }
 
                     if (params.generateSlavedSubs == "Y") {

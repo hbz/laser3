@@ -18,7 +18,10 @@ class InstitutionsService {
                 licenseUrl: baseLicense?.licenseUrl,
                 onixplLicense: baseLicense?.onixplLicense,
                 startDate:baseLicense?.startDate,
-                endDate:baseLicense?.endDate
+                endDate:baseLicense?.endDate,
+
+                instanceof: baseLicense,
+                isSlaved: params.isSlaved
         )
         if(params.copyStartEnd){
             licenseInstance.startDate = baseLicense?.startDate
@@ -72,7 +75,7 @@ class InstitutionsService {
             }
 
             // Finally, create a link
-            def new_link = new Link(fromLic: baseLicense, toLic: licenseInstance,slaved: params.isSlaved).save()
+            //def new_link = new Link(fromLic: baseLicense, toLic: licenseInstance,slaved: params.isSlaved).save()
         }
         return licenseInstance
     }

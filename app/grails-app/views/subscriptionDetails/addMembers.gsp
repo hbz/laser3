@@ -51,37 +51,54 @@
                           tmplConfigShow: ['name', 'wib', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
                           ]"/>
 
-        <div class="ui two fields">
-            <g:set value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Status')}" var="rdcSubStatus"/>
-            <div class="field">
-                <label>Status </label>
-                <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubStatus)}" class="ui dropdown"
-                          optionKey="id"
-                          optionValue="${{ it.getI10n('value') }}"
-                          name="subStatus"
-                          value="${com.k_int.kbplus.RefdataValue.findByValueAndOwner('Current', rdcSubStatus)?.id}"/>
-            </div>
-        </div>
+
 
         <div class="ui two fields">
             <div class="field">
-                <div class="ui radio checkbox">
-                    <input class="hidden" type="radio" name="generateSlavedLics" value="multiple">
-                    <label>${message(code: 'myinst.emptySubscription.seperate_lics1', default: 'Generate seperated Licenses for ANY Consortia Members')}</label>
-                </div>
-                <div class="ui radio checkbox">
-                    <input class="hidden" type="radio" name="generateSlavedLics" value="one" checked="checked">
-                    <label>${message(code: 'myinst.emptySubscription.seperate_lics2', default: 'Generate one copied License for ALL Consortia Members')}</label>
-                </div>
-
-                <br />
-                <br />
+                <label>Lizenz kopieren</label>
 
                 <div class="ui checkbox">
                     <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked"
                            readonly="readonly">
                     <label>${message(code: 'myinst.emptySubscription.seperate_subs', default: 'Generate seperate Subscriptions for all Consortia Members')}</label>
                 </div>
+
+
+                <g:set value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Status')}" var="rdcSubStatus"/>
+
+                <br />
+                <br />
+                <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubStatus)}" class="ui dropdown"
+                          optionKey="id"
+                          optionValue="${{ it.getI10n('value') }}"
+                          name="subStatus"
+                          value="${com.k_int.kbplus.RefdataValue.findByValueAndOwner('Current', rdcSubStatus)?.id}"/>
+            </div>
+
+            <div class="field">
+                <label>Vertrag kopieren</label>
+                <div class="ui radio checkbox">
+                    <input class="hidden" type="radio" name="generateSlavedLics" value="multiple">
+                    <label>${message(code: 'myinst.emptySubscription.seperate_lics1')}</label>
+                </div>
+                <div class="ui radio checkbox">
+                    <input class="hidden" type="radio" name="generateSlavedLics" value="one" checked="checked">
+                    <label>${message(code: 'myinst.emptySubscription.seperate_lics2')}</label>
+                </div>
+                <g:if test="${subscriptionInstance.owner?.derivedLicenses}">
+                    <div class="ui radio checkbox">
+                        <input class="hidden" type="radio" name="generateSlavedLics" value="reference">
+                        <label>${message(code: 'myinst.emptySubscription.seperate_lics3')}</label>
+                    </div>
+
+                    <br />
+                    <br />
+                    <g:select from="${subscriptionInstance.owner?.derivedLicenses}" class="ui search dropdown"
+                              optionKey="${{ 'com.k_int.kbplus.License:' + it.id }}"
+                              optionValue="${{ it.getGenericLabel() }}"
+                              name="generateSlavedLicsReference"
+                        />
+                </g:if>
             </div>
         </div>
 
