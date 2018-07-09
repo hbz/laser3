@@ -236,52 +236,36 @@
                 }
              }
         });
-        var x = $("#contactType option:selected").text();
-        var y = "${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type').getI10n('value')}";
-        if(x == y)
-            {
-                $("label[for='last_name']").text("Benenner");
-                $("#roleType").hide();
-                $("#roleType").prop( "disabled", true );
-                $("#person_gender").hide();
-                $("#gender").prop( "disabled", true );
-                $("#person_first_name").hide();
-                $("#person_middle_name").hide();
-            }
+        var fc = "${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type').getI10n('value')}";
+
         $("#contactType").on('change', function() {
-             x = $("#contactType option:selected").text();
-             y = "${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type').getI10n('value')}";
-            if(x == y)
-            {
+            changeForm( $("#contactType option:selected").text() == fc )
+        })
+
+        function changeForm(hide) {
+            if (hide) {
+                $("#roleType, #person_middle_name, #person_first_name, #person_gender").hide()
+
+                $("#roleType .dropdown, #person_gender .dropdown").addClass('disabled');
+                $("#roleType select, #person_gender select").attr('disabled', 'disabled');
+
+                $("#person_middle_name input, #person_first_name input").attr('disabled', 'disabled');
 
                 $("label[for='last_name']").text("Benenner");
-
-
-                $("#person_gender").hide();
-                $("#gender").prop( "disabled", true );
-
-                $("#first_name").val('');
-                $("#person_first_name").hide();
-
-
-                $("#middle_name").val('');
-                $("#person_middle_name").hide();
-
-
-                $("#roleType").hide();
-                $("#roleType").prop( "disabled", true );
             }
-            else
-                {
-                        $("label[for='last_name']").text("Nachname");
-                        $("#roleType").show();
-                        $("#person_gender").show();
-                        $("#person_first_name").show();
-                        $("#person_middle_name").show();
-                }
-            }
-        );
+            else {
+                $("#roleType, #person_middle_name, #person_first_name, #person_gender").show()
 
+                $("#roleType .dropdown, #person_gender .dropdown").removeClass('disabled');
+                $("#roleType select, #person_gender select").removeAttr('disabled');
+
+                $("#person_middle_name input, #person_first_name input").removeAttr('disabled');
+
+                $("label[for='last_name']").text("Nachname");
+            }
+        }
+
+        changeForm(true) // init
     </r:script>
 
 </semui:modal>
