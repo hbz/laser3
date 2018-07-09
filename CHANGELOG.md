@@ -1,4 +1,9 @@
 
+0.6.1
+
+- bugfix: javascript for creating person modal
+- disabled faulty function to copy licenses
+
 0.6
 
 - added usage statistics for refdata values and property definitions
