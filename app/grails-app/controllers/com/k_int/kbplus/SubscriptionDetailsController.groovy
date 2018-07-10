@@ -670,10 +670,21 @@ class SubscriptionDetailsController {
 
         //if (params.showDeleted == 'Y') {
 
-        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(result.subscriptionInstance, com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
-            result.validSubChilds = validSubChilds
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
+                result.subscriptionInstance,
+                RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+        )
 
-        def deletedSubChilds = Subscription.findAllByInstanceOfAndStatus(result.subscriptionInstance, com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        result.validSubChilds = validSubChilds.sort{ a, b ->
+            def sa = a.getSubscriber()
+            def sb = b.getSubscriber()
+            (sa.sortname ?: sa.name).compareTo( (sb.sortname ?: sb.name) )
+        }
+
+        def deletedSubChilds = Subscription.findAllByInstanceOfAndStatus(
+                result.subscriptionInstance,
+                RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+        )
         result.deletedSubChilds = deletedSubChilds
         //}
         //else {

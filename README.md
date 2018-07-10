@@ -6,6 +6,6 @@
     _/\/\/\/\/\__/\/\____/\/\__/\/\/\/\/\____/\/\____/\/\/\/\__/\/\____/\/\_
     ________________________________________________________________________
 
-This repository is forked from k-int/KBPlus for the LAS:eR project. 
+Welcome to the DFG funded LAS:eR project. 
 
 laser@hbz-nrw.de
