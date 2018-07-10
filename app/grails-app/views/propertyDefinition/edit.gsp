@@ -74,8 +74,8 @@
                         <label class="control-label" for="type">Type</label>
                         <div class="controls">
                             <g:select name="type" disabled="${!editable}" value="${propDefInstance.type}"
-                                      from="${PropertyDefinition.validTypes.entrySet()}"
-                                      optionKey="value" optionValue="key" id="type"/>
+                                      from="${PropertyDefinition.validTypes2.entrySet()}"
+                                      optionKey="key" optionValue="${{PropertyDefinition.getLocalizedValue(it.key)}}" id="type"/>
                         </div>
                     </div>
                     <div class="control-group hide" id="cust_prop_ref_data_name">

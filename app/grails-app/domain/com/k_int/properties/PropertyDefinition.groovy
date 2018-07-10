@@ -77,12 +77,22 @@ class PropertyDefinition extends I10nTranslatableAbstract {
     boolean softData
 
     //Map keys can change and they wont affect any of the functionality
+    @Deprecated
     @Transient
     static def validTypes = ["Number":  Integer.toString(), 
                              "Text":    String.toString(), 
                              "Refdata": RefdataValue.toString(), 
                              "Decimal": BigDecimal.toString(),
                              "Date":    Date.toString()]
+
+    @Transient
+    static def validTypes2 = [
+            'class java.lang.Integer'     : ['de': 'Nummer', 'en': 'Number'],
+            'class java.lang.String'      : ['de': 'Text', 'en': 'Text'],
+            'class com.k_int.kbplus.RefdataValue'   : ['de': 'Referenzwert', 'en': 'Refdata'],
+            'class java.math.BigDecimal'  : ['de': 'Dezimalzahl', 'en': 'Decimal'],
+            'class java.util.Date'        : ['de': 'Datum', 'en': 'Date']
+    ]
 
     static mapping = {
                       id column: 'pd_id'
@@ -108,11 +118,11 @@ class PropertyDefinition extends I10nTranslatableAbstract {
         softData            (nullable: false, blank: false, default: false)
     }
 
-    private static def typeIsValid(value) {
-        if (validTypes.containsValue(value)) {
+    private static def typeIsValid(key) {
+        if (validTypes2.containsKey(key)) {
             return true;
         } else {
-            log.error("Provided prop type ${value.getClass()} is not valid. Allowed types are ${validTypes}")
+            log.error("Provided prop type ${key} is not valid. Allowed types are ${validTypes2}")
             throw new UnexpectedTypeException()
         }
     }
@@ -160,6 +170,7 @@ class PropertyDefinition extends I10nTranslatableAbstract {
     }
 
     static def lookupOrCreate(name, typeClass, descr, multipleOccurence, mandatory, Org tenant) {
+        println typeClass
         typeIsValid(typeClass)
 
         def type = findWhere(
@@ -293,6 +304,17 @@ class PropertyDefinition extends I10nTranslatableAbstract {
                 "com.k_int.kbplus.License"  : PropertyDefinition.LIC_PROP,
                 "com.k_int.kbplus.Person"   : PropertyDefinition.PRS_PROP
         ]
+    }
+
+    static getLocalizedValue(key){
+        def locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
+
+        println locale
+        if (PropertyDefinition.validTypes2.containsKey(key)) {
+            return (PropertyDefinition.validTypes2.get(key)."${locale}") ?: PropertyDefinition.validTypes2.get(key)
+        } else {
+            return null
+        }
     }
 }
 
