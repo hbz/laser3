@@ -16,6 +16,7 @@ class LicenseCustomProperty extends CustomProperty {
     static mapping = {
         paragraph    type: 'text'
         note         type: 'text'
+        stringValue  type: 'text'
     }
 
     static constraints = {

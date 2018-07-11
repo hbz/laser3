@@ -84,7 +84,7 @@ ${usedPdList.join(", ")}
                                             <small>${pd.type?.split('\\.').last()}</small>
                                         </g:else>
                                     </td>
-                                    <td>
+                                    <td class="x">
                                         <g:if test="${pd.softData}">
                                             <span data-position="top right" data-tooltip="${message(code:'default.softData.tooltip')}">
                                                 <i class="tint icon teal"></i>
@@ -95,6 +95,19 @@ ${usedPdList.join(", ")}
                                                 <i class="redo icon orange"></i>
                                             </span>
                                         </g:if>
+
+                                        <%--
+                                        <g:if test="${usedPdList?.contains(pd.id)}">
+                                            <span data-position="top right" data-tooltip="${message(code:'propertyDefinition.exchange.label')}">
+                                                <button class="ui icon button" href="#replacePropertyDefinitionModal" data-semui="modal"
+                                                        data-xcg-pd="${pd.class.name}:${pd.id}"
+                                                        data-xcg-type="${pd.type}"
+                                                        data-xcg-rdc="${pd.refdataCategory}"
+                                                        data-xcg-debug="${pd.getI10n('name')} (${pd.name})"
+                                                ><i class="exchange icon"></i></button>
+                                            </span>
+                                        </g:if>
+                                        --%>
                                     </td>
                                     <%--
                                     <td><semui:xEditable owner="${pdI10nDescr}" field="valueDe" /></td>
@@ -108,6 +121,44 @@ ${usedPdList.join(", ")}
                 </div>
 			</g:each>
         </div>
+
+<%--
+        <semui:modal id="replacePropertyDefinitionModal" message="propertyDefinition.exchange.label" editmodal="editmodal">
+            <g:form class="ui form" url="[controller: 'admin', action: 'managePropertyDefinition']">
+                <input type="hidden" name="cmd" value="replacePropertyDefinition"/>
+                <input type="hidden" name="xcgPdFrom" value=""/>
+
+                <p>
+                    <strong>WARNUNG</strong>
+                </p>
+
+                <p>
+                    Alle Vorkommnisse von <strong class="xcgInfo"></strong> in der Datenbank durch folgenden Wert ersetzen:
+                </p>
+
+                <div class="field">
+                    <label for="xcgPdTo">&nbsp;</label>
+                    <select id="xcgPdTo"></select>
+                </div>
+
+            </g:form>
+
+            <r:script>
+                        $('button[data-xcg-pd]').on('click', function(){
+
+                            var pd = $(this).attr('data-xcg-pd');
+                            var type = $(this).attr('data-xcg-type');
+                            var rdc = $(this).attr('data-xcg-rdc');
+
+                            $('#replacePropertyDefinitionModal .xcgInfo').text($(this).attr('data-xcg-debug'));
+                            $('#replacePropertyDefinitionModal input[name=xcgPdFrom]').attr('value', pd);
+
+                            // TODO
+                        })
+            </r:script>
+
+        </semui:modal>
+--%>
 
         <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 
