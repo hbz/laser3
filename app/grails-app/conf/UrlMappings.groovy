@@ -22,7 +22,7 @@ class UrlMappings {
         "/api/v0/$obj"          (controller: 'api', action: 'v0')
 
         "/"                     (view: "public/index")
-        "/public"               (view: "public/index")
+        "/gasco"                (controller: 'public', action: 'gasco')
 
         "/oai/$id"(controller: 'oai', action: 'index')
 

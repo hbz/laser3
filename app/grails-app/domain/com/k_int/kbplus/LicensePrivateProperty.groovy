@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.properties.PropertyDefinition
 import javax.persistence.Transient
@@ -21,7 +22,7 @@ class LicensePrivateProperty extends PrivateProperty {
     License owner
 
     static mapping = {
-        includes PrivateProperty.mapping
+        includes AbstractProperty.mapping
 
         id      column:'lpp_id'
         version column:'lpp_version'
@@ -32,7 +33,7 @@ class LicensePrivateProperty extends PrivateProperty {
     }
 
     static constraints = {
-        importFrom PrivateProperty
+        importFrom AbstractProperty
 
         paragraph (nullable:true)
         owner     (nullable:false, blank:false)

@@ -19,6 +19,7 @@ abstract class AbstractProperty implements Serializable {
     Date            dateValue
     
     static mapping = {
+        stringValue  type: 'text'
         note         type: 'text'
     }
 
@@ -43,6 +44,10 @@ abstract class AbstractProperty implements Serializable {
             return "refValue"
         if(dateValue)
             return "dateValue"
+    }
+
+    public String getValue() {
+        return toString()
     }
 
     @Override
@@ -117,9 +122,5 @@ abstract class AbstractProperty implements Serializable {
         else if (type == RefdataValue.toString()) {
             refValue = RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc(rdc), value.toString())
         }
-    }
-
-    public String getValue() {
-        return toString()
     }
 }

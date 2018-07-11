@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.properties.PropertyDefinition
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 
@@ -10,6 +11,8 @@ class PersonPrivateProperty extends PrivateProperty {
     Person owner
 
     static mapping = {
+        includes AbstractProperty.mapping
+
         id      column:'ppp_id'
         version column:'ppp_version'
         type    column:'ppp_type_fk'
@@ -17,6 +20,8 @@ class PersonPrivateProperty extends PrivateProperty {
     }
 
     static constraints = {
+        importFrom AbstractProperty
+
         type    (nullable:false, blank:false)
         owner   (nullable:false, blank:false)
     }
