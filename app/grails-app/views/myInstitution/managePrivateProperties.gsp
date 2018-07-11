@@ -151,8 +151,15 @@
     });
 
     $("#cust_prop_refdatacatsearch").select2({
-        placeholder: "Type category...",
+        placeholder: "Kategorie eintippen...",
         minimumInputLength: 1,
+
+        formatInputTooShort: function () {
+            return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
+        },
+        formatNoMatches: function() {
+            return "${message(code:'select2.noMatchesFound')}";
+        },
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
             url: '${createLink(controller:'ajax', action:'lookup')}',
             dataType: 'json',
