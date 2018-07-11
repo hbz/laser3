@@ -593,11 +593,11 @@
 .ui.form .disabled.field,
 .ui.form .field :disabled {
   pointer-events: none;
-  opacity: 0.1;
+  opacity: 0.45;
 }
 .ui.form .field.disabled > label,
 .ui.form .fields.disabled > label {
-  opacity: 0.1;
+  opacity: 0.45;
 }
 .ui.form .field.disabled :disabled {
   opacity: 1;
@@ -1156,4 +1156,15 @@ input#spotlightSearch[type="search"] {
 }
 .ui.form .la-select2-fixed-width {
   width: 356.938px;
+}
+
+/*--------------------
+       Disabled
+---------------------*/
+
+.ui.form .disabled.fields .field,
+.ui.form .disabled.field,
+.ui.form .field :disabled {
+  pointer-events: none;
+  opacity: 0.45;
 }

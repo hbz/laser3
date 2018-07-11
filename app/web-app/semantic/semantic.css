@@ -20753,12 +20753,12 @@ ol.ui.horizontal.list li:before,
 .ui.form .disabled.field,
 .ui.form .field :disabled {
   pointer-events: none;
-  opacity: 0.1;
+  opacity: 0.45;
 }
 
 .ui.form .field.disabled > label,
 .ui.form .fields.disabled > label {
-  opacity: 0.1;
+  opacity: 0.45;
 }
 
 .ui.form .field.disabled :disabled {
@@ -21396,6 +21396,17 @@ input#spotlightSearch[type="search"] {
 
 .ui.form .la-select2-fixed-width {
   width: 356.938px;
+}
+
+/*--------------------
+       Disabled
+---------------------*/
+
+.ui.form .disabled.fields .field,
+.ui.form .disabled.field,
+.ui.form .field :disabled {
+  pointer-events: none;
+  opacity: 0.45;
 }
 /*!
  * # Semantic UI 2.3.1 - Grid
@@ -33324,7 +33335,7 @@ select.ui.dropdown {
 
 .ui.active.search.dropdown input.search:focus + .text .icon,
 .ui.active.search.dropdown input.search:focus + .text .flag {
-  opacity: 0.1;
+  opacity: 0.45;
 }
 
 .ui.active.search.dropdown input.search:focus + .text {
