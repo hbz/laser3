@@ -16,3 +16,4 @@
 @textAreaFontSize: @inputFontSize;
 @textAreaTransition: @inputTransition;
 
+@disabledOpacity: 0.45;

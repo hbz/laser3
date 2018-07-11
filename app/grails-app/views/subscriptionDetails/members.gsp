@@ -56,7 +56,7 @@
         <table class="ui celled la-table table">
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th>${message(code:'sidewide.number')}</th>
                     <th>Sortiername</th>
                     <th>
                         <g:if test="${i==1}">${message(code:'subscriptionDetails.members.deleted')}</g:if> ${message(code:'subscriptionDetails.members.members')}

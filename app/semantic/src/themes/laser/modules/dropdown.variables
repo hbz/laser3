@@ -148,7 +148,7 @@
 
 @selectionTextColor: @textColor;
 
-@selectionTextUnderlayIconOpacity: @disabledOpacity;
+@selectionTextUnderlayIconOpacity: 0.45;
 @selectionTextUnderlayColor: @inputPlaceholderFocusColor;
 
 @selectionBoxShadow: none;
