@@ -11,7 +11,7 @@ class PublicController {
         println "gasco called .."
         def result = [:]
 
-        result.msg = new Date()
+        result.subscriptions = Subscription.findAll().sort{ it.name }
 
         result
     }
