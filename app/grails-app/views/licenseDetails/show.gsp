@@ -13,6 +13,10 @@
 
         <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
+        <semui:controlButtons>
+            <g:render template="actions" />
+        </semui:controlButtons>
+
         <h1 class="ui header"><semui:headerIcon />
 
             %{--${license.licensee?.name}--}%

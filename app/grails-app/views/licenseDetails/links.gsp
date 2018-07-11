@@ -12,17 +12,15 @@
 
 <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-%{-- <semui:controlButtons>
+<semui:controlButtons>
     <g:render template="actions" />
-</semui:controlButtons> --}%
+</semui:controlButtons>
 
 <h1 class="ui header"><semui:headerIcon />
 %{--${license.licensee?.name}--}%
 ${message(code:'license.details.type', args:["${license.type?.getI10n('value')}"], default:'License')} :
 <semui:xEditable owner="${license}" field="reference"/>
 </h1>
-
-
 
 <g:render template="nav" />
 
@@ -38,6 +36,12 @@ ${message(code:'license.details.type', args:["${license.type?.getI10n('value')}"
             <tr>
                 <td>
                     <g:link controller="licenseDetails" action="show" id="${lic.id}">${lic.genericLabel}</g:link>
+
+                    <g:if test="${lic.isSlaved?.value?.equalsIgnoreCase('yes')}">
+                        <span data-position="top right" data-tooltip="${message(code:'license.details.isSlaved.tooltip')}">
+                            <i class="anchor blue icon"></i>
+                        </span>
+                    </g:if>
                 </td>
                 <td>
                     <g:each in="${lic.orgLinks}" var="orgRole">
