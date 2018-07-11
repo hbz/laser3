@@ -7,6 +7,21 @@ class PublicController {
 
     def springSecurityService
 
+    def gasco() {
+        println "gasco called .."
+        def result = [:]
+
+        result.msg = new Date()
+
+        result
+    }
+
+
+
+
+
+
+
     @Deprecated
     @Secured(['ROLE_YODA'])
   def journalLicenses(){
@@ -82,7 +97,6 @@ class PublicController {
     }
     return hasAccess
   }
-
 
   private def generateIELicenseMap(ies, result) {
     log.debug("generateIELicenseMap")
