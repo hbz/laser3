@@ -9,12 +9,13 @@
 </head>
 
 <body>
-    <br>
-    <h1 class="ui header">${message(code:'gasco.title')}</h1>
+    <br />
+    <br />
+    <br />
     <div class="ui grid">
         <div class="eleven wide column">
             <semui:filter>
-                <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="form-inline ui small form">
+                <g:form action="gasco" controller="public" method="get" class="form-inline ui small form">
 
                     <div class="field">
                         <label>${message(code: 'gasco.filter.licenceOrProviderSearch')}</label>
@@ -26,58 +27,47 @@
                         </div>
                     </div>
 
-
                     <div class="field">
-                            <label for="subscritionType">${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
+                        <label for="subscritionType">${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
 
-                            <fieldset id="subscritionType">
-                                <div class="inline fields la-filter-inline">
+                        <fieldset id="subscritionType">
+                            <div class="inline fields la-filter-inline">
 
+                                <g:each in="${RefdataCategory.getAllRefdataValues('Subscription Type')}" var="subType">
 
-                                    <div class="inline field">
-                                        <div class="ui checkbox">
+                                    <g:if test="${subType.value != 'Local Licence'}">
+                                        <g:if test="${subType.value == 'National Licence'}">
+                                            <div class="inline field js-consortiallicence">
+                                        </g:if>
+                                        <g:else>
+                                            <div class="inline field">
+                                        </g:else>
 
-                                            <input id="checkSubType-514" name="subTypes" type="checkbox" value="514" tabindex="0" class="hidden"><label for="checkSubType-514">${message(code: 'gasco.filter.nationalLicence')}</label>
+                                            <div class="ui checkbox">
+                                                <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
+                                                <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
+                                                    <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
+                                                       tabindex="0">
+                                            </div>
                                         </div>
-                                    </div>
+                                    </g:if>
+                                </g:each>
 
-                                    <div class="inline field">
-                                        <div class="ui checkbox">
-
-                                            <input id="checkSubType-517" name="subTypes" type="checkbox" value="517" tabindex="0" class="hidden"><label for="checkSubType-517">${message(code: 'gasco.filter.allianceLicence')}</label>
-                                        </div>
-                                    </div>
-
-                                    <div class="inline field">
-                                        <div class="ui checkbox js-consortiallicence">
-
-                                            <input id="checkSubType-516" name="subTypes" type="checkbox" value="516" tabindex="0" class="hidden"><label for="checkSubType-516">${message(code: 'gasco.filter.consotialLicence')}</label>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </fieldset>
-                        </div>
+                            </div>
+                        </fieldset>
+                    </div>
 
                     <div class="field" id="js-consotial-authority">
                         <label>${message(code: 'gasco.filter.consotialAuthority')}</label>
 
-                        <div class="ui fluid search selection dropdown" >
-                            <input type="hidden" name="country">
-                            <i class="dropdown icon"></i>
-
-                            <div class="default text">${message(code: 'gasco.filter.chooseConsotialAuthority')}</div>
-
-                            <div class="menu">
-                                <div class="item">Option 1</div>
-
-                                <div class="item">Option 2</div>
-
-                                <div class="item">Option 3</div>
-
-                            </div>
-                        </div>
+                        <g:select from="${allConsortia}" class="ui fluid search selection dropdown"
+                            optionKey="${{ "com.k_int.kbplus.Org:" + it.id }}"
+                            optionValue="${{ it.getDesignation() }}"
+                            name="consortia"
+                            noSelection="[null: '']"
+                            value="${params.consortia}"/>
                     </div>
+
                     <div class="field la-filter-search ">
                         <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                         <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}">
@@ -90,6 +80,17 @@
             <img class="ui fluid image" alt="Logo GASCO" class="ui fluid image" src="images/gasco/GASCO-Logo-2_klein.jpg"/>
         </div>
     </div>
+
+    <r:script>
+        $(document).ready(function() {
+
+            $( '.js-consortiallicence' ).click(function() {
+                $('#js-consotial-authority').toggleClass('disabled')
+            });
+        });
+    </r:script>
+
+    <g:if test="${subscriptions}">
 
     <table class="ui celled la-table table">
         <thead>
@@ -106,7 +107,6 @@
                 <tr>
                     <td class="center aligned">
                         ${i}
-
                     </td>
                     <td>
                         ${sub}
@@ -116,9 +116,7 @@
                                 <i class="icon gift la-list-icon"></i>
                                     ${subPkg.pkg}
                             </div>
-
                         </g:each>
-
                     </td>
                     <td>
                         <g:each in="${OrgRole.findAllBySubAndRoleType(sub, RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'))}" var="role">
@@ -131,13 +129,14 @@
                     <td>
                         ${sub.getConsortia()?.name}
                     </td>
-
                 </tr>
             </g:each>
         </tbody>
-        </table>
+    </table>
 
-        <g:each in="${subscriptions}" var="sub" status="i">
+    </g:if>
+<%--
+        <g:each in="${test}" var="sub" status="i">
             <br />
             <br />
             <!-- subscription -->
@@ -162,13 +161,5 @@
 
             <!-- subscription -->
         </g:each>
-
+--%>
 </body>
-<r:script>
-    $(document).ready(function() {
-
-        $( '.js-consortiallicence' ).click(function() {
-                $('#js-consotial-authority').toggleClass('disabled')
-        });
-    });
-</r:script>
