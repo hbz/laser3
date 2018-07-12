@@ -1,4 +1,14 @@
-<semui:modal id="${tmplmodalID}" text="${tmplText}">
+<g:if test="${editmode}">
+    <dl>
+        <dt></dt>
+        <dd>
+            <br />
+            <a class="ui button" data-semui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
+        </dd>
+    </dl>
+</g:if>
+
+<semui:modal id="${tmplModalID}" text="${tmplText}">
     <g:set var="ajaxID" value="${tmplID ?:'allOrgs'}"/>
     <g:form id="create_org_role_link" class="ui form" url="[controller:'ajax', action:'addOrgRole']" method="post" onsubmit="return validateAddOrgRole();">
         <input type="hidden" name="parent" value="${parent}"/>
@@ -6,7 +16,7 @@
         <input type="hidden" name="recip_prop" value="${recip_prop}"/>
 
         <div class="field">
-            <table id="org_role_tab${tmplmodalID}" class="ui celled la-table la-table-small table">
+            <table id="org_role_tab_${tmplModalID}" class="ui celled la-table la-table-small table">
                 <thead>
                     <tr>
                         <th>${message(code:'template.orgLinksModal.name.label')}</th>
@@ -48,7 +58,7 @@
 
         $('#add_org_head_row').empty()
 
-        oOrTable = $('#org_role_tab${tmplmodalID}').dataTable( {
+        oOrTable = $('#org_role_tab_${tmplModalID}').dataTable( {
             'bAutoWidth':  true,
             "sScrollY":    "240px",
             "sAjaxSource": "<g:createLink controller="ajax" action="refdataSearch" id="${ajaxID}" params="${[format:'json']}"/>",

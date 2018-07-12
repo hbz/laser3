@@ -127,12 +127,3 @@
     </g:if>
 </g:each>
 
-<g:if test="${editmode}">
-    <br />
-    <dl>
-        <dt></dt>
-        <dd>
-            <a class="ui button" data-semui="modal" href="#${tmplmodalID}">${tmplButtonText}</a>
-        </dd>
-    </dl>
-</g:if>

@@ -161,8 +161,6 @@
                             <dt>${message(code: 'package.show.pkg_name')}</dt>
                             <dd> <semui:xEditable owner="${packageInstance}" field="name"/></dd>
 
-
-
                             <% /*
                             <dt>${message(code: 'license.is_public')}</dt>
                             <dd>
@@ -176,25 +174,22 @@
                             </dd>
                             */ %>
                         </dl>
-                    </div>
-                </div>
-                <div class="ui card">
-                    <div class="content">
                         <dl>
-
                             <dt>${message(code: 'package.show.vendor_url')}</dt>
                             <dd>
                                 <semui:xEditable owner="${packageInstance}" field="vendorURL" />
                             </dd>
                         </dl>
+                    </div>
+                </div>
+                <div class="ui card">
+                    <div class="content">
 
                         <g:render template="/templates/links/orgLinksAsList"
                                   model="${[roleLinks: visibleOrgs,
                                             roleObject: packageInstance,
                                             roleRespValue: 'Specific package editor',
-                                            editmode: editable,
-                                            tmplButtonText: 'Anbieter hinzufügen',
-                                            tmplmodalID:'osel_add_modal'
+                                            editmode: editable
                                   ]}" />
 
                         <g:render template="/templates/links/orgLinksModal"
@@ -205,15 +200,11 @@
                                         tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role'),
                                         tmplText:'Anbieter hinzufügen',
                                         tmplID:'ContentProvider',
-                                        tmplmodalID:'osel_add_modal'
+                                        tmplButtonText: 'Anbieter hinzufügen',
+                                        tmplModalID:'osel_add_modal_anbieter',
+                                        editmode: editable
                               ]}" />
-<%--
-                        <g:render template="/templates/links/orgLinksAsListAddPrsModal"
-                                  model="[roleLinks: visibleOrgs,
-                                          'package': packageInstance,
-                                          parent: packageInstance.class.name + ':' + packageInstance.id,
-                                          role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
---%>
+
                     </div>
                 </div>
                 <div class="ui card">
@@ -225,7 +216,6 @@
                             </dd>
                         </dl>
                         <dl>
-
                             <dt>${message(code: 'package.consistent')}</dt>
                             <dd>
                                 <semui:xEditableRefData owner="${packageInstance}" field="consistent" config="${RefdataCategory.PKG_CONSISTENT}"/>

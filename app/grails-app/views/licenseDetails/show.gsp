@@ -284,9 +284,7 @@
                                   model="${[roleLinks: visibleOrgLinks,
                                             roleObject: license,
                                             roleRespValue: 'Specific license editor',
-                                            editmode: editable,
-                                            tmplButtonText: 'Lizenzgeber hinzufügen',
-                                            tmplmodalID:'osel_add_modal'
+                                            editmode: editable
                                   ]}" />
 
                         <g:render template="/templates/links/orgLinksModal"
@@ -297,16 +295,11 @@
                                             tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Licensor', 'Organisational Role'),
                                             tmplText:'Lizenzgeber hinzufügen',
                                             tmplID:'CommercialOrgs',
-                                            tmplmodalID:'osel_add_modal'
+                                            tmplButtonText: 'Lizenzgeber hinzufügen',
+                                            tmplModalID:'osel_add_modal_lizenzgeber',
+                                            editmode: editable
                                   ]}" />
-<%--
-                        <g:render template="/templates/links/orgLinksAsListAddPrsModal"
-                                  model="[roleLinks: visibleOrgLinks,
-                                          'license': license,
-                                          parent: license.class.name + ':' + license.id,
-                                          role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id
-                                  ]"/>
-                                  --%>
+
                         </div>
                     </div>
 

@@ -264,9 +264,7 @@
                               model="${[roleLinks: visibleOrgRelations,
                                         roleObject: subscriptionInstance,
                                         roleRespValue: 'Specific subscription editor',
-                                        editmode: editable,
-                                        tmplButtonText:'Anbieter hinzufügen',
-                                        tmplmodalID:'osel_add_modal'
+                                        editmode: editable
                               ]}" />
 
                     <g:render template="/templates/links/orgLinksModal"
@@ -277,36 +275,24 @@
                                         tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'),
                                         tmplText:'Anbieter hinzufügen',
                                         tmplID:'ContentProvider',
-                                        tmplmodalID:'osel_add_modal'
+                                        tmplButtonText:'Anbieter hinzufügen',
+                                        tmplModalID:'osel_add_modal_anbieter',
+                                        editmode: editable
                               ]}" />
 
-
-                <g:render template="/templates/links/orgLinksAsList"
-                          model="${[roleLinks: visibleOrgAgencyRelations,
-                                    roleObject: subscriptionInstance,
-                                    roleRespValue: 'Specific subscription editor',
-                                    editmode: editable,
-                                    tmplButtonText:'Agentur hinzufügen',
-                                    tmplmodalID:'osel_add_modal1'
-                          ]}" />
-
-                <g:render template="/templates/links/orgLinksModal"
-                          model="${[linkType: subscriptionInstance?.class?.name,
+                    <g:render template="/templates/links/orgLinksModal"
+                                model="${[linkType: subscriptionInstance?.class?.name,
                                     parent: subscriptionInstance.class.name+':'+subscriptionInstance.id,
                                     property: 'orgs',
                                     recip_prop: 'sub',
                                     tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Agency', 'Organisational Role'),
                                     tmplText:'Agentur hinzufügen',
                                     tmplID:'ContentProvider',
-                                    tmplmodalID:'osel_add_modal1'
-                          ]}" />
-<%--
-                    <g:render template="/templates/links/orgLinksAsListAddPrsModal"
-                          model="[roleLinks: visibleOrgRelations,
-                                  'subscription': subscriptionInstance,
-                                  parent: subscriptionInstance.class.name + ':' + subscriptionInstance.id,
-                                  role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
---%>
+                                    tmplButtonText:'Agentur hinzufügen',
+                                    tmplModalID:'osel_add_modal_agentur',
+                                    editmode: editable
+                                ]}" />
+
                 <% /*
                <dl>
                     <dt><label class="control-label" for="licenseeRef">${message(code:'org.links.label', default:'Org Links')}</label></dt><dd>
@@ -548,7 +534,7 @@
     <r:script language="JavaScript">
 
       function unlinkPackage(pkg_id){
-        var req_url = "${createLink(controller:'subscriptionDetails', action:'unlinkPackage',params:[subscription:subscriptionInstance.id])}&package="+pkg_id
+        var req_url = "${createLink(controller:'subscriptionDetails', action:'unlinkPackage', params:[subscription:subscriptionInstance.id])}&package="+pkg_id
 
         $.ajax({url: req_url,
           success: function(result){
