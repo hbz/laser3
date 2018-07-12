@@ -87,7 +87,7 @@ class PropertyDefinition extends I10nTranslatableAbstract {
 
     @Transient
     static def validTypes2 = [
-            'class java.lang.Integer'     : ['de': 'Nummer', 'en': 'Number'],
+            'class java.lang.Integer'     : ['de': 'Zahl', 'en': 'Number'],
             'class java.lang.String'      : ['de': 'Text', 'en': 'Text'],
             'class com.k_int.kbplus.RefdataValue'   : ['de': 'Referenzwert', 'en': 'Refdata'],
             'class java.math.BigDecimal'  : ['de': 'Dezimalzahl', 'en': 'Decimal'],
