@@ -1602,15 +1602,15 @@ AND l.status.value != 'Deleted' order by l.reference
         result.user                 = User.get(springSecurityService.principal.id)
         result.subscriptionInstance = Subscription.get(params.id)
         result.subscription         = Subscription.get(params.id)
-        result.institution          = result.subscription.subscriber
+        result.institution          = result.subscription?.subscriber
 
         if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
-            if (! result.subscriptionInstance.isVisibleBy(result.user)) {
+            if (! result.subscriptionInstance?.isVisibleBy(result.user)) {
                 log.debug( "--- NOT VISIBLE ---")
                 return null
             }
         }
-        result.editable = result.subscriptionInstance.isEditableBy(result.user)
+        result.editable = result.subscriptionInstance?.isEditableBy(result.user)
 
         if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
             if (! result.editable) {

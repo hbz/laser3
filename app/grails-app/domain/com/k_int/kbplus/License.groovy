@@ -136,6 +136,10 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
         lastUpdated(nullable: true, blank: true)
     }
 
+    def isTemplate() {
+        return (type != null) && (type == RefdataValue.getByValueAndCategory('Template', 'License Type'))
+    }
+
   def getLicensor() {
     def result = null;
     orgLinks.each { or ->

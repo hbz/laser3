@@ -117,6 +117,12 @@ class Subscription extends BaseDomainComponent implements Permissions {
         // vendor(nullable:true, blank:false)
     }
 
+    // TODO: implement like license
+    def isTemplate() {
+        return 'not implemented'
+        //return (type != null) && (type == RefdataValue.getByValueAndCategory('Template', 'Subscription Type'))
+    }
+
   def getIsSlavedAsString() {
     isSlaved?.value == "Yes" ? "Yes" : "No"
   }
