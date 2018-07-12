@@ -160,6 +160,9 @@
         formatNoMatches: function() {
             return "${message(code:'select2.noMatchesFound')}";
         },
+        formatSearching:  function() {
+            return "${message(code:'select2.formatSearching')}";
+        },
         ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
             url: '${createLink(controller:'ajax', action:'lookup')}',
             dataType: 'json',
