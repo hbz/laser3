@@ -766,6 +766,7 @@ class SubscriptionDetailsController {
 
                             licenseCopy.reference = licenseCopy.reference + " (${postfix})"
                             licenseCopy.sortableReference = licenseCopy.sortableReference + " (${postfix})"
+                            licenseCopy.type = RefdataValue.getByValueAndCategory('Actual', 'License Type')
                             licenseCopy.save()
 
                             new OrgRole(org: result.institution, lic: licenseCopy, roleType: role_lic_cons).save()
@@ -773,6 +774,7 @@ class SubscriptionDetailsController {
                         else if (params.generateSlavedLics == 'one' && ! licenseCopy) {
                             licenseCopy = result.subscriptionInstance.owner.getBaseCopy()
                             licenseCopy.instanceOf = result.subscriptionInstance.owner
+                            licenseCopy.type = RefdataValue.getByValueAndCategory('Actual', 'License Type')
                             licenseCopy.save()
 
                             new OrgRole(org: result.institution, lic: licenseCopy, roleType: role_lic_cons).save()

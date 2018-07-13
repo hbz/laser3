@@ -1,62 +1,52 @@
-<g:set var="rowspan" value="0"/>
-<g:if test="${tmplConfigOptions?.contains('addMembers')}">
-    <g:set var="rowspan" value="2"/>
-</g:if>
-
 <table class="ui sortable celled la-table table">
     <thead>
     <tr>
         <g:if test="${tmplShowCheckbox}">
-            <th rowspan="${rowspan}">
-                <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
+            <th>
+                <g:if test="${orgList}">
+                    <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
+                </g:if>
             </th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('name')}">
-            <g:sortableColumn title="${message(code: 'org.name.label', default: 'Name')}" property="lower(o.name)" rowspan="${rowspan}"/>
+            <g:sortableColumn title="${message(code: 'org.name.label', default: 'Name')}" property="lower(o.name)"/>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('identifier')}">
-            <th rowspan="${rowspan}">Identifier</th>
+            <th>Identifier</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('wib')}">
-            <th rowspan="${rowspan}">WIB</th>
+            <th>WIB</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('isil')}">
-            <th rowspan="${rowspan}">ISIL</th>
+            <th>ISIL</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('type')}">
-            <th rowspan="${rowspan}">${message(code: 'org.type.label', default: 'Type')}</th>
+            <th>${message(code: 'org.type.label', default: 'Type')}</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('sector')}">
-            <th rowspan="${rowspan}">${message(code: 'org.sector.label', default: 'Sector')}</th>
+            <th>${message(code: 'org.sector.label', default: 'Sector')}</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('federalState')}">
-            <th rowspan="${rowspan}">${message(code: 'org.federalState.label')}</th>
+            <th>${message(code: 'org.federalState.label')}</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('libraryNetwork')}">
-            <th rowspan="${rowspan}">${message(code: 'org.libraryNetwork.label')}</th>
+            <th>${message(code: 'org.libraryNetwork.label')}</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('libraryType')}">
-            <th rowspan="${rowspan}">${message(code: 'org.libraryType.label')}</th>
+            <th>${message(code: 'org.libraryType.label')}</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('country')}">
-            <th owspan="${rowspan}">${message(code: 'org.country.label')}</th>
+            <th>${message(code: 'org.country.label')}</th>
         </g:if>
-        <g:if test="${tmplConfigOptions?.contains('addMembers')}">
-            <th colspan="2">
-                <center>${message(code: 'org.option.label')}</center>
-            </th>
-        </g:if>
-    </tr>
-    <g:if test="${tmplConfigOptions?.contains('addMembers')}">
-        <tr>
+        <g:if test="${tmplConfigShow?.contains('addSubMembers')}">
             <th>
                 ${message(code: 'subscription.details.addMembers.option.package.label', args: [subInstance?.name])}
             </th>
             <th>
                 ${message(code: 'subscription.details.addMembers.option.issueEntitlement.label', args: [subInstance?.name])}
             </th>
-        </tr>
-    </g:if>
+        </g:if>
+    </tr>
     </thead>
     <tbody>
         <g:each in="${orgList}" var="org">
@@ -120,7 +110,7 @@
                 <td>${org.country?.getI10n('value')}</td>
             </g:if>
 
-            <g:if test="${tmplConfigOptions?.contains('addMembers')}">
+            <g:if test="${tmplConfigShow?.contains('addSubMembers')}">
                 <g:if test="${subInstance?.packages}">
                     <td><g:checkBox type="text" id="selectedPackage_${org.id}" name="selectedPackage_${org.id}" value="1"
                                     checked="false" onclick="checkselectedPackage(${org.id});"/></td>
@@ -147,7 +137,7 @@
                 $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', false)
             }
         })
-        <g:if test="${tmplConfigOptions?.contains('addMembers')}">
+        <g:if test="${tmplConfigOptions?.contains('addSubMembers')}">
             function checkselectedIssueEntitlement(selectedid) {
                 if ($('#selectedIssueEntitlement_' + selectedid).prop('checked')) {
                     $('#selectedPackage_' + selectedid).prop('checked', false);

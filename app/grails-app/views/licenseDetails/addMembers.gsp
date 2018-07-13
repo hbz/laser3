@@ -5,30 +5,38 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'subscription.details.addMembers.label')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'license.details.addMembers.label')}</title>
 </head>
 
 <body>
+<semui:breadcrumbs>
+    <semui:crumb controller="myInstitution" action="currentLicenses" text="${message(code: 'myinst.currentSubscriptions.label')}"/>
+    <semui:crumb controller="licenseDetails" action="show" id="${license.id}" text="${license.reference}"/>
+    <semui:crumb class="active" text="${message(code: 'license.details.addMembers.label')}"/>
+</semui:breadcrumbs>
 
-    <semui:breadcrumbs>
-        <semui:crumb controller="myInstitution" action="currentSubscriptions"
-                     text="${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}"/>
-        <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}"
-                     text="${subscriptionInstance.name}"/>
-        <semui:crumb class="active"
-                     text="${message(code: 'subscription.details.addMembers.label', default: 'Add Members')}"/>
-    </semui:breadcrumbs>
+<semui:controlButtons>
+    <g:render template="actions"/>
+</semui:controlButtons>
 
-    <semui:controlButtons>
-        <g:render template="actions"/>
-    </semui:controlButtons>
+<h1 class="ui header"><semui:headerIcon />
+    ${message(code:'license.details.type', args:["${license.type?.getI10n('value')}"], default:'License')} :
+    <semui:xEditable owner="${license}" field="reference" id="reference"/>
+</h1>
 
-    <h1 class="ui header"><semui:headerIcon/>
-        <g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name"
-                   class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>
-    </h1>
+<g:render template="nav" />
 
-    <g:render template="nav" contextPath="."/>
+<g:if test="${license.instanceOf && (contextOrg == license.getLicensor())}">
+    <div class="ui negative message">
+        <div class="header"><g:message code="myinst.message.attention" /></div>
+        <p>
+            <g:message code="myinst.licenseDetails.message.ChildView" />
+            <span class="ui label">${license.getLicensee()?.collect{itOrg -> itOrg.name}?.join(',')}</span>.
+        <g:message code="myinst.licenseDetails.message.ConsortialView" />
+        <g:link controller="licenseDetails" action="show" id="${license.instanceOf.id}"><g:message code="myinst.subscriptionDetails.message.here" /></g:link>.
+        </p>
+    </div>
+</g:if>
 
 <g:if test="${institution?.orgType?.value == 'Consortium'}">
 
@@ -41,7 +49,7 @@
         </g:form>
     </semui:filter>
 
-    <g:form action="processAddMembers" params="${[id: params.id]}" controller="subscriptionDetails" method="post" class="ui form">
+    <g:form action="processAddMembers" params="${[id: params.id]}" controller="licenseDetails" method="post" class="ui form">
 
         <input type="hidden" name="asOrgType" value="${institution?.orgType?.id}">
 
@@ -50,32 +58,11 @@
                           tmplDisableOrgIds: cons_members_disabled,
                           subInstance: subscriptionInstance,
                           tmplShowCheckbox: true,
-                          tmplConfigShow: ['name', 'wib', 'isil', 'federalState', 'libraryNetwork', 'libraryType', 'addSubMembers']
+                          tmplConfigShow: ['name', 'wib', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
                           ]"/>
 
         <g:if test="${cons_members}">
             <div class="ui two fields">
-                <div class="field">
-                    <label>Lizenz kopieren</label>
-
-                    <div class="ui checkbox">
-                        <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked"
-                               readonly="readonly">
-                        <label>${message(code: 'myinst.emptySubscription.seperate_subs', default: 'Generate seperate Subscriptions for all Consortia Members')}</label>
-                    </div>
-
-
-                    <g:set value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Status')}" var="rdcSubStatus"/>
-
-                    <br />
-                    <br />
-                    <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubStatus)}" class="ui dropdown"
-                              optionKey="id"
-                              optionValue="${{ it.getI10n('value') }}"
-                              name="subStatus"
-                              value="${com.k_int.kbplus.RefdataValue.findByValueAndOwner('Current', rdcSubStatus)?.id}"/>
-                </div>
-
                 <div class="field">
                     <label>Vertrag kopieren</label>
                     <div class="ui radio checkbox">
@@ -86,7 +73,7 @@
                         <input class="hidden" type="radio" name="generateSlavedLics" value="one" checked="checked">
                         <label>${message(code: 'myinst.emptySubscription.seperate_lics2')}</label>
                     </div>
-                    <g:if test="${subscriptionInstance.owner?.derivedLicenses}">
+                    <g:if test="${license.derivedLicenses}">
                         <div class="ui radio checkbox">
                             <input class="hidden" type="radio" name="generateSlavedLics" value="reference">
                             <label>${message(code: 'myinst.emptySubscription.seperate_lics3')}</label>
@@ -94,7 +81,7 @@
 
                         <br />
                         <br />
-                        <g:select from="${subscriptionInstance.owner?.derivedLicenses}" class="ui search dropdown"
+                        <g:select from="${license.derivedLicenses}" class="ui search dropdown"
                                   optionKey="${{ 'com.k_int.kbplus.License:' + it.id }}"
                                   optionValue="${{ it.getGenericLabel() }}"
                                   name="generateSlavedLicsReference"
@@ -102,12 +89,12 @@
                     </g:if>
                 </div>
             </div>
-        </g:if>
 
-        <br/>
-        <g:if test="${cons_members}">
-            <input type="submit" class="ui button js-click-control"
-                   value="${message(code: 'default.button.create.label', default: 'Create')}"/>
+            <br/>
+            <g:if test="${cons_members}">
+                <input type="submit" class="ui button js-click-control"
+                        value="${message(code: 'default.button.create.label', default: 'Create')}"/>
+            </g:if>
         </g:if>
     </g:form>
 

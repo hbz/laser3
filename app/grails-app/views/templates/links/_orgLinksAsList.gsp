@@ -3,7 +3,7 @@
 
 <g:each in="${roleLinks}" var="role">
     <g:if test="${role.org}">
-        <g:set var="cssId" value="prsLinksModal-${role.org.id}" />
+        <g:set var="cssId" value="prsLinksModal-${role.org.id}-${role.roleType.id}" />
 
         <table class="ui la-selectable table">
             <colgroup>
@@ -44,8 +44,8 @@
                 <td></td>
                 <td>
                     <%-- public --%>
-                    <g:if test="${  Person.getPublicByOrgAndFunc(role.org, 'General contact person') ||
-                            Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue)             }">
+                    <g:if test="${ Person.getPublicByOrgAndFunc(role.org, 'General contact person') ||
+                            Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue)  }">
                         <div class="ui list">
                             <g:each in="${Person.getPublicByOrgAndFunc(role.org, 'General contact person')}" var="func">
                                 <div class="item">

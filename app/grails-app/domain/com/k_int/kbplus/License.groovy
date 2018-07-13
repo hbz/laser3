@@ -360,7 +360,8 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
 
     // Find any licenses derived from this license
     // create a new pending change object
-    def derived_licenses = License.executeQuery('select l from License as l where exists ( select link from Link as link where link.toLic=l and link.fromLic=? )',this)
+    //def derived_licenses = License.executeQuery('select l from License as l where exists ( select link from Link as link where link.toLic=l and link.fromLic=? )',this)
+    def derived_licenses = License.executeQuery('select l from License as l where l.instanceOf=?', this)
     derived_licenses.each { dl ->
       if(dl.status.value != "Deleted"){
         log.debug("Send pending change to ${dl.id}");
