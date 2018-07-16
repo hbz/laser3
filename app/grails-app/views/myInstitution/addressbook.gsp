@@ -21,6 +21,11 @@ import="com.k_int.kbplus.RefdataCategory"
             <semui:crumb message="menu.institutions.addressbook" class="active"/>
         </semui:breadcrumbs>
 
+        <semui:controlButtons>
+            <g:render template="actions" />
+        </semui:controlButtons>
+
+
         <h1 class="ui header"><semui:headerIcon />${institution?.name} - ${message(code:'menu.institutions.myAddressbook', default:'My Addressbook')}</h1>
 
         <semui:messages data="${flash}" />
@@ -35,14 +40,6 @@ import="com.k_int.kbplus.RefdataCategory"
             </div>
         </div>
 
-
-
-        <g:if test="${editable}">
-            <input class="ui button"
-                value="${message(code: 'person.create_new.contactPerson.label')}"
-                data-semui="modal"
-                href="#personFormModal" />
-        </g:if>
 
         <g:render template="/person/formModal" model="['org': institution,
                                                        'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No'),

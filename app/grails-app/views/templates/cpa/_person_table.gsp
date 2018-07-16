@@ -3,8 +3,7 @@
 	<thead>
 		<tr>
             <th>
-                ${message(code:'person.last_name.label')},
-                ${message(code:'person.first_name.label')}
+                ${message(code:'person.name.label')}
             </th>
             <g:if test="${controllerName == 'myInstitution'}">
 			<th>Kontext</th>
