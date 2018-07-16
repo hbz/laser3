@@ -38,9 +38,18 @@ class InstitutionsService {
             return licenseInstance
         } else {
             log.debug("Save ok");
+
             def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee')
+            def lic_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensing Consortium')
+
             log.debug("adding org link to new license");
-            org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role));
+
+            if (params.asOrgType && RefdataValue.get(params.asOrgType)?.value == 'Consortium') {
+                org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role))
+            } else {
+                org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role))
+            }
+
             if (baseLicense?.licensor) {
                 def licensor_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensor')
                 org.links.add(new OrgRole(lic: licenseInstance, org: baseLicense.licensor, roleType: licensor_role));

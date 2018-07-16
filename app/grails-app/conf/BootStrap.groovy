@@ -1235,7 +1235,7 @@ class BootStrap {
         RefdataCategory.loc(RefdataCategory.LIC_TYPE,
                 [en: 'License Type', de: 'Lizenztyp'])
 
-        RefdataValue.loc(RefdataCategory.LIC_TYPE, [en: 'Actual', de: 'Lokal'])
+        RefdataValue.loc(RefdataCategory.LIC_TYPE, [en: 'Actual', de: 'Konkrete Instanz'])
         RefdataValue.loc(RefdataCategory.LIC_TYPE, [en: 'Template', de: 'Vorlage'])
         RefdataValue.loc(RefdataCategory.LIC_TYPE, [en: 'Unknown', de: 'Unbekannt'])
 

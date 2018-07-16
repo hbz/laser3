@@ -18,7 +18,7 @@
 <g:if test="${actionName in ['currentLicenses']}">
     <semui:actionsDropdown>
         <g:if test="${securityService.getCurrentUser().hasAffiliation("INST_EDITOR")}">
-            <semui:actionsDropdownItem controller="myInstitution" action="addLicense" message="license.add.blank" />
+            <semui:actionsDropdownItem controller="myInstitution" action="emptyLicense" message="license.add.blank" />
             <div class="divider"></div>
         </g:if>
 
