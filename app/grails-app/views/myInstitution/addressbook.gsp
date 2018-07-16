@@ -25,7 +25,17 @@ import="com.k_int.kbplus.RefdataCategory"
 
         <semui:messages data="${flash}" />
 
-        <p>${message(code:'myinst.addressBook.visible', default:'These persons are visible to you due your membership')} ..</p>
+        <div class="ui icon positive message">
+            <i class="close icon"></i>
+            <div class="content">
+                <div class="header">
+                    ${message(code: 'message.information')}
+                </div>
+                <p>${message(code:'myinst.addressBook.visible', default:'These persons are visible to you due your membership')}</p>
+            </div>
+        </div>
+
+
 
         <g:if test="${editable}">
             <input class="ui button"

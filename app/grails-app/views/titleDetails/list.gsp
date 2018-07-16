@@ -57,6 +57,7 @@
 
                <div class="ui icon negative message">
                  <i class="exclamation triangle icon"></i>
+                 <i class="close icon"></i>
                  <div class="content">
                    <div class="header">
                      ${message(code: 'message.attantion')}
