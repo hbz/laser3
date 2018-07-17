@@ -1271,15 +1271,18 @@
 ---------------*/
 
 .ui.la-selectable.table {
+  margin: 0;
+}
+.ui.la-selectable.table tr {
   border-bottom: 1px solid rgba(34, 36, 38, 0.1);
   margin: 0;
 }
-.ui.la-selectable.table tr td {
-  border-top: none;
-}
-.ui.la-selectable.table:hover {
+.ui.la-selectable.table tr:hover {
   background: rgba(0, 0, 0, 0.05) !important;
   color: rgba(0, 0, 0, 0.95) !important;
+}
+.ui.la-selectable.table tr td {
+  border-top: none;
 }
 
 /* la-selectable Cell Link */

@@ -167,7 +167,40 @@
 
                 <div class="ui card">
                         <div class="content">
-                            <g:each in="${subscriptionInstance.packages}" var="sp">
+
+                            <table class="ui la-selectable table">
+                                <colgroup>
+                                    <col width="130" />
+                                    <col width="300" />
+                                    <col width="430"/>
+                                </colgroup>
+                                <g:each in="${subscriptionInstance.packages}" var="sp">
+                                <tr>
+                                <th scope="row" class="control-label">${message(code:'subscription.packages.label')}</th>
+                                    <td>
+
+
+                                            <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
+
+                                            <g:if test="${sp.pkg?.contentProvider}">
+                                                (${sp.pkg?.contentProvider?.name})
+                                            </g:if>
+                                    </td>
+                                    <td>
+                                            <g:if test="${editable}">
+
+                                                <div class="ui mini icon buttons">
+                                                    <button class="ui button la-selectable-button" onclick="unlinkPackage(${sp.pkg.id})">
+                                                        <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
+                                                    </button>
+                                                </div>
+                                                <br />
+                                            </g:if>
+                                    </td>
+                                </tr>
+                                </g:each>
+                            </table>
+
                             <table class="ui la-selectable table">
                                 <colgroup>
                                     <col width="130" />
@@ -175,55 +208,41 @@
                                     <col width="430"/>
                                 </colgroup>
                                 <tr>
-                                <th scope="row" class="control-label">${message(code:'subscription.packages.label')}</th>
-                                <td>
-
-
-                                        <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
-
-                                        <g:if test="${sp.pkg?.contentProvider}">
-                                            (${sp.pkg?.contentProvider?.name})
+                                    <th scope="row" class="control-label">${message(code:'license')}</th>
+                                    <td>
+                                        <g:if test="${subscriptionInstance.owner == null}">
+                                            <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
                                         </g:if>
-                                </td>
-                                <td>
+                                        <g:else>
+                                            <g:link controller="licenseDetails" action="show" id="${subscriptionInstance.owner.id}">
+                                                ${subscriptionInstance.owner}
+                                            </g:link>
+                                        </g:else>
+                                        %{-- <g:if test="${subscriptionInstance.owner != null}">
+                                             [<g:link controller="licenseDetails" action="show" id="${subscriptionInstance.owner.id}">
+                                                 <i class="icon-share-alt"></i> ${message(code:'default.button.show.label', default:'Show')}
+                                             </g:link>]
+                                         </g:if>--}%
+                                    </td>
+                                    <td>
                                         <g:if test="${editable}">
 
                                             <div class="ui mini icon buttons">
-                                                <button class="ui button" onclick="unlinkPackage(${sp.pkg.id})">
+                                                <button class="ui button la-selectable-button" onclick="">
                                                     <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
                                                 </button>
                                             </div>
                                             <br />
                                         </g:if>
-                                </td>
+                                    </td>
                             </table>
-                            </g:each>
-                            <dl>
-                                <dt class="control-label la-width-122">${message(code:'license')}</dt>
-                                <dd>
 
-                                        <g:if test="${subscriptionInstance.owner == null}">
-                                            <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
-                                        </g:if>
-                                        <g:else><g:link controller="licenseDetails" action="show" id="${subscriptionInstance.owner.id}">
-                                                    ${subscriptionInstance.owner}
-                                                </g:link>
-                                        </g:else>
-                                       %{-- <g:if test="${subscriptionInstance.owner != null}">
-                                            [<g:link controller="licenseDetails" action="show" id="${subscriptionInstance.owner.id}">
-                                                <i class="icon-share-alt"></i> ${message(code:'default.button.show.label', default:'Show')}
-                                            </g:link>]
-                                        </g:if>--}%
-
-                                        <br/><br/>
-                                        <g:if test="${editable}">
-                                            <g:if test="${subscriptionInstance.owner == null}">
-                                                <g:link  controller="myInstitution" class="ui button" action="emptyLicense" params="[sub: subscriptionInstance.id, subName: subscriptionInstance.name]">${message(code:'license.add.blank')}
-                                                </g:link>
-                                            </g:if>
-                                        </g:if>
-                                </dd>
-                            </dl>
+                            <g:if test="${editable}">
+                                <g:if test="${subscriptionInstance.owner == null}">
+                                    <g:link  controller="myInstitution" class="ui button la-new-item" action="emptyLicense" params="[sub: subscriptionInstance.id, subName: subscriptionInstance.name]">${message(code:'license.add.blank')}
+                                    </g:link>
+                                </g:if>
+                            </g:if>
                         </div>
                     </div>
 
