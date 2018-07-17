@@ -233,7 +233,7 @@ class MyInstitutionController {
         def license_status = RefdataCategory.lookupOrCreate('License Status', 'Deleted')
 
         def base_qry
-        def qry_params // = [lic_org:result.institution, org_roles:[licensee_role, licensee_cons_role, lic_cons_role], lic_status:license_status]
+        def qry_params
 
         @Deprecated
         def qry = INSTITUTIONAL_LICENSES_QUERY
@@ -255,16 +255,7 @@ from License as l where (
     AND ( l.status != :deleted OR l.status = null )
     AND ( l.type != :template )
 )
-""" // TODO check instanceOf and TEMPLATE
-//     AND ( not exists ( select o from l.orgLinks as o where o.roleType = :lcRoleType ) )
-/*
-AND (
-   ( not exists ( select o from l.orgLinks as o where o.roleType = :lcRoleType ) )
-   or
-   ( ( exists ( select o from l.orgLinks as o where o.roleType = :lcRoleType ) ) AND ( l.instanceOf is not null) )
-)
-*/
-            //qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution, deleted:license_status, lcRoleType:lic_cons_role, template: template_license_type]
+"""
             qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution, deleted:license_status, template: template_license_type]
         }
 
@@ -272,14 +263,19 @@ AND (
 
             base_qry = """
 from License as l where (
-    exists ( select o from l.orgLinks as o where ( ( o.roleType = :roleType ) AND o.org = :lic_org ) ) 
+    exists ( select o from l.orgLinks as o where ( 
+            ( o.roleType = :roleTypeC 
+                AND o.org = :lic_org 
+                AND NOT exists (
+                    select o2 from l.orgLinks as o2 where o2.roleType = :roleTypeL
+                )
+            )
+        )) 
     AND ( l.status != :deleted OR l.status = null )
     AND ( l.type != :template )
 )
-""" // TODO check instanceOf and TEMPLATE
-// AND ( l.instanceOf is null )
-
-            qry_params = [roleType:lic_cons_role, lic_org:result.institution, deleted:license_status, template: template_license_type]
+"""
+            qry_params = [roleTypeC:lic_cons_role, roleTypeL:licensee_cons_role, lic_org:result.institution, deleted:license_status, template:template_license_type]
         }
 
         if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
