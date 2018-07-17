@@ -150,15 +150,17 @@
 
 
 .ui.la-selectable.table {
-  border-bottom: @rowBorder;
   margin: 0;
-
-  tr td {
-    border-top: none;
-  }
-  &:hover {
-    background: @selectableBackground !important;
-    color: @selectableTextColor !important;
+  tr {
+    border-bottom: @rowBorder;
+    margin: 0;
+    &:hover {
+      background: @selectableBackground !important;
+      color: @selectableTextColor !important;
+    }
+    td {
+      border-top: none;
+    }
   }
 }
 
