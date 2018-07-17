@@ -10,17 +10,16 @@
 </head>
 <body>
 
-<g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
+    <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-<semui:controlButtons>
-    <g:render template="actions" />
-</semui:controlButtons>
+    <semui:controlButtons>
+        <g:render template="actions" />
+    </semui:controlButtons>
 
-<h1 class="ui header"><semui:headerIcon />
-%{--${license.licensee?.name}--}%
-${message(code:'license.details.type', args:["${license.type?.getI10n('value')}"], default:'License')} :
-<semui:xEditable owner="${license}" field="reference"/>
-</h1>
+    <h1 class="ui header"><semui:headerIcon />
+        <g:if test="${license.type?.value == 'Template'}">${message(code:'license.label')} (${license.type.getI10n('value')}):</g:if>
+        <semui:xEditable owner="${license}" field="reference" id="reference"/>
+    </h1>
 
 <g:render template="nav" />
 

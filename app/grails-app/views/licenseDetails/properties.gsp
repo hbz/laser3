@@ -14,9 +14,7 @@
     <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
     <h1 class="ui header"><semui:headerIcon />
-
-        %{--${license.licensee?.name}--}%
-        ${message(code:'license.details.type', args:["${license.type?.getI10n('value')}"], default:'License')} :
+        <g:if test="${license.type?.value == 'Template'}">${message(code:'license.label')} (${license.type.getI10n('value')}):</g:if>
         <semui:xEditable owner="${license}" field="reference" id="reference"/>
     </h1>
 
