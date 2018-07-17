@@ -18,22 +18,24 @@
         </semui:controlButtons>
 
         <h1 class="ui header"><semui:headerIcon />
-
-            %{--${license.licensee?.name}--}%
             ${message(code:'license.details.type', args:["${license.type?.getI10n('value')}"], default:'License')} :
             <semui:xEditable owner="${license}" field="reference" id="reference"/>
         </h1>
 
         <g:render template="nav" />
 
-        <g:if test="${license.instanceOf && (contextOrg == license.getLicensor())}">
+        <g:if test="${! license.hasTemplate() && license.instanceOf && (contextOrg == license.getLicensor())}">
             <div class="ui negative message">
                 <div class="header"><g:message code="myinst.message.attention" /></div>
                 <p>
                     <g:message code="myinst.licenseDetails.message.ChildView" />
                     <span class="ui label">${license.getLicensee()?.collect{itOrg -> itOrg.name}?.join(',')}</span>.
-                <g:message code="myinst.licenseDetails.message.ConsortialView" />
-                <g:link controller="licenseDetails" action="show" id="${license.instanceOf.id}"><g:message code="myinst.subscriptionDetails.message.here" /></g:link>.
+
+                    <g:message code="myinst.licenseDetails.message.ConsortialView" />
+                    <g:link controller="licenseDetails" action="show" id="${license.instanceOf?.id}">
+                        <g:message code="myinst.subscriptionDetails.message.here" />
+                    </g:link>.
+
                 </p>
             </div>
         </g:if>
@@ -89,7 +91,9 @@
 
         <semui:messages data="${flash}" />
 
-        <g:render template="/templates/pendingChanges" model="${['pendingChanges':pendingChanges, 'flash':flash, 'model':license]}"/>
+        <g:if test="${contextOrg == license.getLicensor() || (! license.getLicensor() && contextOrg == license.getLicensee())}">
+            <g:render template="/templates/pendingChanges" model="${['pendingChanges':pendingChanges, 'flash':flash, 'model':license]}"/>
+        </g:if>
 
         <div class="ui grid">
 
