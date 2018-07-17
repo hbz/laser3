@@ -187,7 +187,7 @@
                                             <td>
                                             <g:if test="${editable}">
                                                 <div class="ui mini icon buttons">
-                                                    <g:link class="ui button" name="unlinkSubscription"
+                                                    <g:link class="ui button la-selectable-button" name="unlinkSubscription"
                                                             controller="licenseDetails" action="unlinkSubscription"
                                                             params="['license':license.id, 'subscription':sub.id]"
                                                             onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >

@@ -20,14 +20,14 @@
                 </td>
                 <td>
                         <div class="ui mini icon buttons">
-                            <g:link class="ui mini icon button" controller="ajax" action="delOrgRole" id="${role.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
+                            <g:link class="ui mini icon button la-selectable-button" controller="ajax" action="delOrgRole" id="${role.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
                                 <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
                             </g:link>
                         </div>
                 </td>
                 <td>
                     <div class="ui mini icon buttons">
-                        <button class="ui button" data-semui="modal" href="#${cssId}" style="margin-left:1rem">
+                        <button class="ui button la-selectable-button" data-semui="modal" href="#${cssId}" style="margin-left:1rem">
                                     <i class="address plus icon"></i> ${modalPrsLinkRole.getI10n("value")} hinzufügen
                         </button>
                     </div>
@@ -66,7 +66,7 @@
                                         <g:if test="${editmode}">
                                             <g:set var="prsRole" value="${com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
                                             <div class="ui mini icon buttons">
-                                                <g:link class="ui button" controller="ajax" action="delPrsRole" id="${prsRole?.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
+                                                <g:link class="ui button la-selectable-button" controller="ajax" action="delPrsRole" id="${prsRole?.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
                                                     <i class="times icon red"></i>
                                                 </g:link>
                                             </div>
@@ -100,7 +100,7 @@
                                         <g:if test="${editmode}">
                                             <g:set var="prsRole" value="${com.k_int.kbplus.PersonRole.getByPersonAndOrgAndRespValue(resp, role.org, roleRespValue)}" />
                                             <div class="ui mini icon buttons">
-                                                <g:link class="ui button" controller="ajax" action="delPrsRole" id="${prsRole?.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
+                                                <g:link class="ui button la-selectable-button" controller="ajax" action="delPrsRole" id="${prsRole?.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
                                                     <i class="times icon red"></i>
                                                 </g:link>
                                             </div>
