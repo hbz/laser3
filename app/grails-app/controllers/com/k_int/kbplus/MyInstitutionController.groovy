@@ -227,17 +227,63 @@ class MyInstitutionController {
 
         def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
         def licensee_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial');
+        def lic_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensing Consortium');
 
         def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template');
         def license_status = RefdataCategory.lookupOrCreate('License Status', 'Deleted')
 
-        def qry_params = [lic_org:result.institution, org_roles:[licensee_role, licensee_cons_role], lic_status:license_status]
+        def base_qry
+        def qry_params // = [lic_org:result.institution, org_roles:[licensee_role, licensee_cons_role, lic_cons_role], lic_status:license_status]
 
+        @Deprecated
         def qry = INSTITUTIONAL_LICENSES_QUERY
-        // def qry = "from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ol.roleType = ? ) AND l.status.value != 'Deleted'"
+
+        if (! params.orgRole) {
+            if (result.institution?.orgType?.value == 'Consortium') {
+                params.orgRole = 'Licensing Consortium'
+            }
+            else {
+                params.orgRole = 'Licensee'
+            }
+        }
+
+        if (params.orgRole == 'Licensee') {
+
+            base_qry = """
+from License as l where (
+    exists ( select o from l.orgLinks as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
+    AND ( l.status != :deleted OR l.status = null )
+    AND ( l.type != :template )
+)
+""" // TODO check instanceOf and TEMPLATE
+//     AND ( not exists ( select o from l.orgLinks as o where o.roleType = :lcRoleType ) )
+/*
+AND (
+   ( not exists ( select o from l.orgLinks as o where o.roleType = :lcRoleType ) )
+   or
+   ( ( exists ( select o from l.orgLinks as o where o.roleType = :lcRoleType ) ) AND ( l.instanceOf is not null) )
+)
+*/
+            //qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution, deleted:license_status, lcRoleType:lic_cons_role, template: template_license_type]
+            qry_params = [roleType1:licensee_role, roleType2:licensee_cons_role, lic_org:result.institution, deleted:license_status, template: template_license_type]
+        }
+
+        if (params.orgRole == 'Licensing Consortium') {
+
+            base_qry = """
+from License as l where (
+    exists ( select o from l.orgLinks as o where ( ( o.roleType = :roleType ) AND o.org = :lic_org ) ) 
+    AND ( l.status != :deleted OR l.status = null )
+    AND ( l.type != :template )
+)
+""" // TODO check instanceOf and TEMPLATE
+// AND ( l.instanceOf is null )
+
+            qry_params = [roleType:lic_cons_role, lic_org:result.institution, deleted:license_status, template: template_license_type]
+        }
 
         if ((params['keyword-search'] != null) && (params['keyword-search'].trim().length() > 0)) {
-            qry += " and lower(l.reference) like :ref"
+            base_qry += " and lower(l.reference) like :ref"
             qry_params += [ref:"%${params['keyword-search'].toLowerCase()}%"]
             result.keyWord = params['keyword-search'].toLowerCase()
         }
@@ -245,25 +291,26 @@ class MyInstitutionController {
         // eval property filter
 
         if (params.filterPropDef) {
-            (qry, qry_params) = propertyService.evalFilterQuery(params, qry, 'l', qry_params)
+            (base_qry, qry_params) = propertyService.evalFilterQuery(params, base_qry, 'l', qry_params)
         }
 
         if (date_restriction) {
-            qry += " and ( ( l.startDate <= :date_restr and l.endDate >= :date_restr ) OR l.startDate is null OR l.endDate is null OR l.startDate >= :date_restr  ) "
+            base_qry += " and ( ( l.startDate <= :date_restr and l.endDate >= :date_restr ) OR l.startDate is null OR l.endDate is null OR l.startDate >= :date_restr  ) "
             qry_params += [date_restr: date_restriction]
             qry_params += [date_restr: date_restriction]
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
-            qry += " order by l.${params.sort} ${params.order}"
+            base_qry += " order by l.${params.sort} ${params.order}"
         } else {
-            qry += " order by l.reference asc"
+            base_qry += " order by l.reference asc"
         }
 
-        //log.debug("currentLicense query=${qry}, params=${qry_params}");
+        log.debug("query = ${base_qry}");
+        log.debug("params = ${qry_params}");
 
-        result.licenseCount = License.executeQuery("select count(l) ${qry}", qry_params)[0];
-        result.licenses = License.executeQuery("select l ${qry}", qry_params, [max: result.max, offset: result.offset]);
+        result.licenseCount = License.executeQuery("select count(l) ${base_qry}", qry_params)[0];
+        result.licenses = License.executeQuery("select l ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
         def filename = "${result.institution.name}_licenses"
         withFormat {
             html result

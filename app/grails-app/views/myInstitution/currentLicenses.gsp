@@ -61,14 +61,46 @@
                 <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
             </div>
 
-            <div class="fields">
-                <div class="field">
-                    <a href="${request.forwardURI}" class="ui reset primary primary button">${message(code:'default.button.reset.label')}</a>
-                </div>
-                <div class="field">
-                    <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}" />
-                </div>
-            </div><!--.fields-->
+
+            <g:if test="${institution?.orgType?.value == 'Consortium'}">
+
+                <div class="two fields">
+                    <div class="field">
+                        <label>${message(code: 'myinst.currentSubscriptions.filter.filterForRole.label')}</label>
+
+                        <div class="inline fields la-filter-inline">
+                            <div class="field">
+                                <div class="ui radio checkbox">
+                                    <input id="radioLicensee" type="radio" value="Licensee" name="orgRole" tabindex="0" class="hidden"
+                                           <g:if test="${params.orgRole == 'Licensee'}">checked=""</g:if>
+                                    >
+                                    <label for="radioLicensee">${message(code: 'subscription.details.members.label')}</label>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <div class="ui radio checkbox">
+                                    <input id="radioKonsortium" type="radio" value="Licensing Consortium" name="orgRole" tabindex="0" class="hidden"
+                                           <g:if test="${params.orgRole == 'Licensing Consortium'}">checked=""</g:if>
+                                    >
+                                    <label for="radioKonsortium">${message(code: 'myinst.currentSubscriptions.filter.consortium.label')}</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!--.field-->
+
+            </g:if>
+
+                    <div class="field la-filter-search">
+                        <a href="${request.forwardURI}" class="ui reset primary primary button">${message(code:'default.button.reset.label')}</a>
+
+                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}" />
+                    </div>
+
+            <g:if test="${institution?.orgType?.value == 'Consortium'}">
+                </div><!--.two fields-->
+            </g:if>
+
         </form>
     </semui:filter>
 
@@ -80,7 +112,9 @@
             <thead>
               <tr>
                 <g:sortableColumn params="${params}" property="reference" title="${message(code:'license.slash.name')}" />
-                <th>${message(code:'license.licensor.label', default:'Licensor')}</th>
+                <g:if test="${params.orgRole == 'Licensee'}">
+                    <th>${message(code:'license.licensor.label', default:'Licensor')}</th>
+                </g:if>
                 <g:sortableColumn params="${params}" property="startDate" title="${message(code:'license.start_date', default:'Start Date')}" />
                 <g:sortableColumn params="${params}" property="endDate" title="${message(code:'license.end_date', default:'End Date')}" />
                 <th></th>
@@ -107,7 +141,13 @@
                       <br/>${message(code:'myinst.currentLicenses.no_subs', default:'No linked subscriptions.')}
                     </g:else>
                   </td>
-                  <td>${l.licensor?.name}</td>
+
+                    <g:if test="${params.orgRole == 'Licensee'}">
+                        <td>
+                            ${l.licensor?.name}
+                        </td>
+                    </g:if>
+
                   <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.startDate}"/></td>
                   <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${l.endDate}"/></td>
                   <td class="x">
