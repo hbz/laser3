@@ -24,7 +24,7 @@
                         </g:if>
                     </td>
                     <td>
-                        ${role?.roleType?.getI10n("value")}
+                        ${role?.roleType?.getI10n("value")} / ${role?.roleType?.value}
                     </td>
                     <td>
                         <g:if test="${role.pkg}">

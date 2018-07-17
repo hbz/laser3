@@ -10,7 +10,7 @@
 
 <body>
 <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentLicenses" text="${message(code: 'myinst.currentSubscriptions.label')}"/>
+    <semui:crumb controller="myInstitution" action="currentLicenses" text="${message(code: 'license.current')}"/>
     <semui:crumb controller="licenseDetails" action="show" id="${license.id}" text="${license.reference}"/>
     <semui:crumb class="active" text="${message(code: 'license.details.addMembers.label')}"/>
 </semui:breadcrumbs>

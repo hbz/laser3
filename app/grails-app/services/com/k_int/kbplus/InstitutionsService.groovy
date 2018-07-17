@@ -20,7 +20,7 @@ class InstitutionsService {
                 startDate:baseLicense?.startDate,
                 endDate:baseLicense?.endDate,
 
-                instanceof: baseLicense,
+                instanceOf: baseLicense,
                 isSlaved: params.isSlaved
         )
         if(params.copyStartEnd){

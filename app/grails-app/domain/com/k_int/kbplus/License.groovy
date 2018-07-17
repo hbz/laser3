@@ -3,13 +3,14 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.Role
 import de.laser.domain.BaseDomainComponent
 import de.laser.domain.Permissions
+import de.laser.domain.TemplateSupport
 
 import javax.persistence.Transient
 import java.text.Normalizer
 import com.k_int.properties.PropertyDefinition
 import com.k_int.ClassUtils
 
-class License extends BaseDomainComponent implements Permissions, Comparable<License> {
+class License extends BaseDomainComponent implements TemplateSupport, Permissions, Comparable<License> {
 
     @Transient
     def grailsApplication
@@ -136,8 +137,14 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
         lastUpdated(nullable: true, blank: true)
     }
 
+    @Override
     def isTemplate() {
         return (type != null) && (type == RefdataValue.getByValueAndCategory('Template', 'License Type'))
+    }
+
+    @Override
+    def hasTemplate() {
+        return instanceOf ? instanceOf.isTemplate() : false
     }
 
   def getLicensor() {
