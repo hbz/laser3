@@ -6,7 +6,7 @@
 <html>
 <head>
   <meta name="layout" content="semanticUI"/>
-  <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'license.label', default:'License')}</title>
+  <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'license.details.incoming.childs')}</title>
 </head>
 <body>
 
@@ -26,13 +26,17 @@
 <table class="ui celled la-table table">
     <thead>
         <tr>
-            <th></th>
-            <th></th>
+            <th>${message(code:'sidewide.number')}</th>
+            <th>${message(code:'license')}</th>
+            <th>${message(code:'subscriptionDetails.members.members')}</th>
+            <th>${message(code:'license.details.status')}</th>
         </tr>
     </thead>
     <tbody>
-        <g:each in="${License.findAllWhere(instanceOf: license)}" var="lic">
+
+        <g:each in="${License.findAllWhere(instanceOf: license)}" status="i" var="lic">
             <tr>
+                <td>${i + 1}</td>
                 <td>
                     <g:link controller="licenseDetails" action="show" id="${lic.id}">${lic.genericLabel}</g:link>
 
@@ -50,19 +54,23 @@
                             </g:link>
                             , ${orgRole?.roleType.getI10n('value')} <br />
                         </g:if>
+
+                        <g:if test="${license.isTemplate() && orgRole?.roleType.value in ['Licensing Consortium']}">
+                            <g:link controller="organisations" action="show" id="${orgRole?.org.id}">
+                                ${orgRole?.org.getDesignation()}
+                            </g:link>
+                            , ${orgRole?.roleType.getI10n('value')} <br />
+                        </g:if>
                     </g:each>
+                </td>
+                <td>
+                    ${lic.status.getI10n('value')}
                 </td>
             </tr>
         </g:each>
-      <%--
-      <g:each in="${license.incomingLinks}" var="links">
-        <tr>
-          <td>Incoming</td>
-          <td>${links.linkTarget.genericLabel}</td>
-        </tr>
-      </g:each>
-      --%>
+
     </tbody>
+</table>
 
 </body>
 </html>

@@ -49,9 +49,10 @@
 
     <g:each in="${[validSubChilds, deletedSubChilds]}" status="i" var="outerLoop">
 
-        <br />
-
-        <h2><g:if test="${i==1}">${message(code:'subscriptionDetails.members.deleted')}</g:if> ${message(code:'subscriptionDetails.members.members')}</h2>
+        <g:if test="${i==1}">
+            <br />
+            <h2>${message(code:'subscriptionDetails.members.deleted')} ${message(code:'subscriptionDetails.members.members')}
+        </g:if>
 
         <table class="ui celled la-table table">
             <thead>

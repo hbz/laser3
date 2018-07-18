@@ -6,7 +6,6 @@
 <semui:subNav actionName="${actionName}">
     <semui:subNavItem controller="licenseDetails" action="show" params="${[id:params.id]}" message="license.nav.details" />
 
-    <%-- TODO: FIX ACCESS: erms-470 --%>
     <g:if test="${license?.isTemplate() || license?.getLicensor()?.id == contextService.getOrg()?.id}">
         <semui:subNavItem controller="licenseDetails" action="members" params="${[id:params.id]}" message="license.details.incoming.childs" />
     </g:if>
@@ -21,7 +20,8 @@
         <semui:subNavItem controller="licenseDetails" action="permissionInfo" params="${[id:params.id]}" class="la-role-admin" message="license.nav.permissionInfo" />
     </sec:ifAnyGranted>
 
+    <%--
     <g:if test="${license.orgLinks?.find{it.roleType?.value == 'Licensing Consortium' && accService.checkMinUserOrgRole(user, it.org, 'INST_ADM') && license.licenseType == 'Template'}}">
         <semui:subNavItem controller="licenseDetails" action="consortia" params="${[id:params.id]}" message="consortium.plural" />
-    </g:if>
+    </g:if> --%>
 </semui:subNav>
