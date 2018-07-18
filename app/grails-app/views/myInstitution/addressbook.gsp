@@ -47,7 +47,41 @@ import="com.k_int.kbplus.RefdataCategory"
         ]"/>
 
         <g:if test="${visiblePersons}">
-            <h5 class="ui header"><g:message code="org.prsLinks.label" default="Persons" /></h5>
+
+
+            <semui:filter>
+                <g:form action="adressbook" controller="myInstitution" method="get" class="form-inline ui small form">
+                    <div class="three fields">
+                        <div class="field">
+                            <label>${message(code: 'person.filter.name')}</label>
+
+                            <div class="ui input">
+                                <input type="text" name="name"
+                                       placeholder="${message(code: 'person.filter.name')}"
+                                       value="${params.name?.encodeAsHTML()}"/>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label>${message(code: 'person.filter.organization')}</label>
+
+                            <div class="ui input">
+                                <input type="text" name="organizaion"
+                                       placeholder="${message(code: 'person.filter.organization')}"
+                                       value="${params.organizaion?.encodeAsHTML()}"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="three fields">
+                        <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
+                        <div class="field la-filter-search">
+                            <label></label>
+                            <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+                            <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}">
+                        </div>
+                    </div>
+
+                </g:form>
+            </semui:filter>
 
             <g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons]}"></g:render>
 
