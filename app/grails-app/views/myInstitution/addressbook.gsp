@@ -51,32 +51,36 @@ import="com.k_int.kbplus.RefdataCategory"
 
             <semui:filter>
                 <g:form action="adressbook" controller="myInstitution" method="get" class="form-inline ui small form">
-                    <div class="three fields">
-                        <div class="field">
-                            <label>${message(code: 'person.filter.name')}</label>
+                    <div class="field">
+                        <div class="three fields">
+                            <div class="field">
+                                <label>${message(code: 'person.filter.name')}</label>
 
-                            <div class="ui input">
-                                <input type="text" name="name"
-                                       placeholder="${message(code: 'person.filter.name')}"
-                                       value="${params.name?.encodeAsHTML()}"/>
+                                <div class="ui input">
+                                    <input type="text" name="name"
+                                           placeholder="${message(code: 'person.filter.name')}"
+                                           value="${params.name?.encodeAsHTML()}"/>
+                                </div>
                             </div>
-                        </div>
-                        <div class="field">
-                            <label>${message(code: 'person.filter.organization')}</label>
+                            <div class="field">
+                                <label>${message(code: 'person.filter.organization')}</label>
 
-                            <div class="ui input">
-                                <input type="text" name="organizaion"
-                                       placeholder="${message(code: 'person.filter.organization')}"
-                                       value="${params.organizaion?.encodeAsHTML()}"/>
+                                <div class="ui input">
+                                    <input type="text" name="organizaion"
+                                           placeholder="${message(code: 'person.filter.organization')}"
+                                           value="${params.organizaion?.encodeAsHTML()}"/>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="three fields">
-                        <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
-                        <div class="field la-filter-search">
-                            <label></label>
-                            <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-                            <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}">
+                    <div class="field">
+                        <div class="three fields">
+                            <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
+                            <div class="field la-filter-search">
+                                <label></label>
+                                <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+                                <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}">
+                            </div>
                         </div>
                     </div>
 
