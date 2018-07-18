@@ -22,7 +22,7 @@
     <semui:messages data="${flash}"/>
 
     <semui:form>
-        <g:form action="cleanLicense" controller="myInstitution" method="post" class="ui form newLicence">
+        <g:form action="processEmptyLicense" controller="myInstitution" method="post" class="ui form newLicence">
             <g:hiddenField name="sub" value="${params.sub}"/>
 
             <g:if test="${params.sub}">
@@ -67,16 +67,16 @@
 <hr>
 
 <h3>${message(code: 'license.copy')}</h3>
+
 <g:if test="${numLicenses > 0 || (params.filter)}">
 
     <semui:filter>
-        <g:form action="emptyLicense" params="${params}" method="get" class="ui form">
+        <g:form action="processEmptyLicense" params="${params}" method="get" class="ui form">
             <div class="fields">
                 <div class="field">
                     <label>${message(code: 'license.name')}</label>
                     <input name="filter" type="text" value="${params.filter}"/>
                 </div>
-
 
                 <div class="field">
                     <label>&nbsp;</label>
@@ -92,18 +92,6 @@
             <input type="hidden" name="order" value="${params.order}">
         </g:form>
     </semui:filter>
-
-    <!--
-        <div>
-            <div class="well license-options">
-    <g:if test="${is_inst_admin}">
-        <input type="submit" name="copy-license" value="${message(code: 'default.button.copySelected.label', default: 'Copy Selected')}" class="ui negative button" />
-    </g:if>
-    <g:else>${message(code: 'myinst.addLicense.no_permission', default: 'Sorry, you must have editor role to be able to add licenses')}</g:else>
-    </div>
-</div>
--->
-    <semui:messages data="${flash}"/>
 
     <div class="license-results">
         <table class="ui sortable celled la-table table">
@@ -145,7 +133,7 @@
                     <td><g:formatDate formatName="default.date.format.notime" date="${l.endDate}"/></td>
                     <td class="x">
                         <g:link controller="myInstitution" action="emptyLicense"
-                                params="${[baselicense: l.id, 'copy-license': 'Y', licenseName: l.reference, licenseStartDate: l.startDate, licenseEndDate: l.endDate, sub: params.sub]}" class="ui icon positive button">
+                                params="${[baselicense: l.id, licenseName: l.reference, licenseStartDate: l.startDate, licenseEndDate: l.endDate, sub: params.sub]}" class="ui icon positive button">
                             <i class="copy icon"></i>
                         </g:link>
                     </td>

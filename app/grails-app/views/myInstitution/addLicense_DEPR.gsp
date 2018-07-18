@@ -20,14 +20,14 @@
 <!--
 <semui:subNav actionName="${actionName}">
     <semui:subNavItem controller="myInstitution" action="currentLicenses" message="license.current"/>
-    <semui:subNavItem controller="myInstitution" action="addLicense" message="license.copy"/>
+    <semui:subNavItem controller="myInstitution" action="addLicense_DEPR" message="license.copy"/>
     <g:if test="${is_inst_admin}">
-        <semui:subNavItem controller="myInstitution" action="addLicense" message="license.add.blank"/>
+        <semui:subNavItem controller="myInstitution" action="addLicense_DEPR" message="license.add.blank"/>
     </g:if>
 </semui:subNav>-->
 
 <h3>${message(code: 'license.new', default: 'Create new License')}</h3>
-<g:form action="cleanLicense" controller="myInstitution" method="post" class="ui form newLicence">
+<g:form action="processEmptyLicense" controller="myInstitution" method="post" class="ui form newLicence">
     <g:hiddenField name="sub" value="${params.sub}"/>
 
 
@@ -60,7 +60,7 @@
 <g:if test="${numLicenses > 0 || (params.filter)}">
 
     <semui:filter>
-        <g:form action="addLicense" params="${params}" method="get" class="ui form">
+        <g:form action="emptyLicense" params="${params}" method="get" class="ui form">
             <div class="fields">
                 <div class="field">
                     <label>${message(code: 'license.name')}</label>
@@ -134,7 +134,7 @@
                     <td><g:formatDate formatName="default.date.format.notime" date="${l.startDate}"/></td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${l.endDate}"/></td>
                     <td class="x">
-                        <g:link controller="myInstitution" action="addLicense"
+                        <g:link controller="myInstitution" action="emptyLicense"
                                 params="${[baselicense: l.id, 'copy-license': 'Y', licenseName: l.reference, licenseStartDate: l.startDate, licenseEndDate: l.endDate, sub: params.sub]}" class="ui icon positive button">
                             <i class="copy icon"></i>
                         </g:link>
@@ -145,7 +145,7 @@
         </table>
 
         <g:if test="${licenses}">
-            <semui:paginate action="addLicense" controller="myInstitution" params="${params}"
+            <semui:paginate action="emptyLicense" controller="myInstitution" params="${params}"
                             next="${message(code: 'default.paginate.next', default: 'Next')}"
                             prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
                             total="${numLicenses}"/>

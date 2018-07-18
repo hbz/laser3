@@ -1,9 +1,7 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
-import de.laser.ContextService
 import de.laser.helper.DebugAnnotation
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -181,7 +179,7 @@ class MyInstitutionController {
     def actionLicenses() {
         log.debug("actionLicenses :: ${params}")
         if (params['copy-license']) {
-            newLicense(params)
+            newLicense_DEPR(params)
         } else if (params['delete-license']) {
             deleteLicense(params)
         }
@@ -397,7 +395,6 @@ from License as l where (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def emptyLicense() {
         def result = setResultGenerics()
-        result.orgType = result.institution.orgType
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
@@ -414,78 +411,12 @@ from License as l where (
         cal.setTimeInMillis(System.currentTimeMillis())
         cal.set(Calendar.MONTH, Calendar.JANUARY)
         cal.set(Calendar.DAY_OF_MONTH, 1)
+
         result.defaultStartYear = sdf.format(cal.getTime())
+
         cal.set(Calendar.MONTH, Calendar.DECEMBER)
         cal.set(Calendar.DAY_OF_MONTH, 31)
-        result.defaultEndYear = sdf.format(cal.getTime())
 
-        result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
-
-        def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template');
-        def qparams = [template_license_type]
-        def public_flag = RefdataCategory.lookupOrCreate('YN', 'No');
-
-        // This query used to allow institutions to copy their own licenses - now users only want to copy template licenses
-        // (OS License specs)
-        // def qry = "from License as l where ( ( l.type = ? ) OR ( exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ol.roleType = ? ) ) OR ( l.isPublic=? ) ) AND l.status.value != 'Deleted'"
-
-        def query = "from License as l where l.type = ? AND l.status.value != 'Deleted'"
-
-        if (params.filter) {
-            query += " and lower(l.reference) like ?"
-            qparams.add("%${params.filter.toLowerCase()}%")
-        }
-
-        //separately select all licenses that are not public or are null, to test access rights.
-        // For some reason that I could track, l.isPublic != 'public-yes' returns different results.
-        def non_public_query = query + " and ( l.isPublic = ? or l.isPublic is null) "
-
-        if ((params.sort != null) && (params.sort.length() > 0)) {
-            query += " order by l.${params.sort} ${params.order}"
-        } else {
-            query += " order by sortableReference asc"
-        }
-
-        println qparams
-        result.numLicenses = License.executeQuery("select count(l) ${query}", qparams)[0]
-        result.licenses = License.executeQuery("select l ${query}", qparams,[max: result.max, offset: result.offset])
-
-        //We do the following to remove any licenses the user does not have access rights
-        qparams += public_flag
-
-        def nonPublic = License.executeQuery("select l ${non_public_query}", qparams)
-        def no_access = nonPublic.findAll{ !it.hasPerm("view",result.user)  }
-
-        result.licenses = result.licenses - no_access
-        result.numLicenses = result.numLicenses - no_access.size()
-
-        result
-    }
-
-    @Deprecated
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def addLicense() {
-        def result = setResultGenerics()
-
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
-            response.sendError(401)
-            return;
-        }
-
-        def cal = new java.util.GregorianCalendar()
-        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
-
-        cal.setTimeInMillis(System.currentTimeMillis())
-        cal.set(Calendar.MONTH, Calendar.JANUARY)
-        cal.set(Calendar.DAY_OF_MONTH, 1)
-        result.defaultStartYear = sdf.format(cal.getTime())
-        cal.set(Calendar.MONTH, Calendar.DECEMBER)
-        cal.set(Calendar.DAY_OF_MONTH, 31)
         result.defaultEndYear = sdf.format(cal.getTime())
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
@@ -523,7 +454,7 @@ from License as l where (
         qparams += public_flag
 
         def nonPublic = License.executeQuery("select l ${non_public_query}", qparams)
-        def no_access = nonPublic.findAll{ !it.hasPerm("view",result.user)  }
+        def no_access = nonPublic.findAll{ ! it.hasPerm("view", result.user)  }
 
         result.licenses = result.licenses - no_access
         result.numLicenses = result.numLicenses - no_access.size()
@@ -1115,7 +1046,7 @@ from Subscription as s where (
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def cleanLicense() {
+    def processEmptyLicense() {
         def user = User.get(springSecurityService.principal.id)
         def org = contextService.getOrg()
 
@@ -1128,14 +1059,15 @@ from Subscription as s where (
 
         def baseLicense = params.baselicense ? License.get(params.baselicense) : null;
         //Nur wenn von Vorlage ist
-        if(baseLicense) {
+        if (baseLicense) {
             if (!baseLicense?.hasPerm("view", user)) {
                 log.debug("return 401....");
                 flash.error = message(code: 'myinst.newLicense.error', default: 'You do not have permission to view the selected license. Please request access on the profile page');
                 response.sendError(401)
 
-            } else {
-                def copyLicense = institutionsService.copyLicense(params)
+            }
+            else {
+                def copyLicense = institutionsService.copyLicense(baseLicense, params)
                 if (copyLicense.hasErrors()) {
                     log.error("Problem saving license ${copyLicense.errors}");
                     render view: 'editLicense', model: [licenseInstance: copyLicense]
@@ -1156,6 +1088,7 @@ from Subscription as s where (
 
         def license_type = RefdataCategory.lookupOrCreate('License Type', 'Actual')
         def license_status = RefdataCategory.lookupOrCreate('License Status', 'Current')
+
         def licenseInstance = new License(type: license_type, status: license_status, reference: params.licenseName ?:null,
                 startDate:params.licenseStartDate ? parseDate(params.licenseStartDate,possible_date_formats) : null,
                 endDate: params.licenseEndDate ? parseDate(params.licenseEndDate,possible_date_formats) : null,)
@@ -1191,7 +1124,8 @@ from Subscription as s where (
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def newLicense(params) {
+    @Deprecated
+    def newLicense_DEPR(params) {
         def user = User.get(springSecurityService.principal.id)
         def org = contextService.getOrg()
 
@@ -1204,13 +1138,14 @@ from Subscription as s where (
 
         def baseLicense = params.baselicense ? License.get(params.baselicense) : null;
 
-        if (!baseLicense?.hasPerm("view", user)) {
+        if (! baseLicense?.hasPerm("view", user)) {
             log.debug("return 401....");
             flash.error = message(code:'myinst.newLicense.error', default:'You do not have permission to view the selected license. Please request access on the profile page');
             response.sendError(401)
 
-        }else{
-            def copyLicense = institutionsService.copyLicense(params)
+        }
+        else {
+            def copyLicense = institutionsService.copyLicense(baseLicense, params)
             if (copyLicense.hasErrors() ) {
                 log.error("Problem saving license ${copyLicense.errors}");
                 render view: 'editLicense', model: [licenseInstance: copyLicense]

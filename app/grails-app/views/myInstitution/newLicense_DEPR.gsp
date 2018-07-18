@@ -15,7 +15,7 @@
         <semui:errors bean="${licenseInstance}" />
 
         <fieldset>
-          <g:form class="ui form" action="newLicense">
+          <g:form class="ui form" action="newLicense_DEPR">
             <fieldset>
               
 

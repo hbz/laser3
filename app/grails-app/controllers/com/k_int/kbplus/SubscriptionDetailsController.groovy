@@ -755,29 +755,25 @@ class SubscriptionDetailsController {
                     cons_members << Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ? and c.fromOrg = ?", [result.institution, fo])
                 }
 
+                def subLicense = result.subscriptionInstance.owner
+
                 cons_members.each { cm ->
 
-                    def postfix = cm.get(0).shortname ?: cm.get(0).name
+                    def postfix = (cons_members.size() == 1) ? 'Teilnehmervertrag' : (cm.get(0).shortname ?: cm.get(0).name)
 
-                    if (result.subscriptionInstance.owner) {
+                    if (subLicense) {
+                        def subLicenseParams = [
+                                lic_name: "${subLicense.reference} (${postfix})",
+                                isSlaved: params.isSlaved,
+                                asOrgType: params.asOrgType,
+                                copyStartEnd: true
+                        ]
+
                         if (params.generateSlavedLics == 'multiple') {
-                            licenseCopy = result.subscriptionInstance.owner.getBaseCopy()
-                            licenseCopy.instanceOf = result.subscriptionInstance.owner
-
-                            licenseCopy.reference = licenseCopy.reference + " (${postfix})"
-                            licenseCopy.sortableReference = licenseCopy.sortableReference + " (${postfix})"
-                            licenseCopy.type = RefdataValue.getByValueAndCategory('Actual', 'License Type')
-                            licenseCopy.save()
-
-                            new OrgRole(org: result.institution, lic: licenseCopy, roleType: role_lic_cons).save()
+                            licenseCopy = institutionsService.copyLicense(subLicense, subLicenseParams)
                         }
                         else if (params.generateSlavedLics == 'one' && ! licenseCopy) {
-                            licenseCopy = result.subscriptionInstance.owner.getBaseCopy()
-                            licenseCopy.instanceOf = result.subscriptionInstance.owner
-                            licenseCopy.type = RefdataValue.getByValueAndCategory('Actual', 'License Type')
-                            licenseCopy.save()
-
-                            new OrgRole(org: result.institution, lic: licenseCopy, roleType: role_lic_cons).save()
+                            licenseCopy = institutionsService.copyLicense(subLicense, subLicenseParams)
                         }
                         else if (params.generateSlavedLics == 'reference' && ! licenseCopy) {
                             licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
