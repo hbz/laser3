@@ -34,3 +34,11 @@
         </semui:actionsDropdown>
     </g:if>
 </g:if>
+
+<g:if test="${actionName in ['addressbook']}">
+    <g:if test="${editable}">
+        <semui:actionsDropdown>
+            <div class="item"  href="#personFormModal" data-semui="modal" data-value="1">${message(code: 'person.create_new.contactPerson.label')}</div>
+        </semui:actionsDropdown>
+    </g:if>
+</g:if>

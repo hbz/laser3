@@ -74,7 +74,8 @@ ${personInstance?.contactType == com.k_int.kbplus.RefdataValue.getByValueAndCate
                                        value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label', default: 'Contacts')])}">
                                 <g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
                             </g:if>
-                        </dd></dl>
+                        </dd>
+                    </dl>
 
                     <dl><dt><g:message code="person.addresses.label" default="Addresses"/></dt>
                         <dd>
@@ -90,23 +91,27 @@ ${personInstance?.contactType == com.k_int.kbplus.RefdataValue.getByValueAndCate
                                        value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}">
                                 <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/>
                             </g:if>
-                        </dd></dl>
+                        </dd>
+                    </dl>
 
                     <dl><dt><g:message code="person.functions.label" default="Functions"/></dt>
-                        <dd><ul>
-                            <g:each in="${personInstance.roleLinks}" var="link">
-                                <g:if test="${link.functionType}">
-                                    <li>
-                                        ${link.functionType?.getI10n('value')}
-                                        <br/>
+                        <dd>
+                            <ul>
+                                <g:each in="${personInstance.roleLinks}" var="link">
+                                    <g:if test="${link.functionType}">
+                                        <li>
+                                            ${link.functionType?.getI10n('value')}
+                                            <br/>
 
-                                        <g:link controller="organisations" action="show"
-                                                id="${link.org?.id}">${link.org?.name}</g:link>
-                                        (Organisation)
-                                    </li>
-                                </g:if>
-                            </g:each>
-                        </ul></dd></dl>
+                                            <g:link controller="organisations" action="show"
+                                                    id="${link.org?.id}">${link.org?.name}</g:link>
+                                            (Organisation)
+                                        </li>
+                                    </g:if>
+                                </g:each>
+                            </ul>
+                        </dd>
+                    </dl>
 
                     <dl><dt><g:message code="person.responsibilites.label" default="Responsibilites"/></dt>
                         <dd><ul>

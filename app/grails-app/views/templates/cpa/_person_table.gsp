@@ -1,13 +1,20 @@
 
 <table class="ui table la-table">
+    <colgroup>
+        <col style="width: 170px;">
+        <col style="width: 236px;">
+        <col style="width: 277px;">
+        <col style="width: 332px;">
+        <col style="width: 112px;">
+    </colgroup>
 	<thead>
 		<tr>
             <th>
-                ${message(code:'person.last_name.label')},
-                ${message(code:'person.first_name.label')}
+                ${message(code:'person.name.label')}
             </th>
             <g:if test="${controllerName == 'myInstitution'}">
-			<th>Kontext</th>
+			    <th>${message(code:'person.organisation.label')}
+                </th>
             </g:if>
 			<th>${message(code:'person.contacts.label')}</th>
 			<th>${message(code:'person.addresses.label')}</th>
@@ -27,8 +34,16 @@
                 <g:if test="${controllerName == 'myInstitution'}">
 				<td>
 					<g:each in="${person?.roleLinks.unique{ it.org }}" var="role">
-						<g:link controller="organisations" action="addressbook" id="${role.org?.id}">${role.org}</g:link>
-                        <br />
+                        <div class="la-flexbox">
+                            <i class="icon university la-list-icon"></i>
+						    <g:link controller="organisations" action="addressbook" id="${role.org?.id}">${role.org}</g:link>
+                        </div>
+                        <div>
+                        <g:if test="${role.functionType}">
+                            (${role.functionType?.getI10n('value')})
+                        </g:if>
+                        </div>
+
 					</g:each>
 				</td>
                 </g:if>
