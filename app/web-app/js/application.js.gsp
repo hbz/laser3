@@ -254,6 +254,7 @@ r2d2 = {
         // close semui:messages alerts
         $(ctxSel + ' .close.icon').click(function() {
             $(this).parent().hide();
+            $(".table").trigger('reflow');
         });
 
         // accordions
