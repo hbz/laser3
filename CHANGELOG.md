@@ -1,7 +1,8 @@
 
-between ..
+0.7
 
-- removed needless copy of jquery-plugin
+- removed tmp copy of jquery-plugin
+- TODO
 
 0.6.1
 
