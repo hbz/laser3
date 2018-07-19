@@ -253,7 +253,7 @@ class LicenseDetailsController {
 
                 cons_members.each { cm ->
 
-                    def postfix = (cons_members.size() == 1) ? 'Teilnehmervertrag' : (cm.get(0).shortname ?: cm.get(0).name)
+                    def postfix = (cons_members.size() > 1) ? 'Teilnehmervertrag' : (cm.get(0).shortname ?: cm.get(0).name)
 
                     if (result.license) {
                         def licenseParams = [

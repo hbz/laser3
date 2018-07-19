@@ -44,33 +44,11 @@ class LicensePrivateProperty extends PrivateProperty {
         owner:  License
     ]
 
-    @Transient
-    def getValueType(){
-        if (stringValue) return "stringValue"
-        if (intValue)    return "intValue"
-        if (decValue)    return "decValue"
-        if (refValue)    return "refValue"
-        if (paragraph)   return "paragraph"
-    }
-
-    @Override
-    public String toString(){
-        if (stringValue)  return stringValue
-        if (intValue)     return intValue.toString()
-        if (decValue)     return decValue.toString()
-        if (refValue)     return refValue.toString()
-        if (paragraph)    return paragraph
-    }
-
     @Override
     def copyValueAndNote(newProp){
-        if (stringValue)    newProp.stringValue = stringValue
-        else if(intValue)   newProp.intValue = intValue
-        else if(decValue)   newProp.decValue = decValue
-        else if(refValue)   newProp.refValue = refValue
-        else if(paragraph)  newProp.paragraph = paragraph
+        newProp = super.copyValueAndNote(newProp)
 
-        newProp.note = note
+        newProp.paragraph = paragraph
         newProp
     }
 

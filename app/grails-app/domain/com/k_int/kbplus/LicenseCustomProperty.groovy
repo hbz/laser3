@@ -1,72 +1,42 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.properties.PropertyDefinition
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import javax.persistence.Transient
 
 class LicenseCustomProperty extends CustomProperty {
 
-  // %{-- >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Begin Copied From Class AbstractProperty <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< --}%
   @Transient
   def controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
 
   @Transient
-  String          paragraph
+  String paragraph
 
     static mapping = {
+        includes AbstractProperty.mapping
+
         paragraph    type: 'text'
-        note         type: 'text'
-        stringValue  type: 'text'
     }
 
     static constraints = {
-    stringValue(nullable: true)
-    intValue(nullable: true)
-    decValue(nullable: true)
-    refValue(nullable: true)
-    paragraph(nullable: true)
-    note(nullable: true)
-    dateValue(nullable: true)
-  }
+        importFrom AbstractProperty
 
-  @Transient
-  def getValueType(){
-    if(stringValue) return "stringValue"
-    if(intValue) return "intValue"
-    if(decValue) return "decValue"
-    if(refValue) return "refValue"
-    if(paragraph) return "paragraph"
-    if(dateValue) return "dateValue"
-  }
+        paragraph(nullable: true)
+    }
 
-  @Override
-  public String toString(){
-    if(stringValue) return stringValue
-    if(intValue) return intValue.toString()
-    if(decValue) return decValue.toString()
-    if(refValue) return refValue.toString()
-    if(paragraph) return paragraph
-    if(dateValue) return dateValue.getDateString()
-  }
+    def copyValueAndNote(newProp){
+        newProp = super.copyValueAndNote(newProp)
 
-  def copyValueAndNote(newProp){
-    if(stringValue) newProp.stringValue = stringValue
-    else if(intValue) newProp.intValue = intValue
-    else if(decValue) newProp.decValue = decValue
-    else if(paragraph) newProp.paragraph = paragraph
-    else if(refValue) newProp.refValue = refValue
-    else if(dateValue) newProp.dateValue = dateValue
-    newProp.note = note
-    newProp
-  }
-  // %{-- >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End Copied From Class AbstractProperty <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< --}%
+        newProp.paragraph = paragraph
+        newProp
+    }
 
   @Transient
   def grailsApplication
 
   @Transient
   def messageSource
-
 
   static auditable = true
 

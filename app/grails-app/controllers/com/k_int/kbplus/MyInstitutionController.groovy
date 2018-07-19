@@ -888,6 +888,7 @@ from Subscription as s where (
         log.debug(params)
         def result = setResultGenerics()
         result.orgType = RefdataValue.get(params.asOrgType)
+
         def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber')
         def role_sub_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial')
         def role_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')

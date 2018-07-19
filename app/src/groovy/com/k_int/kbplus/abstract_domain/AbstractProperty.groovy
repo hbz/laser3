@@ -74,7 +74,7 @@ abstract class AbstractProperty implements Serializable {
         else if(refValue)
             newProp.refValue = refValue
         else if(dateValue)
-            newProp.refValue = dateValue
+            newProp.dateValue = dateValue
 
         newProp.note = note
         newProp
