@@ -11,6 +11,8 @@ import org.apache.http.util.EntityUtils
 import org.springframework.http.HttpStatus
 import sun.misc.BASE64Encoder
 
+import java.text.SimpleDateFormat
+
 class ErrorReportService {
 
     // jira.rest.url = 'https://jira'
@@ -64,8 +66,13 @@ class ErrorReportService {
             post.setHeader(k, v)
         }
 
+        def sdf = new SimpleDateFormat('yMMdd:hhmmss')
+        def dd  = sdf.format(new Date())
+
         def jb = new JsonBuilder(data)
-        def filename = (grailsApplication.config.laserSystemId ?: 'Quelle unbekannt') + " - ${springSecurityService.getCurrentUser().email}"
+        def filename = (grailsApplication.config.laserSystemId ?: 'Quelle unbekannt')
+            + " - ${springSecurityService.getCurrentUser().email}"
+            + " - ${dd}"
 
         MultipartEntityBuilder meb = MultipartEntityBuilder.create()
         meb.addPart('file', new ByteArrayBody( jb.toPrettyString().getBytes(), filename.replace('/', '') ))

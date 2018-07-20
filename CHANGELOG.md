@@ -1,7 +1,15 @@
 
 0.7
 
+- added license handling for consortia and members
+- reworked linking of licenses
+- reworked org role template, fixed javascript behaviour
+- added list view and delete function for budget codes 
+- added translations and increased text length of property definitions
+- added anonymisation for object histories (DSGVO)
 - removed tmp copy of jquery-plugin
+- lots of markup and style changes 
+- minor bugfixes 
 - TODO
 
 0.6.1
