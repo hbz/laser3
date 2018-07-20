@@ -59,20 +59,17 @@ class ErrorReportService {
             log.info("ignored sending error report - no config and/or no data")
             return
         }
-
         HttpPost post = new HttpPost(config.url)
 
         config.headers.each{ k, v ->
             post.setHeader(k, v)
         }
 
+        def jb = new JsonBuilder(data)
         def sdf = new SimpleDateFormat('yMMdd:hhmmss')
         def dd  = sdf.format(new Date())
 
-        def jb = new JsonBuilder(data)
-        def filename = (grailsApplication.config.laserSystemId ?: 'Quelle unbekannt')
-            + " - ${springSecurityService.getCurrentUser().email}"
-            + " - ${dd}"
+        def filename = (grailsApplication.config.laserSystemId ?: 'Quelle unbekannt') + " - ${springSecurityService.getCurrentUser().email} - ${dd}"
 
         MultipartEntityBuilder meb = MultipartEntityBuilder.create()
         meb.addPart('file', new ByteArrayBody( jb.toPrettyString().getBytes(), filename.replace('/', '') ))
