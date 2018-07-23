@@ -79,10 +79,16 @@ class OrganisationsController {
 
     @Secured(['ROLE_USER'])
     def listProvider() {
+        def wordList = ['apfel', 'banane', 'kirsche']
+        def wordCountMap = wordList.collectEntries{ [(it):it.length()] }
+
+
+        println "die Antwort ist: ${wordCountMap}"
 
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
         params.max = params.max ?: result.user?.getDefaultPageSize()
+
 
         params.orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector').id.toString()
         params.orgType = RefdataValue.getByValueAndCategory('Provider','OrgType').id.toString()
@@ -91,6 +97,9 @@ class OrganisationsController {
 
         result.orgList  = Org.findAll(fsq.query, fsq.queryParams, params)
         result.orgListTotal = Org.executeQuery("select count (o) ${fsq.query}", fsq.queryParams)[0]
+
+        result.wcm = wordCountMap
+        result.wl = wordList
 
         result
     }
