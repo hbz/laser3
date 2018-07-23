@@ -15,6 +15,7 @@
     <h1 class="ui header"><semui:headerIcon />Application Info</h1>
 
     <table class="ui celled la-table table">
+        <tr><td>Build Date</td><td> <g:meta name="app.buildDate"/></td></tr>
         <tr><td>Build Number</td><td> <g:meta name="app.buildNumber"/></td></tr>
         <tr><td>Build Profile</td><td> <g:meta name="app.buildProfile"/></td></tr>
         <tr><td>App version</td><td> <g:meta name="app.version"/></td></tr>
@@ -22,10 +23,7 @@
         <tr><td>Groovy version</td><td> ${GroovySystem.getVersion()}</td></tr>
         <tr><td>JVM version</td><td> ${System.getProperty('java.version')}</td></tr>
         <tr><td>Reloading active</td><td> ${grails.util.Environment.reloadingAgentEnabled}</td></tr>
-        <tr><td>Build Date</td><td> <g:meta name="app.buildDate"/></td></tr>
-        <tr><td>Build DateTimestamp</td><td> <g:meta name="app.build.DateTimeStamp"/></td></tr>
-        <tr><td>Commit</td><td> <g:meta name="repository.revision.number"/></td></tr>
-        <tr><td>Checkedout Branch</td><td> <g:meta name="repository.branch"/></td></tr>
+        <tr><td>Session Timeout</td><td> ${(session.getMaxInactiveInterval() / 60)} Minutes</td></tr>
         <tr><td>Last Quartz Heartbeat</td><td>${grailsApplication.config.quartzHeartbeat}</td></tr>
     </table>
 
