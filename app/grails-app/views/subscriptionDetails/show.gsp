@@ -225,12 +225,11 @@
                                          </g:if>--}%
                                     </td>
                                     <td>
-                                        <g:if test="${editable}">
-
+                                        <g:if test="${editable && subscriptionInstance.owner}">
                                             <div class="ui mini icon buttons">
-                                                <button class="ui button la-selectable-button" onclick="">
+                                                <a href="?cmd=unlinkLicense" class="ui button la-selectable-button">
                                                     <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
-                                                </button>
+                                                </a>
                                             </div>
                                             <br />
                                         </g:if>

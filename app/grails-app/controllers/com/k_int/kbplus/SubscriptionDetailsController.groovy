@@ -1470,6 +1470,14 @@ AND l.status.value != 'Deleted' order by l.reference
             response.sendError(401); return
         }
 
+        // unlink license
+
+        if (params.cmd?.equalsIgnoreCase('unlinkLicense')) {
+            if (result.subscriptionInstance.owner) {
+                result.subscriptionInstance.setOwner(null)
+            }
+        }
+
         //if (!result.institution) {
         //    result.institution = result.subscriptionInstance.subscriber ?: result.subscriptionInstance.consortia
         //}
