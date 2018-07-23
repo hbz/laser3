@@ -173,6 +173,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="ui card la-time-card">
                         <div class="content">
                             <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
@@ -186,7 +187,7 @@
                                         <tr>
                                             <th scope="row">${message(code:'license.linkedSubscription', default:'Linked Subscription')}</th>
                                             <td>
-                                                        <g:link controller="subscriptionDetails" action="show" id="${sub.id}">${sub.name}</g:link>
+                                                <g:link controller="subscriptionDetails" action="show" id="${sub.id}">${sub.name}</g:link>
                                             </td>
                                             <td>
                                             <g:if test="${editable}">
@@ -250,13 +251,13 @@
                                         <g:if test="${license.onixplLicense}">
                                             <g:link controller="onixplLicenseDetails" action="index" id="${license.onixplLicense?.id}">${license.onixplLicense.title}</g:link>
                                             <g:if test="${editable}">
-                                                (
+
                                                 <div class="ui mini icon buttons">
                                                     <g:link class="ui button" controller="licenseDetails" action="unlinkLicense" params="[license_id: license.id, opl_id: onixplLicense.id]">
                                                         <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
                                                     </g:link>
                                                 </div>
-                                                )
+
                                             </g:if>
                                         </g:if>
                                         <g:else>

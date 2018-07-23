@@ -7,6 +7,7 @@
 - added list view and delete function for budget codes 
 - added translations and increased text length of property definitions
 - added anonymisation for object histories (DSGVO)
+- increased session timeout
 - removed tmp copy of jquery-plugin
 - lots of markup and style changes 
 - minor bugfixes 

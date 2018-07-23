@@ -947,6 +947,8 @@ class BootStrap {
         RefdataValue.loc('Person Function',     [en: 'Erwerbungsleitung', de: 'Erwerbungsleitung'])
         RefdataValue.loc('Person Function',     [en: 'Medienbearbeitung', de: 'Medienbearbeitung'])
         RefdataValue.loc('Person Function',     [en: 'Zeitschriftenabteilung', de: 'Zeitschriftenabteilung'])
+        RefdataValue.loc('Person Function',     [en: 'Fachreferat', de: 'Fachreferat'])
+        RefdataValue.loc('Person Function',     [en: 'Bereichsbibliotheksleitung', de: 'Bereichsbibliotheksleitung'])
 
         RefdataValue.loc('Person Position',     [en: 'Account Manager', de: 'Account Manager'])
         RefdataValue.loc('Person Position',     [en: 'Head Access Services', de: 'Erwerbungsleiter'])

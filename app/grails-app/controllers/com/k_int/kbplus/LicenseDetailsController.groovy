@@ -84,7 +84,15 @@ class LicenseDetailsController {
               result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
           }
       }
-      result.availableSubs = getAvailableSubscriptions(result.license, result.user)
+
+      //result.availableSubs = getAvailableSubscriptions(result.license, result.user)
+
+        def subscrQuery = """
+from Subscription as s where 
+  ( ( exists ( select o from s.orgRelations as o where (o.roleType.value IN ('Subscriber', 'Subscription Consortia')) and o.org = :co) ) ) ) 
+  AND ( s.status.value != 'Deleted' ) 
+"""
+        result.availableSubs = Subscription.executeQuery("select s ${subscrQuery}", [co: contextService.getOrg()])
 
       // tasks
       def contextOrg = contextService.getOrg()
