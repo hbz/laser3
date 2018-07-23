@@ -100,28 +100,6 @@ class InstitutionsService {
         }
     }
 
-    /*
-
-    http://localhost:8080/laser/myInstitution/emptyLicense
-    ?   baselicense=73
-    &   copy-license=Y
-    &   licenseName=bautz_template
-    &   licenseStartDate=2016-01-01+00%3A00%3A00.0
-    &   licenseEndDate=2017-12-31+00%3A00%3A00.0
-    &   sub=
-
-     */
-
-    /*
-        used params:
-        params.baselicense
-        params.lic_name
-        params.isSlaved
-        params.copyStartEnd
-        params.asOrgType
-
-     */
-
     @Deprecated
     def copyLicense(params) {
         def baseLicense = params.baselicense ? License.get(params.baselicense) : null;
