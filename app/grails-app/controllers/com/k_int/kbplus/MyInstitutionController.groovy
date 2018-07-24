@@ -3080,8 +3080,28 @@ AND EXISTS (
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def addressbook() {
+
+
         def result = setResultGenerics()
-        
+        def queryList = []
+        def queryParams = []
+        def personList = []
+        def query
+
+
+        if (params.personNameContains?.length() > 0) {
+            queryList << "lower(p.last_name)"
+            queryParams << "%${params.personNameContains.toLowerCase()}%"
+        }
+
+        if (queryList) {
+            query = "select p from Person as p  where " + queryList.join(" and ") + "  like ? "
+        }
+
+        if (query) {
+            result.personList = Person.executeQuery(query, queryParams)
+        }
+
         def visiblePersons = []
         def prs = Person.findAllByTenant(result.institution, [sort: "last_name", order: "asc"])
 
