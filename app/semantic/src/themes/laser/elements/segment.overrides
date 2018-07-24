@@ -15,3 +15,7 @@
 .ui.segment.la-role-yoda {
   border-right: 10px solid @green;
 }
+.ui.segment.la-gasco-search {
+  background: #f1ebe5;
+  border: none;
+}
