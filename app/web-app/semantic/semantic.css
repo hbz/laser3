@@ -19304,6 +19304,11 @@ ol.ui.horizontal.list li:before,
 .ui.segment.la-role-yoda {
   border-right: 10px solid #98B500;
 }
+
+.ui.segment.la-gasco-search {
+  background: #f1ebe5;
+  border: none;
+}
 /*!
  * # Semantic UI 2.3.1 - Step
  * http://github.com/semantic-org/semantic-ui/

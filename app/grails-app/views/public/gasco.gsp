@@ -14,7 +14,7 @@
     <br />
     <div class="ui grid">
         <div class="eleven wide column">
-            <semui:filter>
+            <div class="ui la-gasco-search segment">
                 <g:form action="gasco" controller="public" method="get" class="form-inline ui small form">
 
                     <div class="field">
@@ -74,7 +74,7 @@
                     </div>
 
                 </g:form>
-            </semui:filter>
+            </div>
         </div>
         <div class="five wide column">
             <img class="ui fluid image" alt="Logo GASCO" class="ui fluid image" src="images/gasco/GASCO-Logo-2_klein.jpg"/>
