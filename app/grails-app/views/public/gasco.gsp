@@ -117,9 +117,10 @@
                         ${i}
                     </td>
                     <td>
-                        ${sub}
-                        <br>
+                        <g:link controller="public" action="gascoDetails" id="${sub.id}">${sub}</g:link>
+
                         <g:each in="${sub.packages}" var="subPkg" status="j">
+                            <br>
                             <div class="la-flexbox">
                                 <i class="icon gift la-list-icon"></i>
                                     ${subPkg.pkg}

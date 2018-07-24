@@ -63,6 +63,29 @@ class PublicController {
         result
     }
 
+    @Secured(['permitAll'])
+    def gascoDetails() {
+        def result = [:]
+
+        if (params.id) {
+            def sub = Subscription.findById(params.long('id'))
+            def scp = SubscriptionCustomProperty.findByOwnerAndTypeAndRefValue(
+                    sub,
+                    PropertyDefinition.findByDescrAndName('Subscription Property', 'GASCO Entry'),
+                    RefdataValue.getByValueAndCategory('Yes', 'YN')
+            )
+
+            if (scp) {
+                result.subscription = sub
+            }
+            else {
+                redirect controller: 'public', action: 'gasco'
+            }
+        }
+
+        result
+    }
+
     @Deprecated
     @Secured(['ROLE_YODA'])
   def journalLicenses(){
