@@ -3080,38 +3080,48 @@ AND EXISTS (
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def addressbook() {
-
-
         def result = setResultGenerics()
-        def queryList = []
-        def queryParams = []
-        def personList = []
-        def query
 
+        def qParts = [
+                'p.tenant = :tenant',
+                'p.isPublic = :public'
+        ]
+        def qParams = [
+                tenant: result.institution,
+                public: RefdataValue.getByValueAndCategory('No', 'YN')
+        ]
 
-        if (params.personNameContains?.length() > 0) {
-            queryList << "lower(p.last_name)"
-            queryParams << "%${params.personNameContains.toLowerCase()}%"
+        if (params.prs) {
+            qParts << "(LOWER(p.last_name) LIKE :prsName OR LOWER(p.middle_name) LIKE :prsName OR LOWER(p.first_name) LIKE :prsName)"
+            qParams << [prsName: "%${params.prs.toLowerCase()}%"]
+        }
+        if (params.org) {
+            qParts << """(EXISTS (
+SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWER(pr.org.shortname) LIKE :orgName OR LOWER(pr.org.sortname) LIKE :orgName)
+))
+"""
+            qParams << [orgName: "%${params.org.toLowerCase()}%"]
         }
 
-        if (queryList) {
-            query = "select p from Person as p  where " + queryList.join(" and ") + "  like ? "
+        def query = "SELECT p FROM Person AS p WHERE " + qParts.join(" AND ")
+
+        if (params.filterPropDef) {
+            (query, qParams) = propertyService.evalFilterQuery(params, query, 'p', qParams)
         }
 
-        if (query) {
-            result.personList = Person.executeQuery(query, queryParams)
-        }
+        result.visiblePersons = Person.executeQuery(query + " ORDER BY p.last_name, p.first_name ASC", qParams)
 
-        def visiblePersons = []
-        def prs = Person.findAllByTenant(result.institution, [sort: "last_name", order: "asc"])
-
-        prs?.each { p ->
-            if (p?.isPublic?.value == 'No') {
-                visiblePersons << p
-            }
-        }
-        result.visiblePersons = visiblePersons
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+
+        result.propList =
+                PropertyDefinition.findAllWhere(
+                        descr: PropertyDefinition.PRS_PROP,
+                        tenant: null // public properties
+                ) +
+                        PropertyDefinition.findAllWhere(
+                                descr: PropertyDefinition.PRS_PROP,
+                                tenant: contextService.getOrg() // private properties
+                        )
 
         result
       }
