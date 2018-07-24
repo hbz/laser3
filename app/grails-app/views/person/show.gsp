@@ -38,10 +38,18 @@ ${personInstance?.contactType == com.k_int.kbplus.RefdataValue.getByValueAndCate
                                           optionValue="value"
                                           value="${personInstance?.contactType?.id}"
                                           noSelection="['': '']"
-                                          onchange="this.form.submit();"/></g:form></dd></dl>
+                                          onchange="this.form.submit();"/></g:form>
+                        </dd>
+                    </dl>
+
+                    <dl><dt id="person_title"><g:message code="person.title.label" default="Title"/></dt>
+                        <dd><semui:xEditable owner="${personInstance}" field="title"/></dd>
+                    </dl>
 
                     <dl><dt id="person_last_name"><g:message code="person.last_name.label" default="Lastname"/></dt>
-                        <dd><semui:xEditable owner="${personInstance}" field="last_name"/></dd></dl>
+                        <dd><semui:xEditable owner="${personInstance}" field="last_name"/></dd>
+                    </dl>
+
                     <g:if test="${(!personInstance.contactType) || personInstance.contactType.value == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Personal contact', 'Person Contact Type').value}">
 
                         <dl><dt><g:message code="person.first_name.label" default="Firstname"/></dt>

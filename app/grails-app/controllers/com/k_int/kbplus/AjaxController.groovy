@@ -13,6 +13,7 @@ class AjaxController {
     def genericOIDService
     def contextService
     def taskService
+    def addressbookService
 
     def refdata_config = [
     "ContentProvider" : [

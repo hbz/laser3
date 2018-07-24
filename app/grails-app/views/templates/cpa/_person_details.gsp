@@ -3,6 +3,7 @@
 
 		<h5 class="ui header">
 			<g:link controller="person" action="show" id="${person?.id}">
+				${person?.title?.encodeAsHTML()}
 				${person?.first_name?.encodeAsHTML()}
 				${person?.middle_name?.encodeAsHTML()}
 				${person?.last_name?.encodeAsHTML()}
@@ -41,6 +42,7 @@
 	<g:if test="${personRole}">
 
 		<g:link controller="person" action="show" id="${personRole?.prsId}">
+			${personRole?.prs?.title?.encodeAsHTML()}
 			${personRole?.prs?.first_name?.encodeAsHTML()}
 			${personRole?.prs?.middle_name?.encodeAsHTML()}
 			${personRole?.prs?.last_name?.encodeAsHTML()}

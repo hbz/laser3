@@ -39,7 +39,7 @@
         <div class="field">
             <div class="two fields">
 
-                <div class="field wide ten fieldcontain ${hasErrors(bean: personInstance, field: 'last_name', 'error')} required">
+                <div class="field wide twelve fieldcontain ${hasErrors(bean: personInstance, field: 'last_name', 'error')} required">
                     <label for="last_name">
                         <g:message code="person.last_name.label" default="Lastname" />
                     </label>
@@ -47,7 +47,7 @@
 
                 </div>
 
-                <div id="person_middle_name" class="field wide six fieldcontain ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} ">
+                <div id="person_middle_name" class="field wide four fieldcontain ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} ">
                     <label for="middle_name">
                         <g:message code="person.middle_name.label" default="Middlename" />
 
@@ -60,16 +60,23 @@
         </div>
 
         <div class="field">
-            <div class="two fields">
+            <div class="three fields">
 
-                <div id="person_first_name" class="field wide ten fieldcontain ${hasErrors(bean: personInstance, field: 'first_name', 'error')}">
+                <div id="person_first_name" class="field wide eight fieldcontain ${hasErrors(bean: personInstance, field: 'first_name', 'error')}">
                     <label for="first_name">
                         <g:message code="person.first_name.label" default="Firstname" />
                     </label>
                     <g:textField name="first_name" required="" value="${personInstance?.first_name}"/>
                 </div>
 
-                <div id="person_gender" class="field wide six fieldcontain ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">
+                <div id="person_title" class="field wide four fieldcontain ${hasErrors(bean: personInstance, field: 'title', 'error')}">
+                    <label for="title">
+                        <g:message code="person.title.label" default="Title" />
+                    </label>
+                    <g:textField name="title" required="" value="${personInstance?.title}"/>
+                </div>
+
+                <div id="person_gender" class="field wide four fieldcontain ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">
                     <label for="gender">
                         <g:message code="person.gender.label" default="Gender" />
                     </label>
@@ -242,25 +249,26 @@
         })
 
         function changeForm(hide) {
+            var group1 = $("#roleType, #person_middle_name, #person_first_name, #person_title, #person_gender")
+            var group2 = $("#roleType .dropdown, #person_gender .dropdown")
+            var group3 = $("#roleType select, #person_gender select")
+            var group4 = $("#person_middle_name input, #person_first_name input, #person_title input")
+
             if (hide) {
-                $("#roleType, #person_middle_name, #person_first_name, #person_gender").hide()
+                group1.hide()
+                group2.addClass('disabled')
+                group3.attr('disabled', 'disabled')
+                group4.attr('disabled', 'disabled')
 
-                $("#roleType .dropdown, #person_gender .dropdown").addClass('disabled');
-                $("#roleType select, #person_gender select").attr('disabled', 'disabled');
-
-                $("#person_middle_name input, #person_first_name input").attr('disabled', 'disabled');
-
-                $("label[for='last_name']").text("Benenner");
+                $("label[for='last_name']").text("Benenner")
             }
             else {
-                $("#roleType, #person_middle_name, #person_first_name, #person_gender").show()
+                group1.show()
+                group2.removeClass('disabled')
+                group3.removeAttr('disabled')
+                group4.removeAttr('disabled')
 
-                $("#roleType .dropdown, #person_gender .dropdown").removeClass('disabled');
-                $("#roleType select, #person_gender select").removeAttr('disabled');
-
-                $("#person_middle_name input, #person_first_name input").removeAttr('disabled');
-
-                $("label[for='last_name']").text("Nachname");
+                $("label[for='last_name']").text("Nachname")
             }
         }
 

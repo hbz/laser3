@@ -14,10 +14,11 @@ import groovy.util.logging.*
 @Log4j
 class Person extends BaseDomainComponent {
 
+    String       title
     String       first_name
     String       middle_name
     String       last_name
-    RefdataValue gender     // RefdataCategory 'Gender'
+    RefdataValue gender         // RefdataCategory 'Gender'
     Org          tenant
     RefdataValue isPublic       // RefdataCategory 'YN'
     RefdataValue contactType    // RefdataCategory 'Person Contact Type'
@@ -27,6 +28,7 @@ class Person extends BaseDomainComponent {
         id              column:'prs_id'
         globalUID       column:'prs_guid'
         version         column:'prs_version'
+        title           column:'prs_title'
         first_name      column:'prs_first_name'
         middle_name     column:'prs_middle_name'
         last_name       column:'prs_last_name'
@@ -53,7 +55,8 @@ class Person extends BaseDomainComponent {
     
     static constraints = {
         globalUID   (nullable:true,  blank:false, unique:true, maxSize:255)
-        first_name  (nullable:true, blank:false)
+        title       (nullable:true,  blank:false)
+        first_name  (nullable:true,  blank:false)
         middle_name (nullable:true,  blank:false)
         last_name   (nullable:false, blank:false)
         gender      (nullable:true)
@@ -69,7 +72,7 @@ class Person extends BaseDomainComponent {
     
     @Override
     String toString() {
-        (last_name ?:' ') + (first_name ?', '+first_name: '') + ' ' + (middle_name ?: '') // + ' (' + id + ')'
+        ((title ?: '') + ' ' + (last_name ?: ' ') + (first_name ? ', ' + first_name : '') + ' ' + (middle_name ?: '')).trim()
     }
 
     static def lookup(firstName, lastName, tenant, isPublic, contactType) {

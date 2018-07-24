@@ -1,9 +1,16 @@
 <%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
 
+<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'title', 'error')}">
+	<label for="title">
+		<g:message code="person.title.label" default="Title" />
+	</label>
+	<g:textField name="title" required="" value="${personInstance?.title}"/>
+
+</div>
+
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'first_name', 'error')} required">
 	<label for="first_name">
 		<g:message code="person.first_name.label" default="Firstname" />
-		<span class="required-indicator">*</span>
 	</label>
 	<g:textField name="first_name" required="" value="${personInstance?.first_name}"/>
 
@@ -21,7 +28,6 @@
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'last_name', 'error')} required">
 	<label for="last_name">
 		<g:message code="person.last_name.label" default="Lastname" />
-		<span class="required-indicator">*</span>
 	</label>
 	<g:textField name="last_name" required="" value="${personInstance?.last_name}"/>
 
@@ -107,7 +113,6 @@
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">
     <label for="isPublic">
         <g:message code="person.isPublic.label" default="IsPublic" />
-        <span class="required-indicator">*</span>
     </label>
     <laser:select class="ui dropdown" id="isPublic" name="isPublic"
                   from="${com.k_int.kbplus.Person.getAllRefdataValues('YN')}"
@@ -119,7 +124,6 @@
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'tenant', 'error')} required">
     <label for="org">
         <g:message code="person.tenant.label" default="Tenant (Permissions to edit this person and depending addresses and contacts)" />
-        <span class="required-indicator">*</span>
     </label>
     <g:select id="tenant" name="tenant.id" class="ui dropdown" from="${userMemberships}"
               optionKey="id" value="${personInstance?.tenant?.id}" />

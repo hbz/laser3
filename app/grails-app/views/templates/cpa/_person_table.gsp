@@ -25,11 +25,8 @@
 		<g:each in="${persons}" var="person">
 			<tr>
 				<td>
-
-                        ${person?.first_name?.encodeAsHTML() ? person?.last_name?.encodeAsHTML()+', '+person?.first_name?.encodeAsHTML() : person?.last_name?.encodeAsHTML()}
-
-                        ${person?.middle_name?.encodeAsHTML()}
-
+                    ${person?.first_name?.encodeAsHTML() ? person?.last_name?.encodeAsHTML() + ', ' + person?.first_name?.encodeAsHTML() : person?.last_name?.encodeAsHTML()}
+                    ${person?.middle_name?.encodeAsHTML()}
 				</td>
                 <g:if test="${controllerName == 'myInstitution'}">
 				<td>
