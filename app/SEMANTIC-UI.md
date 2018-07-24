@@ -13,6 +13,9 @@
     cd [laser]/app 
     npm install semantic-ui --save
     
+The File semantic.json is automaticly build from your choises in the intallation prozess.
+You have to choose the Folders for the source and the build
+    
 Result: app/nodes_moules 
     
 ## change CSS or JS in source ([laser]/app/semantic/src/..)
