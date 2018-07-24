@@ -15,6 +15,7 @@ class OrganisationsController {
     def contextService
     def addressbookService
     def filterService
+    def genericOIDService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -169,7 +170,24 @@ class OrganisationsController {
             result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         }
 
-      if (!orgInstance) {
+        if (result.editable) {
+            if (params.cmd?.equalsIgnoreCase('deleteAddress')) {
+                def obj = genericOIDService.resolveOID(params.oid)
+                if (obj) {
+                    obj.delete()
+                    redirect(url: request.getHeader('referer'))
+                }
+            }
+            if (params.cmd?.equalsIgnoreCase('deleteContact')) {
+                def obj = genericOIDService.resolveOID(params.oid)
+                if (obj) {
+                    obj.delete()
+                    redirect(url: request.getHeader('referer'))
+                }
+            }
+        }
+
+      if (! orgInstance) {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
         redirect action: 'list'
         return

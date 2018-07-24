@@ -176,7 +176,13 @@
                                 <div class="ui relaxed list">
                                     <g:each in="${orgInstance?.addresses.sort{it.type?.getI10n('value')}}" var="a">
                                         <g:if test="${a.org}">
-                                            <g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
+                                            <g:render template="/templates/cpa/address" model="${[
+                                                    address: a,
+                                                    tmplShowDeleteButton: true,
+                                                    controller: 'org',
+                                                    action: 'show',
+                                                    id: orgInstance.id
+                                            ]}"></g:render>
                                         </g:if>
                                     </g:each>
                                 </div>
@@ -195,7 +201,13 @@
                                 <div class="ui relaxed list">
                                     <g:each in="${orgInstance?.contacts.sort{it.content}}" var="c">
                                         <g:if test="${c.org}">
-                                            <g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
+                                            <g:render template="/templates/cpa/contact" model="${[
+                                                    contact: c,
+                                                    tmplShowDeleteButton: true,
+                                                    controller: 'org',
+                                                    action: 'show',
+                                                    id: orgInstance.id
+                                            ]}"></g:render>
                                         </g:if>
                                     </g:each>
                                 </div>

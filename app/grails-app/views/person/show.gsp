@@ -62,13 +62,19 @@ ${personInstance?.contactType == com.k_int.kbplus.RefdataValue.getByValueAndCate
 
                     <dl><dt><g:message code="person.contacts.label" default="Contacts"/></dt>
                         <dd>
-                            <ul>
+                            <div class="ui list">
                                 <g:each in="${personInstance.contacts.sort{it.content}}" var="c">
-                                    <li>
-                                        <g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
-                                    </li>
+
+                                    <g:render template="/templates/cpa/contact" model="${[
+                                            contact: c,
+                                            tmplShowDeleteButton: true,
+                                            controller: 'person',
+                                            action: 'show',
+                                            id: personInstance.id
+                                    ]}"></g:render>
+
                                 </g:each>
-                            </ul>
+                            </div>
                             <g:if test="${editable}">
                                 <input class="ui button" type="button" data-semui="modal" href="#contactFormModal"
                                        value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label', default: 'Contacts')])}">
@@ -79,13 +85,19 @@ ${personInstance?.contactType == com.k_int.kbplus.RefdataValue.getByValueAndCate
 
                     <dl><dt><g:message code="person.addresses.label" default="Addresses"/></dt>
                         <dd>
-                            <ul>
+                            <div class="ui list">
                                 <g:each in="${personInstance.addresses.sort{it.type?.getI10n('value')}}" var="a">
-                                    <li>
-                                        <g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
-                                    </li>
+
+                                    <g:render template="/templates/cpa/address" model="${[
+                                            address: a,
+                                            tmplShowDeleteButton: true,
+                                            controller: 'person',
+                                            action: 'show',
+                                            id: personInstance.id
+                                    ]}"></g:render>
+
                                 </g:each>
-                            </ul>
+                            </div>
                             <g:if test="${editable}">
                                 <input class="ui button" type="button" data-semui="modal" href="#addressFormModal"
                                        value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}">

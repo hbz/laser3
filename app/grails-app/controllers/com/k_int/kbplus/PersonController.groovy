@@ -12,6 +12,7 @@ class PersonController {
 
     def springSecurityService
     def addressbookService
+    def genericOIDService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -71,10 +72,29 @@ class PersonController {
             return
         }
 
-        [
-            personInstance: personInstance,
-            editable: true
-        ] // TODO
+        def result = [
+                personInstance: personInstance,
+                editable: addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser())
+        ]
+
+        if (result.editable) {
+            if (params.cmd?.equalsIgnoreCase('deleteAddress')) {
+                def obj = genericOIDService.resolveOID(params.oid)
+                if (obj) {
+                    obj.delete()
+                }
+                redirect(url: request.getHeader('referer'))
+            }
+            if (params.cmd?.equalsIgnoreCase('deleteContact')) {
+                def obj = genericOIDService.resolveOID(params.oid)
+                if (obj) {
+                    obj.delete()
+                }
+                redirect(url: request.getHeader('referer'))
+            }
+        }
+
+        result
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
