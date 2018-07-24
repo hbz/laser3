@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code: 'laser', default: 'LAS:eR')} - ${message(code: 'gasco.title')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'gasco.title')}</title>
 </head>
 
 <body>
@@ -84,9 +84,17 @@
     <r:script>
         $(document).ready(function() {
 
-            $( '.js-consortiallicence' ).click(function() {
-                $('#js-consotial-authority').toggleClass('disabled')
-            });
+            function toggleFilterPart() {
+                if ($('.js-consortiallicence input').prop('checked')) {
+                    $('#js-consotial-authority .dropdown').addClass('disabled')
+                    $('#js-consotial-authority select').attr('disabled', 'disabled')
+                } else {
+                    $('#js-consotial-authority .dropdown').removeClass('disabled')
+                    $('#js-consotial-authority select').removeAttr('disabled')
+                }
+            }
+            toggleFilterPart()
+            $('.js-consortiallicence').on('click', toggleFilterPart)
         });
     </r:script>
 

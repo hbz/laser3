@@ -1,17 +1,19 @@
 
 0.7
 
-- added license handling for consortia and members
+- added license handling for consortia and consortia members
 - reworked linking of licenses
 - reworked org role template, fixed javascript behaviour
 - added list view and delete function for budget codes 
+- added filter for addressbooks
+- added functionality for deleting addresses and contacts 
+- added title field for persons
 - added translations and increased text length of property definitions
 - added anonymisation for object histories (DSGVO)
 - increased session timeout
 - removed tmp copy of jquery-plugin
 - lots of markup and style changes 
-- minor bugfixes 
-- TODO
+- minor bugfixes and refactorings
 
 0.6.1
 
