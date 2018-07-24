@@ -80,10 +80,10 @@ class OrganisationsController {
 
     @Secured(['ROLE_USER'])
     def listProvider() {
-
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
         params.max = params.max ?: result.user?.getDefaultPageSize()
+
 
         params.orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector').id.toString()
         params.orgType = RefdataValue.getByValueAndCategory('Provider','OrgType').id.toString()

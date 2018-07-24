@@ -39,7 +39,7 @@
         <div class="field">
             <div class="two fields">
 
-                <div class="field wide twelve fieldcontain ${hasErrors(bean: personInstance, field: 'last_name', 'error')} required">
+                <div class="field wide twelve ${hasErrors(bean: personInstance, field: 'last_name', 'error')} required">
                     <label for="last_name">
                         <g:message code="person.last_name.label" default="Lastname" />
                     </label>
@@ -47,7 +47,7 @@
 
                 </div>
 
-                <div id="person_middle_name" class="field wide four fieldcontain ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} ">
+                <div id="person_middle_name" class="field wide four ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} ">
                     <label for="middle_name">
                         <g:message code="person.middle_name.label" default="Middlename" />
 
@@ -62,21 +62,21 @@
         <div class="field">
             <div class="three fields">
 
-                <div id="person_first_name" class="field wide eight fieldcontain ${hasErrors(bean: personInstance, field: 'first_name', 'error')}">
+                <div id="person_first_name" class="field wide eight ${hasErrors(bean: personInstance, field: 'first_name', 'error')}">
                     <label for="first_name">
                         <g:message code="person.first_name.label" default="Firstname" />
                     </label>
                     <g:textField name="first_name" required="" value="${personInstance?.first_name}"/>
                 </div>
 
-                <div id="person_title" class="field wide four fieldcontain ${hasErrors(bean: personInstance, field: 'title', 'error')}">
+                <div id="person_title" class="field wide four ${hasErrors(bean: personInstance, field: 'title', 'error')}">
                     <label for="title">
                         <g:message code="person.title.label" default="Title" />
                     </label>
                     <g:textField name="title" required="" value="${personInstance?.title}"/>
                 </div>
 
-                <div id="person_gender" class="field wide four fieldcontain ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">
+                <div id="person_gender" class="field wide four ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">
                     <label for="gender">
                         <g:message code="person.gender.label" default="Gender" />
                     </label>

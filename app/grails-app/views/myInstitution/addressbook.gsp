@@ -16,6 +16,7 @@ import="com.k_int.kbplus.RefdataCategory"
     </head>
     <body>
 
+    ${personList}
         <semui:breadcrumbs>
             <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
             <semui:crumb message="menu.institutions.addressbook" class="active"/>
@@ -50,25 +51,27 @@ import="com.k_int.kbplus.RefdataCategory"
 
 
             <semui:filter>
-                <g:form action="adressbook" controller="myInstitution" method="get" class="form-inline ui small form">
+                <g:form action="addressbook" controller="myInstitution" method="get" class="form-inline ui small form">
                     <div class="field">
                         <div class="three fields">
                             <div class="field">
                                 <label>${message(code: 'person.filter.name')}</label>
 
                                 <div class="ui input">
-                                    <input type="text" name="name"
+                                    <input type="text" name="personNameContains"
                                            placeholder="${message(code: 'person.filter.name')}"
-                                           value="${params.name?.encodeAsHTML()}"/>
+                                           value=""/>
                                 </div>
+                                <% /*<input type="text" name="orgNameContains" value="${params.orgNameContains}"/>
+                                value="${params.personNameContains?.encodeAsHTML()}"/> */ %>
                             </div>
                             <div class="field">
                                 <label>${message(code: 'person.filter.organization')}</label>
 
                                 <div class="ui input">
-                                    <input type="text" name="organizaion"
+                                    <input type="text" name="organization"
                                            placeholder="${message(code: 'person.filter.organization')}"
-                                           value="${params.organizaion?.encodeAsHTML()}"/>
+                                           value="${params.organization?.encodeAsHTML()}"/>
                                 </div>
                             </div>
                         </div>
@@ -86,6 +89,8 @@ import="com.k_int.kbplus.RefdataCategory"
 
                 </g:form>
             </semui:filter>
+
+
 
             <g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons]}"></g:render>
 
