@@ -70,11 +70,11 @@
 
                 <div class="field">
                     <label>&nbsp;</label>
-                    <input type="submit" value="${message(code:'default.button.search.label', default:'Search')}" class="ui secondary button">
+                    <input type="submit" value="${message(code:'default.button.filter.label', default:'Filter')}" class="ui secondary button">
                 </div>
                 <div class="field">
                     <label>&nbsp;</label>
-                    <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.searchreset.label')}</a>
+                    <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.filterreset.label')}</a>
                 </div>
 
             </div>

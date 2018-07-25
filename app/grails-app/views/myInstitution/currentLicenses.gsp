@@ -55,7 +55,7 @@
 
                 <div class="field">
                     <label>&nbsp;</label>
-                    <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.searchreset.label')}</a>
+                    <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.filterreset.label')}</a>
                 </div> --%>
 
                 <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
@@ -94,7 +94,7 @@
                     <div class="field la-filter-search">
                         <a href="${request.forwardURI}" class="ui reset primary primary button">${message(code:'default.button.reset.label')}</a>
 
-                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}" />
+                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}" />
                     </div>
 
             <g:if test="${institution?.orgType?.value == 'Consortium'}">

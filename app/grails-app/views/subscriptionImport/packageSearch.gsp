@@ -18,7 +18,7 @@
               <input name="pkgname" value="${params.pkgname}"/>
             </div>
             <div class="field">
-                <button class="ui button" type="submit" name="search" value="yes">${message(code:'default.button.search.label', default:'Search')}</button>
+                <button class="ui button" type="submit" name="search" value="yes">${message(code:'default.button.filter.label', default:'Filter')}</button>
             </div>
             <div class="fields">
                 <div class="field">

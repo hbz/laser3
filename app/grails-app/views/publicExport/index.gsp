@@ -112,7 +112,7 @@
                   </select>
             ${message(code:'default.search.modified_after', default:'Modified After')}: <semui:simpleHiddenValue  id="lastUpdated" value="${params.lastUpdated}" name="lastUpdated" type="date"/>
  
-            <button type="submit" name="search" value="yes">${message(code:'default.button.search.label', default:'Search')}</button>
+            <button type="submit" name="search" value="yes">${message(code:'default.button.filter.label', default:'Filter')}</button>
           </div>
         </div>
       </div>

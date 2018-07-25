@@ -64,8 +64,8 @@
                     <input name="q" placeholder="" value="${params.q}"/>
                 </div>
                 <div class="field">
-                    <button type="submit" name="search" value="yes" class="ui secondary button">${message(code:'default.button.search.label', default:'Search')}</button>
-                    <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.searchreset.label')}</a>
+                    <button type="submit" name="search" value="yes" class="ui secondary button">${message(code:'default.button.filter.label', default:'Filter')}</button>
+                    <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.filterreset.label')}</a>
                 </div>
       </g:form>
    </semui:filter>

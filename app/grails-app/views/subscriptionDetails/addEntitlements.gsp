@@ -50,7 +50,7 @@
                   <semui:datepicker label="default.endsAfter.label" name="endsAfter" value="${params.endsAfter}" />
                   <div class="field">
                       <label>&nbsp;</label>
-                      <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}">
+                      <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
                   </div>
               </div>
 
