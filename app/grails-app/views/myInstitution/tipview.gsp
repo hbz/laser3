@@ -59,7 +59,7 @@
                     </div>
                     <div class="field">
                         <label>&nbsp;</label>
-                        <button type="submit" class="ui secondary button" name="search">${message(code:'default.button.search.label', default:'Search')}</button>
+                        <button type="submit" class="ui secondary button" name="search">${message(code:'default.button.filter.label', default:'Filter')}</button>
                     </div>
                 </div>
 

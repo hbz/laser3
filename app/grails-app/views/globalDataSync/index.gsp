@@ -25,7 +25,7 @@
 
                 <div class="field">
                     <label>&nbsp;</label>
-                    <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.searchreset.label')}</a>
+                    <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.filterreset.label')}</a>
                 </div>
                 <div class="field">
                     <label>&nbsp;</label>
