@@ -6,6 +6,7 @@ import com.k_int.kbplus.abstract_domain.AbstractProperty
 import de.laser.domain.I10nTranslatableAbstract
 import de.laser.domain.I10nTranslation
 import groovy.util.logging.*
+//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
 import javax.persistence.Transient

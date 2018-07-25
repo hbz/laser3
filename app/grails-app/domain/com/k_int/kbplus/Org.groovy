@@ -5,6 +5,7 @@ import de.laser.domain.BaseDomainComponent
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.LogFactory
 import groovy.util.logging.*
+//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 import javax.persistence.Transient

@@ -1,7 +1,6 @@
 package de.laser
 
 import com.k_int.kbplus.Org
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.web.util.WebUtils
 
 class ContextService {

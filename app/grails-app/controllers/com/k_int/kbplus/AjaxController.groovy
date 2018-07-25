@@ -5,6 +5,7 @@ import de.laser.domain.I10nTranslatableAbstract
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import com.k_int.properties.PropertyDefinition
+//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Secured(['permitAll']) // TODO
@@ -866,7 +867,12 @@ class AjaxController {
         error = message(code:'ajax.addCustomPropertyValue.error', default:'A property of this type is already added')
     }
 
-    owner.refresh()
+      if (owner instanceof SystemAdmin) {
+          owner.refresh() // TODO: fix
+      } else {
+          owner.refresh()
+      }
+
     request.setAttribute("editable", params.editable == "true")
     render(template: "/templates/properties/custom", model:[
             ownobj:owner,
@@ -911,7 +917,12 @@ class AjaxController {
             }
         }
 
-        owner.refresh()
+        if (owner instanceof SystemAdmin) {
+            owner.refresh() // TODO: fix
+        } else {
+            owner.refresh()
+        }
+
         request.setAttribute("editable", params.editable == "true")
         render(template: "/templates/properties/private", model:[
                 ownobj: owner,
