@@ -66,17 +66,22 @@
                 <div class="field">
                     <label>Vertrag kopieren</label>
                     <div class="ui radio checkbox">
-                        <input class="hidden" type="radio" name="generateSlavedLics" value="multiple">
-                        <label>${message(code: 'myinst.emptySubscription.seperate_lics1')}</label>
+                        <g:if test="${license.derivedLicenses}">
+                            <input class="hidden" type="radio" name="generateSlavedLics" value="one">
+                        </g:if>
+                        <g:else>
+                            <input class="hidden" type="radio" name="generateSlavedLics" value="one" checked="checked">
+                        </g:else>
+                        <label>${message(code: 'myinst.emptySubscription.seperate_lics_one')}</label>
                     </div>
                     <div class="ui radio checkbox">
-                        <input class="hidden" type="radio" name="generateSlavedLics" value="one" checked="checked">
-                        <label>${message(code: 'myinst.emptySubscription.seperate_lics2')}</label>
+                        <input class="hidden" type="radio" name="generateSlavedLics" value="multiple">
+                        <label>${message(code: 'myinst.emptySubscription.seperate_lics_multiple')}</label>
                     </div>
                     <g:if test="${license.derivedLicenses}">
                         <div class="ui radio checkbox">
-                            <input class="hidden" type="radio" name="generateSlavedLics" value="reference">
-                            <label>${message(code: 'myinst.emptySubscription.seperate_lics3')}</label>
+                            <input class="hidden" type="radio" name="generateSlavedLics" value="reference" checked="checked">
+                            <label>${message(code: 'myinst.emptySubscription.seperate_lics_reference')}</label>
                         </div>
 
                         <br />

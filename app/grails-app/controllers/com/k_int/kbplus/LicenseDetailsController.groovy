@@ -87,13 +87,6 @@ class LicenseDetailsController {
 
       //result.availableSubs = getAvailableSubscriptions(result.license, result.user)
 
-        def subscrQuery = """
-from Subscription as s where 
-  ( ( exists ( select o from s.orgRelations as o where (o.roleType.value IN ('Subscriber', 'Subscription Consortia')) and o.org = :co) ) ) ) 
-  AND ( s.status.value != 'Deleted' ) 
-"""
-        result.availableSubs = Subscription.executeQuery("select s ${subscrQuery}", [co: contextService.getOrg()])
-
       // tasks
       def contextOrg = contextService.getOrg()
       result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.license)
@@ -158,7 +151,15 @@ from Subscription as s where
           }
       }
 
-      withFormat {
+        def subscrQuery = """
+from Subscription as s where 
+  ( ( exists ( select o from s.orgRelations as o where (o.roleType.value IN ('Subscriber', 'Subscription Consortia')) and o.org = :co) ) ) ) 
+  AND ( s.status.value != 'Deleted' ) 
+"""
+        result.availableSubs = Subscription.executeQuery("select s ${subscrQuery}", [co: contextService.getOrg()])
+
+        
+        withFormat {
       html result
       json {
         def map = exportService.addLicensesToMap([:], [result.license])

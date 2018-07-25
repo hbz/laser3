@@ -405,6 +405,8 @@ from License as l where (
             return;
         }
 
+        result.orgType = result.institution.orgType
+
         def cal = new java.util.GregorianCalendar()
         def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
