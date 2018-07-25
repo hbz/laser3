@@ -68,7 +68,9 @@ class PublicController {
         def result = [:]
 
         if (params.id) {
-            def sub = Subscription.findById(params.long('id'))
+            def sp  = SubscriptionPackage.get(params.long('id'))
+            def sub = sp?.subscription
+            def pkg = sp?.pkg
             def scp = SubscriptionCustomProperty.findByOwnerAndTypeAndRefValue(
                     sub,
                     PropertyDefinition.findByDescrAndName('Subscription Property', 'GASCO Entry'),
@@ -77,6 +79,7 @@ class PublicController {
 
             if (scp) {
                 result.subscription = sub
+                result.pakkage = pkg
             }
             else {
                 redirect controller: 'public', action: 'gasco'

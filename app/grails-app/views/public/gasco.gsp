@@ -117,13 +117,12 @@
                         ${i}
                     </td>
                     <td>
-                        <g:link controller="public" action="gascoDetails" id="${sub.id}">${sub}</g:link>
+                        ${sub}
 
                         <g:each in="${sub.packages}" var="subPkg" status="j">
-                            <br>
                             <div class="la-flexbox">
                                 <i class="icon gift la-list-icon"></i>
-                                    ${subPkg.pkg}
+                                <g:link controller="public" action="gascoDetails" id="${subPkg.id}">${subPkg.pkg}</g:link>
                             </div>
                         </g:each>
                     </td>
