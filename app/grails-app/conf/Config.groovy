@@ -579,9 +579,9 @@ grails.plugin.springsecurity.roleHierarchy = '''
     ROLE_GLOBAL_DATA > ROLE_USER
 '''
 
-/*grails.plugins.springsecurity.controllerAnnotations.staticRules = [
-  '/monitoring/**': ['ROLE_ADMIN']  // javaMelody ?
-]*/
+grails.plugin.springsecurity.controllerAnnotations.staticRules = [
+        [pattern: '/monitoring', access: ['ROLE_YODA']]
+]
 
 auditLog {
   logFullClassName = true
