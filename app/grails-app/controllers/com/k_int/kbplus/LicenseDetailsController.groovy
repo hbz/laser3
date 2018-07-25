@@ -96,7 +96,7 @@ class LicenseDetailsController {
         // restrict visible for templates/links/orgLinksAsList
         result.visibleOrgLinks = []
         result.license.orgLinks?.each { or ->
-            if (! (or.org == contextService.getOrg() && or.roleType.value in ["Licensee", "Licensee_Consortial"])) {
+            if (!(or.org == contextService.getOrg()) && !(or.roleType.value in ["Licensee", "Licensee_Consortial"])) {
                 result.visibleOrgLinks << or
             }
         }
@@ -158,7 +158,7 @@ from Subscription as s where
 """
         result.availableSubs = Subscription.executeQuery("select s ${subscrQuery}", [co: contextService.getOrg()])
 
-        
+
         withFormat {
       html result
       json {
@@ -329,8 +329,11 @@ from Subscription as s where
     if(params.subscription && params.license){
       def sub = Subscription.get(params.subscription)
       def owner = License.get(params.license)
-      owner.addToSubscriptions(sub)
-      owner.save(flush:true)
+        // owner.addToSubscriptions(sub) // GORM problem
+        // owner.save()
+        sub.setOwner(owner)
+        sub.save()
+
     }
     redirect controller:'licenseDetails', action:'show', params: [id:params.license]
 
