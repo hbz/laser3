@@ -149,7 +149,7 @@ class SemanticUiTagLib {
                 break
             case 'Database':
                 out << '<div class="la-inline-flexbox" data-tooltip="' + message(code:'spotlight.databasetitle') + '" data-position="left center" data-variation="tiny">'
-                out << '    <i class="icon database outline la-list-icon"></i>'
+                out << '    <i class="icon database la-list-icon"></i>'
                 out << '</div>'
                 break
             case 'EBook':
