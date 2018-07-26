@@ -1,7 +1,6 @@
 package com.k_int.kbplus
 
 import org.apache.commons.logging.LogFactory
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 class Identifier {
 

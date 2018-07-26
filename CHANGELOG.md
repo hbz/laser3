@@ -1,14 +1,17 @@
 
 0.7
 
+- switched to gokb index for listing all packages
+- improved package linking for subscriptions
+- added public gasco overview and details page 
 - added license handling for consortia and consortia members
-- reworked linking of licenses
-- reworked org role template, fixed javascript behaviour
-- added list view and delete function for budget codes 
+- reworked structure of license linking
 - added filter for addressbooks
 - added functionality for deleting addresses and contacts 
-- added title field for persons
+- added list view and delete function for budget codes 
+- reworked org role template, fixed javascript behaviour
 - added translations and increased text length of property definitions
+- added title field for persons
 - added anonymisation for object histories (DSGVO)
 - increased session timeout
 - removed tmp copy of jquery-plugin

@@ -22,6 +22,7 @@ grails.project.dependency.resolution = {
         excludes "grails-docs"
         // uncomment to disable ehcache
         excludes 'ehcache'
+        //excludes 'ehcache-core' // to hibernate 4
     }
     log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
     checksums true // Whether to verify checksums on resolve
@@ -62,7 +63,7 @@ grails.project.dependency.resolution = {
 
     dependencies {
 
-        compile "net.sf.ehcache:ehcache-core:2.6.11"
+        compile "net.sf.ehcache:ehcache:2.7.0" //compile "net.sf.ehcache:ehcache-core:2.6.11" // to hibernate 4
 
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
         runtime 'javax.servlet:jstl:1.1.2'
@@ -137,7 +138,9 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        runtime ':hibernate:3.6.10.19'  
+
+        runtime ':hibernate:3.6.10.19'
+        //runtime ':hibernate4:5.0.0.RC1' //runtime ':hibernate:3.6.10.19' // to hibernate 4
         runtime ":resources:1.2.8" // 1.2.14 won't work @ kbplusapp.js.gsp
         compile ":scaffolding:2.1.2"
         runtime ':fields:1.5.1'
@@ -179,10 +182,10 @@ grails.project.dependency.resolution = {
         runtime ":executor:0.3"
         runtime ":markdown:1.1.1"
         runtime ":quartz:1.0.2"
-        //runtime ":quartz:1.0.1"
-        //compile ":grails-melody:1.53.0"
-        // runtime "com.k-int:domain-model-oai-pmh:0.1"
+        compile ":grails-melody:1.59.0"
         compile ":jsonp:0.2"
+
+        // runtime "com.k-int:domain-model-oai-pmh:0.1"
 
         compile ":remote-pagination:0.4.8" //AJAX Pagination - Finance
     }
