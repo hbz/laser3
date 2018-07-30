@@ -1188,7 +1188,7 @@ class SubscriptionDetailsController {
             def qry = """
 select l from License as l 
 where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ( ol.roleType = ? or ol.roleType = ? ) ) 
-AND l.status.value != 'Deleted' order by l.reference
+AND l.status.value != 'Deleted' order by LOWER(l.reference)
 """
 
             def license_list = License.executeQuery(qry, qry_params);
