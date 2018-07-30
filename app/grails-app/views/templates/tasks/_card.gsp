@@ -19,8 +19,6 @@
     </g:each>
 </semui:card>
 
-<g:render template="/templates/tasks/modal_create" />
-
 <r:script>
     function taskedit(id) {
 

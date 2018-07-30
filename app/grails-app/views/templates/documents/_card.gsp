@@ -28,5 +28,3 @@
     </g:each>
 </semui:card>
 
-<g:render template="/templates/documents/modal" />
-

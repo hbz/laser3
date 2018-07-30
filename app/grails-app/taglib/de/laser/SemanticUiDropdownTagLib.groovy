@@ -79,6 +79,8 @@ class SemanticUiDropdownTagLib {
         def message   = attrs.message ? "${message(code: attrs.message)}" : ''
         def linkBody  = (text && message) ? text + " - " + message : text + message
         def aClass    = 'item'
+        def href      = attrs.href ? attrs.href : '#'
+
         if (this.pageScope.variables?.actionName == attrs.action) {
             aClass = 'item active'
         }
@@ -91,9 +93,12 @@ class SemanticUiDropdownTagLib {
             )
         }
         else {
-            out << '<a href="#" class="' + aClass + '"'
+            out << '<a href="' + href + '" class="item"'
             if (attrs.id) { // e.g. binding js events
                 out << ' id="' + attrs.id + '">'
+            }
+            if (attrs.'data-semui') { // e.g. binding modals
+                out << ' data-semui="' + attrs.'data-semui' + '">'
             }
             out << linkBody + '</a>'
         }

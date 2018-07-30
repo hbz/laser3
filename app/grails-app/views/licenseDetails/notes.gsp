@@ -20,7 +20,5 @@
 
     <g:render template="/templates/notes/table" model="${[instance: license, redirect: 'notes']}"/>
 
-    <g:render template="/templates/notes/modal_create" model="${[doclist: license.documents, ownobj: license, owntp: 'license']}"/>
-
 </body>
 </html>
