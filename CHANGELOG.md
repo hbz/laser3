@@ -14,9 +14,9 @@
 - added title field for persons
 - added anonymisation for object histories (DSGVO)
 - increased session timeout
-- removed tmp copy of jquery-plugin
 - lots of markup and style changes 
 - minor bugfixes and refactorings
+- upgraded some plugins and dependencies
 
 0.6.1
 

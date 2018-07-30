@@ -126,7 +126,7 @@ grails.project.dependency.resolution = {
         compile ("net.sf.jasperreports:jasperreports:5.6.1"){
             excludes "eclipse:jdtcore:3.1.0"
         }
-        compile "org.eclipse.jdt.core.compiler:ecj:4.3.1"
+        //compile "org.eclipse.jdt.core.compiler:ecj:4.3.1" // ':tomcat:7.0.55.2' ?
   
         // II Commented out..
         // compile 'cglib:cglib:2.2.2'
@@ -148,10 +148,13 @@ grails.project.dependency.resolution = {
         //Sicherheitsrisko
         //compile ":file-viewer:0.3"
 
+        build (':tomcat:8.0.50')
+        /*
         build (':tomcat:7.0.55.2'){
             //This is crashing under Java8, we impport newer version manually
             excludes "org.eclipse.jdt.core.compiler:ecj:3.7.2"
         }
+        */
 
         runtime ":database-migration:1.4.0"
 
