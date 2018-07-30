@@ -21,8 +21,6 @@
 
     <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList]}"/>
 
-    <g:render template="/templates/tasks/modal_create"  model="${[ownobj:subscriptionInstance, owntp:'subscription']}"/>
-
 </body>
 </html>
 

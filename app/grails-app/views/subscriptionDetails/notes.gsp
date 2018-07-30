@@ -19,7 +19,5 @@
 
         <g:render template="/templates/notes/table" model="${[instance: subscriptionInstance, redirect: 'notes']}"/>
 
-        <g:render template="/templates/notes/modal_create" model="${[doclist: subscriptionInstance.documents, ownobj: subscriptionInstance, owntp: 'subscription']}"/>
-    
   </body>
 </html>

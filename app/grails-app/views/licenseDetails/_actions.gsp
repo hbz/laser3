@@ -8,6 +8,8 @@
 
         <g:if test="${license.getLicensor()?.id == contextService.getOrg()?.id && ! license.isTemplate()}">
             <g:if test="${!( license.instanceOf && ! license.hasTemplate())}">
+                <div class="divider"></div>
+
                 <semui:actionsDropdownItem controller="licenseDetails" action="addMembers" params="${[id:license?.id]}" message="myinst.emptyLicense.child" />
             </g:if>
         </g:if>

@@ -1,5 +1,14 @@
 <% /* <g:if test="${editable}"> </g:if> */ %>
 <semui:actionsDropdown>
+
+    <g:if test="${editable}">
+        <semui:actionsDropdownItem message="task.create.new" data-semui="modal" href="#modalCreateTask" />
+        <semui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument" />
+        <semui:actionsDropdownItem message="template.addNote" data-semui="modal" href="#modalCreateNote" />
+
+        <div class="divider"></div>
+    </g:if>
+
     <semui:actionsDropdownItem controller="packageDetails" action="compare" message="menu.institutions.comp_pkg" />
 
     <g:if test="${actionName == 'show'}">
@@ -9,3 +18,9 @@
     </g:if>
 
 </semui:actionsDropdown>
+
+<g:if test="${editable}">
+    <g:render template="/templates/tasks/modal_create" model="${[ownobj:packageInstance, owntp:'pkg']}"/>
+    <g:render template="/templates/documents/modal" model="${[ownobj: packageInstance, owntp: 'pkg']}"/>
+    <g:render template="/templates/notes/modal_create" model="${[ownobj: packageInstance, owntp: 'pkg']}"/>
+</g:if>

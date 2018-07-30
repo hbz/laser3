@@ -22,7 +22,5 @@
 
     <g:render template="/templates/documents/table" model="${[instance:subscriptionInstance, context:'documents', redirect:'documents']}"/>
 
-    <g:render template="/templates/documents/modal" model="${[doclist:subscriptionInstance.documents, ownobj:subscriptionInstance, owntp:'subscription']}"/>
-
   </body>
 </html>

@@ -16,6 +16,12 @@
 </g:if>
 <g:if test="${editable}">
     <semui:actionsDropdown>
+        <semui:actionsDropdownItem message="task.create.new" data-semui="modal" href="#modalCreateTask" />
+        <semui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument" />
+        <semui:actionsDropdownItem message="template.addNote" data-semui="modal" href="#modalCreateNote" />
+
+        <div class="divider"></div>
+
         <semui:actionsDropdownItem controller="subscriptionDetails" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
         <semui:actionsDropdownItem controller="subscriptionDetails" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
 
@@ -30,4 +36,8 @@
                                    message="menu.institutions.imp_renew"/>
         </g:if>
     </semui:actionsDropdown>
+
+    <g:render template="/templates/tasks/modal_create" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
+    <g:render template="/templates/documents/modal" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
+    <g:render template="/templates/notes/modal_create" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
 </g:if>
