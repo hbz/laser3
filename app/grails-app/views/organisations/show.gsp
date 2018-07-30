@@ -198,7 +198,7 @@
                         <dl>
                             <dt><g:message code="org.contacts.label" default="Contacts" /></dt>
                             <dd>
-                                <div class="ui relaxed list">
+                                <div class="ui relaxed list la-contact-info-list">
                                     <g:each in="${orgInstance?.contacts.sort{it.content}}" var="c">
                                         <g:if test="${c.org}">
                                             <g:render template="/templates/cpa/contact" model="${[

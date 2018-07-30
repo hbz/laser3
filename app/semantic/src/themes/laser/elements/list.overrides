@@ -1,0 +1,3 @@
+.ui.list.la-contact-info-list>.item>.icon+.content {
+  padding: 0
+}

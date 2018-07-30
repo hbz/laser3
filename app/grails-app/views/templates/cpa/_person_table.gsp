@@ -46,9 +46,11 @@
                 </g:if>
 
                 <td>
-                    <g:each in="${person.contacts.sort{it.content}}" var="contact">
-                        <g:render template="/templates/cpa/contact" model="${[contact: contact]}"></g:render>
-                    </g:each>
+                    <div class="ui list la-contact-info-list">
+                        <g:each in="${person.contacts.sort{it.content}}" var="contact">
+                            <g:render template="/templates/cpa/contact" model="${[contact: contact]}"></g:render>
+                        </g:each>
+                    </div>
                 </td>
 
                 <td>
