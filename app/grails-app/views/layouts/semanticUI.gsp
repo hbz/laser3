@@ -465,11 +465,11 @@
                 <g:if test="${(params.mode)}">
                     <div class="ui buttons">
                             <g:if test="${params.mode=='advanced'}">
-                                <div class="ui label toggle button" data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                <div class="ui label toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right" data-variation="tiny">
                                     <i class="icon green eye"></i>
                             </g:if>
                             <g:else>
-                                <div class="ui label toggle button" data-tooltip="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                <div class="ui label toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right" data-variation="tiny">
                                     <i class="icon eye slash"></i>
                             </g:else>
                         </div>
@@ -477,7 +477,7 @@
 
 
                 <script>
-                    LaToggle = {};
+                    var LaToggle = {};
                     LaToggle.advanced = {};
                     LaToggle.advanced.button = {};
 
@@ -486,9 +486,8 @@
 
                         // selector cache
                         var
-                            $buttons = $('.ui.buttons .button'),
-                            $toggle  = $('.main .ui.toggle.button'),
-                            $button  = $('.ui.button').not($buttons).not($toggle),
+                            $button = $('.ui.buttons .button.la-toggle-advanced'),
+
                             // alias
                             handler = {
                                 activate: function() {
@@ -504,7 +503,7 @@
                                 }
                             }
                         ;
-                        $buttons
+                        $button
                             .on('click', handler.activate)
                         ;
                     };
