@@ -6,9 +6,11 @@
 - added public gasco overview and details page 
 - added license handling for consortia and consortia members
 - reworked structure of license linking
+- improved error reporting
 - added filter for addressbooks
 - added functionality for deleting addresses and contacts 
 - added list view and delete function for budget codes 
+- added menu actions for creating tasks, documents and notes
 - reworked org role template, fixed javascript behaviour
 - added translations and increased text length of property definitions
 - added title field for persons

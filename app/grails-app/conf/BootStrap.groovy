@@ -288,7 +288,8 @@ class BootStrap {
 
         def packageEditorRole = Role.findByAuthority('ROLE_PACKAGE_EDITOR') ?: new Role(authority: 'ROLE_PACKAGE_EDITOR', roleType: 'global').save(failOnError: true)
         def orgEditorRole     = Role.findByAuthority('ROLE_ORG_EDITOR')     ?: new Role(authority: 'ROLE_ORG_EDITOR', roleType: 'global').save(failOnError: true)
-        def orgComRole     = Role.findByAuthority('ROLE_ORG_COM_EDITOR')     ?: new Role(authority: 'ROLE_ORG_COM_EDITOR', roleType: 'global').save(failOnError: true)
+        def ticketEditorRole  = Role.findByAuthority('ROLE_TICKET_EDITOR')  ?: new Role(authority: 'ROLE_TICKET_EDITOR', roleType: 'global').save(failOnError: true)
+        def orgComRole     = Role.findByAuthority('ROLE_ORG_COM_EDITOR')    ?: new Role(authority: 'ROLE_ORG_COM_EDITOR', roleType: 'global').save(failOnError: true)
 
         // Institutional Roles
 
@@ -770,6 +771,8 @@ class BootStrap {
         RefdataCategory.loc('Subscription Status',          	            [en: 'Subscription Status', de: 'Lizenzstatus'])
         RefdataCategory.loc('Task Priority',                	            [en: 'Task Priority', de: 'Aufgabenpriorität'])
         RefdataCategory.loc('Task Status',          	                    [en: 'Task Status', de: 'Aufgabenstatus'])
+        RefdataCategory.loc('Ticket.Category',          	                  [en: 'Ticket Category', de: 'Kategorie'])
+        RefdataCategory.loc('Ticket.Status',          	                      [en: 'Ticket Status', de: 'Ticketstatus'])
         RefdataCategory.loc('License.OA.ReceivingModalities',               [en: 'Receiving Modalities', de: 'Bezugsmodalitäten'])
         RefdataCategory.loc('License.OA.Repository',                        [en: 'Repository', de: 'Repositorium'])
         RefdataCategory.loc('License.OA.CorrespondingAuthorIdentification', [en: 'Corresponding Author Identification', de: 'Autorenindentifikation'])
@@ -987,7 +990,16 @@ class BootStrap {
         RefdataValue.loc('Task Status',      [en: 'Open', de: 'Offen'])
         RefdataValue.loc('Task Status',      [en: 'Done', de: 'Erledigt'])
         RefdataValue.loc('Task Status',      [en: 'Deferred', de: 'Zurückgestellt'])
-		
+
+        RefdataValue.loc('Ticket.Category',    [en: 'Bug', de: 'Fehler'])
+        RefdataValue.loc('Ticket.Category',    [en: 'Improvement', de: 'Verbesserungsvorschlag'])
+
+        RefdataValue.loc('Ticket.Status',      [en: 'New', de: 'Neu'])
+        RefdataValue.loc('Ticket.Status',      [en: 'Open', de: 'Angenommen'])
+        RefdataValue.loc('Ticket.Status',      [en: 'In Progress', de: 'In Bearbeitung'])
+        RefdataValue.loc('Ticket.Status',      [en: 'Done', de: 'Erledigt'])
+        RefdataValue.loc('Ticket.Status',      [en: 'Deferred', de: 'Zurückgestellt'])
+
         RefdataValue.loc('License.OA.ReceivingModalities',       [en: 'By Author', de: 'Über Autor'])
         RefdataValue.loc('License.OA.ReceivingModalities',       [en: 'On Demand', de: 'Auf Nachfrage'])
         RefdataValue.loc('License.OA.ReceivingModalities',       [en: 'From Database', de: 'Aus Datenank'])

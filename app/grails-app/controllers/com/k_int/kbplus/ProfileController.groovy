@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
 import grails.converters.*
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import org.elasticsearch.groovy.common.xcontent.*
@@ -33,19 +34,33 @@ class ProfileController {
 
         if (params.sendErrorReport) {
             def data = [
-                meta:       params.meta,
-                contact:    params.contact,
-                described:  params.described,
-                expected:   params.expected,
-                info:       params.info
+                    author:     result.user,
+                    title:      params.title?.trim(),
+                    described:  params.described?.trim(),
+                    expected:   params.expected?.trim(),
+                    info:       params.info?.trim(),
+                    status:     RefdataValue.getByValueAndCategory('New', 'Ticket.Status'),
+                    category:   RefdataValue.getByValueAndCategory('Bug', 'Ticket.Category')
             ]
-            result.sendingStatus = (errorReportService.sendReportAsAttachement(data) ? 'ok' : 'fail')
+            result.sendingStatus = (errorReportService.writeReportIntoDB(data) ? 'ok' : 'fail')
         }
 
+        result.title = params.title
         result.described = params.described
         result.expected = params.expected
         result.info = params.info
 
+        result
+    }
+
+    @Secured(['ROLE_USER'])
+    def errorReportOverview() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.tickets = SystemTicket.where{}.list(sort: 'dateCreated', order: 'desc')
+
+        result.editable = SpringSecurityUtils.ifAnyGranted("ROLE_YODA,ROLE_TICKET_EDITOR")
         result
     }
 

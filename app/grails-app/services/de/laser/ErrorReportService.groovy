@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.SystemTicket
 import groovy.json.JsonBuilder
 import org.apache.http.HttpResponse
 import org.apache.http.client.HttpClient
@@ -24,6 +25,7 @@ class ErrorReportService {
     def grailsApplication
     def springSecurityService
 
+    @Deprecated
     def getConfig() {
         def config = [:]
 
@@ -52,6 +54,7 @@ class ErrorReportService {
         }
     }
 
+    @Deprecated
     def sendReportAsAttachement(data) {
         def config = getConfig()
 
@@ -86,6 +89,37 @@ class ErrorReportService {
         else {
             log.info(EntityUtils.toString(response.getEntity()))
             return false
+        }
+    }
+
+    def writeReportIntoDB(data) {
+
+        def ticket = new SystemTicket(
+                author:    data.author,
+                title:     data.title,
+                described: data.described,
+                expected:  data.expected,
+                info:      data.info,
+                status:    data.status,
+                category:  data.category
+        )
+
+        def meta = [
+                system:  grailsApplication.config.laserSystemId,
+                build:   grailsApplication.metadata['repository.revision.number']
+        ]
+        ticket.meta = (new JsonBuilder(meta)).toString()
+
+        println grailsApplication.metadata
+
+        def date = new Date()
+        ticket.dateCreated = date
+        ticket.lastUpdated = date
+
+        if (ticket.save()) {
+            return ticket
+        } else {
+            null
         }
     }
 }

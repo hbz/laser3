@@ -17,6 +17,11 @@
 
 <h1 class="ui header"><semui:headerIcon />${message(code: 'menu.user.errorReport')}</h1>
 
+<semui:subNav actionName="${actionName}">
+    <semui:subNavItem controller="profile" action="errorReport" message="profile.errorReport.label" />
+    <semui:subNavItem controller="profile" action="errorReportOverview" message="profile.errorReportOverview.label" />
+</semui:subNav>
+
 <g:if test="${'ok'.equalsIgnoreCase(sendingStatus)}">
     <semui:msg class="positive" text="Ihr Fehlerbericht wurde übertragen." />
 </g:if>
@@ -44,6 +49,11 @@
         <div class="ui form">
 
             <div class="field">
+                <label>Titel</label>
+                <input name="title" type="text" value="${title}" />
+            </div>
+
+            <div class="field">
                 <label>Beobachtetes Verhalten</label>
                 <textarea name="described">${described}</textarea>
             </div>
@@ -55,26 +65,6 @@
                 <label>Kontext, z.B. die betroffene URL in der Adressleiste des Browses</label>
                 <textarea name="info">${info}</textarea>
             </div>
-
-            <div class="three fields">
-                <div class="field">
-                    <input type="text" readonly="readonly" value="${contextService.getUser()}">
-                </div>
-                <div class="field">
-                    <input type="text" readonly="readonly" value="${contextService.getOrg()}">
-                </div>
-                <div class="field">
-                    <input type="text" readonly="readonly" value="${grailsApplication.config.laserSystemId}">
-                </div>
-            </div>
-
-            <input type="hidden" name="meta" value="system:${grailsApplication.config.laserSystemId}">
-            <input type="hidden" name="meta" value="build:${grailsApplication.metadata['repository.revision.number']}">
-            <input type="hidden" name="meta" value="date:${new Date()}">
-            <input type="hidden" name="meta" value="user:${contextService.getUser()?.id}">
-            <input type="hidden" name="meta" value="ctx:${contextService.getOrg()?.id}">
-
-            <input type="hidden" name="contact" value="${contextService.getUser().display} (${contextService.getUser().username}), ${contextService.getUser().email}">
 
             <div class="field">
                 <input type="submit" name="sendErrorReport" class="ui button" value="Fehlerbericht absenden">
