@@ -6,7 +6,7 @@
 - added public gasco overview and details page 
 - added license handling for consortia and consortia members
 - reworked structure of license linking
-- improved error reporting
+- improved error reporting ticket system
 - added filter for addressbooks
 - added functionality for deleting addresses and contacts 
 - added list view and delete function for budget codes 
