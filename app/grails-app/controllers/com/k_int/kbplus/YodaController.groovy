@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.helper.DebugAnnotation
+import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import grails.web.Action
@@ -15,6 +16,7 @@ class YodaController {
     def statsSyncService
     def dataloadService
     def globalSourceSyncService
+    def contextService
 
     static boolean ftupdate_running = false
 
@@ -271,5 +273,61 @@ class YodaController {
         }
 
         redirect action:'settings'
+    }
+
+    @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
+    def costItemsApi(String owner) {
+        def result = []
+
+        if(owner) {
+            def costItems
+
+            //Für später zur besseren Absicherung
+            //costItems = CostItem.findAllByOwner(contextService.getOrg())
+            if(owner == 'all')
+            {
+                costItems = CostItem.getAll()
+            }
+            else{
+                costItems = CostItem.findAllByOwner(Org.get(owner))
+            }
+
+            costItems.each {
+                def costItem = [:]
+                costItem.guid = it.globalUID
+
+                costItem.costItemStatus = it.costItemStatus?.value
+                costItem.costItemTyp = it.costItemCategory?.value
+                costItem.billingCurrency = it.billingCurrency?.value
+                costItem.costItemElement = it.costItemElement?.value
+                costItem.taxCode = it.taxCode?.value
+
+                costItem.costInBillingCurrency = it.costInBillingCurrency
+                costItem.costInLocalCurrency = it.costInLocalCurrency
+                costItem.currencyRate = it.currencyRate
+
+                costItem.costTitle = it.costTitle
+                costItem.costDescription = it.costDescription
+                costItem.reference = it.reference
+
+                costItem.datePaid = it.datePaid
+                costItem.startDate = it.startDate
+                costItem.endDate = it.endDate
+
+                costItem.owner = it.owner
+                costItem.sub = it.sub
+                costItem.subPkg = it.subPkg
+                costItem.issueEntitlement = it.issueEntitlement
+                costItem.order = it.order
+                costItem.invoice = it.invoice
+
+                result.add(costItem)
+
+            }
+        }else {
+            result=[result:'You must enter an organization!']
+        }
+
+        render result as JSON
     }
 }
