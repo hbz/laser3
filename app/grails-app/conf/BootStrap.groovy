@@ -761,7 +761,7 @@ class BootStrap {
         RefdataCategory.loc('Funder Type',          	                    [en: 'Funder Type', de: 'Trägerschaft'])
         RefdataCategory.loc('Gender',               	                    [en: 'Gender', de: 'Geschlecht'])
         RefdataCategory.loc('OrgSector',            	                    [en: 'OrgSector', de: 'Bereich'])
-        RefdataCategory.loc('Library Network',      	                    [en: 'Library Network', de: 'Verbundszugehörigkeit'])
+        RefdataCategory.loc('Library Network',      	                    [en: 'Library Network', de: 'Verbundzugehörigkeit'])
         RefdataCategory.loc('Library Type',         	                    [en: 'Library Type', de: 'Bibliothekstyp'])
         RefdataCategory.loc('OrgType',              	                    [en: 'Organisation Type', de: 'Organisationstyp'])
         RefdataCategory.loc('Person Function',      	                    [en: 'Person Function', de: 'Funktion'])
