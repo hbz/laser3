@@ -397,14 +397,6 @@ class AdminController {
 
         //zenDeskSyncService.doSync()
     }
-
-    @Secured(['ROLE_ADMIN'])
-    def juspSync() {
-        redirect(controller:'home')
-
-        //log.debug("juspSync()");
-        //juspSyncService.doSync()
-    }
     */
 
   @Secured(['ROLE_ADMIN'])
