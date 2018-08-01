@@ -298,9 +298,17 @@
                         <i class="dropdown icon"></i>
 
                         <div class="menu">
+                            <g:link class="item" controller="profile" action="errorOverview">
+                                ${message(code: "menu.user.errorReport")}
+                                <g:set var="newTickets" value="${com.k_int.kbplus.SystemTicket.getNew().size()}" />
+                                <g:if test="${newTickets > 0}">
+                                    <div class="ui floating red circular label">${newTickets}</div>
+                                </g:if>
+                            </g:link>
+
                             <g:link class="item" controller="admin" action="manageAffiliationRequests">
                                 ${message(code: "menu.institutions.affiliation_requests")}
-                                <g:set var="newAffiliationRequests" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatus(0, [sort:'dateRequested']).size()}" />
+                                <g:set var="newAffiliationRequests" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatus(0).size()}" />
                                 <g:if test="${newAffiliationRequests > 0}">
                                     <div class="ui floating red circular label">${newAffiliationRequests}</div>
                                 </g:if>
@@ -311,23 +319,8 @@
                                 <i class="dropdown icon"></i>
 
                                 <div class="menu">
-                                    <g:link class="item" controller="yoda" action="settings">System Settings</g:link>
-                                    <g:link class="item" controller="yoda" action="appConfig">App Config</g:link>
-
-                                    <g:link class="item" controller="yoda" action="appSecurity">App Security</g:link>
+                                    <g:link class="item" controller="admin" action="appInfo">App Info</g:link>
                                     <g:link class="item" controller="admin" action="eventLog">Event Log</g:link>
-
-                                    <div class="divider"></div>
-
-                                    <g:link class="item" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">Start Global Data Sync</g:link>
-                                    <g:link class="item" controller="yoda" action="manageGlobalSources">Manage Global Sources</g:link>
-
-                                    <div class="divider"></div>
-
-                                    <g:link class="item" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">Run Full ES Index Reset</g:link>
-                                    <g:link class="item" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">Start ES Index Update</g:link>
-                                    <%--<g:link class="item" controller="yoda" action="logViewer">Log Viewer</g:link>--%>
-                                    <g:link class="item" controller="yoda" action="manageESSources" >Manage ES Source</g:link>
 
                                     <div class="divider"></div>
 
@@ -340,9 +333,6 @@
                                     <g:link class="item" controller="admin" action="titleAugment" onclick="return confirm('${message(code:'confirm.start.DataCleaningTitleAugment')}')">Run Data Cleaning (Title Augment)</g:link>
                                 </div>
                             </div>
-
-                            <g:link class="item" controller="yoda" action="appInfo">App Info</g:link>
-                            <%--<g:link class="item" controller="yoda" action="appLogfile">App Logfile</g:link>--%>
 
                             <div class="divider"></div>
 
@@ -397,6 +387,36 @@
                            %{-- <g:link class="item" controller="jasperReports" action="uploadReport">Upload Report Definitions</g:link>--}%
 
                         </div>
+                    </div>
+                </sec:ifAnyGranted>
+            </sec:ifLoggedIn>
+
+            <sec:ifLoggedIn>
+                <sec:ifAnyGranted roles="ROLE_YODA">
+                    <div class="ui simple dropdown item">
+                        Yoda
+                        <i class="dropdown icon"></i>
+
+                        <div class="menu">
+                            <g:link class="item" controller="yoda" action="settings">System Settings</g:link>
+                            <g:link class="item" controller="yoda" action="appConfig">App Config</g:link>
+
+                            <g:link class="item" controller="yoda" action="appSecurity">App Security</g:link>
+
+                            <div class="divider"></div>
+
+                            <g:link class="item" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">Start Global Data Sync</g:link>
+                            <g:link class="item" controller="yoda" action="manageGlobalSources">Manage Global Sources</g:link>
+
+                            <div class="divider"></div>
+
+                            <g:link class="item" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">Run Full ES Index Reset</g:link>
+                            <g:link class="item" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">Start ES Index Update</g:link>
+                            <%--<g:link class="item" controller="yoda" action="logViewer">Log Viewer</g:link>--%>
+                            <g:link class="item" controller="yoda" action="manageESSources" >Manage ES Source</g:link>
+
+                        </div>
+
                     </div>
                 </sec:ifAnyGranted>
             </sec:ifLoggedIn>

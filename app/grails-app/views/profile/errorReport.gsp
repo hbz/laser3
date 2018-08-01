@@ -18,8 +18,8 @@
 <h1 class="ui header"><semui:headerIcon />${message(code: 'menu.user.errorReport')}</h1>
 
 <semui:subNav actionName="${actionName}">
+    <semui:subNavItem controller="profile" action="errorOverview" message="profile.errorOverview.label" />
     <semui:subNavItem controller="profile" action="errorReport" message="profile.errorReport.label" />
-    <semui:subNavItem controller="profile" action="errorReportOverview" message="profile.errorReportOverview.label" />
 </semui:subNav>
 
 <g:if test="${'ok'.equalsIgnoreCase(sendingStatus)}">
@@ -67,7 +67,7 @@
             </div>
 
             <div class="field">
-                <input type="submit" name="sendErrorReport" class="ui button" value="Fehlerbericht absenden">
+                <input type="submit" name="sendErrorReport" class="ui button" value="Absenden">
             </div>
 
         </div>

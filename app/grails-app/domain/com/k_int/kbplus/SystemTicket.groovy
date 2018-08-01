@@ -49,4 +49,9 @@ class SystemTicket {
         lastUpdated (nullable:false, blank:false)
         jiraReference(nullable:true, blank:true)
     }
+
+    static getNew() {
+
+        SystemTicket.where{ status == RefdataValue.getByValueAndCategory('New', 'Ticket.Status') }.list(sort:'dateCreated', order:'desc')
+    }
 }

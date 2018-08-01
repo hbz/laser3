@@ -18,8 +18,8 @@
 <h1 class="ui header"><semui:headerIcon />${message(code: 'menu.user.errorReport')}</h1>
 
 <semui:subNav actionName="${actionName}">
+    <semui:subNavItem controller="profile" action="errorOverview" message="profile.errorOverview.label" />
     <semui:subNavItem controller="profile" action="errorReport" message="profile.errorReport.label" />
-    <semui:subNavItem controller="profile" action="errorReportOverview" message="profile.errorReportOverview.label" />
 </semui:subNav>
 
 <div class="ui grid">
@@ -76,28 +76,49 @@
 
                     <tr class="ticket-content-${ticket.id}" style="display:none">
                         <td colspan="5">
-                            <div class="segment">
-                                <h4 class="ui header">${ticket.title}</h4>
+                            <h4 class="ui header">${ticket.title}</h4>
 
-                                <p>
-                                    Status: <semui:xEditableRefData owner="${ticket}" field="status" config='Ticket.Status'/>
-                                </p>
-                                <p>
+                            <div class="ui relaxed list">
+                                <div class="item">
+                                    <div class="header">Status</div>
+                                    <semui:xEditableRefData owner="${ticket}" field="status" config="Ticket.Status"/>
+                                </div>
+
+                                <g:if test="${editable}">
+                                    <div class="item">
+                                        <div class="header">Jira</div>
+                                        <semui:xEditable owner="${ticket}" field="jiraReference"/>
+                                        <g:if test="${ticket.jiraReference}">
+                                            &nbsp;
+                                            <a href="${ticket.jiraReference}" target="_blank">
+                                                <i class="external alternate icon"></i>
+                                            </a>
+                                        </g:if>
+                                    </div>
+                                </g:if>
+
+                                <div class="item">
                                     ${ticket.described}
-                                </p>
-                                <p>
+                                </div>
+                                <div class="item">
                                     ${ticket.expected}
-                                </p>
-                                <p>
+                                </div>
+                                <div class="item">
                                     ${ticket.info}
-                                </p>
-                                <p>
-                                    Zuletzt bearbeitet: <g:formatDate date="${ticket.lastUpdated}" format="${message(code: 'default.date.format.noZ')}"/>
-                                </p>
-                                <p>
-                                    Meta: ${ticket.meta}
-                                </p>
+                                </div>
+                                <div class="item">
+                                    <div class="header">Zuletzt bearbeitet</div>
+                                    <g:formatDate date="${ticket.lastUpdated}" format="${message(code: 'default.date.format.noZ')}"/>
+                                </div>
+
+                                <g:if test="${editable}">
+                                    <div class="item">
+                                        <div class="header">Meta</div>
+                                        ${ticket.meta}
+                                    </div>
+                                </g:if>
                             </div>
+
                         </td>
                     </tr>
 
