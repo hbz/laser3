@@ -190,64 +190,7 @@
         </div>
 
         <g:render template="/templates/tasks/modal_create" />
-
-        <% /*
-        <g:if test="${grailsApplication.config.ZenDeskBaseURL}">
-        <div class="five wide column">
-           <table class="ui table dashboard-widget">
-              <thead>
-                <th>
-                  <h5 class="pull-left">${message(code:'myinst.dash.forum.label', default:'Latest Discussions')}</h5>
-                  <img src="${resource(dir: 'images', file: 'icon_discuss.png')}" alt="Discussions" class="pull-right" />
-                </th>
-              </thead>
-              <tbody>
-            <g:if test="${forumActivity}">
-                <g:each in="${forumActivity}" var="fa">
-                  <tr>
-                    <td>
-                      <div class="pull-left icon">
-                        <img src="${resource(dir: 'images', file: 'icon_discuss.png')}" alt="Discussion" />
-                      </div>
-                      <div class="pull-right message">
-                        <p><strong>${fa.title}</strong></p>
-                        <p>
-                        <g:if test="${fa.result_type=='topic'}">
-                          <g:formatDate date="${fa.updated_at}"  formatName="default.date.format"/>
-                          <a href="${grailsApplication.config.ZenDeskBaseURL}/entries/${fa.id}">View Topic</a>
-                          <a href="${grailsApplication.config.ZenDeskBaseURL}/entries/${fa.id}" title="View Topic (new Window)" target="_blank"><i class="icon-share-alt"></i></a>
-                        </g:if>
-                        <g:else>
-                          <a href="${fa.url}">View ${fa.result_type}</a>
-                        </g:else>
-                        </p>
-                      </div>
-                    </td>
-                  </tr>
-                </g:each>
-            </g:if>
-            <g:else>
-            <tr>
-              <td>
-                <p>${message(code:'myinst.dash.forum.noActivity', default:'Recent forum activity not available. Please retry later.')}</p>
-              </td>
-            </tr>
-            </g:else>
-            <tr>
-              <td>
-                <g:if test="${!grailsApplication.config.ZenDeskBaseURL.equals('https://projectname.zendesk.com')}">
-                  <a href="${grailsApplication.config.ZenDeskBaseURL}/forums" class="btn btn-primary pull-right">${message(code:'myinst.dash.forum.visit', default:'Visit Discussion Forum')}</a>
-                </g:if>
-                <g:else>
-                  <span class="btn btn-primary pull-right disabled">${message(code:'myinst.dash.forum.visit', default:'Visit Discussion Forum')}</span>
-                </g:else>
-              </td>
-            </tr>
-          </tbody>
-          </table>
-        </div><!-- .five -->
-        </g:if>
-        */ %>
+    
     <g:javascript>
         function taskedit(id) {
 

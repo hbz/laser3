@@ -22,7 +22,7 @@ class SystemObject {
   def getNotificationEndpoints() {
     def result = []
     if ( announcementsForumId != null ) {
-      result.add([ service:'zendesk.forum', remoteid:this.announcementsForumId ]);
+      // result.add([ service:'zendesk.forum', remoteid:this.announcementsForumId ]);
     }
     result;
   }

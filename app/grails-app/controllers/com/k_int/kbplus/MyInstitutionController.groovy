@@ -26,7 +26,6 @@ class MyInstitutionController {
     def alertsService
     def genericOIDService
     def factService
-    def zenDeskSyncService
     def exportService
     def transformerService
     def institutionsService
@@ -2879,8 +2878,6 @@ AND EXISTS (
 
         def announcement_type = RefdataCategory.lookupOrCreate('Document Type', 'Announcement')
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: 10, sort: 'dateCreated', order: 'desc'])
-
-        result.forumActivity = zenDeskSyncService.getLatestForumActivity()
 
         result
     }

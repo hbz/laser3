@@ -465,11 +465,7 @@ class PackageDetailsController {
       log.debug("Package has ${result.pendingChanges?.size()} pending changes");
 
       result.pkg_link_str="${grailsApplication.config.grails.serverURL}/packageDetails/show/${params.id}"
-
-      if ( packageInstance.forumId != null && grailsApplication.config.ZenDeskBaseURL ) {
-        result.forum_url = "${grailsApplication.config.ZenDeskBaseURL}/forums/${packageInstance.forumId}"
-      }
-
+        
         // tasks
         def contextOrg  = contextService.getOrg()
         result.tasks    = taskService.getTasksByResponsiblesAndObject(User.get(springSecurityService.principal.id), contextOrg, packageInstance)

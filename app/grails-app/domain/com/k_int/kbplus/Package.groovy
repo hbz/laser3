@@ -264,7 +264,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   @Transient
   def getNotificationEndpoints() {
     [
-      [ service:'zendesk.forum', remoteid:this.forumId ],
+      //[ service:'zendesk.forum', remoteid:this.forumId ],
       [ service:'announcements' ]
     ]
   }

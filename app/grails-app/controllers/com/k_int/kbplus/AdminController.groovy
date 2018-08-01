@@ -12,7 +12,6 @@ class AdminController {
 
   def springSecurityService
   def dataloadService
-  def zenDeskSyncService
   def statsSyncService
   def globalSourceSyncService
   def messageService
@@ -389,15 +388,6 @@ class AdminController {
     if ( ( params.sub_identifier ) && ( params.lic_reference.length() > 0 ) ) {
     }
   }
-
-    /*
-    @Secured(['ROLE_ADMIN'])
-    def forumSync() {
-        redirect(controller:'home')
-
-        //zenDeskSyncService.doSync()
-    }
-    */
 
   @Secured(['ROLE_ADMIN'])
   def statsSync() {
