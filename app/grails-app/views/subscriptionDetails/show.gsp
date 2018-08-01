@@ -238,7 +238,7 @@
 
                             <g:if test="${editable}">
                                 <g:if test="${subscriptionInstance.owner == null}">
-                                    <g:link  controller="myInstitution" class="ui button la-new-item" action="emptyLicense" params="[sub: subscriptionInstance.id, subName: subscriptionInstance.name]">${message(code:'license.add.blank')}
+                                    <g:link  controller="myInstitution" class="ui button la-new-item" action="emptyLicense" params="[sub: subscriptionInstance.id]">${message(code:'license.add.blank')}
                                     </g:link>
                                 </g:if>
                             </g:if>

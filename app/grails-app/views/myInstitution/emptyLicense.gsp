@@ -23,11 +23,10 @@
 
     <semui:form>
         <g:form action="processEmptyLicense" controller="myInstitution" method="post" class="ui form newLicence">
-            <g:hiddenField name="sub" value="${params.sub}"/>
 
-            <g:if test="${params.sub}">
-                <g:hiddenField name="sub" value="${params.sub}"/>
-                <div class="ui info message">${message(code: 'myinst.licensewithSub.notice', default: 'Create a new license and link it to the subscription "{0}"', args: [params.subName])}</div>
+            <g:if test="${subInstance}">
+                <g:hiddenField name="sub" value="${subInstance?.id}"/>
+                <div class="ui info message">${message(code: 'myinst.licensewithSub.notice', default: 'Create a new license and link it to the subscription "{0}"', args: [subInstance?.name])}</div>
             </g:if>
 
             <g:if test="${params.baselicense}">
@@ -133,7 +132,7 @@
                     <td><g:formatDate formatName="default.date.format.notime" date="${l.endDate}"/></td>
                     <td class="x">
                         <g:link controller="myInstitution" action="emptyLicense"
-                                params="${[baselicense: l.id, licenseName: l.reference, licenseStartDate: l.startDate, licenseEndDate: l.endDate, sub: params.sub]}" class="ui icon positive button">
+                                params="${[baselicense: l.id, licenseName: l.reference, licenseStartDate: l.startDate, licenseEndDate: l.endDate, sub: subInstance?.id]}" class="ui icon positive button">
                             <i class="copy icon"></i>
                         </g:link>
                     </td>

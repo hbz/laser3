@@ -12,12 +12,14 @@
 - added list view and delete function for budget codes 
 - added menu actions for creating tasks, documents and notes
 - reworked org role template, fixed javascript behaviour
-- added translations and increased text length of property definitions
+- added translations and increased text length for property definitions
 - added title field for persons
 - added anonymisation for object histories (DSGVO)
+- fixed javascript injection vulnerability
 - increased session timeout
 - lots of markup and style changes 
 - minor bugfixes and refactorings
+- removed legacy jusp and zendesk stuff
 - upgraded some plugins and dependencies
 
 0.6.1

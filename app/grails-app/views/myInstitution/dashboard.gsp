@@ -190,7 +190,7 @@
         </div>
 
         <g:render template="/templates/tasks/modal_create" />
-    
+
     <g:javascript>
         function taskedit(id) {
 

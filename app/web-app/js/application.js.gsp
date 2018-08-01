@@ -163,13 +163,17 @@ r2d2 = {
 
     initDynamicXEditableStuff : function(ctxSel) {
         console.log("r2d2.initDynamicXEditableStuff( " + ctxSel + " )");
+
         if (! ctxSel) {
             ctxSel = 'body'
         }
 
         $(ctxSel + ' .xEditable').editable({
             language: gspLocale,
-            format:   gspDateFormat
+            format:   gspDateFormat,
+            error: function (xhr, status, error) {
+                alert(xhr.status + ": " + xhr.statusText);
+            }
         });
 
         $(ctxSel + ' .xEditableValue').editable({
@@ -185,6 +189,9 @@ r2d2 = {
             success: function(response) {
                 // override newValue with response from backend
                 return {newValue: (response != 'null' ? response : null)}
+            },
+            error: function (xhr, status, error) {
+                alert(xhr.status + ": " + xhr.statusText);
             }
         }).on('save', function(e, params){
             if ($(this).attr('data-format')) {

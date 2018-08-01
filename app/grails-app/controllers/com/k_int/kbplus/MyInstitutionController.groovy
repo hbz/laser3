@@ -447,7 +447,6 @@ from License as l where (
             query += " order by sortableReference asc"
         }
 
-        println qparams
         result.numLicenses = License.executeQuery("select count(l) ${query}", qparams)[0]
         result.licenses = License.executeQuery("select l ${query}", qparams,[max: result.max, offset: result.offset])
 
@@ -459,6 +458,11 @@ from License as l where (
 
         result.licenses = result.licenses - no_access
         result.numLicenses = result.numLicenses - no_access.size()
+
+        if (params.sub) {
+            result.sub         = params.sub
+            result.subInstance = Subscription.get(params.sub)
+        }
 
         result
     }

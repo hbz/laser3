@@ -42,25 +42,19 @@
     </semui:filter>
     --%>
 
-    %{--<g:set var="validSubChilds" value="${subscriptionChildren.findAll{ it.status?.value != 'Deleted' }}" />
-    <g:set var="deletedSubChilds" value="${subscriptionChildren.findAll{ it.status?.value == 'Deleted' }}" />--}%
+    <g:if test="${validSubChilds}">
 
-    <g:if test="${validSubChilds || deletedSubChilds}">
-
-    <g:each in="${[validSubChilds, deletedSubChilds]}" status="i" var="outerLoop">
-
-        <g:if test="${i==1}">
-            <br />
-            <h2>${message(code:'subscriptionDetails.members.deleted')} ${message(code:'subscriptionDetails.members.members')}
-        </g:if>
+    <g:each in="${[validSubChilds]}" status="i" var="outerLoop">
 
         <table class="ui celled la-table table">
             <thead>
                 <tr>
-                    <th>${message(code:'sidewide.number')}</th>
+                    <th>
+                        ${message(code:'sidewide.number')}
+                    </th>
                     <th>Sortiername</th>
                     <th>
-                        <g:if test="${i==1}">${message(code:'subscriptionDetails.members.deleted')}</g:if> ${message(code:'subscriptionDetails.members.members')}
+                        ${message(code:'subscriptionDetails.members.members')}
                     </th>
 
                     <th>${message(code:'default.startDate.label')}</th>
