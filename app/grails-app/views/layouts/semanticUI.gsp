@@ -319,7 +319,7 @@
                                 <i class="dropdown icon"></i>
 
                                 <div class="menu">
-                                    <g:link class="item" controller="admin" action="appInfo">App Info</g:link>
+                                    <g:link class="item" controller="yoda" action="appInfo">App Info</g:link>
                                     <g:link class="item" controller="admin" action="eventLog">Event Log</g:link>
 
                                     <div class="divider"></div>

@@ -207,6 +207,9 @@
 
                     </div>
                 </div>
+
+                <g:render template="/templates/debug/orgRoles" model="[debug: packageInstance.orgs]" />
+
                 <div class="ui card">
                     <div class="content">
                         <dl>
