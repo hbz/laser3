@@ -180,6 +180,27 @@ class SemanticUiTagLib {
         }
     }
 
+    def contactIcon = { attrs, body ->
+
+        switch(attrs.type) {
+            case 'E-Mail':
+                out << '<i class="icon envelope outline la-list-icon"></i>'
+                break
+            case 'Fax':
+                out << '<i class="icon fax la-list-icon"></i>'
+                break
+            case 'Phone':
+                out << '<i class="icon phone la-list-icon"></i>'
+                break
+            case 'Url':
+                out << '<i class="icon globe la-list-icon"></i>'
+                break
+            default:
+                out << '<i class="icon address book la-list-icon"></i>'
+                break
+        }
+    }
+
     def editableLabel = { attrs, body ->
 
         if (attrs.editable) {

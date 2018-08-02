@@ -22,7 +22,22 @@
                         <dd><semui:xEditableRefData owner="${contactInstance}" field="contentType" config="ContactContentType" /></dd>
 
                         <dt><g:message code="contact.content.label" default="Content" /></dt>
-                        <dd><semui:xEditable owner="${contactInstance}" field="content" /></dd>
+                        <dd>
+							<semui:xEditable owner="${contactInstance}" field="content" id="js-mailContent"/>
+							<g:if test="${contactInstance?.contentType?.value.equalsIgnoreCase('E-Mail')}">
+								<a id="js-mailto" class="mini ui icon button">
+									<i class="envelope outline icon"></i>
+								</a>
+								<r:script>
+                                    $('#js-mailContent').editable().on('save', function(e, params){
+                                        console.log(params)
+                                        $('#js-mailto').attr(
+                                            'href', "mailto:"  + params.newValue
+                                        );
+									});
+								</r:script>
+							</g:if>
+						</dd>
 
                         <dt>${com.k_int.kbplus.RefdataCategory.findByDesc('ContactType').getI10n('desc')}</dt>
                         <dd><semui:xEditableRefData owner="${contactInstance}" field="type" config="ContactType" /></dd>

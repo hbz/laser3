@@ -1,0 +1,31 @@
+.ui.list.la-contact-info-list>.item>.icon+.content {
+  padding: 0
+}
+
+.ui.divided.middle.la-flex-list .item {
+  display: flex;
+  .button {
+    opacity: 0;
+    -webkit-transition: opacity 1s; /* For Safari 3.1 to 6.0 */
+    transition: opacity 1s;
+  }
+  &:hover .button {
+    opacity: 1;
+  }
+  .button:focus {
+    opacity: 1;
+  }
+}
+.ui.list.la-flex-list > .item > .icon  {
+  align-self: center;
+}
+.ui.list.la-flex-list > .item > .icon + .content  {
+  flex-basis: 90%;
+  align-self: center;
+
+}
+.ui.list.la-flex-list > .item > .icon + .content + .content {
+  flex-basis: 10%;
+  align-self: center;
+  text-align: right;
+}

@@ -185,7 +185,7 @@ ol.ui.list ol li,
 }
 .ui.list .list > a.item:hover,
 .ui.list > a.item:hover {
-  color: #1e70bf;
+  color: #39a1f2;
 }
 
 /* Linked Item Icons */
@@ -202,7 +202,7 @@ ol.ui.list ol li,
 }
 .ui.list .list > .item a.header:hover,
 .ui.list > .item a.header:hover {
-  color: #1e70bf !important;
+  color: #39a1f2 !important;
 }
 
 /* Floated Content */
@@ -366,7 +366,7 @@ ol.ui.list ol li,
 }
 .ui.inverted.list .list > a.item:hover,
 .ui.inverted.list > a.item:hover {
-  color: #1e70bf;
+  color: #39a1f2;
 }
 
 /* Linking Content */
@@ -374,7 +374,7 @@ ol.ui.list ol li,
   color: rgba(255, 255, 255, 0.9) !important;
 }
 .ui.inverted.list .item a:not(.ui):hover {
-  color: #1e70bf !important;
+  color: #39a1f2 !important;
 }
 
 /*-------------------
@@ -674,7 +674,7 @@ ol.ui.horizontal.list li:before,
 --------------------*/
 
 .ui.divided.list > .item {
-  border-top: 1px solid rgba(34, 36, 38, 0.15);
+  border-top: 1px solid #eaeaea;
 }
 .ui.divided.list .list > .item {
   border-top: none;
@@ -738,7 +738,7 @@ ol.ui.horizontal.list li:before,
 }
 .ui.divided.horizontal.list > .item {
   border-top: none;
-  border-left: 1px solid rgba(34, 36, 38, 0.15);
+  border-left: 1px solid #eaeaea;
   margin: 0em;
   line-height: 0.6;
 }
@@ -759,12 +759,12 @@ ol.ui.horizontal.list li:before,
 
 .ui.celled.list > .item,
 .ui.celled.list > .list {
-  border-top: 1px solid rgba(34, 36, 38, 0.15);
+  border-top: 1px solid #eaeaea;
   padding-left: 0.5em;
   padding-right: 0.5em;
 }
 .ui.celled.list > .item:last-child {
-  border-bottom: 1px solid rgba(34, 36, 38, 0.15);
+  border-bottom: 1px solid #eaeaea;
 }
 
 /* Padding on all elements */
@@ -820,7 +820,7 @@ ol.ui.horizontal.list li:before,
 .ui.horizontal.celled.list .list > .item,
 .ui.horizontal.celled.list > .item {
   border-top: none;
-  border-left: 1px solid rgba(34, 36, 38, 0.15);
+  border-left: 1px solid #eaeaea;
   margin: 0em;
   padding-left: 0.5em;
   padding-right: 0.5em;
@@ -829,7 +829,7 @@ ol.ui.horizontal.list li:before,
 .ui.horizontal.celled.list .list > .item:last-child,
 .ui.horizontal.celled.list > .item:last-child {
   border-bottom: none;
-  border-right: 1px solid rgba(34, 36, 38, 0.15);
+  border-right: 1px solid #eaeaea;
 }
 
 /* Inverted */
@@ -937,9 +937,41 @@ ol.ui.horizontal.list li:before,
 .ui.massive.horizontal.list > .item {
   font-size: 1.71428571rem;
 }
-
-
-/*******************************
-         Theme Overrides
-*******************************/
-
+.ui.list.la-contact-info-list > .item > .icon + .content {
+  padding: 0;
+}
+.ui.divided.middle.la-flex-list .item {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+.ui.divided.middle.la-flex-list .item .button {
+  opacity: 0;
+  -webkit-transition: opacity 1s;
+  
+/* For Safari 3.1 to 6.0 */
+  transition: opacity 1s;
+}
+.ui.divided.middle.la-flex-list .item:hover .button {
+  opacity: 1;
+}
+.ui.divided.middle.la-flex-list .item .button:focus {
+  opacity: 1;
+}
+.ui.list.la-flex-list > .item > .icon {
+  -ms-flex-item-align: center;
+      align-self: center;
+}
+.ui.list.la-flex-list > .item > .icon + .content {
+  -ms-flex-preferred-size: 90%;
+      flex-basis: 90%;
+  -ms-flex-item-align: center;
+      align-self: center;
+}
+.ui.list.la-flex-list > .item > .icon + .content + .content {
+  -ms-flex-preferred-size: 10%;
+      flex-basis: 10%;
+  -ms-flex-item-align: center;
+      align-self: center;
+  text-align: right;
+}

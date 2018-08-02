@@ -70,7 +70,7 @@ ${personInstance?.contactType == com.k_int.kbplus.RefdataValue.getByValueAndCate
 
                     <dl><dt><g:message code="person.contacts.label" default="Contacts"/></dt>
                         <dd>
-                            <div class="ui list">
+                            <div class="ui divided middle aligned selection list la-flex-list la-contact-info-list">
                                 <g:each in="${personInstance.contacts.sort{it.content}}" var="c">
 
                                     <g:render template="/templates/cpa/contact" model="${[
