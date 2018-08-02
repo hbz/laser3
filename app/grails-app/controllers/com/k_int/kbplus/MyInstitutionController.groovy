@@ -1082,10 +1082,16 @@ from Subscription as s where (
                     copyLicense.startDate = parseDate(params.licenseStartDate,possible_date_formats)
                     copyLicense.endDate = parseDate(params.licenseEndDate,possible_date_formats)
 
-                    if (!copyLicense.save(flush: true)) {
+                    if (copyLicense.save(flush: true)) {
+                        flash.message = message(code: 'license.created.message')
                     }
 
-                    flash.message = message(code: 'license.created.message')
+                    if( params.sub) {
+                        def subInstance = Subscription.get(params.sub)
+                        subInstance.owner = copyLicense
+                        subInstance.save(flush: true)
+                    }
+
                     redirect controller: 'licenseDetails', action: 'show', params: params, id: copyLicense.id
                     return
                 }
@@ -1100,7 +1106,8 @@ from Subscription as s where (
                 endDate: params.licenseEndDate ? parseDate(params.licenseEndDate,possible_date_formats) : null,)
 
         if (!licenseInstance.save(flush: true)) {
-        } else {
+        }
+        else {
             log.debug("Save ok");
             def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee')
             def lic_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensing Consortium')
