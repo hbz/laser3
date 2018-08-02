@@ -3,10 +3,17 @@
 		<semui:contactIcon type="${contact?.contentType.('value')}"/>
         <div class="content">
             <g:link controller="contact" action="show" id="${contact?.id}">
-                ${contact.contentType?.getI10n('value')}:
                 ${contact?.content?.encodeAsHTML()}
             </g:link>
         </div>
+
+		<g:if test="${contact.contentType?.getI10n('value') == 'E-Mail'}">
+			<a href="mailto: ${contact?.content?.encodeAsHTML()}">&nbsp; Mailto</a>
+		</g:if>
+		<g:if test="${contact.contentType?.getI10n('value') == 'Url'}">
+			<a href="http:// + ${contact?.content?.encodeAsHTML()}" target="_blank">&nbsp; weblink</a>
+		</g:if>
+
 
 		<g:if test="${editable && tmplShowDeleteButton}">
 			<div class="content">

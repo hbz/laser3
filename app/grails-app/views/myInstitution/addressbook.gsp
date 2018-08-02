@@ -30,7 +30,7 @@ import="com.k_int.kbplus.RefdataCategory"
 
         <semui:messages data="${flash}" />
 
-        <div class="ui icon positive message">
+        <div class="ui icon warning message">
             <i class="close icon"></i>
             <div class="content">
                 <div class="header">
