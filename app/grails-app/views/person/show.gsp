@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue;" %>
 <!doctype html>
 <html>
 <head>
@@ -15,10 +15,12 @@
     <g:message code="default.show.label" args="[entityName]" class="active"/>
 </semui:breadcrumbs>
 
+<g:set var="personType" value="${!personInstance.contactType || personInstance.contactType?.value?.equals('Personal contact')}" />
+
 <h1 class="ui header"><semui:headerIcon/>
-${personInstance?.contactType?.getI10n('value')  ? personInstance?.contactType?.getI10n('value') +': ' :  ' ' }
-${personInstance?.contactType == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type') ? personInstance?.last_name : personInstance?.first_name?:'' + ' ' + personInstance?.last_name}
+${personInstance}
 </h1>
+
 <g:render template="nav" contextPath="."/>
 
 <semui:messages data="${flash}"/>
@@ -30,27 +32,30 @@ ${personInstance?.contactType == com.k_int.kbplus.RefdataValue.getByValueAndCate
             <div class="ui card">
                 <div class="content">
                     <dl><dt>${com.k_int.kbplus.RefdataCategory.findByDesc('Person Contact Type').getI10n('desc')}</dt>
-                        <dd><g:form class="ui form" url='[controller: "person", action: "edit",  id:"${personInstance?.id}"]' method="POST">
-
-                            <laser:select class="ui dropdown" id="contactType" name="contactType"
-                                          from="${com.k_int.kbplus.Person.getAllRefdataValues('Person Contact Type')}"
-                                          optionKey="id"
-                                          optionValue="value"
-                                          value="${personInstance?.contactType?.id}"
-                                          noSelection="['': '']"
-                                          onchange="this.form.submit();"/></g:form>
+                        <dd>
+                            <semui:xEditableRefData owner="${personInstance}" field="contactType" config="Person Contact Type"/>
                         </dd>
                     </dl>
 
-                    <dl><dt id="person_title"><g:message code="person.title.label" default="Title"/></dt>
-                        <dd><semui:xEditable owner="${personInstance}" field="title"/></dd>
-                    </dl>
+                    <g:if test="${personType}">
+                        <dl><dt id="person_title"><g:message code="person.title.label" default="Title"/></dt>
+                            <dd><semui:xEditable owner="${personInstance}" field="title"/></dd>
+                        </dl>
+                    </g:if>
 
-                    <dl><dt id="person_last_name"><g:message code="person.last_name.label" default="Lastname"/></dt>
+                    <dl>
+                        <dt id="person_last_name">
+                            <g:if test="${personType}">
+                                <g:message code="person.last_name.label" default="Lastname"/>
+                            </g:if>
+                            <g:else>
+                                Benenner
+                            </g:else>
+                        </dt>
                         <dd><semui:xEditable owner="${personInstance}" field="last_name"/></dd>
                     </dl>
 
-                    <g:if test="${(!personInstance.contactType) || personInstance.contactType.value == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Personal contact', 'Person Contact Type').value}">
+                    <g:if test="${personType}">
 
                         <dl><dt><g:message code="person.first_name.label" default="Firstname"/></dt>
                             <dd><semui:xEditable owner="${personInstance}" field="first_name"/></dd></dl>
@@ -123,55 +128,82 @@ ${personInstance?.contactType == com.k_int.kbplus.RefdataValue.getByValueAndCate
                                             ${link.functionType?.getI10n('value')}
                                             <br/>
 
-                                            <g:link controller="organisations" action="show"
-                                                    id="${link.org?.id}">${link.org?.name}</g:link>
+                                            <g:link controller="organisations" action="show" id="${link.org?.id}">${link.org?.name}</g:link>
                                             (Organisation)
+
+                                            <g:if test="${editable}">
+                                                <br />
+                                                <div class="ui mini icon buttons">
+                                                    <g:set var="oid" value="${link.class.name}:${link.id}" />
+                                                    <g:link class="ui negative button" controller="person" action="deletePersonRole" id="${personInstance.id}" params="[oid: oid]">
+                                                        <i class="trash alternate icon"></i>
+                                                    </g:link>
+                                                </div>
+                                            </g:if>
+
                                         </li>
                                     </g:if>
                                 </g:each>
                             </ul>
+
+                            <g:if test="${editable}">
+                                <a href="#personRoleFormModal" data-semui="modal" class="ui button">${message('code':'default.button.add.label')}</a>
+                            </g:if>
                         </dd>
                     </dl>
 
                     <dl><dt><g:message code="person.responsibilites.label" default="Responsibilites"/></dt>
-                        <dd><ul>
-                            <g:each in="${personInstance.roleLinks}" var="link">
-                                <g:if test="${link.responsibilityType}">
-                                    <li>
-                                        ${link.responsibilityType?.getI10n('value')}<br/>
+                        <dd>
+                            <ul>
+                                <g:each in="${personInstance.roleLinks}" var="link">
+                                    <g:if test="${link.responsibilityType}">
+                                        <li>
+                                            ${link.responsibilityType?.getI10n('value')}<br/>
 
-                                        <g:if test="${link.pkg}">
-                                            <g:link controller="packageDetails" action="show"
-                                                    id="${link.pkg.id}">${link.pkg.name}</g:link>
-                                            (Package) <br/>
-                                        </g:if>
-                                        <g:if test="${link.cluster}">
-                                            <g:link controller="cluster" action="show"
-                                                    id="${link.cluster.id}">${link.cluster.name}</g:link>
-                                            (Cluster) <br/>
-                                        </g:if>
-                                        <g:if test="${link.sub}">
-                                            <g:link controller="subscriptionDetails" action="show"
-                                                    id="${link.sub.id}">${link.sub.name}</g:link>
-                                            (Subscription) <br/>
-                                        </g:if>
-                                        <g:if test="${link.lic}">
-                                            ${link.lic}
-                                            (License) <br/>
-                                        </g:if>
-                                        <g:if test="${link.title}">
-                                            <g:link controller="titleDetails" action="show"
-                                                    id="${link.title.id}">${link.title.title}</g:link>
-                                            (Title) <br/>
-                                        </g:if>
+                                            <g:if test="${link.pkg}">
+                                                <g:link controller="packageDetails" action="show" id="${link.pkg.id}">${link.pkg.name}</g:link>
+                                                (Package) <br/>
+                                            </g:if>
+                                            <g:if test="${link.cluster}">
+                                                <g:link controller="cluster" action="show" id="${link.cluster.id}">${link.cluster.name}</g:link>
+                                                (Cluster) <br/>
+                                            </g:if>
+                                            <g:if test="${link.sub}">
+                                                <g:link controller="subscriptionDetails" action="show" id="${link.sub.id}">${link.sub.name}</g:link>
+                                                (Subscription) <br/>
+                                            </g:if>
+                                            <g:if test="${link.lic}">
+                                                <g:link controller="licenseDetails" action="show" id="${link.lic.id}">${link.lic}</g:link>
+                                                (License) <br/>
+                                            </g:if>
+                                            <g:if test="${link.title}">
+                                                <g:link controller="titleDetails" action="show" id="${link.title.id}">${link.title.title}</g:link>
+                                                (Title) <br/>
+                                            </g:if>
 
-                                        <g:link controller="organisations" action="show"
-                                                id="${link.org?.id}">${link.org?.name}</g:link>
-                                        (Organisation)
-                                    </li>
-                                </g:if>
-                            </g:each>
-                        </ul>
+                                            <g:link controller="organisations" action="show" id="${link.org?.id}">${link.org?.name}</g:link>
+                                            (Organisation)
+
+                                            <g:if test="${editable}">
+                                                <br />
+                                                <div class="ui mini icon buttons">
+                                                    <g:set var="oid" value="${link.class.name}:${link.id}" />
+                                                    <g:link class="ui negative button" controller="person" action="deletePersonRole" id="${personInstance.id}" params="[oid: oid]">
+                                                        <i class="trash alternate icon"></i>
+                                                    </g:link>
+                                                </div>
+                                            </g:if>
+
+                                        </li>
+                                    </g:if>
+                                </g:each>
+                            </ul>
+
+                            <%--
+                            <g:if test="${editable}">
+                                <button class="ui button add-person-role" type="button">${message('code':'default.button.add.label')}</button>
+                            </g:if>
+                            --%>
                         </dd></dl>
 
                     <g:if test="${personInstance?.tenant}">
@@ -205,15 +237,7 @@ ${personInstance?.contactType == com.k_int.kbplus.RefdataValue.getByValueAndCate
 
 </div><!-- .grid -->
 
+<g:render template="prsRoleModal" model="[]" />
 
-<r:script>
-
-        var x = $("#contactType option:selected").text();
-        var y = "${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type').getI10n('value')}";
-        if(x == y)
-            {
-                $("#person_last_name").replaceWith( "<dt>Benenner</dt>" );
-            }
-</r:script>
 </body>
 </html>

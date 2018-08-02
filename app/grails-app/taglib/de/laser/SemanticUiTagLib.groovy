@@ -184,6 +184,7 @@ class SemanticUiTagLib {
 
         switch(attrs.type) {
             case 'E-Mail':
+            case 'Mail': // Deprecated
                 out << '<i class="icon envelope outline la-list-icon"></i>'
                 break
             case 'Fax':

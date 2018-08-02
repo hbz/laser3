@@ -4,7 +4,7 @@
 	<label for="title">
 		<g:message code="person.title.label" default="Title" />
 	</label>
-	<g:textField name="title" required="" value="${personInstance?.title}"/>
+	<g:textField name="title" value="${personInstance?.title}"/>
 
 </div>
 

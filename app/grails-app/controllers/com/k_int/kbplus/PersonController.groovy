@@ -100,6 +100,9 @@ class PersonController {
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
+        redirect controller: 'person', action: 'show', params: params
+        return // ----- deprecated
+
         def userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
         def personInstance = Person.get(params.id)
 
@@ -222,7 +225,8 @@ class PersonController {
 
         [personInstance: personInstance, authorizedOrgs: user?.authorizedOrgs, editable: editable]
     }
-    
+
+    @Deprecated
     @Secured(['ROLE_USER'])
     def ajax() {        
         def person                  = Person.get(params.id)
@@ -315,6 +319,7 @@ class PersonController {
         }
     }
 
+    @Deprecated
     private deletePersonRoles(Person prs){
 
         params?.personRoleDeleteIds?.each{ key, value ->
@@ -326,6 +331,54 @@ class PersonController {
         }
     }
 
+
+    def addPersonRole() {
+        def result
+        def prs = Person.get(params.id)
+
+        if (addressbookService.isPersonEditable(prs, springSecurityService.getCurrentUser())) {
+
+            if (params.newPrsRoleOrg && params.newPrsRoleType) {
+                def org = Org.get(params.newPrsRoleOrg)
+                def rdv = RefdataValue.get(params.newPrsRoleType)
+
+                if (PersonRole.find("from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.functionType = ${rdv.id}")) {
+                    log.debug("ignore adding PersonRole because of existing duplicate")
+                }
+                else {
+                    result = new PersonRole(prs: prs, functionType: rdv, org: org)
+
+                    if (result.save(flush: true)) {
+                        log.debug("adding PersonRole ${result}")
+                    }
+                    else {
+                        log.error("problem saving new PersonRole ${result}")
+                    }
+                }
+            }
+        }
+        redirect action: 'show', id: params.id
+    }
+
+    def deletePersonRole() {
+        def prs = Person.get(params.id)
+
+        if (addressbookService.isPersonEditable(prs, springSecurityService.getCurrentUser())) {
+
+            if (params.oid) {
+                def pr = genericOIDService.resolveOID(params.oid)
+
+                if (pr && (pr.prs.id == prs.id) && pr.delete()) {
+                    log.debug("deleted PersonRole ${pr}")
+                } else {
+                    log.debug("problem deleting PersonRole ${pr}")
+                }
+            }
+        }
+        redirect action: 'show', id: params.id
+    }
+
+    @Deprecated
     private addPersonRoles(Person prs){
 
         //IF functionType not seleced
