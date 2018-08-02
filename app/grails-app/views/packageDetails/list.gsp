@@ -74,7 +74,7 @@
                         </td>
                         <td>
                             <g:each in="${packageInstance.orgs}" var="orgLink">
-                                <g:link action="show" id="${orgLink.org.id}">${orgLink.org.name}</g:link> <br/>
+                                <g:link controller="organisations" action="show" id="${orgLink.org.id}">${orgLink.org.name}</g:link> <br/>
                             </g:each>
                         </td>
                         <td><g:formatDate date="${packageInstance.dateCreated}" format="${message(code:'default.date.format.noZ', default:'yyyy-MM-dd HH:mm:ss')}"/></td>

@@ -46,6 +46,8 @@
 
         <g:render template="nav" />
 
+        <semui:objectStatus object="${subscriptionInstance}" status="${subscriptionInstance.status}" />
+
     <g:if test="${subscriptionInstance.instanceOf && (contextOrg == subscriptionInstance.getConsortia())}">
         <div class="ui negative message">
             <div class="header"><g:message code="myinst.message.attention" /></div>

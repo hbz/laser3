@@ -34,11 +34,6 @@
         <g:render template="actions" />
     </semui:controlButtons>
 
-    <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_PACKAGE_EDITOR">
-        <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges, 'flash':flash, 'model':packageInstance]}"/>
-    </sec:ifAnyGranted>
-
-
       <h1 class="ui header"><semui:headerIcon />
         <g:if test="${params.asAt}">${message(code:'package.show.asAt', args:[params.asAt])}</g:if>
           <g:if test="${editable}"><span id="packageNameEdit"
@@ -51,6 +46,12 @@
       </h1>
 
     <g:render template="nav" />
+
+    <semui:objectStatus object="${packageInstance}" status="${packageInstance.packageStatus}" />
+
+    <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_PACKAGE_EDITOR">
+        <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges, 'flash':flash, 'model':packageInstance]}"/>
+    </sec:ifAnyGranted>
 
     <semui:meta>
         <div class="inline-lists">
@@ -99,9 +100,9 @@
         </div>
     </semui:meta>
 
- <semui:messages data="${flash}" />
+    <semui:messages data="${flash}" />
 
- <semui:errors bean="${packageInstance}" />
+    <semui:errors bean="${packageInstance}" />
 
     <div class="ui grid">
 

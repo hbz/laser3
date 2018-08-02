@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.User
 import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 import org.springframework.web.servlet.support.RequestContextUtils
@@ -74,7 +75,19 @@ class SemanticUiTagLib {
             out << '</div>'
         }
     }
-    
+
+    // <semui:objectStatus object="${obj}" status="${status}"/>
+
+    def objectStatus = { attrs, body ->
+
+        if ('deleted'.equalsIgnoreCase(attrs.status?.value)) {
+
+            out << '<div class="ui segment inverted red">'
+            out << '<p><strong>' + message(code: 'default.object.isDeleted') + '</strong></p>'
+            out << '</div>'
+        }
+    }
+
     // <semui:card text="${text}" message="local.string" class="some_css_class">
     //
     // <semui:card>
@@ -120,6 +133,7 @@ class SemanticUiTagLib {
             out << '<i class="icon"></i>'
             out << '</div>'
     }
+
     def headerTitleIcon = { attrs, body ->
 
         switch(attrs.type) {
@@ -139,6 +153,7 @@ class SemanticUiTagLib {
         out << '<i class="icon"></i>'
         out << '</div>'
     }
+
     def listIcon = { attrs, body ->
 
         switch(attrs.type) {
