@@ -17552,6 +17552,47 @@ ol.ui.horizontal.list li:before,
 .ui.list.la-contact-info-list > .item > .icon + .content {
   padding: 0;
 }
+
+.ui.divided.middle.la-flex-list .item {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.ui.divided.middle.la-flex-list .item .button {
+  opacity: 0;
+  -webkit-transition: opacity 1s;
+  /* For Safari 3.1 to 6.0 */
+  transition: opacity 1s;
+}
+
+.ui.divided.middle.la-flex-list .item:hover .button {
+  opacity: 1;
+}
+
+.ui.divided.middle.la-flex-list .item .button:focus {
+  opacity: 1;
+}
+
+.ui.list.la-flex-list > .item > .icon {
+  -ms-flex-item-align: center;
+  align-self: center;
+}
+
+.ui.list.la-flex-list > .item > .icon + .content {
+  -ms-flex-preferred-size: 90%;
+  flex-basis: 90%;
+  -ms-flex-item-align: center;
+  align-self: center;
+}
+
+.ui.list.la-flex-list > .item > .icon + .content + .content {
+  -ms-flex-preferred-size: 10%;
+  flex-basis: 10%;
+  -ms-flex-item-align: center;
+  align-self: center;
+  text-align: right;
+}
 /*!
  * # Semantic UI 2.3.1 - Loader
  * http://github.com/semantic-org/semantic-ui/
