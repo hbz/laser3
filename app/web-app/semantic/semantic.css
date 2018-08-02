@@ -17549,10 +17549,6 @@ ol.ui.horizontal.list li:before,
   font-size: 1.71428571rem;
 }
 
-.ui.list.la-contact-info-list > .item > .icon + .content {
-  padding: 0;
-}
-
 .ui.divided.middle.la-flex-list .item {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -17574,19 +17570,19 @@ ol.ui.horizontal.list li:before,
   opacity: 1;
 }
 
-.ui.list.la-flex-list > .item > .icon {
+.ui.list.la-flex-list > .item > span {
   -ms-flex-item-align: center;
   align-self: center;
 }
 
-.ui.list.la-flex-list > .item > .icon + .content {
+.ui.list.la-flex-list > .item > span + .content {
   -ms-flex-preferred-size: 90%;
   flex-basis: 90%;
   -ms-flex-item-align: center;
   align-self: center;
 }
 
-.ui.list.la-flex-list > .item > .icon + .content + .content {
+.ui.list.la-flex-list > .item > span + .content + .content {
   -ms-flex-preferred-size: 10%;
   flex-basis: 10%;
   -ms-flex-item-align: center;
