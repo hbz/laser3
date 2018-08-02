@@ -177,7 +177,7 @@ class SemanticUiTagLib {
             case 'Phone':
                 out << '<i class="icon phone la-list-icon"></i>'
                 break
-            case 'URL':
+            case 'Url':
                 out << '<i class="icon globe la-list-icon"></i>'
                 break
             default:
