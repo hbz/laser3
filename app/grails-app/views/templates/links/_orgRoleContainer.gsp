@@ -66,9 +66,7 @@
 
 
     <script>
-        $("${container} .button").unbind('click');
-
-        $("${container} .button").on('click', function() {
+        $("#orgRoleContainer .button").on('click', function() {
             var ajaxUrl = "<g:createLink controller="organisations" action="show" id="${orgInstance.id}" />"
                         + "?ajax=true&" + $(this).attr('data-params')
 
