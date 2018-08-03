@@ -1,5 +1,8 @@
 <g:if test="${address}">
 	<div class="ui item address-details">
+        <span  data-tooltip="' +message(code:'adress.icon.label.adress') + '" data-position="left center" data-variation="tiny">
+            <i class="ui icon map marker la-list-icon"></i>
+        </span>
         <div class="content">
             <g:link controller="address" action="show" id="${address?.id}">
                 ${address.type?.getI10n('value')}:
@@ -40,14 +43,17 @@
                 </g:if>
             </g:link>
         </div>
+        <div class="content">
+            <g:if test="${editable && tmplShowDeleteButton}">
+                <div class="ui mini icon buttons">
+                    <g:set var="oid" value="${address.class.name}:${address.id}" />
+                    <g:link class="ui negative button" controller="${controller}" action="${action}" id="${id}" params="[cmd: 'deleteAddress', oid: oid]">
+                        <i class="trash alternate icon"></i>
+                    </g:link>
+                </div>
+            </g:if>
+        </div>
 
-        <g:if test="${editable && tmplShowDeleteButton}">
-            <div class="ui mini icon buttons">
-                <g:set var="oid" value="${address.class.name}:${address.id}" />
-                <g:link class="ui negative button" controller="${controller}" action="${action}" id="${id}" params="[cmd: 'deleteAddress', oid: oid]">
-                    <i class="trash alternate icon"></i>
-                </g:link>
-            </div>
-        </g:if>
+
 	</div>
 </g:if>

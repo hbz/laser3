@@ -98,7 +98,7 @@ ${personInstance}
 
                     <dl><dt><g:message code="person.addresses.label" default="Addresses"/></dt>
                         <dd>
-                            <div class="ui list">
+                            <div class="ui divided middle aligned selection list la-flex-list">
                                 <g:each in="${personInstance.addresses.sort{it.type?.getI10n('value')}}" var="a">
 
                                     <g:render template="/templates/cpa/address" model="${[
