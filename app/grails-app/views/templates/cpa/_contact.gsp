@@ -1,6 +1,7 @@
 <g:if test="${contact}">
 	<div class="ui item contact-details">
-		<semui:contactIcon type="${contact?.contentType.('value')}"/>
+		<semui:contactIcon type="${contact?.contentType.('value')}" />
+
         <div class="content">
             <semui:xEditable owner="${contact}" field="content" />
         </div>

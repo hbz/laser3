@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.helper.DebugAnnotation
+import grails.converters.JSON
 import org.springframework.dao.DataIntegrityViolationException
 import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.*;
@@ -156,8 +157,44 @@ class OrganisationsController {
     @Secured(['ROLE_USER'])
     def show() {
         def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+
         def orgInstance = Org.get(params.id)
+
+        def link_vals = RefdataCategory.getAllRefdataValues("Organisational Role")
+        def sorted_links = [:]
+        def offsets = [:]
+
+        link_vals.each { lv ->
+            def param_offset = 0
+
+            if(lv.id){
+                def cur_param = "rdvl_${String.valueOf(lv.id)}"
+
+                if(params[cur_param]){
+                    param_offset = params[cur_param]
+                    result[cur_param] = param_offset
+                }
+
+                def link_type_count = OrgRole.executeQuery("select count(*) from OrgRole as orgr where orgr.org = :oi and orgr.roleType.id = :lid",[oi: orgInstance, lid: lv.id])
+                def link_type_results = OrgRole.executeQuery("select orgr from OrgRole as orgr where orgr.org = :oi and orgr.roleType.id = :lid",[oi: orgInstance, lid: lv.id],[offset:param_offset,max:10])
+
+                if(link_type_results){
+                    sorted_links["${String.valueOf(lv.id)}"] = [rdv: lv, rdvl: cur_param, links: link_type_results, total: link_type_count[0]]
+                }
+            }else{
+                log.debug("Could not read Refdata: ${lv}")
+            }
+        }
+
+        if (params.ajax) {
+            render template: '/templates/links/orgRoleContainer', model: [listOfLinks: sorted_links, orgInstance: orgInstance]
+            return
+        }
+
+        result.sorted_links = sorted_links
+
+        result.user = User.get(springSecurityService.principal.id)
+        result.orgInstance = orgInstance
 
         def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
         def orgType = RefdataValue.getByValueAndCategory('Provider','OrgType')
@@ -192,37 +229,6 @@ class OrganisationsController {
         redirect action: 'list'
         return
       }
-
-      result.orgInstance = orgInstance
-      
-      def link_vals = RefdataCategory.getAllRefdataValues("Organisational Role")
-      def sorted_links = [:]
-      def offsets = [:]
-      
-      link_vals.each { lv ->
-        def param_offset = 0
-        
-        if(lv.id){
-          def cur_param = "rdvl_${String.valueOf(lv.id)}"
-          
-          if(params[cur_param]){ 
-            param_offset = params[cur_param]
-            result[cur_param] = param_offset
-          }
-          
-          def link_type_count = OrgRole.executeQuery("select count(*) from OrgRole as orgr where orgr.org = :oi and orgr.roleType.id = :lid",[oi: orgInstance, lid: lv.id])
-          def link_type_results = OrgRole.executeQuery("select orgr from OrgRole as orgr where orgr.org = :oi and orgr.roleType.id = :lid",[oi: orgInstance, lid: lv.id],[offset:param_offset,max:10])
-          
-          if(link_type_results){
-            sorted_links["${String.valueOf(lv.id)}"] = [rdv: lv, rdvl: cur_param, links: link_type_results, total: link_type_count[0]]
-          }
-        }else{
-          log.debug("Could not read Refdata: ${lv}")
-        }
-      }
-      
-      result.sorted_links = sorted_links
-
 
         // -- private properties
 

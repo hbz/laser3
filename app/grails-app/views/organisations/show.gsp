@@ -345,69 +345,9 @@
                             <div class="ui card la-role-yoda">
                         </g:else>
                                 <div class="content">
-                                    <g:each in="${sorted_links}" var="rdv_id,link_cat">
 
-                                        <dl>
-                                            <dt>
-                                                <h5 class="ui header">Als ${link_cat.rdv.getI10n('value')}</h5>
-                                            <dd>
-                                                <div class="ui list">
-                                                  <g:each in="${link_cat.links}" var="i">
-                                                    <div class="item">
-                                                      <g:if test="${i.pkg}">
-                                                            <g:link controller="packageDetails" action="show" id="${i.pkg.id}">
-                                                                ${message(code:'package.label', default:'Package')}: ${i.pkg.name}
-                                                            </g:link>
-                                                            (${i.pkg?.packageStatus?.getI10n('value')})
-                                                      </g:if>
-                                                      <g:if test="${i.sub}">
-                                                            <g:link controller="subscriptionDetails" action="show" id="${i.sub.id}">
-                                                                ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name}
-                                                            </g:link>
-                                                            (${i.sub.status?.getI10n('value')})
-                                                      </g:if>
-                                                      <g:if test="${i.lic}">
-                                                            <g:link controller="licenseDetails" action="show" id="${i.lic.id}">
-                                                                ${message(code:'license.label', default:'License')}: ${i.lic.reference ?: i.lic.id}
-                                                            </g:link>
-                                                          (${i.lic.status?.getI10n('value')})
-                                                      </g:if>
-                                                      <g:if test="${i.title}">
-                                                            <g:link controller="titleDetails" action="show" id="${i.title.id}">
-                                                                ${message(code:'title.label', default:'Title')}: ${i.title.title}
-                                                            </g:link>
-                                                            (${i.title.status?.getI10n('value')})
-                                                      </g:if>
-                                                    </div>
-                                                  </g:each>
+                                   <g:render template="/templates/links/orgRoleContainer" model="[listOfLinks: sorted_links]" />
 
-                                                    <g:set var="local_offset" value="${params[link_cat.rdvl] ? Long.parseLong(params[link_cat.rdvl]) : null}" />
-
-                                                    <g:if test="${link_cat.total > 10}">
-                                                        <div class="item">
-                                                            ${message(code:'default.paginate.offset', args:[(local_offset ?: 1),(local_offset ? (local_offset + 10 > link_cat.total ? link_cat.total : local_offset + 10) : 10), link_cat.total])}
-                                                        </div>
-                                                        <div class="item">
-                                                            <g:if test="${local_offset}">
-                                                                <g:set var="os_prev" value="${local_offset > 9 ? (local_offset - 10) : 0}" />
-                                                                <g:link controller="organisations" action="show" class="ui icon button tiny"
-                                                                    id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_prev]}">
-                                                                        <i class="left arrow icon"></i>
-                                                                </g:link>
-                                                            </g:if>
-                                                            <g:if test="${!local_offset || ( local_offset < (link_cat.total - 10) )}">
-                                                                <g:set var="os_next" value="${local_offset ? (local_offset + 10) : 10}" />
-                                                                <g:link controller="organisations" action="show" class="ui icon button tiny"
-                                                                    id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_next]}">
-                                                                        <i class="right arrow icon"></i>
-                                                                </g:link>
-                                                            </g:if>
-                                                        </div>
-                                                    </g:if>
-                                                </div>
-                                            </dd>
-                                        </dl>
-                                    </g:each>
                                 </div>
                             </div><!--.card-->
                     </g:if>
