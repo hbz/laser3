@@ -68,9 +68,13 @@ class ContactController {
 		] // TODO
     }
 
+	@Deprecated
 	@DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
 	@Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
+		redirect controller: 'contact', action: 'show', params: params
+		return // ----- deprecated
+
         def contactInstance = Contact.get(params.id)
         if (! contactInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])

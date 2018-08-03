@@ -16,11 +16,16 @@
 		</g:if>
 		<g:else>
 			<semui:crumb message="menu.institutions.all_orgs" controller="organisations" action="index"/>
-			<semui:crumb message="${addressInstance?.org?.getDesignation()}" controller="organisations" action="show" id="${addressInstance?.org?.id}"/>
 			<semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
 		</g:else>
 	</semui:breadcrumbs>
+
 		<h1 class="ui header"><semui:headerIcon /><g:message code="default.show.label" args="[entityName]" /></h1>
+
+        <button class="ui button" onclick="window.location.href = document.referrer">
+            Zurück
+        </button>
+
 		<semui:messages data="${flash}" />
 
 		<div class="ui grid">
@@ -51,7 +56,7 @@
 
                             <g:if test="${addressInstance?.prs?.isPublic}">
                                 <dt><g:message code="person.isPublic.label" default="IsPublic (derived from Prs)" /></dt>
-                                <dd>${addressInstance?.prs?.isPublic?.encodeAsHTML()}</dd>
+                                <dd>${addressInstance?.prs?.isPublic?.getI10n('value')}</dd>
                             </g:if>
 
                             <hr />
@@ -96,24 +101,10 @@
 							<dt><g:message code="address.additionSecond.label" default="additionSecond" /></dt>
 							<dd><semui:xEditable owner="${addressInstance}" field="additionSecond" /></dd>
 
-					</dl>
-				</div>
+                        </dl>
+                    </div>
 
-				<sec:ifAnyGranted roles="ROLE_YODA">
-					<h3 class="ui header">ROLE_YODA</h3>
-					<div class="inline-lists">
-						<dl>
-							<dt><g:message code="address.prs.label" default="Prs" /></dt>
-							<dd>TODO: SELECT PERSON</dd>
-
-
-							<dt><g:message code="address.org.label" default="Org" /></dt>
-							<dd>TODO: SELECT ORG</dd>
-						</dl>
-					</div>
-				</sec:ifAnyGranted>
-
-				<g:if test="${editable}">
+				<g:if test="${false && editable}">
 					<g:form>
 						<g:hiddenField name="id" value="${addressInstance?.id}" />
 						<div class="ui form-actions">
