@@ -1,7 +1,7 @@
 <g:if test="${address}">
 	<div class="ui item address-details">
         <span  data-tooltip="${message(code:'adress.icon.label.adress')}" data-position="left center" data-variation="tiny">
-            <i class="ui icon map marker la-list-icon"></i>
+            <i class="ui icon building map marker alternate la-list-icon"></i>
         </span>
         <div class="content">
             <g:link controller="address" action="show" id="${address?.id}">
