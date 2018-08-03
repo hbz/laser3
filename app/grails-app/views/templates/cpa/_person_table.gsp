@@ -59,9 +59,14 @@
                 </td>
 
                 <td>
-                    <g:each in="${person.addresses.sort{it.type?.getI10n('value')}}" var="address">
-                        <g:render template="/templates/cpa/address" model="${[address: address]}"></g:render>
-                    </g:each>
+                    <div class="ui divided middle aligned selection list la-flex-list ">
+                        <g:each in="${person.addresses.sort{it.type?.getI10n('value')}}" var="address">
+                            <g:render template="/templates/cpa/address" model="${[
+                                    address: address,
+                                    tmplShowDeleteButton: true
+                            ]}"></g:render>
+                        </g:each>
+                    </div>
                 </td>
                 <td class="x">
                     <g:if test="${editable}">
