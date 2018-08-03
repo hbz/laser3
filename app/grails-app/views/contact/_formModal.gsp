@@ -1,6 +1,7 @@
 <%@ page import="com.k_int.kbplus.Contact" %>
 
-<semui:modal id="contactFormModal" text="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}">
+<semui:modal id="contactFormModal"
+             text="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}">
 
     <g:form class="ui form" url="[controller: 'contact', action: 'create']" method="POST">
         <input type="hidden" name="redirect" value="true" />
@@ -8,7 +9,7 @@
         <div class="field">
             <div class="three fields">
 
-                <div class="field eight wide fieldcontain ${hasErrors(bean: contactInstance, field: 'contentType', 'error')} ">
+                <div class="field eight wide ${hasErrors(bean: contactInstance, field: 'contentType', 'error')} ">
                     <label for="contentType">
                         <g:message code="contact.contentType.label" default="ContentType" />
                     </label>
@@ -20,7 +21,7 @@
                         required=""/>
                 </div>
 
-                <div class="field eight wide fieldcontain ${hasErrors(bean: contactInstance, field: 'type', 'error')} ">
+                <div class="field eight wide ${hasErrors(bean: contactInstance, field: 'type', 'error')} ">
                     <label for="type">
                         ${com.k_int.kbplus.RefdataCategory.findByDesc('ContactType').getI10n('desc')}
                     </label>
