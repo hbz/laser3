@@ -75,7 +75,7 @@ ${personInstance}
 
                     <dl><dt><g:message code="person.contacts.label" default="Contacts"/></dt>
                         <dd>
-                            <div class="ui divided middle aligned selection list la-flex-list la-contact-info-list">
+                            <div class="ui divided middle aligned selection list la-flex-list">
                                 <g:each in="${personInstance.contacts.sort{it.content}}" var="c">
 
                                     <g:render template="/templates/cpa/contact" model="${[

@@ -2,17 +2,21 @@
 	<div class="ui item contact-details">
 		<semui:contactIcon type="${contact?.contentType.('value')}"/>
         <div class="content">
-            <g:link controller="contact" action="show" id="${contact?.id}">
-                <%-- ${contact.contentType?.getI10n('value')}: --%>
-                ${contact?.content?.encodeAsHTML()}
-            </g:link>
+            <semui:xEditable owner="${contact}" field="content" />
         </div>
 
 		<g:if test="${editable && tmplShowDeleteButton}">
 			<div class="content">
                 <g:if test="${['Mail', 'E-Mail'].contains(contact?.contentType?.value)}">
                     <span data-position="top right" data-tooltip="Mail senden an ..">
-                        <a href="mailto:${contact?.content?.encodeAsHTML()}" class="ui mini icon button">
+                        <a href="mailto:${contact?.content?.encodeAsHTML()}" class="ui mini icon blue button">
+                            <i class="share square icon"></i>
+                        </a>
+                    </span>
+                </g:if>
+                <g:if test="${contact.contentType?.getI10n('value') == 'Url'}">
+                    <span data-position="top right" data-tooltip="Diese URL aufrufen ..">
+                        <a href="${contact?.content?.encodeAsHTML()}" target="_blank" class="ui mini icon blue button">
                             <i class="share square icon"></i>
                         </a>
                     </span>

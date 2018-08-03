@@ -1,6 +1,4 @@
-.ui.list.la-contact-info-list>.item>.icon+.content {
-  padding: 0
-}
+
 
 .ui.divided.middle.la-flex-list .item {
   display: flex;
@@ -16,15 +14,15 @@
     opacity: 1;
   }
 }
-.ui.list.la-flex-list > .item > .icon  {
+.ui.list.la-flex-list > .item > span  {
   align-self: center;
 }
-.ui.list.la-flex-list > .item > .icon + .content  {
+.ui.list.la-flex-list > .item > span + .content  {
   flex-basis: 90%;
   align-self: center;
 
 }
-.ui.list.la-flex-list > .item > .icon + .content + .content {
+.ui.list.la-flex-list > .item > span + .content + .content {
   flex-basis: 10%;
   align-self: center;
   text-align: right;

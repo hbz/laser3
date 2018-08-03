@@ -185,19 +185,29 @@ class SemanticUiTagLib {
         switch(attrs.type) {
             case 'E-Mail':
             case 'Mail': // Deprecated
-                out << '<i class="icon envelope outline la-list-icon"></i>'
+                out << '<span  data-tooltip="' +message(code:'contact.icon.label.email') + '" data-position="left center" data-variation="tiny">'
+                out << '    <i class="ui icon envelope outline la-list-icon"></i>'
+                out << '</span>'
                 break
             case 'Fax':
-                out << '<i class="icon fax la-list-icon"></i>'
+                out << '<span  data-tooltip="' +message(code:'contact.icon.label.fax') + '" data-position="left center" data-variation="tiny">'
+                out << '    <i class="ui icon fax la-list-icon"></i>'
+                out << '</span>'
                 break
             case 'Phone':
+                out << '<span  data-tooltip="' +message(code:'contact.icon.label.phone') + '" data-position="left center" data-variation="tiny">'
                 out << '<i class="icon phone la-list-icon"></i>'
+                out << '</span>'
                 break
             case 'Url':
+                out << '<span  data-tooltip="' +message(code:'contact.icon.label.url') + '" data-position="left center" data-variation="tiny">'
                 out << '<i class="icon globe la-list-icon"></i>'
+                out << '</span>'
                 break
             default:
+                out << '<span  data-tooltip="' +message(code:'contact.icon.label.contactinfo') + '" data-position="left center" data-variation="tiny">'
                 out << '<i class="icon address book la-list-icon"></i>'
+                out << '</span>'
                 break
         }
     }
