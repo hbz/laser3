@@ -241,8 +241,7 @@
                                                   model="['tenant': contextOrg,
                                                           'org': orgInstance,
                                                           'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
-                                                          presetFunctionType: RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),
-                                                          tmplHideResponsibilities: true]"/>
+                                                          'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', 'Person Function')]"/>
                                     </g:if>
                                 </g:if>
                             </dd>

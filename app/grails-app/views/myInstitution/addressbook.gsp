@@ -30,19 +30,11 @@ import="com.k_int.kbplus.RefdataCategory"
 
         <semui:messages data="${flash}" />
 
-        <div class="ui icon warning message">
-            <i class="close icon"></i>
-            <div class="content">
-                <div class="header">
-                    ${message(code: 'message.information')}
-                </div>
-                <p>${message(code:'myinst.addressBook.visible', default:'These persons are visible to you due your membership')}</p>
-            </div>
-        </div>
+        <semui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.addressBook.visible" />
 
         <g:render template="/person/formModal" model="['org': institution,
                                                        'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No'),
-                                                       tmplHideResponsibilities: true
+                                                       'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', 'Person Function')
         ]"/>
 
         <g:if test="${visiblePersons}">
@@ -81,17 +73,8 @@ import="com.k_int.kbplus.RefdataCategory"
                 </g:form>
             </semui:filter>
 
-            <g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons]}"></g:render>
+            <g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons]}" />
 
-            <% /*
-            <h5 class="ui header"><g:message code="org.prsLinks.label" default="Persons" /></h5>
-            <div class="ui relaxed list">
-
-                <g:each in="${visiblePersons}" var="p">
-                    <g:render template="/templates/cpa/person_details" model="${[person: p]}"></g:render>
-                </g:each>
-            </div>
-            */ %>
         </g:if>
 
   </body>

@@ -25,7 +25,7 @@ import="com.k_int.kbplus.RefdataCategory"
 
         <semui:messages data="${flash}" />
 
-        <p>${message(code:'myinst.addressBook.visible', default:'These persons are visible to you due your membership ..')}</p>
+        <semui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.addressBook.visible" />
 
         <g:if test="${editable}">
             <input class="ui button"
@@ -37,8 +37,7 @@ import="com.k_int.kbplus.RefdataCategory"
         <g:render template="/person/formModal" model="['tenant': contextOrg,
                                                        'org': orgInstance,
                                                        'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'No'),
-                                                       presetFunctionType: RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),
-                                                       tmplHideResponsibilities: true]"/>
+                                                       'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', 'Person Function')]"/>
 
 		<g:if test="${visiblePersons}">
 			<h5 class="ui header"><g:message code="org.prsLinks.label" default="Persons" /></h5>

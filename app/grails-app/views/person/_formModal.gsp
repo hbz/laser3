@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
+<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
 <% def cService = grailsApplication.mainContext.getBean("contextService") %>
 
 <semui:modal id="personFormModal" text="${message(code: 'person.create_new.contactPerson.label')}">
@@ -11,20 +11,18 @@
                 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contactType', 'error')} ">
                     <label for="contactType">
                         ${com.k_int.kbplus.RefdataCategory.findByDesc('Person Contact Type').getI10n('desc')}
-
-
                     </label>
                     <laser:select class="ui dropdown" id="contactType" name="contactType"
                                   from="${com.k_int.kbplus.Person.getAllRefdataValues('Person Contact Type')}"
                                   optionKey="id"
                                   optionValue="value"
-                                  value="${personInstance?.contactType?.id}"
+                                  value="${personInstance?.contactType?.id ?: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Personal contact', 'Person Contact Type')?.id }"
+                                  noSelection="['': '']"
                                   />
                 </div>
                 <div id="roleType" class="field fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')}">
                     <label for="roleType">
                         ${com.k_int.kbplus.RefdataCategory.findByDesc('Person Position').getI10n('desc')}
-
                     </label>
                     <laser:select class="ui dropdown" id="roleType" name="roleType"
                                   from="${com.k_int.kbplus.Person.getAllRefdataValues('Person Position')}"
@@ -44,16 +42,13 @@
                         <g:message code="person.last_name.label" default="Lastname" />
                     </label>
                     <g:textField name="last_name" required="" value="${personInstance?.last_name}"/>
-
                 </div>
 
                 <div id="person_middle_name" class="field wide four ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} ">
                     <label for="middle_name">
                         <g:message code="person.middle_name.label" default="Middlename" />
-
                     </label>
                     <g:textField name="middle_name" value="${personInstance?.middle_name}"/>
-
                 </div>
 
             </div>
@@ -122,104 +117,40 @@
         <div id="person-role-manager">
 
             <g:if test="${! tmplHideFunctions}">
-                <h4 class="ui header"><g:message code="person.functions.label" default="Functions" /></h4>
-                <div class="ui segment person-role-function-manager">
+                <div class="person-role-function-manager">
 
-                    <div class="workspace">
-                        <h5 class="ui header">
-                            <g:message code="default.button.create_new.label" default="Adding"/>
-                        </h5>
-                        <div class="field">
-                            <div class="two fields">
-                                <div class="field wide ten">
-                                    <laser:select class="ui dropdown values"
-                                                  name="ignore-functionType-selector"
-                                                  from="${PersonRole.getAllRefdataValues('Person Function')}"
-                                                  optionKey="id"
-                                                  optionValue="value" />
-                                </div>
-                                <div class="field wide six">
-                                    <button class="ui button add-person-role" type="button">${message('code':'default.button.add.label')}</button>
-                                </div>
+                    <h5 class="ui header">
+                        <g:message code="person.function.label" default="Function"/>
+                    </h5>
+                    <div class="field">
+                        <div class="three fields">
+                            <div class="field wide eight">
+                                <g:select class="ui search dropdown"
+                                      name="functionOrg"
+                                      from="${Org.getAll()}"
+                                      value="${org?.id}"
+                                      optionKey="id"
+                                      optionValue="" />
+                            </div>
+
+                            <div class="field wide six">
+                                <laser:select class="ui dropdown values"
+                                              name="functionType"
+                                              from="${PersonRole.getAllRefdataValues('Person Function')}"
+                                              optionKey="id"
+                                              value="${presetFunctionType?.id}"
+                                              optionValue="value" />
                             </div>
                         </div>
-
-                        <div class="adding"></div>
-                        <h5 class="ui header" data-attr="removeIfEmpty">
-                            <g:message code="default.button.delete.label" default="Delete"/>
-                        </h5>
-                        <div class="existing" data-attr="removeIfEmpty"></div>
                     </div>
                 </div>
-                <script>
-                    $.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=list&roleType=func').done(function(data){
-                        $('.person-role-function-manager .workspace .existing').append(data);
-                        if(data == 'No Data found.') {
-                            $('.person-role-function-manager .workspace [data-attr=removeIfEmpty]').remove()
-                        }
-                    });
-                    $('.person-role-function-manager .add-person-role').click(function(){
-                        var tt = $('.person-role-function-manager select').val()
 
-                        $.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=add&roleType=func&roleTypeId=' + tt + '&org=${org?.id}').done(function(data){
-                            $('.person-role-function-manager .workspace .adding').append(data);
-                        });
-                    })
-                </script>
             </g:if>
             <g:else>
                 <%-- DEFAULT --%>
-                <input type="hidden" name="org.default" value="${org?.id}" />
-                <input type="hidden" name="functionType.default" value="${presetFunctionType?.id}" />
+                <input type="hidden" name="functionOrg.default" value="${org?.id}" />
+                <input type="hidden" name="functionType.default" value="${presetFunctionType?.id}" /><%-- not used ? --%>
             </g:else>
-
-            <g:if test="${! tmplHideResponsibilities}">
-                <h4 class="ui header"><g:message code="person.responsibilites.label" default="Responsibilites" /></h4>
-
-                <div class="ui segment person-role-responsibility-manager">
-
-                    <div class="workspace">
-                        <h5 class="ui header">
-                            <g:message code="default.button.create_new.label" default="Adding"/>
-                        </h5>
-                        <div class="field">
-                            <div class="two fields">
-                                <div class="field wide ten">
-                                    <laser:select class="ui dropdown values"
-                                                  name="ignore-responsibilityType-selector"
-                                                  from="${PersonRole.getAllRefdataValues('Person Responsibility')}"
-                                                  optionKey="id"
-                                                  optionValue="value" />
-                                </div>
-                                <div class="field wide six">
-                                    <button class="ui button add-person-role" type="button">${message('code':'default.button.add.label')}</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="adding"></div>
-                        <h5 class="ui header" data-attr="removeIfEmpty">
-                            <g:message code="default.button.delete.label" default="Delete"/>
-                        </h5>
-                        <div class="existing" data-attr="removeIfEmpty"></div>
-                    </div>
-                </div>
-                <script>
-                    $.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=list&roleType=resp').done(function(data){
-                        $('.person-role-responsibility-manager .workspace .existing').append(data);
-                        if(data == 'No Data found.') {
-                            $('.person-role-responsibility-manager .workspace [data-attr=removeIfEmpty]').remove()
-                        }
-                    });
-                    $('.person-role-responsibility-manager .add-person-role').click(function(){
-                        var tt = $('.person-role-responsibility-manager select').val()
-
-                        $.get('${webRequest.baseUrl}/person/ajax/${personInstance?.id}?cmd=add&roleType=resp&roleTypeId=' + tt + '&org=${org?.id}').done(function(data){
-                            $('.person-role-responsibility-manager .workspace .adding').append(data);
-                        });
-                    })
-                </script>
-            </g:if>
         </div>
 
     </g:form>
@@ -272,7 +203,7 @@
             }
         }
 
-        changeForm(true) // init
+        changeForm(false) // init
     </r:script>
 
 </semui:modal>

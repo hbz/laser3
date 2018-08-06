@@ -41,18 +41,31 @@ class SemanticUiTagLib {
         }
     }
 
-    // <semui:msg class="negative|positive|warning|.." text="${flash}" />
+    // <semui:msg class="negative|positive|warning|.." header="${text}" text="${text}" message="18n.token" />
 
     def msg = { attrs, body ->
 
-        if (attrs.text) {
-            out << '<div class="ui ' + attrs.class + ' message">'
-            out <<   '<i class="close icon"></i>'
-            out <<   '<p>'
-            out <<     attrs.text
-            out <<   '</p>'
+        out << '<div class="ui ' + attrs.class + ' message">'
+        out <<   '<i class="close icon"></i>'
+        out <<   '<div class="content">'
+
+        if (attrs.header ) {
+            out << '<div class="header">'
+            out << attrs.header
             out << '</div>'
         }
+
+        out <<     '<p>'
+        if (attrs.text ) {
+            out << attrs.text
+        }
+        if (attrs.message) {
+            out << "${message(code: attrs.message)}"
+        }
+        out <<     '</p>'
+
+        out <<   '</div>'
+        out << '</div>'
     }
 
     // <semui:errors bean="${instanceOfObject}" />
