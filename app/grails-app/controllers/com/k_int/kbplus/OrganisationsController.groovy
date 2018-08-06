@@ -175,11 +175,16 @@ class OrganisationsController {
                     result[cur_param] = param_offset
                 }
 
-                def link_type_count = OrgRole.executeQuery("select count(*) from OrgRole as orgr where orgr.org = :oi and orgr.roleType.id = :lid",[oi: orgInstance, lid: lv.id])
-                def link_type_results = OrgRole.executeQuery("select orgr from OrgRole as orgr where orgr.org = :oi and orgr.roleType.id = :lid",[oi: orgInstance, lid: lv.id],[offset:param_offset,max:10])
+                def links = OrgRole.findAll {
+                            org == orgInstance &&
+                            roleType == lv
+                }
+                links = links.findAll{ it -> it.ownerStatus?.value != 'Deleted' }
+
+                def link_type_results = links.drop(param_offset.toInteger()).take(10) // drop from head, take 10
 
                 if(link_type_results){
-                    sorted_links["${String.valueOf(lv.id)}"] = [rdv: lv, rdvl: cur_param, links: link_type_results, total: link_type_count[0]]
+                    sorted_links["${String.valueOf(lv.id)}"] = [rdv: lv, rdvl: cur_param, links: link_type_results, total: links.size()]
                 }
             }else{
                 log.debug("Could not read Refdata: ${lv}")

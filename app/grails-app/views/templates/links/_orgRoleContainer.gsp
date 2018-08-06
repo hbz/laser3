@@ -10,30 +10,31 @@
             <div class="ui list">
 
                 <g:each in="${link_cat.links}" var="i">
+
                     <div class="item">
                         <g:if test="${i.pkg}">
                             <g:link controller="packageDetails" action="show" id="${i.pkg.id}">
                                 ${message(code:'package.label', default:'Package')}: ${i.pkg.name}
                             </g:link>
-                            (${i.pkg?.packageStatus?.getI10n('value')})
                         </g:if>
                         <g:if test="${i.sub}">
                             <g:link controller="subscriptionDetails" action="show" id="${i.sub.id}">
                                 ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name}
                             </g:link>
-                            (${i.sub.status?.getI10n('value')})
                         </g:if>
                         <g:if test="${i.lic}">
                             <g:link controller="licenseDetails" action="show" id="${i.lic.id}">
                                 ${message(code:'license.label', default:'License')}: ${i.lic.reference ?: i.lic.id}
                             </g:link>
-                            (${i.lic.status?.getI10n('value')})
                         </g:if>
                         <g:if test="${i.title}">
                             <g:link controller="titleDetails" action="show" id="${i.title.id}">
                                 ${message(code:'title.label', default:'Title')}: ${i.title.title}
                             </g:link>
-                            (${i.title.status?.getI10n('value')})
+                        </g:if>
+
+                        <g:if test="${i.getOwnerStatus()}">
+                            (${i.getOwnerStatus().getI10n('value')})
                         </g:if>
                     </div>
                 </g:each>

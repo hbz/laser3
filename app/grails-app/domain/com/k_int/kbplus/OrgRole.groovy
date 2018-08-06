@@ -1,5 +1,8 @@
 package com.k_int.kbplus
 
+import javax.persistence.Column
+import javax.persistence.Transient
+
 class OrgRole {
 
   static belongsTo = [
@@ -16,6 +19,10 @@ class OrgRole {
   TitleInstance title
   Date          startDate
   Date          endDate
+
+    // dynamic binding for hql queries
+    @Transient
+    ownerStatus
 
   static mapping = {
           id column:'or_id'
@@ -55,7 +62,23 @@ class OrgRole {
         title   = owner instanceof TitleInstance ? owner : title
     }
 
-  static def assertOrgTitleLink(porg, ptitle, prole, pstart, pend) {
+    // dynamic binding for hql queries
+    def getOwnerStatus() {
+        if (pkg) {
+            return pkg.getPackageStatus()
+        }
+        if (sub) {
+            return sub.getStatus()
+        }
+        if (lic) {
+            return lic.getStatus()
+        }
+        if (title) {
+            return title.getStatus()
+        }
+    }
+
+    static def assertOrgTitleLink(porg, ptitle, prole, pstart, pend) {
     // def link = OrgRole.findByTitleAndOrgAndRoleType(ptitle, porg, prole) ?: new OrgRole(title:ptitle, org:porg, roleType:prole).save();
 
     if ( porg && ptitle && prole ) {
