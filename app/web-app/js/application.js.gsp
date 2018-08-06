@@ -283,7 +283,8 @@ r2d2 = {
         // dropdowns
         $(ctxSel + ' .ui.dropdown').dropdown({
             duration: 150,
-            transition: 'fade'
+            transition: 'fade',
+            showOnFocus: false
         });
         $(ctxSel + ' .ui.search.dropdown').dropdown({
             fullTextSearch: 'exact'

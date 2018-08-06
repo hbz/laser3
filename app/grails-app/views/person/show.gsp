@@ -98,7 +98,7 @@ ${personInstance}
 
                     <dl><dt><g:message code="person.addresses.label" default="Addresses"/></dt>
                         <dd>
-                            <div class="ui list">
+                            <div class="ui divided middle aligned selection list la-flex-list">
                                 <g:each in="${personInstance.addresses.sort{it.type?.getI10n('value')}}" var="a">
 
                                     <g:render template="/templates/cpa/address" model="${[
@@ -121,30 +121,32 @@ ${personInstance}
 
                     <dl><dt><g:message code="person.functions.label" default="Functions"/></dt>
                         <dd>
-                            <ul>
+                            <div class="ui divided middle aligned selection list la-flex-list">
                                 <g:each in="${personInstance.roleLinks}" var="link">
                                     <g:if test="${link.functionType}">
-                                        <li>
-                                            ${link.functionType?.getI10n('value')}
-                                            <br/>
-
-                                            <g:link controller="organisations" action="show" id="${link.org?.id}">${link.org?.name}</g:link>
-                                            (Organisation)
-
-                                            <g:if test="${editable}">
-                                                <br />
-                                                <div class="ui mini icon buttons">
-                                                    <g:set var="oid" value="${link.class.name}:${link.id}" />
-                                                    <g:link class="ui negative button" controller="person" action="deletePersonRole" id="${personInstance.id}" params="[oid: oid]">
-                                                        <i class="trash alternate icon"></i>
-                                                    </g:link>
-                                                </div>
-                                            </g:if>
-
-                                        </li>
+                                        <div class="ui item address-details">
+                                            <span  data-tooltip="${message(code:'adress.icon.label.adress')}" data-position="left center" data-variation="tiny">
+                                                <i class="ui icon briefcase la-list-icon"></i>
+                                            </span>
+                                            <div class="content">
+                                                <div class="header">${link.functionType?.getI10n('value')}</div>
+                                                <g:link controller="organisations" action="show" id="${link.org?.id}">${link.org?.name}</g:link>
+                                                (Organisation)
+                                            </div>
+                                            <div class="content">
+                                                <g:if test="${editable}">
+                                                    <div class="ui mini icon buttons">
+                                                        <g:set var="oid" value="${link.class.name}:${link.id}" />
+                                                        <g:link class="ui negative button" controller="person" action="deletePersonRole" id="${personInstance.id}" params="[oid: oid]">
+                                                            <i class="trash alternate icon"></i>
+                                                        </g:link>
+                                                    </div>
+                                                </g:if>
+                                            </div>
+                                        </div>
                                     </g:if>
                                 </g:each>
-                            </ul>
+                            </div>
 
                             <g:if test="${editable}">
                                 <a href="#personRoleFormModal" data-semui="modal" class="ui button">${message('code':'default.button.add.label')}</a>

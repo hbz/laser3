@@ -971,4 +971,7 @@ ol.ui.horizontal.list li:before,
   -ms-flex-item-align: center;
       align-self: center;
   text-align: right;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
 }

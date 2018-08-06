@@ -191,7 +191,7 @@ class SemanticUiTagLib {
                 break
             case 'Fax':
                 out << '<span  data-tooltip="' +message(code:'contact.icon.label.fax') + '" data-position="left center" data-variation="tiny">'
-                out << '    <i class="ui icon fax la-list-icon"></i>'
+                out << '    <i class="ui icon tty la-list-icon"></i>'
                 out << '</span>'
                 break
             case 'Phone':
