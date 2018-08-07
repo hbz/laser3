@@ -3,7 +3,6 @@
     <p>${message(code:'myinst.addressBook.visibleOnly', default:'Some persons are visible to you due your addressbook')}</p>
 
     <div class="field">
-
         <table id="prs_role_tab" class="ui celled la-table la-table-small table">
             <thead>
             <tr>
@@ -17,7 +16,10 @@
                     <g:if test="${true}">
                         <tr>
                             <td>
-                                <i class="address card icon"></i> ${p}
+                                <span data-tooltip="${message(code:'address.public')}" data-position="top right">
+                                    <i class="address card icon"></i>
+                                </span>
+                                ${p}
                             </td>
                             <td>
                                 <g:each in="${com.k_int.kbplus.PersonRole.findByPrsAndOrg(p, orgRole.org)}" var="prsFunc">
@@ -42,7 +44,10 @@
                     <g:if test="${com.k_int.kbplus.PersonRole.findByPrsAndOrg(p, orgRole.org)}">
                         <tr>
                             <td>
-                                <i class="address card outline icon"></i> ${p}
+                                <span data-tooltip="${message(code:'address.private')}" data-position="top right">
+                                    <i class="address card outline icon"></i>
+                                </span>
+                                ${p}
                             </td>
                             <td>
                                 <g:each in="${com.k_int.kbplus.PersonRole.findByPrsAndOrg(p, orgRole.org)}" var="prsFunc">

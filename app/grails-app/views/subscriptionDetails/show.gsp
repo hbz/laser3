@@ -180,24 +180,22 @@
                                 <tr>
                                 <th scope="row" class="control-label">${message(code:'subscription.packages.label')}</th>
                                     <td>
+                                        <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
 
-
-                                            <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
-
-                                            <g:if test="${sp.pkg?.contentProvider}">
-                                                (${sp.pkg?.contentProvider?.name})
-                                            </g:if>
+                                        <g:if test="${sp.pkg?.contentProvider}">
+                                            (${sp.pkg?.contentProvider?.name})
+                                        </g:if>
                                     </td>
                                     <td>
-                                            <g:if test="${editable}">
+                                        <g:if test="${editable}">
 
-                                                <div class="ui mini icon buttons">
-                                                    <button class="ui button la-selectable-button" onclick="unlinkPackage(${sp.pkg.id})">
-                                                        <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
-                                                    </button>
-                                                </div>
-                                                <br />
-                                            </g:if>
+                                            <div class="ui mini icon buttons">
+                                                <button class="ui button la-selectable-button" onclick="unlinkPackage(${sp.pkg.id})">
+                                                    <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
+                                                </button>
+                                            </div>
+                                            <br />
+                                        </g:if>
                                     </td>
                                 </tr>
                                 </g:each>
@@ -258,27 +256,6 @@
                     <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="isPublic" config='YN' /></dd>
                 </dl>
                 */ %>
-                <% /* <dl>
-                   <dt>${message(code:'license.details.incoming.child', default:'Child')} </dt>
-                   <dd>${subscriptionInstance.getIsSlavedAsString()}</dd>
-               </dl> */ %>
-
-                <% /*
-                <dl>
-                    <dt>
-                        <g:annotatedLabel owner="${subscriptionInstance}" property="nominalPlatform">${message(code:'package.nominalPlatform', default:'Nominal Platform')}</g:annotatedLabel>
-                    </dt>
-                    <dd>
-                        <g:each in="${subscriptionInstance.packages}" var="sp">
-                            ${sp.pkg?.nominalPlatform?.name}<br/>
-                        </g:each>
-                    </dd>
-                </dl>
-                */ %>
-                <% /* <dl>
-                    <dt>${message(code:'financials.cancellationAllowances', default:'Cancellation Allowances')}</dt>
-                    <dd> <semui:xEditable owner="${subscriptionInstance}" field="cancellationAllowances" /></dd>
-                </dl> */ %>
 
                     <g:render template="/templates/links/orgLinksAsList"
                               model="${[roleLinks: visibleOrgRelations,

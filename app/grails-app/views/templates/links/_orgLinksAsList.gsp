@@ -57,7 +57,9 @@
                             <div class="ui list">
                                 <g:each in="${Person.getPublicByOrgAndFunc(role.org, 'General contact person')}" var="func">
                                     <div class="item">
-                                        <i class="address card icon"></i>
+                                        <span data-tooltip="${message(code:'address.public')}" data-position="top right">
+                                            <i class="address card icon"></i>
+                                        </span>
                                         <div class="content">
                                             <g:link controller="person" action="show" id="${func.id}">${func}</g:link>
                                             (${(RefdataValue.findByValue('General contact person')).getI10n('value')})
@@ -66,7 +68,9 @@
                                 </g:each>
                                 <g:each in="${Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue)}" var="resp">
                                     <div class="item">
-                                        <i class="address card icon"></i>
+                                        <span data-tooltip="${message(code:'address.public')}" data-position="top right">
+                                            <i class="address card icon"></i>
+                                        </span>
                                         <div class="content">
                                             <g:link controller="person" action="show" id="${resp.id}">${resp}</g:link>
                                             (${(RefdataValue.findByValue(roleRespValue)).getI10n('value')})
@@ -92,7 +96,9 @@
                             <div class="ui list">
                                 <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextService.getOrg())}" var="func">
                                     <div class="item">
-                                        <i class="address card outline icon"></i>
+                                        <span data-tooltip="${message(code:'address.private')}" data-position="top right">
+                                            <i class="address card outline icon"></i>
+                                        </span>
                                         <div class="content">
                                             <g:link controller="person" action="show" id="${func.id}">${func}</g:link>
                                             (${(RefdataValue.findByValue('General contact person')).getI10n('value')})
@@ -101,7 +107,9 @@
                                 </g:each>
                                 <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextService.getOrg())}" var="resp">
                                     <div class="item">
-                                        <i class="address card outline icon"></i>
+                                        <span data-tooltip="${message(code:'address.private')}" data-position="top right">
+                                            <i class="address card outline icon"></i>
+                                        </span>
                                         <div class="content">
                                             <g:link controller="person" action="show" id="${resp.id}">${resp}</g:link>
                                             (${(RefdataValue.findByValue(roleRespValue)).getI10n('value')})

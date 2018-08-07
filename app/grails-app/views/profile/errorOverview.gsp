@@ -64,7 +64,12 @@
                             ${fieldValue(bean: ticket, field: "title")}
                         </td>
                         <td>
-                            ${fieldValue(bean: ticket, field: "author")}
+                            <g:if test="${! editable}">
+                                ${fieldValue(bean: ticket, field: "author")}
+                            </g:if>
+                            <g:else>
+                                <i class="user icon"></i>
+                            </g:else>
                         </td>
 
                         <td class="x">

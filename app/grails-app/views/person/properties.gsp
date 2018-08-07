@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.properties.PropertyDefinition" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataValue" %>
 
 <!doctype html>
 <html>
@@ -16,8 +16,17 @@
     </semui:breadcrumbs>
 
     <h1 class="ui header"><semui:headerIcon/>
-    ${personInstance?.contactType == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type') ? personInstance?.contactType.getI10n('value') + ': ' + personInstance?.last_name : personInstance?.contactType.getI10n('value') + ': ' + personInstance?.first_name?:"" + ' ' + personInstance?.last_name}
+        <g:if test="${personInstance?.contactType == RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type')}">
+            ${personInstance.contactType?.getI10n('value') + ': ' + personInstance?.last_name}
+        </g:if>
+        <g:elseif test="${personInstance?.contactType == RefdataValue.getByValueAndCategory('Personal contact', 'Person Contact Type')}">
+            ${personInstance.contactType?.getI10n('value') + ': ' + personInstance}
+        </g:elseif>
+        <g:else>
+            ${personInstance}
+        </g:else>
     </h1>
+
     <g:render template="nav" contextPath="." />
 
     <div class="ui grid">
@@ -26,26 +35,35 @@
 
             <semui:messages data="${flash}" />
 
-            <g:each in="${authorizedOrgs}" var="authOrg">
-                <br />
+            <div class="la-inline-lists">
 
-                <div id="custom_props_div_${authOrg.id}">
-                    <h5 class="ui header">@ ${authOrg.name}</h5>
+                <g:each in="${authorizedOrgs}" var="authOrg">
 
-                    <g:render template="/templates/properties/private" model="${[
-                            prop_desc: PropertyDefinition.PRS_PROP,
-                            ownobj: personInstance,
-                            custom_props_div: "custom_props_div_${authOrg.id}",
-                            tenant: authOrg]}"/>
+                    <div class="ui card">
+                        <div class="content">
 
-                    <r:script language="JavaScript">
-                            $(document).ready(function(){
-                                c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
-                            });
-                    </r:script>
-                </div>
+                            <div id="custom_props_div_${authOrg.id}">
+                                <h5 class="ui header">${message(code:'org.properties.private')} ${authOrg.name}</h5>
 
-            </g:each>
+                                <g:render template="/templates/properties/private" model="${[
+                                        prop_desc: PropertyDefinition.PRS_PROP,
+                                        ownobj: personInstance,
+                                        custom_props_div: "custom_props_div_${authOrg.id}",
+                                        tenant: authOrg]}"/>
+
+                                <r:script language="JavaScript">
+                                        $(document).ready(function(){
+                                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
+                                        });
+                                </r:script>
+                            </div>
+
+                        </div>
+                    </div><!-- .card -->
+
+                </g:each>
+
+            </div>
 
         </div>
     </div>

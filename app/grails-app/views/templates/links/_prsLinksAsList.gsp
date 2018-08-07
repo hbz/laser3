@@ -9,10 +9,14 @@
                 <div class="ui list">
                     <div class="item">
                         <g:if test="${pr.prs.isPublic?.value == "No"}">
-                            <i class="address card outline icon"></i>
+                            <span data-tooltip="${message(code:'address.private')}" data-position="top right">
+                                <i class="address card outline icon"></i>
+                            </span>
                         </g:if>
                         <g:else>
-                            <i class="address card icon"></i>
+                            <span data-tooltip="${message(code:'address.public')}" data-position="top right">
+                                <i class="address card icon"></i>
+                            </span>
                         </g:else>
 
                         <div class="content">

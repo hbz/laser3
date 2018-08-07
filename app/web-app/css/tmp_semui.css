@@ -281,3 +281,9 @@ aside.metaboxContent + .metaboxContent-spacer {
 .hidden {
     display: none !important;
 }
+
+/* hofix - contact hover icons over content */
+
+dd {
+    min-width: 80% !important;
+}

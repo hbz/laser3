@@ -267,18 +267,6 @@
                 </div><!--.card-->--}%
                 </g:if>
 
-            <% /*
-            <dt><g:message code="org.membership.label" default="Membership Organisation" /></dt>
-            <dd>
-                <g:if test="${editable}">
-                    <semui:xEditableRefData owner="${orgInstance}" field="membership" config='YN'/>
-                </g:if>
-                <g:else>
-                    <g:fieldValue bean="${orgInstance}" field="membership"/>
-                </g:else>
-            </dd>
-            */ %>
-
                     <g:if test="${orgInstance?.outgoingCombos && ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                         <g:if test="${orgInstance.id == contextService.getOrg().id}">
                             <div class="ui card">
