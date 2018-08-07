@@ -21,8 +21,6 @@ environments {
             password = "laser"
             url = "jdbc:mysql://localhost/laser?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8"
             pooled = true
-            // logSql = truei
-            // formatSql = true
             properties {
                 maxActive = -1
                 minEvictableIdleTimeMillis=1800000
@@ -44,8 +42,6 @@ environments {
             password = "laser"
             url = "jdbc:mysql://localhost/laserTest?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8"
             pooled = true
-            // logSql = true
-            // formatSql = true
             properties {
                 maxActive = -1
                 minEvictableIdleTimeMillis=1800000

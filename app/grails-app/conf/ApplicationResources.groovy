@@ -6,6 +6,12 @@ modules = {
         }
     }
 
+    /*
+    jquery {
+        resource url:'js/jquery-3.2.1.min.js', disposition: 'head'
+    }
+    */
+
     annotations {
         dependsOn 'semanticUI'
 

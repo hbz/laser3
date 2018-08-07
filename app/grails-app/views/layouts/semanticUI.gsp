@@ -29,9 +29,7 @@
 
 </head>
 
-<body class="${controllerName}_${actionName}">
-
-    <span id="jumpMark_top"></span>
+<body class="${controllerName}_${actionName}" id="globalJumpMark">
 
     <g:set var="contextOrg" value="${contextService.getOrg()}" />
     <g:set var="contextUser" value="${contextService.getUser()}" />
@@ -41,12 +39,12 @@
         <div class="ui green label big la-server-label">
             <span>DEV</span>
         </div>
-    </g:if><%-- debug --%>
+    </g:if>
     <g:if test="${grailsApplication.config.getCurrentServer() == contextService.SERVER_QA}">
         <div class="ui red label big la-server-label">
             <span>QA</span>
         </div>
-    </g:if><%-- debug --%>
+    </g:if>
 
     <div class="ui fixed inverted menu">
         <div class="ui container">
@@ -572,6 +570,8 @@
         <div id="loadingIndicator" style="display: none">
             <div class="ui text loader active">Loading</div>
         </div>
+
+        <%-- <a href="#globalJumpMark" class="ui button icon" style="position:fixed;right:0;bottom:0;"><i class="angle up icon"></i></a> --%>
 
         <r:layoutResources/>
 

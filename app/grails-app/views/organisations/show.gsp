@@ -173,7 +173,7 @@
                         <dl>
                             <dt><g:message code="org.addresses.label" default="Addresses" /></dt>
                             <dd>
-                                <div class="ui relaxed list">
+                                <div class="ui divided middle aligned selection list la-flex-list">
                                     <g:each in="${orgInstance?.addresses.sort{it.type?.getI10n('value')}}" var="a">
                                         <g:if test="${a.org}">
                                             <g:render template="/templates/cpa/address" model="${[
@@ -198,13 +198,13 @@
                         <dl>
                             <dt><g:message code="org.contacts.label" default="Contacts" /></dt>
                             <dd>
-                                <div class="ui relaxed list">
+                                <div class="ui divided middle aligned selection list la-flex-list">
                                     <g:each in="${orgInstance?.contacts.sort{it.content}}" var="c">
                                         <g:if test="${c.org}">
                                             <g:render template="/templates/cpa/contact" model="${[
                                                     contact: c,
                                                     tmplShowDeleteButton: true,
-                                                    controller: 'org',
+                                                    controller: 'organisations',
                                                     action: 'show',
                                                     id: orgInstance.id
                                             ]}"></g:render>
@@ -223,13 +223,19 @@
                         <dl>
                             <dt><g:message code="org.prsLinks.label" default="Kontaktpersonen" /></dt>
                             <dd>
-                                <div class="ui relaxed list">
+                                <%-- <div class="ui divided middle aligned selection list la-flex-list"> --%>
                                     <g:each in="${orgInstance?.prsLinks}" var="pl">
                                         <g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value!='No'}">
-                                            <g:render template="/templates/cpa/person_details" model="${[personRole: pl]}"></g:render>
+                                            <g:render template="/templates/cpa/person_details" model="${[
+                                                    personRole: pl,
+                                                    tmplShowDeleteButton: true,
+                                                    controller: 'organisations',
+                                                    action: 'show',
+                                                    id: orgInstance.id
+                                            ]}"></g:render>
                                         </g:if>
                                     </g:each>
-                                </div>
+                                <%-- </div> --%>
                                 <g:if test="${editable}">
                                     <g:if test="${ ! SpringSecurityUtils.ifAnyGranted('ROLE_ORG_COM_EDITOR') }">
                                         <input class="ui button"
