@@ -1,26 +1,28 @@
 
 0.7
 
-- switched to gokb index for listing all packages
-- improved package linking for subscriptions
 - added public gasco overview and details page 
+- added anonymisation for object histories (DSGVO)
 - added license handling for consortia and consortia members
-- reworked structure of license linking
+- improved package linking for subscriptions
+- switched to gokb ES index for package listing
 - improved error reporting ticket system
+- added list view and budget code handling 
+- reworked contact, address and person views
 - added filter for addressbooks
 - added functionality for deleting addresses and contacts 
-- added list view and delete function for budget codes 
-- added menu actions for creating tasks, documents and notes
+- added menu actions for adding tasks, documents and notes
 - reworked org role template, fixed javascript behaviour
 - added translations and increased text length for property definitions
 - added title field for persons
-- added anonymisation for object histories (DSGVO)
+- reworked structure of license linking
 - fixed javascript injection vulnerability
 - increased session timeout
-- lots of markup and style changes 
-- minor bugfixes and refactorings
 - removed legacy jusp and zendesk stuff
 - upgraded some plugins and dependencies
+- added java monitoring
+- lots of markup and style changes 
+- lots of bugfixes
 
 0.6.1
 

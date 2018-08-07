@@ -1,6 +1,7 @@
 // locations to search for config files that get merged into the main config
 // config files can either be Java properties files or ConfigSlurper scripts
 
+import de.laser.ContextService
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.apache.log4j.DailyRollingFileAppender
 import org.apache.log4j.RollingFileAppender
@@ -18,30 +19,10 @@ laserSystemId = 'local'
 // access via grailsApplication.config.showDebugInfo
 // showDebugInfo = true
 
-// STATS-CONFIG
-//statsApiUrl = 'http://statsServer'
-
 // @NotificationsJob
 // - enable notification
 // - enable reminder
 //hbzMaster = true
-
-// ES-CONFIG
-//aggr_es_cluster	= 'elasticsearch'
-//aggr_es_index		= 'laser'
-//aggr_es_hostname	= 'localhost'
-
-// JIRA-CONFIG
-
-// FEATURE-CONFIG
-//feature.eBooks = true
-//feature.issnl = true
-feature_finance = false
-//feature.notifications = true
-//globalDataSyncJobActiv = true
-//AdminReminderJobActiv = true
-
-
 
 // Database Migration Plugin
 grails.plugin.databasemigration.updateOnStart = false
@@ -49,6 +30,24 @@ grails.plugin.databasemigration.updateOnStartFileNames = [ 'changelog.groovy' ]
 
 System.out.println("\n~ local config override: ${grails.config.locations}")
 System.out.println("~ database migration plugin updateOnStart: ${grails.plugin.databasemigration.updateOnStart}")
+
+getCurrentServer = {
+    // laserSystemId mapping for runtime check
+    switch (grailsApplication.config.laserSystemId) {
+        case 'LAS:eR-Dev':
+            return ContextService.SERVER_DEV
+            break
+        case 'LAS:eR-QA/Stage':
+            return ContextService.SERVER_QA
+            break
+        case 'LAS:eR-Productive':
+            return ContextService.SERVER_PROD
+            break
+        default:
+            return ContextService.SERVER_LOCAL
+            break
+    }
+}
 
 customProperties =[
     "org":[

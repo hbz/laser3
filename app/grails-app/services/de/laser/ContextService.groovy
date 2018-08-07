@@ -7,6 +7,12 @@ class ContextService {
 
     def springSecurityService
 
+    static final SERVER_LOCAL = 'SERVER_LOCAL'
+    static final SERVER_DEV   = 'SERVER_DEV'
+    static final SERVER_QA    = 'SERVER_QA'
+    static final SERVER_PROD  = 'SERVER_PROD'
+
+
     def setOrg(Org context) {
         def session = WebUtils.retrieveGrailsWebRequest().getSession()
         session.setAttribute('contextOrg', context)

@@ -37,12 +37,12 @@
     <g:set var="contextUser" value="${contextService.getUser()}" />
     <g:set var="contextMemberships" value="${contextService.getMemberships()}" />
 
-    <g:if test="${'LAS:eR-Dev' == grailsApplication.config.laserSystemId}">
+    <g:if test="${grailsApplication.config.getCurrentServer() == contextService.SERVER_DEV}">
         <div class="ui green label big la-server-label">
             <span>DEV</span>
         </div>
     </g:if><%-- debug --%>
-    <g:if test="${'LAS:eR-QA/Stage' == grailsApplication.config.laserSystemId}">
+    <g:if test="${grailsApplication.config.getCurrentServer() == contextService.SERVER_QA}">
         <div class="ui red label big la-server-label">
             <span>QA</span>
         </div>
@@ -400,8 +400,8 @@
                         <div class="menu">
                             <g:link class="item" controller="yoda" action="settings">System Settings</g:link>
                             <g:link class="item" controller="yoda" action="appConfig">App Config</g:link>
-
                             <g:link class="item" controller="yoda" action="appSecurity">App Security</g:link>
+                            <a class="item" href="${g.createLink(uri:'/monitoring')}">App Monitoring</a>
 
                             <div class="divider"></div>
 

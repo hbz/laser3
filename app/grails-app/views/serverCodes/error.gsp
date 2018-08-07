@@ -1,4 +1,5 @@
 <%@ page import="org.codehaus.groovy.grails.web.errors.ExceptionUtils" %>
+<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 <% Throwable exception = (Throwable) exception %>
 <% def root = ExceptionUtils.getRootCause(exception) %>
 <% def causedby;
@@ -44,7 +45,7 @@ if (root != null && root != exception && root.message != exception.message) {
 
 </g:if>
 <g:if env="production">
-    <g:if test="${'LAS:eR-Dev' == grailsApplication.config.laserSystemId}">
+    <g:if test="${grailsApplication.config.getCurrentServer() == contextService.SERVER_DEV}">
 
         <semui:card>
             <div class="content">
@@ -96,12 +97,6 @@ if (root != null && root != exception && root.message != exception.message) {
         </semui:card>
 
     </g:else>
-%{--<g:if test="${'LAS:eR-QA/Stage' == grailsApplication.config.laserSystemId}">
-
-</g:if>
-<g:if test="${'LAS:eR-Productive' == grailsApplication.config.laserSystemId}">
-
-</g:if>--}%
 </g:if>
 
 </body>
