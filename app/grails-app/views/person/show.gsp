@@ -34,6 +34,12 @@ ${personInstance}
                     <dl><dt>${com.k_int.kbplus.RefdataCategory.findByDesc('Person Contact Type').getI10n('desc')}</dt>
                         <dd>
                             <semui:xEditableRefData owner="${personInstance}" field="contactType" config="Person Contact Type"/>
+
+                            <r:script>
+                                $('a[data-name=contactType]').on('save', function(e, params) {
+                                    window.location.reload()
+                                });
+                            </r:script>
                         </dd>
                     </dl>
 
@@ -71,7 +77,6 @@ ${personInstance}
                             <dd><semui:xEditableRefData owner="${personInstance}" field="roleType"
                                                         config="Person Position"/></dd></dl>
                     </g:if>
-
                 </div>
             </div><!-- .card -->
 
