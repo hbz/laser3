@@ -87,6 +87,7 @@
 
 .ui .select2-container {
     vertical-align: top;
+    width: inherit;
 }
 .ui .select2-container .select2-choice {
     height: 36px;

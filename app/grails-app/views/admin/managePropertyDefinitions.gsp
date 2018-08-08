@@ -182,7 +182,7 @@ ${usedPdList.join(", ")}
                         </select>
                     </div>
                     <div class="field five wide">
-                        <label class="property-label">Type</label>
+                        <label class="property-label"><g:message code="propertyDefinition.type.label" /></label>
                         <g:select class="ui dropdown"
                             from="${PropertyDefinition.validTypes2.entrySet()}"
                             optionKey="key" optionValue="${{PropertyDefinition.getLocalizedValue(it.key)}}"
@@ -191,7 +191,7 @@ ${usedPdList.join(", ")}
                     </div>
 
                     <div class="field six wide hide" id="cust_prop_ref_data_name">
-                        <label class="property-label">Kategorie</label>
+                        <label class="property-label"><g:message code="refdataCategory.label" /></label>
                         <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
                     </div>
                 </div>
@@ -211,7 +211,9 @@ ${usedPdList.join(", ")}
 
 			   if( $( "#cust_prop_modal_select option:selected" ).val() == "class com.k_int.kbplus.RefdataValue") {
 					$("#cust_prop_ref_data_name").show();
-			   }
+			   } else {
+                     $("#cust_prop_ref_data_name").hide();
+                }
 
 			$('#cust_prop_modal_select').change(function() {
 				var selectedText = $( "#cust_prop_modal_select option:selected" ).val();
@@ -223,8 +225,18 @@ ${usedPdList.join(", ")}
 			});
 
 			$("#cust_prop_refdatacatsearch").select2({
-				placeholder: "Type category...",
-				minimumInputLength: 1,
+				placeholder: "Kategorie eintippen...",
+                minimumInputLength: 1,
+
+                formatInputTooShort: function () {
+                    return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
+                },
+                formatNoMatches: function() {
+                    return "${message(code:'select2.noMatchesFound')}";
+                },
+                formatSearching:  function() {
+                    return "${message(code:'select2.formatSearching')}";
+                },
 				ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
 					url: '${createLink(controller:'ajax', action:'lookup')}',
 					dataType: 'json',
