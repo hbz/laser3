@@ -90,13 +90,13 @@
                         </div>
 
                         <div class="ui radio checkbox">
-                            <input class="hidden" type="radio" name="generateSlavedLics" value="multiple">
-                            <label>${message(code: 'myinst.emptySubscription.seperate_lics_multiple')}</label>
+                            <input class="hidden" type="radio" name="generateSlavedLics" value="shared">
+                            <label>${message(code: 'rolemyinst.emptySubscription.seperate_lics_shared')}</label>
                         </div>
 
                         <div class="ui radio checkbox">
-                            <input class="hidden" type="radio" name="generateSlavedLics" value="one">
-                            <label>${message(code: 'myinst.emptySubscription.seperate_lics_one')}</label>
+                            <input class="hidden" type="radio" name="generateSlavedLics" value="explicit">
+                            <label>${message(code: 'myinst.emptySubscription.seperate_lics_explicit')}</label>
                         </div>
 
                         <g:if test="${subscriptionInstance.owner.derivedLicenses}">

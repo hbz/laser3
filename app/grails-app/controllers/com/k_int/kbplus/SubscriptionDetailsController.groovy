@@ -769,10 +769,10 @@ class SubscriptionDetailsController {
                                 copyStartEnd: true
                         ]
 
-                        if (params.generateSlavedLics == 'multiple') {
+                        if (params.generateSlavedLics == 'explicit') {
                             licenseCopy = institutionsService.copyLicense(subLicense, subLicenseParams)
                         }
-                        else if (params.generateSlavedLics == 'one' && ! licenseCopy) {
+                        else if (params.generateSlavedLics == 'shared' && ! licenseCopy) {
                             licenseCopy = institutionsService.copyLicense(subLicense, subLicenseParams)
                         }
                         else if (params.generateSlavedLics == 'reference' && ! licenseCopy) {

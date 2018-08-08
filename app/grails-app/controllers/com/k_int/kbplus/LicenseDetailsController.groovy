@@ -272,11 +272,11 @@ from Subscription as s where
                                 copyStartEnd: true
                         ]
 
-                        if (params.generateSlavedLics == 'multiple') {
+                        if (params.generateSlavedLics == 'explicit') {
                             licenseCopy = institutionsService.copyLicense(result.license, licenseParams)
                             // licenseCopy.sortableReference = subLicense.sortableReference
                         }
-                        else if (params.generateSlavedLics == 'one' && ! licenseCopy) {
+                        else if (params.generateSlavedLics == 'shared' && ! licenseCopy) {
                             licenseCopy = institutionsService.copyLicense(result.license, licenseParams)
                         }
                         else if (params.generateSlavedLics == 'reference' && ! licenseCopy) {

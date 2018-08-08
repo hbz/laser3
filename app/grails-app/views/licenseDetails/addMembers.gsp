@@ -67,16 +67,16 @@
                     <label>Vertrag kopieren</label>
                     <div class="ui radio checkbox">
                         <g:if test="${license.derivedLicenses}">
-                            <input class="hidden" type="radio" name="generateSlavedLics" value="one">
+                            <input class="hidden" type="radio" name="generateSlavedLics" value="explicit">
                         </g:if>
                         <g:else>
-                            <input class="hidden" type="radio" name="generateSlavedLics" value="one" checked="checked">
+                            <input class="hidden" type="radio" name="generateSlavedLics" value="explicit" checked="checked">
                         </g:else>
-                        <label>${message(code: 'myinst.emptySubscription.seperate_lics_one')}</label>
+                        <label>${message(code: 'myinst.emptySubscription.seperate_lics_explicit')}</label>
                     </div>
                     <div class="ui radio checkbox">
-                        <input class="hidden" type="radio" name="generateSlavedLics" value="multiple">
-                        <label>${message(code: 'myinst.emptySubscription.seperate_lics_multiple')}</label>
+                        <input class="hidden" type="radio" name="generateSlavedLics" value="shared">
+                        <label>${message(code: 'rolemyinst.emptySubscription.seperate_lics_shared')}</label>
                     </div>
                     <g:if test="${license.derivedLicenses}">
                         <div class="ui radio checkbox">
