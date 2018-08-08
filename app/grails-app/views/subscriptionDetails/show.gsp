@@ -16,7 +16,14 @@
         <g:javascript src="properties.js"/>
     </head>
     <body>
+
+        <semui:debugInfo>
+            <g:render template="/templates/debug/orgRoles" model="[debug: subscriptionInstance.orgRelations]" />
+            <g:render template="/templates/debug/prsRoles" model="[debug: subscriptionInstance.prsLinks]" />
+        </semui:debugInfo>
+
         <g:render template="breadcrumb" model="${[ params:params ]}"/>
+
         <semui:controlButtons>
             <g:render template="actions" />
         </semui:controlButtons>
@@ -327,8 +334,6 @@
 
                         </div>
                     </div>
-
-                <g:render template="/templates/debug/orgRoles" model="[debug: subscriptionInstance.orgRelations]" />
 
                 <g:if test="${subscriptionInstance.costItems}">
 

@@ -18,9 +18,15 @@
     </head>
     <body>
 
+    <semui:debugInfo>
+        <g:render template="/templates/debug/orgRoles" model="[debug: orgInstance.links]" />
+        <g:render template="/templates/debug/prsRoles" model="[debug: orgInstance.prsLinks]" />
+    </semui:debugInfo>
+
     <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
 
-    <h1 class="ui header"><semui:headerIcon />
+    <h1 class="ui header">
+        <semui:headerIcon />
         ${orgInstance.name}
     </h1>
 

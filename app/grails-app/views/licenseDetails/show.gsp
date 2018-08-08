@@ -11,6 +11,11 @@
 
     <body>
 
+        <semui:debugInfo>
+            <g:render template="/templates/debug/orgRoles" model="[debug: license.orgLinks]" />
+            <g:render template="/templates/debug/prsRoles" model="[debug: license.prsLinks]" />
+        </semui:debugInfo>
+
         <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
         <semui:controlButtons>
@@ -303,8 +308,6 @@
 
                         </div>
                     </div>
-
-                    <g:render template="/templates/debug/orgRoles" model="[debug: license.orgLinks]" />
 
                     <div class="ui card la-dl-no-table">
                         <div class="content">

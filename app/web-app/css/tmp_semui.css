@@ -287,3 +287,11 @@ aside.metaboxContent + .metaboxContent-spacer {
 dd {
     min-width: 80% !important;
 }
+
+/* debug info */
+
+#showDebugInfo {
+    position: absolute;
+    top: 100px;
+    right: 0;
+}

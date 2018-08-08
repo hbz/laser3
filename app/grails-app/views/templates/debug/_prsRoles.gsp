@@ -1,10 +1,11 @@
 
     <div class="ui segment">
-        <h5 class="ui red header">ORG_ROLES</h5>
+        <h5 class="ui red header">PERSON_ROLES</h5>
 
         <table class="ui celled la-table la-table-small table ignore-floatThead">
             <thead>
                 <tr>
+                    <th>PRS</th>
                     <th>ORG</th>
                     <th>RDV</th>
                     <th>OBJ</th>
@@ -13,12 +14,22 @@
             <g:each in="${debug.sort{it.id}}" var="role">
                 <tr>
                     <td>
+                        <g:if test="${role.prs}">
+                            <g:link controller="person" action="show" id="${role.prs.id}">${role.prs}</g:link>
+                        </g:if>
+                    </td>
+                    <td>
                         <g:if test="${role.org}">
                             <g:link controller="organisations" action="show" id="${role.org.id}">${role.org.name} (${role.org.id})</g:link>
                         </g:if>
                     </td>
                     <td>
-                        ${role.roleType?.getI10n("value")} / ${role.roleType?.value}
+                        <g:if test="${role.functionType}">   
+                            ${role.functionType?.getI10n("value")} / ${role.functionType?.value}
+                        </g:if>
+                        <g:if test="${role.responsibilityType}">
+                            ${role.responsibilityType?.getI10n("value")} / ${role.responsibilityType?.value}
+                        </g:if>
                     </td>
                     <td>
                         <g:if test="${role.pkg}">

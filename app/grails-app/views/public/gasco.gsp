@@ -114,7 +114,7 @@
             <g:each in="${subscriptions}" var="sub" status="i">
                 <tr>
                     <td class="center aligned">
-                        ${i}
+                        ${i + 1}
                     </td>
                     <td>
                         ${sub}

@@ -140,11 +140,31 @@ class SemanticUiTagLib {
         }
     }
     */
+    def debugInfo = { attrs, body ->
+
+        if (grailsApplication.config.showDebugInfo) {
+
+            out << '<a href="#debugInfo" id="showDebugInfo" class="ui button icon" data-semui="modal">'
+            out << '<i class="red bug icon"></i>'
+            out << '</a>'
+
+            out << '<div id="debugInfo" class="ui modal">'
+            out <<     '<h4 class="ui red header"> <i class="bug icon"></i> DEBUG-INFORMATION</h4>'
+            out <<     '<div class="scrolling content">'
+            out <<          body()
+            out <<          '<br />'
+            out <<     '</div>'
+            out <<     '<div class="actions">'
+            out <<     '</div>'
+            out << '</div>'
+        }
+    }
+
     def headerIcon = { attrs, body ->
 
-            out << '<div class="ui la-object circular label" style="margin-left:0; margin-right: 5px!important; ">'
-            out << '<i class="icon"></i>'
-            out << '</div>'
+        out << '<div class="ui la-object circular label" style="margin-left:0; margin-right: 5px!important; ">'
+        out << '<i class="icon"></i>'
+        out << '</div>'
     }
 
     def headerTitleIcon = { attrs, body ->

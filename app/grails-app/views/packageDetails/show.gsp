@@ -7,6 +7,12 @@
         <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'package', default:'Package Details')}</title>
     </head>
     <body>
+
+    <semui:debugInfo>
+        <g:render template="/templates/debug/orgRoles" model="[debug: packageInstance.orgs]" />
+        <g:render template="/templates/debug/prsRoles" model="[debug: packageInstance.prsLinks]" />
+    </semui:debugInfo>
+
     <g:set var="locale" value="${RequestContextUtils.getLocale(request)}" />
 
     <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
@@ -209,7 +215,6 @@
                     </div>
                 </div>
 
-                <g:render template="/templates/debug/orgRoles" model="[debug: packageInstance.orgs]" />
 
                 <div class="ui card">
                     <div class="content">
