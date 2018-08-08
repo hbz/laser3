@@ -13,52 +13,64 @@ class PublicController {
     def gasco() {
         def result = [:]
 
-        def query = "from Subscription as s where ("
-        query += "      lower(s.status.value) = 'current'"
-        query += "      and lower(s.type.value) != 'local licence'"
-        query += "      and exists (select scp from s.customProperties as scp where scp.type = :gasco and lower(scp.refValue.value) = 'yes')"
-        query += " )"
-
-        def queryParams = [gasco: PropertyDefinition.findByName('GASCO Entry')]
-
-        def q = params.q?.trim()
-        if (q) {
-            query += " and ((lower(s.name) like :q) or exists ("
-            query += "    select ogr from s.orgRelations as ogr where ("
-            query += "          lower(ogr.org.name) like :q or lower(ogr.org.shortname) like :q or lower(ogr.org.sortname) like :q"
-            query += "      ) and ogr.roleType.value = 'Provider'"
-            query += "    )"
-            query += " )"
-
-            queryParams.put('q', '%' + q.toLowerCase() + '%')
-        }
-
-        def subTypes = params.list('subTypes')
-        if (subTypes) {
-            subTypes = subTypes.collect{ it as Long }
-            query += " and s.type.id in (:subTypes) "
-
-            queryParams.put('subTypes', subTypes)
-        }
-
-        def consortia = params.consortia ? genericOIDService.resolveOID(params.consortia) : null
-        if (consortia) {
-            query += " and exists ("
-            query += "    select cr from s.orgRelations as cr where lower(cr.roleType.value) = 'subscription consortia'"
-            query += "       and cr.org = :consortia"
-            query += " )"
-
-            queryParams.put('consortia', consortia)
-        }
-
-        if (q || subTypes || consortia) {
-            result.subscriptionsCount = Subscription.executeQuery("select count(s) " + query, queryParams)[0]
-            result.subscriptions = Subscription.executeQuery("select s ${query}", queryParams)
-        }
-
         result.allConsortia = Org.findAllByOrgType(
                 RefdataValue.getByValueAndCategory('Consortium', 'OrgType')
         ).sort{ it.getDesignation() }
+
+        if (! params.subTypes && ! params.consortia && ! params.q) {
+            // init filter with checkboxes checked
+            result.initQuery = 'true'
+        }
+        else {
+
+            def query = "from Subscription as s where ("
+            query += "      lower(s.status.value) = 'current'"
+            query += "      and lower(s.type.value) != 'local licence'"
+            query += "      and exists (select scp from s.customProperties as scp where scp.type = :gasco and lower(scp.refValue.value) = 'yes')"
+            query += " )"
+
+            def queryParams = [gasco: PropertyDefinition.findByName('GASCO Entry')]
+
+            def q = params.q?.trim()
+            if (q) {
+                query += " and ((lower(s.name) like :q) or exists ("
+                query += "    select ogr from s.orgRelations as ogr where ("
+                query += "          lower(ogr.org.name) like :q or lower(ogr.org.shortname) like :q or lower(ogr.org.sortname) like :q"
+                query += "      ) and ogr.roleType.value = 'Provider'"
+                query += "    )"
+                query += " )"
+
+                queryParams.put('q', '%' + q.toLowerCase() + '%')
+            }
+
+            def consortia = params.consortia ? genericOIDService.resolveOID(params.consortia) : null
+            if (consortia) {
+                query += " and exists ("
+                query += "    select cr from s.orgRelations as cr where lower(cr.roleType.value) = 'subscription consortia'"
+                query += "       and cr.org = :consortia"
+                query += " )"
+
+                queryParams.put('consortia', consortia)
+            }
+
+            def subTypes = params.list('subTypes')
+            if (subTypes) {
+                subTypes = subTypes.collect { it as Long }
+                query += " and s.type.id in (:subTypes) "
+
+                queryParams.put('subTypes', subTypes)
+            }
+            else {
+                query += " and s.type.id in (:subTypes) "
+                // fake negative result for query without checked subTypes
+                queryParams.put('subTypes', [0.longValue()])
+            }
+
+            if (q || consortia || subTypes) {
+                result.subscriptionsCount = Subscription.executeQuery("select count(s) " + query, queryParams)[0]
+                result.subscriptions = Subscription.executeQuery("select s ${query}", queryParams)
+            }
+        }
 
         result
     }

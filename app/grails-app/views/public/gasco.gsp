@@ -29,7 +29,6 @@
 
                     <div class="field">
                         <label for="subscritionType">${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
-
                         <fieldset id="subscritionType">
                             <div class="inline fields la-filter-inline">
 
@@ -47,6 +46,7 @@
                                                 <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
                                                 <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
                                                     <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
+                                                    <g:if test="${initQuery}"> checked="" </g:if>
                                                        tabindex="0">
                                             </div>
                                         </div>
@@ -143,31 +143,4 @@
     </table>
 
     </g:if>
-<%--
-        <g:each in="${test}" var="sub" status="i">
-            <br />
-            <br />
-            <!-- subscription -->
-
-            &nbsp; SUB: ${i} - ${sub}
-
-            <g:each in="${OrgRole.findAllBySubAndRoleType(sub, RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'))}" var="role">
-                <br />
-                &nbsp;&nbsp;&nbsp; Anbieter: ${role.org?.name}
-            </g:each>
-
-            <br />
-            &nbsp;&nbsp;&nbsp; Lizenztyp: ${sub.type?.getI10n('value')}
-
-            <br />
-            &nbsp;&nbsp;&nbsp; Konsortium: ${sub.getConsortia()?.name}
-
-            <g:each in="${sub.packages}" var="subPkg" status="j">
-                <br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; PKG: ${j} - ${subPkg.pkg}
-            </g:each>
-
-            <!-- subscription -->
-        </g:each>
---%>
 </body>
