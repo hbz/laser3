@@ -21,6 +21,7 @@
 - removed legacy jusp and zendesk stuff
 - upgraded some plugins and dependencies
 - added java monitoring
+- added debug information views
 - lots of markup and style changes 
 - lots of bugfixes
 

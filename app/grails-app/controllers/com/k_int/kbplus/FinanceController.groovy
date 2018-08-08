@@ -134,9 +134,15 @@ class FinanceController {
 
         request.setAttribute("editable", result.editable) //editable Taglib doesn't pick up AJAX request, REQUIRED!
         result.info        =  [] as List
-        params.max         =  params.max && params.int('max') ? Math.min(params.int('max'),200) : (user?.defaultPageSize? maxAllowedVals.min{(it-user.defaultPageSize).abs()} : 10)
-        result.max         =  params.max
-        result.offset      =  params.int('offset',0)?: 0
+        //params.max         =  params.max && params.int('max') ? Math.min(params.int('max'),200) : (user?.defaultPageSize? maxAllowedVals.min{(it-user.defaultPageSize).abs()} : 10)
+        //result.max         =  params.max
+        //result.offset      =  params.int('offset',0)?: 0
+
+        // WORKAROUND: erms-517
+        params.max = 5000
+        result.max = 5000
+        result.offset = 0
+
         result.sort        =  ["desc","asc"].contains(params.sort)? params.sort : "desc" //defaults to sort & order of desc id
         result.isRelation  =  params.orderRelation? params.boolean('orderRelation',false) : false
 
