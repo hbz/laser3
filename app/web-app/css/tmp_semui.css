@@ -286,7 +286,7 @@ aside.metaboxContent + .metaboxContent-spacer {
 /* debug info */
 
 #showDebugInfo {
-    position: absolute;
-    top: 100px;
+    position: fixed;
+    bottom: 3px;
     right: 0;
 }

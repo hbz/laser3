@@ -10,6 +10,7 @@ import org.springframework.web.servlet.support.RequestContextUtils
 class SemanticUiTagLib {
 
     def springSecurityService
+    def yodaService
 
     //static defaultEncodeAs = [taglib:'html']
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
@@ -142,7 +143,7 @@ class SemanticUiTagLib {
     */
     def debugInfo = { attrs, body ->
 
-        if (grailsApplication.config.showDebugInfo) {
+        if (yodaService.showDebugInfo()) {
 
             out << '<a href="#debugInfo" id="showDebugInfo" class="ui button icon" data-semui="modal">'
             out << '<i class="red bug icon"></i>'

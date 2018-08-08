@@ -312,7 +312,9 @@
 
 <div id="magicArea">
 
-<g:if test="${grailsApplication.config.showDebugInfo}">
+    <g:set var="yodaService" bean="yodaService" />
+
+<g:if test="${yodaService.showDebugInfo()}">
 <g:render template="coreAssertionsModal" contextPath="../templates" model="${[tipID:-1,coreDates:[]]}"/>
 </g:if>
 </div>

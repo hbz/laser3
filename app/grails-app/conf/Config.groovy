@@ -13,11 +13,7 @@ laserSystemId = 'local'
 
 //localauth = true
 
-// pilot version
-// access via grailsApplication.config.pilotDisableFlag
-// pilotDisableFlag = false
-// access via grailsApplication.config.showDebugInfo
-// showDebugInfo = true
+// showDebugInfo = false
 
 // @NotificationsJob
 // - enable notification
