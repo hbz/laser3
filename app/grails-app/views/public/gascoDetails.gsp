@@ -13,7 +13,48 @@
     <br />
     <br />
 
-    <h2 class="ui title">${subscription}</h2>
+    <h2 class="ui title">
+        ${subscription}
+        <g:if test="${tippsCount}">
+            &nbsp;&nbsp;
+            (${tipps?.size()} von ${tippsCount})
+        </g:if>
+    </h2>
+
+    <semui:filter>
+        <form class="ui form">
+            <div class="fields">
+
+                <div class="field">
+                    <label>Suche nach Name</label>
+                    <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q}" />
+                </div>
+
+                <div class="field">
+                    <label>Suche nach Identifikatoren</label>
+                    <g:select name="idns"
+                              from="${idnsPreset}" optionKey="id" optionValue="ns"
+                              value="${params.idns}"
+                              class="ui dropdown"
+                              noSelection="['':'']"
+                    />
+                </div>
+
+                <div class="field">
+                    <label>&nbsp;</label>
+                    <input type="text" name="idv" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.idv}" />
+                </div>
+
+                <div class="field">
+                    <label>&nbsp;</label>
+                    <a href="${request.forwardURI}" class="ui reset primary primary button">${message(code:'default.button.reset.label')}</a>
+
+                    <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}" />
+                </div>
+
+            </div>
+        </form>
+    </semui:filter>
 
     <table class="ui celled la-table table">
         <thead>
@@ -23,7 +64,7 @@
         </thead>
         <tbody>
 
-            <g:each in="${pakkage.tipps}" var="tipp" status="counter">
+            <g:each in="${tipps}" var="tipp" status="counter">
                 <tr>
                     <td>${counter + 1}</td>
                     <td>

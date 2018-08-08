@@ -79,6 +79,12 @@ class PublicController {
     def gascoDetails() {
         def result = [:]
 
+        result.tipps = []
+
+        result.idnsPreset = IdentifierNamespace.findAll {
+            ns in ['eissn', 'issn', 'zdb', 'ezb']
+        }
+
         if (params.id) {
             def sp  = SubscriptionPackage.get(params.long('id'))
             def sub = sp?.subscription
@@ -91,7 +97,37 @@ class PublicController {
 
             if (scp) {
                 result.subscription = sub
-                result.pakkage = pkg
+
+                def query = "SELECT tipp FROM TitleInstancePackagePlatform as tipp WHERE tipp.pkg = :pkg "
+                def queryParams = [pkg: pkg]
+
+                result.tippsCount = TitleInstancePackagePlatform.executeQuery(query, queryParams).size()
+
+                def q = params.q?.trim()
+                if (q) {
+                    query += " AND ( LOWER(tipp.title.title) LIKE :q ) "
+
+                    queryParams.put('q', '%' + q.toLowerCase() + '%')
+                }
+
+                def idv = params.idv?.trim()
+                if (idv) {
+                    query += " AND ( EXISTS ( " +
+                        " SELECT io FROM IdentifierOccurrence AS io " +
+                        " WHERE io.ti = tipp.title AND io.identifier.value LIKE :idv "
+
+                    if (params.idns) {
+                        query += " AND io.identifier.ns = :idns "
+
+                        queryParams.put('idns', IdentifierNamespace.get(params.idns))
+                    }
+
+                    query += " ) ) "
+
+                    queryParams.put('idv', '%' + idv.toLowerCase() + '%')
+                }
+
+                result.tipps = TitleInstancePackagePlatform.executeQuery(query, queryParams)
             }
             else {
                 redirect controller: 'public', action: 'gasco'
