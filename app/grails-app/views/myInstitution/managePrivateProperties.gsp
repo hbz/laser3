@@ -105,7 +105,7 @@
                 </div>
 
                 <div class="field five wide">
-                    <label class="property-label">Type</label>
+                    <label class="property-label"><g:message code="propertyDefinition.type.label" /></label>
                     <g:select class="ui dropdown"
                         from="${PropertyDefinition.validTypes2.entrySet()}"
                         optionKey="key" optionValue="${{PropertyDefinition.getLocalizedValue(it.key)}}"
@@ -114,7 +114,7 @@
                 </div>
 
                 <div class="field six wide hide" id="cust_prop_ref_data_name">
-                    <label class="property-label">Kategorie</label>
+                    <label class="property-label"><g:message code="refdataCategory.label" /></label>
                     <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
                 </div>
             </div>
