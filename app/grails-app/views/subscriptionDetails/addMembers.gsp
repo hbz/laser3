@@ -64,7 +64,6 @@
                         <label>${message(code: 'myinst.emptySubscription.seperate_subs', default: 'Generate seperate Subscriptions for all Consortia Members')}</label>
                     </div>
 
-
                     <g:set value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Status')}" var="rdcSubStatus"/>
 
                     <br />
@@ -105,13 +104,22 @@
                                 <label>${message(code: 'myinst.emptySubscription.seperate_lics_reference')}</label>
                             </div>
 
-                            <br />
-                            <br />
-                            <g:select from="${subscriptionInstance.owner?.derivedLicenses}" class="ui search dropdown"
-                                      optionKey="${{ 'com.k_int.kbplus.License:' + it.id }}"
-                                      optionValue="${{ it.getGenericLabel() }}"
-                                      name="generateSlavedLicsReference"
-                                />
+                            <div class="generateSlavedLicsReference-wrapper hidden">
+                                <br />
+                                <g:select from="${subscriptionInstance.owner?.derivedLicenses}" class="ui search dropdown hide"
+                                          optionKey="${{ 'com.k_int.kbplus.License:' + it.id }}"
+                                          optionValue="${{ it.getGenericLabel() }}"
+                                          name="generateSlavedLicsReference"
+                                    />
+                            </div>
+                            <r:script>
+                                $('*[name=generateSlavedLics]').change( function(){
+                                    $('*[name=generateSlavedLics][value=reference]').prop('checked') ?
+                                            $('.generateSlavedLicsReference-wrapper').removeClass('hidden') :
+                                            $('.generateSlavedLicsReference-wrapper').addClass('hidden') ;
+                                })
+                                $('*[name=generateSlavedLics]').trigger('change')
+                            </r:script>
                         </g:if>
 
                     </g:if>
