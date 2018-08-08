@@ -376,8 +376,13 @@ grails.mime.types = [
 //grails.urlmapping.cache.maxsize = 1000
 
 // What URL patterns should be processed by the resources plugin
-grails.resources.adhoc.patterns = ['/images/*', '/css/*', '/js/*', '/plugins/*', '/rest/*']
-grails.resources.adhoc.includes = ['/images/**', '/css/**', '/js/**', '/plugins/**', '/semantic/**', '/rest/**']
+//rails.resources.resourceLocatorEnabled = true // upgrade to 1.2.14
+//grails.resources.uriToUrlCacheTimeout = 0  // upgrade to 1.2.14
+//grails.resources.processing.startup = "delayed" // upgrade to 1.2.14
+grails.resources.adhoc.patterns = [
+        '/images/*', '/css/*', '/js/*', '/plugins/*', '/semantic/*', '/semantic-restoration/*', '/vendor/*', '/rest/*']
+grails.resources.adhoc.includes = [
+        '/images/**', '/css/**', '/js/**', '/plugins/**', '/semantic/**', '/semantic-restoration/**', '/vendor/**', '/rest/**']
 
 // The default codec used to encode data with ${}
 grails.views.default.codec = "html" // none, html, base64

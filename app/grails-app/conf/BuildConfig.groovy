@@ -141,7 +141,8 @@ grails.project.dependency.resolution = {
 
         runtime ':hibernate:3.6.10.19'
         //runtime ':hibernate4:5.0.0.RC1' //runtime ':hibernate:3.6.10.19' // to hibernate 4
-        runtime ":resources:1.2.8" // 1.2.14 won't work @ kbplusapp.js.gsp
+        runtime ":gsp-resources:0.4.4"
+        runtime ":resources:1.2.8" // 1.2.14 won't work @ application.js.gsp
         compile ":scaffolding:2.1.2"
         runtime ':fields:1.5.1'
 
@@ -178,7 +179,6 @@ grails.project.dependency.resolution = {
         //compile ':spring-security-ldap:1.0.6'
         //compile ':spring-security-shibboleth-native-sp:1.0.3'
 
-        runtime ":gsp-resources:0.4.4"
         runtime ":jquery:1.11.1"
 
         runtime ":audit-logging:1.0.3"
