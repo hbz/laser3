@@ -1,17 +1,19 @@
 
-    <div class="ui segment">
+    <div style="padding: 1em 0;">
         <h5 class="ui red header">ORG_ROLES</h5>
 
         <table class="ui celled la-table la-table-small table ignore-floatThead">
             <thead>
                 <tr>
+                    <th></th>
                     <th>ORG</th>
                     <th>RDV</th>
                     <th>OBJ</th>
                 </tr>
             </thead>
-            <g:each in="${debug.sort{it.id}}" var="role">
+            <g:each in="${debug.sort{it.id}}" status="c" var="role">
                 <tr>
+                    <td>${c+1}</td>
                     <td>
                         <g:if test="${role.org}">
                             <g:link controller="organisations" action="show" id="${role.org.id}">${role.org.name} (${role.org.id})</g:link>

@@ -51,7 +51,7 @@
               <g:if test="${chg.pkg != null}">${message(code:'package.change.to')} <g:link controller="packageDetails" action="show" id="${chg.package.id}">${chg.package.id}</g:link></g:if>
             </td>
             <td>
-              ${chg.desc}
+              <% print chg.desc; /* avoid auto encodeAsHTML() */ %>
               ${chg.status} on ${chg.actionDate} by ${chg.user?.displayName}
             </td>
           </tr>
