@@ -57,6 +57,9 @@
 
                 </div>
             </g:if>
+            <g:else>
+                <input type="hidden" name="asOrgType" value="${institution?.orgType?.id}">
+            </g:else>
 
             <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label', default: 'Create')}"/>
 

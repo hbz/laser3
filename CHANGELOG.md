@@ -12,6 +12,7 @@
 - added filter for addressbooks
 - added functionality for deleting addresses and contacts 
 - added menu actions for adding tasks, documents and notes
+- reworked dashboard
 - reworked org role template, fixed javascript behaviour
 - added translations and increased text length for property definitions
 - added title field for persons
