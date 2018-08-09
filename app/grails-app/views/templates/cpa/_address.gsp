@@ -22,7 +22,7 @@
                     <br />
                     ${address?.state?.getI10n('value')}
                     <g:if test="${address?.state && address?.country}">, </g:if>
-                    ${address?.country.getI10n('value')}
+                    ${address?.country?.getI10n('value')}
                 </g:if>
 
                 <g:if test="${address?.pob || address?.pobZipcode || address?.pobCity}">

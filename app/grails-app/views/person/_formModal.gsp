@@ -10,7 +10,7 @@
 
                 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contactType', 'error')} ">
                     <label for="contactType">
-                        ${com.k_int.kbplus.RefdataCategory.findByDesc('Person Contact Type').getI10n('desc')}
+                        ${com.k_int.kbplus.RefdataCategory.findByDesc('Person Contact Type')?.getI10n('desc')}
                     </label>
                     <laser:select class="ui dropdown" id="contactType" name="contactType"
                                   from="${com.k_int.kbplus.Person.getAllRefdataValues('Person Contact Type')}"
@@ -22,7 +22,7 @@
                 </div>
                 <div id="roleType" class="field fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')}">
                     <label for="roleType">
-                        ${com.k_int.kbplus.RefdataCategory.findByDesc('Person Position').getI10n('desc')}
+                        ${com.k_int.kbplus.RefdataCategory.findByDesc('Person Position')?.getI10n('desc')}
                     </label>
                     <laser:select class="ui dropdown" id="roleType" name="roleType"
                                   from="${com.k_int.kbplus.Person.getAllRefdataValues('Person Position')}"
@@ -106,7 +106,7 @@
                         <label for="isPublic">
                             <g:message code="person.isPublic.label" default="IsPublic" />
                         </label>
-                        ${isPublic.getI10n('value')}
+                        ${isPublic?.getI10n('value')}
                         <input id="isPublic" name="isPublic" type="hidden" value="${isPublic?.id}" />
                     </div>
                 </div>
@@ -173,7 +173,7 @@
                 }
              }
         });
-        var fc = "${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type').getI10n('value')}";
+        var fc = "${com.k_int.kbplus.RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type')?.getI10n('value')}";
 
         $("#contactType").on('change', function() {
             changeForm( $("#contactType option:selected").text() == fc )
