@@ -16,6 +16,7 @@
             />
         </div>
 
+        <%--
         <div class="field">
             <label>Funktion</label>
             <laser:select class="ui dropdown search"
@@ -24,6 +25,6 @@
                           optionKey="id"
                           optionValue="value" />
         </div>
-
+        --%>
     </g:form>
 </semui:modal>

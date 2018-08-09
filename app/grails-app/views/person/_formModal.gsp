@@ -20,6 +20,7 @@
                                   noSelection="['': '']"
                                   />
                 </div>
+                <%--
                 <div id="roleType" class="field fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')}">
                     <label for="roleType">
                         ${com.k_int.kbplus.RefdataCategory.findByDesc('Person Position')?.getI10n('desc')}
@@ -31,6 +32,7 @@
                                   value="${personInstance?.roleType?.id}"
                                   noSelection="['': '']"/>
                 </div>
+                --%>
             </div>
         </div>
 
@@ -44,11 +46,11 @@
                     <g:textField name="last_name" required="" value="${personInstance?.last_name}"/>
                 </div>
 
-                <div id="person_middle_name" class="field wide four ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} ">
-                    <label for="middle_name">
-                        <g:message code="person.middle_name.label" default="Middlename" />
+                <div id="person_title" class="field wide four ${hasErrors(bean: personInstance, field: 'title', 'error')}">
+                    <label for="title">
+                        <g:message code="person.title.label" default="Title" />
                     </label>
-                    <g:textField name="middle_name" value="${personInstance?.middle_name}"/>
+                    <g:textField name="title" required="" value="${personInstance?.title}"/>
                 </div>
 
             </div>
@@ -64,11 +66,11 @@
                     <g:textField name="first_name" required="" value="${personInstance?.first_name}"/>
                 </div>
 
-                <div id="person_title" class="field wide four ${hasErrors(bean: personInstance, field: 'title', 'error')}">
-                    <label for="title">
-                        <g:message code="person.title.label" default="Title" />
+                <div id="person_middle_name" class="field wide four ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} ">
+                    <label for="middle_name">
+                        <g:message code="person.middle_name.label" default="Middlename" />
                     </label>
-                    <g:textField name="title" required="" value="${personInstance?.title}"/>
+                    <g:textField name="middle_name" value="${personInstance?.middle_name}"/>
                 </div>
 
                 <div id="person_gender" class="field wide four ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">
@@ -192,6 +194,8 @@
                 group4.attr('disabled', 'disabled')
 
                 $("label[for='last_name']").text("Benenner")
+                ! $("#last_name").val() ? $("#last_name").val("Allgemeiner Funktionskontakt") : false
+
             }
             else {
                 group1.show()
@@ -200,6 +204,7 @@
                 group4.removeAttr('disabled')
 
                 $("label[for='last_name']").text("Nachname")
+                $("#last_name").val() == "Allgemeiner Funktionskontakt" ? $("#last_name").val("") : false
             }
         }
 

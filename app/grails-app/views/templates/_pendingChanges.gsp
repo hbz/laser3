@@ -35,8 +35,10 @@
           <tbody>
             <g:each in="${pendingChanges}" var="pc">
               <tr>
-                <td>${pc.desc}</td>
-                  <td><g:formatDate format="${message(code: 'default.date.format')}" date="${pc.ts}"/></td>
+                <td>
+                    <% print pc.desc; /* avoid auto encodeAsHTML() */ %>
+                </td>
+                <td><g:formatDate format="${message(code: 'default.date.format')}" date="${pc.ts}"/></td>
                 <td class="x">
                   <g:if test="${! processingpc}">
                     <g:link controller="pendingChange" action="accept" id="${pc.id}" class="ui icon positive button">

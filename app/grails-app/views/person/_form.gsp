@@ -45,7 +45,7 @@
                   value="${personInstance?.gender?.id}"
                   noSelection="['': '']"/>
 </div>
-
+<%--
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')} ">
     <label for="roleType">
 		${com.k_int.kbplus.RefdataCategory.findByDesc('Person Position').getI10n('desc')}
@@ -58,7 +58,7 @@
                   value="${personInstance?.roleType?.id}"
                   noSelection="['': '']"/>
 </div>
-
+--%>
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contactType', 'error')} ">
     <label for="contactType">
 		${com.k_int.kbplus.RefdataCategory.findByDesc('Person Contact Type').getI10n('desc')}

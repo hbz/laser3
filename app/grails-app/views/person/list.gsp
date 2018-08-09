@@ -5,7 +5,7 @@
 	<head>
 		<meta name="layout" content="semanticUI">
 		<g:set var="entityName" value="${message(code: 'person.label', default: 'Person')}" />
-		<title><g:message code="default.list.label" args="[entityName]" /></title>
+		<title>${message(code:'laser', default:'LAS:eR')} : <g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
 		<div>
@@ -47,7 +47,7 @@
 							
 							<td>${fieldValue(bean: personInstance, field: "isPublic")}</td>
 						
-							<td class="link">
+							<td class="x">
 								<g:link action="show" id="${personInstance.id}" class="ui tiny button">${message('code':'default.button.show.label')}</g:link>
 								<g:link action="edit" id="${personInstance.id}" class="ui tiny button">${message('code':'default.button.edit.label')}</g:link>
 							</td>

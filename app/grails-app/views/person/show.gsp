@@ -4,7 +4,7 @@
 <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'person.label', default: 'Person')}"/>
-    <title><g:message code="default.show.label" args="[entityName]"/></title>
+    <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="default.show.label" args="[entityName]"/></title>
 
 </head>
 
@@ -73,9 +73,10 @@ ${personInstance}
                             <dd><semui:xEditableRefData owner="${personInstance}" field="gender" config="Gender"/></dd>
                         </dl>
 
+                        <%--
                         <dl><dt>${com.k_int.kbplus.RefdataCategory.findByDesc('Person Position').getI10n('desc')}</dt>
                             <dd><semui:xEditableRefData owner="${personInstance}" field="roleType"
-                                                        config="Person Position"/></dd></dl>
+                                                        config="Person Position"/></dd></dl>--%>
                     </g:if>
                 </div>
             </div><!-- .card -->
