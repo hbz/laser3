@@ -59,7 +59,7 @@ class YodaController {
         result.adminObj = SystemAdmin.list().first()
         result.editable = true
         if (request.method == "POST") {
-            result.adminObj.refresh()
+            result.adminObj.refreshWithHibernate4()
         }
         result.currentconf = grails.util.Holders.config
 

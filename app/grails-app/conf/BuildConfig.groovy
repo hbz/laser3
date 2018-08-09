@@ -22,7 +22,7 @@ grails.project.dependency.resolution = {
         excludes "grails-docs"
         // uncomment to disable ehcache
         excludes 'ehcache'
-        //excludes 'ehcache-core' // to hibernate 4
+        excludes 'ehcache-core' // to hibernate 4
     }
     log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
     checksums true // Whether to verify checksums on resolve
@@ -62,6 +62,8 @@ grails.project.dependency.resolution = {
     }
 
     dependencies {
+
+        //compile 'org.grails.plugins:hibernate4:6.0.12' // to hibernate 4
 
         compile "net.sf.ehcache:ehcache:2.7.0" //compile "net.sf.ehcache:ehcache-core:2.6.11" // to hibernate 4
 
@@ -139,8 +141,10 @@ grails.project.dependency.resolution = {
 
     plugins {
 
-        runtime ':hibernate:3.6.10.19'
-        //runtime ':hibernate4:5.0.0.RC1' //runtime ':hibernate:3.6.10.19' // to hibernate 4
+        runtime ':hibernate4:6.0.12' // to hibernate 4
+        //compile ':hibernate4:6.0.12' // to hibernate 4
+        //runtime ':hibernate:3.6.10.19' // to hibernate 4
+
         runtime ":gsp-resources:0.4.4"
         runtime ":resources:1.2.8" // 1.2.14 won't work @ application.js.gsp
         compile ":scaffolding:2.1.2"

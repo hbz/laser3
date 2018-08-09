@@ -5,8 +5,7 @@ import de.laser.domain.I10nTranslatableAbstract
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import com.k_int.properties.PropertyDefinition
-//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Secured(['permitAll']) // TODO
 class AjaxController {
@@ -868,7 +867,7 @@ class AjaxController {
     }
 
       if (owner instanceof SystemAdmin) {
-          owner.refresh() // TODO: fix
+          owner.refreshWithHibernate4() // TODO: fix
       } else {
           owner.refresh()
       }
@@ -918,7 +917,7 @@ class AjaxController {
         }
 
         if (owner instanceof SystemAdmin) {
-            owner.refresh() // TODO: fix
+            owner.refreshWithHibernate4() // TODO: fix
         } else {
             owner.refresh()
         }

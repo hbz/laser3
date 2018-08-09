@@ -417,7 +417,7 @@ environments {
 }
 
 // enable query caching by default
-grails.hibernate.cache.queries = true
+//grails.hibernate.cache.queries = true
 
 grails.cache.config = {
   cache {
