@@ -1179,7 +1179,7 @@ class SubscriptionDetailsController {
         if (subscriber || consortia) {
 
             def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
-            def licensee_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial');
+            def licensee_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensing Consortium');
 
             def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template');
 
