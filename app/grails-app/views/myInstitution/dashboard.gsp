@@ -123,23 +123,31 @@
             <div class="ui relaxed divided list">
                 <g:each in="${recentAnnouncements}" var="ra">
                     <div class="item">
-                        <div class="icon">
-                            <i class="warning circle icon"></i>
-                        </div>
-                        <div class="message">
-                            <g:set var="ann_nws" value="${ra.title?.replaceAll(' ', '')}"/>
-                            <p>
-                                <strong>${message(code:"announcement.${ann_nws}", default:"${ra.title}")}</strong>
-                            </p>
-                            <div class="widget-content">${ra.content}</div>
-                            <p>
-                                ${message(code:'myinst.ann.posted_by', default:'Posted by')}
-                                <em><g:link controller="userDetails" action="show" id="${ra.user?.id}">${ra.user?.displayName}</g:link></em>
-                                <br/>
-                                ${message(code:'myinst.ann.posted_on', default:'on')}
-                                <g:formatDate date="${ra.dateCreated}" formatName="default.date.format"/>
-                            </p>
-                        </div>
+
+                        <div class="ui internally celled grid">
+                            <div class="row">
+                                <div class="three wide column">
+
+                                    <strong>${message(code:'myinst.ann.posted_by', default:'Posted by')}</strong>
+                                    <g:link controller="userDetails" action="show" id="${ra.user?.id}">${ra.user?.displayName}</g:link>
+                                    <br /><br />
+                                    <g:formatDate date="${ra.dateCreated}" formatName="default.date.format.noZ"/>
+
+                                </div><!-- .column -->
+                                <div class="thirteen wide column">
+
+                                    <div class="header" style="margin:0 0 1em 0">
+                                        <g:set var="ann_nws" value="${ra.title?.replaceAll(' ', '')}"/>
+                                        ${message(code:"announcement.${ann_nws}", default:"${ra.title}")}
+                                    </div>
+                                    <div>
+                                        <div class="widget-content"><% print ra.content; /* avoid auto encodeAsHTML() */ %></div>
+                                    </div>
+
+                                </div><!-- .column -->
+                            </div><!-- .row -->
+                        </div><!-- .grid -->
+
                     </div>
                 </g:each>
             </div>
@@ -155,35 +163,46 @@
             <div class="ui relaxed divided list">
                 <g:each in="${tasks}" var="tsk">
                     <div class="item">
-                        <div class="content">
-                            <div class="header">
-                                <a onclick="taskedit(${tsk?.id});">${tsk?.title}</a>
-                            </div>
-                            <div class="description">
-                                <g:if test="${tsk.description}">
-                                    <span><em>${tsk.description}</em></span> <br />
-                                </g:if>
-                                <span>
-                                    <strong>Betrifft:</strong>
-                                    <g:if test="${tsk.getObjects()}">
-                                        <ul>
-                                    <g:each in="${tsk.getObjects()}" var="tskObj">
-                                        <li>${message(code: 'task.'+tskObj.controller)}: <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link></li>
-                                    </g:each>
-                                        </ul>
-                                    </g:if>
-                                    <g:else>${message(code: 'task.general')}</g:else>
-                                </span>
-                                <br />
-                                <span>
+                        <div class="ui internally celled grid">
+                            <div class="row">
+                                <div class="three wide column">
+
                                     <strong>Fällig:</strong>
                                     <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk?.endDate}"/>
-                                    &nbsp; / &nbsp;
+                                    <br />
+                                    <br />
                                     <strong>Status:</strong>
                                     <semui:xEditableRefData config="Task Status" owner="${tsk}" field="status" />
-                                </span>
-                            </div>
-                        </div>
+
+                                </div><!-- .column -->
+                                <div class="thirteen wide column">
+
+                                    <div class="header" style="margin:0 0 1em 0">
+                                        <a onclick="taskedit(${tsk?.id});">${tsk?.title}</a>
+                                    </div>
+                                    <div class="description"style="margin:0 0 1em 0">
+                                        <g:if test="${tsk.description}">
+                                            <span><em>${tsk.description}</em></span> <br />
+                                        </g:if>
+                                    </div>
+                                    <div>
+                                        <strong>Betrifft:</strong>
+                                        <g:if test="${tsk.getObjects()}">
+                                            <g:each in="${tsk.getObjects()}" var="tskObj">
+                                                <div class="item">
+                                                    <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
+                                                    &nbsp; (${message(code: 'task.' + tskObj.controller)})
+                                                </div>
+                                            </g:each>
+                                        </g:if>
+                                        <g:else>
+                                            ${message(code: 'task.general')}
+                                        </g:else>
+                                    </div>
+
+                                </div><!-- .column -->
+                            </div><!-- .row -->
+                        </div><!-- .grid -->
                     </div>
                 </g:each>
             </div>
