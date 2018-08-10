@@ -1,4 +1,11 @@
 
+0.7.1
+
+- minors changes on dashboard
+- bufgix: avoid queries for person custom properties
+- bugfix: missing dropdown for person function
+- bugfix: ordering tasks by enddate
+
 0.7
 
 - added public gasco overview and details page 
