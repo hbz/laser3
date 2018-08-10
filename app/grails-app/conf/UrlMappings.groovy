@@ -18,7 +18,7 @@ class UrlMappings {
 
         // new custom api
         "/api/push/orgs"        (controller: 'api', action: 'importInstitutions', parseRequest: false)
-        "/api/v0/spec"          (uri: '/rest/v0/laser.yaml.gsp')
+        "/api/v0/spec"          (uri: '/swagger/v0/laser.yaml.gsp')
         "/api/v0/$obj"          (controller: 'api', action: 'v0')
 
         "/"                     (view: "public/index")

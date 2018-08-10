@@ -86,7 +86,7 @@
 
     <script>
         window.onload = function() {
-            const ui = SwaggerUIBundle({
+            var ui = SwaggerUIBundle({
                 url: "${grailsApplication.config.grails.serverURL}/api/v0/spec",
                 dom_id: '#swagger-ui',
                 presets: [

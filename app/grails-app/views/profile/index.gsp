@@ -123,34 +123,38 @@
         </div><!-- .segment -->
     </div><!-- .column -->
 
-    <%--
-    <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | user.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
-        <div class="column wide eight">
-            <div class="ui segment">
-                <div class="ui form">
-                    <h4 class="ui dividing header">
-                        ${message(code: 'api.label', default:'API')}
-                    </h4>
 
-                    <div class="field">
-                        <label>${message(code: 'api.apikey.label', default:'API-Key')}</label>
-                        <input type="text" readonly="readonly" value="${user.apikey}">
-                    </div>
+    <sec:ifAnyGranted roles="ROLE_YODA">
 
-                    <div class="field">
-                        <label>${message(code: 'api.apisecret.label', default:'API-Secret')}</label>
-                        <input type="text" readonly="readonly" value="${user.apisecret}">
-                    </div>
+        <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | user.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
+            <div class="column wide eight">
+                <div class="ui segment">
+                    <div class="ui form">
+                        <h4 class="ui dividing header">
+                            ${message(code: 'api.label', default:'API')}
+                        </h4>
 
-                    <div class="field">
-                        <label></label>
-                        <g:link class="ui button" controller="api" action="index">${message(code:'api.linkTo', default:'Visit API')}</g:link>
-                    </div>
-                </div><!-- form -->
-            </div><!-- .segment -->
-        </div><!-- .column -->
-    </g:if>
-    --%>
+                        <div class="field">
+                            <label>${message(code: 'api.apikey.label', default:'API-Key')}</label>
+                            <input type="text" readonly="readonly" value="${user.apikey}">
+                        </div>
+
+                        <div class="field">
+                            <label>${message(code: 'api.apisecret.label', default:'API-Secret')}</label>
+                            <input type="text" readonly="readonly" value="${user.apisecret}">
+                        </div>
+
+                        <div class="field">
+                            <label></label>
+                            <g:link class="ui button" controller="api" action="index">${message(code:'api.linkTo', default:'Visit API')}</g:link>
+                        </div>
+                    </div><!-- form -->
+                </div><!-- .segment -->
+            </div><!-- .column -->
+        </g:if>
+
+    </sec:ifAnyGranted>
+
 
 </div><!-- .grid -->
 

@@ -376,9 +376,9 @@ grails.mime.types = [
 //grails.resources.uriToUrlCacheTimeout = 0  // upgrade to 1.2.14
 //grails.resources.processing.startup = "delayed" // upgrade to 1.2.14
 grails.resources.adhoc.patterns = [
-        '/images/*', '/css/*', '/js/*', '/plugins/*', '/semantic/*', '/semantic-restoration/*', '/vendor/*', '/rest/*']
+        '/images/*', '/css/*', '/js/*', '/plugins/*', '/semantic/*', '/semantic-restoration/*', '/vendor/*']
 grails.resources.adhoc.includes = [
-        '/images/**', '/css/**', '/js/**', '/plugins/**', '/semantic/**', '/semantic-restoration/**', '/vendor/**', '/rest/**']
+        '/images/**', '/css/**', '/js/**', '/plugins/**', '/semantic/**', '/semantic-restoration/**', '/vendor/**']
 
 // The default codec used to encode data with ${}
 grails.views.default.codec = "html" // none, html, base64
@@ -577,7 +577,8 @@ grails.plugin.springsecurity.roleHierarchy = '''
 '''
 
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
-        [pattern: '/monitoring', access: ['ROLE_YODA']]
+        [pattern: '/monitoring',                access: ['ROLE_YODA']],
+        [pattern: '/swagger/v0/laser.yaml.gsp', access: ['permitAll']]
 ]
 
 auditLog {
