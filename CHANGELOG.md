@@ -1,4 +1,8 @@
 
+meanwhile ..
+
+- upgraded to hibernate 4.3
+
 0.7
 
 - added public gasco overview and details page 
