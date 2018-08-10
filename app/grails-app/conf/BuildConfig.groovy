@@ -22,7 +22,7 @@ grails.project.dependency.resolution = {
         excludes "grails-docs"
         // uncomment to disable ehcache
         excludes 'ehcache'
-        //excludes 'ehcache-core' // to hibernate 4
+        excludes 'ehcache-core' // to hibernate 4
     }
     log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
     checksums true // Whether to verify checksums on resolve
@@ -63,8 +63,6 @@ grails.project.dependency.resolution = {
 
     dependencies {
 
-        compile "net.sf.ehcache:ehcache:2.7.0" //compile "net.sf.ehcache:ehcache-core:2.6.11" // to hibernate 4
-
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
         runtime 'javax.servlet:jstl:1.1.2'
         runtime 'taglibs:standard:1.1.2'
@@ -79,21 +77,12 @@ grails.project.dependency.resolution = {
         runtime 'xerces:xercesImpl:2.11.0'
         runtime 'mysql:mysql-connector-java:5.1.30'
 
-//        runtime ('org.elasticsearch:elasticsearch:1.7.1') {
-//            excludes "org.ow2.asm:asm:4.1"
-//            //excludes "org.ow2.asm:asm-commons:4.1"
-//        }
-//        runtime ('org.elasticsearch:elasticsearch-groovy:1.7.0') {
-//            excludes "org.codehaus.groovy:groovy-all:2.4.3"
-//        }
-
         compile 'org.elasticsearch:elasticsearch:2.1.2'
         runtime ('org.elasticsearch:elasticsearch-groovy:2.1.2') {
             excludes "org.codehaus.groovy:groovy-all"
         }
 
         compile 'joda-time:joda-time:2.9.9'
-
 
         runtime 'gov.loc:bagit:4.0'
         runtime 'org.apache.poi:poi:3.8'
@@ -126,7 +115,6 @@ grails.project.dependency.resolution = {
         compile ("net.sf.jasperreports:jasperreports:5.6.1"){
             excludes "eclipse:jdtcore:3.1.0"
         }
-        //compile "org.eclipse.jdt.core.compiler:ecj:4.3.1" // ':tomcat:7.0.55.2' ?
   
         // II Commented out..
         // compile 'cglib:cglib:2.2.2'
@@ -139,8 +127,8 @@ grails.project.dependency.resolution = {
 
     plugins {
 
-        runtime ':hibernate:3.6.10.19'
-        //runtime ':hibernate4:5.0.0.RC1' //runtime ':hibernate:3.6.10.19' // to hibernate 4
+        runtime ':hibernate4:4.3.10'
+
         runtime ":gsp-resources:0.4.4"
         runtime ":resources:1.2.8" // 1.2.14 won't work @ application.js.gsp
         compile ":scaffolding:2.1.2"
@@ -150,12 +138,6 @@ grails.project.dependency.resolution = {
         //compile ":file-viewer:0.3"
 
         build (':tomcat:8.0.50')
-        /*
-        build (':tomcat:7.0.55.2'){
-            //This is crashing under Java8, we impport newer version manually
-            excludes "org.eclipse.jdt.core.compiler:ecj:3.7.2"
-        }
-        */
 
         runtime ":database-migration:1.4.0"
 

@@ -10,7 +10,7 @@ class SystemAdmin {
 
   static hasMany = [customProperties: SystemAdminCustomProperty]
   String name;
-
+    
   @Transient
   def refresh(){
     customProperties.each{
@@ -18,4 +18,5 @@ class SystemAdmin {
       grails.util.Holders.config.put(prop_name,it.getValue())
     }
   }
+
 }

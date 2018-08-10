@@ -867,11 +867,7 @@ class AjaxController {
         error = message(code:'ajax.addCustomPropertyValue.error', default:'A property of this type is already added')
     }
 
-      if (owner instanceof SystemAdmin) {
-          owner.refresh() // TODO: fix
-      } else {
-          owner.refresh()
-      }
+      owner.refresh()
 
     request.setAttribute("editable", params.editable == "true")
     render(template: "/templates/properties/custom", model:[
@@ -917,11 +913,7 @@ class AjaxController {
             }
         }
 
-        if (owner instanceof SystemAdmin) {
-            owner.refresh() // TODO: fix
-        } else {
-            owner.refresh()
-        }
+        owner.refresh()
 
         request.setAttribute("editable", params.editable == "true")
         render(template: "/templates/properties/private", model:[

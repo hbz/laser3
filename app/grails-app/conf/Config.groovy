@@ -416,9 +416,6 @@ environments {
     }
 }
 
-// enable query caching by default
-grails.hibernate.cache.queries = true
-
 grails.cache.config = {
   cache {
     name 'message'
@@ -527,7 +524,7 @@ log4j = {
       'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
       'org.springframework',
       'org.hibernate',
-      'net.sf.ehcache.hibernate',
+      'org.hibernate.cache.ehcache',
       'formfields',
       'com.k_int.kbplus.filter',
       // 'org.codehaus.groovy.grails.plugins.springsecurity'

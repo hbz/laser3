@@ -1,4 +1,8 @@
 
+meanwhile ..
+
+- upgraded to hibernate 4.3
+
 0.7.1
 
 - minors changes on dashboard
