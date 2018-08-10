@@ -161,7 +161,7 @@
             </g:if>
 
             <div class="ui relaxed list" style="clear:both;padding-top:1rem;">
-                <g:each in="${tasks}" var="tsk">
+                <g:each in="${tasks.sort{ a,b -> b.endDate.compareTo(a.endDate) }}" var="tsk">
                     <div class="item">
                         <div class="ui internally celled grid">
                             <div class="row">

@@ -24,7 +24,7 @@
             </tr>
             </thead>
             <tbody>
-            <g:each in="${taskInstanceList}" var="taskInstance">
+            <g:each in="${taskInstanceList.sort{ a,b -> b.endDate.compareTo(a.endDate) }}" var="taskInstance">
                 <tr>
                     <td>${fieldValue(bean: taskInstance, field: "title")}</td>
 
