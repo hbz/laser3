@@ -325,7 +325,7 @@ class BootStrap {
         }
         //Will not overwrite any existing database properties.
         createDefaultSysProps(admObj)
-        admObj.refreshWithHibernate4()
+        admObj.refresh()
         log.debug("Finished updating config from SystemAdmin")
     }
 
