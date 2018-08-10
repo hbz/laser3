@@ -85,7 +85,7 @@
                 </div>
             </g:if>
 
-            <div class="ui relaxed divided list">
+            <div class="ui relaxed list" style="clear:both;padding-top:1rem;">
                 <g:each in="${todos}" var="todo">
                     <div class="item">
                         <div class="icon">
@@ -120,7 +120,7 @@
                 </div>
             </g:if>
 
-            <div class="ui relaxed divided list">
+            <div class="ui relaxed list" style="clear:both;padding-top:1rem;">
                 <g:each in="${recentAnnouncements}" var="ra">
                     <div class="item">
 
@@ -160,7 +160,7 @@
                 </div>
             </g:if>
 
-            <div class="ui relaxed divided list">
+            <div class="ui relaxed list" style="clear:both;padding-top:1rem;">
                 <g:each in="${tasks}" var="tsk">
                     <div class="item">
                         <div class="ui internally celled grid">

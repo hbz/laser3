@@ -290,3 +290,11 @@ aside.metaboxContent + .metaboxContent-spacer {
     bottom: 3px;
     right: 0;
 }
+
+/* grid hover @ cpa */
+
+.ui.internally.grid > .row:hover {
+    background: rgba(0,0,0,.03);
+    color: rgba(0,0,0,.8);
+    transition: 0.1s color ease, 0.1s background-color ease;
+}
