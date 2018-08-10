@@ -1,50 +1,65 @@
 
 <table class="ui table la-table">
     <colgroup>
+        <col style="width:  30px;">
         <col style="width: 170px;">
         <col style="width: 236px;">
         <col style="width: 277px;">
         <col style="width: 332px;">
-        <col style="width: 112px;">
+        <col style="width:  82px;">
     </colgroup>
 	<thead>
 		<tr>
+            <th></th>
             <th>
                 ${message(code:'person.name.label')}
             </th>
-            <g:if test="${controllerName == 'myInstitution'}">
-			    <th>${message(code:'person.organisation.label')}
-                </th>
-            </g:if>
+            <th>
+                <g:if test="${controllerName == 'myInstitution'}">
+                    ${message(code:'person.organisation.label')}
+                </g:if>
+                <g:else>
+                    Funktion
+                </g:else>
+            </th>
 			<th>${message(code:'person.contacts.label')}</th>
 			<th>${message(code:'person.addresses.label')}</th>
             <th></th>
 		</tr>
 	</thead>
 	<tbody>
-		<g:each in="${persons}" var="person">
+		<g:each in="${persons}" var="person" status="c">
 			<tr>
+                <td>
+                    ${c + 1}
+                </td>
 				<td>
                     ${person?.first_name?.encodeAsHTML() ? person?.last_name?.encodeAsHTML() + ', ' + person?.first_name?.encodeAsHTML() : person?.last_name?.encodeAsHTML()}
                     ${person?.middle_name?.encodeAsHTML()}
 				</td>
-                <g:if test="${controllerName == 'myInstitution'}">
+
 				<td>
 					<g:each in="${person?.roleLinks.unique{ it.org }}" var="role">
-                        <div class="la-flexbox">
-                            <i class="icon university la-list-icon"></i>
-						    <g:link controller="organisations" action="addressbook" id="${role.org?.id}">${role.org}</g:link>
-                        </div>
-                        <div>
-                        <g:if test="${role.functionType}">
-                            (${role.functionType?.getI10n('value')})
+                        <g:if test="${controllerName == 'myInstitution'}">
+                            <div class="la-flexbox">
+                                <i class="icon university la-list-icon"></i>
+                                <g:link controller="organisations" action="addressbook" id="${role.org?.id}">${role.org}</g:link>
+                            </div>
+                            <div>
+                                <g:if test="${role.functionType}">
+                                    (${role.functionType?.getI10n('value')})
+                                </g:if>
+                            </div>
                         </g:if>
-                        </div>
-
+                        <g:else>
+                            <div>
+                                <g:if test="${role.functionType}">
+                                    ${role.functionType?.getI10n('value')}
+                                </g:if>
+                            </div>
+                        </g:else>
 					</g:each>
-				</td>
-                </g:if>
-
+                </td>
                 <td>
                     <div class="ui divided middle aligned selection list la-flex-list ">
                         <g:each in="${person.contacts.sort{it.content}}" var="contact">

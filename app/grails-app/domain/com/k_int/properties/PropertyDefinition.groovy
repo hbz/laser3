@@ -51,7 +51,6 @@ class PropertyDefinition extends I10nTranslatableAbstract {
             ORG_CONF,
             SUB_PROP,
             SYS_CONF,
-            PRS_PROP,
             ORG_PROP
     ]
     @Transient

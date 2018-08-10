@@ -40,8 +40,6 @@ import="com.k_int.kbplus.RefdataCategory"
                                                        'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', 'Person Function')]"/>
 
 		<g:if test="${visiblePersons}">
-			<h5 class="ui header"><g:message code="org.prsLinks.label" default="Persons" /></h5>
-
 			<g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons]}" />
 		</g:if>
 

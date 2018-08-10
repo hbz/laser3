@@ -24,16 +24,6 @@
                 </div>
             </div>
 
-<%--<pre>
-${usedPdList.join(", ")}
-
-<g:each in="${attrMap}" var="objs">
-    ${objs.key}
-    <g:each in="${objs.value}" var="attrs">    ${attrs}
-    </g:each>
-</g:each>
-</pre>--%>
-
 		<div class="ui styled fluid accordion">
 			<g:each in="${propertyDefinitions}" var="entry">
                 <div class="title">

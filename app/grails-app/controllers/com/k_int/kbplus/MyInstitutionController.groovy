@@ -3126,12 +3126,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result.propList =
                 PropertyDefinition.findAllWhere(
                         descr: PropertyDefinition.PRS_PROP,
-                        tenant: null // public properties
-                ) +
-                        PropertyDefinition.findAllWhere(
-                                descr: PropertyDefinition.PRS_PROP,
-                                tenant: contextService.getOrg() // private properties
-                        )
+                        tenant: contextService.getOrg() // private properties
+                )
 
         result
       }
