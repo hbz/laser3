@@ -5,7 +5,8 @@ import de.laser.domain.I10nTranslatableAbstract
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import com.k_int.properties.PropertyDefinition
-import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Secured(['permitAll']) // TODO
 class AjaxController {
