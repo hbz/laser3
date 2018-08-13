@@ -2,7 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.helper.DebugAnnotation
 import grails.converters.JSON
-import grails.plugin.cache.GrailsCacheManager
+import grails.plugin.cache.Cacheable
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import grails.web.Action
@@ -72,14 +72,13 @@ class YodaController {
         def result = [:]
 
         result.grailsApp = grailsApplication
-
         result.appContext = getApplicationContext()
-
         result.cacheManager = result.appContext.grailsCacheManager
 
         result
     }
 
+    //@Cacheable('message')
     @Secured(['ROLE_ADMIN'])
     def appInfo() {
         def result = [:]

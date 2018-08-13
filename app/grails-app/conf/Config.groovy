@@ -417,9 +417,13 @@ environments {
 }
 
 grails.cache.config = {
-  cache {
-    name 'message'
-  }
+
+    cache {
+        name 'laser'
+    }
+    cache {
+        name 'message'
+    }
 }
 
 subscriptionTransforms = [

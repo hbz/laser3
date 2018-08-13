@@ -17,7 +17,7 @@
     <h3 class="ui header">${cacheName}</h3>
 
     <g:set var="cache" value="${cacheManager.getCache(cacheName)}" />
-    <pre>${cache}</pre>
+    <pre>${cache} : ${cache.nativeCache.cacheConfiguration}</pre>
 
     <% cache.put("test-entry", new Date()) %>
     <ul>
