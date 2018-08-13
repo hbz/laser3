@@ -1,18 +1,18 @@
 ---
 swagger: "2.0"
 info:
-  version: "v0 // 0.9"
+  version: "v1 // 0.1"
   title: LAS:eR - API
   description: >
     Known Issues: _Authorization_ has to filled out manually. Usual javascript insertion isn't working due shadow dom mechanic of [React](https://facebook.github.io/react). Please copy and paste
   contact:
     email: david.klober@hbz-nrw.de
 
-<g:if test="${grails.util.Environment.current == grails.util.Environment.PRODUCTION}">basePath: /api/v0 # production
+<g:if test="${grails.util.Environment.current == grails.util.Environment.PRODUCTION}">basePath: /api/v1 # production
 
 schemes:
   - http</g:if>
-<g:else>basePath: /laser/api/v0 # development
+<g:else>basePath: /laser/api/v1 # development
 
 schemes:
   - http</g:else>

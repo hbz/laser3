@@ -1,6 +1,5 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.api.v0.ApiMainService
 import com.k_int.kbplus.auth.*
 import de.laser.domain.Constants
 import grails.converters.JSON
@@ -11,7 +10,8 @@ class ApiController {
 
     def springSecurityService
     ApiService apiService
-    ApiMainService apiMainService
+    de.laser.api.v0.ApiMainService apiMainServiceV0
+    de.laser.api.v1.ApiMainService apiMainServiceV1
 
     ApiController(){
         super()
@@ -330,7 +330,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                             break
                     }
 
-                    result = apiMainService.read((String) obj, (String) query, (String) value, (User) user, (Org) contextOrg, format)
+                    result = apiMainServiceV0.read((String) obj, (String) query, (String) value, (User) user, (Org) contextOrg, format)
 
                     if (result instanceof Doc) {
                         if (result.contentType == Doc.CONTENT_TYPE_STRING) {
@@ -359,14 +359,14 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                     result = Constants.HTTP_BAD_REQUEST
                 }
                 else {
-                    result = apiMainService.write((String) obj, data, (User) user, (Org) contextOrg)
+                    result = apiMainServiceV0.write((String) obj, data, (User) user, (Org) contextOrg)
                 }
             }
             else {
                 result = Constants.HTTP_NOT_IMPLEMENTED
             }
         }
-        def responseStruct = apiMainService.buildResponse(request, obj, query, value, context, contextOrg, result)
+        def responseStruct = apiMainServiceV0.buildResponse(request, obj, query, value, context, contextOrg, result)
 
         def responseJson = responseStruct[0]
         def responseCode = responseStruct[1]
