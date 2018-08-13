@@ -1,13 +1,13 @@
-package com.k_int.kbplus.api.v0.converter
+package de.laser.api.v0
 
 import com.k_int.kbplus.Doc
 import de.laser.domain.Constants
 import grails.converters.JSON
-import groovy.json.*
+import groovy.json.JsonSlurper
 import groovy.util.logging.Log4j
 
 @Log4j
-class ApiKbartService {
+class ApiKbartConverter {
 
     static final KBART2_HEADER = [
         "publication_title",
@@ -48,7 +48,7 @@ class ApiKbartService {
     /**
      * @return
      */
-    def convertIssueEntitlements(JSON json) {
+    static convertIssueEntitlements(JSON json) {
 
         // TODO .. incomplete Mapping
         def output
@@ -107,7 +107,7 @@ class ApiKbartService {
         output
     }
 
-    def getAsDocument(def data) {
+    static getAsDocument(def data) {
         def todo = new Doc(
                 title:          "KBART-EXPORT",
                 content:        data,
@@ -117,11 +117,11 @@ class ApiKbartService {
         todo
     }
 
-    def normValue(def value) {
+    static normValue(def value) {
         value ? value : ''
     }
 
-    def normDate(def date) {
+    static normDate(def date) {
         // TODO in json
         date
     }

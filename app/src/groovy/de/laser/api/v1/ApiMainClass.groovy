@@ -1,19 +1,9 @@
-package com.k_int.kbplus.api.v0
+package de.laser.api.v1
 
-import com.k_int.kbplus.Doc
-import com.k_int.kbplus.License
-import com.k_int.kbplus.Org
-import com.k_int.kbplus.Package
-import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.api.v0.converter.ApiKbartService
+import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
 import de.laser.api.v0.ApiWriter
-import de.laser.api.v0.entities.ApiDoc
-import de.laser.api.v0.entities.ApiIssueEntitlement
-import de.laser.api.v0.entities.ApiLicense
-import de.laser.api.v0.entities.ApiOrg
-import de.laser.api.v0.entities.ApiPkg
-import de.laser.api.v0.entities.ApiSubscription
+import de.laser.api.v0.entities.*
 import de.laser.domain.Constants
 import grails.converters.JSON
 import groovy.util.logging.Log4j
@@ -23,14 +13,12 @@ import org.springframework.http.HttpStatus
 import javax.servlet.http.HttpServletRequest
 
 @Log4j
-class ApiMainService {
-
-    ApiKbartService apiKbartService
+class ApiMainClass {
 
     /**
      * @return Object | BAD_REQUEST | PRECONDITION_FAILED | NOT_ACCEPTABLE
      */
-    def read(String obj, String query, String value, User user, Org contextOrg, String format) {
+    static read(String obj, String query, String value, User user, Org contextOrg, String format) {
         def result
         log.debug("API-READ: ${obj} (${format}) @ ${query}:${value}")
 
@@ -49,8 +37,8 @@ class ApiMainService {
                     result = ApiIssueEntitlement.getIssueEntitlements(subPkg, user, contextOrg)
 
                     if (result && format == Constants.MIME_TEXT_PLAIN) {
-                        def kbart = apiKbartService.convertIssueEntitlements(result)
-                        result = apiKbartService.getAsDocument(kbart)
+                        def kbart = ApiKbartConverter.convertIssueEntitlements(result)
+                        result = ApiKbartConverter.getAsDocument(kbart)
                     }
                 }
             }
@@ -120,7 +108,7 @@ class ApiMainService {
         result
     }
 
-    def write(String obj, JSONObject data, User user, Org contextOrg) {
+    static write(String obj, JSONObject data, User user, Org contextOrg) {
         def result
 
         // check existing resources
@@ -174,7 +162,7 @@ class ApiMainService {
         result
     }
 
-    def buildResponse(HttpServletRequest request, def obj, def query, def value, def context, def contextOrg, def result) {
+    static buildResponse(HttpServletRequest request, def obj, def query, def value, def context, def contextOrg, def result) {
 
         def response = []
 
