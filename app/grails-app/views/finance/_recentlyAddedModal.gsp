@@ -26,14 +26,14 @@
                 <g:each in="${recentlyUpdated}" var="item">
                     <tr>
                         <td>${item?.costTitle}</td>
-                        <td>${item?.invoice?.invoiceNumber.encodeAsHTML()}</td>
-                        <td>${item?.order?.orderNumber.encodeAsHTML()}</td>
-                        <td>${item?.sub?.name.encodeAsHTML()}</td>
+                        <td>${item?.invoice?.invoiceNumber}</td>
+                        <td>${item?.order?.orderNumber}</td>
+                        <td>${item?.sub?.name}</td>
                     </tr>
                     <tr>
-                        <td>${item?.subPkg?.pkg?.name.encodeAsHTML()}</td>
-                        <td>${item?.issueEntitlement?.tipp?.title?.title.encodeAsHTML()}</td>
-                        <td>${item?.costInBillingCurrency.encodeAsHTML()}</td>
+                        <td>${item?.subPkg?.pkg?.name}</td>
+                        <td>${item?.issueEntitlement?.tipp?.title?.title}</td>
+                        <td>${item?.costInBillingCurrency}</td>
                         <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${item?.lastUpdated}"/></td>
                     </tr>
                 </g:each>

@@ -40,7 +40,7 @@
 
 					<g:if test="${clusterInstance?.type}">
 						<dt>${com.k_int.kbplus.RefdataCategory.findByDesc('Cluster Type').getI10n('desc')}</dt>
-						<dd>${clusterInstance?.type?.encodeAsHTML()}</dd>
+						<dd>${clusterInstance?.type}</dd>
 					</g:if>
 				
 				</dl>

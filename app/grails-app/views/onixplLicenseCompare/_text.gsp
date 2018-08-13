@@ -11,21 +11,21 @@
 	  <g:if test="${ last_preceding }" >
 	    </ul>
 	  </g:if>
-	  <li><span class="text-preceding" >${ preceding.encodeAsHTML() }</span>
+	  <li><span class="text-preceding" >${ preceding }</span>
 	  <ul><li>
 	  <g:if test="${display_num}" >
-	    <span class='text-num'>${ display_num.encodeAsHTML() } - </span>
+	    <span class='text-num'>${ display_num } - </span>
 	  </g:if>
-	  ${ val.get('Text')?.get(0)?.get('_content')?.encodeAsHTML()}</li>
+	  ${ val.get('Text')?.get(0)?.get('_content')}</li>
 	</g:if>
 	<g:else>
     <g:if test="${ preceding != last_preceding }" >
       </ul>
     </g:if>
     <li><g:if test="${display_num}" >
-	    <span class='text-num'>${ display_num.encodeAsHTML() } - </span>
+	    <span class='text-num'>${ display_num } - </span>
 	  </g:if>
-	  ${ val.get('Text')?.get(0)?.get('_content')?.encodeAsHTML()}</li>
+	  ${ val.get('Text')?.get(0)?.get('_content')}</li>
 	</g:else>
   <g:set var="last_preceding" value="${ preceding }" />
 </g:each></ul></div>

@@ -54,7 +54,7 @@
                 <dd>
                     <g:if test="${orgInstance?.ids}">
                         <g:each in="${orgInstance.ids.sort{it.identifier.ns.ns}}" var="i">
-                            <g:link controller="identifier" action="show" id="${i.identifier.id}">${i?.identifier?.ns?.ns?.encodeAsHTML()} : ${i?.identifier?.value?.encodeAsHTML()}</g:link>
+                            <g:link controller="identifier" action="show" id="${i.identifier.id}">${i?.identifier?.ns?.ns} : ${i?.identifier?.value}</g:link>
                             <br />
                         </g:each>
                     </g:if>

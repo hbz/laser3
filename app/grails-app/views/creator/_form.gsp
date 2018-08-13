@@ -56,7 +56,7 @@
 	
 %{--<ul class="one-to-many">
 <g:each in="${creatorInstance?.title?}" var="t">
-    <li><g:link controller="creatorTitle" action="show" id="${t.id}">${t?.encodeAsHTML()}</g:link></li>
+    <li><g:link controller="creatorTitle" action="show" id="${t.id}">${t}</g:link></li>
 </g:each>
 <li class="add">
 <g:link controller="creatorTitle" action="create" params="['creator.id': creatorInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'creatorTitle.label', default: 'CreatorTitle')])}</g:link>

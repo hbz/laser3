@@ -78,7 +78,7 @@
 	</label>
 	<ul class="one-to-many">
 		<g:each in="${personInstance?.contacts?}" var="c">
-		    <li><g:link controller="contact" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></li>
+		    <li><g:link controller="contact" action="show" id="${c.id}">${c}</g:link></li>
 		</g:each>
 	</ul>
     <% /* <input class="ui button" type="button" data-semui="modal" href="#contactFormModal"
@@ -97,7 +97,7 @@
 	</label>
 	<ul class="one-to-many">
 		<g:each in="${personInstance?.addresses?}" var="a">
-		    <li><g:link controller="address" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></li>
+		    <li><g:link controller="address" action="show" id="${a.id}">${a}</g:link></li>
 		</g:each>
         <% /* <input class="ui button" type="button" data-semui="modal" href="#addressFormModal"
 			   value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}"> */ %>

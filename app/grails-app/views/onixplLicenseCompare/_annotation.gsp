@@ -9,16 +9,16 @@
     <g:if test="${ last_preceding }" >
       </ul>
     </g:if>
-    <li><span class="text-preceding" >${ preceding.encodeAsHTML() }</span>
+    <li><span class="text-preceding" >${ preceding }</span>
     <ul><li>
-    ${ val.get('AnnotationText')?.get(0)?.get('_content')?.encodeAsHTML()}</li>
+    ${ val.get('AnnotationText')?.get(0)?.get('_content')}</li>
   </g:if>
   <g:else>
     <g:if test="${ preceding != last_preceding }" >
       </ul>
     </g:if>
     <li>
-    ${ val.get('AnnotationText')?.get(0)?.get('_content')?.encodeAsHTML()}</li>
+    ${ val.get('AnnotationText')?.get(0)?.get('_content')}</li>
   </g:else>
   <g:set var="last_preceding" value="${ preceding }" />
 </g:each></ul></div>

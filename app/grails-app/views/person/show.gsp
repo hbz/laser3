@@ -265,7 +265,7 @@ ${personInstance}
                                 <dl><dt><g:message code="person.tenant.label" default="Tenant"/></dt>
                                 <dd>
                                     <g:link controller="organisations" action="show"
-                                            id="${personInstance.tenant?.id}">${personInstance.tenant?.encodeAsHTML()}</g:link>
+                                            id="${personInstance.tenant?.id}">${personInstance.tenant}</g:link>
                                     <g:if test="${personInstance?.isPublic?.value == 'No'}">
                                         <span data-tooltip="${message(code:'address.private')}" data-position="top right">
                                             <i class="address card outline icon"></i>

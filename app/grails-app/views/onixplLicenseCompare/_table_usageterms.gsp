@@ -54,7 +54,7 @@
               <span class='exceptions' ><i class='icon-exclamation-sign' title='Exceptions' data-content='${
                 OnixPLService.formatOnixValue(
                   entry['UsageException']['UsageExceptionType']['_content']*.get(0).join(", ")
-                ).encodeAsHTML()
+                )
               }'></i></span>
             </g:if>
             <g:if test="${ entry['TextElement'] }" >

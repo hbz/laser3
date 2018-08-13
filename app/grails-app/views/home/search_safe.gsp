@@ -23,7 +23,7 @@
           <div class="container" style="text-align:center">
             <g:form action="search" method="get" class="ui form">
                 <label>Search Text:</label>
-                <input type="text" class="search-query" placeholder="Search" name="q" value="${params.q?.encodeAsHTML()}">
+                <input type="text" class="search-query" placeholder="Search" name="q" value="${params.q}">
                 <input type="submit" value="Search" class="ui button" />
             </g:form>
           </div>

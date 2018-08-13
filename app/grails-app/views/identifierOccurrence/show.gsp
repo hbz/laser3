@@ -41,28 +41,28 @@
 					<g:if test="${identifierOccurrenceInstance?.org}">
 						<dt><g:message code="identifierOccurrence.org.label" default="Org" /></dt>
 						
-							<dd><g:link controller="org" action="show" id="${identifierOccurrenceInstance?.org?.id}">${identifierOccurrenceInstance?.org?.encodeAsHTML()}</g:link></dd>
+							<dd><g:link controller="org" action="show" id="${identifierOccurrenceInstance?.org?.id}">${identifierOccurrenceInstance?.org}</g:link></dd>
 						
 					</g:if>
 				
 					<g:if test="${identifierOccurrenceInstance?.ti}">
 						<dt><g:message code="identifierOccurrence.ti.label" default="Ti" /></dt>
 						
-							<dd><g:link controller="titleDetails" action="show" id="${identifierOccurrenceInstance?.ti?.id}">${identifierOccurrenceInstance?.ti?.encodeAsHTML()}</g:link></dd>
+							<dd><g:link controller="titleDetails" action="show" id="${identifierOccurrenceInstance?.ti?.id}">${identifierOccurrenceInstance?.ti}</g:link></dd>
 						
 					</g:if>
 				
 					<g:if test="${identifierOccurrenceInstance?.tipp}">
 						<dt><g:message code="identifierOccurrence.tipp.label" default="Tipp" /></dt>
 						
-							<dd><g:link controller="titleInstancePackagePlatform" action="show" id="${identifierOccurrenceInstance?.tipp?.id}">${identifierOccurrenceInstance?.tipp?.encodeAsHTML()}</g:link></dd>
+							<dd><g:link controller="titleInstancePackagePlatform" action="show" id="${identifierOccurrenceInstance?.tipp?.id}">${identifierOccurrenceInstance?.tipp}</g:link></dd>
 						
 					</g:if>
 				
 					<g:if test="${identifierOccurrenceInstance?.identifier}">
 						<dt><g:message code="identifierOccurrence.identifier.label" default="Identifier" /></dt>
 						
-							<dd><g:link controller="identifier" action="show" id="${identifierOccurrenceInstance?.identifier?.id}">${identifierOccurrenceInstance?.identifier?.encodeAsHTML()}</g:link></dd>
+							<dd><g:link controller="identifier" action="show" id="${identifierOccurrenceInstance?.identifier?.id}">${identifierOccurrenceInstance?.identifier}</g:link></dd>
 						
 					</g:if>
 				

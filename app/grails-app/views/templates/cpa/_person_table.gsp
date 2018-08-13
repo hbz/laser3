@@ -34,8 +34,8 @@
                     ${c + 1}
                 </td>
 				<td>
-                    ${person?.first_name?.encodeAsHTML() ? person?.last_name?.encodeAsHTML() + ', ' + person?.first_name?.encodeAsHTML() : person?.last_name?.encodeAsHTML()}
-                    ${person?.middle_name?.encodeAsHTML()}
+                    ${person?.first_name? person?.last_name + ', ' + person?.first_name : person?.last_name}
+                    ${person?.middle_name}
 				</td>
 
 				<td>

@@ -49,7 +49,7 @@
 
 							<td>${fieldValue(bean: contactInstance, field: "org")}</td>
 						
-							<td>${contactInstance?.prs?.isPublic?.encodeAsHTML()}</td>
+							<td>${contactInstance?.prs?.isPublic}</td>
 							
 							<td class="link">
 								<g:link action="show" id="${contactInstance.id}" class="ui tiny button">${message('code':'default.button.show.label')}</g:link>

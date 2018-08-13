@@ -19,7 +19,7 @@
             <div class="field">
                 <label>${message(code: 'globalDataSync.search.text')}</label>
                 <input type="text" name="q" placeholder="${message(code: 'globalDataSync.search.ph')}"
-                       value="${params.q?.encodeAsHTML()}"/>
+                       value="${params.q}"/>
             </div>
 
 

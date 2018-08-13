@@ -18,7 +18,7 @@
                     <div class="fields">
                         <div class="field">
                             <label>${message(code:'default.search.text', default:'Search text')}</label>
-                            <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q?.encodeAsHTML()}" />
+                            <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q}" />
                         </div>
 						<div class="field">
 							<label>&nbsp;</label>

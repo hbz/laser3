@@ -25,7 +25,7 @@
                         <div class="ui input">
                             <input type="text" name="taskName"
                                    placeholder="${message(code: 'default.search.ph', default: 'enter search term ..')}"
-                                   value="${params.taskName?.encodeAsHTML()}"/>
+                                   value="${params.taskName}"/>
                         </div>
                     </div>
 

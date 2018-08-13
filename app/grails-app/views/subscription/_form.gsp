@@ -82,7 +82,7 @@
 	
 <ul class="one-to-many">
 <g:each in="${subscriptionInstance?.packages?}" var="p">
-    <li><g:link controller="subscriptionPackage" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
+    <li><g:link controller="subscriptionPackage" action="show" id="${p.id}">${p}</g:link></li>
 </g:each>
 <li class="add">
 <g:link controller="subscriptionPackage" action="create" params="['subscription.id': subscriptionInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'subscriptionPackage.label', default: 'SubscriptionPackage')])}</g:link>

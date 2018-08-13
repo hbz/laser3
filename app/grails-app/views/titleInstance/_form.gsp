@@ -10,7 +10,7 @@
 	
 <ul class="one-to-many">
 <g:each in="${titleInstanceInstance?.ids?.sort{it.identifier.ns.ns}}" var="i">
-    <li><g:link controller="titleSID" action="show" id="${i.id}">${i?.encodeAsHTML()}</g:link></li>
+    <li><g:link controller="titleSID" action="show" id="${i.id}">${i}</g:link></li>
 </g:each>
 <li class="add">
 <g:link controller="titleSID" action="create" params="['titleInstance.id': titleInstanceInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'titleSID.label', default: 'TitleSID')])}</g:link>
@@ -35,7 +35,7 @@
 	
 <ul class="one-to-many">
 <g:each in="${titleInstanceInstance?.tipps?}" var="t">
-    <li><g:link controller="titleInstancePackagePlatform" action="show" id="${t.id}">${t?.encodeAsHTML()}</g:link></li>
+    <li><g:link controller="titleInstancePackagePlatform" action="show" id="${t.id}">${t}</g:link></li>
 </g:each>
 <li class="add">
 <g:link controller="titleInstancePackagePlatform" action="create" params="['titleInstance.id': titleInstanceInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'titleInstancePackagePlatform.label', default: 'TitleInstancePackagePlatform')])}</g:link>
