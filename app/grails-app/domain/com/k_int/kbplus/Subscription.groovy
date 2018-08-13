@@ -45,7 +45,6 @@ class Subscription extends BaseDomainComponent implements Permissions {
 
   static transients = [ 'subscriber', 'provider', 'consortia' ]
 
-
   static hasMany = [
                      ids: IdentifierOccurrence,
                      packages : SubscriptionPackage,
@@ -57,7 +56,9 @@ class Subscription extends BaseDomainComponent implements Permissions {
                      pendingChanges: PendingChange,
                      customProperties: SubscriptionCustomProperty,
                      privateProperties: SubscriptionPrivateProperty,
-                     costItems: CostItem]
+                     costItems: CostItem,
+                     oapl: OrgAccessPointLink
+  ]
 
   static mappedBy = [
                       ids: 'sub',
@@ -69,7 +70,8 @@ class Subscription extends BaseDomainComponent implements Permissions {
                       derivedSubscriptions: 'instanceOf',
                       pendingChanges: 'subscription',
                       costItems: 'sub',
-                      privateProperties: 'owner'
+                      privateProperties: 'owner',
+                      oapl: 'subscription'
                       ]
 
     static mapping = {
