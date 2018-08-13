@@ -47,7 +47,7 @@
             <g:if test="${editable && tmplShowDeleteButton}">
                 <div class="ui mini icon buttons">
                     <g:set var="oid" value="${address.class.name}:${address.id}" />
-                    <g:link class="ui negative button" controller="${controller}" action="${action}" id="${id}" params="[cmd: 'deleteAddress', oid: oid]">
+                    <g:link class="ui negative button" controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: oid]">
                         <i class="trash alternate icon"></i>
                     </g:link>
                 </div>

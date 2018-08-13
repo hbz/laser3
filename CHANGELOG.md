@@ -1,4 +1,9 @@
 
+0.7.2
+
+- bugfix: deleting persons in addressbook
+- bugfix: deleting persons with addresses and contacts
+
 0.7.1
 
 - minors changes on dashboard

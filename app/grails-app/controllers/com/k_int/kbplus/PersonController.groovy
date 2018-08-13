@@ -77,23 +77,6 @@ class PersonController {
                 editable: addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser())
         ]
 
-        if (result.editable) {
-            if (params.cmd?.equalsIgnoreCase('deleteAddress')) {
-                def obj = genericOIDService.resolveOID(params.oid)
-                if (obj) {
-                    obj.delete()
-                }
-                redirect(url: request.getHeader('referer'))
-            }
-            if (params.cmd?.equalsIgnoreCase('deleteContact')) {
-                def obj = genericOIDService.resolveOID(params.oid)
-                if (obj) {
-                    obj.delete()
-                }
-                redirect(url: request.getHeader('referer'))
-            }
-        }
-
         result
     }
 
