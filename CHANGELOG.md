@@ -1,8 +1,9 @@
 
 0.7.2
 
+- force explicit modal closing
 - bugfix: deleting persons in addressbook
-- bugfix: deleting persons with addresses and contacts
+- bugfix: on delete cascade addresses and contacts
 
 0.7.1
 
