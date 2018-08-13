@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.helper.DebugAnnotation
 import grails.converters.JSON
+import grails.plugin.cache.GrailsCacheManager
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import grails.web.Action
@@ -62,6 +63,19 @@ class YodaController {
             result.adminObj.refresh()
         }
         result.currentconf = grails.util.Holders.config
+
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def cacheInfo() {
+        def result = [:]
+
+        result.grailsApp = grailsApplication
+
+        result.appContext = getApplicationContext()
+
+        result.cacheManager = result.appContext.grailsCacheManager
 
         result
     }

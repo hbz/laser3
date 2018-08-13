@@ -401,6 +401,7 @@
                             <g:link class="item" controller="yoda" action="settings">System Settings</g:link>
                             <g:link class="item" controller="yoda" action="appConfig">App Config</g:link>
                             <g:link class="item" controller="yoda" action="appSecurity">App Security</g:link>
+                            <g:link class="item" controller="yoda" action="cacheInfo">App Cache Info</g:link>
                             <a class="item" href="${g.createLink(uri:'/monitoring')}">App Monitoring</a>
 
                             <div class="divider"></div>
