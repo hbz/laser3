@@ -26,6 +26,9 @@ class FinanceController {
     private final def maxAllowedVals  = [10,20,50,100,200] //in case user has strange default list size, plays hell with UI
     //private final def defaultInclSub  = RefdataCategory.lookupOrCreate('YN','Yes') //Owen is to confirm this functionality
 
+    final static MODE_OWNER       = 'MODE_OWNER'
+    final static MODE_CONS_SUBSCR = 'MODE_CONS_SUBSCR'
+
     private boolean userCertified(User user, Org institution)
     {
         if (!user.getAuthorizedOrgs().id.contains(institution.id))
@@ -67,23 +70,53 @@ class FinanceController {
             params.subscriptionFilter = "${params.sub}"
 
             result.fixedSubscription = params.int('sub')? Subscription.get(params.sub) : null
-            if (!result.fixedSubscription) {
+            if (! result.fixedSubscription) {
                 log.error("Financials in FIXED subscription mode, sent incorrect subscription ID: ${params?.sub}")
                 response.sendError(400, "No relevant subscription, please report this error to an administrator")
             }
         }
 
-            //Grab the financial data
-            financialData(result,params,user)
+          //Grab the financial data
+          if (result.inSubMode
+                  &&
+                  OrgRole.findBySubAndOrgAndRoleType(
+                      result.fixedSubscription,
+                      result.institution,
+                      RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role')
+                  )
+                  &&
+                  ! OrgRole.findBySubAndRoleType(
+                      result.fixedSubscription,
+                      RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role')
+                  )
+          ) {
+              result.queryMode = MODE_CONS_SUBSCR
+              def tmp = financialData(result, params, user, MODE_CONS_SUBSCR)
+
+              result.foundMatches_CS    = tmp.foundMatches
+              result.cost_items_CS      = tmp.cost_items
+              result.cost_item_count_CS = tmp.cost_item_count
+          }
+          else {
+              result.queryMode = MODE_OWNER
+          }
+
+          def tmp = financialData(result, params, user, MODE_OWNER)
+          result.foundMatches    = tmp.foundMatches
+          result.cost_items      = tmp.cost_items
+          result.cost_item_count = tmp.cost_item_count
 
             flash.error = null
             flash.message = null
 
-            if (result.foundMatches) {
+            if (result.foundMatches || result.foundMatches_CS ) {
                 flash.message = "Felder mit potentiellen Treffern bleiben gesetzt."
-            } else if (params.get('submit')) {
+            }
+            else if (params.get('submit')) {
                 flash.error = "Keine Treffer. Der Filter wird zurückgesetzt."
             }
+
+          // TODO : MODE_CHILDREN & MODE_ALL
 
           // prepare filter dropdowns
           def myCostItems = result.fixedSubscription ?
@@ -148,6 +181,7 @@ class FinanceController {
 
         result.wildcard    =  params.wildcard == 'on' ? 'on' : 'off' //defaulted to on
 
+        // TODO fix:shortcode
         if (params.csvMode && request.getHeader('referer')?.endsWith("${params?.shortcode}/finance")) {
             params.max = -1 //Adjust so all results are returned, in regards to present user screen query
             log.debug("Making changes to query setup data for an export...")
@@ -155,11 +189,11 @@ class FinanceController {
         //Query setup options, ordering, joins, param query data....
         def (order, join, gspOrder) = CostItem.orderingByCheck(params.order) //order = field, join = left join required or null, gsporder = to see which field is ordering by
         result.order = gspOrder
-        
+
         //todo Add to query params and HQL query if we are in sub mode e.g. result.inSubMode, result.fixedSubscription
-        def cost_item_qry_params  =  [owner: result.institution]
-        def cost_item_qry         =  (join)? "LEFT OUTER JOIN ${join} AS j WHERE ci.owner = :owner " :"  where ci.owner = :owner "
-        def orderAndSortBy        =  (join)? "ORDER BY COALESCE(j.${order}, ${Integer.MAX_VALUE}) ${result.sort}, ci.id ASC" : " ORDER BY ci.${order} ${result.sort}"
+        def cost_item_qry_params =  [owner: result.institution]
+        def cost_item_qry        = (join)? "LEFT OUTER JOIN ${join} AS j WHERE ci.owner = :owner " :"  where ci.owner = :owner "
+        def orderAndSortBy       = (join)? "ORDER BY COALESCE(j.${order}, ${Integer.MAX_VALUE}) ${result.sort}, ci.id ASC" : " ORDER BY ci.${order} ${result.sort}"
 
         return [cost_item_qry_params, cost_item_qry, orderAndSortBy]
     }
@@ -169,51 +203,30 @@ class FinanceController {
      * @param result - LinkedHashMap for model data
      * @param params - Qry data sent from view
      * @param user   - Currently logged in user object
+     * @param queryMode - MODE_OWNER, MODE_CHILDREN, MODE_ALL
      * @return Cost Item count & data / view information for pagination, sorting, etc
      *
      * Note - Requests DB requests are cached ONLY if non-hardcoded values are used
      */
-    private def financialData(result, params, user) {
+    private def financialData(result, params, user, queryMode) {
+        def tmp = [:]
+
         //Setup using param data, returning back DB query info
         def (cost_item_qry_params, cost_item_qry, orderAndSortBy) = setupQueryData(result, params, user)
 
         //Filter processing...
 
             log.debug("FinanceController::index()  -- Performing filtering processing...")
-            def qryOutput = filterQuery(result, params, (result.wildcard == 'on'))
-
-            // WORKAROUND: DISABLE FALLBACK! WOULD VIEW ALL COSTITEMS ON LICENSE_VIEW
+            def qryOutput = filterQuery(result, params, (result.wildcard == 'on'), queryMode)
 
             cost_item_qry_params   << qryOutput.fqParams
-            result.foundMatches    =  cost_item_qry_params.size() > 1 // used for flash
-            result.cost_items      =  CostItem.executeQuery(ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy, cost_item_qry_params, params);
-            result.cost_item_count =  CostItem.executeQuery(ci_count + cost_item_qry + qryOutput.qry_string, cost_item_qry_params).first();
-            log.debug("FinanceController::index()  -- Performed filtering process... ${result.cost_item_count} result(s) found")
+        tmp.foundMatches    =  cost_item_qry_params.size() > 1 // used for flash
+        tmp.cost_items      =  CostItem.executeQuery(ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy, cost_item_qry_params, params);
+        tmp.cost_item_count =  CostItem.executeQuery(ci_count + cost_item_qry + qryOutput.qry_string, cost_item_qry_params).first();
 
-            // WORKAROUND: DISABLE FALLBACK! WOULD VIEW ALL COSTITEMS ON LICENSE_VIEW
-            /*
-            if (qryOutput.filterCount == 0 || !qryOutput.qry_string) //Nothing found from filtering!
-                result.info.add([status:message(code: 'financials.result.filtered.info', args: [message(code: 'financials.result.filtered.mode')]),
-                                 msg:message(code: 'finance.result.filtered.empty')])
-                result.filterMode =  "OFF" //SWITCHING BACK!!! ...Since nothing has been found, informed user!
-                result.wildcard   =  true //default behaviour is ON
-                log.debug("FinanceController::index()  -- Performed filtering process... no results found, turned off filter mode")
-            }
-            else {
-                cost_item_qry_params.addAll(qryOutput.fqParams)
-                result.cost_items      =  CostItem.executeQuery(ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy, cost_item_qry_params, params);
-                result.cost_item_count =  CostItem.executeQuery(ci_count + cost_item_qry + qryOutput.qry_string, cost_item_qry_params).first();
-                log.debug("FinanceController::index()  -- Performed filtering process... ${result.cost_item_count} result(s) found")
-            }
-            */
-            // WORKAROUND: DISABLE FALLBACK! WOULD VIEW ALL COSTITEMS ON LICENSE_VIEW
-            //result.info.addAll(qryOutput.failed)
-            //result.info.addAll(qryOutput.valid)
+        log.debug("FinanceController::index()  -- Performed filtering process... ${tmp.cost_item_count} result(s) found")
 
-            //'SELECT ci FROM CostItem AS ci LEFT OUTER JOIN ci.order AS o WHERE ci.owner = ? ORDER BY COALESCE(o.orderNumber,?) ASC, ci.id ASC'
-            //result.cost_items      =  CostItem.executeQuery(ci_select + cost_item_qry + orderAndSortBy, cost_item_qry_params, params);
-            //result.cost_item_count =  CostItem.executeQuery(ci_count + cost_item_qry, cost_item_qry_params).first();
-            //log.debug("FinanceController::index()  -- Performing standard non-filtered process ... ${result.cost_item_count} result(s) found")
+        tmp
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -232,7 +245,7 @@ class FinanceController {
                 return
             }
 
-            financialData(result,params,user) //Grab the financials!
+            financialData(result, params, user, MODE_OWNER) //Grab the financials!
             def filename = result.institution.name
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}_financialExport.csv\"")
             response.contentType = "text/csv"
@@ -440,15 +453,14 @@ class FinanceController {
      * @param wildcard
      * @return
      */
-    def private filterQuery(LinkedHashMap result, GrailsParameterMap params, boolean wildcard) {
+    def private filterQuery(LinkedHashMap result, GrailsParameterMap params, boolean wildcard, queryMode) {
         def fqResult = [:]
 
         fqResult.qry_string = ""
-
-        def final count = ci_count + " where ci.owner = :owner "
-        def countCheck  = ci_count + " where ci.owner = :owner "
-
         fqResult.fqParams = [owner: result.institution]
+
+        def count =  ci_count + " where ci.owner = :owner "
+        def countCheck = ci_count + " where ci.owner = :owner "
 
         def hqlCompare = (wildcard) ? " like " : " = "
 
@@ -509,6 +521,7 @@ class FinanceController {
         filterBy( 'filterCIBudgetCode', 'budgetCode', 'budgetCode' )
 
 
+        /*
         if (params?.subscriptionFilter?.startsWith("com.k_int.kbplus.Subscription:")) {
 
             def sub     = Subscription.get(params.subscriptionFilter.split(":")[1])
@@ -526,9 +539,20 @@ class FinanceController {
                 params.remove('subscriptionFilter')
             }
         }
-        else if (params?.sub && result.inSubMode) {
-            fqResult.qry_string += " AND ci_sub_fk = " + params.sub
-            countCheck          += " AND ci_sub_fk = " + params.sub
+        else */
+        if (MODE_CONS_SUBSCR == queryMode) {
+            if (result.inSubMode && result.fixedSubscription) {
+                def memberSubs = Subscription.findAllByInstanceOf(result.fixedSubscription)
+
+                fqResult.qry_string += " AND ci_sub_fk IN (" + memberSubs.collect{ it.id }.join(',') + ") "
+                countCheck          += " AND ci_sub_fk IN (" + memberSubs.collect{ it.id }.join(',') + ") "
+            }
+        }
+        else if (MODE_OWNER == queryMode) {
+            if (result.inSubMode && result.fixedSubscription) {
+                fqResult.qry_string += " AND ci_sub_fk = " + result.fixedSubscription.id
+                countCheck          += " AND ci_sub_fk = " + result.fixedSubscription.id
+            }
         }
 
         if (params?.packageFilter?.startsWith("com.k_int.kbplus.SubscriptionPackage:")) {
@@ -548,27 +572,7 @@ class FinanceController {
             }
         }
 
-        fqResult.filterCount = CostItem.executeQuery(countCheck, fqResult.fqParams).first()
-        if (fqResult.filterCount == 0)
-        {
-            // WORKAROUND: ACCEPT EMPTY RESULTS
-
-            //fqResult.failed.add([status: message(code: 'financials.result.filtered.info', args: [message(code: 'financials.result.filtered.nomatch')]),
-            //                     msg: message(code: 'financials.result.filtered.invalid')])
-            //fqResult.qry_string = ""
-            //fqResult.fqParams.clear()
-            //params.remove('filterCIOrderNumber')
-            //params.remove('filterCIInvoiceNumber')
-            //if (!result.inSubMode)
-            //    params.remove('subscriptionFilter')
-            //params.remove('packageFilter')
-
-            //fqResult.fqParams.remove(0) // NEW ADDED DUE WORKAROUND
-            // WORKAROUND: ACCEPT EMPTY RESULTS
-        }
-        else {
-            //fqResult.fqParams.remove(0) //already have this where necessary in the index method!
-        }
+        fqResult.filterCount = CostItem.executeQuery(countCheck, fqResult.fqParams).first() // ?
 
         log.debug("Financials : filterQuery - Wildcard Searching active : ${wildcard} Query output : ${fqResult.qry_string? fqResult.qry_string:'qry failed!'}")
 

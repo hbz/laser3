@@ -114,40 +114,11 @@
     <div class="ui grid">
         <div class="sixteen wide column">
 
-            <%--<div id="userError" hidden="">
-                <table class="ui celled la-table table">
-                    <thead>
-                    <tr><th>Problem/Update</th>
-                        <th>Info</th></tr>
-                    </thead>
-                    <tbody><tr></tr></tbody>
-                </table>
-            </div>--%>
-
-            <%
-                // WORKAROUND; grouping costitems by subscription
-                def costItemSubList = ["clean":[]]
-                (cost_items?.collect{it.sub}).each{ item ->
-                    if (item) {
-                        costItemSubList << ["${item.name}": []]
-                    }
-                }
-                cost_items.each{ item ->
-                    if (item.sub) {
-                        costItemSubList.get("${item.sub?.name}").add(item)
-                    }
-                    else {
-                        costItemSubList.get('clean').add(item)
-                    }
-                }
-                costItemSubList = costItemSubList.findAll{ ! it.value.isEmpty() }
-            %>
-
             <div id="filterTemplateWrapper" class="wrapper">
                 <div id="filterTemplate">
+                    <g:render template="filter" model="['ciListOwner': cost_items, 'ciListConsSubsc': cost_items_CS]"/>
 
-                    <g:render template="filter" model="['costItemSubList': costItemSubList]"/>
-
+                    <g:render template="result" model="['ciListOwner': cost_items, 'ciListConsSubsc': cost_items_CS]"/>
                 </div>
             </div>
 
