@@ -17,21 +17,21 @@
 				<dl>
 					<g:if test="${taskInstance?.license}">
 						<dt><g:message code="task.license.label" default="License" /></dt>
-						<dd><g:link controller="licenseDetails" action="show" id="${taskInstance?.license?.id}">${taskInstance?.license?.encodeAsHTML()}</g:link></dd>
+						<dd><g:link controller="licenseDetails" action="show" id="${taskInstance?.license?.id}">${taskInstance?.license}</g:link></dd>
 					</g:if>
 					<g:if test="${taskInstance?.org}">
 						<dt><g:message code="task.org.label" default="Org" /></dt>
-						<dd><g:link controller="organisations" action="show" id="${taskInstance?.org?.id}">${taskInstance?.org?.encodeAsHTML()}</g:link></dd>
+						<dd><g:link controller="organisations" action="show" id="${taskInstance?.org?.id}">${taskInstance?.org}</g:link></dd>
 					</g:if>
 				
 					<g:if test="${taskInstance?.pkg}">
 						<dt><g:message code="task.pkg.label" default="Pkg" /></dt>
-						<dd><g:link controller="packageDetails" action="show" id="${taskInstance?.pkg?.id}">${taskInstance?.pkg?.encodeAsHTML()}</g:link></dd>
+						<dd><g:link controller="packageDetails" action="show" id="${taskInstance?.pkg?.id}">${taskInstance?.pkg}</g:link></dd>
 					</g:if>
 				
 					<g:if test="${taskInstance?.subscription}">
 						<dt><g:message code="task.subscription.label" default="Subscription" /></dt>
-						<dd><g:link controller="subscriptionDetails" action="show" id="${taskInstance?.subscription?.id}">${taskInstance?.subscription?.encodeAsHTML()}</g:link></dd>
+						<dd><g:link controller="subscriptionDetails" action="show" id="${taskInstance?.subscription?.id}">${taskInstance?.subscription}</g:link></dd>
 					</g:if>
 				
 					<g:if test="${taskInstance?.title}">
@@ -46,12 +46,12 @@
 				
 					<g:if test="${taskInstance?.status}">
 						<dt><g:message code="task.status.label" default="Status" /></dt>
-						<dd><g:link controller="refdataValue" action="show" id="${taskInstance?.status?.id}">${taskInstance?.status?.encodeAsHTML()}</g:link></dd>
+						<dd><g:link controller="refdataValue" action="show" id="${taskInstance?.status?.id}">${taskInstance?.status}</g:link></dd>
 					</g:if>
 				
 					<g:if test="${taskInstance?.creator}">
 						<dt><g:message code="task.creator.label" default="Creator" /></dt>
-						<dd><g:link controller="userDetails" action="show" id="${taskInstance?.creator?.id}">${taskInstance?.creator?.display?.encodeAsHTML()}</g:link></dd>
+						<dd><g:link controller="userDetails" action="show" id="${taskInstance?.creator?.id}">${taskInstance?.creator?.display}</g:link></dd>
 					</g:if>
 
 					<g:if test="${taskInstance?.createDate}">
@@ -66,12 +66,12 @@
 				
 					<g:if test="${taskInstance?.responsibleUser}">
 						<dt><g:message code="task.responsibleUser.label" default="Responsible User" /></dt>
-						<dd><g:link controller="userDetails" action="show" id="${taskInstance?.responsibleUser?.id}">${taskInstance?.responsibleUser?.display?.encodeAsHTML()}</g:link></dd>
+						<dd><g:link controller="userDetails" action="show" id="${taskInstance?.responsibleUser?.id}">${taskInstance?.responsibleUser?.display}</g:link></dd>
 					</g:if>
 				
 					<g:if test="${taskInstance?.responsibleOrg}">
 						<dt><g:message code="task.responsibleOrg.label" default="Responsible Org" /></dt>
-						<dd><g:link controller="organisations" action="show" id="${taskInstance?.responsibleOrg?.id}">${taskInstance?.responsibleOrg?.encodeAsHTML()}</g:link></dd>
+						<dd><g:link controller="organisations" action="show" id="${taskInstance?.responsibleOrg?.id}">${taskInstance?.responsibleOrg}</g:link></dd>
 					</g:if>
 				</dl>
 

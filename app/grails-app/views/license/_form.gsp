@@ -178,7 +178,7 @@
 	
 <ul class="one-to-many">
 <g:each in="${licenseInstance?.documents?}" var="d">
-    <li><g:link controller="docContext" action="show" id="${d.id}">${d?.encodeAsHTML()}</g:link></li>
+    <li><g:link controller="docContext" action="show" id="${d.id}">${d}</g:link></li>
 </g:each>
 <li class="add">
 <g:link controller="docContext" action="create" params="['license.id': licenseInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'docContext.label', default: 'DocContext')])}</g:link>
@@ -195,7 +195,7 @@
 	
 <ul class="one-to-many">
 <g:each in="${licenseInstance?.orgLinks?}" var="o">
-    <li><g:link controller="orgRole" action="show" id="${o.id}">${o?.encodeAsHTML()}</g:link></li>
+    <li><g:link controller="orgRole" action="show" id="${o.id}">${o}</g:link></li>
 </g:each>
 <li class="add">
 <g:link controller="orgRole" action="create" params="['license.id': licenseInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'orgRole.label', default: 'OrgRole')])}</g:link>
@@ -212,7 +212,7 @@
 	
 <ul class="one-to-many">
 <g:each in="${licenseInstance?.subscriptions?.sort{it.name}}" var="s">
-    <li><g:link controller="subscriptionDetails" action="show" id="${s.id}">${s?.encodeAsHTML()}</g:link></li>
+    <li><g:link controller="subscriptionDetails" action="show" id="${s.id}">${s}</g:link></li>
 </g:each>
 <li class="add">
 <g:link controller="subscriptionDetails" action="create" params="['license.id': licenseInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'subscription.label', default: 'Subscription')])}</g:link>

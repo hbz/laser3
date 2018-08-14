@@ -1025,6 +1025,23 @@ class AjaxController {
     }
   }
 
+    def delete() {
+
+        if (params.cmd?.equalsIgnoreCase('deleteAddress')) {
+            def obj = genericOIDService.resolveOID(params.oid)
+            if (obj) {
+                obj.delete()
+            }
+        }
+        if (params.cmd?.equalsIgnoreCase('deleteContact')) {
+            def obj = genericOIDService.resolveOID(params.oid)
+            if (obj) {
+                obj.delete()
+            }
+        }
+        redirect(url: request.getHeader('referer'))
+    }
+
     @Secured(['ROLE_USER'])
     def deleteCoreDate(){
     log.debug("ajax:: deleteCoreDate::${params}")

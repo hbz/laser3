@@ -40,18 +40,18 @@
 
                             <g:if test="${addressInstance?.prs}">
                                 <dt><g:message code="address.prs.label" default="Prs" /></dt>
-                                <dd><g:link controller="person" action="show" id="${addressInstance?.prs?.id}">${addressInstance?.prs?.encodeAsHTML()}</g:link></dd>
+                                <dd><g:link controller="person" action="show" id="${addressInstance?.prs?.id}">${addressInstance?.prs}</g:link></dd>
                             </g:if>
 
                             <g:if test="${addressInstance?.org}">
                                 <dt><g:message code="address.org.label" default="Org" /></dt>
-                                <dd><g:link controller="organisations" action="show" id="${addressInstance?.org?.id}">${addressInstance?.org?.encodeAsHTML()}</g:link></dd>
+                                <dd><g:link controller="organisations" action="show" id="${addressInstance?.org?.id}">${addressInstance?.org}</g:link></dd>
                             </g:if>
 
 
                             <g:if test="${addressInstance?.prs?.tenant}">
                                 <dt><g:message code="person.tenant.label" default="Tenant (derived from Prs)" /></dt>
-                                <dd><g:link controller="organisations" action="show" id="${addressInstance?.prs?.tenant?.id}">${addressInstance?.prs?.tenant?.encodeAsHTML()}</g:link></dd>
+                                <dd><g:link controller="organisations" action="show" id="${addressInstance?.prs?.tenant?.id}">${addressInstance?.prs?.tenant}</g:link></dd>
                             </g:if>
 
                             <g:if test="${addressInstance?.prs?.isPublic}">

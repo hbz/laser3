@@ -30,7 +30,7 @@
 
               <div class="field">
                   <label>${message(code:'package.search.text')}</label>
-                  <input type="text" name="q" placeholder="${message(code:'package.search.ph')}" value="${params.q?.encodeAsHTML()}" />
+                  <input type="text" name="q" placeholder="${message(code:'package.search.ph')}" value="${params.q}" />
               </div>
 
               <div class="fields">

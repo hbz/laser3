@@ -20,7 +20,7 @@
                 <g:if test="${licenseInstance?.status}">
                     <dl><dt><g:message code="license.status.label" default="Status" /></dt>
 
-                        <dd>${licenseInstance?.status?.value?.encodeAsHTML()}</dd></dl>
+                        <dd>${licenseInstance?.status?.value}</dd></dl>
 
 
                 </g:if>
@@ -28,7 +28,7 @@
                 <g:if test="${licenseInstance?.type}">
                     <dl><dt><g:message code="license.type.label" default="Type" /></dt>
 
-                        <dd>${licenseInstance?.type?.value?.encodeAsHTML()}</dd></dl>
+                        <dd>${licenseInstance?.type?.value}</dd></dl>
 
                 </g:if>
 
@@ -42,77 +42,77 @@
                 <g:if test="${licenseInstance?.concurrentUsers}">
                     <dl><dt><g:message code="license.concurrentUsers.label" default="Concurrent Users" /></dt>
 
-                        <dd>${licenseInstance?.concurrentUsers?.value?.encodeAsHTML()}</dd></dl>
+                        <dd>${licenseInstance?.concurrentUsers?.value}</dd></dl>
 
                 </g:if>
 
                 <g:if test="${licenseInstance?.remoteAccess}">
                     <dl><dt><g:message code="license.remoteAccess.label" default="Remote Access" /></dt>
 
-                        <dd>${licenseInstance?.remoteAccess?.value?.encodeAsHTML()}</dd></dl>
+                        <dd>${licenseInstance?.remoteAccess?.value}</dd></dl>
 
                 </g:if>
 
                 <g:if test="${licenseInstance?.walkinAccess}">
                     <dl><dt><g:message code="license.walkinAccess.label" default="Walkin Access" /></dt>
 
-                        <dd>${licenseInstance?.walkinAccess?.value?.encodeAsHTML()}</dd></dl>
+                        <dd>${licenseInstance?.walkinAccess?.value}</dd></dl>
 
                 </g:if>
 
                 <g:if test="${licenseInstance?.multisiteAccess}">
                     <dl><dt><g:message code="license.multisiteAccess.label" default="Multisite Access" /></dt>
 
-                        <dd>${licenseInstance?.multisiteAccess?.value?.encodeAsHTML()}</dd></dl>
+                        <dd>${licenseInstance?.multisiteAccess?.value}</dd></dl>
 
                 </g:if>
 
                 <g:if test="${licenseInstance?.partnersAccess}">
                     <dl><dt><g:message code="license.partnersAccess.label" default="Partners Access" /></dt>
 
-                        <dd>${licenseInstance?.partnersAccess?.value?.encodeAsHTML()}</dd></dl>
+                        <dd>${licenseInstance?.partnersAccess?.value}</dd></dl>
 
                 </g:if>
 
                 <g:if test="${licenseInstance?.alumniAccess}">
                     <dl><dt><g:message code="license.alumniAccess.label" default="Alumni Access" /></dt>
 
-                        <dd>${licenseInstance?.alumniAccess?.value?.encodeAsHTML()}</dd></dl>
+                        <dd>${licenseInstance?.alumniAccess?.value}</dd></dl>
 
                 </g:if>
 
                 <g:if test="${licenseInstance?.ill}">
                     <dl><dt><g:message code="license.ill.label" default="Ill" /></dt>
 
-                        <dd>${licenseInstance?.ill?.value?.encodeAsHTML()}</dd></dl>
+                        <dd>${licenseInstance?.ill?.value}</dd></dl>
 
                 </g:if>
 
                 <g:if test="${licenseInstance?.coursepack}">
                     <dl><dt><g:message code="license.coursepack.label" default="Coursepack" /></dt>
 
-                        <dd>${licenseInstance?.coursepack?.value?.encodeAsHTML()}</dd></dl>
+                        <dd>${licenseInstance?.coursepack?.value}</dd></dl>
 
                 </g:if>
 
                 <g:if test="${licenseInstance?.vle}">
                     <dl><dt><g:message code="license.vle.label" default="Vle" /></dt>
 
-                        <dd>${licenseInstance?.vle?.value?.encodeAsHTML()}</dd></dl>
+                        <dd>${licenseInstance?.vle?.value}</dd></dl>
 
                 </g:if>
 
                 <g:if test="${licenseInstance?.enterprise}">
                     <dl><dt><g:message code="license.enterprise.label" default="Enterprise" /></dt>
 
-                        <dd>${licenseInstance?.enterprise?.value?.encodeAsHTML()}</dd></dl>
+                        <dd>${licenseInstance?.enterprise?.value}</dd></dl>
 
                 </g:if>
 
                 <g:if test="${licenseInstance?.pca}">
                     <dl><dt><g:message code="license.pca.label" default="Pca" /></dt>
 
-                        <dd>${licenseInstance?.pca?.value?.encodeAsHTML()}</dd></dl>
+                        <dd>${licenseInstance?.pca?.value}</dd></dl>
 
                 </g:if>
 
@@ -172,7 +172,7 @@
                         <dd>
                             <ul>
                                 <g:each in="${licenseInstance.documents}" var="d">
-                                    <li><g:link controller="docContext" action="show" id="${d.id}">${d?.encodeAsHTML()}</g:link></li>                      
+                                    <li><g:link controller="docContext" action="show" id="${d.id}">${d}</g:link></li>
                                 </g:each>
                             </ul>
                         </dd>
@@ -187,7 +187,7 @@
                         <dd>
                             <ul>
                                 <g:each in="${licenseInstance.orgLinks}" var="o">
-                                    <li><g:link controller="orgRole" action="show" id="${o.id}">${o?.encodeAsHTML()}</g:link></li>
+                                    <li><g:link controller="orgRole" action="show" id="${o.id}">${o}</g:link></li>
                                 </g:each>
                             </ul>
                         </dd>
@@ -201,7 +201,7 @@
                         <dd>
                             <ul>
                                 <g:each in="${licenseInstance.prsLinks}" var="o">
-                                    <li><g:link controller="personRole" action="show" id="${o.id}">${o?.encodeAsHTML()}</g:link></li>
+                                    <li><g:link controller="personRole" action="show" id="${o.id}">${o}</g:link></li>
                                 </g:each>
                             </ul>
                         </dd>
@@ -215,7 +215,7 @@
                         <dd>
                             <ul>
                                 <g:each in="${licenseInstance.subscriptions.sort{it.name}}" var="s">
-                                    <li><g:link controller="subscriptionDetails" action="show" id="${s.id}">${s?.encodeAsHTML()}</g:link></li>
+                                    <li><g:link controller="subscriptionDetails" action="show" id="${s.id}">${s}</g:link></li>
                                 </g:each>
                             </ul>
                         </dd>

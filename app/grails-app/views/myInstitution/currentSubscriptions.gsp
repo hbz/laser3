@@ -39,7 +39,7 @@
                 <div class="ui input">
                     <input type="text" name="q"
                            placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
-                           value="${params.q?.encodeAsHTML()}"/>
+                           value="${params.q}"/>
                 </div>
             </div>
             <!-- 1-2 -->

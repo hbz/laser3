@@ -5,10 +5,10 @@
         <div class="ui item person-details">
             <h5 class="ui header">
                 <g:link controller="person" action="show" id="${person?.id}">
-                    ${person?.title?.encodeAsHTML()}
-                    ${person?.first_name?.encodeAsHTML()}
-                    ${person?.middle_name?.encodeAsHTML()}
-                    ${person?.last_name?.encodeAsHTML()}
+                    ${person?.title}
+                    ${person?.first_name}
+                    ${person?.middle_name}
+                    ${person?.last_name}
                 </g:link>
             </h5>
 
@@ -47,10 +47,10 @@
 
         <div class="ui item person-details">
             <g:link controller="person" action="show" id="${personRole?.prsId}">
-                ${personRole?.prs?.title?.encodeAsHTML()}
-                ${personRole?.prs?.first_name?.encodeAsHTML()}
-                ${personRole?.prs?.middle_name?.encodeAsHTML()}
-                ${personRole?.prs?.last_name?.encodeAsHTML()}
+                ${personRole?.prs?.title}
+                ${personRole?.prs?.first_name}
+                ${personRole?.prs?.middle_name}
+                ${personRole?.prs?.last_name}
             </g:link>
             <g:if test="${personRole?.functionType}">
                  &nbsp;

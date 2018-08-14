@@ -37,6 +37,11 @@ class Person extends BaseDomainComponent {
         isPublic        column:'prs_is_public_rv_fk'
         contactType     column:'prs_contact_type_rv_fk'
         roleType        column:'prs_role_type_rv_fk'
+
+        roleLinks   cascade: 'all'
+        addresses   cascade: 'all'
+        contacts    cascade: 'all'
+        privateProperties   cascade: 'all'
     }
     
     static mappedBy = [

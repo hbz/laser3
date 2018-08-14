@@ -37,9 +37,10 @@ class ProfileController {
             def data = [
                     author:     result.user,
                     title:      params.title?.trim(),
-                    described:  params.described?.trim(),
-                    expected:   params.expected?.trim(),
-                    info:       params.info?.trim(),
+                    // TODO: workaround: erms-534 .. dbm required
+                    described:  ( params.described?.trim() ) ?: '..',
+                    expected:   ( params.expected?.trim() ) ?: '..',
+                    info:       ( params.info?.trim() ) ?: '..',
                     status:     RefdataValue.getByValueAndCategory('New', 'Ticket.Status'),
                     category:   RefdataValue.getByValueAndCategory('Bug', 'Ticket.Category')
             ]

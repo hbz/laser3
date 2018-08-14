@@ -46,12 +46,12 @@
                                     <g:if test="${point.getNote()}">
                                         <span class='main-annotation'><i class='icon-edit' data-content='Click the icon to view the annotations.' title='Annotations'></i></span>
                                         <div class="textelement">
-                                            <ul><li><span>${point.getNote().encodeAsHTML()}</span></li></ul>
+                                            <ul><li><span>${point.getNote()}</span></li></ul>
                                         </div>
                                     </g:if>
                                 </div>--%>
                                 <g:if test="${['stringValue','intValue','decValue'].contains(point.getValueType())}">
-                                    <span class="cell-inner">  <strong>${point.getValue().encodeAsHTML()}</strong></span>
+                                    <span class="cell-inner">  <strong>${point.getValue()}</strong></span>
                                 </g:if>
                                 <g:else>
                                     <g:set var="val" value="${point.getValue()}"/>
@@ -76,7 +76,7 @@
                                         </span>
                                     </g:elseif>
                                     <g:else>
-                                     <span class="cell-inner">  <strong>${point.getValue().encodeAsHTML()}</strong></span>
+                                     <span class="cell-inner">  <strong>${point.getValue()}</strong></span>
                                     </g:else>
                                 </g:else>
                             </td>

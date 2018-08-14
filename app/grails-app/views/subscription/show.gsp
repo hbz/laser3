@@ -28,21 +28,21 @@
               <g:if test="${subscriptionInstance?.status}">
                   <dl>
                       <dt><g:message code="subscription.status.label" default="Status" /></dt>
-                      <dd><g:link controller="refdataValue" action="show" id="${subscriptionInstance?.status?.id}">${subscriptionInstance?.status?.encodeAsHTML()}</g:link></dd>
+                      <dd><g:link controller="refdataValue" action="show" id="${subscriptionInstance?.status?.id}">${subscriptionInstance?.status}</g:link></dd>
                   </dl>
               </g:if>
 
               <g:if test="${subscriptionInstance?.type}">
                   <dl>
                       <dt><g:message code="subscription.type.label" default="Type" /></dt>
-                      <dd>${subscriptionInstance?.type?.value?.encodeAsHTML()}</dd>
+                      <dd>${subscriptionInstance?.type?.value}</dd>
                   </dl>
               </g:if>
 
               <g:if test="${subscriptionInstance?.owner}">
                   <dl>
                       <dt><g:message code="subscription.owner.label" default="License" /></dt>
-                      <dd><g:link controller="licenseDetails" action="show" id="${subscriptionInstance?.owner?.id}">${subscriptionInstance?.owner?.encodeAsHTML()}</g:link></dd>
+                      <dd><g:link controller="licenseDetails" action="show" id="${subscriptionInstance?.owner?.id}">${subscriptionInstance?.owner}</g:link></dd>
                   </dl>
               </g:if>
 
@@ -63,7 +63,7 @@
               <g:if test="${subscriptionInstance?.instanceOf}">
                   <dl>
                       <dt><g:message code="subscription.instanceOf.label" default="Instance Of" /></dt>
-                      <dd><g:link controller="subscriptionDetails" action="show" id="${subscriptionInstance?.instanceOf?.id}">${subscriptionInstance?.instanceOf?.name?.encodeAsHTML()}</g:link></dd>
+                      <dd><g:link controller="subscriptionDetails" action="show" id="${subscriptionInstance?.instanceOf?.id}">${subscriptionInstance?.instanceOf?.name}</g:link></dd>
                   </dl>
               </g:if>
 

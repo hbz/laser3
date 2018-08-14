@@ -9,14 +9,14 @@
 
                 <g:if test="${address?.name}">
                     <br />
-                    ${address?.name.encodeAsHTML()}
+                    ${address?.name}
                 </g:if>
 
                 <br />
-                ${address?.street_1.encodeAsHTML()} ${address?.street_2.encodeAsHTML()}
+                ${address?.street_1} ${address?.street_2}
 
                 <br />
-                ${address?.zipcode.encodeAsHTML()} ${address?.city.encodeAsHTML()}
+                ${address?.zipcode} ${address?.city}
 
                 <g:if test="${address?.state || address?.country}">
                     <br />
@@ -28,18 +28,18 @@
                 <g:if test="${address?.pob || address?.pobZipcode || address?.pobCity}">
                     <br />
                     <g:message code="address.pob.label" default="Pob" />
-                    ${address?.pob.encodeAsHTML()}
+                    ${address?.pob}
                     <g:if test="${address?.pobZipcode || address?.pobCity}">, </g:if>
-                    ${address?.pobZipcode?.encodeAsHTML()} ${address?.pobCity?.encodeAsHTML()}
+                    ${address?.pobZipcode} ${address?.pobCity}
                 </g:if>
 
                 <g:if test="${address?.additionFirst}">
                     <br />
-                    ${address?.additionFirst.encodeAsHTML()}
+                    ${address?.additionFirst}
                 </g:if>
                 <g:if test="${address?.additionSecond}">
                     <br />
-                    ${address?.additionSecond.encodeAsHTML()}
+                    ${address?.additionSecond}
                 </g:if>
             </g:link>
         </div>
@@ -47,7 +47,7 @@
             <g:if test="${editable && tmplShowDeleteButton}">
                 <div class="ui mini icon buttons">
                     <g:set var="oid" value="${address.class.name}:${address.id}" />
-                    <g:link class="ui negative button" controller="${controller}" action="${action}" id="${id}" params="[cmd: 'deleteAddress', oid: oid]">
+                    <g:link class="ui negative button" controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: oid]">
                         <i class="trash alternate icon"></i>
                     </g:link>
                 </div>

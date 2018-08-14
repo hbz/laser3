@@ -44,7 +44,7 @@
 	<ul class="one-to-many">
 	<g:each in="${clusterInstance?.orgs?}" var="o">
 	    <li>
-	    	<g:link controller="orgRole" action="show" id="${o.id}">${o?.encodeAsHTML()}</g:link>
+	    	<g:link controller="orgRole" action="show" id="${o.id}">${o}</g:link>
 	    </li>
 	</g:each>
 	<li class="add">

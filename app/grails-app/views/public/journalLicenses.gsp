@@ -72,7 +72,7 @@
                             <g:if test="${point.getNote()}">
                               <span class='main-annotation' ><i class='icon-edit' data-content='Click the icon to view the annotations.' title='Annotations'></i></span>
                               <div class="textelement" > 
-                                <ul><li>${ point.getNote().encodeAsHTML() }</span></li></ul>
+                                <ul><li>${ point.getNote() }</span></li></ul>
                               </div>
                             </g:if>
                           </div>

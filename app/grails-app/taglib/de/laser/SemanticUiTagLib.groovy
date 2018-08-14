@@ -156,6 +156,7 @@ class SemanticUiTagLib {
             out <<          '<br />'
             out <<     '</div>'
             out <<     '<div class="actions">'
+            out <<         '<a href="#" class="ui button" onclick="$(\'#debugInfo\').modal(\'hide\')">Schließen</a>'
             out <<     '</div>'
             out << '</div>'
         }

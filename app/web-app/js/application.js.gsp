@@ -126,7 +126,7 @@ r2d2 = {
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
                 },
                 detachable: true,
-                closable: true,
+                closable: false,
                 transition: 'scale',
                 onApprove : function() {
                     $(this).find('.ui.form').submit();

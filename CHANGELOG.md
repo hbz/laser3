@@ -1,7 +1,15 @@
 
 meanwhile ..
 
-- upgraded to hibernate 4.3
+- upgrade to hibernate 4.3
+
+0.7.2
+
+- force explicit closing of modals
+- ignore cancellation date when adding child subscriptions
+- bugfix: double encoding of html entities
+- bugfix: deleting persons in addressbook
+- bugfix: on delete cascade addresses and contacts
 
 0.7.1
 

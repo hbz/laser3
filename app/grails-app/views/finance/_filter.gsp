@@ -18,8 +18,8 @@
             <tbody>
             <g:each in="${info}" var="i">
                 <tr>
-                    <td>${i.status.encodeAsHTML()}</td>
-                    <td>${i.msg.encodeAsHTML()}</td>
+                    <td>${i.status}</td>
+                    <td>${i.msg}</td>
                 </tr>
             </g:each>
             </tbody>

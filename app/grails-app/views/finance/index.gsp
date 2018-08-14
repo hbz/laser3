@@ -90,7 +90,7 @@
                                     ajaxPostFunc()
                                 },
                                 detachable: true,
-                                closable: true,
+                                closable: false,
                                 transition: 'scale',
                                 onApprove: function () {
                                     $(this).find('.ui.form').submit();
@@ -266,7 +266,7 @@
                     ajaxPostFunc()
                 },
                 detachable: true,
-                closable: true,
+                closable: false,
                 transition: 'scale',
                 onApprove : function() {
                     $(this).find('.ui.form').submit();

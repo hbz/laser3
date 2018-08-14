@@ -106,11 +106,10 @@ class ErrorReportService {
 
         def meta = [
                 system:  grailsApplication.config.laserSystemId,
+                version: grailsApplication.metadata['app.version'],
                 build:   grailsApplication.metadata['repository.revision.number']
         ]
         ticket.meta = (new JsonBuilder(meta)).toString()
-
-        println grailsApplication.metadata
 
         def date = new Date()
         ticket.dateCreated = date

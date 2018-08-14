@@ -39,17 +39,17 @@
 
                         <g:if test="${contactInstance?.prs}">
                             <dt><g:message code="contact.prs.label" default="Prs" /></dt>
-                            <dd><g:link controller="person" action="show" id="${contactInstance?.prs?.id}">${contactInstance?.prs?.encodeAsHTML()}</g:link></dd>
+                            <dd><g:link controller="person" action="show" id="${contactInstance?.prs?.id}">${contactInstance?.prs}</g:link></dd>
                         </g:if>
 
                         <g:if test="${contactInstance?.org}">
                             <dt><g:message code="contact.org.label" default="Org" /></dt>
-                            <dd><g:link controller="organisations" action="show" id="${contactInstance?.org?.id}">${contactInstance?.org?.encodeAsHTML()}</g:link></dd>
+                            <dd><g:link controller="organisations" action="show" id="${contactInstance?.org?.id}">${contactInstance?.org}</g:link></dd>
                         </g:if>
 
 						<g:if test="${contactInstance?.prs?.tenant}">
 							<dt><g:message code="person.tenant.label" default="Tenant (derived from Prs)" /></dt>
-							<dd><g:link controller="organisations" action="show" id="${contactInstance?.prs?.tenant?.id}">${contactInstance?.prs?.tenant?.encodeAsHTML()}</g:link></dd>
+							<dd><g:link controller="organisations" action="show" id="${contactInstance?.prs?.tenant?.id}">${contactInstance?.prs?.tenant}</g:link></dd>
 						</g:if>
 
 						<g:if test="${contactInstance?.prs?.isPublic}">

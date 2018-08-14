@@ -20,7 +20,7 @@
 				
 					<g:if test="${identifierInstance?.ns}">
 						<dt><g:message code="identifier.namespace.label" default="Namespace / Identifier Type" /></dt>
-							<dd>${identifierInstance?.ns?.ns?.encodeAsHTML()}</dd>
+							<dd>${identifierInstance?.ns?.ns}</dd>
 						
 					</g:if>
 				
