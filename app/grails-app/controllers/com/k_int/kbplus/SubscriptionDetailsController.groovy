@@ -799,7 +799,7 @@ class SubscriptionDetailsController {
                                 startDate: result.subscriptionInstance.startDate,
                                 endDate: result.subscriptionInstance.endDate,
                                 manualRenewalDate: result.subscriptionInstance.manualRenewalDate,
-                                manualCancellationDate: result.subscriptionInstance.manualCancellationDate,
+                                /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
                                 identifier: java.util.UUID.randomUUID().toString(),
                                 instanceOf: result.subscriptionInstance,
                                 isSlaved: RefdataCategory.lookupOrCreate('YN', 'Yes'),
