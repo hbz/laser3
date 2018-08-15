@@ -137,7 +137,7 @@
                 $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', false)
             }
         })
-        <g:if test="${tmplConfigOptions?.contains('addSubMembers')}">
+        <g:if test="${tmplConfigShow?.contains('addSubMembers')}">
             function checkselectedIssueEntitlement(selectedid) {
                 if ($('#selectedIssueEntitlement_' + selectedid).prop('checked')) {
                     $('#selectedPackage_' + selectedid).prop('checked', false);
