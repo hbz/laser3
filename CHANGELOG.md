@@ -1,4 +1,8 @@
 
+0.7.3
+
+- bugfix: menu entry members not available on license
+
 0.7.2
 
 - force explicit closing of modals
