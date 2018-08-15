@@ -130,10 +130,12 @@
                     <g:if test="${l.subscriptions && ( l.subscriptions.size() > 0 )}">
                         <g:each in="${l.subscriptions.sort{it.name}}" var="sub">
                           <g:if test="${sub.status?.value != 'Deleted'}">
-                              <div class="la-flexbox">
-                                  <i class="icon folder open outline la-list-icon"></i>
-                                <g:link controller="subscriptionDetails" action="index" id="${sub.id}">${sub.name}</g:link><br/>
-                              </div>
+                                  <g:if test="${institution in sub.orgRelations.org || institution?.orgType?.value == 'Consortium'}">
+                                  <div class="la-flexbox">
+                                      <i class="icon folder open outline la-list-icon"></i>
+                                      <g:link controller="subscriptionDetails" action="index" id="${sub.id}">${sub.name}</g:link><br/>
+                                  </div>
+                                  </g:if>
                           </g:if>
                         </g:each>
                     </g:if>
