@@ -787,11 +787,6 @@ class SubscriptionDetailsController {
                     if (params.generateSlavedSubs == "Y") {
                         log.debug("Generating seperate slaved instances for consortia members")
 
-                        def takePackage = params."selectedPackage_${cm.get(0).id}"
-                        def takeIE = params."selectedIssueEntitlement_${cm.get(0).id}"
-
-                        log.debug("Package:${takePackage} IE:${takeIE}")
-
                         def cons_sub = new Subscription(
                                 type: result.subscriptionInstance.type?:"",
                                 status: subStatus,
@@ -810,9 +805,12 @@ class SubscriptionDetailsController {
 
                         cons_sub.save()
 
-                            if(takePackage || takeIE)
-                            {
-                                result.subscriptionInstance.packages.each { sub_pkg ->
+                        result.subscriptionInstance.packages.each { sub_pkg ->
+                                    def takePackage = params."selectedPackage_${cm.get(0).id+sub_pkg.pkg.id}"
+                                    def takeIE = params."selectedIssueEntitlement_${cm.get(0).id+sub_pkg.pkg.id}"
+
+                                    log.debug("Package:${takePackage} IE:${takeIE}")
+
                                     def pkg_to_link = sub_pkg.pkg
                                     //def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
                                     if (takeIE) {
@@ -826,8 +824,7 @@ class SubscriptionDetailsController {
                                             pkg_to_link.addToSubscription(it, false)
                                         }*/
                                     }
-                                }
-                            }
+                        }
 
                         if (cons_sub) {
 
