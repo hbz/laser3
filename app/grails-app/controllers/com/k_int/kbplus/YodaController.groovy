@@ -138,7 +138,7 @@ class YodaController {
                 cList<< ["${cKey}": [
                         'secured': controllerClass.getAnnotation(Secured)?.value(),
                         'methods': mList.sort{it.key}
-                        ]
+                ]
                 ]
             }
         }
@@ -288,7 +288,7 @@ class YodaController {
         redirect action:'settings'
     }
 
-    @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_YODA'])
     def costItemsApi(String owner) {
         def result = []
 
@@ -307,7 +307,7 @@ class YodaController {
 
             costItems.each {
                 def costItem = [:]
-                costItem.guid = it.globalUID
+                costItem.globalUID = it.globalUID
 
                 costItem.costItemStatus = it.costItemStatus?.value
                 costItem.costItemTyp = it.costItemCategory?.value
@@ -323,12 +323,27 @@ class YodaController {
                 costItem.costDescription = it.costDescription
                 costItem.reference = it.reference
 
-                costItem.datePaid = it.datePaid
                 costItem.startDate = it.startDate
                 costItem.endDate = it.endDate
 
-                costItem.owner = it.owner
-                costItem.sub = it.sub
+                costItem.owner = [:]
+                it.owner?.each{
+                    costItem.owner.globalUID = it.globalUID ?:''
+                    costItem.owner.name = it.name
+                    costItem.owner.shortname = it.shortname
+                    costItem.owner.sortname = it.sortname
+                    costItem.owner.ownerType = it.orgType?.value
+                    costItem.owner.libraryType = it.libraryType?.value
+                }
+
+                costItem.sub = [:]
+                it.sub?.each {
+                    costItem.sub.name = it.name
+                    costItem.sub.globalUID = it.globalUID ?: ''
+                    costItem.sub.startDate = it.startDate
+                    costItem.sub.endDate = it.endDate
+                }
+
                 costItem.subPkg = it.subPkg
                 costItem.issueEntitlement = it.issueEntitlement
                 costItem.order = it.order
@@ -343,4 +358,5 @@ class YodaController {
 
         render result as JSON
     }
+
 }

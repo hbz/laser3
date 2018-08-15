@@ -4,6 +4,7 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
 import de.laser.api.v0.ApiWriter
 import de.laser.api.v0.entities.*
+import de.laser.api.v1.entities.ApiCostItem
 import de.laser.domain.Constants
 import grails.converters.JSON
 import groovy.util.logging.Log4j
@@ -96,6 +97,24 @@ class ApiMainClass {
                 if (result && !(result in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED])) {
                     result = ApiSubscription.getSubscription((Subscription) result, user, contextOrg)
                 }
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
+            }
+        }
+        else if ('costItem'.equalsIgnoreCase(obj)) {
+            if (format in [Constants.MIME_APPLICATION_JSON]) {
+                result = ApiCostItem.findCostItemBy(query, value)
+                if (result && !(result in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED])) {
+                    result = ApiCostItem.getCostItem((CostItem) result, user, contextOrg)
+                }
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
+            }
+        } else if ('costItems'.equalsIgnoreCase(obj)) {
+            if (format in [Constants.MIME_TEXT_PLAIN, Constants.MIME_APPLICATION_JSON]) {
+                    result = ApiCostItem.getCostItems(user, contextOrg)
             }
             else {
                 return Constants.HTTP_NOT_ACCEPTABLE

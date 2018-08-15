@@ -249,6 +249,69 @@ class ApiReader {
         return ApiReaderHelper.cleanUp(result, true, true)
     }
 
+    /**
+     * @param com.k_int.kbplus.CostItem costItem
+     * @param com.k_int.kbplus.Org context
+     * @return
+     */
+    static exportCostItem(CostItem costItem, Org context){
+        def result = [:]
+
+        costItem = GrailsHibernateUtil.unwrapIfProxy(costItem)
+
+        result.globalUID = costItem.globalUID
+
+        // RefdataValues
+        result.costItemStatus = costItem.costItemStatus?.value
+        result.costItemTyp = costItem.costItemCategory?.value
+        result.billingCurrency = costItem.billingCurrency?.value
+        result.costItemElement = costItem.costItemElement?.value
+        result.taxCode = costItem.taxCode?.value
+
+        result.costInBillingCurrency = costItem.costInBillingCurrency
+        result.costInLocalCurrency = costItem.costInLocalCurrency
+        result.currencyRate = costItem.currencyRate
+
+        result.costTitle = costItem.costTitle
+        result.costDescription = costItem.costDescription
+        result.reference = costItem.reference
+
+        result.startDate = costItem.startDate
+        result.endDate = costItem.endDate
+        result.datePaid            = costItem.datePaid
+        result.dateCreated         = costItem.dateCreated
+        result.lastUpdated         = costItem.lastUpdated
+
+        // References
+
+        result.owner = ApiReaderHelper.resolveOrganisationStub(costItem.owner, context) // com.k_int.kbplus.Org
+        result.sub = ApiReaderHelper.resolveSubscriptionStub(costItem.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
+        result.subPkg = ApiReaderHelper.resolveSubscriptionPackageStub(costItem.subPkg, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
+        result.issueEntitlement = ApiReaderHelper.resolveIssueEntitlement(costItem.issueEntitlement, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
+        result.order = ApiReaderHelper.resolveOrder(costItem.order) // com.k_int.kbplus.Order
+        result.invoice = ApiReaderHelper.resolveInvoice(costItem.invoice)
+
+        return ApiReaderHelper.cleanUp(result, true, true)
+    }
+
+    /**
+     * @param com.k_int.kbplus.SubscriptionPackage subPkg
+     * @param ignoreRelation
+     * @param com.k_int.kbplus.Org context
+     * @return
+     */
+    static exportCostItems(def ignoreRelation, Org context){
+        def result = []
+
+        def costItems = CostItem.findAllByOwner(context)
+        costItems.each {
+        result << ApiReader.exportCostItem(it, context)
+        }
+
+        return ApiReaderHelper.cleanUp(result, true, true)
+    }
+
+
     // ################### HELPER ###################
 
     static isDataManager(User user) {
