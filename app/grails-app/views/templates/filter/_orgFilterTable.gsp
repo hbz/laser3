@@ -40,10 +40,10 @@
         </g:if>
         <g:if test="${tmplConfigShow?.contains('addSubMembers')}">
             <th>
-                ${message(code: 'subscription.details.addMembers.option.package.label', args: [subInstance?.name])}
+                ${message(code: 'subscription.details.addMembers.option.package.label')}
             </th>
             <th>
-                ${message(code: 'subscription.details.addMembers.option.issueEntitlement.label', args: [subInstance?.name])}
+                ${message(code: 'subscription.details.addMembers.option.issueEntitlement.label')}
             </th>
         </g:if>
     </tr>
@@ -112,11 +112,17 @@
 
             <g:if test="${tmplConfigShow?.contains('addSubMembers')}">
                 <g:if test="${subInstance?.packages}">
-                    <td><g:checkBox type="text" id="selectedPackage_${org.id}" name="selectedPackage_${org.id}" value="1"
-                                    checked="false" onclick="checkselectedPackage(${org.id});"/></td>
-                    <td><g:checkBox type="text" id="selectedIssueEntitlement_${org.id}"
-                                    name="selectedIssueEntitlement_${org.id}" value="1" checked="false"
-                                    onclick="checkselectedIssueEntitlement(${org.id});"/></td>
+                    <td><g:each in="${subInstance?.packages}" >
+                        <g:checkBox type="text" id="selectedPackage_${org.id+it.pkg.id}" name="selectedPackage_${org.id+it.pkg.id}" value="1"
+                                    checked="false" onclick="checkselectedPackage(${org.id+it.pkg.id});"/> ${it.pkg.name}<br>
+                        </g:each>
+                    </td>
+                    <td><g:each in="${subInstance?.packages}" >
+                        <g:checkBox type="text" id="selectedIssueEntitlement_${org.id+it.pkg.id}"
+                                    name="selectedIssueEntitlement_${org.id+it.pkg.id}" value="1" checked="false"
+                                    onclick="checkselectedIssueEntitlement(${org.id+it.pkg.id});"/> ${it.pkg.name}<br>
+                    </g:each>
+                    </td>
                 </g:if><g:else>
                     <td>${message(code: 'subscription.details.addMembers.option.noPackage.label', args: [subInstance?.name])}</td>
                     <td>${message(code: 'subscription.details.addMembers.option.noPackage.label', args: [subInstance?.name])}</td>
@@ -137,7 +143,7 @@
                 $("tr[class!=disabled] input[name=selectedOrgs]").prop('checked', false)
             }
         })
-        <g:if test="${tmplConfigOptions?.contains('addSubMembers')}">
+        <g:if test="${tmplConfigShow?.contains('addSubMembers')}">
             function checkselectedIssueEntitlement(selectedid) {
                 if ($('#selectedIssueEntitlement_' + selectedid).prop('checked')) {
                     $('#selectedPackage_' + selectedid).prop('checked', false);

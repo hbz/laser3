@@ -158,6 +158,11 @@ class ApiReaderHelper {
             result.globalUID    = org.globalUID
             result.name         = org.name
             result.shortcode    = org.shortcode
+            result.shortname    = org.shortname
+            result.sortname     = org.sortname
+
+            result.orgType      = org.orgType?.value
+            result.libraryType  = org.libraryType?.value
 
             // References
             result.identifiers = resolveIdentifiers(org.ids) // com.k_int.kbplus.IdentifierOccurrence
@@ -233,7 +238,8 @@ class ApiReaderHelper {
             result.name         = sub.name
             result.identifier   = sub.identifier
             result.impId        = sub.impId
-
+            result.startDate    = sub.startDate
+            result.endDate      = sub.endDate
             // References
             result.identifiers = resolveIdentifiers(sub.ids) // com.k_int.kbplus.IdentifierOccurrence
 
