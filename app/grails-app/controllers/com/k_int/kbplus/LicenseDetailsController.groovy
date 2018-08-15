@@ -152,11 +152,12 @@ class LicenseDetailsController {
       }
 
         def subscrQuery = """
-from Subscription as s where 
-  ( ( exists ( select o from s.orgRelations as o where (o.roleType.value IN ('Subscriber', 'Subscription Consortia')) and o.org = :co) ) ) ) 
-  AND ( s.status.value != 'Deleted' ) 
+select s from Subscription as s where (
+  exists ( select o from s.orgRelations as o where (o.roleType.value IN ('Subscriber', 'Subscription Consortia')) and o.org = :co) ) 
+  AND ( LOWER(s.status.value) != 'deleted' ) 
+)
 """
-        result.availableSubs = Subscription.executeQuery("select s ${subscrQuery} order by LOWER(s.name) asc", [co: contextService.getOrg()])
+        result.availableSubs = Subscription.executeQuery("${subscrQuery} order by LOWER(s.name) asc", [co: contextService.getOrg()])
 
 
         withFormat {

@@ -2,6 +2,7 @@
 0.7.3
 
 - denied access to subscription list for licensees
+- bugfix: remove deleted subscriptions from dropdown
 - bugfix: faulty breadcrumbs due multiple licensees
 - bugfix: faulty menu entry on license views
 
