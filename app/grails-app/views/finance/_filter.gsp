@@ -276,7 +276,6 @@
                 </div>
 
                 <div class="field">
-                    DEBUG: ${queryMode}
                 </div>
 
                 <div class="field la-filter-search ">
