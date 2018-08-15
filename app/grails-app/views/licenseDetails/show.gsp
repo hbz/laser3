@@ -31,7 +31,7 @@
 
         <semui:objectStatus object="${license}" status="${license.status}" />
 
-        <g:if test="${! license.hasTemplate() && license.instanceOf && (contextOrg.id == license.getLicensor()?.id)}">
+        <g:if test="${! license.hasTemplate() && license.instanceOf && (contextOrg.id == license.getLicensingConsortium()?.id)}">
             <div class="ui negative message">
                 <div class="header"><g:message code="myinst.message.attention" /></div>
                 <p>
@@ -98,7 +98,7 @@
 
         <semui:messages data="${flash}" />
 
-        <g:if test="${contextOrg.id == license.getLicensor()?.id || (! license.getLicensor() && contextOrg.id == license.getLicensee()?.id)}">
+        <g:if test="${contextOrg.id == license.getLicensingConsortium()?.id || (! license.getLicensingConsortium() && contextOrg.id == license.getLicensee()?.id)}">
             <g:render template="/templates/pendingChanges" model="${['pendingChanges':pendingChanges, 'flash':flash, 'model':license]}"/>
         </g:if>
 

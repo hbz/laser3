@@ -6,7 +6,7 @@
         <semui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument" />
         <semui:actionsDropdownItem message="template.addNote" data-semui="modal" href="#modalCreateNote" />
 
-        <g:if test="${license.getLicensor()?.id == contextService.getOrg()?.id && ! license.isTemplate()}">
+        <g:if test="${license.getLicensingConsortium()?.id == contextService.getOrg()?.id && ! license.isTemplate()}">
             <g:if test="${!( license.instanceOf && ! license.hasTemplate())}">
                 <div class="divider"></div>
 
