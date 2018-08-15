@@ -10,8 +10,8 @@
 <div>
     <ul class="breadcrumb">
         <li><g:link controller="home" action="index">Home</g:link> <span class="divider">/</span></li>
-        <g:if test="${onixplLicense.license.licensee}">
-            <li><g:link controller="myInstitution" action="currentLicenses">${onixplLicense.license.licensee.name} Current Licenses</g:link> <span
+        <g:if test="${onixplLicense.license.getLicensee()}">
+            <li><g:link controller="myInstitution" action="currentLicenses">${onixplLicense.license.getLicensee().name} Current Licenses</g:link> <span
                     class="divider">/</span></li>
         </g:if>
         <li><g:link controller="onixplLicenseDetails" action="index" id="${params.id}">ONIX-PL License Details</g:link> <span class="divider">/</span></li>
@@ -23,7 +23,7 @@
         <semui:crumbAsBadge message="default.editable" class="orange" />
     </g:if>
 
-    <h1 class="ui header"><semui:headerIcon />${onixplLicense.license.licensee?.name} ${onixplLicense.license.type?.value} License : <span id="reference"
+    <h1 class="ui header"><semui:headerIcon />${onixplLicense.license.getLicensee()?.name} ${onixplLicense.license.type?.value} License : <span id="reference"
                                                                                                      style="padding-top: 5px;">${onixplLicense.license.reference}</span>
     </h1>
 

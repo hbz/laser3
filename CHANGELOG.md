@@ -1,7 +1,9 @@
 
 0.7.3
 
-- bugfix: menu entry members not available on license
+- denied access to subscription list for licensees
+- bugfix: faulty breadcrumbs due multiple licensees
+- bugfix: faulty menu entry on license views
 
 0.7.2
 

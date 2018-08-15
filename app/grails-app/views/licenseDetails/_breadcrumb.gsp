@@ -1,8 +1,14 @@
+<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+
 <semui:breadcrumbs>
-    <g:if test="${license?.licensee}">
-        <semui:crumb controller="myInstitution" action="dashboard" text="${license.licensee?.getDesignation()}" />
+    <g:if test="${license?.getLicensee() && license?.getLicensee()?.id == contextService.getOrg()?.id}">
+        <semui:crumb controller="myInstitution" action="dashboard" text="${license.getLicensee()?.getDesignation()}" />
         <semui:crumb text="${message(code:'license.current')}" controller="myInstitution" action="currentLicenses" />
     </g:if>
+    <g:elseif test="${license?.getLicensingConsortium()?.id == contextService.getOrg()?.id}">
+        <semui:crumb controller="myInstitution" action="dashboard" text="${license.getLicensingConsortium()?.getDesignation()}" />
+        <semui:crumb text="${message(code:'license.current')}" controller="myInstitution" action="currentLicenses" />
+    </g:elseif>
 
     <semui:crumb text="${license.reference}" class="active" />
 

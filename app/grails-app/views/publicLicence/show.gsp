@@ -33,7 +33,7 @@
     </div>
 
     <div>
-      <h1 class="ui header"><semui:headerIcon />${license.licensee?.name} ${license.type?.value} License : <semui:xEditable owner="${license}" field="reference" id="reference"/></h1>
+      <h1 class="ui header"><semui:headerIcon />${license.getLicensee()?.name} ${license.type?.value} License : <semui:xEditable owner="${license}" field="reference" id="reference"/></h1>
     </div>
 
 
