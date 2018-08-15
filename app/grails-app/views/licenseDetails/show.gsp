@@ -31,12 +31,14 @@
 
         <semui:objectStatus object="${license}" status="${license.status}" />
 
-        <g:if test="${! license.hasTemplate() && license.instanceOf && (contextOrg.id == license.getLicensor()?.id)}">
+        <g:if test="${! license.hasTemplate() && license.instanceOf && (contextOrg.id == license.getLicensingConsortium()?.id)}">
             <div class="ui negative message">
                 <div class="header"><g:message code="myinst.message.attention" /></div>
                 <p>
                     <g:message code="myinst.licenseDetails.message.ChildView" />
-                    <span class="ui label">${license.getLicensee()?.collect{itOrg -> itOrg.name}?.join(',')}</span>.
+                    <g:each in="${license.getAllLicensee()?.collect{itOrg -> itOrg.name}}" var="licensee">
+                        <span class="ui label">${licensee}</span> ,
+                    </g:each>
 
                     <g:message code="myinst.licenseDetails.message.ConsortialView" />
                     <g:link controller="licenseDetails" action="show" id="${license.instanceOf?.id}">
@@ -98,7 +100,7 @@
 
         <semui:messages data="${flash}" />
 
-        <g:if test="${contextOrg.id == license.getLicensor()?.id || (! license.getLicensor() && contextOrg.id == license.getLicensee()?.id)}">
+        <g:if test="${contextOrg.id == license.getLicensingConsortium()?.id || (! license.getLicensingConsortium() && contextOrg.id == license.getLicensee()?.id)}">
             <g:render template="/templates/pendingChanges" model="${['pendingChanges':pendingChanges, 'flash':flash, 'model':license]}"/>
         </g:if>
 
@@ -186,31 +188,34 @@
 
                             <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
                                 <g:each in="${license.subscriptions.sort{it.name}}" var="sub">
-                                    <table class="ui la-selectable table">
-                                        <colgroup>
-                                            <col width="130" />
-                                            <col width="300" />
-                                            <col width="430"/>
-                                        </colgroup>
-                                        <tr>
-                                            <th scope="row">${message(code:'license.linkedSubscription', default:'Linked Subscription')}</th>
-                                            <td>
-                                                <g:link controller="subscriptionDetails" action="show" id="${sub.id}">${sub.name}</g:link>
-                                            </td>
-                                            <td>
-                                                <g:if test="${editable}">
-                                                    <div class="ui mini icon buttons">
-                                                        <g:link class="ui button la-selectable-button" name="unlinkSubscription"
-                                                                controller="licenseDetails" action="unlinkSubscription"
-                                                                params="['license':license.id, 'subscription':sub.id]"
-                                                                onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
-                                                            <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
-                                                        </g:link>
-                                                    </div>
-                                                </g:if>
-                                            </td>
-                                        </tr>
-                                    </table>
+                                    <g:if test="${contextOrg in sub.orgRelations.org || contextOrg?.orgType?.value == 'Consortium'}">
+                                        <table class="ui la-selectable table">
+                                            <colgroup>
+                                                <col width="130" />
+                                                <col width="300" />
+                                                <col width="430"/>
+                                            </colgroup>
+                                            <tr>
+                                                <th scope="row">${message(code:'license.linkedSubscription', default:'Linked Subscription')}</th>
+                                                <td>
+                                                    <g:link controller="subscriptionDetails" action="show" id="${sub.id}">${sub.name }</g:link>
+                                                </td>
+                                                <td>
+                                                    <g:if test="${editable}">
+                                                        <div class="ui mini icon buttons">
+                                                            <g:link class="ui button la-selectable-button" name="unlinkSubscription"
+                                                                    controller="licenseDetails" action="unlinkSubscription"
+                                                                    params="['license':license.id, 'subscription':sub.id]"
+                                                                    onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
+                                                                <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
+                                                            </g:link>
+                                                        </div>
+                                                    </g:if>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </g:if>
+
                                 </g:each>
                             </g:if>
                             <g:else>
