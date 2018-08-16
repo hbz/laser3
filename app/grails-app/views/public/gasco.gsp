@@ -81,23 +81,6 @@
         </div>
     </div>
 
-    <r:script>
-        $(document).ready(function() {
-
-            function toggleFilterPart() {
-                if ($('.js-consortiallicence input').prop('checked')) {
-                    $('#js-consotial-authority .dropdown').addClass('disabled')
-                    $('#js-consotial-authority select').attr('disabled', 'disabled')
-                } else {
-                    $('#js-consotial-authority .dropdown').removeClass('disabled')
-                    $('#js-consotial-authority select').removeAttr('disabled')
-                }
-            }
-            toggleFilterPart()
-            $('.js-consortiallicence').on('click', toggleFilterPart)
-        });
-    </r:script>
-
     <g:if test="${subscriptions}">
 
     <table class="ui celled la-table table">
