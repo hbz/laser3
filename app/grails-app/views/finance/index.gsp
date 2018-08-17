@@ -198,20 +198,52 @@
     var financeHelper = {
 
         calcSumOfCosts : function () {
-            var totalcost = 0
+
             $('table[id^=costTable]').each( function() {
-                var result = 0
-                $(this).find('tbody tr span.costInLocalCurrency').each( function() {
-                    result += parseFloat($(this).attr('data-costInLocalCurrency'))
+
+                var costs = {}
+                var currencies = $.unique($(this).find('.costData').map(function(){return $(this).attr('data-billingCurrency')}))
+                currencies.each(function() {
+                    costs[this] = {local: 0.0, localAfterTax: 0.0, billing: 0.0, billingAfterTax: 0.0}
+                })
+
+                $(this).find('tbody tr span.costData').each( function() {
+
+                    var ci = costs[$(this).attr('data-billingCurrency')]
+                    ci.local            += parseFloat($(this).attr('data-costInLocalCurrency'))
+                    ci.localAfterTax    += parseFloat($(this).attr('data-costInLocalCurrencyAfterTax'))
+                    ci.billing          += parseFloat($(this).attr('data-costInBillingCurrency'))
+                    ci.billingAfterTax  += parseFloat($(this).attr('data-costInBillingCurrencyAfterTax'))
                 })
                 var socClass = $(this).find('span[class^=sumOfCosts]').attr('class')
                 console.log(socClass)
-                $('.' + socClass).text(
-                    Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(result)
-                )
-                totalcost += result
+
+                var finalLocal = 0.0
+                var finalLocalAfterTax = 0.0
+
+                for (ci in costs) {
+                    finalLocal += costs[ci].local
+                    finalLocalAfterTax += costs[ci].localAfterTax
+                }
+
+                var info = "Wert: "
+                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(finalLocal)
+                    info += "<br />"
+                    info += "Endpreis nach Steuern: "
+                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(finalLocalAfterTax)
+
+                for (ci in costs) {
+                    info += "<br /><br /><strong>" + ci + "</strong><br />"
+                    info += "Rechnungssumme: "
+                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billing)
+                    info += "<br />"
+                    info += "Endpreis nach Steuern: "
+                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billingAfterTax)
+                }
+                $('.' + socClass).html( info )
+
+                console.log( costs)
             })
-              $('#totalCost').text(Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(totalcost))
         }
     }
 

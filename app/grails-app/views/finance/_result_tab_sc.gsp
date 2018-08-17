@@ -38,9 +38,22 @@
                     </g:each>
                 </td>
                 <td>
+                    <%--
                     <span class="costInLocalCurrency" data-costInLocalCurrency="<g:formatNumber number="${ci.costInLocalCurrency}" locale="en" maxFractionDigits="2"/>">
-                        <g:formatNumber number="${ci.costInLocalCurrency}" type="currency" currencyCode="EUR"/>
-                        ( <g:formatNumber number="${ci.costInBillingCurrency}" type="currency" currencyCode="${ci.billingCurrency}"/> )
+                        <g:formatNumber number="${ci.costInLocalCurrency}" type="currency" currencyCode="EUR"/> /
+                        <g:formatNumber number="${ci.costInBillingCurrency}" type="currency" currencyCode="${ci.billingCurrency}"/>
+                    </span>
+                    --%>
+                    <span class="costData"
+                          data-costInLocalCurrency="<g:formatNumber number="${ci.costInLocalCurrency}" locale="en" maxFractionDigits="2"/>"
+                          data-costInLocalCurrencyAfterTax="<g:formatNumber number="${ci.costInLocalCurrencyAfterTax}" locale="en" maxFractionDigits="2"/>"
+                          data-billingCurrency="${ci.billingCurrency}"
+                          data-costInBillingCurrency="<g:formatNumber number="${ci.costInBillingCurrency}" locale="en" maxFractionDigits="2"/>"
+                          data-costInBillingCurrencyAfterTax="<g:formatNumber number="${ci.costInBillingCurrencyAfterTax}" locale="en" maxFractionDigits="2"/>"
+                    >
+                        <g:formatNumber number="${ci.costInBillingCurrency}" type="currency" currencyCode="${ci.billingCurrency}"/>
+                        <br />
+                        <g:formatNumber number="${ci.costInBillingCurrencyAfterTax}" type="currency" currencyCode="${ci.billingCurrency}"/>
                     </span>
                 </td>
                 <td>
@@ -80,9 +93,11 @@
 </tbody>
     <tfoot>
     <tr>
-        <th>
-            <strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}: <span class="sumOfCosts_${i}"></span></strong>
-        </th>
+        <td colspan="7">
+            <strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}</strong>
+            <br/>
+            <span class="sumOfCosts_${i}"></span>
+        </td>
     </tr>
     </tfoot>
 </table>

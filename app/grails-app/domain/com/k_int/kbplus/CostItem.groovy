@@ -28,7 +28,7 @@ class CostItem extends BaseDomainComponent {
 
     Double costInBillingCurrencyAfterTax
     Double costInLocalCurrencyAfterTax
-    Double taxRate
+    Integer taxRate
     Boolean finalCostRounding
 
     String costTitle

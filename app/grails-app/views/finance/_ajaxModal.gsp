@@ -1,4 +1,4 @@
-<!-- _editAjax.gsp -->
+<!-- _ajaxModal.gsp -->
 <%@ page import="com.k_int.kbplus.CostItem;com.k_int.kbplus.CostItemGroup;" %>
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 
@@ -101,10 +101,10 @@
             <fieldset class="nine wide field la-modal-fieldset-margin-right la-account-currency">
                 <label>${g.message(code:'financials.newCosts.amount')}</label>
 
-                <div class="three fields">
+                <div class="two fields">
                     <div class="field">
                         <label>${message(code:'financials.invoice_total')}</label>
-                        <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="number" class="calc"
+                        <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="number" class="calc" style="width:50%"
                                name="newCostInBillingCurrency" id="newCostInBillingCurrency"
                                placeholder="${g.message(code:'financials.invoice_total')}"
                                value="${costItem?.costInBillingCurrency}" step="0.01"/>
@@ -112,10 +112,8 @@
                         <div class="ui icon button" id="costButton3" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
-                    </div><!-- .field -->
-                    <div class="field">
-                        <label>&nbsp;</label>
-                        <g:select class="ui dropdown IGNORE-la-currency" name="newCostCurrency" title="${g.message(code: 'financials.addNew.currencyType')}"
+
+                        <g:select class="ui dropdown dk-width-auto" name="newCostCurrency" title="${g.message(code: 'financials.addNew.currencyType')}"
                                   from="${currency}"
                                   optionKey="id"
                                   optionValue="${{(it.text.split('-')).first()}}"
@@ -128,9 +126,16 @@
                                value="${costItem?.costInBillingCurrencyAfterTax}" step="0.01"/>
 
                     </div><!-- .field -->
+                    <!-- TODO -->
+                    <style>
+                        .dk-width-auto {
+                            width: auto !important;
+                            min-width: auto !important;
+                        }
+                    </style>
                 </div>
 
-                <div class="three fields">
+                <div class="two fields">
                     <div class="field la-exchange-rate">
                         <label>${g.message(code:'financials.newCosts.exchangeRate')}</label>
                         <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
@@ -143,9 +148,6 @@
                         </div>
                     </div><!-- .field -->
                     <div class="field">
-
-                    </div><!-- .field -->
-                    <div class="field">
                         <label>Steuersatz (in %)</label>
                         <g:select class="ui dropdown" name="newTaxRate" title="TaxRate"
                               from="${CostItem.TAX_RATES}"
@@ -156,7 +158,7 @@
                     </div><!-- .field -->
                 </div>
 
-                <div class="three fields">
+                <div class="two fields">
                     <div class="field">
                         <label>${g.message(code:'financials.newCosts.valueInEuro')}</label>
                         <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="number" class="calc"
@@ -169,9 +171,6 @@
                         </div>
                     </div><!-- .field -->
                     <div class="field">
-
-                    </div><!-- .field -->
-                    <div class="field">
                         <label>Endpreis (in EUR)</label>
                         <input title="Wert nach Steuer (in EUR)" type="number" class="calc" readonly="readonly"
                                name="newCostInLocalCurrencyAfterTax" id="newCostInLocalCurrencyAfterTax"
@@ -179,7 +178,7 @@
 
                     </div><!-- .field -->
                 </div>
-            </fieldset> <!-- 1/2 field -->
+            </fieldset> <!-- 1/2 field |  .la-account-currency -->
 
 
 
@@ -473,4 +472,4 @@
     </script>
 
 </semui:modal>
-<!-- _editAjax.gsp -->
+<!-- _ajaxModal.gsp -->
