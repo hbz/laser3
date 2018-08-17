@@ -54,7 +54,6 @@
                     <i class="dropdown icon"></i>
                     ${subListItem.key != 'clean' ? subListItem.key : 'Ohne konkrete Zuordnung'}
                     ( ${subListItem.value?.size()} )
-                    <span class="sumOfCosts_${i}" style="position:absolute;right:30px"></span>
                 </div>
 
                 <div class="content">
@@ -70,10 +69,6 @@
         </g:each>
 
     <g:if test="${costItemsOwner.size() > 1}">
-            <div class="title">
-                <strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}:<span id="totalCost" style="position:absolute;right:30px"></span></strong>
-            </div>
-
         </div><!-- .accordion -->
     </g:if>
 
