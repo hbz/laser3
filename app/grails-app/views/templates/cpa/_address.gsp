@@ -3,7 +3,7 @@
         <span  data-tooltip="${message(code:'adress.icon.label.adress')}" data-position="top right" data-variation="tiny">
             <i class="ui icon building map marker alternate la-list-icon"></i>
         </span>
-        <div class="content">
+        <div class="content la-space-right">
             <g:link controller="address" action="show" id="${address?.id}">
                 ${address.type?.getI10n('value')}:
 
