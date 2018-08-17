@@ -465,6 +465,10 @@
                                 <div class="divider"></div>
 
                                 <g:link class="item" controller="logout">${message(code:'menu.user.logout')}</g:link>
+                                <div class="divider"></div>
+                                <g:if test="${grailsApplication.metadata['app.version']}">
+                                    <div class="header">Version: ${grailsApplication.metadata['app.version']}</div>
+                                </g:if>
                             </div>
                         </div>
                     </g:if>

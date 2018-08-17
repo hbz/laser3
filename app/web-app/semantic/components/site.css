@@ -698,3 +698,6 @@ body[class*="organisation"] .ui.label.la-object .icon:before {
   margin-top: -20px;
   margin-left: -3px;
 }
+.la-space-right {
+  padding-right: 20px;
+}
