@@ -31,7 +31,7 @@
 		<g:each in="${persons}" var="person" status="c">
 			<tr>
                 <td>
-                    ${c + 1}
+                    ${c + 1 + (offset?:0)}
                 </td>
 				<td>
                     ${person?.first_name? person?.last_name + ', ' + person?.first_name : person?.last_name}
