@@ -281,8 +281,7 @@ class GlobalSourceSyncService {
         grt.localOid = "com.k_int.kbplus.Package:${pkg.id}"
         grt.save()
 
-          //Update INDEX ES
-          dataloadService.updateFTIndexes();
+
       }
     }
 
@@ -900,6 +899,9 @@ class GlobalSourceSyncService {
   }
 
   def initialiseTracker(grt) {
+
+    def newrecord = reloadAndSaveRecordofPackage(grt)
+
     int rectype = grt.owner.rectype.longValue()
     def cfg = rectypes[rectype]
 
@@ -910,7 +912,9 @@ class GlobalSourceSyncService {
     def newrec = ins.readObject()
     ins.close()
 
-    cfg.reconciler.call(grt,oldrec,newrec)
+    def record = newrecord.parsed_rec ?: newrec
+
+    cfg.reconciler.call(grt,oldrec,record)
   }
 
   def initialiseTracker(grt, localPkgOID) {
@@ -976,7 +980,7 @@ class GlobalSourceSyncService {
     }
 
     def oai = new OaiClientLaser()
-    def titlerecord = oai.getRecordTitle(uri, 'titles', 'org.gokb.cred.TitleInstance:'+title_id)
+    def titlerecord = oai.getRecord(uri, 'titles', 'org.gokb.cred.TitleInstance:'+title_id)
 
     if(titlerecord == null)
     {
@@ -1085,5 +1089,51 @@ class GlobalSourceSyncService {
               }
             }
   }
+
+  def reloadAndSaveRecordofPackage(grt)
+  {
+    def gli = GlobalRecordInfo.get(grt.owner.id)
+    def grs = GlobalRecordSource.get(gli.source.id)
+    def uri = grs.uri.replaceAll("packages", "")
+    def oai = new OaiClientLaser()
+    def record = oai.getRecord(uri, 'packages', grt.owner.identifier)
+
+    def newrecord = record ? packageConv(record.metadata, grs) : null
+
+    if(newrecord) {
+      def baos = new ByteArrayOutputStream()
+      def out = new ObjectOutputStream(baos)
+      log.debug("write object ${newrecord?.parsed_rec}");
+      out.writeObject(newrecord?.parsed_rec)
+      out.close()
+
+      gli.record = baos.toByteArray()
+      gli.save()
+    }
+
+    return newrecord
+
+  }
+
+  def initialiseTrackerNew(grt) {
+
+    def newrecord = reloadAndSaveRecordofPackage(grt)
+
+    int rectype = grt.owner.rectype.longValue()
+    def cfg = rectypes[rectype]
+
+    def oldrec = [:]
+    oldrec.tipps=[]
+    def bais = new ByteArrayInputStream((byte[])(grt.owner.record))
+    def ins = new ObjectInputStream(bais);
+    def newrec = ins.readObject()
+    ins.close()
+
+    def record = newrecord.parsed_rec ?: newrec
+
+    cfg.reconciler.call(grt,oldrec,record)
+  }
+
+
 
 }

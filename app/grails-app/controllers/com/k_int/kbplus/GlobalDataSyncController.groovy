@@ -141,6 +141,8 @@ class GlobalDataSyncController {
                   autoAcceptPackageUpdate: params.autoAcceptPackageChange == 'on' ? true : false)
           if ( grt.save() ) {
             globalSourceSyncService.initialiseTracker(grt);
+            //Update INDEX ES
+            dataloadService.updateFTIndexes();
           }
           else {
             log.error(grt.errors)
