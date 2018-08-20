@@ -7,9 +7,9 @@
 
 <thead>
     <tr>
-        <th></th>
-        <th>${message(code:'financials.costInLocalCurrency')}</th>
-        <th class="three wide">${message(code:'financials.newCosts.costTitle')}</th>
+        <th>${message(code:'financials.newCosts.costTitle')}</th>
+        <th class="two wide">${message(code:'financials.costInBillingCurrency')}</th>
+        <th class="two wide">${message(code:'financials.newCosts.valueInEuro')}</th>
         <th>${message(code:'financials.costItemElement')}</th>
         <th>${message(code:'financials.costItemStatus')}</th>
         <th></th>
@@ -36,14 +36,11 @@
                     <g:each in="${orgRoles}" var="or">
                         <g:link mapping="subfinance" params="[sub:or.sub.id]">${or.org}</g:link>
                     </g:each>
+
+                    <br />
+                    &nbsp; &nbsp; <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" />
                 </td>
                 <td>
-                    <%--
-                    <span class="costInLocalCurrency" data-costInLocalCurrency="<g:formatNumber number="${ci.costInLocalCurrency}" locale="en" maxFractionDigits="2"/>">
-                        <g:formatNumber number="${ci.costInLocalCurrency}" type="currency" currencyCode="EUR"/> /
-                        <g:formatNumber number="${ci.costInBillingCurrency}" type="currency" currencyCode="${ci.billingCurrency}"/>
-                    </span>
-                    --%>
                     <span class="costData"
                           data-costInLocalCurrency="<g:formatNumber number="${ci.costInLocalCurrency}" locale="en" maxFractionDigits="2"/>"
                           data-costInLocalCurrencyAfterTax="<g:formatNumber number="${ci.costInLocalCurrencyAfterTax}" locale="en" maxFractionDigits="2"/>"
@@ -51,13 +48,15 @@
                           data-costInBillingCurrency="<g:formatNumber number="${ci.costInBillingCurrency}" locale="en" maxFractionDigits="2"/>"
                           data-costInBillingCurrencyAfterTax="<g:formatNumber number="${ci.costInBillingCurrencyAfterTax}" locale="en" maxFractionDigits="2"/>"
                     >
-                        <g:formatNumber number="${ci.costInBillingCurrency}" type="currency" currencyCode="${ci.billingCurrency}"/>
+                        <g:formatNumber number="${ci.costInBillingCurrency}" type="currency" currencyCode="${ci.billingCurrency}" />
                         <br />
-                        <g:formatNumber number="${ci.costInBillingCurrencyAfterTax}" type="currency" currencyCode="${ci.billingCurrency}"/>
+                        <g:formatNumber number="${ci.costInBillingCurrencyAfterTax}" type="currency" currencyCode="${ci.billingCurrency}" />
                     </span>
                 </td>
                 <td>
-                    <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" />
+                    <g:formatNumber number="${ci.costInLocalCurrency}" type="currency" currencyCode="EUR" />
+                    <br />
+                    <g:formatNumber number="${ci.costInLocalCurrencyAfterTax}" type="currency" currencyCode="EUR" />
                 </td>
                 <td>
                     <semui:xEditableRefData config="CostItemElement" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemElement" />

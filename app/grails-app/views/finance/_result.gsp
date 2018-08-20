@@ -42,6 +42,10 @@
     <div class="ui bottom attached tab active" data-tab="OWNER">
 </g:if><%-- FinanceController.MODE_CONS_SUBSCR --%>
 
+    <g:if test="${! costItemsOwner}">
+        <g:render template="result_tab_owner" model="[editable: editable, cost_items: [], i: 'empty']"></g:render>
+    </g:if>
+
     <g:if test="${costItemsOwner.size() > 1}">
         <div class="ui fluid accordion">
             <br />

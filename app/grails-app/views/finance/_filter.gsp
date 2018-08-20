@@ -214,6 +214,62 @@
                     <input id="filterCITitle" name="filterCITitle" type="text" value="${params.filterCITitle}"/>
                 </div>
 
+                <div class="field fieldcontain"><!--NEW -->
+                    <label for="filterCISub">${message(code:'subscription.label')}</label>
+                    <g:select id="filterCISub" class="ui dropdown selection"
+                              name="filterCISub"
+                              from="${allCISubs}"
+                              optionValue="${{it.name ?: 'Keine Verknüpfung'}}"
+                              optionKey="${{"com.k_int.kbplus.Subscription:" + it.id}}"
+                              noSelection="['':'']"
+                              value="${params.filterCISub}" />
+                </div>
+
+                <div class="field fieldcontain"><!--NEW -->
+                    <label for="filterCISPkg">${message(code:'package.label')}</label>
+                    <g:select id="filterCISPkg" class="ui dropdown selection"
+                              name="filterCISPkg"
+                              from="${allCISPkgs}"
+                              optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
+                              optionKey="${{"com.k_int.kbplus.SubscriptionPackage:" + it?.id}}"
+                              noSelection="['':'']"
+                              value="${params.filterCISPkg}" />
+                </div>
+            </div><!-- .three -->
+
+            <div class="three fields">
+                <div class="field">
+                    <label for="filterCIBudgetCode">${message(code:'financials.budgetCode')}</label>
+                    <g:select id="filterCIBudgetCode" class="ui dropdown search selection"
+                              name="filterCIBudgetCode"
+                              from="${allCIBudgetCodes}"
+                              value="${params.filterCIBudgetCode}"
+                              noSelection="${['':'Alle ..']}"
+                    />
+                </div>
+
+                <div class="field">
+                    <label>${message(code:'financials.invoice_number')}</label>
+                    <g:select id="filterCIInvoiceNumber" class="ui dropdown search selection"
+                              name="filterCIInvoiceNumber"
+                              from="${allCIInvoiceNumbers}"
+                              value="${params.filterCIInvoiceNumber}"
+                              noSelection="${['':'Alle ..']}"
+                    />
+                </div>
+
+                <div class="field">
+                    <label>${message(code:'financials.order_number')}</label>
+                    <g:select id="filterCIOrderNumber" class="ui dropdown search selection"
+                              name="filterCIOrderNumber"
+                              from="${allCIOrderNumbers}"
+                              value="${params.filterCIOrderNumber}"
+                              noSelection="${['':'Alle ..']}"
+                    />
+                </div>
+            </div><!-- .three -->
+
+            <div class="three fields">
                 <div class="field fieldcontain">
                     <label for="filterCIElement">${message(code:'financials.costItemElement')}</label>
                     <laser:select id="filterCIElement" class="ui dropdown selection"
@@ -235,44 +291,51 @@
                                   value="${params.filterCIStatus}"
                                   noSelection="${['':'Alle ..']}"/>
                 </div>
-            </div><!-- .three -->
-
-            <div class="three fields">
-                <div class="field">
-                    <label for="filterCIBudgetCode">${message(code:'financials.budgetCode')}</label>
-                    <g:select id="filterCIBudgetCode" class="ui dropdown search selection"
-                              name="filterCIBudgetCode"
-                              from="${allCIBudgetCodes}"
-                              value="${params.filterCIBudgetCode}"
-                              noSelection="${['':'Alle ..']}"
-                        />
-                </div>
-
-                <div class="field">
-                    <label>${message(code:'financials.invoice_number')}</label>
-                    <g:select id="filterCIInvoiceNumber" class="ui dropdown search selection"
-                              name="filterCIInvoiceNumber"
-                              from="${allCIInvoiceNumbers}"
-                              value="${params.filterCIInvoiceNumber}"
-                              noSelection="${['':'Alle ..']}"
-                        />
-                </div>
-
-                <div class="field">
-                    <label>${message(code:'financials.order_number')}</label>
-                    <g:select id="filterCIOrderNumber" class="ui dropdown search selection"
-                              name="filterCIOrderNumber"
-                              from="${allCIOrderNumbers}"
-                              value="${params.filterCIOrderNumber}"
-                              noSelection="${['':'Alle ..']}"
-                        />
+                <div class="field fieldcontain"><!--NEW -->
+                <%--
+                <label for="filterCICategory">${message(code:'financials.costItemCategory')}</label>
+                <laser:select id="filterCICategory" class="ui dropdown selection"
+                              name="filterCICategory"
+                              from="${costItemCategory}"
+                              optionKey="${{it.class.getName() + ":" + it.id}}"
+                              optionValue="value"
+                              value="${params.filterCICategory}"
+                              noSelection="${['':'Alle ..']}"/>
+                              --%>
+                    <label for="filterCITaxType">${message(code:'financials.newCosts.controllable')}</label>
+                    <laser:select id="filterCITaxType" class="ui dropdown selection"
+                                  name="filterCITaxType"
+                                  from="${taxType}"
+                                  optionKey="${{it.class.getName() + ":" + it.id}}"
+                                  optionValue="value"
+                                  value="${params.taxType}"
+                                  noSelection="${['':'Alle ..']}"/>
                 </div>
             </div><!-- .three -->
 
             <div class="three fields">
                 <div class="field">
-                    <label>Unscharfe Suche zulassen (im Feld Bezeichnung)</label>
-                    <input type="checkbox" name="wildcard" value="on" <g:if test="${wildcard != 'off'}"> checked="checked"</g:if> />
+                    <semui:datepicker label="default.valid_on.label" name="filterCIValidOn" placeholder="filter.placeholder"
+                                      value="${params.filterCIValidOn}"/>
+                </div>
+
+                <div class="field">
+                    <semui:datepicker label="financials.invoice_from" name="filterCIInvoiceFrom" placeholder="filter.placeholder"
+                                      value="${params.filterCIInvoiceFrom}"/>
+                </div>
+
+                <div class="field">
+                    <semui:datepicker label="financials.invoice_to" name="filterCIInvoiceTo" placeholder="filter.placeholder"
+                                      value="${params.filterCIInvoiceTo}"/>
+                </div>
+            </div>
+
+            <div class="three fields">
+                <div class="field">
+                    <%--
+                    <label>Genaue Suche (im Feld Bezeichnung)</label>
+                    <input type="checkbox" name="wildcard" value="off" <g:if test="${wildcard != 'on'}"> checked="checked"</g:if> />
+                    --%>
                 </div>
 
                 <div class="field">

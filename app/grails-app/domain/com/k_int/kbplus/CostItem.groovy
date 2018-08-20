@@ -30,6 +30,7 @@ class CostItem extends BaseDomainComponent {
     Double costInLocalCurrencyAfterTax
     Integer taxRate
     Boolean finalCostRounding
+    Date invoiceDate
 
     String costTitle
     String costDescription
@@ -50,7 +51,7 @@ class CostItem extends BaseDomainComponent {
     @Transient
     def springSecurityService
 
-    static final TAX_RATES = [ 0, 9, 17 ]
+    static final TAX_RATES = [ 0, 7, 19 ]
 
     static mapping = {
         id              column: 'ci_id'
@@ -75,6 +76,7 @@ class CostItem extends BaseDomainComponent {
         finalCostRounding               column:'ci_final_cost_rounding'
         taxCode         column: 'ci_tax_code'
         taxRate                         column: 'ci_tax_rate'
+        invoiceDate                     column: 'ci_invoice_date'
         includeInSubscription column: 'ci_include_in_subscr'
         costItemCategory    column: 'ci_cat_rv_fk'
         costItemElement     column: 'ci_element_rv_fk'
@@ -104,6 +106,7 @@ class CostItem extends BaseDomainComponent {
         finalCostRounding               (nullable: true, blank: false)
         taxCode         (nullable: true, blank: false)
         taxRate                         (nullable: true, blank: false)
+        invoiceDate                     (nullable: true, blank: false)
         includeInSubscription(nullable: true, blank: false)
         costItemCategory(nullable: true, blank: false)
         costItemStatus  (nullable: true, blank: false)

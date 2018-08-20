@@ -127,6 +127,9 @@ class FinanceController {
           result.allCIOrderNumbers   = (myCostItems.collect{ it -> it?.order?.orderNumber }).findAll{ it }.unique().sort()
           result.allCIBudgetCodes    = (myCostItems.collect{ it -> it?.budgetcodes?.value }).flatten().unique().sort()
 
+          result.allCISPkgs = (myCostItems.collect{ it -> it?.subPkg }).findAll{ it }.unique().sort()
+          result.allCISubs  = (myCostItems.collect{ it -> it?.sub }).findAll{ it }.unique().sort()
+
           result.isXHR = request.isXhr()
         //Other than first run, request will always be AJAX...
         if (result.isXHR) {
@@ -149,19 +152,23 @@ class FinanceController {
         log.debug("finance::index returning");
       }
 
-
       result
     }
 
     /**
-     * Setup the data for the financials processing (see financialData())
-     * @param result
-     * @param params
-     * @param user
-     * @return Query data to performing selection, ordering/sorting, and query parameters (e.g. institution)
+     * Sets up the financial data parameters and performs the relevant DB search
+     * @param result - LinkedHashMap for model data
+     * @param params - Qry data sent from view
+     * @param user   - Currently logged in user object
+     * @return Cost Item count & data / view information for pagination, sorting, etc
+     *
+     * Note - Requests DB requests are cached ONLY if non-hardcoded values are used
      */
-    private def setupQueryData(result, params, user) {
-        //Setup params
+    private def financialData(result, params, user, queryMode) {
+        def tmp = [:]
+
+        //Setup using param data, returning back DB query info
+
         result.editable    =  accessService.checkMinUserOrgRole(user, result.institution, user_role)
         params.shortcode   =  result.institution.shortcode
 
@@ -179,7 +186,7 @@ class FinanceController {
         result.sort        =  ["desc","asc"].contains(params.sort)? params.sort : "desc" //defaults to sort & order of desc id
         result.isRelation  =  params.orderRelation? params.boolean('orderRelation',false) : false
 
-        result.wildcard    =  params.wildcard == 'on' ? 'on' : 'off' //defaulted to on
+        //result.wildcard    =  params.wildcard != 'off' ? 'on' : 'off' //defaulted to on
 
         // TODO fix:shortcode
         if (params.csvMode && request.getHeader('referer')?.endsWith("${params?.shortcode}/finance")) {
@@ -195,32 +202,14 @@ class FinanceController {
         def cost_item_qry        = (join)? "LEFT OUTER JOIN ${join} AS j WHERE ci.owner = :owner " :"  where ci.owner = :owner "
         def orderAndSortBy       = (join)? "ORDER BY COALESCE(j.${order}, ${Integer.MAX_VALUE}) ${result.sort}, ci.id ASC" : " ORDER BY ci.${order} ${result.sort}"
 
-        return [cost_item_qry_params, cost_item_qry, orderAndSortBy]
-    }
-
-    /**
-     * Sets up the financial data parameters and performs the relevant DB search
-     * @param result - LinkedHashMap for model data
-     * @param params - Qry data sent from view
-     * @param user   - Currently logged in user object
-     * @param queryMode - MODE_OWNER, MODE_CHILDREN, MODE_ALL
-     * @return Cost Item count & data / view information for pagination, sorting, etc
-     *
-     * Note - Requests DB requests are cached ONLY if non-hardcoded values are used
-     */
-    private def financialData(result, params, user, queryMode) {
-        def tmp = [:]
-
-        //Setup using param data, returning back DB query info
-        def (cost_item_qry_params, cost_item_qry, orderAndSortBy) = setupQueryData(result, params, user)
 
         //Filter processing...
 
             log.debug("FinanceController::index()  -- Performing filtering processing...")
-            def qryOutput = filterQuery(result, params, (result.wildcard == 'on'), queryMode)
+            def qryOutput = filterQuery(result, params, (/*result.wildcard != 'off'*/ true), queryMode)
 
             cost_item_qry_params   << qryOutput.fqParams
-        tmp.foundMatches    =  cost_item_qry_params.size() > 1 // used for flash
+        tmp.foundMatches    =  cost_item_qry_params.size() > 1 // [owner:default] ; used for flash
         tmp.cost_items      =  CostItem.executeQuery(ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy, cost_item_qry_params, params);
         tmp.cost_item_count =  CostItem.executeQuery(ci_count + cost_item_qry + qryOutput.qry_string, cost_item_qry_params).first();
 
@@ -515,31 +504,60 @@ class FinanceController {
         filterBy( 'filterCIOrderNumber', 'orderNumber', 'order' )
         filterBy( 'filterCIInvoiceNumber', 'invoiceNumber', 'invoice' )
 
+        //filterBy( 'filterCICategory', 'costItemCategory', 'refdata' )
         filterBy( 'filterCIElement', 'costItemElement', 'refdata' )
         filterBy( 'filterCIStatus', 'costItemStatus', 'refdata' )
 
+        filterBy( 'filterCITaxType', 'taxCode', 'refdata' )
         filterBy( 'filterCIBudgetCode', 'budgetCode', 'budgetCode' )
 
+        if (params.filterCISub) {
+            def fSub = genericOIDService.resolveOID(params.filterCISub)
+            if (fSub) {
+                fqResult.qry_string += " AND ci.sub.id = :subId "
+                countCheck          += " AND ci.sub.id = :subId "
 
-        /*
-        if (params?.subscriptionFilter?.startsWith("com.k_int.kbplus.Subscription:")) {
-
-            def sub     = Subscription.get(params.subscriptionFilter.split(":")[1])
-            def subCost = sub ? CostItem.findBySubAndOwner(sub,result.institution) : null
-            if (subCost)
-            {
-                fqResult.valid.add([status: message(code: 'financials.result.filtered.success', args: [message(code: 'financials.field.sub')]),
-                                    msg: "Found Subscription: "+sub.name])
-                fqResult.qry_string += " AND ci_sub_fk = "+sub.id+" "
-                countCheck          += " AND ci_sub_fk = "+sub.id
-            } else
-            {
-                fqResult.failed.add([status: message(code: 'financials.result.filtered.failed', args: [message(code: 'financials.field.sub')]),
-                                     msg: message(code: 'financials.result.filtered.failed.msg2', args: [ message(code: 'financials.field.sub'), sub!=null? sub.name:'no subscription name!'])])
-                params.remove('subscriptionFilter')
+                fqResult.fqParams << [subId: fSub.id]
             }
         }
-        else */
+
+        if (params.filterCISPkg) {
+            def fSPkg = genericOIDService.resolveOID(params.filterCISPkg)
+            if (fSPkg) {
+                fqResult.qry_string += " AND ci.subPkg.pkg.id = :pkgId"
+                countCheck          += " AND ci.subPkg.pkg.id = :pkgId"
+
+                fqResult.fqParams << [pkgId: fSPkg.pkg.id]
+            }
+        }
+
+        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+
+        if (params.filterCIValidOn) {
+            fqResult.qry_string += " AND (ci.startDate <= :validOn OR ci.startDate IS null) AND (ci.endDate >= :validOn OR ci.endDate IS null) "
+            countCheck          += " AND (ci.startDate <= :validOn OR ci.startDate IS null) AND (ci.endDate >= :validOn OR ci.endDate IS null) "
+
+            fqResult.fqParams << [validOn: sdf.parse(params.filterCIValidOn)]
+        }
+
+        if (params.filterCIInvoiceFrom) {
+            println sdf.parse(params.filterCIInvoiceFrom)
+
+            fqResult.qry_string += " AND (ci.invoiceDate >= :invoiceDateFrom AND ci.invoiceDate IS NOT null) "
+            countCheck          += " AND (ci.invoiceDate >= :invoiceDateFrom AND ci.invoiceDate IS NOT null) "
+
+            fqResult.fqParams << [invoiceDateFrom: sdf.parse(params.filterCIInvoiceFrom)]
+        }
+
+        if (params.filterCIInvoiceTo) {
+            println sdf.parse(params.filterCIInvoiceTo)
+
+            fqResult.qry_string += " AND (ci.invoiceDate <= :invoiceDateTo AND ci.invoiceDate IS NOT null) "
+            countCheck          += " AND (ci.invoiceDate <= :invoiceDateTo AND ci.invoiceDate IS NOT null) "
+
+            fqResult.fqParams << [invoiceDateTo: sdf.parse(params.filterCIInvoiceTo)]
+        }
+
         if (MODE_CONS_SUBSCR == queryMode) {
             if (result.inSubMode && result.fixedSubscription) {
                 def memberSubs = Subscription.findAllByInstanceOf(result.fixedSubscription)
@@ -555,25 +573,7 @@ class FinanceController {
             }
         }
 
-        if (params?.packageFilter?.startsWith("com.k_int.kbplus.SubscriptionPackage:")) {
-            def pkg        = SubscriptionPackage.get(params.packageFilter.split(":")[1]);
-            def subPkgCost = pkg ? CostItem.findBySubPkgAndOwner(pkg,result.institution) : null
-            if (subPkgCost)
-            {
-                fqResult.valid.add([status: message(code: 'financials.result.filtered.success', args: [message(code: 'financials.field.subpkg')]),
-                                    msg: message(code: 'financials.result.filtered.success.msg2', args: [ message(code: 'financials.field.subpkg'), params.packageFilter])])
-                fqResult.qry_string += " AND ci_subPkg_fk = " + pkg.id
-                countCheck          += " AND ci_subPkg_fk = " + pkg.id
-            } else
-            {
-                fqResult.failed.add([status: message(code: 'financials.result.filtered.failed', args: [message(code: 'financials.field.subpkg')]),
-                                     msg: message(code: 'financials.result.filtered.failed.msg2', args: [ message(code: 'financials.field.subpkg'), params.packageFilter])])
-                params.remove('packageFilter')
-            }
-        }
-
         fqResult.filterCount = CostItem.executeQuery(countCheck, fqResult.fqParams).first() // ?
-
         log.debug("Financials : filterQuery - Wildcard Searching active : ${wildcard} Query output : ${fqResult.qry_string? fqResult.qry_string:'qry failed!'}")
 
         return fqResult
@@ -672,35 +672,20 @@ class FinanceController {
             }
         }
 
-        def datePaid = null
-        if (params.newDatePaid)
-        {
+        Closure newDate = { param, format ->
+            Date date
             try {
-                datePaid = dateFormat.parse(params.newDatePaid)
+                date = dateFormat.parse(param)
             } catch (Exception e) {
-                log.debug("Unable to parse date : ${params.newDatePaid} in format ${dateFormat.toPattern()}")
+                log.debug("Unable to parse date : ${param} in format ${format}")
             }
+            date
         }
 
-        def startDate = null
-        if (params.newStartDate)
-        {
-            try {
-                startDate = dateFormat.parse(params.newStartDate)
-            } catch (Exception e) {
-                log.debug("Unable to parse date : ${params.newStartDate} in format ${dateFormat.toPattern()}")
-            }
-        }
-
-        def endDate = null
-        if (params.newEndDate)
-        {
-            try {
-                endDate = dateFormat.parse(params.newEndDate)
-            } catch (Exception e) {
-                log.debug("Unable to parse date : ${params.newEndDate} in format ${dateFormat.toPattern()}")
-            }
-        }
+        def datePaid    = newDate(params.newDatePaid,  dateFormat.toPattern())
+        def startDate   = newDate(params.newStartDate, dateFormat.toPattern())
+        def endDate     = newDate(params.newEndDate,   dateFormat.toPattern())
+        def invoiceDate = newDate(params.newInvoiceDate,    dateFormat.toPattern())
 
         def ie = null
         if(params.newIe)
@@ -759,13 +744,17 @@ class FinanceController {
             newCostItem.costInBillingCurrency = cost_billing_currency as Double
             newCostItem.costInLocalCurrency = cost_local_currency as Double
 
+            newCostItem.finalCostRounding   = params.newFinalCostRounding ? true : false
             newCostItem.costInBillingCurrencyAfterTax = cost_billing_currency_after_tax as Double
             newCostItem.costInLocalCurrencyAfterTax   = cost_local_currency_after_tax as Double
+            newCostItem.currencyRate                  = cost_currency_rate as Double
             newCostItem.taxRate                       = new_tax_rate as Integer
 
             newCostItem.datePaid            = datePaid
             newCostItem.startDate           = startDate
             newCostItem.endDate             = endDate
+            newCostItem.invoiceDate         = invoiceDate
+
             newCostItem.includeInSubscription = null //todo Discussion needed, nobody is quite sure of the functionality behind this...
             newCostItem.reference           = params.newReference? params.newReference.trim()?.toLowerCase() : null
 

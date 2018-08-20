@@ -116,6 +116,7 @@
 
             <div id="filterTemplateWrapper" class="wrapper">
                 <div id="filterTemplate">
+
                     <g:render template="filter" model="['ciListOwner': cost_items, 'ciListConsSubsc': cost_items_CS]"/>
 
                     <g:render template="result" model="['ciListOwner': cost_items, 'ciListConsSubsc': cost_items_CS]"/>
@@ -252,7 +253,7 @@
         financeHelper.calcSumOfCosts()
     })
 
-         $('table[id^=costTable] .x .button:not(.negative)').on('click', function(e) {
+    $('table[id^=costTable] .x .button:not(.negative)').on('click', function(e) {
         e.preventDefault()
 
         $.ajax({
