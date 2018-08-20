@@ -344,6 +344,7 @@
                             <% /* g:link class="item" controller="admin" action="forumSync">Run Forum Sync</g:link */ %>
                             <% /* g:link class="item" controller="admin" action="juspSync">Run JUSP Sync</g:link */ %>
                             <g:link class="item" controller="admin" action="forceSendNotifications">Send Pending Notifications</g:link>
+                            <g:link class="item" controller="admin" action="checkPackageTIPPs">Tipps Check of GOKB and LAS:eR</g:link>
 
                             <div class="ui dropdown item">
                                 Data Management
