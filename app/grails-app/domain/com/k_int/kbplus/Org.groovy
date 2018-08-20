@@ -255,7 +255,7 @@ class Org extends BaseDomainComponent {
         }
 
         // No match by identifier, try and match by name
-        if (result == null) {
+        if (!result) {
             // log.debug("Match by name ${name}");
             def o = Org.executeQuery("select o from Org as o where lower(o.name) = ?", [name.toLowerCase()])
 
