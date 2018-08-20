@@ -1,4 +1,8 @@
 
+0.7.4
+
+- bugfix: matching organisations by name
+
 0.7.3
 
 - denied access to subscription list for licensees
