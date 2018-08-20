@@ -42,6 +42,7 @@ class SubscriptionDetailsController {
     def docstoreService
     def ESWrapperService
     def globalSourceSyncService
+    def dataloadService
 
     private static String INVOICES_FOR_SUB_HQL =
             'select co.invoice, sum(co.costInLocalCurrency), sum(co.costInBillingCurrency), co from CostItem as co where co.sub = :sub group by co.invoice order by min(co.invoice.startDate) desc';
@@ -271,15 +272,15 @@ class SubscriptionDetailsController {
                 def numOfPCs = removePackagePendingChanges(result.package.id, result.subscription.id, params.confirmed)
 
                 def numOfIEs = IssueEntitlement.executeQuery("select count(ie) ${query}", queryParams)[0]
-                def conflict_item_pkg = [name: "Linked Package", details: [['link': createLink(controller: 'packageDetails', action: 'show', id: result.package.id), 'text': result.package.name]], action: [actionRequired: false, text: 'Link will be removed']]
+                def conflict_item_pkg = [name: "${g.message(code: "subscription.details.unlink.linkedPackage")}", details: [['link': createLink(controller: 'packageDetails', action: 'show', id: result.package.id), 'text': result.package.name]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.linkedPackage.action")}"]]
                 def conflicts_list = [conflict_item_pkg]
 
                 if (numOfIEs > 0) {
-                    def conflict_item_ie = [name: "Package IEs", details: [['text': 'Number of IEs: ' + numOfIEs]], action: [actionRequired: false, text: 'IEs will be deleted']]
+                    def conflict_item_ie = [name: "${g.message(code: "subscription.details.unlink.packageIEs")}", details: [['text': "${g.message(code: "subscription.details.unlink.packageIEs.numbers")} " + numOfIEs]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.packageIEs.action")}"]]
                     conflicts_list += conflict_item_ie
                 }
                 if (numOfPCs > 0) {
-                    def conflict_item_pc = [name: "Pending Changes", details: [['text': 'Number of PendingChanges: ' + numOfPCs]], action: [actionRequired: false, text: 'Pending Changes will be deleted']]
+                    def conflict_item_pc = [name: "${g.message(code: "subscription.details.unlink.pendingChanges")}", details: [['text': "${g.message(code: "subscription.details.unlink.pendingChanges.numbers")} " + numOfPCs]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.pendingChanges.numbers.action")}"]]
                     conflicts_list += conflict_item_pc
                 }
 
@@ -290,7 +291,7 @@ class SubscriptionDetailsController {
         }
 
 
-        redirect action: 'index', id: params.subscription
+        redirect(url: request.getHeader('referer'))
 
     }
 
@@ -1202,19 +1203,23 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
         log.debug("Link package, params: ${params} ");
 
         //Wenn die Subsc schon ein Anbieter hat. Soll nur Pakete von diesem Anbieter angezeigt werden als erstes
-        if(params.size() == 3) {
+        /*if(params.size() == 3) {
             def subInstance = Subscription.get(params.id)
                     subInstance.orgRelations?.each { or ->
            if (or.roleType.value == "Provider") {
                 params.put("cpname", or.org.name)
                 }
             }
-        }
+        }*/
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
         }
+
+        //Change to GOKB ElasticSearch
+        params.esgokb = "Package"
+        params.sort = "name.sort"
 
         if (params.addType && (params.addType != '')) {
             if(params.esgokb)
@@ -1234,11 +1239,19 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
                                         autoAcceptPackageUpdate: params.autoAcceptPackageChange == 'on' ? true : false)
                     if ( grt.save() ) {
                          globalSourceSyncService.initialiseTracker(grt);
+                        //Update INDEX ES
+                        dataloadService.updateFTIndexes();
                     }
                     else {
                           log.error(grt.errors)
                     }
                 }
+                if (!Package.findByImpId(grt.owner.identifier)){
+                    globalSourceSyncService.initialiseTracker(grt);
+                    //Update INDEX ES
+                    dataloadService.updateFTIndexes();
+                }
+
                 def pkg_to_link =Package.findByImpId(grt.owner.identifier)
                 def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
                 log.debug("Add package ${params.addType} to subscription ${params}");
@@ -1310,10 +1323,6 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
     log.debug("Going for ES")
     User user   = springSecurityService.getCurrentUser()
     params.max = user?.getDefaultPageSize()?:25
-
-    //Change to GOKB ElasticSearch
-    params.esgokb = "Package"
-    params.sort = "name"
 
     result.putAll(ESSearchService.search(params))
         result

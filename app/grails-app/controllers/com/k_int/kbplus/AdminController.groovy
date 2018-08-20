@@ -28,6 +28,7 @@ class AdminController {
   def docstoreService
   def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
   def executorService
+  def ESSearchService
 
   @Secured(['ROLE_ADMIN'])
   def index() { }
@@ -903,4 +904,49 @@ class AdminController {
                 usedRdvList : usedRdvList
         ]
   }
+
+  @Secured(['ROLE_ADMIN'])
+  def checkPackageTIPPs() {
+    def result = [:]
+    result.user = User.get(springSecurityService.principal.id)
+
+
+    //Change to GOKB ElasticSearch
+    params.esgokb = "Package"
+    params.sort = "name.sort"
+
+    params.max = (result.user?.getDefaultPageSize() >= Package.getAll().size())? result.user?.getDefaultPageSize() : Package.getAll().size()
+    params.q = ""
+
+    if(params.onlyNotEqual){
+      params.onlyNotEqual.each { p ->
+        if (p == params.onlyNotEqual.first()) {
+          params.q +="( "
+        }
+        params.q += "_id:\"${p}\""
+        if (p == params.onlyNotEqual.last()) {
+          params.q +=" ) "
+        } else {
+          params.q +=" OR "
+        }
+      }
+    }
+
+
+    result.putAll(ESSearchService.search(params))
+
+    result.tippsNotEqual = []
+    result.hits.each{ hit ->
+
+        if(com.k_int.kbplus.Package.findByImpId(hit.id)) {
+              if(com.k_int.kbplus.Package.findByImpId(hit.id)?.tipps?.size() != hit.getSource().tippsCountCurrent && hit.getSource().tippsCountCurrent != 0)
+              {
+                result.tippsNotEqual << hit.id
+              }
+        }
+    }
+
+    result
+  }
+
 }

@@ -915,7 +915,7 @@ from Subscription as s where (
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
             def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
-            def startDate = sdf.parse(params.valid_from)
+            def startDate = params.valid_from ? sdf.parse(params.valid_from) : null
             def endDate = params.valid_to ? sdf.parse(params.valid_to) : null
 
 

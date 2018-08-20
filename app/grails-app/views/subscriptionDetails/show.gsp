@@ -335,6 +335,8 @@
                         </div>
                     </div>
 
+                <%-- FINANCE
+
                 <g:if test="${subscriptionInstance.costItems}">
 
                     <div class="ui card la-dl-no-table">
@@ -393,6 +395,8 @@
                         </div>
                     </div>
                 </g:if>
+
+                FINANCE --%>
                 <g:if test="${usage}">
                     <div class="ui card la-dl-no-table">
                         <div class="content">
