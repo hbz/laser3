@@ -26,12 +26,12 @@
 
 <g:render template="nav" />
 
-<g:if test="${license.instanceOf && (contextOrg == license.getLicensor())}">
+<g:if test="${license.instanceOf && (contextOrg == license.getLicensingConsortium())}">
     <div class="ui negative message">
         <div class="header"><g:message code="myinst.message.attention" /></div>
         <p>
             <g:message code="myinst.licenseDetails.message.ChildView" />
-            <span class="ui label">${license.getLicensee()?.collect{itOrg -> itOrg.name}?.join(',')}</span>.
+            <span class="ui label">${license.getAllLicensee()?.collect{itOrg -> itOrg.name}?.join(',')}</span>.
         <g:message code="myinst.licenseDetails.message.ConsortialView" />
         <g:link controller="licenseDetails" action="show" id="${license.instanceOf.id}"><g:message code="myinst.subscriptionDetails.message.here" /></g:link>.
         </p>

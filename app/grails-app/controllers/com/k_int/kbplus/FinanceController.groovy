@@ -730,6 +730,10 @@ class FinanceController {
           def cost_currency_rate    = params.newCostCurrencyRate?      params.double('newCostCurrencyRate', 1.00) : 1.00
           def cost_local_currency   = params.newCostInLocalCurrency?   params.double('newCostInLocalCurrency', 0.00) : 0.00
 
+          def cost_billing_currency_after_tax   = params.newCostInBillingCurrencyAfterTax ? params.double( 'newCostInBillingCurrencyAfterTax') : cost_billing_currency
+          def cost_local_currency_after_tax     = params.newCostInLocalCurrencyAfterTax ? params.double( 'newCostInLocalCurrencyAfterTax') : cost_local_currency
+          def new_tax_rate                      = params.newTaxRate ? params.int( 'newTaxRate' ) : 0
+
         //def inclSub = params.includeInSubscription? (RefdataValue.get(params.long('includeInSubscription'))): defaultInclSub //todo Speak with Owen, unknown behaviour
 
           if (params.oldCostItem && genericOIDService.resolveOID(params.oldCostItem)) {
@@ -754,7 +758,11 @@ class FinanceController {
             newCostItem.costTitle           = params.newCostTitle ?: null
             newCostItem.costInBillingCurrency = cost_billing_currency as Double
             newCostItem.costInLocalCurrency = cost_local_currency as Double
-            newCostItem.currencyRate        = cost_currency_rate as Double
+
+            newCostItem.costInBillingCurrencyAfterTax = cost_billing_currency_after_tax as Double
+            newCostItem.costInLocalCurrencyAfterTax   = cost_local_currency_after_tax as Double
+            newCostItem.taxRate                       = new_tax_rate as Integer
+
             newCostItem.datePaid            = datePaid
             newCostItem.startDate           = startDate
             newCostItem.endDate             = endDate

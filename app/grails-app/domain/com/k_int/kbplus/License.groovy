@@ -147,23 +147,41 @@ class License extends BaseDomainComponent implements TemplateSupport, Permission
         return instanceOf ? instanceOf.isTemplate() : false
     }
 
-  def getLicensor() {
-    def result = null;
-    orgLinks.each { or ->
-      if ( or?.roleType?.value in ['Licensor', 'Licensing Consortium'] )
-        result = or.org;
+    def getLicensingConsortium() {
+        def result = null;
+        orgLinks.each { or ->
+            if ( or?.roleType?.value in ['Licensing Consortium'] )
+                result = or.org;
+            }
+        result
     }
-    result
+
+    def getLicensor() {
+        def result = null;
+        orgLinks.each { or ->
+            if ( or?.roleType?.value in ['Licensor'] )
+                result = or.org;
+        }
+        result
+    }
+
+    def getLicensee() {
+        def result = null;
+        orgLinks.each { or ->
+            if ( or?.roleType?.value in ['Licensee', 'Licensee_Consortial'] )
+                result = or.org;
+        }
+        result
+    }
+    def getAllLicensee() {
+        def result = [];
+        orgLinks.each { or ->
+            if ( or?.roleType?.value in ['Licensee', 'Licensee_Consortial'] )
+                result << or.org
+        }
+        result
   }
 
-  def getLicensee() {
-    def result = null;
-    orgLinks.each { or ->
-      if ( or?.roleType?.value in ['Licensee', 'Licensee_Consortial'] )
-        result = or.org;
-    }
-    result
-  }
   @Transient
   def getLicenseType() {
     return type?.value

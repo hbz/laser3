@@ -1,4 +1,5 @@
-<!-- _editAjax.gsp -->
+<!-- _ajaxModal.gsp -->
+<%@ page import="com.k_int.kbplus.CostItem;com.k_int.kbplus.CostItemGroup;" %>
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 
 <g:render template="vars" /><%-- setting vars --%>
@@ -40,7 +41,7 @@
                     <div class="field">
                         <label>${message(code:'financials.budgetCode')}</label>
                         <input type="text" name="newBudgetCode" id="newBudgetCode" class="select2 la-full-width"
-                               placeholder="${com.k_int.kbplus.CostItemGroup.findByCostItem(costItem)?.budgetCode?.value}"/>
+                               placeholder="${CostItemGroup.findByCostItem(costItem)?.budgetCode?.value}"/>
                     </div><!-- .field -->
 
                     <div class="field">
@@ -99,61 +100,85 @@
         <div class="fields">
             <fieldset class="nine wide field la-modal-fieldset-margin-right la-account-currency">
                 <label>${g.message(code:'financials.newCosts.amount')}</label>
+
                 <div class="two fields">
                     <div class="field">
-                        <label>${g.message(code:'financials.newCosts.valueInEuro')}</label>
-                        <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="number" class="calc"
-                               name="newCostInLocalCurrency" id="newCostInLocalCurrency"
-                               placeholder="${message(code:'financials.newCosts.valueInEuro')}" value="${costItem?.costInLocalCurrency}" step="0.01"/>
+                        <label>${message(code:'financials.invoice_total')}</label>
+                        <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="number" class="calc" style="width:50%"
+                               name="newCostInBillingCurrency" id="newCostInBillingCurrency"
+                               placeholder="${g.message(code:'financials.invoice_total')}"
+                               value="${costItem?.costInBillingCurrency}" step="0.01"/>
 
-                        <div class="ui icon button" id="costButton1" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                        <div class="ui icon button" id="costButton3" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
+
+                        <g:select class="ui dropdown dk-width-auto" name="newCostCurrency" title="${g.message(code: 'financials.addNew.currencyType')}"
+                                  from="${currency}"
+                                  optionKey="id"
+                                  optionValue="${{(it.text.split('-')).first()}}"
+                                  value="${costItem?.billingCurrency?.id}" />
                     </div><!-- .field -->
-                    <!-- Aditial field here-->
                     <div class="field">
+                        <label>Endpreis</label>
+                        <input title="Rechnungssumme nach Steuer (in EUR)" type="number" class="calc" readonly="readonly"
+                               name="newCostInBillingCurrencyAfterTax" id="newCostInBillingCurrencyAfterTax"
+                               value="${costItem?.costInBillingCurrencyAfterTax}" step="0.01"/>
 
                     </div><!-- .field -->
+                    <!-- TODO -->
+                    <style>
+                        .dk-width-auto {
+                            width: auto !important;
+                            min-width: auto !important;
+                        }
+                    </style>
                 </div>
+
                 <div class="two fields">
                     <div class="field la-exchange-rate">
                         <label>${g.message(code:'financials.newCosts.exchangeRate')}</label>
                         <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
                                name="newCostCurrencyRate" id="newCostCurrencyRate"
-                               placeholder="${g.message(code:'financials.newCosts.exchangeRate')}" value="${costItem?.currencyRate}" step="0.000000001" />
+                               placeholder="${g.message(code:'financials.newCosts.exchangeRate')}"
+                               value="${costItem?.currencyRate}" step="0.000000001" />
 
                         <div class="ui icon button" id="costButton2" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
-                    <!-- Aditial field here-->
                     <div class="field">
+                        <label>Steuersatz (in %)</label>
+                        <g:select class="ui dropdown" name="newTaxRate" title="TaxRate"
+                              from="${CostItem.TAX_RATES}"
+                              optionKey="${{it}}"
+                              optionValue="${{it}}"
+                              value="${costItem?.taxRate}" />
 
                     </div><!-- .field -->
                 </div>
+
                 <div class="two fields">
-
                     <div class="field">
-                        <label>${message(code:'financials.invoice_total')}</label>
-                        <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="number" class="calc"
-                               name="newCostInBillingCurrency" id="newCostInBillingCurrency"
-                               placeholder="${g.message(code:'financials.invoice_total')}" value="${costItem?.costInBillingCurrency}" step="0.01"/>
+                        <label>${g.message(code:'financials.newCosts.valueInEuro')}</label>
+                        <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="number" class="calc"
+                               name="newCostInLocalCurrency" id="newCostInLocalCurrency"
+                               placeholder="${message(code:'financials.newCosts.valueInEuro')}"
+                               value="${costItem?.costInLocalCurrency}" step="0.01"/>
 
-                        <div class="ui icon button" id="costButton3" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                        <div class="ui icon button" id="costButton1" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
-
                     <div class="field">
-                        <label>&nbsp;</label>
-                        <g:select class="ui dropdown la-currency" name="newCostCurrency" title="${g.message(code: 'financials.addNew.currencyType')}"
-                                  from="${currency}"
-                                  optionKey="id"
-                                  optionValue="text"
-                                  value="${costItem?.billingCurrency?.id}" />
+                        <label>Endpreis (in EUR)</label>
+                        <input title="Wert nach Steuer (in EUR)" type="number" class="calc" readonly="readonly"
+                               name="newCostInLocalCurrencyAfterTax" id="newCostInLocalCurrencyAfterTax"
+                               value="${costItem?.costInLocalCurrencyAfterTax}" step="0.01"/>
+
                     </div><!-- .field -->
                 </div>
-            </fieldset> <!-- 1/2 field -->
+            </fieldset> <!-- 1/2 field |  .la-account-currency -->
 
 
 
@@ -278,6 +303,7 @@
                 input.val(($("#newCostInBillingCurrency").val() / $("#newCostCurrencyRate").val()).toFixed(2));
 
                 $(".la-account-currency").find(".field").removeClass("error");
+                taxRateElem.trigger('change')
             }
         })
         $("#costButton2").click(function() {
@@ -287,6 +313,7 @@
                 input.val(($("#newCostInBillingCurrency").val() / $("#newCostInLocalCurrency").val()).toFixed(9));
 
                 $(".la-account-currency").find(".field").removeClass("error");
+                taxRateElem.trigger('change')
             }
         })
         $("#costButton3").click(function() {
@@ -296,6 +323,7 @@
                 input.val(($("#newCostInLocalCurrency").val() * $("#newCostCurrencyRate").val()).toFixed(2));
 
                 $(".la-account-currency").find(".field").removeClass("error");
+                taxRateElem.trigger('change')
             }
         });
         var isError = function(cssSel)  {
@@ -306,6 +334,19 @@
             }
             return false
         }
+
+        var taxRateElem = $("*[name=newTaxRate]")
+
+        taxRateElem.on('change', function(){
+            var taxF = 1.0 + (0.01 * $("*[name=newTaxRate]").val())
+
+            $('#newCostInBillingCurrencyAfterTax').val(
+                ( $("#newCostInBillingCurrency").val() * taxF ).toFixed(2)
+            )
+            $('#newCostInLocalCurrencyAfterTax').val(
+                ( $("#newCostInLocalCurrency").val() * taxF ).toFixed(2)
+            )
+        })
 
         var costElems = $("#newCostInLocalCurrency, #newCostCurrencyRate, #newCostInBillingCurrency")
 
@@ -431,4 +472,4 @@
     </script>
 
 </semui:modal>
-<!-- _editAjax.gsp -->
+<!-- _ajaxModal.gsp -->

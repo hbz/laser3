@@ -915,7 +915,7 @@ from Subscription as s where (
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
             def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
-            def startDate = sdf.parse(params.valid_from)
+            def startDate = params.valid_from ? sdf.parse(params.valid_from) : null
             def endDate = params.valid_to ? sdf.parse(params.valid_to) : null
 
 
@@ -3090,8 +3090,12 @@ AND EXISTS (
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def addressbook() {
+
+
         def result = setResultGenerics()
 
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         def qParts = [
                 'p.tenant = :tenant',
                 'p.isPublic = :public'
@@ -3119,7 +3123,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             (query, qParams) = propertyService.evalFilterQuery(params, query, 'p', qParams)
         }
 
-        result.visiblePersons = Person.executeQuery(query + " ORDER BY p.last_name, p.first_name ASC", qParams)
+        result.visiblePersons = Person.executeQuery(query + " ORDER BY p.last_name, p.first_name ASC", qParams, [max:result.max, offset:result.offset]);
 
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
@@ -3128,6 +3132,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                         descr: PropertyDefinition.PRS_PROP,
                         tenant: contextService.getOrg() // private properties
                 )
+
+        result.num_visiblePersons = Person.executeQuery(query, qParams).size()
 
         result
       }

@@ -34,7 +34,7 @@
                  </div>
 
                 <div class="two fields">
-                    <semui:datepicker label="subscription.startDate.label" name="valid_from" value="${defaultStartYear}" class="required" />
+                    <semui:datepicker label="subscription.startDate.label" name="valid_from" value="${defaultStartYear}" />
 
                     <semui:datepicker label="subscription.endDate.label" name="valid_to" value="${defaultEndYear}" />
                 </div>
@@ -131,16 +131,6 @@
                         fields: {
                             newEmptySubName: {
                                 identifier  : 'newEmptySubName',
-                                rules: [
-                                    {
-                                        type   : 'empty',
-                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
-                                    }
-                                ]
-                            },
-
-                            valid_from: {
-                                identifier  : 'valid_from',
                                 rules: [
                                     {
                                         type   : 'empty',

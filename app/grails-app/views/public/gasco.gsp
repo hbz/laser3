@@ -80,7 +80,7 @@
             <img class="ui fluid image" alt="Logo GASCO" class="ui fluid image" src="images/gasco/GASCO-Logo-2_klein.jpg"/>
         </div>
     </div>
-
+    <%--
     <r:script>
         $(document).ready(function() {
 
@@ -97,7 +97,7 @@
             $('.js-consortiallicence').on('click', toggleFilterPart)
         });
     </r:script>
-
+    --%>
     <g:if test="${subscriptions}">
 
     <table class="ui celled la-table table">

@@ -2,7 +2,7 @@
 	<div class="ui item contact-details">
 		<semui:contactIcon type="${contact?.contentType.('value')}" />
 
-        <div class="content">
+        <div class="content la-space-right">
             <semui:xEditable owner="${contact}" field="content" />
         </div>
 
