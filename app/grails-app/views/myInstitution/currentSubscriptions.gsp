@@ -231,8 +231,7 @@
                                 -- ${message(code: 'myinst.currentSubscriptions.name_not_set', default: 'Name Not Set')}  --
                             </g:else>
                             <g:if test="${s.instanceOf}">
-                                (${message(code: 'subscription.isInstanceOf.label', default: 'Dependent')}
-                                <g:if test="${s.consortia && s.consortia == institution}">
+                                (<g:if test="${s.consortia && s.consortia == institution}">
                                     : ${s.subscriber?.name}
                                 </g:if>)
                             </g:if>
