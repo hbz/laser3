@@ -33,7 +33,7 @@
         </thead>
     </g:if>
     <tbody>
-        <g:each in="${ownobj.customProperties}" var="prop">
+        <g:each in="${ownobj.customProperties.sort{it.type.getI10n('name')}}" var="prop">
             <g:if test="${prop.type.descr == prop_desc}">
                 <tr>
                     <td class="la-column-nowrap">
