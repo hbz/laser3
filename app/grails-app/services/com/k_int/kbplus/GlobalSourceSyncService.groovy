@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.goai.OaiClient
+import com.k_int.kbplus.auth.User
 import de.laser.oai.OaiClientLaser
 
 import java.text.SimpleDateFormat
@@ -22,6 +23,7 @@ class GlobalSourceSyncService {
   def executorService
   def changeNotificationService
   boolean parallel_jobs = false
+  def messageSource
 
   def titleReconcile = { grt ,oldtitle, newtitle ->
     log.debug("Reconcile grt: ${grt} oldtitle:${oldtitle} newtitle:${newtitle}");
@@ -272,8 +274,10 @@ class GlobalSourceSyncService {
 
         if ( newpkg.packageProvider ) {
 
+          def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
+          def orgType = RefdataValue.getByValueAndCategory('Provider','OrgType')
           def orgRole = RefdataValue.loc('Organisational Role',  [en: 'Content Provider', de: 'Anbieter']);
-          def provider = Org.lookupOrCreate(newpkg.packageProvider , null , null, [:], null)
+          def provider = Org.lookupOrCreate2(newpkg.packageProvider , orgSector , null, [:], null, orgType)
 
           OrgRole.assertOrgPackageLink(provider, pkg, orgRole)
         }
@@ -472,7 +476,34 @@ class GlobalSourceSyncService {
     }
 
     def onPkgPropChange = { ctx, propname, value, auto_accept ->
-      println("updated pkg prop");
+      def oldvalue
+      def announcement_content
+      switch (propname) {
+        case 'title':
+          def contextObject = genericOIDService.resolveOID("Package:${ctx.id}");
+          oldvalue = ctx.name
+          ctx.name = value
+          def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+          announcement_content = "<p>${messageSource.getMessage('announcement.package.ChangeTitle', null, "Change Package Title on ", locale)}  ${contextObject.getURL() ? "<a href=\"${contextObject.getURL()}\">${ctx.name}</a>" : "${ctx.name}"} ${new Date().toString()}</p>"
+          announcement_content += "<p><ul><li>${messageSource.getMessage("announcement.package.TitleChange", [oldvalue, value] as Object[],"Package Title was change from {0} to {1}.", locale)}</li></ul></p>"
+          println("updated pkg prop");
+          break;
+        default:
+          println("Not updated pkg prop");
+          break;
+      }
+
+      if(auto_accept){
+        ctx.save(flush:true)
+
+        def announcement_type = RefdataCategory.lookupOrCreate('Document Type','Announcement')
+        def newAnnouncement = new Doc(title:'Automated Announcement',
+              type:announcement_type,
+              content:announcement_content,
+              dateCreated:new Date(),
+              user: User.findByUsername('admin')).save(flush:true);
+      }
+
     }
 
     def onTippUnchanged = {ctx, tippa ->

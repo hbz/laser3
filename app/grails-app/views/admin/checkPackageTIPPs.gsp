@@ -128,7 +128,7 @@
                 </g:else>
             </div>
             <g:if test="${hits}" >
-                <semui:paginate action="linkPackage" controller="subscriptionDetails" params="${params}"
+                <semui:paginate action="checkPackageTIPPs"  params="${params}"
                                 next="${message(code: 'default.paginate.next', default: 'Next')}"
                                 prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
                                 total="${resultsTotal}"/>

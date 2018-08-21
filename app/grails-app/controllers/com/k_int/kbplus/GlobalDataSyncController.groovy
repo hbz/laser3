@@ -9,6 +9,7 @@ class GlobalDataSyncController {
   def springSecurityService
   def globalSourceSyncService
   def genericOIDService
+  def dataloadService
 
   @Secured(['ROLE_GLOBAL_DATA'])
   def index() {

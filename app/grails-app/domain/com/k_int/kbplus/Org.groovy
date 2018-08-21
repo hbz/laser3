@@ -266,6 +266,10 @@ class Org extends BaseDomainComponent {
     }
 
     static def lookupOrCreate(name, sector, consortium, identifiers, iprange) {
+        lookupOrCreate2(name, sector, consortium, identifiers, iprange, null)
+    }
+
+    static def lookupOrCreate2(name, sector, consortium, identifiers, iprange, orgTyp) {
 
         def result = Org.lookup(name, identifiers)
 
@@ -279,7 +283,10 @@ class Org extends BaseDomainComponent {
                            name:name,
                            sector:sector,
                            ipRange:iprange,
-                           impId:java.util.UUID.randomUUID().toString()).save()
+                           impId:java.util.UUID.randomUUID().toString(),
+                           orgType: orgTyp
+          ).save()
+
 
             // SUPPORT MULTIPLE IDENTIFIERS
             if (identifiers instanceof ArrayList) {
