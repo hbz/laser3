@@ -178,9 +178,16 @@
 
                     </div><!-- .field -->
                 </div>
+
+                <div class="field">
+                    <div class="ui checkbox">
+                        <label>Finalen Preis runden</label>
+                        <input name="newFinalCostRounding" class="hidden" type="checkbox"
+                               <g:if test="${costItem?.finalCostRounding}"> checked="checked" </g:if>
+                        />
+                    </div>
+                </div><!-- .field -->
             </fieldset> <!-- 1/2 field |  .la-account-currency -->
-
-
 
             <fieldset class="seven wide field la-modal-fieldset-no-margin">
                 <label>${message(code:'financials.newCosts.constsReferenceOn')}</label>
@@ -240,6 +247,7 @@
                 </div><!-- .field -->
 
                 <div class="field">
+
                     <%--
                     <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
                     <g:if test="${! inSubMode}">
@@ -266,8 +274,11 @@
 
             <fieldset class="field la-modal-fieldset-margin">
                 <div class="field">
+                    <semui:datepicker label="financials.invoiceDate" name="newInvoiceDate" placeholder="financials.invoiceDate" value="${costItem?.invoiceDate}" />
+
                     <label>${message(code:'financials.newCosts.description')}</label>
-                    <textarea name="newDescription" id="newDescription" placeholder="${message(code:'default.description.label')}">${costItem?.costDescription}</textarea>
+                    <input type="text" name="newDescription" id="newDescription"
+                           placeholder="${message(code:'default.description.label')}" value="${costItem?.costDescription}"/>
                 </div><!-- .field -->
             </fieldset> <!-- 2/3 field -->
 
@@ -338,13 +349,14 @@
         var taxRateElem = $("*[name=newTaxRate]")
 
         taxRateElem.on('change', function(){
+            var roundF = $('*[name=newFinalCostRounding]').prop('checked')
             var taxF = 1.0 + (0.01 * $("*[name=newTaxRate]").val())
 
             $('#newCostInBillingCurrencyAfterTax').val(
-                ( $("#newCostInBillingCurrency").val() * taxF ).toFixed(2)
+                roundF ? Math.round($("#newCostInBillingCurrency").val() * taxF) : ($("#newCostInBillingCurrency").val() * taxF).toFixed(2)
             )
             $('#newCostInLocalCurrencyAfterTax').val(
-                ( $("#newCostInLocalCurrency").val() * taxF ).toFixed(2)
+                roundF ? Math.round( $("#newCostInLocalCurrency").val() * taxF ) : ( $("#newCostInLocalCurrency").val() * taxF ).toFixed(2)
             )
         })
 
@@ -359,14 +371,15 @@
             }
         })
 
+        $('*[name=newFinalCostRounding]').on('change', function(){
+            if (! isError("#newCostInLocalCurrency") && ! isError("#newCostInBillingCurrency") && ! isError("#newCostCurrencyRate")) {
+                taxRateElem.trigger('change')
+            }
+        })
+
         var ajaxPostFunc = function () {
 
             console.log( "ajaxPostFunc")
-            /*
-            $('#newCostCurrency').dropdown('setting', 'onChange', function(value, text, $selectedItem) {
-                $('#newCostCurrency').dropdown('set text', text.split('-')[0].trim());
-            }).dropdown('change');
-            */
 
             $('#costItem_ajaxModal #newBudgetCode').select2({
                 minimumInputLength: 0,
@@ -427,12 +440,6 @@
             });
 */
 
-/*
-            $('#s2test').select2({
-                tags: [{id:123, text: 'blah'},{id:36, text: 'blubb'}]
-            })
-            $('#s2test').val('123', '36').trigger('change')
-*/
 
             <g:if test="${! inSubMode}">
 

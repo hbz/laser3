@@ -41,7 +41,7 @@
           <div class="item">
             <strong>${ra.title}</strong> <br/>
             <div class="ann-content">
-              ${ra.content}
+              <% print ra.content; /* avoid auto encodeAsHTML() */ %>
             </div>
               <br />
             <g:if test="${ra.user != null}">
