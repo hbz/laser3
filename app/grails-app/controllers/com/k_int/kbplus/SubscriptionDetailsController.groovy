@@ -1217,6 +1217,10 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
             response.sendError(401); return
         }
 
+        if (result.institution?.orgType?.value == 'Consortium') {
+
+        }
+
         //Change to GOKB ElasticSearch
         params.esgokb = "Package"
         params.sort = "name.sort"

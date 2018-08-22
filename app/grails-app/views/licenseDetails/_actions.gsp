@@ -13,6 +13,8 @@
                 <semui:actionsDropdownItem controller="licenseDetails" action="addMembers" params="${[id:license?.id]}" message="myinst.emptyLicense.child" />
             </g:if>
         </g:if>
+
+        <semui:actionsDropdownItem controller="licenseDetails" action="copyLicense" params="${[id:license?.id]}" message="myinst.copyLicense" />
     </semui:actionsDropdown>
 
     <g:render template="/templates/tasks/modal_create" model="${[ownobj:license, owntp:'license']}"/>
