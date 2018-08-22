@@ -87,5 +87,16 @@ import="com.k_int.kbplus.RefdataCategory"
 
         </g:if>
 
+        <r:script>
+            $(function(){
+                $(".js-open-confirm-modal").click(function(){
+                    $('.mini.modal')
+                            .modal('setting', 'closable', false)
+                            .modal('show')
+                    ;
+                });
+            });
+        </r:script>
+
   </body>
 </html>

@@ -90,9 +90,9 @@
                                 <g:link class="ui icon button" controller="person" action="show" id="${person?.id}">
                                     <i class="write icon"></i>
                                 </g:link>
-                                <button class="ui icon negative button" type="submit" name="_action_delete">
+                                <div class="ui icon negative button js-open-confirm-modal" id="${person?.id}" >
                                     <i class="trash alternate icon"></i>
-                                </button>
+                                </div>
                         </g:form>
                     </g:if>
                 </td>
@@ -100,3 +100,29 @@
 		</g:each>
 	</tbody>
 </table>
+
+
+    <div class="ui mini modal">
+        <div class="header">Header</div>
+        <div class="content">
+            <p></p>
+        </div>
+        <g:form controller="person" action="delete" class="test">
+            <script>
+                console.log(this.id)
+            </script>
+            <g:hiddenField name="id" value="" />
+        <div class="actions">
+            <div class="ui deny button">
+                Abbrechen
+            </div>
+
+            <button class="ui negative right labeled icon button" type="submit" name="_action_delete">
+                Entgültig löschen
+                <i class="trash alternate icon"></i>
+            </button>
+
+        </div>
+        </g:form>
+    </div>
+
