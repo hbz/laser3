@@ -100,7 +100,6 @@ import="com.k_int.kbplus.RefdataCategory"
                     })
                             .modal('show')
                     ;
-
                 });
             });
         </r:script>

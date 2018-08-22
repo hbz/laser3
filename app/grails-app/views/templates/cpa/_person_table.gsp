@@ -102,21 +102,5 @@
 </table>
 
 
-<div class="ui mini modal">
-    <div class="header">Header</div>
-    <div class="content">
-        <p></p>
-    </div>
-    <div class="actions">
-        <div class="ui deny button">
-            Abbrechen
-        </div>
-
-        <button class="ui positive right labeled icon button" type="submit" name="_action_delete" onclick="">
-            Entgültig löschen
-            <i class="trash alternate icon"></i>
-        </button>
-
-    </div>
-</div>
+<semui:confirmationModal text="Wollen Sie diese Person wirklich aus dem System löschen?" deletemodal="true" />
 
