@@ -290,9 +290,9 @@
                                     property: 'orgs',
                                     recip_prop: 'sub',
                                     tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Agency', 'Organisational Role'),
-                                    tmplText:'Agentur hinzufügen',
+                                    tmplText:'Lieferant hinzufügen',
                                     tmplID:'ContentProvider',
-                                    tmplButtonText:'Agentur hinzufügen',
+                                    tmplButtonText:'Lieferant hinzufügen',
                                     tmplModalID:'osel_add_modal_agentur',
                                     editmode: editable
                                 ]}" />

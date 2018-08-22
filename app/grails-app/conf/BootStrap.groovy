@@ -714,7 +714,7 @@ class BootStrap {
                 [[en: 'Content Provider', de: 'Anbieter'], pkg],
                 [[en: 'Package Consortia'], pkg],
                 [[en: 'Publisher', de: 'Verlag'], null],
-                [[en: 'Agency', de: 'Agentur'], sub]
+                [[en: 'Agency', de: 'Lieferant'], sub]
         ]
 
         RefdataCategory.loc('Organisational Role',  [en: 'Organisational Role', de: 'Organisational Role'])
