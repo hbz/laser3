@@ -203,7 +203,9 @@
             $('table[id^=costTable]').each( function() {
 
                 var costs = {}
-                var currencies = $.unique($(this).find('.costData').map(function(){return $(this).attr('data-billingCurrency')}))
+                var currencies = $.unique($(this).find('.costData').map(function(){
+                    return $(this).attr('data-billingCurrency')
+                }))
                 currencies.each(function() {
                     costs[this] = {local: 0.0, localAfterTax: 0.0, billing: 0.0, billingAfterTax: 0.0}
                 })
