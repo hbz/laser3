@@ -1,3 +1,4 @@
+<%@ page import="com.k_int.kbplus.Subscription" %>
 <!doctype html>
 <%
   def addFacet = { params, facet, val ->
@@ -87,8 +88,19 @@
         </div>
         </div>
 
-
       <div class="ui grid">
+
+%{--          <g:if test="${institution?.orgType?.value == 'Consortium' && (com.k_int.kbplus.Subscription.findAllByInstanceOf(com.k_int.kbplus.Subscription.get(params.id)).size() > 0) }">
+              <div class="sixteen wide column">
+                  <div class="field">
+                                <div class="ui checkbox">
+                                    <g:checkBox name="copyPackageToChildSubs" value="" />
+                                </div>
+                      <label><b>${message(code: 'subscription.details.linkPackage.copyPackageToChildSubs', default: 'Link the Package for all Child Subscriptions')}</b></label>
+                  </div>
+              </div>
+
+          </g:if>--}%
 
    %{--       <div class="sixteen wide column">
               <g:each in="${['type','endYear','startYear','consortiaName','cpname']}" var="facet">

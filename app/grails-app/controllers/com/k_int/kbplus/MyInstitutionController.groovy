@@ -3452,4 +3452,38 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
         redirect(action: "manageAffiliationRequests")
     }
+
+    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def copyLicense() {
+        def result = setResultGenerics()
+
+        if(params.id)
+        {
+            def license = License.get(params.id)
+            def isEditable = license.isEditableBy(result.user)
+
+            if (! (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR'))) {
+                flash.error = message(code:'license.permissionInfo.noPerms', default: 'No User Permissions');
+                response.sendError(401)
+                return;
+            }
+
+            if(isEditable){
+                redirect controller: 'licenseDetails', action: 'processcopyLicense', params: ['baseLicense'                  : license.id,
+                                                                                              'license.copyAnnouncements'    : 'on',
+                                                                                              'license.copyCustomProperties' : 'on',
+                                                                                              'license.copyDates'            : 'on',
+                                                                                              'license.copyDocs'             : 'on',
+                                                                                              'license.copyLinks'            : 'on',
+                                                                                              'license.copyPrivateProperties': 'on',
+                                                                                              'license.copyTasks'            : 'on']
+            }else {
+                flash.error = message(code:'license.permissionInfo.noPerms', default: 'No User Permissions');
+                response.sendError(401)
+                return;
+            }
+        }
+
+    }
 }

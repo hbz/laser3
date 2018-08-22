@@ -161,6 +161,11 @@
                             </g:link>
                         </span>
                         --}%
+                        <span data-position="top right" data-tooltip="${message(code:'license.details.copy.tooltip')}">
+                        <g:link controller="myInstitution" action="copyLicense" params="${[id:l.id]}" class="ui icon button">
+                            <i class="copy icon"></i>
+                        </g:link>
+                        </span>
                         <g:if test="${! l.subscriptions}">
                             <g:link controller="myInstitution" action="actionLicenses" onclick="return confirm('${message(code:'license.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}?')"
                                 params="${[baselicense:l.id,'delete-license':'Y']}" class="ui icon negative button">
