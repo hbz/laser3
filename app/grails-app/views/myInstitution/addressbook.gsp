@@ -94,7 +94,12 @@ import="com.k_int.kbplus.RefdataCategory"
                             .modal('setting', 'closable', false)
                             .modal('show')
                     ;
+                    console.log(this.id);
                 });
+
+
+
+
             });
         </r:script>
 

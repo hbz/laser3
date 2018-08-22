@@ -85,15 +85,17 @@
                 </td>
                 <td class="x">
                     <g:if test="${editable}">
-                        <g:form controller="person" action="delete">
-                            <g:hiddenField name="id" value="${person?.id}" />
-                                <g:link class="ui icon button" controller="person" action="show" id="${person?.id}">
-                                    <i class="write icon"></i>
-                                </g:link>
-                                <div class="ui icon negative button js-open-confirm-modal" id="${person?.id}" >
-                                    <i class="trash alternate icon"></i>
-                                </div>
-                        </g:form>
+                        <div id="${person?.id.toString()+ '_wrap'}">
+                            <g:form controller="person" action="delete">
+                                <g:hiddenField name="id" value="${person?.id}" />
+                                    <g:link class="ui icon button" controller="person" action="show" id="${person?.id}">
+                                        <i class="write icon"></i>
+                                    </g:link>
+                                    <div class="ui icon negative button js-open-confirm-modal" id="${person?.id}" >
+                                        <i class="trash alternate icon"></i>
+                                    </div>
+                            </g:form>
+                        </div>
                     </g:if>
                 </td>
 			</tr>
@@ -107,22 +109,16 @@
         <div class="content">
             <p></p>
         </div>
-        <g:form controller="person" action="delete" class="test">
-            <script>
-                console.log(this.id)
-            </script>
-            <g:hiddenField name="id" value="" />
         <div class="actions">
             <div class="ui deny button">
                 Abbrechen
             </div>
 
-            <button class="ui negative right labeled icon button" type="submit" name="_action_delete">
+            <button class="ui negative right labeled icon button" type="submit" name="_action_delete" onclick="event.preventDefault(); $(this.id + '_wrap').find('form').submit()">
                 Entgültig löschen
                 <i class="trash alternate icon"></i>
             </button>
 
         </div>
-        </g:form>
     </div>
 
