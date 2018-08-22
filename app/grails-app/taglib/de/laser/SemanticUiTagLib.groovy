@@ -387,6 +387,8 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
+
+
     //<semui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="true" />
 
     def datepicker = { attrs, body ->

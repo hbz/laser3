@@ -90,16 +90,18 @@ import="com.k_int.kbplus.RefdataCategory"
         <r:script>
             $(function(){
                 $(".js-open-confirm-modal").click(function(){
+                    var tmp = this.getAttribute("data-confirm-id")+'_form';
                     $('.mini.modal')
-                            .modal('setting', 'closable', false)
+                        .modal({
+                        closable  : false,
+                        onApprove : function() {
+                            $('[data-confirm-id='+tmp+']').submit();
+                        }
+                    })
                             .modal('show')
                     ;
-                    console.log(this.id);
+
                 });
-
-
-
-
             });
         </r:script>
 

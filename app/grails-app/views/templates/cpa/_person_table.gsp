@@ -85,17 +85,15 @@
                 </td>
                 <td class="x">
                     <g:if test="${editable}">
-                        <div id="${person?.id.toString()+ '_wrap'}">
-                            <g:form controller="person" action="delete">
+                            <g:form controller="person" action="delete" data-confirm-id="${person?.id.toString()+ '_form'}">
                                 <g:hiddenField name="id" value="${person?.id}" />
                                     <g:link class="ui icon button" controller="person" action="show" id="${person?.id}">
                                         <i class="write icon"></i>
                                     </g:link>
-                                    <div class="ui icon negative button js-open-confirm-modal" id="${person?.id}" >
+                                    <div class="ui icon negative button js-open-confirm-modal" data-confirm-id="${person?.id}" >
                                         <i class="trash alternate icon"></i>
                                     </div>
                             </g:form>
-                        </div>
                     </g:if>
                 </td>
 			</tr>
@@ -104,21 +102,21 @@
 </table>
 
 
-    <div class="ui mini modal">
-        <div class="header">Header</div>
-        <div class="content">
-            <p></p>
-        </div>
-        <div class="actions">
-            <div class="ui deny button">
-                Abbrechen
-            </div>
-
-            <button class="ui negative right labeled icon button" type="submit" name="_action_delete" onclick="event.preventDefault(); $(this.id + '_wrap').find('form').submit()">
-                Entgültig löschen
-                <i class="trash alternate icon"></i>
-            </button>
-
-        </div>
+<div class="ui mini modal">
+    <div class="header">Header</div>
+    <div class="content">
+        <p></p>
     </div>
+    <div class="actions">
+        <div class="ui deny button">
+            Abbrechen
+        </div>
+
+        <button class="ui positive right labeled icon button" type="submit" name="_action_delete" onclick="">
+            Entgültig löschen
+            <i class="trash alternate icon"></i>
+        </button>
+
+    </div>
+</div>
 
