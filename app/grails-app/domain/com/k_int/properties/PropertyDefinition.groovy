@@ -223,18 +223,32 @@ class PropertyDefinition extends I10nTranslatableAbstract {
         result
     }
 
-    def countUsages() {
-        def table
-
+    def getImplClass(String customOrPrivate) {
         def parts = this.descr.split(" ")
-        if (parts.size() == 2) {
-            table = parts[0] + "PrivateProperty"
 
-            // TODO: change table names from Org<x>Property to Organisation<x>Property
-            if (parts[0] == "Organisation"){
-                table = "OrgPrivateProperty"
+        if (parts.size() >= 2) {
+            if (parts[0] == "Organisation") {
+                parts[0] = "Org"
+            }
+            def cp = 'com.k_int.kbplus.' + parts[0] + 'CustomProperty'
+            def pp = 'com.k_int.kbplus.' + parts[0] + 'PrivateProperty'
+
+            try {
+                if (customOrPrivate.equalsIgnoreCase('custom') && Class.forName(cp)) {
+                    return cp
+                }
+                if (customOrPrivate.equalsIgnoreCase('private') && Class.forName(pp)) {
+                    return pp
+                }
+            } catch (Exception e) {
+
             }
         }
+        null
+    }
+
+    def countUsages() {
+        def table = getImplClass('private')?.minus('com.k_int.kbplus.')
 
         if (table) {
             def c = PropertyDefinition.executeQuery("select count(c) from " + table + " as c where c.type = ?", [this])

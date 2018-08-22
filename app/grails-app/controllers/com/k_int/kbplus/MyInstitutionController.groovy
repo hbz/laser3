@@ -3372,6 +3372,23 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             def id = Long.parseLong(did)
             def privatePropDef = PropertyDefinition.findWhere(id: id, tenant: tenant)
             if (privatePropDef) {
+
+                try {
+                    if (privatePropDef.mandatory) {
+                        privatePropDef.mandatory = false
+                        privatePropDef.save()
+
+                        // delete inbetween created mandatories
+                        Class.forName(
+                                privatePropDef.getImplClass('private')
+                        )?.findAllByType(privatePropDef)?.each { it ->
+                            it.delete()
+                        }
+                    }
+                } catch(Exception e) {
+                    log.error(e)
+                }
+
                 privatePropDef.delete()
                 messages << message(code: 'default.deleted.message', args:[privatePropDef.descr, privatePropDef.name])
             }
