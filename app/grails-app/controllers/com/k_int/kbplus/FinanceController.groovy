@@ -660,6 +660,13 @@ class FinanceController {
 
         }
 
+          // NEW: create cost items for members
+          // TODO
+          if (params.newLicenseeTarget && (params.newLicenseeTarget != "com.k_int.kbplus.Subscription:null")) {
+            sub = genericOIDService.resolveOID(params.newLicenseeTarget)
+          }
+
+
         def pkg = null;
         if (params.newPackage?.contains("com.k_int.kbplus.SubscriptionPackage:"))
         {

@@ -155,28 +155,44 @@
     </g:form>
     <g:if test="${controllerName == 'myInstitution'}">
         <r:script>
-            $("#generalradio").change(function () {
-                $("#licensediv, #orgdiv, #pkgdiv, #subscriptiondiv").hide();
-            });
-            $("#licenseradio").change(function () {
-                $("#orgdiv, #pkgdiv, #subscriptiondiv").hide();
-                $("#licensediv").show();
-            });
-            $("#pkgradio").change(function () {
-                $("#licensediv, #orgdiv, #subscriptiondiv").hide();
-                $("#pkgdiv").show();
-            });
-            $("#subscriptionradio").change(function () {
-                $("#licensediv, #orgdiv, #pkgdiv").hide();
-                $("#subscriptiondiv").show();
-            });
-            $("#orgradio").change(function () {
-                $("#licensediv, #pkgdiv, #subscriptiondiv").hide();
-                $("#orgdiv").show();
-            });
-
+            // initial side call
             $("#generalradio").prop( "checked", true );
             $("#licensediv, #orgdiv, #pkgdiv, #subscriptiondiv").hide();
+
+            function showHideRequire (taskType) {
+                var arr = [ 'license', 'org', 'pkg', 'subscription' ];
+                $('#'+ taskType +'radio').change(function () {
+
+                    var hideArray = arr.filter(function(val, index, arr) {
+                        return val != taskType;
+                    });
+                    var hide = hideArray.map(function(val, index, arr) {
+                        return '#' + val + 'div';
+                    }).join(", ");
+
+                    $(hide).hide();
+                    $('#' + taskType + 'div').show();
+                    chooseRequiredDropdown(taskType);
+                });
+            }
+            showHideRequire (
+                'general'
+            );
+
+            showHideRequire (
+                    'license'
+            );
+            showHideRequire (
+                    'pkg'
+            );
+            showHideRequire (
+                    'subscription'
+            );
+            showHideRequire (
+                    'org'
+            );
+
+
         </r:script>
     </g:if>
     <r:script>
@@ -189,32 +205,46 @@
         $("#radioresponsibleOrg").prop( "checked", true );
         $("#responsibleUser").hide();
 
-        $('#create_task')
-                .form({
-            on: 'blur',
-            inline: true,
-            fields: {
-                title: {
-                    identifier  : 'title',
-                    rules: [
-                        {
-                            type   : 'empty',
-                            prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
-                        }
-                    ]
-                },
+        function chooseRequiredDropdown(opt) {
+            $('#create_task')
+                    .form({
 
-                endDate: {
-                    identifier  : 'endDate',
-                    rules: [
-                        {
-                            type   : 'empty',
-                            prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
-                        }
-                    ]
-                }
-             }
-        });
+                inline: true,
+                fields: {
+                    title: {
+                        identifier  : 'title',
+                        rules: [
+                            {
+                                type   : 'empty',
+                                prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                            }
+                        ]
+                    },
+
+                    endDate: {
+                        identifier  : 'endDate',
+                        rules: [
+                            {
+                                type   : 'empty',
+                                prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                            }
+                        ]
+                    },
+                    opt: {
+                        identifier  : opt,
+                        rules: [
+                            {
+                                type   : 'empty',
+                                prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                            }
+                        ]
+                    },
+                 }
+            });
+        }
+        chooseRequiredDropdown()
+
+
 
 
     </r:script>

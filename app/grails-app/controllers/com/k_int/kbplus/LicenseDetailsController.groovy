@@ -7,6 +7,7 @@ import grails.converters.*
 import com.k_int.kbplus.auth.*;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import grails.plugin.springsecurity.annotation.Secured
+import org.codehaus.groovy.runtime.InvokerHelper
 
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -717,4 +718,169 @@ from Subscription as s where
 
         result
     }
+
+    def copyLicense()
+    {
+        log.debug("licenseDetails: ${params}");
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        result.visibleOrgLinks = []
+        result.license.orgLinks?.each { or ->
+            if (!(or.org == contextService.getOrg()) && !(or.roleType.value in ["Licensee", "Licensee_Consortial"])) {
+                result.visibleOrgLinks << or
+            }
+        }
+        result.visibleOrgLinks.sort{ it.org.sortname }
+
+        def contextOrg = contextService.getOrg()
+        result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.license)
+        def preCon = taskService.getPreconditions(contextOrg)
+        result << preCon
+
+
+        result.contextOrg = contextService.getOrg()
+
+        result
+
+    }
+
+    def processcopyLicense() {
+
+        def baseLicense = com.k_int.kbplus.License.get(params.baseLicense)
+
+        if (baseLicense) {
+
+            def lic_name = params.lic_name ?: "Kopie von ${baseLicense.reference}"
+
+            def licenseInstance = new License(
+                    reference: lic_name,
+                    status: baseLicense.status,
+                    type: baseLicense.type,
+                    startDate: params.license.copyDates ? baseLicense?.startDate : null,
+                    endDate: params.license.copyDates ? baseLicense?.endDate : null,
+                    instanceOf: params.license.links ? baseLicense.instanceOf : null
+            )
+
+
+            if (!licenseInstance.save(flush: true)) {
+                log.error("Problem saving license ${licenseInstance.errors}");
+                return licenseInstance
+            } else {
+                   log.debug("Save ok");
+
+                    baseLicense.documents?.each { dctx ->
+
+                        //Copy Docs
+                        if (params.license.copyDocs) {
+                            if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status?.value != 'Deleted')) {
+                                Doc clonedContents = new Doc(
+                                        blobContent: dctx.owner.blobContent,
+                                        status: dctx.owner.status,
+                                        type: dctx.owner.type,
+                                        alert: dctx.owner.alert,
+                                        content: dctx.owner.content,
+                                        uuid: dctx.owner.uuid,
+                                        contentType: dctx.owner.contentType,
+                                        title: dctx.owner.title,
+                                        creator: dctx.owner.creator,
+                                        filename: dctx.owner.filename,
+                                        mimeType: dctx.owner.mimeType,
+                                        user: dctx.owner.user,
+                                        migrated: dctx.owner.migrated
+                                ).save()
+
+                                DocContext ndc = new DocContext(
+                                        owner: clonedContents,
+                                        license: licenseInstance,
+                                        domain: dctx.domain,
+                                        status: dctx.status,
+                                        doctype: dctx.doctype
+                                ).save()
+                            }
+                        }
+                        //Copy Announcements
+                        if (params.license.copyAnnouncements) {
+                            if ((dctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
+                                Doc clonedContents = new Doc(
+                                        blobContent: dctx.owner.blobContent,
+                                        status: dctx.owner.status,
+                                        type: dctx.owner.type,
+                                        alert: dctx.owner.alert,
+                                        content: dctx.owner.content,
+                                        uuid: dctx.owner.uuid,
+                                        contentType: dctx.owner.contentType,
+                                        title: dctx.owner.title,
+                                        creator: dctx.owner.creator,
+                                        filename: dctx.owner.filename,
+                                        mimeType: dctx.owner.mimeType,
+                                        user: dctx.owner.user,
+                                        migrated: dctx.owner.migrated
+                                ).save()
+
+                                DocContext ndc = new DocContext(
+                                        owner: clonedContents,
+                                        license: licenseInstance,
+                                        domain: dctx.domain,
+                                        status: dctx.status,
+                                        doctype: dctx.doctype
+                                ).save()
+                            }
+                        }
+                    }
+                    //Copy Tasks
+                    if (params.license.copyTasks) {
+
+                        Task.findAllByLicense(baseLicense).each { task ->
+
+                            Task newTask = new Task()
+                            InvokerHelper.setProperties(newTask, task.properties)
+                            newTask.license = licenseInstance
+                            newTask.save(flush:true)
+                        }
+
+                    }
+                    //Copy References
+                    if (params.license.copyLinks){
+
+                        baseLicense.orgLinks?.each { or ->
+
+                            OrgRole newOrgRole = new OrgRole()
+                            InvokerHelper.setProperties(newOrgRole, or.properties)
+                            newOrgRole.lic = licenseInstance
+                            newOrgRole.save(flush:true)
+
+                            }
+
+                    }
+
+                    if(params.license.copyCustomProperties) {
+                        //customProperties
+                        for (prop in baseLicense.customProperties) {
+                            def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
+                            copiedProp = prop.copyValueAndNote(copiedProp)
+                            licenseInstance.addToCustomProperties(copiedProp)
+                        }
+                    }
+                    if(params.license.copyPrivateProperties){
+                        //privatProperties
+                        def contextOrg = contextService.getOrg()
+
+                        baseLicense.privateProperties.each { prop ->
+                            if(prop.type?.tenant?.id == contextOrg?.id)
+                            {
+                                def copiedProp = new LicensePrivateProperty(type: prop.type, owner: licenseInstance)
+                                copiedProp = prop.copyValueAndNote(copiedProp)
+                                licenseInstance.addToPrivateProperties(copiedProp)
+                            }
+                        }
+                    }
+
+                redirect controller: 'licenseDetails', action: 'show', params: [id: licenseInstance.id]
+                }
+
+            }
+        }
 }

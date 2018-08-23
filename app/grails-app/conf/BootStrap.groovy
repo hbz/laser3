@@ -714,7 +714,7 @@ class BootStrap {
                 [[en: 'Content Provider', de: 'Anbieter'], pkg],
                 [[en: 'Package Consortia'], pkg],
                 [[en: 'Publisher', de: 'Verlag'], null],
-                [[en: 'Agency', de: 'Agentur'], sub]
+                [[en: 'Agency', de: 'Lieferant'], sub]
         ]
 
         RefdataCategory.loc('Organisational Role',  [en: 'Organisational Role', de: 'Organisational Role'])
@@ -830,7 +830,7 @@ class BootStrap {
         RefdataValue.loc('AddressType', [en: 'Postal address', de: 'Postanschrift'])
         RefdataValue.loc('AddressType', [en: 'Billing address', de: 'Rechnungsanschrift'])
         RefdataValue.loc('AddressType', [en: 'Delivery address', de: 'Lieferanschrift'])
-        RefdataValue.loc('AddressType', [en: 'Library address', de: 'Bibliotheksanschrift'])
+        RefdataValue.loc('AddressType', [en: 'Library address', de: 'Anschrift'])
         RefdataValue.loc('AddressType', [en: 'Legal patron address', de: 'Anschrift des rechtlichen Trägers'])
 
         RefdataValue.loc('ClusterType', [en: 'Undefined'])

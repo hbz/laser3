@@ -164,7 +164,6 @@ grails.project.dependency.resolution = {
         //compile ':spring-security-shibboleth-native-sp:1.0.3'
 
         runtime ":jquery:1.11.1"
-
         runtime ":audit-logging:1.0.3"
         runtime ":executor:0.3"
         runtime ":markdown:1.1.1"
@@ -173,7 +172,6 @@ grails.project.dependency.resolution = {
         compile ":jsonp:0.2"
 
         // runtime "com.k-int:domain-model-oai-pmh:0.1"
-
-        compile ":remote-pagination:0.4.8" //AJAX Pagination - Finance
+        // compile ":remote-pagination:0.4.8" //AJAX Pagination - Finance
     }
 }

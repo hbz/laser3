@@ -1,8 +1,13 @@
 
-meanwhile at hbz-dev ..
+0.8
 
+- improved gasco views
+- reworked finance functionality
 - upgrade to hibernate 4.3
-
+- fixed deletion of mandatory private properties
+- added pagination on some views
+- lots of markup and style changes 
+- other bugfixes
 
 0.7.4
 

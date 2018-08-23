@@ -791,7 +791,8 @@ class SubscriptionDetailsController {
                         def cons_sub = new Subscription(
                                 type: result.subscriptionInstance.type?:"",
                                 status: subStatus,
-                                name: result.subscriptionInstance.name + " (" + (cm.get(0).shortname ?: cm.get(0).name) + ")",
+                                name: result.subscriptionInstance.name,
+                                //name: result.subscriptionInstance.name + " (" + (cm.get(0).shortname ?: cm.get(0).name) + ")",
                                 startDate: result.subscriptionInstance.startDate,
                                 endDate: result.subscriptionInstance.endDate,
                                 manualRenewalDate: result.subscriptionInstance.manualRenewalDate,
@@ -1215,6 +1216,10 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
             response.sendError(401); return
+        }
+
+        if (result.institution?.orgType?.value == 'Consortium') {
+
         }
 
         //Change to GOKB ElasticSearch

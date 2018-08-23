@@ -959,7 +959,8 @@ from Subscription as s where (
                                             // type: RefdataValue.findByValue("Subscription Taken"),
                                           type: subType,
                                           status: RefdataCategory.lookupOrCreate('Subscription Status', 'Current'),
-                                          name: params.newEmptySubName + " (${postfix})",
+                                          name: params.newEmptySubName,
+                                          // name: params.newEmptySubName + " (${postfix})",
                                           startDate: startDate,
                                           endDate: endDate,
                                           identifier: java.util.UUID.randomUUID().toString(),
@@ -3372,6 +3373,23 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             def id = Long.parseLong(did)
             def privatePropDef = PropertyDefinition.findWhere(id: id, tenant: tenant)
             if (privatePropDef) {
+
+                try {
+                    if (privatePropDef.mandatory) {
+                        privatePropDef.mandatory = false
+                        privatePropDef.save()
+
+                        // delete inbetween created mandatories
+                        Class.forName(
+                                privatePropDef.getImplClass('private')
+                        )?.findAllByType(privatePropDef)?.each { it ->
+                            it.delete()
+                        }
+                    }
+                } catch(Exception e) {
+                    log.error(e)
+                }
+
                 privatePropDef.delete()
                 messages << message(code: 'default.deleted.message', args:[privatePropDef.descr, privatePropDef.name])
             }
@@ -3434,5 +3452,39 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             log.error("FLASH");
         }
         redirect(action: "manageAffiliationRequests")
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def copyLicense() {
+        def result = setResultGenerics()
+
+        if(params.id)
+        {
+            def license = License.get(params.id)
+            def isEditable = license.isEditableBy(result.user)
+
+            if (! (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR'))) {
+                flash.error = message(code:'license.permissionInfo.noPerms', default: 'No User Permissions');
+                response.sendError(401)
+                return;
+            }
+
+            if(isEditable){
+                redirect controller: 'licenseDetails', action: 'processcopyLicense', params: ['baseLicense'                  : license.id,
+                                                                                              'license.copyAnnouncements'    : 'on',
+                                                                                              'license.copyCustomProperties' : 'on',
+                                                                                              'license.copyDates'            : 'on',
+                                                                                              'license.copyDocs'             : 'on',
+                                                                                              'license.copyLinks'            : 'on',
+                                                                                              'license.copyPrivateProperties': 'on',
+                                                                                              'license.copyTasks'            : 'on']
+            }else {
+                flash.error = message(code:'license.permissionInfo.noPerms', default: 'No User Permissions');
+                response.sendError(401)
+                return;
+            }
+        }
+
     }
 }
