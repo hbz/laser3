@@ -85,7 +85,7 @@ class FilterService {
         queryParams << org
         queryParams << 'Consortium'
 
-        def defaultOrder = " order by " + (params.sort ?: " LOWER(o.sortname) ") + (params.order ?: "asc")
+        def defaultOrder = " order by " + (params.sort ?: " LOWER(o.sortname) ") + (params.order ?: " asc")
 
         if (query.size() > 0) {
             query = "select o from Org as o, Combo as c where " + query.join(" and ") + " and c.fromOrg = o and c.toOrg = ? and c.type.value = ? " + defaultOrder
@@ -126,7 +126,7 @@ class FilterService {
             queryParams << sdFormat.parse(params.endDateTo)
         }
 
-        def defaultOrder = " order by " + (params.sort ?: "t.endDate") + (params.order ?: "desc")
+        def defaultOrder = " order by " + (params.sort ?: "t.endDate") + (params.order ?: " desc")
 
         if (query.size() > 0) {
             query = " and " + query.join(" and ") + defaultOrder
