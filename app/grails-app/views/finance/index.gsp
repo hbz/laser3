@@ -219,7 +219,6 @@
                     ci.billingAfterTax  += parseFloat($(this).attr('data-costInBillingCurrencyAfterTax'))
                 })
                 var socClass = $(this).find('span[class^=sumOfCosts]').attr('class')
-                console.log(socClass)
 
                 var finalLocal = 0.0
                 var finalLocalAfterTax = 0.0
@@ -244,8 +243,6 @@
                     info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billingAfterTax)
                 }
                 $('.' + socClass).html( info )
-
-                console.log( costs)
             })
         }
     }
