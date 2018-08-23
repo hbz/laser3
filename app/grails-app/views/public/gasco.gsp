@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
 <%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition" %>
 
 <!doctype html>
@@ -135,7 +135,25 @@
                         ${sub.type?.getI10n('value')}
                     </td>
                     <td>
-                        ${sub.getConsortia()?.name}
+                        ${sub.getConsortia()?.name}<br>
+
+                        Hauptansprechpartner:<br>
+                        <g:each in ="${com.k_int.kbplus.PersonRole.findAllByFunctionTypeAndOrg(RefdataValue.getByValueAndCategory('General contact person', 'Person Function'), sub.getConsortia())}" var="person">
+                            <p>
+                                ${person.getPrs().getFirst_name()}
+                                ${person.getPrs().getLast_name()}
+                                <br>
+
+                            <g:each in ="${com.k_int.kbplus.Contact.findAllByPrsAndContentType(
+                                    person.getPrs(),
+                                    RefdataValue.getByValueAndCategory('E-Mail', 'ContactContentType')
+                            )}" var="prsContact">
+                                ${prsContact.content}
+                            </g:each>
+                            </p>
+
+                        </g:each>
+
                     </td>
                 </tr>
             </g:each>
