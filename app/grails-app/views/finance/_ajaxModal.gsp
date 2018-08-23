@@ -239,14 +239,28 @@
                                       optionKey="${{"com.k_int.kbplus.Subscription:" + it?.id}}"
                                       noSelection="['':'']"
                                       value="${'com.k_int.kbplus.Subscription:' + it?.id}" />
+
+                            <script>
+                                $(function() {
+                                    $('#newLicenseeTarget').on('change', function () {
+                                        var $elems = $('#newPackageWrapper select, #newPackageWrapper .dropdown')
+                                        if ('com.k_int.kbplus.Subscription:null' == $(this).val()) {
+                                            $elems.removeAttr('disabled')
+                                            $elems.removeClass('disabled')
+                                        } else {
+                                            $elems.attr('disabled', 'disabled')
+                                            $elems.addClass('disabled')
+                                        }
+                                    })
+                                })
+                            </script>
                         </g:if>
                     </g:if>
 
                 </div><!-- .field -->
 
-                <div class="field">
+                <div class="field" id="newPackageWrapper">
 
-                <%-- TODO: dynamic loading depending on #newLicenseeTarget
                     <g:if test="${costItem?.sub}">
                         <label>${message(code:'package.label')}</label>
                         <g:select name="newPackage" id="newPackage" class="ui dropdown"
@@ -268,7 +282,7 @@
                     <g:else>
                         <input name="newPackage" id="newPackage" class="la-full-width" disabled="disabled" data-subFilter="" data-disableReset="true" />
                     </g:else>
-                --%>
+
 
                     <%--
                     <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
