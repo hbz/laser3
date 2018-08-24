@@ -131,7 +131,7 @@ class FilterService {
         if (query.size() > 0) {
             query = " and " + query.join(" and ") + defaultOrder
         } else {
-            query = " order by " + defaultOrder
+            query = defaultOrder
         }
 
         result.query = query
