@@ -387,6 +387,36 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
+    def confirmationModal = { attrs, body ->
+
+        def id        = attrs.id ? ' id="' + attrs.id + '" ' : ''
+        def text      = attrs.text ? attrs.text : ''
+        def message   = attrs.message ? "${message(code: attrs.message)}" : ''
+        def title     = (text && message) ? text + " - " + message : text + message
+        def deletemodal = attrs.deletemodal
+
+        def msgClose = "Schließen"
+        def msgDelete  = deletemodal ? "Entgültig löschen" : "Entgültig ändern"
+        def msgCancel  = "Abbrechen"
+
+        out << '<div class="ui mini modal">'
+        out <<   '<div class="header">' + title + '</div>'
+        if (body) {
+            out <<   '<div class="content">'
+            out << body()
+            out <<   '</div>'
+        }
+        out <<   '<div class="actions">'
+        out <<     '<div class="ui deny button">'+ msgCancel+ '</div>'
+        out <<     '<button class="ui positive right labeled icon button">'+ msgDelete
+        out <<     '    <i class="trash alternate icon"></i>'
+        out <<     '</button>'
+        out <<   '</div>'
+        out << '</div>'
+    }
+
+
+
     //<semui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="true" />
 
     def datepicker = { attrs, body ->

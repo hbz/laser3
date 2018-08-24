@@ -7,7 +7,7 @@
 
 <thead>
     <tr>
-        <th>${message(code:'financials.newCosts.costTitle')}</th>
+        <th>Teilnehmer / ${message(code:'financials.newCosts.costTitle')}</th>
         <th class="two wide">${message(code:'financials.invoice_total')}</th>
         <th class="two wide">${message(code:'financials.newCosts.valueInEuro')}</th>
         <th>${message(code:'financials.costItemElement')}</th>
@@ -38,7 +38,7 @@
                     </g:each>
 
                     <br />
-                    &nbsp; &nbsp; <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" />
+                    <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" />
                 </td>
                 <td>
                     <span class="costData"

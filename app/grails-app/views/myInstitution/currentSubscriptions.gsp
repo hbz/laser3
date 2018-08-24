@@ -231,9 +231,9 @@
                                 -- ${message(code: 'myinst.currentSubscriptions.name_not_set', default: 'Name Not Set')}  --
                             </g:else>
                             <g:if test="${s.instanceOf}">
-                                (<g:if test="${s.consortia && s.consortia == institution}">
-                                    : ${s.subscriber?.name}
-                                </g:if>)
+                                <g:if test="${s.consortia && s.consortia == institution}">
+                                    ( ${s.subscriber?.name} )
+                                </g:if>
                             </g:if>
                         </g:link>
                         <g:if test="${s.owner}">
