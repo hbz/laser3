@@ -62,16 +62,18 @@
             </g:if>
             <g:set var="oid" value="${personRole?.class.name}:${personRole?.id}" />
 
-            //TODO Weitere Ausführung (event.currentTarget.submit();) funktioniert nicht.
-            //Ohne Confirm-Dialog wird das Löschen angestossen.
-            <g:link onclick="
-                    event.preventDefault();
-                    if(confirm('Wollen Sie wirklich die Zuordnung der Person zu dieser Organisation löschen?')){
-                        event.currentTarget.submit();
-                    }"
-                class="ui mini icon negative button" controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
+            <g:link class="ui mini icon negative button deletePersonRoleLink-${personRole?.id}"
+                    controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
                 <i class="trash alternate icon"></i>
             </g:link>
+            <script>
+                $('.deletePersonRoleLink-${personRole?.id}').on( 'click', function(event) {
+                    event.preventDefault()
+                    if (confirm('Wollen Sie wirklich die Zuordnung der Person zu dieser Organisation löschen?')) {
+                        window.location.href = $(this).attr('href')
+                    }
+                })
+            </script>
         </div><!-- .person-details -->
 
         <g:if test="${personRole?.prs?.contacts}">
