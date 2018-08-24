@@ -1,5 +1,5 @@
 
-	<g:if test="${person}">
+<g:if test="${person}">
         <div class="ui divided middle aligned selection list la-flex-list">
 
         <div class="ui item person-details">
@@ -46,7 +46,7 @@
         <div class="ui divided middle aligned selection list la-flex-list">
 
         <div class="ui item person-details">
-            <g:link controller="person" action="show" id="${personRole?.prsId}">
+            <g:link controller="person" action="show" id="${personRole?.id}">
                 ${personRole?.prs?.title}
                 ${personRole?.prs?.first_name}
                 ${personRole?.prs?.middle_name}
@@ -60,7 +60,18 @@
                 &nbsp;
                 (${personRole?.responsibilityType?.getI10n('value')})
             </g:if>
+            <g:set var="oid" value="${personRole?.class.name}:${personRole?.id}" />
 
+            //TODO Weitere Ausführung (event.currentTarget.submit();) funktioniert nicht.
+            //Ohne Confirm-Dialog wird das Löschen angestossen.
+            <g:link onclick="
+                    event.preventDefault();
+                    if(confirm('Wollen Sie wirklich die Zuordnung der Person zu dieser Organisation löschen?')){
+                        event.currentTarget.submit();
+                    }"
+                class="ui mini icon negative button" controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
+                <i class="trash alternate icon"></i>
+            </g:link>
         </div><!-- .person-details -->
 
         <g:if test="${personRole?.prs?.contacts}">
