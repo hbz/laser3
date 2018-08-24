@@ -8,8 +8,10 @@ import grails.plugin.springsecurity.annotation.Secured
 
 // 2.0
 import grails.converters.*
-import com.k_int.kbplus.auth.*;
+import com.k_int.kbplus.auth.*
+import groovy.time.TimeCategory;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
+import org.codehaus.groovy.runtime.InvokerHelper
 import org.elasticsearch.client.Client
 
 import java.text.NumberFormat
@@ -141,7 +143,7 @@ class SubscriptionDetailsController {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
                 // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
                 // qry_params.add(deleted_ie);
-                base_qry += "and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
+                base_qry += "and (( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
                 qry_params.add(date_filter);
                 qry_params.add(date_filter);
             }
@@ -153,7 +155,7 @@ class SubscriptionDetailsController {
             if (params.mode != 'advanced') {
                 // If we are not in advanced mode, hide IEs that are not current, otherwise filter
 
-                base_qry += " and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
+                base_qry += " and (( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
                 qry_params.add(date_filter);
                 qry_params.add(date_filter);
             }
@@ -1603,6 +1605,287 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
 
 
         result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def renewSubscription(){
+
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!(result || contextService.getOrg().orgType?.value == 'Consortium') ) {
+               response.sendError(401); return
+        }
+
+        def baseSub = Subscription.get(params.baseSubscription?:params.id)
+
+        Date newStartDate
+        Date newEndDate
+
+        use(TimeCategory) {
+            result.newStartDate = baseSub.startDate + 1.year
+            result.newEndDate = baseSub.endDate+ 1.year
+        }
+
+        if(params.workFlowPart == '2')
+        {
+            def newSub2 = Subscription.get(params.newSubscription)
+
+            //Copy Docs
+            def toCopyDocs = []
+            params.list('subscription.takeDocs').each { doc ->
+
+                toCopyDocs << Long.valueOf(doc)
+            }
+
+            //Copy Announcements
+            def toCopyAnnouncements = []
+            params.list('subscription.takeAnnouncements').each { announcement ->
+
+                toCopyAnnouncements << Long.valueOf(announcement)
+            }
+
+            baseSub.documents?.each { dctx ->
+
+                //Copy Docs
+                if (dctx.owner.id in toCopyDocs) {
+                    if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status?.value != 'Deleted')) {
+                        Doc clonedContents = new Doc(
+                                blobContent: dctx.owner.blobContent,
+                                status: dctx.owner.status,
+                                type: dctx.owner.type,
+                                alert: dctx.owner.alert,
+                                content: dctx.owner.content,
+                                uuid: dctx.owner.uuid,
+                                contentType: dctx.owner.contentType,
+                                title: dctx.owner.title,
+                                creator: dctx.owner.creator,
+                                filename: dctx.owner.filename,
+                                mimeType: dctx.owner.mimeType,
+                                user: dctx.owner.user,
+                                migrated: dctx.owner.migrated
+                        ).save()
+
+                        DocContext ndc = new DocContext(
+                                owner: clonedContents,
+                                subscription: newSub2,
+                                domain: dctx.domain,
+                                status: dctx.status,
+                                doctype: dctx.doctype
+                        ).save()
+                    }
+                }
+                //Copy Announcements
+                if (dctx.owner.id in toCopyAnnouncements) {
+                    if ((dctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
+                        Doc clonedContents = new Doc(
+                                blobContent: dctx.owner.blobContent,
+                                status: dctx.owner.status,
+                                type: dctx.owner.type,
+                                alert: dctx.owner.alert,
+                                content: dctx.owner.content,
+                                uuid: dctx.owner.uuid,
+                                contentType: dctx.owner.contentType,
+                                title: dctx.owner.title,
+                                creator: dctx.owner.creator,
+                                filename: dctx.owner.filename,
+                                mimeType: dctx.owner.mimeType,
+                                user: dctx.owner.user,
+                                migrated: dctx.owner.migrated
+                        ).save()
+
+                        DocContext ndc = new DocContext(
+                                owner: clonedContents,
+                                subscription: newSub2,
+                                domain: dctx.domain,
+                                status: dctx.status,
+                                doctype: dctx.doctype
+                        ).save()
+                    }
+                }
+            }
+            //Copy Tasks
+            params.list('subscription.takeTasks').each { tsk ->
+
+                def task = Task.findBySubscriptionAndId(baseSub, Long.valueOf(tsk))
+                if (task) {
+                    if (task.status != RefdataValue.loc('Task Status', [en: 'Done', de: 'Erledigt'])) {
+                        Task newTask = new Task()
+                        InvokerHelper.setProperties(newTask, task.properties)
+                        newTask.subscription = newSub2
+                        newTask.save(flush: true)
+                    }
+
+                }
+            }
+            params.workFlowPart = 3
+            result.newSub = newSub2
+
+
+
+            def role_sub      = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial')
+            def role_sub_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
+
+            def queryParams = [role_sub, role_sub_cons, baseSub]
+
+            def query = "SELECT o.* from Org o LEFT JOIN org_role o2 on o.org_id = o2.or_org_fk WHERE o2.or_roletype_fk = ? AND o2.or_sub_fk IN " +
+                    "(SELECT sub_id from subscription s LEFT JOIN org_role o3 on s.sub_id = o3.or_sub_fk WHERE s.sub_parent_sub_fk = ? AND o3.or_roletype_fk = ? )" +
+                    "order by LOWER(o.sortname) asc;"
+
+            result.cons_members = Org.executeQuery(query, queryParams)
+            result.cons_members_disabled = []
+            result.cons_members.each { it ->
+                if (Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
+                        [result.subscriptionInstance, it.id])
+                ) {
+                    result.cons_members_disabled << it.id
+                }
+            }
+
+
+        }
+
+
+            if(params.workFlowPart == '1'){
+
+                if(params.baseSubscription) {
+
+                    if(Subscription.findAllByPreviousSubscription(baseSub))
+                    {
+                        flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
+                    }else
+                    {
+
+
+                    def newSub = new Subscription(
+                            name: baseSub.name,
+                            startDate: result.newStartDate,
+                            endDate: result.newEndDate,
+                            previousSubscription: baseSub.id,
+                            identifier: java.util.UUID.randomUUID().toString(),
+                            isPublic: baseSub.isPublic,
+                            isSlaved: baseSub.isSlaved,
+                            type: baseSub.type,
+                            status: RefdataValue.loc('Subscription Status',      [en: 'Intended', de: 'Geplant'])
+                    )
+                    if (!newSub.save(flush: true)) {
+                        log.error("Problem saving subscription ${newSub.errors}");
+                        return newSub
+                    } else {
+                        log.debug("Save ok");
+                        //Copy References
+                        if (params.subscription.takeLinks) {
+
+                            //OrgRole
+                            baseSub.orgRelations?.each { or ->
+                                OrgRole newOrgRole = new OrgRole()
+                                InvokerHelper.setProperties(newOrgRole, or.properties)
+                                newOrgRole.sub = newSub
+                                newOrgRole.save(flush: true)
+                            }
+                            //Package
+                            baseSub.packages?.each { pkg ->
+                                SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
+                                InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
+                                newSubscriptionPackage.subscription = newSub
+                                newSubscriptionPackage.save(flush: true)
+                            }
+                            //License
+                            newSub.owner = baseSub.owner
+                            newSub.save(flush: true)
+
+
+                        }
+
+                        if (params.subscription.takeEntitlements) {
+
+                            baseSub.issueEntitlements.each { ie ->
+
+                                if(ie.status != RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted'))
+                                {
+                                    def properties = ie.properties
+                                    properties.globalUID = null
+
+                                    IssueEntitlement newIssueEntitlement = new IssueEntitlement()
+                                    InvokerHelper.setProperties(newIssueEntitlement, properties)
+                                    newIssueEntitlement.subscription = newSub
+                                    newIssueEntitlement.save(flush: true)
+                                }
+                            }
+
+                        }
+
+
+                        if (params.subscription.takeCustomProperties) {
+                            //customProperties
+                            for (prop in baseSub.customProperties) {
+                                def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSub)
+                                copiedProp = prop.copyValueAndNote(copiedProp)
+                                newSub.addToCustomProperties(copiedProp)
+                            }
+                        }
+                        if (params.subscription.takePrivateProperties) {
+                            //privatProperties
+                            def contextOrg = contextService.getOrg()
+
+                            baseSub.privateProperties.each { prop ->
+                                if (prop.type?.tenant?.id == contextOrg?.id) {
+                                    def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSub)
+                                    copiedProp = prop.copyValueAndNote(copiedProp)
+                                    newSub.addToPrivateProperties(copiedProp)
+                                }
+                            }
+                        }
+
+                        params.workFlowPart = 2
+                        result.newSub = newSub
+                        }
+                    }
+                }
+            }
+
+
+            result.navPrevSubscription = result.subscriptionInstance.previousSubscription
+            result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
+
+            // tasks
+            def contextOrg  = contextService.getOrg()
+            result.tasks    = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
+
+            result.contextOrg = contextOrg
+            // restrict visible for templates/links/orgLinksAsList
+            result.visibleOrgRelations = []
+            result.subscriptionInstance.orgRelations?.each { or ->
+                if (!(or.org == contextService.getOrg()) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                    result.visibleOrgRelations << or
+                }
+            }
+            result.visibleOrgRelations.sort{it.org.sortname}
+
+
+            result.modalPrsLinkRole = RefdataValue.findByValue('Specific subscription editor')
+            result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
+
+            result.visiblePrsLinks = []
+
+            result.subscriptionInstance.prsLinks.each { pl ->
+                if (! result.visiblePrsLinks.contains(pl.prs)) {
+                    if (pl.prs.isPublic?.value != 'No') {
+                        result.visiblePrsLinks << pl
+                    }
+                    else {
+                        // nasty lazy loading fix
+                        result.user.authorizedOrgs.each{ ao ->
+                            if (ao.getId() == pl.prs.tenant.getId()) {
+                                result.visiblePrsLinks << pl
+                            }
+                        }
+                    }
+                }
+            }
+
+            result.workFlowPart = params.workFlowPart ?: 1
+
+            result
     }
 
     private LinkedHashMap setResultGenericsAndCheckAccess(checkOption) {

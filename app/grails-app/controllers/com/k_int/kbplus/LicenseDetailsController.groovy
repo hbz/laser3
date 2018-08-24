@@ -761,7 +761,8 @@ from Subscription as s where
                     type: baseLicense.type,
                     startDate: params.license.copyDates ? baseLicense?.startDate : null,
                     endDate: params.license.copyDates ? baseLicense?.endDate : null,
-                    instanceOf: params.license.links ? baseLicense.instanceOf : null
+                    instanceOf: params.license.links ? baseLicense.instanceOf : null,
+
             )
 
 

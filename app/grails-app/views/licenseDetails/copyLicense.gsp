@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'license.new')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'myinst.copyLicense')}</title>
 </head>
 
 <body>
@@ -43,7 +43,7 @@ ${message(code: 'myinst.copyLicense')}: ${license.reference}
     <tr>
         <th><g:checkBox name="license.copyDates" value="${true}" /></th>
         <th>${message(code:'license.copyDates', default:'Copy all Dates from License')}</th>
-        <td><g:formatDate date="${license?.startDate}" format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}"/>${license?.endDate ? '- '+formatDate(date:"${license?.endDate}", format: message(code:'default.date.format.notime', default:'yyyy-MM-dd')):''}</td>
+        <td><g:formatDate date="${license?.startDate}" format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}"/>${license?.endDate ? (' - '+formatDate(date:license?.endDate, format: message(code:'default.date.format.notime', default:'yyyy-MM-dd'))):''}</td>
     </tr>
     <tr>
         <th><g:checkBox name="license.copyLinks" value="${true}" /></th>
@@ -51,7 +51,7 @@ ${message(code: 'myinst.copyLicense')}: ${license.reference}
         <td>
             <b>${message(code:'license.linktoLicense', default:'License Template')}:</b>
             <g:if test="${license.instanceOf}">
-                <g:link controller="licenseDetails" action="show" id="${license.instanceOf.id}">${license.instanceOf}</g:link>
+                <g:link controller="licenseDetails" action="show" target="_blank" id="${license.instanceOf.id}">${license.instanceOf}</g:link>
             </g:if>
             <g:else>
                 ${message(code:'license.linktoLicenseEmpty', default:'No License Template')}
@@ -60,7 +60,7 @@ ${message(code: 'myinst.copyLicense')}: ${license.reference}
 
         <g:each in="${visibleOrgLinks}" var="role">
             <g:if test="${role.org}">
-                <b>${role?.roleType?.getI10n("value")}:</b> <g:link controller="Organisations" action="show" id="${role.org.id}">${role?.org?.name}</g:link><br>
+                <b>${role?.roleType?.getI10n("value")}:</b> <g:link controller="Organisations" action="show" target="_blank" id="${role.org.id}">${role?.org?.name}</g:link><br>
             </g:if>
         </g:each>
         </td>
@@ -141,7 +141,7 @@ ${message(code: 'myinst.copyLicense')}: ${license.reference}
     </tr>
     <tr>
         <th><g:checkBox name="license.copyCustomProperties" value="${true}" /></th>
-        <th>${message(code:'license.copyProperty', default:'Copy Property from License')}</th>
+        <th>${message(code:'license.copyCostumProperty', default:'Copy Property from License')}</th>
         <td>${message(code:'license.properties')}<br>
             ${message(code:'license.openaccess.properties')}<br>
             ${message(code:'license.archive.properties')}<br>
@@ -149,7 +149,7 @@ ${message(code: 'myinst.copyLicense')}: ${license.reference}
     </tr>
     <tr>
         <th><g:checkBox name="license.copyPrivateProperties" value="${true}" /></th>
-        <th>${message(code:'license.copyProperty', default:'Copy Property from License')}</th>
+        <th>${message(code:'license.copyPrivateProperty', default:'Copy Property from License')}</th>
         <td>${message(code:'license.properties.private')} ${contextOrg?.name}<br>
         </td>
     </tr>
