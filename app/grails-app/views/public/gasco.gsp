@@ -128,32 +128,37 @@
                     </td>
                     <td>
                         <g:each in="${OrgRole.findAllBySubAndRoleType(sub, RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'))}" var="role">
-                            ${role.org?.name}
+                            ${role.org?.name}<br>
                         </g:each>
                     </td>
                     <td>
                         ${sub.type?.getI10n('value')}
                     </td>
                     <td>
-                        ${sub.getConsortia()?.name}<br>
-
-                        Hauptansprechpartner:<br>
+                        ${sub.getConsortia()?.name}
                         <g:each in ="${com.k_int.kbplus.PersonRole.findAllByFunctionTypeAndOrg(RefdataValue.getByValueAndCategory('General contact person', 'Person Function'), sub.getConsortia())}" var="person">
-                            <p>
-                                ${person.getPrs().getFirst_name()}
-                                ${person.getPrs().getLast_name()}
-                                <br>
+                            <div class="ui list">
+                                <div class="item">
+                                    <div class="content">
+                                        <div class="header">
+                                            Hauptansprechpartner: ${person?.getPrs()?.getFirst_name()} ${person?.getPrs()?.getLast_name()}
+                                        </div>
+                                        <g:each in ="${com.k_int.kbplus.Contact.findAllByPrsAndContentType(
+                                                person.getPrs(),
+                                                RefdataValue.getByValueAndCategory('E-Mail', 'ContactContentType')
+                                        )}" var="prsContact">
 
-                            <g:each in ="${com.k_int.kbplus.Contact.findAllByPrsAndContentType(
-                                    person.getPrs(),
-                                    RefdataValue.getByValueAndCategory('E-Mail', 'ContactContentType')
-                            )}" var="prsContact">
-                                ${prsContact.content}
-                            </g:each>
-                            </p>
-
+                                            <div class="description">
+                                                <i class="ui icon envelope outline"></i>
+                                                <span data-position="right center" data-tooltip="Mail senden an ${person?.getPrs().getFirst_name()} ${person?.getPrs()?.getLast_name()}">
+                                                    <a href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
+                                                </span>
+                                            </div>
+                                        </g:each>
+                                    </div>
+                                </div>
+                            </div>
                         </g:each>
-
                     </td>
                 </tr>
             </g:each>
