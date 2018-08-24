@@ -36,7 +36,10 @@
             <td>
                 <g:link controller="userDetails" action="edit" id="${userOrg[0].user.id}">
                     ${userOrg[0].user.displayName}
-                    ${userOrg[0].user.defaultDash?.name?"<br />${userOrg[0].user.defaultDash.name}":""}
+                  <g:if test="${userOrg[0].user.defaultDash?.name}">
+                    <br>
+                    ${userOrg[0].user.defaultDash.name}
+                  </g:if>
                 </g:link>
             </td>
             <td>
