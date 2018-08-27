@@ -9,7 +9,6 @@
 - added pagination on some views
 - security: restrict permissions check to context org
 - added cache management
-- upgrade to hibernate 4.3
 - lots of markup and style changes 
 - other bugfixes
 

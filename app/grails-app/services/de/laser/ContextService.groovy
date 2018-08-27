@@ -12,7 +12,6 @@ class ContextService {
     static final SERVER_QA    = 'SERVER_QA'
     static final SERVER_PROD  = 'SERVER_PROD'
 
-
     def setOrg(Org context) {
         def session = WebUtils.retrieveGrailsWebRequest().getSession()
         session.setAttribute('contextOrg', context)
