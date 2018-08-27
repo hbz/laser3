@@ -1,6 +1,5 @@
 <% def accService = grailsApplication.mainContext.getBean("accessService") %>
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
-<% def securityService = grailsApplication.mainContext.getBean("springSecurityService") %>
 <!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->
 <g:set var="overwriteEditable" value="${editable || accService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}" />
 
@@ -74,7 +73,7 @@
                                 <i class="write icon"></i>
                             </a>
                         </g:if>
-                        <g:if test="${(user == taskInstance.creator) || securityService.getCurrentUser().hasAffiliation("INST_ADM")}">
+                        <g:if test="${(user == taskInstance.creator) || contextService.getUser().hasAffiliation("INST_ADM")}">
                             <g:link action="tasks" params="[deleteId:taskInstance.id, id: params.id]" class="ui icon negative button">
                                 <i class="trash alternate icon"></i>
                             </g:link>
