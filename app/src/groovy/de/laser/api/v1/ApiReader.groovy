@@ -259,28 +259,36 @@ class ApiReader {
 
         costItem = GrailsHibernateUtil.unwrapIfProxy(costItem)
 
-        result.globalUID = costItem.globalUID
+        result.globalUID           = costItem.globalUID
 
         // RefdataValues
-        result.costItemStatus = costItem.costItemStatus?.value
-        result.costItemTyp = costItem.costItemCategory?.value
-        result.billingCurrency = costItem.billingCurrency?.value
-        result.costItemElement = costItem.costItemElement?.value
-        result.taxCode = costItem.taxCode?.value
+        result.costItemStatus      = costItem.costItemStatus?.value
+        result.costItemCategory    = costItem.costItemCategory?.value
+        result.billingCurrency     = costItem.billingCurrency?.value
+        result.costItemElement     = costItem.costItemElement?.value
+        result.taxCode             = costItem.taxCode?.value
 
         result.costInBillingCurrency = costItem.costInBillingCurrency
-        result.costInLocalCurrency = costItem.costInLocalCurrency
-        result.currencyRate = costItem.currencyRate
+        result.costInLocalCurrency  = costItem.costInLocalCurrency
+        result.currencyRate         = costItem.currencyRate
 
-        result.costTitle = costItem.costTitle
-        result.costDescription = costItem.costDescription
-        result.reference = costItem.reference
+        result.costInBillingCurrencyAfterTax = costItem.costInBillingCurrencyAfterTax
+        result.costInLocalCurrencyAfterTax= costItem.costInLocalCurrencyAfterTax
+        result.taxRate             = costItem.taxRate
+        result.finalCostRounding   = costItem.finalCostRounding
+        result.invoiceDate         = costItem.invoiceDate
 
-        result.startDate = costItem.startDate
-        result.endDate = costItem.endDate
+        result.costTitle           = costItem.costTitle
+        result.costDescription     = costItem.costDescription
+        result.reference           = costItem.reference
+
+        result.startDate           = costItem.startDate
+        result.endDate             = costItem.endDate
         result.datePaid            = costItem.datePaid
         result.dateCreated         = costItem.dateCreated
         result.lastUpdated         = costItem.lastUpdated
+
+
 
         // References
 
