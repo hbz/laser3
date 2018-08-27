@@ -6,6 +6,7 @@ import grails.plugin.cache.Cacheable
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import grails.web.Action
+import org.hibernate.SessionFactory
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -111,7 +112,7 @@ class YodaController {
 
         grailsApplication.controllerClasses.toList().each { controller ->
             Class controllerClass = controller.clazz
-            if (controllerClass.name.startsWith('com.k_int.kbplus')) {
+            if (controllerClass.name.startsWith('com.k_int.kbplus') || controllerClass.name.startsWith('de.laser')) {
                 def mList = [:]
 
                 controllerClass.methods.each { Method method ->

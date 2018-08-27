@@ -31,7 +31,8 @@
             <span class="ROLE_ORG_EDITOR">ROLE_ORG_EDITOR</span> |
             <span class="ROLE_ORG_COM_EDITOR">ROLE_ORG_COM_EDITOR</span> |
             <span class="ROLE_PACKAGE_EDITOR">ROLE_PACKAGE_EDITOR</span> |
-            <span class="ROLE_ORG_COM_EDITOR">ROLE_TICKET_EDITOR</span>
+            <span class="ROLE_STATISTICS_EDITOR">ROLE_STATISTICS_EDITOR</span> |
+            <span class="ROLE_TICKET_EDITOR">ROLE_TICKET_EDITOR</span>
         </div>
     </div>
     <div class="ui list">
@@ -93,9 +94,8 @@
             <div class="ui sticky">
                 <aside>
                     <g:each in="${controller}" var="c">
-                        <a href="#jumpMark_${c.key}">${c.key.replaceFirst('com.k_int.kbplus.','').replaceAll('Controller', '  ')}</a> |
+                        <a href="#jumpMark_${c.key}">${c.key.replaceFirst('com.k_int.kbplus.','').replaceFirst('de.laser.','').replaceAll('Controller', '  ')}</a> |
                     </g:each>
-                    <a href="#jumpMark_top">&uArr;</a>
                 </aside>
             </div>
         </div>
