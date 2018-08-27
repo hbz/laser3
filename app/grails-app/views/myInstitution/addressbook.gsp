@@ -81,28 +81,6 @@ import="com.k_int.kbplus.RefdataCategory"
                             max="${max}"
                             total="${num_visiblePersons}"/>
 
-
-
-
-
         </g:if>
-
-        <r:script>
-            $(function(){
-                $(".js-open-confirm-modal").click(function(){
-                    var tmp = this.getAttribute("data-confirm-id")+'_form';
-                    $('.mini.modal')
-                        .modal({
-                        closable  : false,
-                        onApprove : function() {
-                            $('[data-confirm-id='+tmp+']').submit();
-                        }
-                    })
-                            .modal('show')
-                    ;
-                });
-            });
-        </r:script>
-
-  </body>
+    </body>
 </html>

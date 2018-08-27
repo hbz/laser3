@@ -34,7 +34,7 @@ class PersonController {
 
         // TODO remove this fallback !!!!
         if(userMemberships.size() == 0){
-            userMemberships = Org.list()
+            userMemberships = []
         }
         
         switch (request.method) {

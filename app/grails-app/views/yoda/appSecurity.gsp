@@ -13,7 +13,7 @@
 
 <h1 class="ui header"><semui:headerIcon />Application Security</h1>
 
-<h3 class="ui header">Global Roles</h3>
+<h3 class="ui header">Hierarchical Global Roles</h3>
 
 <div class="secInfoWrapper">
     <div class="ui list">
@@ -25,6 +25,11 @@
             <span class="IS_AUTHENTICATED_FULLY">IS_AUTHENTICATED_FULLY</span>
         </div>
     </div>
+</div>
+
+<h3 class="ui header">Independent Global Roles</h3>
+
+<div class="secInfoWrapper">
     <div class="ui list">
         <div class="item">
             <span class="ROLE_ORG_COM_EDITOR">ROLE_GLOBAL_DATA</span> |
@@ -44,14 +49,17 @@
     </div>
 </div>
 
-<h3 class="ui header">User Roles</h3>
+<h3 class="ui header">Hierarchical User Roles</h3>
 
 <div class="secInfoWrapper">
     <div class="ui list">
         <div class="item">
             <span>INST_ADM</span> &rArr;
             <span>INST_EDITOR</span> &rArr;
-            <span>INST_USER</span> (implizit Prüfung auf <span class="ROLE_USER">ROLE_USER</span>)
+            <span>INST_USER</span>  &nbsp; (implizite Prüfung auf <span class="ROLE_USER">ROLE_USER</span>)
+        </div>
+        <div class="item">
+            <span class="ROLE_YODA">ROLE_YODA</span> und <span class="ROLE_ADMIN">ROLE_ADMIN</span> liefern <code>TRUE</code>
         </div>
     </div>
 </div>
