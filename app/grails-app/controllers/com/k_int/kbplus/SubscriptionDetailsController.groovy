@@ -871,7 +871,7 @@ class SubscriptionDetailsController {
             response.sendError(401); return
         }
 
-        def delSubscription = Subscription.get(params.basesubscription)
+        def delSubscription = Subscription.get(params.target)
         def delInstitution = delSubscription.getSubscriber()
 
         def deletedStatus = RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted')
