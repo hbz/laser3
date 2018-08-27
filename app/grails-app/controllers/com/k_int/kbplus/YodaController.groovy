@@ -14,6 +14,8 @@ import java.lang.reflect.Modifier
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class YodaController {
 
+    SessionFactory sessionFactory
+
     def springSecurityService
     def statsSyncService
     def dataloadService
@@ -75,6 +77,14 @@ class YodaController {
         result.grailsApp = grailsApplication
         result.appContext = getApplicationContext()
         result.cacheManager = result.appContext.grailsCacheManager
+
+        if (params.cmd?.equals('clearCache')) {
+            def cache = result.cacheManager.getCache(params.cache)
+            if (cache) {
+                cache.clear()
+            }
+        }
+        result.hibernateStats = sessionFactory.statistics // org.hibernate.stat.Statistics
 
         result
     }

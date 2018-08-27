@@ -64,6 +64,7 @@ grails.project.dependency.resolution = {
     dependencies {
 
         //compile "net.sf.ehcache:ehcache:2.9.0" // to hibernate 4
+        compile "org.hibernate:hibernate-ehcache:4.3.10.Final"
 
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
         runtime 'javax.servlet:jstl:1.1.2'
