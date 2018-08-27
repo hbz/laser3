@@ -451,4 +451,6 @@ class SemanticUiTagLib {
 
     }
 
-    public SemanticUiTagLib ( ) { } }
+    public SemanticUiTagLib ( ) { }
+
+}

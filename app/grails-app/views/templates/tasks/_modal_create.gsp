@@ -1,5 +1,6 @@
 <%@ page import="com.k_int.kbplus.Task" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
+
 <semui:modal id="modalCreateTask" message="task.create.new">
 
     <g:form class="ui form" id="create_task" url="[controller: 'task', action: 'create']" method="post">

@@ -6,6 +6,8 @@
     </head>
     <body>
 
+        <laser:serviceInjection />
+
         <semui:breadcrumbs>
             <semui:crumb text="${institution?.getDesignation()}" class="active" />
         </semui:breadcrumbs>

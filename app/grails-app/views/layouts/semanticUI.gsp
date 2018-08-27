@@ -1,6 +1,4 @@
 <%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
-<% def securityService = grailsApplication.mainContext.getBean("springSecurityService") %>
 <!doctype html>
 
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
@@ -31,7 +29,7 @@
 
 <body class="${controllerName}_${actionName}" id="globalJumpMark">
 
-    <g:set var="yodaService" bean="yodaService" />
+    <laser:serviceInjection />
 
     <g:set var="contextOrg" value="${contextService.getOrg()}" />
     <g:set var="contextUser" value="${contextService.getUser()}" />
