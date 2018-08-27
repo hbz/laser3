@@ -4,6 +4,7 @@ class LaserInjectionTagLib {
 
     def springSecurityService
     def contextService
+    def accessService
     def yodaService
 
     static namespace = "laser"

@@ -1,4 +1,5 @@
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
+
 <g:if test="${actionName == 'index'}">
     <semui:exportDropdown>
         <semui:exportDropdownItem>

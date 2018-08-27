@@ -1,7 +1,6 @@
 <!-- _filter.gsp -->
 <%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.FinanceController" %>
-
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
 
 <g:if test="${false}"><!-- TMP::IGNORE LEGACY FILTER -->
 

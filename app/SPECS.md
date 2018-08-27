@@ -30,3 +30,9 @@ Use **com.k_int.kbplus.auth.User.hasAffiliation('MIN_INST_ROLE')** to secure act
 Use **DebugAnnotation** for dynamic documentation.
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    
+#### Service Injection
+
+Mainly used services are available in GSPs due the following custom tag.
+
+    <laser:serviceInjection />

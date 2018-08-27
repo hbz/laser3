@@ -1,7 +1,7 @@
 <!-- _result_tab_sc.gsp -->
 <%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.FinanceController" %>
 
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
 
 <table id="costTable_${i}" class="ui celled sortable table table-tworow la-table ignore-floatThead">
 

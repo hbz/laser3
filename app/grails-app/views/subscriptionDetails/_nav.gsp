@@ -1,4 +1,4 @@
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
 
 <semui:subNav actionName="${actionName}">
 

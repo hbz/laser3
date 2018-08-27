@@ -1,4 +1,3 @@
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/html">
 <head>
@@ -7,6 +6,7 @@
 
 </head>
 <body>
+    <laser:serviceInjection />
 
     <g:render template="vars" /><%-- setting vars --%>
 

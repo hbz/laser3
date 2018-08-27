@@ -1,5 +1,6 @@
 <!-- _create.gsp -->
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
+
 <semui:form>
     <form class="ui form" id="createCost">
         <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}"></g:hiddenField>

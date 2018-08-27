@@ -1,4 +1,4 @@
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
 
 <semui:breadcrumbs>
     <g:if test="${license?.getLicensee() && license?.getLicensee()?.id == contextService.getOrg()?.id}">

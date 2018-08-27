@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.*" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
-<% def securityService = grailsApplication.mainContext.getBean("springSecurityService") %>
+<laser:serviceInjection />
+
 <!doctype html>
 <html>
 <head>
@@ -137,7 +137,7 @@
         </g:if>
     </g:form>
 
-    <g:if test="${securityService.getCurrentUser().hasAffiliation("INST_ADM") && contextService.getOrg().orgType?.value == 'Consortium'}">
+    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") && contextService.getOrg().orgType?.value == 'Consortium'}">
         <hr />
 
         <div class="ui info message">

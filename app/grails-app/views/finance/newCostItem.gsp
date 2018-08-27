@@ -1,4 +1,5 @@
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
+
 <!doctype html>
 <html>
 <!-- deprecated -->

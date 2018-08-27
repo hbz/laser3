@@ -1,5 +1,5 @@
 <%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org;" %>
-<% def cService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
 
 <semui:modal id="numbersFormModal" text="${message(code: 'numbers.create.label')}">
 
