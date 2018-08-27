@@ -1716,10 +1716,12 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
 
                         //OrgRole
                         subMember.orgRelations?.each { or ->
-                            OrgRole newOrgRole = new OrgRole()
-                            InvokerHelper.setProperties(newOrgRole, or.properties)
-                            newOrgRole.sub = newSubscription
-                            newOrgRole.save(flush: true)
+                            if ((or.org == contextService.getOrg()) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || (newSubConsortia.orgRelations.size() >= 1)) {
+                                OrgRole newOrgRole = new OrgRole()
+                                InvokerHelper.setProperties(newOrgRole, or.properties)
+                                newOrgRole.sub = newSubscription
+                                newOrgRole.save(flush: true)
+                            }
                         }
 
 
@@ -1851,15 +1853,17 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
                         } else {
                             log.debug("Save ok");
                             //Copy References
-                            if (params.subscription.takeLinks) {
-
                                 //OrgRole
                                 baseSub.orgRelations?.each { or ->
-                                    OrgRole newOrgRole = new OrgRole()
-                                    InvokerHelper.setProperties(newOrgRole, or.properties)
-                                    newOrgRole.sub = newSub
-                                    newOrgRole.save(flush: true)
+
+                                    if ((or.org == contextService.getOrg()) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || params.subscription.takeLinks) {
+                                        OrgRole newOrgRole = new OrgRole()
+                                        InvokerHelper.setProperties(newOrgRole, or.properties)
+                                        newOrgRole.sub = newSub
+                                        newOrgRole.save(flush: true)
+                                    }
                                 }
+                            if(params.subscription.takeLinks){
                                 //Package
                                 baseSub.packages?.each { pkg ->
                                     SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
@@ -1870,8 +1874,6 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
                                 //License
                                 newSub.owner = baseSub.owner
                                 newSub.save(flush: true)
-
-
                             }
 
                             if (params.subscription.takeEntitlements) {

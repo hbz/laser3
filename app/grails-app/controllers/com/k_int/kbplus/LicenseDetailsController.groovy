@@ -844,10 +844,8 @@ from Subscription as s where
 
                     }
                     //Copy References
-                    if (params.license.copyLinks){
-
                         baseLicense.orgLinks?.each { or ->
-
+                            if ((or.org == contextService.getOrg()) || (or.roleType.value in ["Licensee", "Licensee_Consortial"]) || (params.license.copyLinks)) {
                             OrgRole newOrgRole = new OrgRole()
                             InvokerHelper.setProperties(newOrgRole, or.properties)
                             newOrgRole.lic = licenseInstance
