@@ -36,7 +36,7 @@
                                    message="menu.institutions.imp_renew"/>
         </g:if>
         <g:if test="${subscriptionInstance?.type == com.k_int.kbplus.RefdataValue.getByValueAndCategory("Consortial Licence", "Subscription Type") && contextService.getOrg().orgType?.value == 'Consortium' && !(com.k_int.kbplus.Subscription.findAllByPreviousSubscription(subscriptionInstance))}">
-            <semui:actionsDropdownItem controller="subscriptionDetails" action="renewSubscription"
+            <semui:actionsDropdownItem controller="subscriptionDetails" action="renewSubscriptionConsortia"
                                        params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>
         </g:if>
 

@@ -1609,235 +1609,313 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def renewSubscription(){
+    def renewSubscriptionConsortia(){
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!(result || contextService.getOrg().orgType?.value == 'Consortium') ) {
                response.sendError(401); return
         }
 
-        def baseSub = Subscription.get(params.baseSubscription?:params.id)
+        if (result.institution?.orgType?.value == 'Consortium') {
+            def baseSub = Subscription.get(params.baseSubscription ?: params.id)
 
-        Date newStartDate
-        Date newEndDate
+            Date newStartDate
+            Date newEndDate
 
-        use(TimeCategory) {
-            result.newStartDate = baseSub.startDate + 1.year
-            result.newEndDate = baseSub.endDate+ 1.year
-        }
-
-        if(params.workFlowPart == '2')
-        {
-            def newSub2 = Subscription.get(params.newSubscription)
-
-            //Copy Docs
-            def toCopyDocs = []
-            params.list('subscription.takeDocs').each { doc ->
-
-                toCopyDocs << Long.valueOf(doc)
+            use(TimeCategory) {
+                result.newStartDate = baseSub.startDate + 1.year
+                result.newEndDate = baseSub.endDate + 1.year
             }
 
-            //Copy Announcements
-            def toCopyAnnouncements = []
-            params.list('subscription.takeAnnouncements').each { announcement ->
+            if (params.workFlowPart == '3') {
 
-                toCopyAnnouncements << Long.valueOf(announcement)
-            }
+                def newSubConsortia = Subscription.get(params.newSubscription)
 
-            baseSub.documents?.each { dctx ->
+                def subMembers = []
 
-                //Copy Docs
-                if (dctx.owner.id in toCopyDocs) {
-                    if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status?.value != 'Deleted')) {
-                        Doc clonedContents = new Doc(
-                                blobContent: dctx.owner.blobContent,
-                                status: dctx.owner.status,
-                                type: dctx.owner.type,
-                                alert: dctx.owner.alert,
-                                content: dctx.owner.content,
-                                uuid: dctx.owner.uuid,
-                                contentType: dctx.owner.contentType,
-                                title: dctx.owner.title,
-                                creator: dctx.owner.creator,
-                                filename: dctx.owner.filename,
-                                mimeType: dctx.owner.mimeType,
-                                user: dctx.owner.user,
-                                migrated: dctx.owner.migrated
-                        ).save()
-
-                        DocContext ndc = new DocContext(
-                                owner: clonedContents,
-                                subscription: newSub2,
-                                domain: dctx.domain,
-                                status: dctx.status,
-                                doctype: dctx.doctype
-                        ).save()
-                    }
+                params.list('selectedSubs').each { it ->
+                    subMembers << Long.valueOf(it)
                 }
-                //Copy Announcements
-                if (dctx.owner.id in toCopyAnnouncements) {
-                    if ((dctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
-                        Doc clonedContents = new Doc(
-                                blobContent: dctx.owner.blobContent,
-                                status: dctx.owner.status,
-                                type: dctx.owner.type,
-                                alert: dctx.owner.alert,
-                                content: dctx.owner.content,
-                                uuid: dctx.owner.uuid,
-                                contentType: dctx.owner.contentType,
-                                title: dctx.owner.title,
-                                creator: dctx.owner.creator,
-                                filename: dctx.owner.filename,
-                                mimeType: dctx.owner.mimeType,
-                                user: dctx.owner.user,
-                                migrated: dctx.owner.migrated
-                        ).save()
-
-                        DocContext ndc = new DocContext(
-                                owner: clonedContents,
-                                subscription: newSub2,
-                                domain: dctx.domain,
-                                status: dctx.status,
-                                doctype: dctx.doctype
-                        ).save()
-                    }
-                }
-            }
-            //Copy Tasks
-            params.list('subscription.takeTasks').each { tsk ->
-
-                def task = Task.findBySubscriptionAndId(baseSub, Long.valueOf(tsk))
-                if (task) {
-                    if (task.status != RefdataValue.loc('Task Status', [en: 'Done', de: 'Erledigt'])) {
-                        Task newTask = new Task()
-                        InvokerHelper.setProperties(newTask, task.properties)
-                        newTask.subscription = newSub2
-                        newTask.save(flush: true)
-                    }
-
-                }
-            }
-            params.workFlowPart = 3
-            result.newSub = newSub2
 
 
+                subMembers.each { sub ->
 
-            def role_sub      = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial')
-            def role_sub_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
+                    def subMember = Subscription.findById(sub)
 
-            def queryParams = [role_sub, role_sub_cons, baseSub]
+                    //ChildSub Exisit
+                    if (!Subscription.findAllByPreviousSubscription(subMember)) {
 
-            def query = "SELECT o.* from Org o LEFT JOIN org_role o2 on o.org_id = o2.or_org_fk WHERE o2.or_roletype_fk = ? AND o2.or_sub_fk IN " +
-                    "(SELECT sub_id from subscription s LEFT JOIN org_role o3 on s.sub_id = o3.or_sub_fk WHERE s.sub_parent_sub_fk = ? AND o3.or_roletype_fk = ? )" +
-                    "order by LOWER(o.sortname) asc;"
+                        /* Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
+                            [result.subscriptionInstance, it.id])*/
 
-            result.cons_members = Org.executeQuery(query, queryParams)
-            result.cons_members_disabled = []
-            result.cons_members.each { it ->
-                if (Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
-                        [result.subscriptionInstance, it.id])
-                ) {
-                    result.cons_members_disabled << it.id
-                }
-            }
-
-
-        }
-
-
-            if(params.workFlowPart == '1'){
-
-                if(params.baseSubscription) {
-
-                    if(Subscription.findAllByPreviousSubscription(baseSub))
-                    {
-                        flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
-                    }else
-                    {
+                        Subscription newSubscription = new Subscription(
+                                type: subMember.type,
+                                status: newSubConsortia.status,
+                                name: subMember.name,
+                                startDate: newSubConsortia.startDate,
+                                endDate: newSubConsortia.endDate,
+                                manualRenewalDate: subMember.manualRenewalDate,
+                                /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
+                                identifier: java.util.UUID.randomUUID().toString(),
+                                instanceOf: newSubConsortia,
+                                previousSubscription: subMember,
+                                isSlaved: subMember.isSlaved,
+                                isPublic: subMember.isPublic,
+                                impId: java.util.UUID.randomUUID().toString(),
+                                owner: newSubConsortia.owner ? subMember.owner : null
+                        )
+                        newSubscription.save(flush: true)
 
 
-                    def newSub = new Subscription(
-                            name: baseSub.name,
-                            startDate: result.newStartDate,
-                            endDate: result.newEndDate,
-                            previousSubscription: baseSub.id,
-                            identifier: java.util.UUID.randomUUID().toString(),
-                            isPublic: baseSub.isPublic,
-                            isSlaved: baseSub.isSlaved,
-                            type: baseSub.type,
-                            status: RefdataValue.loc('Subscription Status',      [en: 'Intended', de: 'Geplant'])
-                    )
-                    if (!newSub.save(flush: true)) {
-                        log.error("Problem saving subscription ${newSub.errors}");
-                        return newSub
-                    } else {
-                        log.debug("Save ok");
-                        //Copy References
-                        if (params.subscription.takeLinks) {
-
-                            //OrgRole
-                            baseSub.orgRelations?.each { or ->
-                                OrgRole newOrgRole = new OrgRole()
-                                InvokerHelper.setProperties(newOrgRole, or.properties)
-                                newOrgRole.sub = newSub
-                                newOrgRole.save(flush: true)
-                            }
-                            //Package
-                            baseSub.packages?.each { pkg ->
-                                SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
-                                InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
-                                newSubscriptionPackage.subscription = newSub
-                                newSubscriptionPackage.save(flush: true)
-                            }
-                            //License
-                            newSub.owner = baseSub.owner
-                            newSub.save(flush: true)
-
-
-                        }
-
-                        if (params.subscription.takeEntitlements) {
-
-                            baseSub.issueEntitlements.each { ie ->
-
-                                if(ie.status != RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted'))
-                                {
-                                    def properties = ie.properties
-                                    properties.globalUID = null
-
-                                    IssueEntitlement newIssueEntitlement = new IssueEntitlement()
-                                    InvokerHelper.setProperties(newIssueEntitlement, properties)
-                                    newIssueEntitlement.subscription = newSub
-                                    newIssueEntitlement.save(flush: true)
-                                }
-                            }
-
-                        }
-
-
-                        if (params.subscription.takeCustomProperties) {
+                        if (subMember.customProperties) {
                             //customProperties
-                            for (prop in baseSub.customProperties) {
-                                def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSub)
+                            for (prop in subMember.customProperties) {
+                                def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscription)
                                 copiedProp = prop.copyValueAndNote(copiedProp)
                                 newSub.addToCustomProperties(copiedProp)
                             }
                         }
-                        if (params.subscription.takePrivateProperties) {
+                        if (subMember.privateProperties) {
                             //privatProperties
                             def contextOrg = contextService.getOrg()
 
-                            baseSub.privateProperties.each { prop ->
+                            subMember.privateProperties.each { prop ->
                                 if (prop.type?.tenant?.id == contextOrg?.id) {
-                                    def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSub)
+                                    def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscription)
                                     copiedProp = prop.copyValueAndNote(copiedProp)
                                     newSub.addToPrivateProperties(copiedProp)
                                 }
                             }
                         }
 
-                        params.workFlowPart = 2
-                        result.newSub = newSub
+                        if (subMember.packages && newSubConsortia.packages) {
+                            //Package
+                            subMember.packages?.each { pkg ->
+                                SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
+                                InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
+                                newSubscriptionPackage.subscription = newSubscription
+                                newSubscriptionPackage.save(flush: true)
+                            }
+                        }
+                        if (subMember.issueEntitlements && newSubConsortia.issueEntitlements) {
+
+                            subMember.issueEntitlements.each { ie ->
+
+                                if (ie.status != RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted')) {
+                                    def ieProperties = ie.properties
+                                    ieProperties.globalUID = null
+
+                                    IssueEntitlement newIssueEntitlement = new IssueEntitlement()
+                                    InvokerHelper.setProperties(newIssueEntitlement, ieProperties)
+                                    newIssueEntitlement.subscription = newSubscription
+                                    newIssueEntitlement.save(flush: true)
+                                }
+                            }
+
+                        }
+
+                        //OrgRole
+                        subMember.orgRelations?.each { or ->
+                            OrgRole newOrgRole = new OrgRole()
+                            InvokerHelper.setProperties(newOrgRole, or.properties)
+                            newOrgRole.sub = newSubscription
+                            newOrgRole.save(flush: true)
+                        }
+
+
+
+                        if (subMember.prsLinks && newSubConsortia.prsLinks) {
+                            //PersonRole
+                            subMember.prsLinks?.each { prsLink ->
+                                PersonRole newPersonRole = new PersonRole()
+                                InvokerHelper.setProperties(newPersonRole, prsLink.properties)
+                                newPersonRole.sub = newSubscription
+                                newPersonRole.save(flush: true)
+                            }
+                        }
+                    }
+                }
+
+
+                redirect controller: 'subscriptionDetails', action: 'show', params: [id: newSubConsortia?.id]
+
+            }
+
+            if (params.workFlowPart == '2') {
+                def newSub2 = Subscription.get(params.newSubscription)
+
+                //Copy Docs
+                def toCopyDocs = []
+                params.list('subscription.takeDocs').each { doc ->
+
+                    toCopyDocs << Long.valueOf(doc)
+                }
+
+                //Copy Announcements
+                def toCopyAnnouncements = []
+                params.list('subscription.takeAnnouncements').each { announcement ->
+
+                    toCopyAnnouncements << Long.valueOf(announcement)
+                }
+                if (newSub2.documents.size() == 0) {
+                    baseSub.documents?.each { dctx ->
+
+                        //Copy Docs
+                        if (dctx.id in toCopyDocs) {
+                            if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status?.value != 'Deleted')) {
+
+                                Doc newDoc = new Doc()
+                                InvokerHelper.setProperties(newDoc, dctx.owner.properties)
+                                newDoc.save(flush: true)
+
+                                DocContext newDocContext = new DocContext()
+                                InvokerHelper.setProperties(newDocContext, dctx.properties)
+                                newDocContext.subscription = newSub2
+                                newDocContext.owner = newDoc
+                                newDocContext.save(flush: true)
+                            }
+                        }
+                        //Copy Announcements
+                        if (dctx.id in toCopyAnnouncements) {
+                            if ((dctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
+                                Doc newDoc = new Doc()
+                                InvokerHelper.setProperties(newDoc, dctx.owner.properties)
+                                newDoc.save(flush: true)
+
+                                DocContext newDocContext = new DocContext()
+                                InvokerHelper.setProperties(newDocContext, dctx.properties)
+                                newDocContext.subscription = newSub2
+                                newDocContext.owner = newDoc
+                                newDocContext.save(flush: true)
+                            }
+                        }
+                    }
+                }
+                if(!Task.findAllBySubscription(newSub2)) {
+                    //Copy Tasks
+                    params.list('subscription.takeTasks').each { tsk ->
+
+                        def task = Task.findBySubscriptionAndId(baseSub, Long.valueOf(tsk))
+                        if (task) {
+                            if (task.status != RefdataValue.loc('Task Status', [en: 'Done', de: 'Erledigt'])) {
+                                Task newTask = new Task()
+                                InvokerHelper.setProperties(newTask, task.properties)
+                                newTask.subscription = newSub2
+                                newTask.save(flush: true)
+                            }
+
+                        }
+                    }
+                }
+                params.workFlowPart = 3
+                params.workFlowPartNext = 4
+                result.newSub = newSub2
+
+                def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
+                        baseSub,
+                        RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+                )
+
+                result.validSubChilds = validSubChilds.sort { a, b ->
+                    def sa = a.getSubscriber()
+                    def sb = b.getSubscriber()
+                    (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
+                }
+
+            }
+
+
+            if (params.workFlowPart == '1') {
+
+                if (params.baseSubscription) {
+
+                    if (Subscription.findAllByPreviousSubscription(baseSub)) {
+                        flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
+                    } else {
+
+
+                        def newSub = new Subscription(
+                                name: baseSub.name,
+                                startDate: result.newStartDate,
+                                endDate: result.newEndDate,
+                                previousSubscription: baseSub.id,
+                                identifier: java.util.UUID.randomUUID().toString(),
+                                isPublic: baseSub.isPublic,
+                                isSlaved: baseSub.isSlaved,
+                                type: baseSub.type,
+                                status: RefdataValue.loc('Subscription Status', [en: 'Intended', de: 'Geplant'])
+                        )
+                        if (!newSub.save(flush: true)) {
+                            log.error("Problem saving subscription ${newSub.errors}");
+                            return newSub
+                        } else {
+                            log.debug("Save ok");
+                            //Copy References
+                            if (params.subscription.takeLinks) {
+
+                                //OrgRole
+                                baseSub.orgRelations?.each { or ->
+                                    OrgRole newOrgRole = new OrgRole()
+                                    InvokerHelper.setProperties(newOrgRole, or.properties)
+                                    newOrgRole.sub = newSub
+                                    newOrgRole.save(flush: true)
+                                }
+                                //Package
+                                baseSub.packages?.each { pkg ->
+                                    SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
+                                    InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
+                                    newSubscriptionPackage.subscription = newSub
+                                    newSubscriptionPackage.save(flush: true)
+                                }
+                                //License
+                                newSub.owner = baseSub.owner
+                                newSub.save(flush: true)
+
+
+                            }
+
+                            if (params.subscription.takeEntitlements) {
+
+                                baseSub.issueEntitlements.each { ie ->
+
+                                    if (ie.status != RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted')) {
+                                        def properties = ie.properties
+                                        properties.globalUID = null
+
+                                        IssueEntitlement newIssueEntitlement = new IssueEntitlement()
+                                        InvokerHelper.setProperties(newIssueEntitlement, properties)
+                                        newIssueEntitlement.subscription = newSub
+                                        newIssueEntitlement.save(flush: true)
+                                    }
+                                }
+
+                            }
+
+
+                            if (params.subscription.takeCustomProperties) {
+                                //customProperties
+                                for (prop in baseSub.customProperties) {
+                                    def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSub)
+                                    copiedProp = prop.copyValueAndNote(copiedProp)
+                                    newSub.addToCustomProperties(copiedProp)
+                                }
+                            }
+                            if (params.subscription.takePrivateProperties) {
+                                //privatProperties
+                                def contextOrg = contextService.getOrg()
+
+                                baseSub.privateProperties.each { prop ->
+                                    if (prop.type?.tenant?.id == contextOrg?.id) {
+                                        def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSub)
+                                        copiedProp = prop.copyValueAndNote(copiedProp)
+                                        newSub.addToPrivateProperties(copiedProp)
+                                    }
+                                }
+                            }
+
+                            params.workFlowPart = 2
+                            params.workFlowPartNext = 3
+                            result.newSub = newSub
                         }
                     }
                 }
@@ -1848,8 +1926,8 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
             result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
 
             // tasks
-            def contextOrg  = contextService.getOrg()
-            result.tasks    = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
+            def contextOrg = contextService.getOrg()
+            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
 
             result.contextOrg = contextOrg
             // restrict visible for templates/links/orgLinksAsList
@@ -1859,7 +1937,7 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
                     result.visibleOrgRelations << or
                 }
             }
-            result.visibleOrgRelations.sort{it.org.sortname}
+            result.visibleOrgRelations.sort { it.org.sortname }
 
 
             result.modalPrsLinkRole = RefdataValue.findByValue('Specific subscription editor')
@@ -1868,13 +1946,12 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
             result.visiblePrsLinks = []
 
             result.subscriptionInstance.prsLinks.each { pl ->
-                if (! result.visiblePrsLinks.contains(pl.prs)) {
+                if (!result.visiblePrsLinks.contains(pl.prs)) {
                     if (pl.prs.isPublic?.value != 'No') {
                         result.visiblePrsLinks << pl
-                    }
-                    else {
+                    } else {
                         // nasty lazy loading fix
-                        result.user.authorizedOrgs.each{ ao ->
+                        result.user.authorizedOrgs.each { ao ->
                             if (ao.getId() == pl.prs.tenant.getId()) {
                                 result.visiblePrsLinks << pl
                             }
@@ -1884,8 +1961,11 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
             }
 
             result.workFlowPart = params.workFlowPart ?: 1
+            result.workFlowPartNext = params.workFlowPartNext ?: 2
 
+        }
             result
+
     }
 
     private LinkedHashMap setResultGenericsAndCheckAccess(checkOption) {
