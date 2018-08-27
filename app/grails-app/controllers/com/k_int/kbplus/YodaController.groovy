@@ -6,12 +6,15 @@ import grails.plugin.cache.Cacheable
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import grails.web.Action
+import org.hibernate.SessionFactory
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class YodaController {
+
+    SessionFactory sessionFactory
 
     def springSecurityService
     def statsSyncService
@@ -75,6 +78,14 @@ class YodaController {
         result.appContext = getApplicationContext()
         result.cacheManager = result.appContext.grailsCacheManager
 
+        if (params.cmd?.equals('clearCache')) {
+            def cache = result.cacheManager.getCache(params.cache)
+            if (cache) {
+                cache.clear()
+            }
+        }
+        result.hibernateStats = sessionFactory.statistics // org.hibernate.stat.Statistics
+
         result
     }
 
@@ -111,7 +122,7 @@ class YodaController {
 
         grailsApplication.controllerClasses.toList().each { controller ->
             Class controllerClass = controller.clazz
-            if (controllerClass.name.startsWith('com.k_int.kbplus')) {
+            if (controllerClass.name.startsWith('com.k_int.kbplus') || controllerClass.name.startsWith('de.laser')) {
                 def mList = [:]
 
                 controllerClass.methods.each { Method method ->

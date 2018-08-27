@@ -31,11 +31,6 @@ class PersonController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
         def userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
-
-        // TODO remove this fallback !!!!
-        if(userMemberships.size() == 0){
-            userMemberships = Org.list()
-        }
         
         switch (request.method) {
 		case 'GET':

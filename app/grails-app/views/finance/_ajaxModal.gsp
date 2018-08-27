@@ -222,6 +222,45 @@
                 </div><!-- .field -->
 
                 <div class="field">
+
+                    <g:if test="${inSubMode}">
+                        <%
+                            def validSubChilds = com.k_int.kbplus.Subscription.findAllByInstanceOfAndStatusNotEqual(
+                                    fixedSubscription,
+                                    com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+                            )
+                        %>
+
+                        <g:if test="${validSubChilds && ! costItem}">
+                            <label>Teilnehmer</label>
+                            <g:select name="newLicenseeTarget" id="newLicenseeTarget" class="ui dropdown"
+                                      from="${[{}] + validSubChilds}"
+                                      optionValue="${{it?.name ? it.getAllSubscribers().join(', ') : 'Gilt für die Konsortiallizenz'}}"
+                                      optionKey="${{"com.k_int.kbplus.Subscription:" + it?.id}}"
+                                      noSelection="['':'']"
+                                      value="${'com.k_int.kbplus.Subscription:' + it?.id}" />
+
+                            <script>
+                                $(function() {
+                                    $('#newLicenseeTarget').on('change', function () {
+                                        var $elems = $('#newPackageWrapper select, #newPackageWrapper .dropdown')
+                                        if ('com.k_int.kbplus.Subscription:null' == $(this).val()) {
+                                            $elems.removeAttr('disabled')
+                                            $elems.removeClass('disabled')
+                                        } else {
+                                            $elems.attr('disabled', 'disabled')
+                                            $elems.addClass('disabled')
+                                        }
+                                    })
+                                })
+                            </script>
+                        </g:if>
+                    </g:if>
+
+                </div><!-- .field -->
+
+                <div class="field" id="newPackageWrapper">
+
                     <g:if test="${costItem?.sub}">
                         <label>${message(code:'package.label')}</label>
                         <g:select name="newPackage" id="newPackage" class="ui dropdown"
@@ -244,9 +283,6 @@
                         <input name="newPackage" id="newPackage" class="la-full-width" disabled="disabled" data-subFilter="" data-disableReset="true" />
                     </g:else>
 
-                </div><!-- .field -->
-
-                <div class="field">
 
                     <%--
                     <label>${message(code:'financials.newCosts.singleEntitlement')}</label>

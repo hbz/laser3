@@ -17,7 +17,7 @@ class UsageController {
 
     static transactional = false
 
-    @Secured(['ROLE_ADMIN'])
+    @Secured(['ROLE_STATISTICS_EDITOR','ROLE_ADMIN'])
     def index() {
         def result = initResult()
         result
@@ -50,7 +50,7 @@ class UsageController {
         return result
     }
 
-    @Secured(['ROLE_ADMIN'])
+    @Secured(['ROLE_STATISTICS_EDITOR','ROLE_ADMIN'])
     def abort()
     {
         def result = initResult()
@@ -58,7 +58,7 @@ class UsageController {
         redirect(view: "index", model: result)
     }
 
-    @Secured(['ROLE_ADMIN'])
+    @Secured(['ROLE_STATISTICS_EDITOR','ROLE_ADMIN'])
     def fetchSelection()
     {
         def result = initResult()
@@ -67,7 +67,7 @@ class UsageController {
         redirect(view: "index", model: result)
     }
 
-    @Secured(['ROLE_ADMIN'])
+    @Secured(['ROLE_STATISTICS_EDITOR','ROLE_ADMIN'])
     @Transactional
     def deleteAll()
     {
@@ -78,7 +78,7 @@ class UsageController {
         redirect(view: "index", model: result)
     }
 
-    @Secured(['ROLE_ADMIN'])
+    @Secured(['ROLE_STATISTICS_EDITOR','ROLE_ADMIN'])
     @Transactional
     def deleteSelection()
     {

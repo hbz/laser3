@@ -448,7 +448,7 @@ class OrganisationsController {
           result.editable = true
         }
         else {
-          result.editable = permissionHelperService.hasUserWithRole(result.user, orgInstance, 'INST_ADM')
+          result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM')
         }
 
         if (!orgInstance) {

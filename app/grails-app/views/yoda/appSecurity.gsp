@@ -13,7 +13,7 @@
 
 <h1 class="ui header"><semui:headerIcon />Application Security</h1>
 
-<h3 class="ui header">Global Roles</h3>
+<h3 class="ui header">Hierarchical Global Roles</h3>
 
 <div class="secInfoWrapper">
     <div class="ui list">
@@ -25,13 +25,19 @@
             <span class="IS_AUTHENTICATED_FULLY">IS_AUTHENTICATED_FULLY</span>
         </div>
     </div>
+</div>
+
+<h3 class="ui header">Independent Global Roles</h3>
+
+<div class="secInfoWrapper">
     <div class="ui list">
         <div class="item">
             <span class="ROLE_ORG_COM_EDITOR">ROLE_GLOBAL_DATA</span> |
             <span class="ROLE_ORG_EDITOR">ROLE_ORG_EDITOR</span> |
             <span class="ROLE_ORG_COM_EDITOR">ROLE_ORG_COM_EDITOR</span> |
             <span class="ROLE_PACKAGE_EDITOR">ROLE_PACKAGE_EDITOR</span> |
-            <span class="ROLE_ORG_COM_EDITOR">ROLE_TICKET_EDITOR</span>
+            <span class="ROLE_STATISTICS_EDITOR">ROLE_STATISTICS_EDITOR</span> |
+            <span class="ROLE_TICKET_EDITOR">ROLE_TICKET_EDITOR</span>
         </div>
     </div>
     <div class="ui list">
@@ -43,14 +49,17 @@
     </div>
 </div>
 
-<h3 class="ui header">User Roles</h3>
+<h3 class="ui header">Hierarchical User Roles</h3>
 
 <div class="secInfoWrapper">
     <div class="ui list">
         <div class="item">
             <span>INST_ADM</span> &rArr;
             <span>INST_EDITOR</span> &rArr;
-            <span>INST_USER</span> (implizit Prüfung auf <span class="ROLE_USER">ROLE_USER</span>)
+            <span>INST_USER</span>  &nbsp; (implizite Prüfung auf <span class="ROLE_USER">ROLE_USER</span>)
+        </div>
+        <div class="item">
+            <span class="ROLE_YODA">ROLE_YODA</span> und <span class="ROLE_ADMIN">ROLE_ADMIN</span> liefern <code>TRUE</code>
         </div>
     </div>
 </div>
@@ -93,9 +102,8 @@
             <div class="ui sticky">
                 <aside>
                     <g:each in="${controller}" var="c">
-                        <a href="#jumpMark_${c.key}">${c.key.replaceFirst('com.k_int.kbplus.','').replaceAll('Controller', '  ')}</a> |
+                        <a href="#jumpMark_${c.key}">${c.key.replaceFirst('com.k_int.kbplus.','').replaceFirst('de.laser.','').replaceAll('Controller', '  ')}</a> |
                     </g:each>
-                    <a href="#jumpMark_top">&uArr;</a>
                 </aside>
             </div>
         </div>

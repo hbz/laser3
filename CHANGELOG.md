@@ -1,8 +1,16 @@
 
-meanwhile at hbz-dev ..
+0.8
 
-- upgrade to hibernate 4.3
-
+- improved public gasco views
+- reworked finance views and functionality
+- fixed deletion of mandatory private properties
+- added new role for statistics management
+- added default role for new users
+- added pagination on some views
+- security: restrict permissions check to context org
+- added cache management
+- lots of markup and style changes 
+- other bugfixes
 
 0.7.4
 

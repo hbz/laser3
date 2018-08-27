@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
 <%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition" %>
 
 <!doctype html>
@@ -128,7 +128,7 @@
                     </td>
                     <td>
                         <g:each in="${OrgRole.findAllBySubAndRoleType(sub, RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'))}" var="role">
-                            ${role.org?.name}
+                            ${role.org?.name}<br>
                         </g:each>
                     </td>
                     <td>
@@ -136,6 +136,29 @@
                     </td>
                     <td>
                         ${sub.getConsortia()?.name}
+                        <g:each in ="${com.k_int.kbplus.PersonRole.findAllByFunctionTypeAndOrg(RefdataValue.getByValueAndCategory('General contact person', 'Person Function'), sub.getConsortia())}" var="person">
+                            <div class="ui list">
+                                <div class="item">
+                                    <div class="content">
+                                        <div class="header">
+                                            Hauptansprechpartner: ${person?.getPrs()?.getFirst_name()} ${person?.getPrs()?.getLast_name()}
+                                        </div>
+                                        <g:each in ="${com.k_int.kbplus.Contact.findAllByPrsAndContentType(
+                                                person.getPrs(),
+                                                RefdataValue.getByValueAndCategory('E-Mail', 'ContactContentType')
+                                        )}" var="prsContact">
+
+                                            <div class="description">
+                                                <i class="ui icon envelope outline"></i>
+                                                <span data-position="right center" data-tooltip="Mail senden an ${person?.getPrs().getFirst_name()} ${person?.getPrs()?.getLast_name()}">
+                                                    <a href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
+                                                </span>
+                                            </div>
+                                        </g:each>
+                                    </div>
+                                </div>
+                            </div>
+                        </g:each>
                     </td>
                 </tr>
             </g:each>

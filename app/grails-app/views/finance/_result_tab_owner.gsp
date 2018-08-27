@@ -6,7 +6,7 @@
 <thead>
     <tr>
         <th>${message(code:'financials.newCosts.costTitle')}</th>
-        <th class="two wide">${message(code:'financials.costInBillingCurrency')}</th>
+        <th class="two wide">${message(code:'financials.invoice_total')}</th>
         <th class="two wide">${message(code:'financials.newCosts.valueInEuro')}</th>
         <th>${message(code:'financials.costItemElement')}</th>
         <th>${message(code:'financials.costItemStatus')}</th>
@@ -36,20 +36,20 @@
             <td>
                 <span class="costData"
                       data-costInLocalCurrency="<g:formatNumber number="${ci.costInLocalCurrency}" locale="en" maxFractionDigits="2"/>"
-                      data-costInLocalCurrencyAfterTax="<g:formatNumber number="${ci.costInLocalCurrencyAfterTax}" locale="en" maxFractionDigits="2"/>"
-                      data-billingCurrency="${ci.billingCurrency}"
+                      data-costInLocalCurrencyAfterTax="<g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" locale="en" maxFractionDigits="2"/>"
+                      data-billingCurrency="${ci.billingCurrency ?: 'EUR'}"
                       data-costInBillingCurrency="<g:formatNumber number="${ci.costInBillingCurrency}" locale="en" maxFractionDigits="2"/>"
-                      data-costInBillingCurrencyAfterTax="<g:formatNumber number="${ci.costInBillingCurrencyAfterTax}" locale="en" maxFractionDigits="2"/>"
+                      data-costInBillingCurrencyAfterTax="<g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" locale="en" maxFractionDigits="2"/>"
                 >
-                    <g:formatNumber number="${ci.costInBillingCurrency}" type="currency" currencyCode="${ci.billingCurrency}"/>
+                    <g:formatNumber number="${ci.costInBillingCurrency ?: 0.0}" type="currency" currencyCode="${ci.billingCurrency ?: 'EUR'}"/>
                     <br />
-                    <g:formatNumber number="${ci.costInBillingCurrencyAfterTax}" type="currency" currencyCode="${ci.billingCurrency}"/>
+                    <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="${ci.billingCurrency ?: 'EUR'}"/>  (${ci.taxRate ?: 0}%)
                 </span>
             </td>
             <td>
                 <g:formatNumber number="${ci.costInLocalCurrency}" type="currency" currencyCode="EUR" />
                 <br />
-                <g:formatNumber number="${ci.costInLocalCurrencyAfterTax}" type="currency" currencyCode="EUR" />
+                <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="EUR" />  (${ci.taxRate ?: 0}%)
             </td>
             <td>
                 <semui:xEditableRefData config="CostItemElement" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemElement" />

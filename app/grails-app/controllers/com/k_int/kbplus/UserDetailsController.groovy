@@ -109,14 +109,20 @@ class UserDetailsController {
         [orgInstance: new Org(params)]
         break
       case 'POST':
-        def userInstance = new User(params)
-        if (!userInstance.save(flush: true)) {
-          render view: 'create', model: [userInstance: userInstance]
-          return
-        }
+            def userInstance = new User(params)
+            if (!userInstance.save(flush: true)) {
+                render view: 'create', model: [userInstance: userInstance]
+                return
+            }
 
-        flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), userInstance.id])
-        redirect action: 'edit', id: userInstance.id
+            def defaultRole = new UserRole(
+                user: userInstance,
+                role: Role.findByAuthority('ROLE_USER')
+            )
+            defaultRole.save(flush: true);
+
+            flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), userInstance.id])
+            redirect action: 'edit', id: userInstance.id
         break
     }
   }
