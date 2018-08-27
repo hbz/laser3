@@ -1,6 +1,7 @@
 <%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<% def accessService = grailsApplication.mainContext.getBean("accessService") %>
 
 <!doctype html>
 <html>
