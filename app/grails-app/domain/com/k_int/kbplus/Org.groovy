@@ -101,6 +101,9 @@ class Org extends BaseDomainComponent {
        libraryType column:'org_library_type_rv_fk'
       importSource column:'org_import_source'
     lastImportDate column:'org_last_import_date'
+
+        addresses   lazy: false
+        contacts    lazy: false
     }
 
     static constraints = {

@@ -39,8 +39,8 @@ class Person extends BaseDomainComponent {
         roleType        column:'prs_role_type_rv_fk'
 
         roleLinks   cascade: 'all'
-        addresses   cascade: 'all'
-        contacts    cascade: 'all'
+        addresses   cascade: 'all', lazy: false
+        contacts    cascade: 'all', lazy: false
         privateProperties   cascade: 'all'
     }
     
