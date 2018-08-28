@@ -62,16 +62,6 @@
                         <input type="text" name="newReference" id="newCostItemReference" placeholder="" value="${costItem?.reference}"/>
                     </div><!-- .field -->
                 </div>
-                <div class="field">
-                    <label>${message(code:'financials.costItemStatus')}</label>
-                    <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
-                                  id="newCostItemStatus"
-                                  from="${costItemStatus}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  noSelection="${['':'']}"
-                                  value="${costItem?.costItemStatus?.id}" />
-                </div><!-- .field -->
 
             </div>
 
@@ -107,6 +97,18 @@
                                   noSelection="${['':'']}"
                                   value="${costItem?.taxCode?.id}" />
                 </div><!-- .field -->
+
+                <div class="field">
+                    <label>${message(code:'financials.costItemStatus')}</label>
+                    <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
+                                  id="newCostItemStatus"
+                                  from="${costItemStatus}"
+                                  optionKey="id"
+                                  optionValue="value"
+                                  noSelection="${['':'']}"
+                                  value="${costItem?.costItemStatus?.id}" />
+                </div><!-- .field -->
+
             </div> <!-- 2/2 field -->
         </div><!-- two fields -->
 
