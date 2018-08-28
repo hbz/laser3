@@ -219,12 +219,28 @@ select s from Subscription as s where (
         }
         else if (result.license?.instanceOf && ! result.license?.instanceOf.isTemplate()) {
             log.debug( 'ignored setting.cons_members because: LCurrent.instanceOf (LParent.noTemplate)')
-        } else {
+        }
+        else {
             if (result.institution?.orgType?.value == 'Consortium') {
                 def fsq = filterService.getOrgComboQuery(params, result.institution)
-                result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+                def all_cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+
+                result.cons_members = []
+
+                // filter by members of subscription.owner -> this
+                all_cons_members.each { org ->
+                    Subscription.where { owner == result.license }.findAll().each { subscr ->
+                        subscr.getDerivedSubscribers().each { subOrg ->
+                            if (subOrg.id == org.id) {
+                                result.cons_members << org
+                            }
+                        }
+                    }
+                }
+
                 result.cons_members_disabled = []
-                result.cons_members.each { it ->
+
+                result.cons_members.unique().each { it ->
                     if (License.executeQuery("select l from License as l join l.orgLinks as lol where l.instanceOf = ? and lol.org.id = ?",
                             [result.license, it.id])
                     ) {

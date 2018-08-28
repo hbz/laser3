@@ -299,8 +299,8 @@ from License as l where (
             base_qry += " order by l.reference asc"
         }
 
-        log.debug("query = ${base_qry}");
-        log.debug("params = ${qry_params}");
+        //log.debug("query = ${base_qry}");
+        //log.debug("params = ${qry_params}");
 
         result.licenseCount = License.executeQuery("select count(l) ${base_qry}", qry_params)[0];
         result.licenses = License.executeQuery("select l ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
