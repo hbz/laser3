@@ -240,7 +240,7 @@ select s from Subscription as s where (
 
                 result.cons_members_disabled = []
 
-                result.cons_members.each { it ->
+                result.cons_members.unique().each { it ->
                     if (License.executeQuery("select l from License as l join l.orgLinks as lol where l.instanceOf = ? and lol.org.id = ?",
                             [result.license, it.id])
                     ) {
