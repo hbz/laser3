@@ -40,6 +40,16 @@
 
 <g:if test="${institution?.orgType?.value == 'Consortium'}">
 
+    <div class="ui info message">
+        <div class="header">
+            Hinweis
+        </div>
+        <p>
+            Angezeigt werden die Konsorten der verknüpften Lizenzen.
+            Werden keine Konsorten angezeigt, dann sind evtl. die Lizenzen nicht verknüpft oder es sind diesen noch keine Teilnehmer zugeordnet.
+        </p>
+    </div>
+
     <semui:filter>
         <g:form action="addMembers" method="get" params="[id: params.id]" class="ui form">
             <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/>

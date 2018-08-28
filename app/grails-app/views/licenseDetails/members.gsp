@@ -30,11 +30,12 @@
             <th>${message(code:'license')}</th>
             <th>${message(code:'subscriptionDetails.members.members')}</th>
             <th>${message(code:'license.details.status')}</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
 
-        <g:each in="${License.findAllWhere(instanceOf: license)}" status="i" var="lic">
+        <g:each in="${validMemberLicenses}" status="i" var="lic">
             <tr>
                 <td>${i + 1}</td>
                 <td>
@@ -65,6 +66,15 @@
                 </td>
                 <td>
                     ${lic.status.getI10n('value')}
+                </td>
+                <td class="x">
+                    <g:if test="${editable}">
+                        <g:link controller="licenseDetails" action="deleteMember" class="ui icon negative button"
+                                params="${[id:license.id, target: lic.id]}"
+                                onclick="return confirm('${message(code:'license.details.delete.confirm', args:[(lic.reference?:'this license')])}')">
+                            <i class="trash alternate icon"></i>
+                        </g:link>
+                    </g:if>
                 </td>
             </tr>
         </g:each>

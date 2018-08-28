@@ -14,4 +14,9 @@ class SubscriptionCustomProperty extends CustomProperty {
         type:  PropertyDefinition,
         owner: Subscription
     ]
+
+    def copyValueAndNote(newProp){
+        newProp = super.copyValueAndNote(newProp)
+        newProp
+    }
 }

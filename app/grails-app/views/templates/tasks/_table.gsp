@@ -73,10 +73,10 @@
                                 <i class="write icon"></i>
                             </a>
                         </g:if>
-                        <g:if test="${user == taskInstance.creator}">
-                        <g:link action="tasks" params="[deleteId:taskInstance.id, id: params.id]" class="ui icon negative button">
-                            <i class="trash alternate icon"></i>
-                        </g:link>
+                        <g:if test="${(user == taskInstance.creator) || contextService.getUser().hasAffiliation("INST_ADM")}">
+                            <g:link action="tasks" params="[deleteId:taskInstance.id, id: params.id]" class="ui icon negative button">
+                                <i class="trash alternate icon"></i>
+                            </g:link>
                         </g:if>
                     </td>
                 </tr>
