@@ -774,10 +774,28 @@ class FinanceController {
         }
         else
         {
-            if (newCostItem.save(flush: true))
-            {
-                if (params.newBudgetCode)
-                    createBudgetCodes(newCostItem, params.newBudgetCode?.trim()?.toLowerCase(), result.institution)
+            if (newCostItem.save(flush: true)) {
+                def newBcObjs = []
+
+                params.list('newBudgetCodes')?.each { newbc ->
+                    def bc = genericOIDService.resolveOID(newbc)
+                    if (bc) {
+                        newBcObjs << bc
+                        if (! CostItemGroup.findByCostItemAndBudgetCode( newCostItem, bc )) {
+                            new CostItemGroup(costItem: newCostItem, budgetCode: bc).save(flush: true)
+                        }
+                    }
+                }
+
+                def toDelete = newCostItem.getBudgetcodes().minus(newBcObjs)
+                toDelete.each{ bc ->
+                    def cig = CostItemGroup.findByCostItemAndBudgetCode( newCostItem, bc )
+                    if (cig) {
+                        log.debug('deleting ' + cig)
+                        cig.delete()
+                    }
+                }
+
             } else {
                 result.error = "Unable to save!"
             }
@@ -793,6 +811,7 @@ class FinanceController {
         redirect(uri: request.getHeader('referer') )
     }
 
+    @Deprecated
     private def createBudgetCodes(CostItem costItem, String budgetcodes, Org budgetOwner)
     {
         def result = []
@@ -1067,6 +1086,7 @@ class FinanceController {
         render result as JSON
     }
 
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def createCode() {

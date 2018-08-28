@@ -1,5 +1,5 @@
 <!-- _ajaxModal.gsp -->
-<%@ page import="com.k_int.kbplus.CostItem;com.k_int.kbplus.CostItemGroup;" %>
+<%@ page import="com.k_int.kbplus.BudgetCode;com.k_int.kbplus.CostItem;com.k_int.kbplus.CostItemGroup;" %>
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 
 <g:render template="vars" /><%-- setting vars --%>
@@ -40,8 +40,21 @@
                 <div class="two fields la-fields-no-margin-button">
                     <div class="field">
                         <label>${message(code:'financials.budgetCode')}</label>
+                        <select name="newBudgetCodes" class="ui fluid search dropdown" multiple="multiple">
+                            <g:each in="${BudgetCode.findAllByOwner(contextService.getOrg())}" var="bc">
+                                <g:if test="${costItem?.getBudgetcodes()?.contains(bc)}">
+                                    <option selected="selected" value="${bc.class.name}:${bc.id}">${bc.value}</option>
+                                </g:if>
+                                <g:else>
+                                    <option value="${bc.class.name}:${bc.id}">${bc.value}</option>
+                                </g:else>
+                            </g:each>
+                        </select>
+                        <%--
                         <input type="text" name="newBudgetCode" id="newBudgetCode" class="select2 la-full-width"
                                placeholder="${CostItemGroup.findByCostItem(costItem)?.budgetCode?.value}"/>
+                               --%>
+
                     </div><!-- .field -->
 
                     <div class="field">
@@ -416,7 +429,7 @@
         var ajaxPostFunc = function () {
 
             console.log( "ajaxPostFunc")
-
+<%--
             $('#costItem_ajaxModal #newBudgetCode').select2({
                 minimumInputLength: 0,
                 formatInputTooShort: function () {
@@ -455,7 +468,7 @@
                         return {id: -1 + term, text: "${message(code: 'default.newValue.label')}: " + term};
                 }
             })
-
+--%>
             /*
             $.ajax({
                 url: "<g:createLink controller='ajax' action='lookup'/>",
