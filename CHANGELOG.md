@@ -1,4 +1,8 @@
 
+0.7.5
+
+- changed access for org editors 
+
 0.7.4
 
 - bugfix: matching organisations by name
