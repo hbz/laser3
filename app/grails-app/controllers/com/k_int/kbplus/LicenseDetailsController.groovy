@@ -808,6 +808,12 @@ from Subscription as s where
 
     def processcopyLicense() {
 
+        params.id = params.baseLicense
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
         def baseLicense = com.k_int.kbplus.License.get(params.baseLicense)
 
         if (baseLicense) {
@@ -820,7 +826,7 @@ from Subscription as s where
                     type: baseLicense.type,
                     startDate: params.license.copyDates ? baseLicense?.startDate : null,
                     endDate: params.license.copyDates ? baseLicense?.endDate : null,
-                    instanceOf: params.license.links ? baseLicense.instanceOf : null,
+                    instanceOf: params.license.copyLinks ? baseLicense?.instanceOf : null,
 
             )
 
