@@ -72,7 +72,7 @@
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subStatus"
-                              value="${com.k_int.kbplus.RefdataValue.findByValueAndOwner('Current', rdcSubStatus)?.id}"/>
+                              value="${com.k_int.kbplus.Subscription.get(params.id).status?.id}"/>
                 </div>
 
                 <div class="field">
