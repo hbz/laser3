@@ -6,7 +6,7 @@ import javax.persistence.Transient
 
 class Package extends BaseDomainComponent {
 
-  static auditable = [ignore:['version','lastUpdated','pendingChanges']]
+  //static auditable = [ignore:['version','lastUpdated','pendingChanges']]
 
   @Transient
   def grailsApplication

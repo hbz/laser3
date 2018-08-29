@@ -3,20 +3,22 @@ package com.k_int.kbplus
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.properties.PropertyDefinition
+import de.laser.traits.AuditTrait
+
 import javax.persistence.Transient
 
-class LicensePrivateProperty extends PrivateProperty {
+class LicensePrivateProperty extends PrivateProperty implements AuditTrait {
 
-    @Transient
-    def controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
+    // AuditTrait
+    static auditable = true
+    static controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
+
     @Transient
     String paragraph
     @Transient
     def grailsApplication
     @Transient
     def messageSource
-
-    static auditable = true
 
     PropertyDefinition type
     License owner

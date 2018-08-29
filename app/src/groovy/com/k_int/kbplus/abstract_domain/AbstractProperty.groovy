@@ -1,15 +1,14 @@
 package com.k_int.kbplus.abstract_domain
 
 import com.k_int.kbplus.RefdataCategory
-import com.k_int.properties.PropertyDefinition
-import com.k_int.kbplus.License
 import com.k_int.kbplus.RefdataValue
+
 import javax.persistence.Transient
 
-abstract class AbstractProperty implements Serializable {
+abstract class AbstractProperty implements Serializable /* AuditTrait */ {
 
-    @Transient
-    def controlledProperties = ['stringValue','intValue','decValue','refValue','note','dateValue']
+    // AuditTrait
+    //static controlledProperties = ['stringValue','intValue','decValue','refValue','note','dateValue']
 
     String          stringValue
     Integer         intValue

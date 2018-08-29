@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
+import de.laser.traits.AuditTrait
 import de.laser.domain.BaseDomainComponent
 import de.laser.domain.Permissions
 import de.laser.domain.TemplateSupport
@@ -10,7 +11,7 @@ import java.text.Normalizer
 import com.k_int.properties.PropertyDefinition
 import com.k_int.ClassUtils
 
-class License extends BaseDomainComponent implements TemplateSupport, Permissions, Comparable<License> {
+class License extends BaseDomainComponent implements TemplateSupport, Permissions, Comparable<License>, AuditTrait {
 
     @Transient
     def grailsApplication
@@ -21,11 +22,13 @@ class License extends BaseDomainComponent implements TemplateSupport, Permission
     @Transient
     def messageSource
 
-  
-  static auditable = [ignore:['version','lastUpdated','pendingChanges']]
 
-    static controlledProperties =    ['licenseUrl', 'noticePeriod', 'reference', 'startDate', 'endDate']
-    static controlledRefProperties = ['isPublic' ]
+    // AuditTrait
+    static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
+    static controlledProperties = [
+            'licenseUrl', 'noticePeriod', 'reference', 'startDate', 'endDate', //
+            'isPublic' // RefdataValue
+    ]
 
     License instanceOf
 
@@ -315,6 +318,7 @@ class License extends BaseDomainComponent implements TemplateSupport, Permission
     result
   }
 
+    /*
   def onChange = { oldMap,newMap ->
     log.debug("license onChange....${oldMap} || ${newMap}");
     def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
@@ -355,6 +359,8 @@ class License extends BaseDomainComponent implements TemplateSupport, Permission
 
     log.debug("On change complete");
   }
+
+    */
   @Override
   public boolean equals (Object o) {
     def obj = ClassUtils.deproxy(o)

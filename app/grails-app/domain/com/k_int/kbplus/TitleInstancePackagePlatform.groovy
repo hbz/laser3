@@ -1,16 +1,16 @@
 package com.k_int.kbplus
 
 import de.laser.domain.*
+import de.laser.traits.AuditTrait
 
 import javax.persistence.Transient
- 
-import org.hibernate.proxy.HibernateProxy
+
 import com.k_int.ClassUtils
 import org.springframework.context.i18n.LocaleContextHolder
 import org.apache.commons.logging.*
 import groovy.time.TimeCategory
 
-class TitleInstancePackagePlatform extends BaseDomainComponent {
+class TitleInstancePackagePlatform extends BaseDomainComponent implements AuditTrait {
   @Transient
   def grailsLinkGenerator
 
@@ -21,9 +21,10 @@ class TitleInstancePackagePlatform extends BaseDomainComponent {
   def messageSource
 
   static Log static_logger = LogFactory.getLog(TitleInstancePackagePlatform)
- 
-  static auditable = true
-  static def controlledProperties = ['status',
+
+    // AuditTrait
+    static auditable = true
+    static controlledProperties = ['status',
                                      'startDate',
                                      'startVolume',
                                      'startIssue',

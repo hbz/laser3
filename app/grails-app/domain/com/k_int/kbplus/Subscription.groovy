@@ -1,15 +1,18 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
+import de.laser.traits.AuditTrait
 import de.laser.domain.BaseDomainComponent
 import de.laser.domain.Permissions
 import de.laser.domain.TemplateSupport
 
 import javax.persistence.Transient
 
-class Subscription extends BaseDomainComponent implements TemplateSupport, Permissions {
+class Subscription extends BaseDomainComponent implements TemplateSupport, Permissions, AuditTrait {
 
-  static auditable = [ignore:['version','lastUpdated','pendingChanges']]
+    // AuditTrait
+    static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
+    static controlledProperties = [ 'name', 'startDate', 'endDate' ]
 
     @Transient
     def grailsApplication
@@ -281,7 +284,7 @@ class Subscription extends BaseDomainComponent implements TemplateSupport, Permi
 
     result
   }
-
+/*
   def onChange = { oldMap,newMap ->
 
     log.debug("onChange")
@@ -302,6 +305,7 @@ class Subscription extends BaseDomainComponent implements TemplateSupport, Permi
       }
     }
   }
+*/
 
   @Override
   def beforeInsert() {
@@ -311,11 +315,12 @@ class Subscription extends BaseDomainComponent implements TemplateSupport, Permi
     super.beforeInsert()
   }
 
+    /*
   @Transient
   def notifyDependencies(changeDocument) {
     log.debug("notifyDependencies(${changeDocument})");
   }
-
+*/
   public String toString() {
       name ? "${name}" : "Subscription ${id}"
   }

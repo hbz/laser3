@@ -3,12 +3,15 @@ package com.k_int.kbplus
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.properties.PropertyDefinition
 import com.k_int.kbplus.abstract_domain.CustomProperty
+import de.laser.traits.AuditTrait
+
 import javax.persistence.Transient
 
-class LicenseCustomProperty extends CustomProperty {
+class LicenseCustomProperty extends CustomProperty implements AuditTrait {
 
-  @Transient
-  def controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
+    // AuditTrait
+    static auditable = true
+    static controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
 
   @Transient
   String paragraph
@@ -37,8 +40,6 @@ class LicenseCustomProperty extends CustomProperty {
 
   @Transient
   def messageSource
-
-  static auditable = true
 
   static belongsTo = [
       type : PropertyDefinition,
