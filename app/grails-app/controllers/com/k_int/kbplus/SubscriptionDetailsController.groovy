@@ -70,7 +70,7 @@ class SubscriptionDetailsController {
         if (!result) {
             response.sendError(401); return
         }
-
+        result.contextOrg = contextService.getOrg()
         def verystarttime = exportService.printStart("SubscriptionDetails")
 
         log.debug("subscriptionDetails id:${params.id} format=${response.format}");
@@ -1028,7 +1028,7 @@ class SubscriptionDetailsController {
         if (!result) {
             response.sendError(401); return
         }
-
+        result.contextOrg = contextService.getOrg()
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
         }
@@ -1043,7 +1043,7 @@ class SubscriptionDetailsController {
         if (!result) {
             response.sendError(401); return
         }
-
+        result.contextOrg = contextService.getOrg()
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
         }
@@ -1057,6 +1057,7 @@ class SubscriptionDetailsController {
         if (!result) {
             response.sendError(401); return
         }
+        result.contextOrg = contextService.getOrg()
 
         if (params.deleteId) {
             def dTask = Task.get(params.deleteId)
@@ -1113,7 +1114,7 @@ class SubscriptionDetailsController {
         if (!result) {
             response.sendError(401); return
         }
-
+        result.contextOrg = contextService.getOrg()
         result
     }
 
@@ -1401,7 +1402,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
         if (!result) {
             response.sendError(401); return
         }
-
+        result.contextOrg = contextService.getOrg()
         result.max = params.max ?: result.user.defaultPageSize;
         result.offset = params.offset ?: 0;
 
@@ -1419,7 +1420,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
         if (!result) {
             response.sendError(401); return
         }
-
+        result.contextOrg = contextService.getOrg()
         result.max = params.max ?: result.user.defaultPageSize;
         result.offset = params.offset ?: 0;
 

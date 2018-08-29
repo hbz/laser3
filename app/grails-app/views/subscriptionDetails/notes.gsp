@@ -17,6 +17,20 @@
 
         <g:render template="nav" />
 
+        <g:if test="${subscriptionInstance.instanceOf && (contextOrg == subscriptionInstance.getConsortia())}">
+            <div class="ui negative message">
+                <div class="header"><g:message code="myinst.message.attention" /></div>
+                <p>
+                    <g:message code="myinst.subscriptionDetails.message.ChildView" />
+                    <span class="ui label">${subscriptionInstance.getAllSubscribers()?.collect{itOrg -> itOrg.name}.join(',')}</span>.
+                <g:message code="myinst.subscriptionDetails.message.ConsortialView" />
+                <g:link controller="subscriptionDetails" action="show" id="${subscriptionInstance.instanceOf.id}"><g:message code="myinst.subscriptionDetails.message.here" /></g:link>.
+                </p>
+            </div>
+        </g:if>
+
+        <semui:messages data="${flash}" />
+
         <g:render template="/templates/notes/table" model="${[instance: subscriptionInstance, redirect: 'notes']}"/>
 
   </body>

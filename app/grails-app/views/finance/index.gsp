@@ -57,6 +57,18 @@
     <h1 class="ui header"><semui:headerIcon />${message(code:'subscription.details.financials.label')} für ${institution.name}</h1>
 </g:else>
 
+<g:if test="${fixedSubscription?.instanceOf && (contextOrg == fixedSubscription?.getConsortia())}">
+    <div class="ui negative message">
+        <div class="header"><g:message code="myinst.message.attention" /></div>
+        <p>
+            <g:message code="myinst.subscriptionDetails.message.ChildView" />
+            <span class="ui label">${fixedSubscription.getAllSubscribers()?.collect{itOrg -> itOrg.name}.join(',')}</span>.
+        <g:message code="myinst.subscriptionDetails.message.ConsortialView" />
+        <g:link controller="subscriptionDetails" action="show" id="${fixedSubscription.instanceOf.id}"><g:message code="myinst.subscriptionDetails.message.here" /></g:link>.
+        </p>
+    </div>
+</g:if>
+
 <semui:messages data="${flash}" />
 
 <div class="ui grid">
