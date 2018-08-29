@@ -152,12 +152,26 @@ class LicenseDetailsController {
           }
       }
 
+        def licensee = result.license.getLicensee();
+        def consortia = result.license.getLicensingConsortium();
+
         def subscrQuery = """
 select s from Subscription as s where (
   exists ( select o from s.orgRelations as o where (o.roleType.value IN ('Subscriber', 'Subscription Consortia')) and o.org = :co) ) 
   AND ( LOWER(s.status.value) != 'deleted' ) 
 )
 """
+
+        if(consortia)
+        {
+            subscrQuery = """
+select s from Subscription as s where (
+  exists ( select o from s.orgRelations as o where (o.roleType.value IN ('Subscription Consortia')) and o.org = :co) ) 
+  AND ( LOWER(s.status.value) != 'deleted' AND (s.instanceOf is null or s.instanceOf = '') 
+)
+"""
+        }
+
         result.availableSubs = Subscription.executeQuery("${subscrQuery} order by LOWER(s.name) asc", [co: contextService.getOrg()])
 
 

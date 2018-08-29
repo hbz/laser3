@@ -1184,13 +1184,34 @@ class SubscriptionDetailsController {
 
             def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template');
 
-            def qry_params = [(subscriber ?: consortia), licensee_role, licensee_cons_role]
+            def qry_params = [(subscription.instanceOf ? consortia : subscriber), licensee_role, licensee_cons_role]
 
-            def qry = """
+            def qry = ""
+
+            if(subscription.instanceOf)
+            {
+                qry = """
 select l from License as l 
-where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ( ol.roleType = ? or ol.roleType = ? ) ) 
+where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ( ol.roleType = ? or ol.roleType = ?) ) 
+AND l.status.value != 'Deleted' AND (l.instanceOf is not null) order by LOWER(l.reference)
+"""
+            }
+            else {
+                qry = """
+select l from License as l 
+where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ( ol.roleType = ? or ol.roleType = ?) ) 
 AND l.status.value != 'Deleted' order by LOWER(l.reference)
 """
+            }
+           if(subscriber == consortia)
+           {
+               qry_params = [consortia, licensee_cons_role]
+               qry = """
+select l from License as l 
+where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ( ol.roleType = ?) ) 
+AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') order by LOWER(l.reference)
+"""
+           }
 
             def license_list = License.executeQuery(qry, qry_params);
             license_list.each { l ->
