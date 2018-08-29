@@ -406,8 +406,17 @@ class License extends BaseDomainComponent implements TemplateSupport, Permission
             if( defaultMsg)
                 description = defaultMsg.content
         }
-        def propName = changeDocument.name ? ((messageSource.getMessage("license.${changeDocument.name}",null,locale))?:(changeDocument.name)) : (messageSource.getMessage("license.${changeDocument.prop}",null,locale)?:(changeDocument.prop))
-        changeNotificationService
+
+          def propName
+          try {
+              // UGLY
+              propName = changeDocument.name ? ((messageSource.getMessage("license.${changeDocument.name}", null, locale)) ?: (changeDocument.name)) : (messageSource.getMessage("license.${changeDocument.prop}", null, locale) ?: (changeDocument.prop))
+
+          } catch(Exception e) {
+              propName = changeDocument.name ?: changeDocument.prop
+          }
+
+          changeNotificationService
         .registerPendingChange('license',
                               dl,
                               "<b>${propName}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Vertragsvorlage geändert. " + description,

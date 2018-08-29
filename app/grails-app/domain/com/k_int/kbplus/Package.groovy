@@ -6,7 +6,8 @@ import javax.persistence.Transient
 
 class Package extends BaseDomainComponent {
 
-  //static auditable = [ignore:['version','lastUpdated','pendingChanges']]
+  static auditable = [ignore:['version','lastUpdated','pendingChanges']]
+    // ??? org.quartz.JobExecutionException: groovy.lang.MissingPropertyException: No such property: auditable for class: com.k_int.kbplus.Package
 
   @Transient
   def grailsApplication

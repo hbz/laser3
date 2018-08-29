@@ -54,6 +54,7 @@ class LicensePrivateProperty extends PrivateProperty implements AuditTrait {
         newProp
     }
 
+    /*
     @Transient
     def onChange = { oldMap,newMap ->
         log.debug("onChange LicensePrivateProperty")
@@ -75,6 +76,7 @@ class LicensePrivateProperty extends PrivateProperty implements AuditTrait {
             }
         }
     }
+ */
 
     @Transient
     def onDelete = { oldMap ->
