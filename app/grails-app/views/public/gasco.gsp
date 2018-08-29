@@ -136,12 +136,12 @@
                     </td>
                     <td>
                         ${sub.getConsortia()?.name}
-                        <g:each in ="${com.k_int.kbplus.PersonRole.findAllByFunctionTypeAndOrg(RefdataValue.getByValueAndCategory('General contact person', 'Person Function'), sub.getConsortia())}" var="person">
+                        <g:each in ="${com.k_int.kbplus.PersonRole.findAllByFunctionTypeAndOrg(RefdataValue.getByValueAndCategory('GASCO-Contact', 'Person Function'), sub.getConsortia())}" var="person">
                             <div class="ui list">
                                 <div class="item">
                                     <div class="content">
                                         <div class="header">
-                                            Hauptansprechpartner: ${person?.getPrs()?.getFirst_name()} ${person?.getPrs()?.getLast_name()}
+                                            ${person?.getPrs()?.getFirst_name()} ${person?.getPrs()?.getLast_name()}
                                         </div>
                                         <g:each in ="${com.k_int.kbplus.Contact.findAllByPrsAndContentType(
                                                 person.getPrs(),
