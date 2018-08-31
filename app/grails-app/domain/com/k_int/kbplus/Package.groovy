@@ -6,6 +6,7 @@ import javax.persistence.Transient
 
 class Package extends BaseDomainComponent {
 
+    // TODO AuditTrail
   static auditable = [ignore:['version','lastUpdated','pendingChanges']]
     // ??? org.quartz.JobExecutionException: groovy.lang.MissingPropertyException: No such property: auditable for class: com.k_int.kbplus.Package
 
@@ -278,6 +279,10 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   public String getURL() {
     "${grailsApplication.config.grails.serverURL}/packageDetails/show/${id}".toString();
   }
+
+    def onChange = { oldMap, newMap ->
+        log.debug("OVERWRITE onChange")
+    }
 
   // @Transient
   // def onChange = { oldMap,newMap ->
