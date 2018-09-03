@@ -56,36 +56,12 @@ class LicensePrivateProperty extends PrivateProperty /* implements AuditTrait */
         newProp
     }
 
-    /*
-    @Transient
-    def onChange = { oldMap,newMap ->
-        log.debug("onChange LicensePrivateProperty")
-
-        def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
-        controlledProperties.each{ cp->
-            if ( oldMap[cp] != newMap[cp] ) {
-                log.debug("Change found on ${this.class.name}:${this.id}.")
-                changeNotificationService.notifyChangeEvent([
-                    OID: "${this.owner.class.name}:${this.owner.id}",
-                    event:'PrivateProperty.updated',
-                    prop: cp,
-                    name: type.name,
-                    type: this."${cp}".getClass().toString(),
-                    old: oldMap[cp] instanceof RefdataValue? oldMap[cp].toString() : oldMap[cp],
-                    new: newMap[cp] instanceof RefdataValue? newMap[cp].toString() : newMap[cp],
-                    propertyOID: "${this.class.name}:${this.id}"
-                ])
-            }
-        }
-    }
- */
-
     @Transient
     def onDelete = { oldMap ->
         log.debug("onDelete LicensePrivateProperty")
         def oid = "${this.owner.class.name}:${this.owner.id}"
         def changeDoc = [ OID: oid,
-                         event:'PrivateProperty.deleted',
+                         event:'LicensePrivateProperty.deleted',
                          prop: "${this.type.name}",
                          old: "",
                          new: "property removed",

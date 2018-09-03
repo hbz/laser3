@@ -12,7 +12,7 @@ class Subscription extends BaseDomainComponent implements TemplateSupport, Permi
 
     // AuditTrait
     static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
-    static controlledProperties = [ 'name', 'startDate', 'endDate' ]
+    static controlledProperties = [ 'startDate', 'endDate', 'status', 'type' ]
 
     @Transient
     def grailsApplication
@@ -288,28 +288,6 @@ class Subscription extends BaseDomainComponent implements TemplateSupport, Permi
 
     result
   }
-/*
-  def onChange = { oldMap,newMap ->
-
-    log.debug("onChange")
-
-    def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
-    def controlledProperties = ['name','startDate','endDate']
-
-    controlledProperties.each { cp ->
-      if ( oldMap[cp] != newMap[cp] ) {
-        //changeNotificationService.notifySubscriptionChange(this.id, cp, oldMap[cp], newMap[cp], null, 'S');
-        changeNotificationService.notifyChangeEvent([
-                                                     OID:"${this.class.name}:${this.id}",
-                                                     event:'Subscription.updated',
-                                                     prop:cp,
-                                                     old:oldMap[cp],
-                                                     new:newMap[cp]
-                                                    ])
-      }
-    }
-  }
-*/
 
   @Override
   def beforeInsert() {
@@ -318,13 +296,6 @@ class Subscription extends BaseDomainComponent implements TemplateSupport, Permi
     }
     super.beforeInsert()
   }
-
-    /*
-  @Transient
-  def notifyDependencies(changeDocument) {
-    log.debug("notifyDependencies(${changeDocument})");
-  }
-*/
 
     @Transient
     def notifyDependencies(changeDocument) {

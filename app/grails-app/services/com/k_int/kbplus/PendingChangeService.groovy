@@ -151,28 +151,32 @@ def performAccept(change,httpRequest) {
         }      
         def updateProp = target_object.customProperties.find{it.type.name == changeDoc.name}
         if(updateProp){
-          switch (changeDoc.event){
-            case "CustomProperty.deleted":
-              log.debug("Deleting property ${updateProp.type.name} from ${parsed_change_info.changeTarget}")
-              target_object.customProperties.remove(updateProp)
-              updateProp.delete()
-              break;
-            case "CustomProperty.updated":
-              log.debug("Update custom property ${updateProp.type.name}")
-              if(changeDoc.type == RefdataValue.toString()){
-                  def propertyDefinition = PropertyDefinition.findByName(changeDoc.name)
-                  def newProp =  RefdataCategory.lookupOrCreate(propertyDefinition.refdataCategory,changeDoc.new)
-                  updateProp."${changeDoc.prop}" = newProp                
-              }else{
-                updateProp."${changeDoc.prop}" = 
-                  updateProp.parseValue("${changeDoc.new}", changeDoc.type)
-              }
-              log.debug("Setting value for ${changeDoc.name}.${changeDoc.prop} to ${changeDoc.new}")
-              updateProp.save()          
-              break;
-            default:
-              log.error("ChangeDoc event '${changeDoc.event}'' not recognized.")          
-          }
+
+            if (changeDoc.event.endsWith('CustomProperty.deleted')) {
+
+                log.debug("Deleting property ${updateProp.type.name} from ${parsed_change_info.changeTarget}")
+                target_object.customProperties.remove(updateProp)
+                updateProp.delete()
+            }
+            else if (changeDoc.event.endsWith('CustomProperty.updated')) {
+
+                log.debug("Update custom property ${updateProp.type.name}")
+                if (changeDoc.type == RefdataValue.toString()){
+                    def propertyDefinition = PropertyDefinition.findByName(changeDoc.name)
+                    def newProp =  RefdataCategory.lookupOrCreate(propertyDefinition.refdataCategory,changeDoc.new)
+                    updateProp."${changeDoc.prop}" = newProp
+                }
+                else {
+                    updateProp."${changeDoc.prop}" =
+                            updateProp.parseValue("${changeDoc.new}", changeDoc.type)
+                }
+                log.debug("Setting value for ${changeDoc.name}.${changeDoc.prop} to ${changeDoc.new}")
+                updateProp.save()
+            }
+            else {
+                log.error("ChangeDoc event '${changeDoc.event}'' not recognized.")
+            }
+
         }else{
           if(changeDoc.propertyOID){
             def propertyType = genericOIDService.resolveOID(changeDoc.propertyOID).type

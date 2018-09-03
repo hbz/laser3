@@ -43,7 +43,7 @@
 
                     <g:if test="${lic.isSlaved?.value?.equalsIgnoreCase('yes')}">
                         <span data-position="top right" data-tooltip="${message(code:'license.details.isSlaved.tooltip')}">
-                            <i class="anchor blue icon"></i>
+                            <i class="thumbtack blue icon"></i>
                         </span>
                     </g:if>
                 </td>

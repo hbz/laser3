@@ -27,10 +27,7 @@ class License extends BaseDomainComponent implements TemplateSupport, Permission
 
     // AuditTrait
     static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
-    static controlledProperties = [
-            'licenseUrl', 'noticePeriod', 'reference', 'startDate', 'endDate', //
-            'isPublic' // RefdataValue
-    ]
+    static controlledProperties = [ 'startDate', 'endDate', 'licenseUrl', 'status', 'type' ]
 
     License instanceOf
 
@@ -320,49 +317,6 @@ class License extends BaseDomainComponent implements TemplateSupport, Permission
     result
   }
 
-    /*
-  def onChange = { oldMap,newMap ->
-    log.debug("license onChange....${oldMap} || ${newMap}");
-    def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
-
-    controlledProperties.each { cp ->
-     // log.debug("MAP TYPE ${oldMap[cp]?.class} OLD MAP: ${oldMap[cp]} NEW MAP: ${newMap[cp]}")
-      if ( oldMap[cp] != newMap[cp] ) {
-        log.debug("Sending reference change...");
-        changeNotificationService.notifyChangeEvent([
-                                                     OID:"${this.class.name}:${this.id}",
-                                                     event:'License.updated',
-                                                     prop:cp,
-                                                     old:oldMap[cp],
-                                                     new:newMap[cp]
-                                                    ])
-      }
-    }
-
-    controlledRefProperties.each { crp ->
-//      log.debug("MAP TYPE ${oldMap[crp]?.class} OLD MAP: ${oldMap[crp]} NEW MAP: ${newMap[crp]}")
-
-      if ( oldMap[crp] != newMap[crp] ) {
-
-        log.debug("Sending reference change...");
-        def old_oid = oldMap[crp] ? "${oldMap[crp].class.name}:${oldMap[crp].id}" : null;
-        def new_oid = newMap[crp] ? "${newMap[crp].class.name}:${newMap[crp].id}" : null;
-        changeNotificationService.notifyChangeEvent([
-                                                     OID:"${this.class.name}:${this.id}",
-                                                     event:'License.updated',
-                                                     prop:crp,
-                                                     old:old_oid,
-                                                     oldLabel:oldMap[crp]?.toString(),
-                                                     new:new_oid,
-                                                     newLabel:newMap[crp]?.toString()
-                                                    ])
-      }
-    }
-
-    log.debug("On change complete");
-  }
-
-    */
   @Override
   public boolean equals (Object o) {
     def obj = ClassUtils.deproxy(o)
