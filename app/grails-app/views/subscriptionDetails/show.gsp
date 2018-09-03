@@ -124,11 +124,11 @@
                     <div class="ui card la-time-card">
                         <div class="content">
                             <dl>
-                                <dt class="control-label">${message(code:'subscription.startDate.label', default:'Start Date')}</dt>
+                                <semui:dtAuditCheck message="subscription.startDate.label" auditable="[subscriptionInstance, 'startDate']"/>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="startDate" type="date"/></dd>
                             </dl>
                             <dl>
-                                <dt class="control-label">${message(code:'subscription.endDate.label', default:'End Date')}</dt>
+                                <semui:dtAuditCheck message="subscription.endDate.label" auditable="[subscriptionInstance, 'endDate']"/>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="endDate" type="date"/></dd>
                             </dl>
                             <% /*
@@ -147,11 +147,11 @@
                     <div class="ui card">
                         <div class="content">
                             <dl>
-                                <dt class="control-label">${message(code:'subscription.details.status', default:'Status')}</dt>
+                                <semui:dtAuditCheck message="subscription.details.status" auditable="[subscriptionInstance, 'status']"/>
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status' /></dd>
                             </dl>
                             <dl>
-                                <dt class="control-label">${message(code:'subscription.details.type', default:'Type')}</dt>
+                                <semui:dtAuditCheck message="subscription.details.type" auditable="[subscriptionInstance, 'type']"/>
                                 <dd>
                                     <%-- TODO: subscribers may not edit type, but admins and yoda --%>
                                     <g:if test="${subscriptionInstance.getAllSubscribers().contains(contextOrg)}">
@@ -168,6 +168,13 @@
                                     <dd>
                                         <g:link controller="subscriptionDetails" action="show" id="${subscriptionInstance.instanceOf.id}">${subscriptionInstance.instanceOf}</g:link>
                                     </dd>
+                                </dl>
+
+                                <dl>
+                                    <dt></dt>
+                                    ${message(code:'license.details.linktoLicense.pendingChange', default:'Automatically Accept Changes?')}
+                                    <br />
+                                    <semui:xEditableRefData owner="${subscriptionInstance}" field="isSlaved" config='YN'/>
                                 </dl>
                             </g:if>
                         </div>

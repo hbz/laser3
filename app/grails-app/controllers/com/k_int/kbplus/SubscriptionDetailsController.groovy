@@ -1503,6 +1503,39 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
         result.navPrevSubscription = result.subscriptionInstance.previousSubscription
         result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
 
+
+        // ---- pendingChanges : start
+
+        if (executorWrapperService.hasRunningProcess(result.institution)) {
+            log.debug("PendingChange processing in progress")
+            result.processingpc = true
+        } else {
+
+            def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+            def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.subscription, pending_change_pending_status])
+
+            log.debug("pc result is ${result.pendingChanges}")
+
+            if (result.subscription.isSlaved?.value == "Yes" && pendingChanges) {
+                log.debug("Slaved subscription, auto-accept pending changes")
+                def changesDesc = []
+                pendingChanges.each { change ->
+                    if (!pendingChangeService.performAccept(change, request)) {
+                        log.debug("Auto-accepting pending change has failed.")
+                    } else {
+                        changesDesc.add(PendingChange.get(change).desc)
+                    }
+                }
+                flash.message = changesDesc
+            } else {
+                result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
+            }
+        }
+
+        // ---- pendingChanges : end
+
+
+
         // tasks
         def contextOrg  = contextService.getOrg()
         result.tasks    = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)

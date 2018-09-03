@@ -18,6 +18,10 @@ class Subscription extends BaseDomainComponent implements TemplateSupport, Permi
     def grailsApplication
     @Transient
     def contextService
+    @Transient
+    def messageSource
+    @Transient
+    def changeNotificationService
 
   RefdataValue status
   RefdataValue type         // RefdataCatagory 'Subscription Type'
@@ -321,6 +325,53 @@ class Subscription extends BaseDomainComponent implements TemplateSupport, Permi
     log.debug("notifyDependencies(${changeDocument})");
   }
 */
+
+    @Transient
+    def notifyDependencies(changeDocument) {
+        log.debug("notifyDependencies(${changeDocument})")
+        //def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
+
+        def derived_subscriptions = Subscription.where{ instanceOf == this && status.value != 'Deleted' }
+
+        derived_subscriptions.each { ds ->
+
+            log.debug("Send pending change to ${ds.id}")
+
+            def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+            ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.subscription."+changeDocument.prop, locale.toString())
+            def description = messageSource.getMessage('default.accept.placeholder',null, locale)
+            if (contentItemDesc) {
+                description = contentItemDesc.content
+            }
+            else {
+                def defaultMsg = ContentItem.findByKeyAndLocale("kbplus.change.subscription.default", locale.toString())
+                if( defaultMsg)
+                    description = defaultMsg.content
+            }
+
+            def propName
+            try {
+                // UGLY
+                propName = changeDocument.name ? ((messageSource.getMessage("subscription.${changeDocument.name}", null, locale)) ?: (changeDocument.name)) : (messageSource.getMessage("subscription.${changeDocument.prop}", null, locale) ?: (changeDocument.prop))
+
+            } catch(Exception e) {
+                propName = changeDocument.name ?: changeDocument.prop
+            }
+
+            changeNotificationService
+                    .registerPendingChange('subscription',
+                    ds,
+                    "<b>${propName}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Lizenzvorlage geändert. " + description,
+                    ds.getSubscriber(),
+                    [
+                            changeTarget:"com.k_int.kbplus.Subscription:${ds.id}",
+                            changeType:'PropertyChange',
+                            changeDoc:changeDocument
+                    ])
+
+        }
+    }
+
   public String toString() {
       name ? "${name}" : "Subscription ${id}"
   }
