@@ -7,11 +7,11 @@ import de.laser.traits.AuditTrait
 
 import javax.persistence.Transient
 
-class LicensePrivateProperty extends PrivateProperty implements AuditTrait {
+class LicensePrivateProperty extends PrivateProperty /* implements AuditTrait */ {
 
     // AuditTrait
-    static auditable = true
-    static controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
+    // static auditable = true
+    // static controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
 
     @Transient
     String paragraph
@@ -19,6 +19,8 @@ class LicensePrivateProperty extends PrivateProperty implements AuditTrait {
     def grailsApplication
     @Transient
     def messageSource
+    @Transient
+    def changeNotificationService
 
     PropertyDefinition type
     License owner
@@ -92,10 +94,5 @@ class LicensePrivateProperty extends PrivateProperty implements AuditTrait {
         def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
         // changeNotificationService.broadcastEvent("com.k_int.kbplus.License:${owner.id}", changeDoc);
         changeNotificationService.notifyChangeEvent(changeDoc)
-    }
-
-    @Transient
-    def onSave = {
-        log.debug("LicensePrivateProperty inserted")
     }
 }

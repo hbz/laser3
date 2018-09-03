@@ -3,12 +3,11 @@ package de.laser.traits
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
+import de.laser.AuditConfig
 
 import javax.persistence.Transient
 
 trait AuditTrait {
-
-    def changeNotificationService
 
     /**
      * IMPORTANT:
@@ -19,21 +18,41 @@ trait AuditTrait {
      *
      */
 
+    // def changeNotificationService
+
     // static auditable = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
 
     // static controlledProperties = ['name', 'date', 'etc']
 
+    def getWatchedProperties() {
+        def cp = getAuditConfig().collect{ it ->
+            it.referenceField
+        }
+
+        if (controlledProperties) {
+            cp.addAll(controlledProperties)
+            cp.unique()
+        }
+
+        /*
+        if (defaultControlledProperties) {
+            cp.addAll(defaultControlledProperties).unique()
+        }
+        */
+        cp
+    }
+
     @Transient
     def onChange = { oldMap, newMap ->
 
-        log?.debug( "onChange(): ${oldMap} => ${newMap}" )
+        log?.debug("onChange(): ${oldMap} => ${newMap}")
 
-        controlledProperties?.each { cp ->
+        getWatchedProperties()?.each { cp ->
             if (oldMap[cp] != newMap[cp]) {
                 def event
                 def clazz = this."${cp}".getClass().getName()
 
-                log?.debug( "notifyChangeEvent() for property class " + clazz)
+                log?.debug("notifyChangeEvent() for property class " + clazz)
 
                 if (this instanceof CustomProperty || this instanceof PrivateProperty) {
 
@@ -47,8 +66,7 @@ trait AuditTrait {
                             new        : newMap[cp] instanceof RefdataValue ? newMap[cp].toString() : newMap[cp],
                             propertyOID: "${this.class.name}:${this.id}"
                     ]
-                }
-                else {
+                } else {
 
                     if (clazz.equals("com.k_int.kbplus.RefdataValue")) {
 
@@ -77,15 +95,38 @@ trait AuditTrait {
                 }
 
                 if (event) {
-                    changeNotificationService.notifyChangeEvent( event )
+                    if (! changeNotificationService) {
+                        log?.error("changeNotificationService not implemented @ ${it}")
+                    } else {
+                        changeNotificationService.notifyChangeEvent(event)
+                    }
                 }
             }
         }
     }
 
     @Transient
-    def notifyDependencies(changeDocument) {
+    def onDelete = { oldMap ->
+        log?.debug("onDelete() ${this}")
+    }
 
-        log?.debug( "notifyDependencies() not implemented => ${changeDocument}" )
+    @Transient
+    def onSave = {
+        log?.debug("onSave() ${this}")
+    }
+
+    @Transient
+    def notifyDependencies(changeDocument) {
+        log?.debug("notifyDependencies() not implemented => ${changeDocument}")
+    }
+
+    @Transient
+    def getAuditConfig() {
+        AuditConfig.getConfig(this)
+    }
+
+    @Transient
+    def getAuditConfig(String field) {
+        AuditConfig.getConfig(this, field)
     }
 }

@@ -189,6 +189,37 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
+
+    def dtAuditCheck = { attrs, body ->
+        def text    = attrs.text ? attrs.text : ''
+        def message = attrs.message ? "${message(code: attrs.message)}" : ''
+        def label   = (text && message) ? text + " - " + message : text + message
+
+        out << '<dt class="control-label">' + label
+
+        if (attrs.auditable) {
+            try {
+                def obj = attrs.auditable[0]
+                if (obj.instanceOf) {
+                    if (obj.instanceOf?.getWatchedProperties()?.contains(attrs.auditable[1])) {
+                        if (obj.isSlaved?.value?.equalsIgnoreCase('yes')) {
+                            out << '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon anchor blue"></i></span>'
+                        }
+                        else {
+                            out << '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon anchor grey"></i></span>'
+                        }
+                    }
+                }
+                else {
+                    if (obj.getWatchedProperties()?.contains(attrs.auditable[1])) {
+                        out << '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon anchor blue"></i></span>'
+                    }
+                }
+            } catch(Exception e) {}
+        }
+        out << '</dt>'
+    }
+
     def listIcon = { attrs, body ->
 
         switch(attrs.type) {

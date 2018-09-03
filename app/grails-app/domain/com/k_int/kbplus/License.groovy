@@ -21,6 +21,8 @@ class License extends BaseDomainComponent implements TemplateSupport, Permission
     def genericOIDService
     @Transient
     def messageSource
+    @Transient
+    def changeNotificationService
 
 
     // AuditTrait
@@ -383,19 +385,19 @@ class License extends BaseDomainComponent implements TemplateSupport, Permission
   }
 
 
-  @Transient
-  def notifyDependencies(changeDocument) {
-    log.debug("notifyDependencies(${changeDocument})");
-
-    def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
+    @Transient
+    def notifyDependencies(changeDocument) {
+        log.debug("notifyDependencies(${changeDocument})")
+        //def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
 
     // Find any licenses derived from this license
     // create a new pending change object
     //def derived_licenses = License.executeQuery('select l from License as l where exists ( select link from Link as link where link.toLic=l and link.fromLic=? )',this)
-    def derived_licenses = License.executeQuery('select l from License as l where l.instanceOf=?', this)
+    def derived_licenses = License.where{ instanceOf == this && status.value != 'Deleted' }
+
     derived_licenses.each { dl ->
-      if(dl.status.value != "Deleted"){
-        log.debug("Send pending change to ${dl.id}");
+        log.debug("Send pending change to ${dl.id}")
+
         def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
         ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.license."+changeDocument.prop,locale.toString())
         def description = messageSource.getMessage('default.accept.placeholder',null, locale)
@@ -427,10 +429,7 @@ class License extends BaseDomainComponent implements TemplateSupport, Permission
                                 changeDoc:changeDocument
                               ])
 
-      }else{
-        log.debug("License ${dl} has status deleted, no pending notification will be generated.")
-      }  
-    }
+      }
   }
 
     @Override
