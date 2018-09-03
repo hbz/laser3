@@ -432,8 +432,8 @@ class OrganisationsController {
         result.user = User.get(springSecurityService.principal.id)
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
-        result.orgInstance = contextService.getOrg()
-        result.numbersInstanceList = Numbers.findAllByOrg(contextService.getOrg(), [sort: 'type'])
+        result.orgInstance = Org.get(params.id)
+        result.numbersInstanceList = Numbers.findAllByOrg(Org.get(params.id), [sort: 'type'])
 
         result
     }

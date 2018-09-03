@@ -23,11 +23,10 @@
 
 <semui:messages data="${flash}"/>
 
-<g:if test="${consortiaMembers}">
     <semui:filter>
         <g:form action="manageConsortia" method="get" class="ui form">
             <g:render template="/templates/filter/orgFilter"
-                      model="[tmplConfigShow: ['name', 'federalState', 'libraryNetwork', 'libraryType']
+                      model="[tmplConfigShow: ['property', 'name', 'federalState', 'libraryNetwork', 'libraryType']
                       ]"/>
         </g:form>
     </semui:filter>
@@ -38,20 +37,17 @@
         <g:render template="/templates/filter/orgFilterTable"
                   model="[orgList: consortiaMembers,
                           tmplShowCheckbox: true,
-                          tmplConfigShow: ['name', 'wib', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
+                          tmplConfigShow: ['sortname', 'name', 'mainContact', 'currentFTEs', 'numberOfLicenses', 'wib', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
                   ]"/>
 
         <br/>
 
-        <input type="submit" class="ui button"
+        <g:if test="${consortiaMembers}">
+            <input type="submit" class="ui button"
                value="${message(code: 'default.button.revoke.label', default: 'Revoke')}"/>
-
+        </g:if>
     </g:form>
-</g:if>
-<g:else>
-    <br/>
-    <b><g:message code="consortium.emptyConsortiaMembers"/></b>
-</g:else>
+
 
 </body>
 </html>
