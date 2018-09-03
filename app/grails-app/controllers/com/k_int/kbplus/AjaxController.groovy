@@ -1279,7 +1279,8 @@ class AjaxController {
                 def binding_properties = [:]
                 binding_properties[params.name] = params.value
                 bindData(target_object, binding_properties)
-                // target_object."${params.name}" = params.value
+
+                target_object.owner?.save() // avoid owner.xyz not processed by flush
                 target_object.save(failOnError: true, flush: true);
 
                 result = target_object."${params.name}"
@@ -1291,7 +1292,6 @@ class AjaxController {
         def outs = response.outputStream
 
         outs << result
-
         outs.flush()
         outs.close()
     }
