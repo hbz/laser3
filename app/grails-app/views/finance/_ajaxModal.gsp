@@ -40,8 +40,21 @@
                 <div class="two fields la-fields-no-margin-button">
                     <div class="field">
                         <label>${message(code:'financials.budgetCode')}</label>
+                        <select name="newBudgetCodes" class="ui fluid search dropdown" multiple="multiple">
+                            <g:each in="${BudgetCode.findAllByOwner(contextService.getOrg())}" var="bc">
+                                <g:if test="${costItem?.getBudgetcodes()?.contains(bc)}">
+                                    <option selected="selected" value="${bc.class.name}:${bc.id}">${bc.value}</option>
+                                </g:if>
+                                <g:else>
+                                    <option value="${bc.class.name}:${bc.id}">${bc.value}</option>
+                                </g:else>
+                            </g:each>
+                        </select>
+                        <%--
                         <input type="text" name="newBudgetCode" id="newBudgetCode" class="select2 la-full-width"
                                placeholder="${CostItemGroup.findByCostItem(costItem)?.budgetCode?.value}"/>
+                               --%>
+
                     </div><!-- .field -->
 
                     <div class="field">
@@ -49,16 +62,6 @@
                         <input type="text" name="newReference" id="newCostItemReference" placeholder="" value="${costItem?.reference}"/>
                     </div><!-- .field -->
                 </div>
-                <div class="field">
-                    <label>${message(code:'financials.costItemStatus')}</label>
-                    <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
-                                  id="newCostItemStatus"
-                                  from="${costItemStatus}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  noSelection="${['':'']}"
-                                  value="${costItem?.costItemStatus?.id}" />
-                </div><!-- .field -->
 
             </div>
 
@@ -94,6 +97,18 @@
                                   noSelection="${['':'']}"
                                   value="${costItem?.taxCode?.id}" />
                 </div><!-- .field -->
+
+                <div class="field">
+                    <label>${message(code:'financials.costItemStatus')}</label>
+                    <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
+                                  id="newCostItemStatus"
+                                  from="${costItemStatus}"
+                                  optionKey="id"
+                                  optionValue="value"
+                                  noSelection="${['':'']}"
+                                  value="${costItem?.costItemStatus?.id}" />
+                </div><!-- .field -->
+
             </div> <!-- 2/2 field -->
         </div><!-- two fields -->
 
@@ -416,7 +431,7 @@
         var ajaxPostFunc = function () {
 
             console.log( "ajaxPostFunc")
-
+<%--
             $('#costItem_ajaxModal #newBudgetCode').select2({
                 minimumInputLength: 0,
                 formatInputTooShort: function () {
@@ -455,7 +470,7 @@
                         return {id: -1 + term, text: "${message(code: 'default.newValue.label')}: " + term};
                 }
             })
-
+--%>
             /*
             $.ajax({
                 url: "<g:createLink controller='ajax' action='lookup'/>",

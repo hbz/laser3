@@ -4,7 +4,7 @@
     <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')}">
     <semui:securedSubNavItem controller="organisations" action="numbers" params="${[id: params.id]}"
                              affiliation="INST_EDITOR" affiliationOrg="${orgInstance}"
-                      message="menu.institutions.numbers"/>
+                      message="menu.institutions.numbers" specRoleCheck="ROLE_ORG_EDITOR"/>
     </g:if>
 
     <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')}">

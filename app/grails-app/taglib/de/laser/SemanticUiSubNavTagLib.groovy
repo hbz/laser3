@@ -1,6 +1,7 @@
 package de.laser
 
 import org.springframework.web.servlet.support.RequestContextUtils
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 class SemanticUiSubNavTagLib {
 
@@ -49,10 +50,14 @@ class SemanticUiSubNavTagLib {
         def text      = attrs.text ? attrs.text : ''
         def message   = attrs.message ? "${message(code: attrs.message)}" : ''
         def linkBody  = (text && message) ? text + " - " + message : text + message
+        def specrole      = []
+        specrole          = attrs.specRoleCheck
 
         def secureCheck = false
 
-        if (attrs.affiliation) {
+        secureCheck = specrole ? SpringSecurityUtils.ifAnyGranted(specrole) : false
+
+        if (!secureCheck || attrs.affiliation) {
             if (attrs.affiliationOrg) {
                 if (springSecurityService.getCurrentUser()?.hasAffiliationForOrg(attrs.affiliation, attrs.affiliationOrg)) {
                     secureCheck = true

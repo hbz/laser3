@@ -15,6 +15,9 @@
             <g:sortableColumn title="${message(code: 'org.sortname.label', default: 'Sortname')}" property="lower(o.sortname)"/>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('name')}">
+            <g:sortableColumn title="${message(code: 'org.sortName.label')}" property="lower(o.sortname)"/>
+        </g:if>
+        <g:if test="${tmplConfigShow?.contains('name')}">
             <g:sortableColumn title="${message(code: 'org.name.label', default: 'Name')}" property="lower(o.name)"/>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('mainContact')}">
@@ -29,7 +32,7 @@
         <g:if test="${tmplConfigShow?.contains('identifier')}">
             <th>Identifier</th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('wib')}">
+        <g:if test="${tmplConfigShow?.contains('wibid')}">
             <th>WIB</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('isil')}">
@@ -81,6 +84,20 @@
                     ${org.sortname}
                 </td>
             </g:if>
+            <td>
+                <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
+                    <g:if test="${org.sortname}">
+                        ${fieldValue(bean: org, field: "sortname")}
+                    </g:if>
+                </g:if>
+                <g:else>
+                    <g:link controller="organisations" action="show" id="${org.id}">
+                        <g:if test="${org.sortname}">
+                            ${fieldValue(bean: org, field: "sortname")}
+                        </g:if>
+                    </g:link>
+                </g:else>
+            </td>
             <td>
                 <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
                         ${fieldValue(bean: org, field: "name")} <br>
@@ -144,8 +161,8 @@
                     </ul>
                 </g:if></td>
             </g:if>
-            <g:if test="${tmplConfigShow?.contains('wib')}">
-                <td>${org.getIdentifiersByType('wib')?.value?.join(', ')}</td>
+            <g:if test="${tmplConfigShow?.contains('wibid')}">
+                <td>${org.getIdentifiersByType('wibid')?.value?.join(', ')}</td>
             </g:if>
             <g:if test="${tmplConfigShow?.contains('isil')}">
                 <td>${org.getIdentifiersByType('isil')?.value?.join(', ')}</td>

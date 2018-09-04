@@ -71,6 +71,32 @@
 
 <semui:messages data="${flash}" />
 
+<%-- --%>
+<g:if test="${editable}">
+    <button class="ui button" value="" href="#addBudgetCodeModal" data-semui="modal">${message(code:'budgetCode.create_new.label')}</button>
+
+    <semui:modal id="addBudgetCodeModal" message="budgetCode.create_new.label">
+
+        <g:form class="ui form" url="[controller: 'myInstitution', action: 'budgetCodes']" method="POST">
+            <input type="hidden" name="cmd" value="newBudgetCode"/>
+            <input type="hidden" name="redirect" value="redirect"/>
+
+            <div class="field">
+                <label>Beschreibung</label>
+                <input type="text" name="bc"/>
+            </div>
+
+            <div class="field">
+                <label>Verwendung</label>
+                <textarea name="descr"></textarea>
+            </div>
+
+        </g:form>
+    </semui:modal>
+
+</g:if>
+<%-- --%>
+
 <div class="ui grid">
     <div class="column">
         <%--<button class="ui button" type="submit" data-semui="modal" href="#recentlyAdded_modal" id="showHideRecent">${message(code:'financials.recentCosts')}</button>--%>
