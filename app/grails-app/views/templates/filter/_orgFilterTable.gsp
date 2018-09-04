@@ -9,12 +9,15 @@
             </th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('name')}">
+            <g:sortableColumn title="${message(code: 'org.sortName.label')}" property="lower(o.sortname)"/>
+        </g:if>
+        <g:if test="${tmplConfigShow?.contains('name')}">
             <g:sortableColumn title="${message(code: 'org.name.label', default: 'Name')}" property="lower(o.name)"/>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('identifier')}">
             <th>Identifier</th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('wib')}">
+        <g:if test="${tmplConfigShow?.contains('wibid')}">
             <th>WIB</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('isil')}">
@@ -40,10 +43,10 @@
         </g:if>
         <g:if test="${tmplConfigShow?.contains('addSubMembers')}">
             <th>
-                ${message(code: 'subscription.details.addMembers.option.package.label', args: [subInstance?.name])}
+                ${message(code: 'subscription.details.addMembers.option.package.label')}
             </th>
             <th>
-                ${message(code: 'subscription.details.addMembers.option.issueEntitlement.label', args: [subInstance?.name])}
+                ${message(code: 'subscription.details.addMembers.option.issueEntitlement.label')}
             </th>
         </g:if>
     </tr>
@@ -61,6 +64,20 @@
                     <g:checkBox type="text" name="selectedOrgs" value="${org.id}" checked="false"/>
                 </td>
             </g:if>
+            <td>
+                <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
+                    <g:if test="${org.sortname}">
+                        ${fieldValue(bean: org, field: "sortname")}
+                    </g:if>
+                </g:if>
+                <g:else>
+                    <g:link controller="organisations" action="show" id="${org.id}">
+                        <g:if test="${org.sortname}">
+                            ${fieldValue(bean: org, field: "sortname")}
+                        </g:if>
+                    </g:link>
+                </g:else>
+            </td>
             <td>
                 <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
                         ${fieldValue(bean: org, field: "name")} <br>
@@ -85,8 +102,8 @@
                     </ul>
                 </g:if></td>
             </g:if>
-            <g:if test="${tmplConfigShow?.contains('wib')}">
-                <td>${org.getIdentifiersByType('wib')?.value?.join(', ')}</td>
+            <g:if test="${tmplConfigShow?.contains('wibid')}">
+                <td>${org.getIdentifiersByType('wibid')?.value?.join(', ')}</td>
             </g:if>
             <g:if test="${tmplConfigShow?.contains('isil')}">
                 <td>${org.getIdentifiersByType('isil')?.value?.join(', ')}</td>
@@ -112,11 +129,17 @@
 
             <g:if test="${tmplConfigShow?.contains('addSubMembers')}">
                 <g:if test="${subInstance?.packages}">
-                    <td><g:checkBox type="text" id="selectedPackage_${org.id}" name="selectedPackage_${org.id}" value="1"
-                                    checked="false" onclick="checkselectedPackage(${org.id});"/></td>
-                    <td><g:checkBox type="text" id="selectedIssueEntitlement_${org.id}"
-                                    name="selectedIssueEntitlement_${org.id}" value="1" checked="false"
-                                    onclick="checkselectedIssueEntitlement(${org.id});"/></td>
+                    <td><g:each in="${subInstance?.packages}" >
+                        <g:checkBox type="text" id="selectedPackage_${org.id+it.pkg.id}" name="selectedPackage_${org.id+it.pkg.id}" value="1"
+                                    checked="false" onclick="checkselectedPackage(${org.id+it.pkg.id});"/> ${it.pkg.name}<br>
+                        </g:each>
+                    </td>
+                    <td><g:each in="${subInstance?.packages}" >
+                        <g:checkBox type="text" id="selectedIssueEntitlement_${org.id+it.pkg.id}"
+                                    name="selectedIssueEntitlement_${org.id+it.pkg.id}" value="1" checked="false"
+                                    onclick="checkselectedIssueEntitlement(${org.id+it.pkg.id});"/> ${it.pkg.name}<br>
+                    </g:each>
+                    </td>
                 </g:if><g:else>
                     <td>${message(code: 'subscription.details.addMembers.option.noPackage.label', args: [subInstance?.name])}</td>
                     <td>${message(code: 'subscription.details.addMembers.option.noPackage.label', args: [subInstance?.name])}</td>

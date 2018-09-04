@@ -7,7 +7,7 @@ class OaiClientLaser {
 
     private String host;
 
-    def getRecordTitle(url, object, id)
+    def getRecord(url, object, id)
     {
         try {
             def http = new HTTPBuilder( url )

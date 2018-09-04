@@ -344,6 +344,7 @@
                             <% /* g:link class="item" controller="admin" action="forumSync">Run Forum Sync</g:link */ %>
                             <% /* g:link class="item" controller="admin" action="juspSync">Run JUSP Sync</g:link */ %>
                             <g:link class="item" controller="admin" action="forceSendNotifications">Send Pending Notifications</g:link>
+                            <g:link class="item" controller="admin" action="checkPackageTIPPs">Tipps Check of GOKB and LAS:eR</g:link>
 
                             <div class="ui dropdown item">
                                 Data Management
@@ -401,6 +402,7 @@
                             <g:link class="item" controller="yoda" action="settings">System Settings</g:link>
                             <g:link class="item" controller="yoda" action="appConfig">App Config</g:link>
                             <g:link class="item" controller="yoda" action="appSecurity">App Security</g:link>
+                            <g:link class="item" controller="yoda" action="cacheInfo">App Cache Info</g:link>
                             <a class="item" href="${g.createLink(uri:'/monitoring')}">App Monitoring</a>
 
                             <div class="divider"></div>
@@ -464,6 +466,10 @@
                                 <div class="divider"></div>
 
                                 <g:link class="item" controller="logout">${message(code:'menu.user.logout')}</g:link>
+                                <div class="divider"></div>
+                                <g:if test="${grailsApplication.metadata['app.version']}">
+                                    <div class="header">Version: ${grailsApplication.metadata['app.version']} – ${grailsApplication.metadata['app.buildDate']}</div>
+                                </g:if>
                             </div>
                         </div>
                     </g:if>
@@ -573,7 +579,11 @@
             <div class="ui text loader active">Loading</div>
         </div>
 
-        <%-- <a href="#globalJumpMark" class="ui button icon" style="position:fixed;right:0;bottom:0;"><i class="angle up icon"></i></a> --%>
+        <%-- global confirmation modal --%>
+        <semui:confirmationModal  />
+
+
+    <%-- <a href="#globalJumpMark" class="ui button icon" style="position:fixed;right:0;bottom:0;"><i class="angle up icon"></i></a> --%>
 
         <r:layoutResources/>
 

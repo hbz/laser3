@@ -1,5 +1,5 @@
 <!-- _filter.gsp -->
-<%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition" %>
+<%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.FinanceController" %>
 
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 
@@ -135,7 +135,7 @@
                 </div>
                 <div class="field">
                     <label>&nbsp;</label>
-                    <g:submitButton name="submitFilterMode" id="submitFilterMode" class="ui secondary button" value="${filterMode=='ON'?'reset':'search'}" title="${g.message(code: 'financials.pagination.title')}"></g:submitButton>
+                    <g:submitButton name="submitFilterMode" id="submitFilterMode" class="ui secondary button" value="${filterMode=='ON'?'reset':'search'}" title="${g.message(code: 'financials.pagination.title')}" />
                 </div>
             </div>
         </div><!-- row4 -->
@@ -214,6 +214,62 @@
                     <input id="filterCITitle" name="filterCITitle" type="text" value="${params.filterCITitle}"/>
                 </div>
 
+                <div class="field fieldcontain"><!--NEW -->
+                    <label for="filterCISub">${message(code:'subscription.label')}</label>
+                    <g:select id="filterCISub" class="ui dropdown selection"
+                              name="filterCISub"
+                              from="${allCISubs}"
+                              optionValue="${{it.name ?: 'Keine Verknüpfung'}}"
+                              optionKey="${{"com.k_int.kbplus.Subscription:" + it.id}}"
+                              noSelection="['':'']"
+                              value="${params.filterCISub}" />
+                </div>
+
+                <div class="field fieldcontain"><!--NEW -->
+                    <label for="filterCISPkg">${message(code:'package.label')}</label>
+                    <g:select id="filterCISPkg" class="ui dropdown selection"
+                              name="filterCISPkg"
+                              from="${allCISPkgs}"
+                              optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
+                              optionKey="${{"com.k_int.kbplus.SubscriptionPackage:" + it?.id}}"
+                              noSelection="['':'']"
+                              value="${params.filterCISPkg}" />
+                </div>
+            </div><!-- .three -->
+
+            <div class="three fields">
+                <div class="field">
+                    <label for="filterCIBudgetCode">${message(code:'financials.budgetCode')}</label>
+                    <g:select id="filterCIBudgetCode" class="ui dropdown search selection"
+                              name="filterCIBudgetCode"
+                              from="${allCIBudgetCodes}"
+                              value="${params.filterCIBudgetCode}"
+                              noSelection="${['':'Alle ..']}"
+                    />
+                </div>
+
+                <div class="field">
+                    <label>${message(code:'financials.invoice_number')}</label>
+                    <g:select id="filterCIInvoiceNumber" class="ui dropdown search selection"
+                              name="filterCIInvoiceNumber"
+                              from="${allCIInvoiceNumbers}"
+                              value="${params.filterCIInvoiceNumber}"
+                              noSelection="${['':'Alle ..']}"
+                    />
+                </div>
+
+                <div class="field">
+                    <label>${message(code:'financials.order_number')}</label>
+                    <g:select id="filterCIOrderNumber" class="ui dropdown search selection"
+                              name="filterCIOrderNumber"
+                              from="${allCIOrderNumbers}"
+                              value="${params.filterCIOrderNumber}"
+                              noSelection="${['':'Alle ..']}"
+                    />
+                </div>
+            </div><!-- .three -->
+
+            <div class="three fields">
                 <div class="field fieldcontain">
                     <label for="filterCIElement">${message(code:'financials.costItemElement')}</label>
                     <laser:select id="filterCIElement" class="ui dropdown selection"
@@ -235,44 +291,51 @@
                                   value="${params.filterCIStatus}"
                                   noSelection="${['':'Alle ..']}"/>
                 </div>
-            </div><!-- .three -->
-
-            <div class="three fields">
-                <div class="field">
-                    <label for="filterCIBudgetCode">${message(code:'financials.budgetCode')}</label>
-                    <g:select id="filterCIBudgetCode" class="ui dropdown search selection"
-                              name="filterCIBudgetCode"
-                              from="${allCIBudgetCodes}"
-                              value="${params.filterCIBudgetCode}"
-                              noSelection="${['':'Alle ..']}"
-                        />
-                </div>
-
-                <div class="field">
-                    <label>${message(code:'financials.invoice_number')}</label>
-                    <g:select id="filterCIInvoiceNumber" class="ui dropdown search selection"
-                              name="filterCIInvoiceNumber"
-                              from="${allCIInvoiceNumbers}"
-                              value="${params.filterCIInvoiceNumber}"
-                              noSelection="${['':'Alle ..']}"
-                        />
-                </div>
-
-                <div class="field">
-                    <label>${message(code:'financials.order_number')}</label>
-                    <g:select id="filterCIOrderNumber" class="ui dropdown search selection"
-                              name="filterCIOrderNumber"
-                              from="${allCIOrderNumbers}"
-                              value="${params.filterCIOrderNumber}"
-                              noSelection="${['':'Alle ..']}"
-                        />
+                <div class="field fieldcontain"><!--NEW -->
+                <%--
+                <label for="filterCICategory">${message(code:'financials.costItemCategory')}</label>
+                <laser:select id="filterCICategory" class="ui dropdown selection"
+                              name="filterCICategory"
+                              from="${costItemCategory}"
+                              optionKey="${{it.class.getName() + ":" + it.id}}"
+                              optionValue="value"
+                              value="${params.filterCICategory}"
+                              noSelection="${['':'Alle ..']}"/>
+                              --%>
+                    <label for="filterCITaxType">${message(code:'financials.newCosts.controllable')}</label>
+                    <laser:select id="filterCITaxType" class="ui dropdown selection"
+                                  name="filterCITaxType"
+                                  from="${taxType}"
+                                  optionKey="${{it.class.getName() + ":" + it.id}}"
+                                  optionValue="value"
+                                  value="${params.taxType}"
+                                  noSelection="${['':'Alle ..']}"/>
                 </div>
             </div><!-- .three -->
 
             <div class="three fields">
                 <div class="field">
-                    <label>Unscharfe Suche zulassen (im Feld Bezeichnung)</label>
-                    <input type="checkbox" name="wildcard" value="on" <g:if test="${wildcard != 'off'}"> checked="checked"</g:if> />
+                    <semui:datepicker label="default.valid_on.label" name="filterCIValidOn" placeholder="filter.placeholder"
+                                      value="${params.filterCIValidOn}"/>
+                </div>
+
+                <div class="field">
+                    <semui:datepicker label="financials.invoice_from" name="filterCIInvoiceFrom" placeholder="filter.placeholder"
+                                      value="${params.filterCIInvoiceFrom}"/>
+                </div>
+
+                <div class="field">
+                    <semui:datepicker label="financials.invoice_to" name="filterCIInvoiceTo" placeholder="filter.placeholder"
+                                      value="${params.filterCIInvoiceTo}"/>
+                </div>
+            </div>
+
+            <div class="three fields">
+                <div class="field">
+                    <%--
+                    <label>Genaue Suche (im Feld Bezeichnung)</label>
+                    <input type="checkbox" name="wildcard" value="off" <g:if test="${wildcard != 'on'}"> checked="checked"</g:if> />
+                    --%>
                 </div>
 
                 <div class="field">
@@ -287,75 +350,6 @@
             <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/> %{-- TODO: REMOVE --}%
         </g:form>
     </semui:filter>
-
-<g:if test="${costItemSubList.size() > 1}">
-    <div class="ui styled fluid accordion">
-</g:if>
-
-    <g:each in="${costItemSubList}" var="subListItem" status="i">
-
-        <g:if test="${costItemSubList.size() > 1}">
-            <div class="title">
-                <i class="dropdown icon"></i>
-                ${subListItem.key != 'clean' ? subListItem.key : 'Ohne konkrete Zuordnung'}
-                ( ${subListItem.value?.size()} )
-                <span class="sumOfCosts_${i}" style="position:absolute;right:30px"></span>
-            </div>
-
-            <div class="content">
-        </g:if>
-
-            <g:set var="cost_items" value="${subListItem.value}" />
-
-            <table id="costTable_${i}" class="ui celled sortable table table-tworow la-table floatThead">
-
-                <thead>
-                    <tr>
-                        <th>${message(code:'financials.costInLocalCurrency')}</th>
-                        <th class="three wide">${message(code:'financials.newCosts.costTitle')}</th>
-                        <%-- <th>${message(code:'financials.costItemCategory')}</th> --%>
-                        <th>${message(code:'financials.costItemElement')}</th>
-                        <%-- <th>${message(code:'financials.costItemComponent')}</th> --%>
-                        <th>${message(code:'financials.costItemStatus')}</th>
-                        <th>${message(code:'financials.dateFrom')}</th>
-                        <th>${message(code:'financials.dateTo')}</th>
-                        <th>Aktionen</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    %{--Empty result set--}%
-                    <g:if test="${cost_item_count == 0}">
-                        <tr><td colspan="7" style="text-align:center">&nbsp;<br/>
-                            <g:if test="${msg}">${msg}</g:if><g:else>${message(code:'finance.result.filtered.empty')}</g:else><br/>&nbsp;
-                        </td></tr>
-                    </g:if>
-                    <g:else>
-                        <g:render template="filter_data" model="[editable: editable, cost_items: cost_items]"></g:render>
-                    </g:else>
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <th>
-                            <strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}: <span class="sumOfCosts_${i}"></span></strong>
-                        </th>
-                    </tr>
-                </tfoot>
-            </table>
-
-        <g:if test="${costItemSubList.size() > 1}">
-            </div><!-- .content -->
-        </g:if>
-    </g:each>
-
-    <g:if test="${costItemSubList.size() > 1}">
-        <div class="title">
-            <strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}:<span id="totalCost" style="position:absolute;right:30px"></span></strong>
-        </div>
-    </g:if>
-
-<g:if test="${costItemSubList.size() > 1}">
-    </div>
-</g:if>
 
 <%--
         <table id="costTable" class="ui striped celled la-rowspan table table-tworow">
@@ -430,19 +424,4 @@
         </table>
  --%>
 
-<%--
-<div id="paginationWrapper" class="pagination">
-    <div id="paginateInfo" hidden="true" data-offset="${offset!=null?offset:params.offset}" data-max="${max!=null?max:params.max}"
-         data-wildcard="${wildcard!=null?wildcard:params.wildcard}" data-insubmode="${inSubMode}" data-sub="${fixedSubscription?.id}"
-         data-sort="${sort!=null?sort:params.sort}" data-order="${order!=null?order:params.order}" data-relation="${isRelation!=null?isRelation:params.orderRelation}"
-         data-filterMode="${filterMode}" data-total="${cost_item_count}" data-resetMode="${params.resetMode}" data-subscriptionFilter="${params.subscriptionFilter}"
-         data-invoiceNumberFilter="${params.invoiceNumberFilter}" data-orderNumberFilter="${params.orderNumberFilter}" data-packageFilter="${params.packageFilter}">
-    </div>
-
-    <util:remotePaginate title="${g.message(code: 'financials.pagination.title')}"
-          onFailure="errorHandling(textStatus,'Pagination',errorThrown)" onComplete="Finance.rebind();Finance.scrollTo(null,'#costTable');" update="filterTemplate"
-          offset='0'  total="${cost_item_count}"  max="20" pageSizes="[10, 20, 50, 100, 200]" alwaysShowPageSizes="true" controller="finance" action="index"
-           params="${params+["filterMode": "${filterMode}", "sort":"${sort}", "order":"${order}", "format":"frag", "inSubMode":"${inSubMode}", "sub":"${fixedSubscription?.id}"]}" />
-</div>
---%>
 <!-- _filter.gsp -->

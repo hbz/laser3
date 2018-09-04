@@ -146,7 +146,7 @@ ${personInstance}
                                                 <i class="ui icon university la-list-icon"></i>
                                             </span>
 
-                                            <div class="content">
+                                            <div class="content la-space-right">
                                                 <div class="header">
                                                     ${link.functionType?.getI10n('value')}
                                                 </div>

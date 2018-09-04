@@ -2,15 +2,19 @@ package com.k_int.kbplus
 
 import de.laser.helper.DebugAnnotation
 import grails.converters.JSON
+import grails.plugin.cache.Cacheable
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import grails.web.Action
+import org.hibernate.SessionFactory
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class YodaController {
+
+    SessionFactory sessionFactory
 
     def springSecurityService
     def statsSyncService
@@ -66,6 +70,26 @@ class YodaController {
         result
     }
 
+    @Secured(['ROLE_YODA'])
+    def cacheInfo() {
+        def result = [:]
+
+        result.grailsApp = grailsApplication
+        result.appContext = getApplicationContext()
+        result.cacheManager = result.appContext.grailsCacheManager
+
+        if (params.cmd?.equals('clearCache')) {
+            def cache = result.cacheManager.getCache(params.cache)
+            if (cache) {
+                cache.clear()
+            }
+        }
+        result.hibernateStats = sessionFactory.statistics // org.hibernate.stat.Statistics
+
+        result
+    }
+
+    //@Cacheable('message')
     @Secured(['ROLE_ADMIN'])
     def appInfo() {
         def result = [:]
@@ -98,7 +122,7 @@ class YodaController {
 
         grailsApplication.controllerClasses.toList().each { controller ->
             Class controllerClass = controller.clazz
-            if (controllerClass.name.startsWith('com.k_int.kbplus')) {
+            if (controllerClass.name.startsWith('com.k_int.kbplus') || controllerClass.name.startsWith('de.laser')) {
                 def mList = [:]
 
                 controllerClass.methods.each { Method method ->
@@ -125,7 +149,7 @@ class YodaController {
                 cList<< ["${cKey}": [
                         'secured': controllerClass.getAnnotation(Secured)?.value(),
                         'methods': mList.sort{it.key}
-                        ]
+                ]
                 ]
             }
         }
@@ -275,7 +299,7 @@ class YodaController {
         redirect action:'settings'
     }
 
-    @Secured(['ROLE_API', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_YODA'])
     def costItemsApi(String owner) {
         def result = []
 
@@ -294,7 +318,7 @@ class YodaController {
 
             costItems.each {
                 def costItem = [:]
-                costItem.guid = it.globalUID
+                costItem.globalUID = it.globalUID
 
                 costItem.costItemStatus = it.costItemStatus?.value
                 costItem.costItemTyp = it.costItemCategory?.value
@@ -310,12 +334,27 @@ class YodaController {
                 costItem.costDescription = it.costDescription
                 costItem.reference = it.reference
 
-                costItem.datePaid = it.datePaid
                 costItem.startDate = it.startDate
                 costItem.endDate = it.endDate
 
-                costItem.owner = it.owner
-                costItem.sub = it.sub
+                costItem.owner = [:]
+                it.owner?.each{
+                    costItem.owner.globalUID = it.globalUID ?:''
+                    costItem.owner.name = it.name
+                    costItem.owner.shortname = it.shortname
+                    costItem.owner.sortname = it.sortname
+                    costItem.owner.ownerType = it.orgType?.value
+                    costItem.owner.libraryType = it.libraryType?.value
+                }
+
+                costItem.sub = [:]
+                it.sub?.each {
+                    costItem.sub.name = it.name
+                    costItem.sub.globalUID = it.globalUID ?: ''
+                    costItem.sub.startDate = it.startDate
+                    costItem.sub.endDate = it.endDate
+                }
+
                 costItem.subPkg = it.subPkg
                 costItem.issueEntitlement = it.issueEntitlement
                 costItem.order = it.order
@@ -330,4 +369,5 @@ class YodaController {
 
         render result as JSON
     }
+
 }

@@ -14,10 +14,10 @@
 <table class="ui la-table-small la-table-inCard table">
     <g:if test="${ownobj.customProperties}">
         <colgroup>
-            <col style="width: 229px;">
+            <col style="width: 129px;">
             <col style="width: 96px;">
-            <col style="width: 109px;">
-            <col style="width: 298px;">
+            <col style="width: 359px;">
+            <col style="width: 148px;">
             <col style="width: 76px;">
         </colgroup>
         <thead>
@@ -33,7 +33,7 @@
         </thead>
     </g:if>
     <tbody>
-        <g:each in="${ownobj.customProperties}" var="prop">
+        <g:each in="${ownobj.customProperties.sort{it.type.getI10n('name')}}" var="prop">
             <g:if test="${prop.type.descr == prop_desc}">
                 <tr>
                     <td class="la-column-nowrap">
@@ -63,7 +63,7 @@
                     </td>
                     <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
                         <td>
-                            <semui:xEditable owner="${prop}" type="text" field="paragraph"/>
+                            <semui:xEditable owner="${prop}" type="textarea" field="paragraph"/>
                         </td>
                     </g:if>
                     <td>

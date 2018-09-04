@@ -26,11 +26,7 @@ class AccessService {
 
     def grailsApplication
     def springSecurityService
-
-    def test() {
-        // org context
-        //ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR")
-    }
+    def contextService
 
     // copied from FinanceController, LicenseCompareController, MyInstitutionsController
     boolean checkUserIsMember(user, org) {
@@ -41,28 +37,6 @@ class AccessService {
         }
 
         return (uoq.count() > 0)
-    }
-
-    // copied from Org
-    //
-    // NO ROLE HIERARCHY !!!
-    //
-    @Deprecated
-    boolean checkUserOrgRole(user, org, role) {
-
-        if (! user || ! org) {
-            return false
-        }
-        if (role instanceof String) {
-           role = Role.findByAuthority(role)
-        }
-
-        def userOrg = UserOrg.findByUserAndOrgAndFormalRole(user, org, role)
-        if (userOrg && (userOrg.status == UserOrg.STATUS_APPROVED || userOrg.status == UserOrg.STATUS_AUTO_APPROVED)) {
-            return true
-        }
-
-        false
     }
 
     boolean checkMinUserOrgRole(user, org, role) {
@@ -76,6 +50,11 @@ class AccessService {
 
         def rolesToCheck = [role]
         def result = false
+
+        // NEW CONSTRAINT:
+        if (org.id != contextService.getOrg()?.id) {
+            return false
+        }
 
         // sym. role hierarchy
         if (role.authority == "INST_USER") {

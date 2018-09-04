@@ -299,8 +299,8 @@ from License as l where (
             base_qry += " order by l.reference asc"
         }
 
-        log.debug("query = ${base_qry}");
-        log.debug("params = ${qry_params}");
+        //log.debug("query = ${base_qry}");
+        //log.debug("params = ${qry_params}");
 
         result.licenseCount = License.executeQuery("select count(l) ${base_qry}", qry_params)[0];
         result.licenses = License.executeQuery("select l ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
@@ -915,7 +915,7 @@ from Subscription as s where (
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
             def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
-            def startDate = sdf.parse(params.valid_from)
+            def startDate = params.valid_from ? sdf.parse(params.valid_from) : null
             def endDate = params.valid_to ? sdf.parse(params.valid_to) : null
 
 
@@ -959,7 +959,8 @@ from Subscription as s where (
                                             // type: RefdataValue.findByValue("Subscription Taken"),
                                           type: subType,
                                           status: RefdataCategory.lookupOrCreate('Subscription Status', 'Current'),
-                                          name: params.newEmptySubName + " (${postfix})",
+                                          name: params.newEmptySubName,
+                                          // name: params.newEmptySubName + " (${postfix})",
                                           startDate: startDate,
                                           endDate: endDate,
                                           identifier: java.util.UUID.randomUUID().toString(),
@@ -3090,8 +3091,12 @@ AND EXISTS (
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def addressbook() {
+
+
         def result = setResultGenerics()
 
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         def qParts = [
                 'p.tenant = :tenant',
                 'p.isPublic = :public'
@@ -3119,7 +3124,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             (query, qParams) = propertyService.evalFilterQuery(params, query, 'p', qParams)
         }
 
-        result.visiblePersons = Person.executeQuery(query + " ORDER BY p.last_name, p.first_name ASC", qParams)
+        result.visiblePersons = Person.executeQuery(query + " ORDER BY p.last_name, p.first_name ASC", qParams, [max:result.max, offset:result.offset]);
 
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
@@ -3128,6 +3133,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                         descr: PropertyDefinition.PRS_PROP,
                         tenant: contextService.getOrg() // private properties
                 )
+
+        result.num_visiblePersons = Person.executeQuery(query, qParams).size()
 
         result
       }
@@ -3169,6 +3176,10 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
         }
         result.budgetCodes = BudgetCode.findAllByOwner(result.institution, [sort: 'value'])
+
+        if (params.redirect) {
+            redirect(url: request.getHeader('referer'), params: params)
+        }
 
         result
     }
@@ -3366,6 +3377,23 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             def id = Long.parseLong(did)
             def privatePropDef = PropertyDefinition.findWhere(id: id, tenant: tenant)
             if (privatePropDef) {
+
+                try {
+                    if (privatePropDef.mandatory) {
+                        privatePropDef.mandatory = false
+                        privatePropDef.save()
+
+                        // delete inbetween created mandatories
+                        Class.forName(
+                                privatePropDef.getImplClass('private')
+                        )?.findAllByType(privatePropDef)?.each { it ->
+                            it.delete()
+                        }
+                    }
+                } catch(Exception e) {
+                    log.error(e)
+                }
+
                 privatePropDef.delete()
                 messages << message(code: 'default.deleted.message', args:[privatePropDef.descr, privatePropDef.name])
             }
@@ -3428,5 +3456,39 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             log.error("FLASH");
         }
         redirect(action: "manageAffiliationRequests")
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def copyLicense() {
+        def result = setResultGenerics()
+
+        if(params.id)
+        {
+            def license = License.get(params.id)
+            def isEditable = license.isEditableBy(result.user)
+
+            if (! (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR'))) {
+                flash.error = message(code:'license.permissionInfo.noPerms', default: 'No User Permissions');
+                response.sendError(401)
+                return;
+            }
+
+            if(isEditable){
+                redirect controller: 'licenseDetails', action: 'processcopyLicense', params: ['baseLicense'                  : license.id,
+                                                                                              'license.copyAnnouncements'    : 'on',
+                                                                                              'license.copyCustomProperties' : 'on',
+                                                                                              'license.copyDates'            : 'on',
+                                                                                              'license.copyDocs'             : 'on',
+                                                                                              'license.copyLinks'            : 'on',
+                                                                                              'license.copyPrivateProperties': 'on',
+                                                                                              'license.copyTasks'            : 'on']
+            }else {
+                flash.error = message(code:'license.permissionInfo.noPerms', default: 'No User Permissions');
+                response.sendError(401)
+                return;
+            }
+        }
+
     }
 }

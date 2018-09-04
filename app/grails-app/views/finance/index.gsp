@@ -59,6 +59,32 @@
 
 <semui:messages data="${flash}" />
 
+<%-- --%>
+<g:if test="${editable}">
+    <button class="ui button" value="" href="#addBudgetCodeModal" data-semui="modal">${message(code:'budgetCode.create_new.label')}</button>
+
+    <semui:modal id="addBudgetCodeModal" message="budgetCode.create_new.label">
+
+        <g:form class="ui form" url="[controller: 'myInstitution', action: 'budgetCodes']" method="POST">
+            <input type="hidden" name="cmd" value="newBudgetCode"/>
+            <input type="hidden" name="redirect" value="redirect"/>
+
+            <div class="field">
+                <label>Beschreibung</label>
+                <input type="text" name="bc"/>
+            </div>
+
+            <div class="field">
+                <label>Verwendung</label>
+                <textarea name="descr"></textarea>
+            </div>
+
+        </g:form>
+    </semui:modal>
+
+</g:if>
+<%-- --%>
+
 <div class="ui grid">
     <div class="column">
         <%--<button class="ui button" type="submit" data-semui="modal" href="#recentlyAdded_modal" id="showHideRecent">${message(code:'financials.recentCosts')}</button>--%>
@@ -114,40 +140,12 @@
     <div class="ui grid">
         <div class="sixteen wide column">
 
-            <%--<div id="userError" hidden="">
-                <table class="ui celled la-table table">
-                    <thead>
-                    <tr><th>Problem/Update</th>
-                        <th>Info</th></tr>
-                    </thead>
-                    <tbody><tr></tr></tbody>
-                </table>
-            </div>--%>
-
-            <%
-                // WORKAROUND; grouping costitems by subscription
-                def costItemSubList = ["clean":[]]
-                (cost_items?.collect{it.sub}).each{ item ->
-                    if (item) {
-                        costItemSubList << ["${item.name}": []]
-                    }
-                }
-                cost_items.each{ item ->
-                    if (item.sub) {
-                        costItemSubList.get("${item.sub?.name}").add(item)
-                    }
-                    else {
-                        costItemSubList.get('clean').add(item)
-                    }
-                }
-                costItemSubList = costItemSubList.findAll{ ! it.value.isEmpty() }
-            %>
-
             <div id="filterTemplateWrapper" class="wrapper">
                 <div id="filterTemplate">
 
-                    <g:render template="filter" model="['costItemSubList': costItemSubList]"/>
+                    <g:render template="filter" model="['ciListOwner': cost_items, 'ciListConsSubsc': cost_items_CS]"/>
 
+                    <g:render template="result" model="['ciListOwner': cost_items, 'ciListConsSubsc': cost_items_CS]"/>
                 </div>
             </div>
 
@@ -227,20 +225,51 @@
     var financeHelper = {
 
         calcSumOfCosts : function () {
-            var totalcost = 0
+
             $('table[id^=costTable]').each( function() {
-                var result = 0
-                $(this).find('tbody tr span.costInLocalCurrency').each( function() {
-                    result += parseFloat($(this).attr('data-costInLocalCurrency'))
+
+                var costs = {}
+                var currencies = $.unique($(this).find('.costData').map(function(){
+                    return $(this).attr('data-billingCurrency')
+                }))
+                currencies.each(function() {
+                    costs[this] = {local: 0.0, localAfterTax: 0.0, billing: 0.0, billingAfterTax: 0.0}
+                })
+
+                $(this).find('tbody tr span.costData').each( function() {
+
+                    var ci = costs[$(this).attr('data-billingCurrency')]
+                    ci.local            += parseFloat($(this).attr('data-costInLocalCurrency'))
+                    ci.localAfterTax    += parseFloat($(this).attr('data-costInLocalCurrencyAfterTax'))
+                    ci.billing          += parseFloat($(this).attr('data-costInBillingCurrency'))
+                    ci.billingAfterTax  += parseFloat($(this).attr('data-costInBillingCurrencyAfterTax'))
                 })
                 var socClass = $(this).find('span[class^=sumOfCosts]').attr('class')
-                console.log(socClass)
-                $('.' + socClass).text(
-                    Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(result)
-                )
-                totalcost += result
+
+                var finalLocal = 0.0
+                var finalLocalAfterTax = 0.0
+
+                for (ci in costs) {
+                    finalLocal += costs[ci].local
+                    finalLocalAfterTax += costs[ci].localAfterTax
+                }
+
+                var info = "Wert: "
+                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(finalLocal)
+                    info += "<br />"
+                    info += "Endpreis nach Steuern: "
+                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(finalLocalAfterTax)
+
+                for (ci in costs) {
+                    info += "<br /><br /><strong>" + ci + "</strong><br />"
+                    info += "Rechnungssumme: "
+                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billing)
+                    info += "<br />"
+                    info += "Endpreis nach Steuern: "
+                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billingAfterTax)
+                }
+                $('.' + socClass).html( info )
             })
-              $('#totalCost').text(Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(totalcost))
         }
     }
 
@@ -249,7 +278,7 @@
         financeHelper.calcSumOfCosts()
     })
 
-         $('table[id^=costTable] .x .button:not(.negative)').on('click', function(e) {
+    $('table[id^=costTable] .x .button:not(.negative)').on('click', function(e) {
         e.preventDefault()
 
         $.ajax({

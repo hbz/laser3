@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
 import grails.converters.*
+import grails.plugin.cache.Cacheable
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
@@ -313,6 +314,7 @@ class ProfileController {
 
         render result as JSON
     }
+
     @Secured(['ROLE_USER'])
     def properties() {
         def propDefs = [:]

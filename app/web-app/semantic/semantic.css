@@ -1324,6 +1324,10 @@ body[class*="organisation"] .ui.label.la-object .icon:before {
   margin-top: -20px;
   margin-left: -3px;
 }
+
+.la-space-right {
+  padding-right: 20px;
+}
 /*!
  * # Semantic UI 2.3.1 - Button
  * http://github.com/semantic-org/semantic-ui/
@@ -20301,7 +20305,7 @@ ol.ui.horizontal.list li:before,
   transition: color 0.1s ease, border-color 0.1s ease;
   font-size: 1em;
   line-height: 1.2857;
-  resize: vertical;
+  resize: both;
 }
 
 .ui.form textarea:not([rows]) {

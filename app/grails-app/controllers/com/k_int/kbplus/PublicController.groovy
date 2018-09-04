@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
+import grails.plugin.cache.Cacheable;
 import grails.plugin.springsecurity.annotation.Secured;
 
 @Secured(['permitAll'])
@@ -8,6 +9,11 @@ class PublicController {
 
     def springSecurityService
     def genericOIDService
+
+    @Cacheable('laser_experimental')
+    @Secured(['permitAll'])
+    def index() {
+    }
 
     @Secured(['permitAll'])
     def gasco() {
@@ -68,7 +74,7 @@ class PublicController {
 
             if (q || consortia || subTypes) {
                 result.subscriptionsCount = Subscription.executeQuery("select count(s) " + query, queryParams)[0]
-                result.subscriptions = Subscription.executeQuery("select s ${query}", queryParams)
+                result.subscriptions = Subscription.executeQuery("select s ${query} order by lower(s.name) asc", queryParams)
             }
         }
 

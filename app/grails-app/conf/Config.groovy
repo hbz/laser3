@@ -376,9 +376,9 @@ grails.mime.types = [
 //grails.resources.uriToUrlCacheTimeout = 0  // upgrade to 1.2.14
 //grails.resources.processing.startup = "delayed" // upgrade to 1.2.14
 grails.resources.adhoc.patterns = [
-        '/images/*', '/css/*', '/js/*', '/plugins/*', '/semantic/*', '/semantic-restoration/*', '/vendor/*', '/rest/*']
+        '/images/*', '/css/*', '/js/*', '/plugins/*', '/semantic/*', '/semantic-restoration/*', '/vendor/*']
 grails.resources.adhoc.includes = [
-        '/images/**', '/css/**', '/js/**', '/plugins/**', '/semantic/**', '/semantic-restoration/**', '/vendor/**', '/rest/**']
+        '/images/**', '/css/**', '/js/**', '/plugins/**', '/semantic/**', '/semantic-restoration/**', '/vendor/**']
 
 // The default codec used to encode data with ${}
 grails.views.default.codec = "html" // none, html, base64
@@ -416,13 +416,13 @@ environments {
     }
 }
 
-// enable query caching by default
-grails.hibernate.cache.queries = true
-
 grails.cache.config = {
-  cache {
-    name 'message'
-  }
+    cache {
+        name = 'laser_experimental'
+    }
+    cache {
+        name 'message'
+    }
 }
 
 subscriptionTransforms = [
@@ -527,7 +527,7 @@ log4j = {
       'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
       'org.springframework',
       'org.hibernate',
-      'net.sf.ehcache.hibernate',
+      'org.hibernate.cache.ehcache',
       'formfields',
       'com.k_int.kbplus.filter',
       // 'org.codehaus.groovy.grails.plugins.springsecurity'
@@ -580,7 +580,8 @@ grails.plugin.springsecurity.roleHierarchy = '''
 '''
 
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
-        [pattern: '/monitoring', access: ['ROLE_YODA']]
+        [pattern: '/monitoring',                access: ['ROLE_YODA']],
+        [pattern: '/swagger/v0/laser.yaml.gsp', access: ['permitAll']]
 ]
 
 auditLog {

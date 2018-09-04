@@ -496,3 +496,6 @@ body[class*="organisation"] {
     margin-top: -20px;
     margin-left: -3px;
 }
+.la-space-right {
+    padding-right: 20px;
+}

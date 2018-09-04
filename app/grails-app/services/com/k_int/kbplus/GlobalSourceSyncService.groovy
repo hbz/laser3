@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.goai.OaiClient
+import com.k_int.kbplus.auth.User
 import de.laser.oai.OaiClientLaser
 
 import java.text.SimpleDateFormat
@@ -22,6 +23,7 @@ class GlobalSourceSyncService {
   def executorService
   def changeNotificationService
   boolean parallel_jobs = false
+  def messageSource
 
   def titleReconcile = { grt ,oldtitle, newtitle ->
     log.debug("Reconcile grt: ${grt} oldtitle:${oldtitle} newtitle:${newtitle}");
@@ -272,8 +274,10 @@ class GlobalSourceSyncService {
 
         if ( newpkg.packageProvider ) {
 
+          def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
+          def orgType = RefdataValue.getByValueAndCategory('Provider','OrgType')
           def orgRole = RefdataValue.loc('Organisational Role',  [en: 'Content Provider', de: 'Anbieter']);
-          def provider = Org.lookupOrCreate(newpkg.packageProvider , null , null, [:], null)
+          def provider = Org.lookupOrCreate2(newpkg.packageProvider , orgSector , null, [:], null, orgType)
 
           OrgRole.assertOrgPackageLink(provider, pkg, orgRole)
         }
@@ -281,8 +285,7 @@ class GlobalSourceSyncService {
         grt.localOid = "com.k_int.kbplus.Package:${pkg.id}"
         grt.save()
 
-          //Update INDEX ES
-          dataloadService.updateFTIndexes();
+
       }
     }
 
@@ -473,7 +476,34 @@ class GlobalSourceSyncService {
     }
 
     def onPkgPropChange = { ctx, propname, value, auto_accept ->
-      println("updated pkg prop");
+      def oldvalue
+      def announcement_content
+      switch (propname) {
+        case 'title':
+          def contextObject = genericOIDService.resolveOID("Package:${ctx.id}");
+          oldvalue = ctx.name
+          ctx.name = value
+          def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+          announcement_content = "<p>${messageSource.getMessage('announcement.package.ChangeTitle', null, "Change Package Title on ", locale)}  ${contextObject.getURL() ? "<a href=\"${contextObject.getURL()}\">${ctx.name}</a>" : "${ctx.name}"} ${new Date().toString()}</p>"
+          announcement_content += "<p><ul><li>${messageSource.getMessage("announcement.package.TitleChange", [oldvalue, value] as Object[],"Package Title was change from {0} to {1}.", locale)}</li></ul></p>"
+          println("updated pkg prop");
+          break;
+        default:
+          println("Not updated pkg prop");
+          break;
+      }
+
+      if(auto_accept){
+        ctx.save(flush:true)
+
+        def announcement_type = RefdataCategory.lookupOrCreate('Document Type','Announcement')
+        def newAnnouncement = new Doc(title:'Automated Announcement',
+              type:announcement_type,
+              content:announcement_content,
+              dateCreated:new Date(),
+              user: User.findByUsername('admin')).save(flush:true);
+      }
+
     }
 
     def onTippUnchanged = {ctx, tippa ->
@@ -900,6 +930,9 @@ class GlobalSourceSyncService {
   }
 
   def initialiseTracker(grt) {
+
+    def newrecord = reloadAndSaveRecordofPackage(grt)
+
     int rectype = grt.owner.rectype.longValue()
     def cfg = rectypes[rectype]
 
@@ -910,7 +943,9 @@ class GlobalSourceSyncService {
     def newrec = ins.readObject()
     ins.close()
 
-    cfg.reconciler.call(grt,oldrec,newrec)
+    def record = newrecord.parsed_rec ?: newrec
+
+    cfg.reconciler.call(grt,oldrec,record)
   }
 
   def initialiseTracker(grt, localPkgOID) {
@@ -976,7 +1011,7 @@ class GlobalSourceSyncService {
     }
 
     def oai = new OaiClientLaser()
-    def titlerecord = oai.getRecordTitle(uri, 'titles', 'org.gokb.cred.TitleInstance:'+title_id)
+    def titlerecord = oai.getRecord(uri, 'titles', 'org.gokb.cred.TitleInstance:'+title_id)
 
     if(titlerecord == null)
     {
@@ -1085,5 +1120,51 @@ class GlobalSourceSyncService {
               }
             }
   }
+
+  def reloadAndSaveRecordofPackage(grt)
+  {
+    def gli = GlobalRecordInfo.get(grt.owner.id)
+    def grs = GlobalRecordSource.get(gli.source.id)
+    def uri = grs.uri.replaceAll("packages", "")
+    def oai = new OaiClientLaser()
+    def record = oai.getRecord(uri, 'packages', grt.owner.identifier)
+
+    def newrecord = record ? packageConv(record.metadata, grs) : null
+
+    if(newrecord) {
+      def baos = new ByteArrayOutputStream()
+      def out = new ObjectOutputStream(baos)
+      log.debug("write object ${newrecord?.parsed_rec}");
+      out.writeObject(newrecord?.parsed_rec)
+      out.close()
+
+      gli.record = baos.toByteArray()
+      gli.save()
+    }
+
+    return newrecord
+
+  }
+
+  def initialiseTrackerNew(grt) {
+
+    def newrecord = reloadAndSaveRecordofPackage(grt)
+
+    int rectype = grt.owner.rectype.longValue()
+    def cfg = rectypes[rectype]
+
+    def oldrec = [:]
+    oldrec.tipps=[]
+    def bais = new ByteArrayInputStream((byte[])(grt.owner.record))
+    def ins = new ObjectInputStream(bais);
+    def newrec = ins.readObject()
+    ins.close()
+
+    def record = newrecord.parsed_rec ?: newrec
+
+    cfg.reconciler.call(grt,oldrec,record)
+  }
+
+
 
 }

@@ -34,7 +34,7 @@
         <div class="three fields">
             <!-- 1-1 -->
             <div class="field">
-                <label>${message(code: 'default.search.text', default: 'Search text')} (Lizenz, Vertrag, Paket, Anbieter, Konsortium, Agentur)</label>
+                <label>${message(code: 'default.search.text', default: 'Search text')} (Lizenz, Vertrag, Paket, Anbieter, Konsortium, Lieferant)</label>
 
                 <div class="ui input">
                     <input type="text" name="q"
@@ -231,10 +231,9 @@
                                 -- ${message(code: 'myinst.currentSubscriptions.name_not_set', default: 'Name Not Set')}  --
                             </g:else>
                             <g:if test="${s.instanceOf}">
-                                (${message(code: 'subscription.isInstanceOf.label', default: 'Dependent')}
                                 <g:if test="${s.consortia && s.consortia == institution}">
-                                    : ${s.subscriber?.name}
-                                </g:if>)
+                                    ( ${s.subscriber?.name} )
+                                </g:if>
                             </g:if>
                         </g:link>
                         <g:if test="${s.owner}">

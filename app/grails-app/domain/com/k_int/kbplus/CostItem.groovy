@@ -26,6 +26,12 @@ class CostItem extends BaseDomainComponent {
     Double costInLocalCurrency     //local amount entered
     Double currencyRate
 
+    Double costInBillingCurrencyAfterTax
+    Double costInLocalCurrencyAfterTax
+    Integer taxRate
+    Boolean finalCostRounding
+    Date invoiceDate
+
     String costTitle
     String costDescription
     String reference
@@ -45,6 +51,8 @@ class CostItem extends BaseDomainComponent {
     @Transient
     def springSecurityService
 
+    static final TAX_RATES = [ 0, 7, 19 ]
+
     static mapping = {
         id              column: 'ci_id'
         globalUID       column:'ci_guid'
@@ -59,11 +67,16 @@ class CostItem extends BaseDomainComponent {
         billingCurrency column: 'ci_billing_currency_rv_fk'
         costDescription column: 'ci_cost_description', type:'text'
         costTitle       column: 'ci_cost_title'
-        costInBillingCurrency column: 'ci_cost_in_billing_currency'
+        costInBillingCurrency           column: 'ci_cost_in_billing_currency'
+        costInBillingCurrencyAfterTax   column: 'ci_cost_in_billing_currency_after_tax'
         datePaid            column: 'ci_date_paid'
-        costInLocalCurrency column: 'ci_cost_in_local_currency'
+        costInLocalCurrency             column: 'ci_cost_in_local_currency'
+        costInLocalCurrencyAfterTax     column: 'ci_cost_in_local_currency_after_tax'
         currencyRate    column: 'ci_currency_rate'
+        finalCostRounding               column:'ci_final_cost_rounding'
         taxCode         column: 'ci_tax_code'
+        taxRate                         column: 'ci_tax_rate'
+        invoiceDate                     column: 'ci_invoice_date'
         includeInSubscription column: 'ci_include_in_subscr'
         costItemCategory    column: 'ci_cat_rv_fk'
         costItemElement     column: 'ci_element_rv_fk'
@@ -84,11 +97,16 @@ class CostItem extends BaseDomainComponent {
         billingCurrency (nullable: true, blank: false)
         costDescription (nullable: true, blank: false)
         costTitle       (nullable: true, blank: false)
-        costInBillingCurrency(nullable: true, blank: false)
+        costInBillingCurrency           (nullable: true, blank: false)
+        costInBillingCurrencyAfterTax   (nullable: true, blank: false)
         datePaid        (nullable: true, blank: false)
-        costInLocalCurrency(nullable: true, blank: false)
+        costInLocalCurrency             (nullable: true, blank: false)
+        costInLocalCurrencyAfterTax     (nullable: true, blank: false)
         currencyRate    (nullable: true, blank: false, scale: 9)
+        finalCostRounding               (nullable: true, blank: false)
         taxCode         (nullable: true, blank: false)
+        taxRate                         (nullable: true, blank: false)
+        invoiceDate                     (nullable: true, blank: false)
         includeInSubscription(nullable: true, blank: false)
         costItemCategory(nullable: true, blank: false)
         costItemStatus  (nullable: true, blank: false)

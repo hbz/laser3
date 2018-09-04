@@ -1,3 +1,4 @@
+<%@ page import="com.k_int.kbplus.Subscription" %>
 <!doctype html>
 <%
   def addFacet = { params, facet, val ->
@@ -87,24 +88,30 @@
         </div>
         </div>
 
-        <r:script language="JavaScript">
-            function toggleAlert() {
-                $('#durationAlert').toggle();
-            }
-        </r:script>
-
       <div class="ui grid">
 
-          <div class="sixteen wide column">
+%{--          <g:if test="${institution?.orgType?.value == 'Consortium' && (com.k_int.kbplus.Subscription.findAllByInstanceOf(com.k_int.kbplus.Subscription.get(params.id)).size() > 0) }">
+              <div class="sixteen wide column">
+                  <div class="field">
+                                <div class="ui checkbox">
+                                    <g:checkBox name="copyPackageToChildSubs" value="" />
+                                </div>
+                      <label><b>${message(code: 'subscription.details.linkPackage.copyPackageToChildSubs', default: 'Link the Package for all Child Subscriptions')}</b></label>
+                  </div>
+              </div>
+
+          </g:if>--}%
+
+   %{--       <div class="sixteen wide column">
               <g:each in="${['type','endYear','startYear','consortiaName','cpname']}" var="facet">
                 <g:each in="${params.list(facet)}" var="fv">
                   <span class="badge alert-info">${facet}:${fv} &nbsp; <g:link controller="${controller}" action="linkPackage" params="${removeFacet(params,facet,fv)}"><i class="icon-remove icon-white"></i></g:link></span>
                 </g:each>
               </g:each>
-          </div>
+          </div>--}%
 
 
-        <div class="four wide column facetFilter">
+%{--        <div class="four wide column facetFilter">
             <div class="ui card">
                 <div class="content">
                     <div class="header"><g:message code="default.filter.label" default="Filter"/></div>
@@ -144,9 +151,9 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>--}%
 
-        <div class="eight wide column">
+        <div class="twelve wide column">
           <div>
              <g:if test="${hits}">
                  <div class="paginateButtons" style="text-align:center">
@@ -161,7 +168,7 @@
                      </g:else>
                  </div>
                 <div id="resultsarea">
-                  <table class="ui celled la-table table">
+                  <table class="ui celled la-selectable la-table table">
                     <thead>
                       <tr>
                           <th>${message(code:'package.show.pkg_name', default:'Package Name')}</th>
@@ -195,26 +202,41 @@
                             </tr>
                           </g:if><g:else>
                           <tr>
-                              <td>${hit.getSource().name}
+                              <td>
+                                    <g:if test="${com.k_int.kbplus.Package.findByImpId(hit.id)}">
+                                        <g:link controller="packageDetails" target="_blank" action="show" id="${com.k_int.kbplus.Package.findByImpId(hit.id).id}">${hit.getSource().name}</g:link>
+                                    </g:if>
+                                    <g:else>
+                                      ${hit.getSource().name} <a target="_blank" href="${es_host_url ? es_host_url+'/gokb/resource/show/'+hit.id : '#'}" ><i title="GOKB Link" class="external alternate icon"></i></a>
+                                    </g:else>
                                   <br><b>(${hit.getSource().tippsCountCurrent?:'0'} ${message(code:'title.plural', default:'Titles')})</b>
                               </td>
 
                               <td>
-                                  <g:if test="${editable && (!pkgs || !pkgs.contains(hit.id))}">
+                                  <g:if test="${editable && (!pkgs || !(hit.id in pkgs))}">
                                       <g:link action="linkPackage"
                                               id="${params.id}"
-                                              params="${[addId:hit.id, addType:'Without', esgokb: 'Package']}"
+                                              params="${[addId: hit.id, addType:'Without', esgokb: 'Package']}"
                                               style="white-space:nowrap;"
                                               onClick="return confirm('${message(code:'subscription.details.link.no_ents.confirm', default:'Are you sure you want to add without entitlements?')}'); toggleAlert();">${message(code:'subscription.details.link.no_ents', default:'Link (no Entitlements)')}</g:link>
                                       <br/>
                                       <g:link action="linkPackage"
                                               id="${params.id}"
-                                              params="${[addId:hit.id, addType:'With', esgokb: 'Package']}"
+                                              params="${[addId: hit.id, addType:'With', esgokb: 'Package']}"
                                               style="white-space:nowrap;"
                                               onClick="return confirm('${message(code:'subscription.details.link.with_ents.confirm', default:'Are you sure you want to add with entitlements?')}'); toggleAlert();">${message(code:'subscription.details.link.with_ents', default:'Link (with Entitlements)')}</g:link>
                                   </g:if>
                                   <g:else>
-                                      <span></span>
+                                      <span><b>${message(code:'subscription.details.linkPackage.currentPackage', default:'This package is already linked to the license!')}</b></span>
+                                      <g:if test="${editable}">
+                                          <br>
+                                          <div class="ui mini icon buttons">
+                                              <button class="ui button la-selectable-button" onclick="unlinkPackage(${com.k_int.kbplus.Package.findByImpId(hit.id)?.id})">
+                                                  <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
+                                              </button>
+                                          </div>
+                                          <br />
+                                      </g:if>
                                   </g:else>
                               </td>
                           </tr>
@@ -247,17 +269,48 @@
   <div class="four wide column">
       <div class="ui card">
           <div class="content">
-              <div class="header">${message(code:'subscription.details.linkPackage.current', default:'Current Links')}</div>
+              <div class="header">${message(code:'subscription.details.linkPackage.current', default:'Current Links', args: [subscriptionInstance.name])}</div>
           </div>
           <div class="content">
-              <g:each in="${subscriptionInstance.packages}" var="sp">
-                  <div class="item"><g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp.pkg.name}</g:link></div><hr>
+              <g:each in="${subscriptionInstance.packages.sort{it.pkg.name}}" var="sp">
+                  <div class="item"><g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
+                      <g:if test="${editable}">
+                            <br>
+                          <div class="ui mini icon buttons">
+                              <button class="ui button la-selectable-button" onclick="unlinkPackage(${sp.pkg.id})">
+                                  <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
+                              </button>
+                          </div>
+                          <br />
+                      </g:if>
+                  </div><hr>
               </g:each>
           </div>
       </div>
   </div>
 </div>
+    <div id="magicArea"></div>
 
+<r:script language="JavaScript">
+
+      function unlinkPackage(pkg_id){
+        var req_url = "${createLink(controller:'subscriptionDetails', action:'unlinkPackage', params:[subscription:subscriptionInstance.id])}&package="+pkg_id
+
+        $.ajax({url: req_url,
+          success: function(result){
+             $('#magicArea').html(result);
+          },
+          complete: function(){
+            $("#unlinkPackageModal").modal("show");
+          }
+        });
+      }
+
+      function toggleAlert() {
+                $('#durationAlert').toggle();
+            }
+
+</r:script>
 <!-- ES Query String: ${es_query} -->
 </body>
 </html>

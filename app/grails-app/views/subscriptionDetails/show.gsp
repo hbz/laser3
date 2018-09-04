@@ -183,7 +183,7 @@
                                     <col width="300" />
                                     <col width="430"/>
                                 </colgroup>
-                                <g:each in="${subscriptionInstance.packages}" var="sp">
+                                <g:each in="${subscriptionInstance.packages.sort{it.pkg.name}}" var="sp">
                                 <tr>
                                 <th scope="row" class="control-label">${message(code:'subscription.packages.label')}</th>
                                     <td>
@@ -290,9 +290,9 @@
                                     property: 'orgs',
                                     recip_prop: 'sub',
                                     tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Agency', 'Organisational Role'),
-                                    tmplText:'Agentur hinzufügen',
+                                    tmplText:'Lieferant hinzufügen',
                                     tmplID:'ContentProvider',
-                                    tmplButtonText:'Agentur hinzufügen',
+                                    tmplButtonText:'Lieferant hinzufügen',
                                     tmplModalID:'osel_add_modal_agentur',
                                     editmode: editable
                                 ]}" />
@@ -334,6 +334,8 @@
 
                         </div>
                     </div>
+
+                <%-- FINANCE
 
                 <g:if test="${subscriptionInstance.costItems}">
 
@@ -393,6 +395,8 @@
                         </div>
                     </div>
                 </g:if>
+
+                FINANCE --%>
                 <g:if test="${usage}">
                     <div class="ui card la-dl-no-table">
                         <div class="content">

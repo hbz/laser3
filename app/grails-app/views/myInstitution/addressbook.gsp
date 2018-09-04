@@ -75,7 +75,12 @@ import="com.k_int.kbplus.RefdataCategory"
 
             <g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons]}" />
 
-        </g:if>
+            <semui:paginate action="addressbook" controller="myInstitution" params="${params}"
+                            next="${message(code: 'default.paginate.next', default: 'Next')}"
+                            prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
+                            max="${max}"
+                            total="${num_visiblePersons}"/>
 
-  </body>
+        </g:if>
+    </body>
 </html>

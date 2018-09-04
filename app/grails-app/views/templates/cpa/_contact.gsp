@@ -2,7 +2,7 @@
 	<div class="ui item contact-details">
 		<semui:contactIcon type="${contact?.contentType.('value')}" />
 
-        <div class="content">
+        <div class="content la-space-right">
             <semui:xEditable owner="${contact}" field="content" />
         </div>
 
@@ -25,7 +25,7 @@
 
                 <g:set var="oid" value="${contact.class.name}:${contact.id}" />
 
-				<g:link class="ui mini icon negative button" controller="ajax" action="delete" params="[cmd: 'deleteContact', oid: oid]">
+				<g:link class="ui mini icon negative button js-open-confirm-modal" data-confirm-term="diese Kontaktdaten"  controller="ajax" action="delete" params="[cmd: 'deleteContact', oid: oid]">
 					<i class="trash alternate icon"></i>
 				</g:link>
 			</div>

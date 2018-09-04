@@ -7,6 +7,7 @@ import grails.converters.*
 import com.k_int.kbplus.auth.*;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import grails.plugin.springsecurity.annotation.Secured
+import org.codehaus.groovy.runtime.InvokerHelper
 
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -218,12 +219,28 @@ select s from Subscription as s where (
         }
         else if (result.license?.instanceOf && ! result.license?.instanceOf.isTemplate()) {
             log.debug( 'ignored setting.cons_members because: LCurrent.instanceOf (LParent.noTemplate)')
-        } else {
+        }
+        else {
             if (result.institution?.orgType?.value == 'Consortium') {
                 def fsq = filterService.getOrgComboQuery(params, result.institution)
-                result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+                def all_cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+
+                result.cons_members = []
+
+                // filter by members of subscription.owner -> this
+                all_cons_members.each { org ->
+                    Subscription.where { owner == result.license }.findAll().each { subscr ->
+                        subscr.getDerivedSubscribers().each { subOrg ->
+                            if (subOrg.id == org.id) {
+                                result.cons_members << org
+                            }
+                        }
+                    }
+                }
+
                 result.cons_members_disabled = []
-                result.cons_members.each { it ->
+
+                result.cons_members.unique().each { it ->
                     if (License.executeQuery("select l from License as l join l.orgLinks as lol where l.instanceOf = ? and lol.org.id = ?",
                             [result.license, it.id])
                     ) {
@@ -438,7 +455,50 @@ from Subscription as s where
             response.sendError(401); return
         }
 
+        def validMemberLicenses = License.where {
+            (instanceOf == result.license) && (status.value != 'Deleted')
+        }
+
+        result.validMemberLicenses = validMemberLicenses
         result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def deleteMember() {
+        log.debug(params)
+
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        // adopted from SubscriptionDetailsController.deleteMember()
+
+        def delLicense      = License.get(params.target)
+        def delInstitutions = delLicense.getAllLicensee()
+
+        def deletedStatus = RefdataCategory.lookupOrCreate('License Status', 'Deleted')
+
+        if (delLicense.hasPerm("edit", result.user)) {
+            def derived_lics = License.findByInstanceOfAndStatusNot(delLicense, deletedStatus)
+
+            if (! derived_lics) {
+                if (delLicense.getLicensingConsortium() && ! ( delInstitutions.contains(delLicense.getLicensingConsortium() ) ) ) {
+                    OrgRole.executeUpdate("delete from OrgRole where lic = :l and org IN (:orgs)", [l: delLicense, orgs: delInstitutions])
+
+                    delLicense.status = deletedStatus
+                    delLicense.save(flush: true)
+                }
+            } else {
+                flash.error = message(code: 'myinst.actionCurrentLicense.error', default: 'Unable to delete - The selected license has attached licenses')
+            }
+        } else {
+            log.warn("${result.user} attempted to delete license ${delLicense} without perms")
+            flash.message = message(code: 'license.delete.norights')
+        }
+
+        redirect action: 'members', params: [id: params.id], model: result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -717,4 +777,168 @@ from Subscription as s where
 
         result
     }
+
+    def copyLicense()
+    {
+        log.debug("licenseDetails: ${params}");
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        result.visibleOrgLinks = []
+        result.license.orgLinks?.each { or ->
+            if (!(or.org == contextService.getOrg()) && !(or.roleType.value in ["Licensee", "Licensee_Consortial"])) {
+                result.visibleOrgLinks << or
+            }
+        }
+        result.visibleOrgLinks.sort{ it.org.sortname }
+
+        def contextOrg = contextService.getOrg()
+        result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.license)
+        def preCon = taskService.getPreconditions(contextOrg)
+        result << preCon
+
+
+        result.contextOrg = contextService.getOrg()
+
+        result
+
+    }
+
+    def processcopyLicense() {
+
+        def baseLicense = com.k_int.kbplus.License.get(params.baseLicense)
+
+        if (baseLicense) {
+
+            def lic_name = params.lic_name ?: "Kopie von ${baseLicense.reference}"
+
+            def licenseInstance = new License(
+                    reference: lic_name,
+                    status: baseLicense.status,
+                    type: baseLicense.type,
+                    startDate: params.license.copyDates ? baseLicense?.startDate : null,
+                    endDate: params.license.copyDates ? baseLicense?.endDate : null,
+                    instanceOf: params.license.links ? baseLicense.instanceOf : null,
+
+            )
+
+
+            if (!licenseInstance.save(flush: true)) {
+                log.error("Problem saving license ${licenseInstance.errors}");
+                return licenseInstance
+            } else {
+                   log.debug("Save ok");
+
+                    baseLicense.documents?.each { dctx ->
+
+                        //Copy Docs
+                        if (params.license.copyDocs) {
+                            if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status?.value != 'Deleted')) {
+                                Doc clonedContents = new Doc(
+                                        blobContent: dctx.owner.blobContent,
+                                        status: dctx.owner.status,
+                                        type: dctx.owner.type,
+                                        alert: dctx.owner.alert,
+                                        content: dctx.owner.content,
+                                        uuid: dctx.owner.uuid,
+                                        contentType: dctx.owner.contentType,
+                                        title: dctx.owner.title,
+                                        creator: dctx.owner.creator,
+                                        filename: dctx.owner.filename,
+                                        mimeType: dctx.owner.mimeType,
+                                        user: dctx.owner.user,
+                                        migrated: dctx.owner.migrated
+                                ).save()
+
+                                DocContext ndc = new DocContext(
+                                        owner: clonedContents,
+                                        license: licenseInstance,
+                                        domain: dctx.domain,
+                                        status: dctx.status,
+                                        doctype: dctx.doctype
+                                ).save()
+                            }
+                        }
+                        //Copy Announcements
+                        if (params.license.copyAnnouncements) {
+                            if ((dctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
+                                Doc clonedContents = new Doc(
+                                        blobContent: dctx.owner.blobContent,
+                                        status: dctx.owner.status,
+                                        type: dctx.owner.type,
+                                        alert: dctx.owner.alert,
+                                        content: dctx.owner.content,
+                                        uuid: dctx.owner.uuid,
+                                        contentType: dctx.owner.contentType,
+                                        title: dctx.owner.title,
+                                        creator: dctx.owner.creator,
+                                        filename: dctx.owner.filename,
+                                        mimeType: dctx.owner.mimeType,
+                                        user: dctx.owner.user,
+                                        migrated: dctx.owner.migrated
+                                ).save()
+
+                                DocContext ndc = new DocContext(
+                                        owner: clonedContents,
+                                        license: licenseInstance,
+                                        domain: dctx.domain,
+                                        status: dctx.status,
+                                        doctype: dctx.doctype
+                                ).save()
+                            }
+                        }
+                    }
+                    //Copy Tasks
+                    if (params.license.copyTasks) {
+
+                        Task.findAllByLicense(baseLicense).each { task ->
+
+                            Task newTask = new Task()
+                            InvokerHelper.setProperties(newTask, task.properties)
+                            newTask.license = licenseInstance
+                            newTask.save(flush:true)
+                        }
+
+                    }
+                    //Copy References
+                        baseLicense.orgLinks?.each { or ->
+                            if ((or.org == contextService.getOrg()) || (or.roleType.value in ["Licensee", "Licensee_Consortial"]) || (params.license.copyLinks)) {
+                            OrgRole newOrgRole = new OrgRole()
+                            InvokerHelper.setProperties(newOrgRole, or.properties)
+                            newOrgRole.lic = licenseInstance
+                            newOrgRole.save(flush:true)
+
+                            }
+
+                    }
+
+                    if(params.license.copyCustomProperties) {
+                        //customProperties
+                        for (prop in baseLicense.customProperties) {
+                            def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
+                            copiedProp = prop.copyValueAndNote(copiedProp)
+                            licenseInstance.addToCustomProperties(copiedProp)
+                        }
+                    }
+                    if(params.license.copyPrivateProperties){
+                        //privatProperties
+                        def contextOrg = contextService.getOrg()
+
+                        baseLicense.privateProperties.each { prop ->
+                            if(prop.type?.tenant?.id == contextOrg?.id)
+                            {
+                                def copiedProp = new LicensePrivateProperty(type: prop.type, owner: licenseInstance)
+                                copiedProp = prop.copyValueAndNote(copiedProp)
+                                licenseInstance.addToPrivateProperties(copiedProp)
+                            }
+                        }
+                    }
+
+                redirect controller: 'licenseDetails', action: 'show', params: [id: licenseInstance.id]
+                }
+
+            }
+        }
 }
