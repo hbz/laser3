@@ -292,6 +292,7 @@ class AjaxController {
         if ( target && value ) {
           def binding_properties = [ "${params.name}":value ]
           bindData(target, binding_properties)
+            target.owner?.save()  // avoid .. not processed by flush
           target.save(flush:true);
           
           // We should clear the session values for a user if this is a user to force reload of the,
@@ -1263,6 +1264,7 @@ class AjaxController {
                         // delete existing date
                         target_object."${params.name}" = null
                     }
+                    target_object.owner?.save() // avoid owner.xyz not processed by flush
                     target_object.save(failOnError: true, flush: true);
                 }
                 catch(Exception e) {

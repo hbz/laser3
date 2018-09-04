@@ -158,12 +158,13 @@ class PropertyDefinition extends I10nTranslatableAbstract {
         def newProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: type, owner: owner)
         newProp.setNote("")
 
+        /*
         if (flag == PropertyDefinition.CUSTOM_PROPERTY) {
             owner.customProperties.add(newProp)
         }
         else if (flag == PropertyDefinition.PRIVATE_PROPERTY) {
             owner.privateProperties.add(newProp)
-        }
+        } */
 
         newProp.save(flush:true)
         GrailsHibernateUtil.unwrapIfProxy(newProp)

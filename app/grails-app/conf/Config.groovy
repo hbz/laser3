@@ -599,8 +599,7 @@ auditLog {
       username = SpringSecurityUtils.switchedUserOriginalUsername+" AS "+username
     }
 
-        def blacklist = com.k_int.kbplus.auth.User.executeQuery("SELECT u.username FROM User as u")
-        return username in blacklist ? 'anonymised' : username // DSGVO
+      return (username in [null, 'anonymousUser', 'system']) ? username : 'anonymised'
   }
 }
 

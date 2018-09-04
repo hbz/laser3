@@ -179,20 +179,26 @@ def performAccept(change,httpRequest) {
 
         }else{
           if(changeDoc.propertyOID){
-            def propertyType = genericOIDService.resolveOID(changeDoc.propertyOID).type
-            def newProperty = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, target_object, propertyType)
+            def propertyType = genericOIDService.resolveOID(changeDoc.propertyOID)?.type
+              if (propertyType) {
 
-            if(changeDoc.type == RefdataValue.toString()){
-              def originalRefdata = genericOIDService.resolveOID(changeDoc.propertyOID).refValue;
-              log.debug("RefdataCategory ${propertyType.refdataCategory}")
-              def copyRefdata = RefdataCategory.lookupOrCreate(propertyType.refdataCategory,changeDoc.new)
-              newProperty."${changeDoc.prop}" = copyRefdata
-            }else{
-              newProperty."${changeDoc.prop}" = AbstractProperty.parseValue("${changeDoc.new}", changeDoc.type)
-            }
-            newProperty.save()
-            log.debug("New CustomProperty ${newProperty.type.name} created for ${target_object}")
-            
+
+                  def newProperty = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, target_object, propertyType)
+
+                  if (changeDoc.type == RefdataValue.toString()) {
+                      def originalRefdata = genericOIDService.resolveOID(changeDoc.propertyOID).refValue;
+                      log.debug("RefdataCategory ${propertyType.refdataCategory}")
+                      def copyRefdata = RefdataCategory.lookupOrCreate(propertyType.refdataCategory, changeDoc.new)
+                      newProperty."${changeDoc.prop}" = copyRefdata
+                  } else {
+                      newProperty."${changeDoc.prop}" = AbstractProperty.parseValue("${changeDoc.new}", changeDoc.type)
+                  }
+                  newProperty.save()
+                  log.debug("New CustomProperty ${newProperty.type.name} created for ${target_object}")
+              }
+              else {
+                  log.error("Custom property change, but can not relove propertyType: ${parsed_change_info}")
+              }
           }else{
             log.error("Custom property change, but changedoc is missing propertyOID: ${parsed_change_info}")
           }

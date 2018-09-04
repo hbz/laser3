@@ -373,10 +373,10 @@ class License extends BaseDomainComponent implements TemplateSupport, Permission
           }
 
           changeNotificationService
-        .registerPendingChange('license',
-                              dl,
+        .registerPendingChange('license', // prop
+                              dl, // target
                               "<b>${propName}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Vertragsvorlage geändert. " + description,
-                              dl.getLicensee(),
+                              dl.getLicensee(), // objowner TODO !!!!???
                               [
                                 changeTarget:"com.k_int.kbplus.License:${dl.id}",
                                 changeType:'PropertyChange',

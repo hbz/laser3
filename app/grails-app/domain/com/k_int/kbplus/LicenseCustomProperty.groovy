@@ -7,14 +7,14 @@ import de.laser.traits.AuditTrait
 
 import javax.persistence.Transient
 
-class LicenseCustomProperty extends CustomProperty /* implements AuditTrait */ {
+class LicenseCustomProperty extends CustomProperty implements AuditTrait  {
 
     @Transient
     def changeNotificationService
 
     // AuditTrait
-    // static auditable = true
-    // static controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
+    static auditable = true
+    static controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
 
   @Transient
   String paragraph
