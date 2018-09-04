@@ -63,8 +63,7 @@ class LicenseCustomProperty extends CustomProperty implements AuditTrait  {
                      new: "property removed",
                      name: this.type.name
                      ]
-    def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
-    // changeNotificationService.broadcastEvent("com.k_int.kbplus.License:${owner.id}", changeDoc);
+    //def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
     changeNotificationService.notifyChangeEvent(changeDoc) 
   }
 }

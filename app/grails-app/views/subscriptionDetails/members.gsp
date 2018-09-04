@@ -70,9 +70,17 @@
 
                         <g:each in="${sub.getAllSubscribers()}" var="subscr">
 
-                            <td>${subscr.sortname}</td>
+                            <td>
+                                ${subscr.sortname}
+                            </td>
                             <td>
                                 <g:link controller="organisations" action="show" id="${subscr.id}">${subscr}</g:link>
+
+                                <g:if test="${sub.isSlaved?.value?.equalsIgnoreCase('yes')}">
+                                    <span data-position="top right" data-tooltip="${message(code:'license.details.isSlaved.tooltip')}">
+                                        <i class="thumbtack blue icon"></i>
+                                    </span>
+                                </g:if>
 
                                 <g:set var="rdvGcp" value="${RefdataValue.findByValue('General contact person')}"/>
                                 <g:set var="rdvSse" value="${RefdataValue.findByValue('Specific subscription editor')}"/>
