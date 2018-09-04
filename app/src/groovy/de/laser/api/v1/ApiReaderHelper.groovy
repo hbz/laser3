@@ -151,7 +151,7 @@ class ApiReaderHelper {
         }
 
         // TODO check orgRole.roleType
-        if (org.id == context?.id) {
+        if (org.id == context?.id || context?.orgType?.value == 'Consortium') {
             hasAccess = true
         }
         if (hasAccess) {
@@ -231,6 +231,15 @@ class ApiReaderHelper {
             // TODO check orgRole.roleType
             if (orgRole.getOrg().id == context?.id) {
                 hasAccess = true
+            }
+            if (orgRole.getRoleType() == RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role')) {
+                result.subscriber = ApiReaderHelper.resolveOrganisationStub(orgRole.org, context)
+            }
+            if (orgRole.getRoleType() == RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')) {
+                result.owner = ApiReaderHelper.resolveOrganisationStub(orgRole.org, context)
+            }
+            if (orgRole.getRoleType() == RefdataValue.getByValueAndCategory('Provider','Organisational Role')) {
+                result.provider = ApiReaderHelper.resolveOrganisationStub(orgRole.org, context)
             }
         }
         if (hasAccess) {
