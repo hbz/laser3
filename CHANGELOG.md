@@ -2,15 +2,20 @@
 0.8
 
 - improved public gasco views
-- reworked finance views and functionality
-- fixed deletion of mandatory private properties
+- improved subscription renewal
+- reworked subscription and package linkage
+- reworked finance functionality
+- reworked finance views
+- added functionality for copying licenses
 - added new role for statistics management
 - added default role for new users
 - added pagination on some views
-- security: restrict permissions check to context org
 - added cache management
+- fixed deletion of mandatory private properties
+- security: restricted permissions check to context org
+- fixed some wording issues
 - lots of markup and style changes 
-- other bugfixes
+- minor bugfixes
 
 0.7.4
 
