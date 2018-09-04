@@ -4,7 +4,7 @@
 <semui:modal id="numbersFormModal" text="${message(code: 'numbers.create.label')}">
 
     <g:form class="ui form" id="create_number" url="[controller: 'numbers', action: 'create']" method="POST">
-
+    <g:hiddenField name="orgid" value="${params.id}"/>
 
         <div class="field">
             <div class="two fields">

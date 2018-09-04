@@ -6,7 +6,11 @@
         <input type="text" name="orgNameContains" value="${params.orgNameContains}"/>
     </div>
 </g:if>
-
+<g:if test="${tmplConfigShow?.contains('property')}">
+     <div class="four fields">
+        <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
+     </div>
+</g:if>
 <div class="fields">
     <g:if test="${tmplConfigShow?.contains('type')}">
         <div class="field">

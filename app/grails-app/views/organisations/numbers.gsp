@@ -38,7 +38,7 @@ ${orgInstance.name}
 <g:render template="/numbers/formModal"/>
 
 
-<h5 class="ui header"><g:message code="numbers.plural" default="Numbers"/></h5>
+<h5 class="ui header"><g:message code="menu.institutions.numbers" default="Numbers"/></h5>
 
 <table class="ui table la-table">
 <thead>

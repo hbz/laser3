@@ -3257,8 +3257,19 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         def result = setResultGenerics()
 
         // new: filter preset
-        params.orgType   = RefdataValue.getByValueAndCategory('Institution', 'OrgType')?.id.toString()
-        params.orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')?.id.toString()
+        params.orgType   = RefdataValue.getByValueAndCategory('Institution', 'OrgType')?.id?.toString()
+        params.orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')?.id?.toString()
+
+        result.propList =
+                PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
+                        defList: [PropertyDefinition.ORG_PROP],
+                ] // public properties
+                ) +
+                        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant = :tenant", [
+                                defList: [PropertyDefinition.ORG_PROP],
+                                tenant: contextService.getOrg()
+                        ]// private properties
+                        )
 
         if (params.selectedOrgs) {
             log.debug('remove orgs from consortia')
@@ -3272,9 +3283,19 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 cmb.delete()
             }
         }
-
         def fsq = filterService.getOrgComboQuery(params, result.institution)
-        result.consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams, params)
+
+        def consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams, params)
+
+        def tmpQuery        = ["SELECT o FROM Org o WHERE o.id IN (:oids)"]
+        def tmpQueryParams  = [oids: consortiaMembers.collect{ it.id }]
+
+        if (params.filterPropDef && tmpQueryParams.oids) {
+            (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, tmpQuery, 'o', tmpQueryParams)
+            result.consortiaMembers = Org.executeQuery( tmpQuery.join(' '), tmpQueryParams )
+        } else {
+            result.consortiaMembers = consortiaMembers
+        }
 
         result
     }
