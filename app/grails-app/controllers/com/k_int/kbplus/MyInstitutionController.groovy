@@ -3177,6 +3177,10 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
         result.budgetCodes = BudgetCode.findAllByOwner(result.institution, [sort: 'value'])
 
+        if (params.redirect) {
+            redirect(url: request.getHeader('referer'), params: params)
+        }
+
         result
     }
 

@@ -577,7 +577,11 @@
             <div class="ui text loader active">Loading</div>
         </div>
 
-        <%-- <a href="#globalJumpMark" class="ui button icon" style="position:fixed;right:0;bottom:0;"><i class="angle up icon"></i></a> --%>
+        <%-- global confirmation modal --%>
+        <semui:confirmationModal  />
+
+
+    <%-- <a href="#globalJumpMark" class="ui button icon" style="position:fixed;right:0;bottom:0;"><i class="angle up icon"></i></a> --%>
 
         <r:layoutResources/>
 
