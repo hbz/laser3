@@ -17,7 +17,7 @@
         <g:if test="${tmplConfigShow?.contains('identifier')}">
             <th>Identifier</th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('wib')}">
+        <g:if test="${tmplConfigShow?.contains('wibid')}">
             <th>WIB</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('isil')}">
@@ -102,8 +102,8 @@
                     </ul>
                 </g:if></td>
             </g:if>
-            <g:if test="${tmplConfigShow?.contains('wib')}">
-                <td>${org.getIdentifiersByType('wib')?.value?.join(', ')}</td>
+            <g:if test="${tmplConfigShow?.contains('wibid')}">
+                <td>${org.getIdentifiersByType('wibid')?.value?.join(', ')}</td>
             </g:if>
             <g:if test="${tmplConfigShow?.contains('isil')}">
                 <td>${org.getIdentifiersByType('isil')?.value?.join(', ')}</td>
