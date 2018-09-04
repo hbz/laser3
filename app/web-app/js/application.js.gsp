@@ -134,6 +134,31 @@ r2d2 = {
                 }
             }).modal('show')
         });
+
+        // confirmation modal
+        $(".js-open-confirm-modal").click(function(){
+            var dataAttr = this.getAttribute("data-confirm-id")? this.getAttribute("data-confirm-id")+'_form':false;
+            var tmpTerm = this.getAttribute("data-confirm-term")? this.getAttribute("data-confirm-term"):"dieses Element";
+            var url = this.getAttribute('href')? this.getAttribute('href'): false;
+
+            event.preventDefault();
+            $('#js-confirmation-term').text(tmpTerm);
+            $('.mini.modal')
+                .modal({
+
+                    closable  : false,
+                    onApprove : function() {
+                        if (dataAttr){
+                            $('[data-confirm-id='+dataAttr+']').submit();
+                        }
+                        if (url){
+                            window.location.href = url;
+                        }
+                    }
+                })
+                .modal('show')
+            ;
+        });
     },
 
     initGlobalXEditableStuff : function() {
