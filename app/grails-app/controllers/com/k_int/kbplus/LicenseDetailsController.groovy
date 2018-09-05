@@ -156,12 +156,26 @@ class LicenseDetailsController {
           }
       }
 
+        def licensee = result.license.getLicensee();
+        def consortia = result.license.getLicensingConsortium();
+
         def subscrQuery = """
 select s from Subscription as s where (
   exists ( select o from s.orgRelations as o where (o.roleType.value IN ('Subscriber', 'Subscription Consortia')) and o.org = :co) ) 
   AND ( LOWER(s.status.value) != 'deleted' ) 
 )
 """
+
+        if(consortia)
+        {
+            subscrQuery = """
+select s from Subscription as s where (
+  exists ( select o from s.orgRelations as o where (o.roleType.value IN ('Subscription Consortia')) and o.org = :co) ) 
+  AND ( LOWER(s.status.value) != 'deleted' AND (s.instanceOf is null or s.instanceOf = '') 
+)
+"""
+        }
+
         result.availableSubs = Subscription.executeQuery("${subscrQuery} order by LOWER(s.name) asc", [co: contextService.getOrg()])
 
 
@@ -812,6 +826,12 @@ from Subscription as s where
 
     def processcopyLicense() {
 
+        params.id = params.baseLicense
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
         def baseLicense = com.k_int.kbplus.License.get(params.baseLicense)
 
         if (baseLicense) {
@@ -824,7 +844,7 @@ from Subscription as s where
                     type: baseLicense.type,
                     startDate: params.license.copyDates ? baseLicense?.startDate : null,
                     endDate: params.license.copyDates ? baseLicense?.endDate : null,
-                    instanceOf: params.license.links ? baseLicense.instanceOf : null,
+                    instanceOf: params.license.copyLinks ? baseLicense?.instanceOf : null,
 
             )
 

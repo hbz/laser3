@@ -57,7 +57,45 @@
     <h1 class="ui header"><semui:headerIcon />${message(code:'subscription.details.financials.label')} für ${institution.name}</h1>
 </g:else>
 
+<g:if test="${fixedSubscription?.instanceOf && (contextOrg == fixedSubscription?.getConsortia())}">
+    <div class="ui negative message">
+        <div class="header"><g:message code="myinst.message.attention" /></div>
+        <p>
+            <g:message code="myinst.subscriptionDetails.message.ChildView" />
+            <span class="ui label">${fixedSubscription.getAllSubscribers()?.collect{itOrg -> itOrg.name}.join(',')}</span>.
+        <g:message code="myinst.subscriptionDetails.message.ConsortialView" />
+        <g:link controller="subscriptionDetails" action="show" id="${fixedSubscription.instanceOf.id}"><g:message code="myinst.subscriptionDetails.message.here" /></g:link>.
+        </p>
+    </div>
+</g:if>
+
 <semui:messages data="${flash}" />
+
+<%-- --%>
+<g:if test="${editable}">
+    <button class="ui button" value="" href="#addBudgetCodeModal" data-semui="modal">${message(code:'budgetCode.create_new.label')}</button>
+
+    <semui:modal id="addBudgetCodeModal" message="budgetCode.create_new.label">
+
+        <g:form class="ui form" url="[controller: 'myInstitution', action: 'budgetCodes']" method="POST">
+            <input type="hidden" name="cmd" value="newBudgetCode"/>
+            <input type="hidden" name="redirect" value="redirect"/>
+
+            <div class="field">
+                <label>Beschreibung</label>
+                <input type="text" name="bc"/>
+            </div>
+
+            <div class="field">
+                <label>Verwendung</label>
+                <textarea name="descr"></textarea>
+            </div>
+
+        </g:form>
+    </semui:modal>
+
+</g:if>
+<%-- --%>
 
 <div class="ui grid">
     <div class="column">

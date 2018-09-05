@@ -92,7 +92,7 @@
             </div>
 
             <div class="field">
-                <label>Beschreibung</label>
+                <label>Verwendung</label>
                 <textarea name="descr"></textarea>
             </div>
 

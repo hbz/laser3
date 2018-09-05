@@ -50,7 +50,7 @@
                           tmplDisableOrgIds: cons_members_disabled,
                           subInstance: subscriptionInstance,
                           tmplShowCheckbox: true,
-                          tmplConfigShow: ['name', 'wib', 'isil', 'federalState', 'libraryNetwork', 'libraryType', 'addSubMembers']
+                          tmplConfigShow: ['name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType', 'addSubMembers']
                           ]"/>
 
         <g:if test="${cons_members}">
@@ -72,7 +72,7 @@
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subStatus"
-                              value="${com.k_int.kbplus.RefdataValue.findByValueAndOwner('Current', rdcSubStatus)?.id}"/>
+                              value="${com.k_int.kbplus.Subscription.get(params.id).status?.id}"/>
                 </div>
 
                 <div class="field">

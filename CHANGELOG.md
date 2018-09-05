@@ -1,16 +1,34 @@
 
+0.8.1
+
+- news on landing page
+
 0.8
 
 - improved public gasco views
-- reworked finance views and functionality
-- fixed deletion of mandatory private properties
+- improved subscription renewals
+- reworked subscription and package linkage
+- reworked cost items and cost calculation
+- reworked finance functionality and views
+- added functionality for copying licenses
 - added new role for statistics management
 - added default role for new users
+- improved address and contact management
+- added confirmation dialog before deleting persons and contacts
+- improved inline editing, e.g. textareas
+- responsible task user is now visible
 - added pagination on some views
-- security: restrict permissions check to context org
+- added sortable columns for some tables
 - added cache management
+- fixed deletion of mandatory private properties
+- security: restricted permissions check to context org
+- fixed some wording issues
 - lots of markup and style changes 
-- other bugfixes
+- minor bugfixes
+
+0.7.5
+
+- changed access for org editors 
 
 0.7.4
 

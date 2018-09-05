@@ -141,6 +141,10 @@
 
                                 <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentProviders" message="menu.institutions.myProviders" />
 
+                                <g:if test="${contextService.getOrg().orgType?.value == 'Consortium'}">
+                                    <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.myConsortia" />
+                                </g:if>
+
                                 <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.institutions.myTitles" />
 
                                 <%--<semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="tipview" message="menu.institutions.myCoreTitles" />--%>
@@ -215,9 +219,9 @@
                                 <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageAffiliationRequests" message="menu.institutions.affiliation_requests" newAffiliationRequests="${newAffiliationRequests1}" />
 
 
-                                <g:if test="${contextService.getOrg().orgType?.value == 'Consortium'}">
-                                    <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.manage_consortia" />
-                                </g:if>
+                                %{--<g:if test="${contextService.getOrg().orgType?.value == 'Consortium'}">--}%
+                                    %{--<semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.manage_consortia" />--}%
+                                %{--</g:if>--}%
 
                                 <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
 
@@ -577,7 +581,11 @@
             <div class="ui text loader active">Loading</div>
         </div>
 
-        <%-- <a href="#globalJumpMark" class="ui button icon" style="position:fixed;right:0;bottom:0;"><i class="angle up icon"></i></a> --%>
+        <%-- global confirmation modal --%>
+        <semui:confirmationModal  />
+
+
+    <%-- <a href="#globalJumpMark" class="ui button icon" style="position:fixed;right:0;bottom:0;"><i class="angle up icon"></i></a> --%>
 
         <r:layoutResources/>
 

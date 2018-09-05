@@ -207,9 +207,9 @@ class OrganisationsController {
         //IF ORG is a Provider
         if(orgInstance.sector == orgSector || orgType == orgInstance.orgType)
         {
-            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_COM_EDITOR')
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_COM_EDITOR,ROLE_ORG_EDITOR')
         }else {
-            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
         }
         
       if (! orgInstance) {
@@ -430,10 +430,10 @@ class OrganisationsController {
     def numbers() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
-        result.orgInstance = contextService.getOrg()
-        result.numbersInstanceList = Numbers.findAllByOrg(contextService.getOrg(), [sort: 'type'])
+        result.orgInstance = Org.get(params.id)
+        result.numbersInstanceList = Numbers.findAllByOrg(Org.get(params.id), [sort: 'type'])
 
         result
     }

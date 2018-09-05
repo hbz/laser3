@@ -31,7 +31,7 @@ class NumbersController {
 			if (params.startDate)
 				params.startDate = sdf.parse(params.startDate)
 
-			params.org = contextService.getOrg()
+			params.org = Org.get(params.orgid)
 	        def numbersInstance = new Numbers(params)
 	        if (! numbersInstance.save(flush: true)) {
 				flash.error = message(code: 'default.not.created.message', args: [message(code: 'numbers.number.label', default: 'Number')])

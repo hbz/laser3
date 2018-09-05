@@ -13,7 +13,7 @@
     <div class="ui container ">
         <div class="ui top fixed hidden inverted  menu la-fixed-menu">
             <div class="ui container">
-                <img class="logo" src="images/laser.svg"/>
+                <img class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
                 <a href="https://wiki1.hbz-nrw.de/display/LAS/Projekthintergrund" class="item" target="_blank">${message(code: 'landingpage.menu.about', default: 'About')}</a>
                 <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Startseite" class="item" target="_blank">Wiki</a>
 
@@ -30,7 +30,7 @@
     <div class="pusher">
         <div class="ui inverted menu la-top-menu">
             <div class="ui container">
-                <img class="logo" src="images/laser.svg"/>
+                <img class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
                 <a href="https://wiki1.hbz-nrw.de/display/LAS/Projekthintergrund" class="item" target="_blank">${message(code: 'landingpage.menu.about', default: 'About')}</a>
                 <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Startseite" class="item" target="_blank">Wiki</a>
 
@@ -72,13 +72,28 @@
                     </div>
 
                     <span class="ui basic blue left pointing  label la-eye-catcher-txt">
-                        <b>LAS:eR-Webinar-Folien online</b>
-                        <br><br>
-                        In insgesamt sieben Webinaren zwischen Mitte und Ende März 2018 hat das LAS:eR-Projektteam über 250 Teilnehmern aus Informationseinrichtungen in Deutschland die LAS:eR Pilotversion und die Rahmenbedingungen des Pilotbetriebs vorgestellt, der ab Mai 2018 mit ausgewählten Bibliotheken starten wird.
-                    <br><br>
-                        Wenn auch Sie Interesse haben, das Projekt als Pilotanwender zu unterstützen, melden Sie sich noch bis zum 06. April 2018 an <a href="mailto:laser@hbz-nrw.de">laser@hbz-nrw.de</a>. Alle Informationen zum Nachlesen finden Sie in den <a href="https://wiki1.hbz-nrw.de/download/attachments/282198029/laser_webinar_vortrag.pdf?version=1&modificationDate=1522130342844" target="_blank">bereits online verfügbaren Webinar-Folien</a>.
-                    <br><br>
-                        Eine Aufbereitung der Rückfragen in Form einer FAQ-Sammlung und eine Aufzeichnung des Webinar-Vortrags folgen.
+
+                        <strong>LAS:eR-Pilotbetrieb gestartet</strong>
+                        <br />
+                        <br />
+
+                        Seit Mai 2018 läuft der Pilotbetrieb von LAS:eR mit Unterstützung einer heterogene Anwendergruppe, bestehend aus den Universitätsbibliotheken Erlangen-Nürnberg,
+                        Frankfurt, Gießen und Tübingen, der Universitäts- und Landesbibliothek Münster, der Technischen Informationsbibliothek Hannover, der Fachhochschule Südwestfalen, der Jade Hochschule Wilhelmshaven, dem
+                        Forschungszentrum Jülich und der KIT-Bibliothek Karlsruhe.
+
+                        <br />
+                        <br />
+                        Gemeinsam gehen Pilotanwender und LAS:eR-Projektgruppe jetzt die ersten wichtigen Schritte auf dem Weg zur produktiven Nutzung des bundesweiten ERMS.
+
+                        Die Umsetzung der weiteren Entwicklungsaufgaben für die Vollversion erfolgt parallel:
+                        Dadurch können neue Features direkt im Pilotbetrieb erprobt und Anregungen aus dem Pilotbetrieb in die Vollversion übernommen werden.
+
+                        <br />
+                        <br />
+
+                        Sollten Sie Interesse haben zu einem späteren Zeitpunkt noch in den Pilotbetrieb einzusteigen, können Sie sich gerne jederzeit unter <a href="mailto:laser@hbz-nrw.de">laser@hbz-nrw.de</a> vormerken lassen.
+                        Auch bei Detailfragen zu LAS:eR stehen wir gerne zur Verfügung!
+
                     </span>
                 </div>
 

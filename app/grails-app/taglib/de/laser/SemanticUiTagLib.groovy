@@ -418,20 +418,21 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
+    //  <semui:confirmationModal  />
+    // global included at semanticUI.gsp
+    // called by the specific delete button
+    //  - to send a form or
+    //        <g:form data-confirm-id="${person?.id.toString()+ '_form'}">
+    //        <div class="....... js-open-confirm-modal" data-confirm-term="diese Person" data-confirm-id="${person?.id}" >
+    //  - to call a link
+    //        <g:link class="..... js-open-confirm-modal" data-confirm-term="diese Kontaktdresse" ...... >
     def confirmationModal = { attrs, body ->
 
-        def id        = attrs.id ? ' id="' + attrs.id + '" ' : ''
-        def text      = attrs.text ? attrs.text : ''
-        def message   = attrs.message ? "${message(code: attrs.message)}" : ''
-        def title     = (text && message) ? text + " - " + message : text + message
-        def deletemodal = attrs.deletemodal
-
-        def msgClose = "Schließen"
-        def msgDelete  = deletemodal ? "Entgültig löschen" : "Entgültig ändern"
+        def msgDelete  = "Entgültig löschen"
         def msgCancel  = "Abbrechen"
 
         out << '<div class="ui mini modal">'
-        out <<   '<div class="header">' + title + '</div>'
+        out <<   '<div class="header">Wollen Sie <span id="js-confirmation-term"></span> wirklich aus dem System löschen?</div>'
         if (body) {
             out <<   '<div class="content">'
             out << body()
