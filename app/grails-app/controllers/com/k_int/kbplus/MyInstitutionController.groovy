@@ -74,7 +74,6 @@ class MyInstitutionController {
 
           if ((result.user.affiliations == null) || (result.user.affiliations.size() == 0)) {
               redirect controller: 'profile', action: 'index'
-          } else {
           }
         }
         else {

@@ -17,6 +17,7 @@ class OrganisationsController {
     def addressbookService
     def filterService
     def genericOIDService
+    def propertyService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -82,18 +83,48 @@ class OrganisationsController {
     @Secured(['ROLE_USER'])
     def listProvider() {
         def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        params.max = params.max ?: result.user?.getDefaultPageSize()
+        result.propList =
+                PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
+                        defList: [PropertyDefinition.ORG_PROP],
+                ] // public properties
+                ) +
+                        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant = :tenant", [
+                                defList: [PropertyDefinition.ORG_PROP],
+                                tenant: contextService.getOrg()
+                        ]// private properties
+                        )
 
+        result.user = User.get(springSecurityService.principal.id)
+        params.max  = params.max ?: result.user?.getDefaultPageSize()
+        def paramsWithoutMax = params.clone()
+        paramsWithoutMax.remove("max")
 
         params.orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector').id.toString()
-        params.orgType = RefdataValue.getByValueAndCategory('Provider','OrgType').id.toString()
+        params.orgType   = RefdataValue.getByValueAndCategory('Provider','OrgType').id.toString()
 
-        def fsq = filterService.getOrgQuery(params)
 
-        result.orgList  = Org.findAll(fsq.query, fsq.queryParams, params)
-        result.orgListTotal = Org.executeQuery("select count (o) ${fsq.query}", fsq.queryParams)[0]
+        def fsq           = filterService.getOrgQuery(params)
+        def fsqWithoutMax = filterService.getOrgQuery(paramsWithoutMax)
 
+        def orgList            = Org.findAll(fsq.query, fsq.queryParams, params)
+        def orgListWithoutMax  = Org.findAll(fsqWithoutMax.query, fsqWithoutMax.queryParams, paramsWithoutMax)
+
+        def tmpQuery                  = ["SELECT o FROM Org o WHERE o.id IN (:oids)"]
+        def tmpQueryWithoutMax        = [" FROM Org o WHERE o.id IN (:oids)"]
+        def tmpQueryParams            = [oids: orgList.collect{ it.id }]
+        def tmpQueryParamsWithoutMax  = [oids: orgListWithoutMax.collect{ it.id }]
+
+        if (params.filterPropDef && tmpQueryParams.oids) {
+            (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, tmpQuery, 'o', tmpQueryParams)
+            result.orgList = Org.executeQuery( tmpQuery.join(' '), tmpQueryParams )
+
+            (tmpQueryWithoutMax, tmpQueryParamsWithoutMax) = propertyService.evalFilterQuery(paramsWithoutMax, tmpQueryWithoutMax, 'o', tmpQueryParamsWithoutMax)
+            result.orgListTotal = Org.executeQuery("select count (o) ${tmpQueryWithoutMax.join(' ')}", tmpQueryParamsWithoutMax)[0]
+
+        } else {
+            result.orgList = orgList
+            result.orgListTotal = Org.executeQuery("select count (o) ${fsq.query}", fsq.queryParams)[0]
+        }
         result
     }
 
