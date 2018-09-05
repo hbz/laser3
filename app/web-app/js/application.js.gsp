@@ -136,7 +136,7 @@ r2d2 = {
         });
 
         // confirmation modal
-        $(".js-open-confirm-modal").click(function(){
+        $(".js-open-confirm-modal").click(function(event){
             var dataAttr = this.getAttribute("data-confirm-id")? this.getAttribute("data-confirm-id")+'_form':false;
             var tmpTerm = this.getAttribute("data-confirm-term")? this.getAttribute("data-confirm-term"):"dieses Element";
             var url = this.getAttribute('href')? this.getAttribute('href'): false;
