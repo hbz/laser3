@@ -1,4 +1,10 @@
 
+0.8.2
+
+- fixed: empty user dropdown when creating tasks
+- fixed: download files without filenames
+- fixed: confirm dialog javascript
+
 0.8.1
 
 - news on landing page
