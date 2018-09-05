@@ -1,4 +1,8 @@
 
+0.8.2
+
+- fixed: download files without filenames
+
 0.8.1
 
 - news on landing page

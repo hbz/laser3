@@ -81,7 +81,7 @@ class Doc {
     return blobContent?.length() ?: 0
   }
     
-  def render(def response) {
+  def render(def response, def filename) {
     response.setContentType(mimeType)
     response.addHeader("content-disposition", "attachment; filename=\"${filename}\"")
     response.outputStream << getBlobData()
