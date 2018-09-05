@@ -1,4 +1,8 @@
 
+0.8.1
+
+- news on landing page
+
 0.8
 
 - improved public gasco views
