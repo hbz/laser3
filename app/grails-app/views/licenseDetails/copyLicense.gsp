@@ -10,6 +10,7 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb controller="myInstitution" action="currentLicenses" message="license.current"/>
+    <semui:crumb action="show" controller="licenseDetails" id="${license.id}" text="${license.reference}" />
     <semui:crumb message="myinst.copyLicense" class="active"/>
 </semui:breadcrumbs>
 

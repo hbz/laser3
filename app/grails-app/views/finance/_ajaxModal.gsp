@@ -1,6 +1,6 @@
 <!-- _ajaxModal.gsp -->
-<%@ page import="com.k_int.kbplus.BudgetCode;com.k_int.kbplus.CostItem;com.k_int.kbplus.CostItemGroup;" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<%@ page import="com.k_int.kbplus.CostItem;com.k_int.kbplus.CostItemGroup;" %>
+<laser:serviceInjection />
 
 <g:render template="vars" /><%-- setting vars --%>
 

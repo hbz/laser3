@@ -1,5 +1,5 @@
 <%@ page import="com.k_int.kbplus.Task" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
 
 <semui:modal id="modalEditTask" message="task.edit" editmodal="true" >
 

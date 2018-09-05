@@ -1,5 +1,5 @@
 <%@ page import="com.k_int.kbplus.Person;com.k_int.kbplus.RefdataValue" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
 
 <table class="ui la-selectable table">
     <colgroup>

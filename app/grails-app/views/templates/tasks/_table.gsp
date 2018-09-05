@@ -1,7 +1,7 @@
-<% def accService = grailsApplication.mainContext.getBean("accessService") %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
-<!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->
-<g:set var="overwriteEditable" value="${editable || accService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}" />
+<laser:serviceInjection />
+
+<!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->
+<g:set var="overwriteEditable" value="${editable || accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}" />
 
 <div class="ui grid">
 

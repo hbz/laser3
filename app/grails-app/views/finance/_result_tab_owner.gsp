@@ -1,5 +1,5 @@
 <!-- _result_tab_owner.gsp -->
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
 
 <table id="costTable_${i}" class="ui celled sortable table table-tworow la-table ignore-floatThead">
 

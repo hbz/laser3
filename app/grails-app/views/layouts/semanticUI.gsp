@@ -1,6 +1,4 @@
 <%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
-<% def securityService = grailsApplication.mainContext.getBean("springSecurityService") %>
 <!doctype html>
 
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
@@ -31,7 +29,7 @@
 
 <body class="${controllerName}_${actionName}" id="globalJumpMark">
 
-    <g:set var="yodaService" bean="yodaService" />
+    <laser:serviceInjection />
 
     <g:set var="contextOrg" value="${contextService.getOrg()}" />
     <g:set var="contextUser" value="${contextService.getUser()}" />
@@ -143,6 +141,10 @@
 
                                 <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentProviders" message="menu.institutions.myProviders" />
 
+                                <g:if test="${contextService.getOrg().orgType?.value == 'Consortium'}">
+                                    <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.myConsortia" />
+                                </g:if>
+
                                 <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.institutions.myTitles" />
 
                                 <%--<semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="tipview" message="menu.institutions.myCoreTitles" />--%>
@@ -217,9 +219,9 @@
                                 <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageAffiliationRequests" message="menu.institutions.affiliation_requests" newAffiliationRequests="${newAffiliationRequests1}" />
 
 
-                                <g:if test="${contextService.getOrg().orgType?.value == 'Consortium'}">
-                                    <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.manage_consortia" />
-                                </g:if>
+                                %{--<g:if test="${contextService.getOrg().orgType?.value == 'Consortium'}">--}%
+                                    %{--<semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.manage_consortia" />--}%
+                                %{--</g:if>--}%
 
                                 <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
 

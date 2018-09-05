@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.Person" %>
 <%@ page import="com.k_int.kbplus.RefdataValue" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
 
 <!doctype html>
 <html>

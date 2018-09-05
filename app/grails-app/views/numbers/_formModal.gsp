@@ -1,10 +1,10 @@
 <%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org;" %>
-<% def cService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
 
 <semui:modal id="numbersFormModal" text="${message(code: 'numbers.create.label')}">
 
     <g:form class="ui form" id="create_number" url="[controller: 'numbers', action: 'create']" method="POST">
-
+    <g:hiddenField name="orgid" value="${params.id}"/>
 
         <div class="field">
             <div class="two fields">

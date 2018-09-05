@@ -1,5 +1,5 @@
 <!-- _filter_data.gsp -->
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
 %{--Two rows of data per CostItem--}%
 
 <g:each in="${cost_items}" var="ci">

@@ -53,6 +53,7 @@ class FinanceController {
         def result = [:]
 
       try {
+        result.contextOrg = contextService.getOrg()
         result.institution = contextService.getOrg()
 
         def user =  User.get(springSecurityService.principal.id)

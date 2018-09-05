@@ -1,4 +1,4 @@
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
 
 <g:if test="${editable}">
     <semui:actionsDropdown>

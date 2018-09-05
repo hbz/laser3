@@ -1,5 +1,4 @@
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
-<% def securityService = grailsApplication.mainContext.getBean("springSecurityService") %>
+<laser:serviceInjection />
 
 <%@ page import="com.k_int.kbplus.Combo" %>
 <!doctype html>
@@ -65,7 +64,7 @@
         <g:if test="${orgType?.value == 'Consortium'}">
 
             <g:if test="${! cons_members}">
-                <g:if test="${securityService.getCurrentUser().hasAffiliation("INST_ADM")}">
+                <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
                     <hr />
 
                     <div class="ui info message">

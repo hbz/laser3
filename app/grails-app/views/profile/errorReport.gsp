@@ -1,6 +1,5 @@
 <%@ page import="com.k_int.kbplus.RefdataValue;com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserOrg" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
-<% def securityService = grailsApplication.mainContext.getBean("springSecurityService") %>
+<laser:serviceInjection />
 
 <!doctype html>
 <html>

@@ -1,4 +1,5 @@
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
+
 <g:if test="${actionName == 'index'}">
     <semui:exportDropdown>
         <semui:exportDropdownItem>
@@ -22,6 +23,8 @@
 
         <div class="divider"></div>
 
+        <semui:actionsDropdownItem controller="subscriptionDetails" action="copySubscription" params="${[id: params.id]}" message="myinst.copySubscription" />
+
         <semui:actionsDropdownItem controller="subscriptionDetails" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
         <semui:actionsDropdownItem controller="subscriptionDetails" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
 
@@ -39,6 +42,8 @@
             <semui:actionsDropdownItem controller="subscriptionDetails" action="renewSubscriptionConsortia"
                                        params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>
         </g:if>
+
+
 
     </semui:actionsDropdown>
 
