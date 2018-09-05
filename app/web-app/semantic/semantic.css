@@ -28174,6 +28174,11 @@ Floated Menu / Item
   color: inherit;
   padding: 0.78571429em 0.78571429em;
 }
+
+.ui.table thead th.la-smaller-table-head {
+  padding-top: 0;
+  padding-bottom: 0;
+}
 /*!
  * # Semantic UI 2.3.1 - Ad
  * http://github.com/semantic-org/semantic-ui/
