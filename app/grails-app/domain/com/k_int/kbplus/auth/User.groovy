@@ -27,7 +27,7 @@ class User implements Permissions {
   boolean accountExpired
   boolean accountLocked
   boolean passwordExpired
-  Long defaultPageSize = new Long(20);
+  Long defaultPageSize = new Long(10);
 
   SortedSet affiliations
   SortedSet roles
