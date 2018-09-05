@@ -347,7 +347,7 @@ class License extends BaseDomainComponent implements TemplateSupport, Permission
     // Find any licenses derived from this license
     // create a new pending change object
     //def derived_licenses = License.executeQuery('select l from License as l where exists ( select link from Link as link where link.toLic=l and link.fromLic=? )',this)
-    def derived_licenses = License.where{ instanceOf == this && status.value != 'Deleted' }
+    def derived_licenses = getNonDeletedDerivedLicenses()
 
     derived_licenses.each { dl ->
         log.debug("Send pending change to ${dl.id}")
@@ -385,6 +385,10 @@ class License extends BaseDomainComponent implements TemplateSupport, Permission
 
       }
   }
+
+    def getNonDeletedDerivedLicenses() {
+        License.where{ instanceOf == this && status.value != 'Deleted' }
+    }
 
     @Override
     def beforeInsert() {

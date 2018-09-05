@@ -489,7 +489,22 @@
                 </g:if>
                 <div class="ui card la-dl-no-table">
                     <div class="content">
-                        <h5 class="ui header">${message(code:'subscription.properties')}</h5>
+                        <h5 class="ui header">
+                            ${message(code:'subscription.properties')}
+                            <%
+                                if (subscriptionInstance.instanceOf && ! subscriptionInstance.instanceOf.isTemplate()) {
+                                    if (subscriptionInstance.isSlaved?.value?.equalsIgnoreCase('yes')) {
+                                        println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                                    }
+                                    else {
+                                        println '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                    }
+                                }
+                                else {
+                                    println '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                                }
+                            %>
+                        </h5>
 
                         <div id="custom_props_div_props">
                     <g:render template="/templates/properties/custom" model="${[

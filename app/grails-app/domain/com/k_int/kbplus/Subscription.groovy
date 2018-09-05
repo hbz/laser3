@@ -302,7 +302,7 @@ class Subscription extends BaseDomainComponent implements TemplateSupport, Permi
         log.debug("notifyDependencies(${changeDocument})")
         //def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
 
-        def derived_subscriptions = Subscription.where{ instanceOf == this && status.value != 'Deleted' }
+        def derived_subscriptions = getNonDeletedDerivedSubscriptions()
 
         derived_subscriptions.each { ds ->
 
@@ -341,6 +341,10 @@ class Subscription extends BaseDomainComponent implements TemplateSupport, Permi
                     ])
 
         }
+    }
+
+    def getNonDeletedDerivedSubscriptions() {
+        Subscription.where{ instanceOf == this && status.value != 'Deleted' }
     }
 
   public String toString() {
