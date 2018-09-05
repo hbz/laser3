@@ -3209,6 +3209,9 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
+        def preCon = taskService.getPreconditions(contextService.getOrg())
+        result << preCon
+
         log.debug(result.taskInstanceList)
         result
     }
