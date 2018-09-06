@@ -28,7 +28,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		<g:each in="${persons}" var="person" status="c">
+		<g:each in="${persons.sort{it.last_name}}" var="person" status="c">
 			<tr>
                 <td>
                     ${c + 1 + (offset?:0)}
