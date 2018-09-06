@@ -190,8 +190,11 @@
     <table class="ui celled sortable table table-tworow la-table">
         <thead>
         <tr>
-            <g:sortableColumn params="${params}" property="s.name" title="${message(code: 'license.slash.name')}"/>
-            <th>
+            <th rowspan="2" class="center aligned">
+
+            </th>
+            <g:sortableColumn params="${params}" property="s.name" title="${message(code: 'license.slash.name')}" rowspan="2" />
+            <th rowspan="2" >
                 <g:annotatedLabel owner="${institution}" property="linkedPackages">${message(code: 'license.details.linked_pkg', default: 'Linked Packages')}</g:annotatedLabel>
             </th>
             <% /*
@@ -201,27 +204,35 @@
             */ %>
 
             <g:if test="${params.orgRole == 'Subscriber'}">
-                <th>${message(code: 'consortium', default: 'Consortia')}</th>
+                <th rowspan="2" >${message(code: 'consortium', default: 'Consortia')}</th>
             </g:if>
 
-            <th>${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}</th>
+            <th rowspan="2" >${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}</th>
+
             <%--
             <g:if test="${params.orgRole == 'Subscription Consortia'}">
                 <th>${message(code: 'consortium.subscriber', default: 'Subscriber')}</th>
             </g:if>
             --%>
-            <g:sortableColumn params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
+            <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
 
-            <g:sortableColumn params="${params}" property="s.endDate" title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
+
 
             <% /* <g:sortableColumn params="${params}" property="s.manualCancellationDate"
                               title="${message(code: 'default.cancellationDate.label', default: 'Cancellation Date')}"/> */ %>
-            <th class="two wide"></th>
+            <th rowspan="2"  class="two wide"></th>
+        </tr>
+
+        <tr>
+            <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.endDate" title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
         </tr>
         </thead>
-        <g:each in="${subscriptions}" var="s">
+        <g:each in="${subscriptions}" var="s" status="i">
             <g:if test="${true || !s.instanceOf}">
                 <tr>
+                    <td class="center aligned">
+                        ${i + 1}
+                    </td>
                     <td>
                         <g:link controller="subscriptionDetails" action="show" id="${s.id}">
                             <g:if test="${s.name}">
@@ -296,8 +307,11 @@
                         </g:if>
                     </td>
                     --%>
-                    <td><g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/></td>
-                    <td><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></td>
+                    <td>
+                        <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br>
+                        <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
+                    </td>
+
 
                     <td class="x">
                         <g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.hasOrgWithUsageSupplierId()}">

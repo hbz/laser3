@@ -173,3 +173,7 @@
   color: inherit;
   padding: @cellVerticalPadding @cellHorizontalPadding;
 }
+.ui.table thead th.la-smaller-table-head {
+  padding-top: 0;
+  padding-bottom: 0;
+}
