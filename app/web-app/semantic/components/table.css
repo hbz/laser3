@@ -1298,3 +1298,11 @@
   padding-top: 0;
   padding-bottom: 0;
 }
+
+/* wrap small needed th to avoid table layout break */
+.ui.sortable.table thead th.la-th-wrap {
+  white-space: normal;
+}
+.ui.sortable.table thead th.la-hyphenation {
+  text-align: justify;
+}
