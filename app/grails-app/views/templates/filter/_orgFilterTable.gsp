@@ -11,9 +11,6 @@
                 </g:if>
             </th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('sortname')}">
-            <g:sortableColumn title="${message(code: 'org.sortname.label', default: 'Sortname')}" property="lower(o.sortname)"/>
-        </g:if>
         <g:if test="${tmplConfigShow?.contains('name')}">
             <g:sortableColumn title="${message(code: 'org.sortName.label')}" property="lower(o.sortname)"/>
         </g:if>
@@ -27,7 +24,7 @@
             <th>${message(code: 'org.currentFTEs.label', default: 'Current FTEs')}</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('numberOfLicenses')}">
-            <th>${message(code: 'org.numberOfLicenses.label', default: 'Number of Licenses')}</th>
+            <th class="la-th-wrap">${message(code: 'org.numberOfLicenses.label', default: 'Number of Licenses')}</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('identifier')}">
             <th>Identifier</th>
@@ -48,7 +45,7 @@
             <th>${message(code: 'org.federalState.label')}</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('libraryNetwork')}">
-            <th>${message(code: 'org.libraryNetwork.label')}</th>
+            <th class="la-th-wrap la-hyphenation">${message(code: 'org.libraryNetwork.label')}</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('libraryType')}">
             <th>${message(code: 'org.libraryType.label')}</th>
@@ -77,11 +74,6 @@
             <g:if test="${tmplShowCheckbox}">
                 <td>
                     <g:checkBox type="text" name="selectedOrgs" value="${org.id}" checked="false"/>
-                </td>
-            </g:if>
-            <g:if test="${tmplConfigShow?.contains('sortname')}">
-                <td>
-                    ${org.sortname}
                 </td>
             </g:if>
             <td>
