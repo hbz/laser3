@@ -199,6 +199,10 @@ class SubscriptionDetailsController {
         if (executorWrapperService.hasRunningProcess(result.subscriptionInstance)) {
             result.processingpc = true
         }
+
+        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
+        result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
+
         withFormat {
             html result
             csv {
@@ -696,6 +700,9 @@ class SubscriptionDetailsController {
         //            [result.subscriptionInstance]
         //    )
         //}
+
+        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
+        result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
         result
     }
 
@@ -1649,7 +1656,7 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
                         /* Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
                             [result.subscriptionInstance, it.id])*/
 
-                        Subscription newSubscription = new Subscription(
+                        def newSubscription = new Subscription(
                                 type: subMember.type,
                                 status: newSubConsortia.status,
                                 name: subMember.name,
@@ -1658,12 +1665,12 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
                                 manualRenewalDate: subMember.manualRenewalDate,
                                 /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
                                 identifier: java.util.UUID.randomUUID().toString(),
-                                instanceOf: newSubConsortia,
-                                previousSubscription: subMember,
+                                instanceOf: newSubConsortia?.id,
+                                previousSubscription: subMember?.id,
                                 isSlaved: subMember.isSlaved,
                                 isPublic: subMember.isPublic,
                                 impId: java.util.UUID.randomUUID().toString(),
-                                owner: newSubConsortia.owner ? subMember.owner : null
+                                owner: newSubConsortia.owner?.id ? subMember.owner?.id : null
                         )
                         newSubscription.save(flush: true)
 
@@ -1673,18 +1680,18 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
                             for (prop in subMember.customProperties) {
                                 def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscription)
                                 copiedProp = prop.copyValueAndNote(copiedProp)
-                                newSub.addToCustomProperties(copiedProp)
+                                newSubscription.addToCustomProperties(copiedProp)
                             }
                         }
                         if (subMember.privateProperties) {
                             //privatProperties
                             def contextOrg = contextService.getOrg()
 
-                            subMember.privateProperties.each { prop ->
+                            subMember.privateProperties?.each { prop ->
                                 if (prop.type?.tenant?.id == contextOrg?.id) {
                                     def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscription)
                                     copiedProp = prop.copyValueAndNote(copiedProp)
-                                    newSub.addToPrivateProperties(copiedProp)
+                                    newSubscription.addToPrivateProperties(copiedProp)
                                 }
                             }
                         }
@@ -1700,7 +1707,7 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
                         }
                         if (subMember.issueEntitlements && newSubConsortia.issueEntitlements) {
 
-                            subMember.issueEntitlements.each { ie ->
+                            subMember.issueEntitlements?.each { ie ->
 
                                 if (ie.status != RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted')) {
                                     def ieProperties = ie.properties
@@ -1737,6 +1744,7 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
                             }
                         }
                     }
+
                 }
 
 
