@@ -116,17 +116,17 @@ class OrganisationsController {
 
         if (params.filterPropDef && tmpQueryParams.oids) {
             (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, tmpQuery, 'o', tmpQueryParamsTotal)
-            def orgListTotalMitParams = Org.executeQuery( tmpQuery.join(' '), tmpQueryParams )
+            def orgListTotalMitParams  = Org.executeQuery( tmpQuery.join(' '), tmpQueryParams )
 
-            int startIndex = Integer.parseInt(params?.offset? params.offset+"" : "0").intValue()
-            int tmpMax = Integer.parseInt(params?.max? params.max+"": "10").intValue()
-            int endIndex   = (startIndex+tmpMax) > orgListTotalMitParams.size() ? orgListTotalMitParams.size() : startIndex+tmpMax
+            int startIndex     = Integer.parseInt(params?.offset? params.offset+"" : "0").intValue()
+            int tmpMax         = Integer.parseInt(params?.max? params.max+"": "10").intValue()
+            int endIndex       = (startIndex+tmpMax) > orgListTotalMitParams.size() ? orgListTotalMitParams.size() : startIndex+tmpMax
 
-            result.orgList = orgListTotalMitParams.subList(startIndex, endIndex)
+            result.orgList      = orgListTotalMitParams.subList(startIndex, endIndex)
             result.orgListTotal = orgListTotalMitParams.size()
 
         } else {
-            result.orgList = orgList
+            result.orgList      = orgList
             result.orgListTotal = Org.executeQuery("select count (o) ${fsq.query}", fsq.queryParams)[0]
         }
         result
