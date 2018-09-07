@@ -232,7 +232,7 @@ class FactService {
     def usage = new long[firstAxis.size()][secondAxis.size()]
     factList.each { f ->
       def x_label = f.get('reportingYear').intValue()
-      def y_label = f.get('factType')
+      def y_label = f.get('factType').toString()
       usage[firstAxis.indexOf(y_label)][secondAxis.indexOf(x_label)] += Long.parseLong(f.get('factValue'))
     }
     usage
