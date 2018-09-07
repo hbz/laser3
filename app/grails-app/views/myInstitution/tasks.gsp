@@ -69,6 +69,8 @@
 
         <g:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList]}"/>
 
+        <g:render template="/templates/tasks/js_taskedit"/>
+
 
 
   </body>
