@@ -94,32 +94,36 @@ class OrganisationsController {
                         ]// private properties
                         )
 
-        result.user = User.get(springSecurityService.principal.id)
-        params.max  = params.max ?: result.user?.getDefaultPageSize()
-        def paramsWithoutMax = params.clone()
-        paramsWithoutMax.remove("max")
+        result.user       = User.get(springSecurityService.principal.id)
+        params.max        = params.max ?: result.user?.getDefaultPageSize()
+        def paramsTotal   = params.clone()
+        if (paramsTotal.max == null) {
+            paramsTotal.remove("max")
+        }
 
-        params.orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector').id.toString()
-        params.orgType   = RefdataValue.getByValueAndCategory('Provider','OrgType').id.toString()
-
+        params.orgSector  = RefdataValue.getByValueAndCategory('Publisher','OrgSector')?.id?.toString()
+        params.orgType    = RefdataValue.getByValueAndCategory('Provider','OrgType')?.id?.toString()
 
         def fsq           = filterService.getOrgQuery(params)
-        def fsqWithoutMax = filterService.getOrgQuery(paramsWithoutMax)
+        def fsqTotal      = filterService.getOrgQuery(paramsTotal)
 
-        def orgList            = Org.findAll(fsq.query, fsq.queryParams, params)
-        def orgListWithoutMax  = Org.findAll(fsqWithoutMax.query, fsqWithoutMax.queryParams, paramsWithoutMax)
+        def orgList       = Org.findAll(fsq.query, fsq.queryParams, params)
+        def orgListTotal  = Org.findAll(fsqTotal.query, fsqTotal.queryParams)
 
-        def tmpQuery                  = ["SELECT o FROM Org o WHERE o.id IN (:oids)"]
-        def tmpQueryWithoutMax        = [" FROM Org o WHERE o.id IN (:oids)"]
-        def tmpQueryParams            = [oids: orgList.collect{ it.id }]
-        def tmpQueryParamsWithoutMax  = [oids: orgListWithoutMax.collect{ it.id }]
+        def tmpQuery             = ["SELECT o FROM Org o WHERE o.id IN (:oids)"]
+        def tmpQueryParams       = [oids: orgList.collect{ it1 -> it1.id }]
+        def tmpQueryParamsTotal  = [oids: orgListTotal.collect{ it2 -> it2.id }]
 
         if (params.filterPropDef && tmpQueryParams.oids) {
-            (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, tmpQuery, 'o', tmpQueryParams)
-            result.orgList = Org.executeQuery( tmpQuery.join(' '), tmpQueryParams )
+            (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, tmpQuery, 'o', tmpQueryParamsTotal)
+            def orgListTotalMitParams = Org.executeQuery( tmpQuery.join(' '), tmpQueryParams )
 
-            (tmpQueryWithoutMax, tmpQueryParamsWithoutMax) = propertyService.evalFilterQuery(paramsWithoutMax, tmpQueryWithoutMax, 'o', tmpQueryParamsWithoutMax)
-            result.orgListTotal = Org.executeQuery("select count (o) ${tmpQueryWithoutMax.join(' ')}", tmpQueryParamsWithoutMax)[0]
+            int startIndex = Integer.parseInt(params?.offset? params.offset+"" : "0").intValue()
+            int tmpMax = Integer.parseInt(params?.max? params.max+"": "10").intValue()
+            int endIndex   = (startIndex+tmpMax) > orgListTotalMitParams.size() ? orgListTotalMitParams.size() : startIndex+tmpMax
+
+            result.orgList = orgListTotalMitParams.subList(startIndex, endIndex)
+            result.orgListTotal = orgListTotalMitParams.size()
 
         } else {
             result.orgList = orgList

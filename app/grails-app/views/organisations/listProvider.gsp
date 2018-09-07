@@ -33,8 +33,6 @@
                       tmplShowCheckbox: false,
                       tmplConfigShow: ['name', 'country']
               ]"/>
-
-        TEST Treffer pro Seite: ${orgList.size()}, Treffer gesamt: ${orgListTotal}
         <semui:paginate total="${orgListTotal}" params="${params}" />
 
     </body>
