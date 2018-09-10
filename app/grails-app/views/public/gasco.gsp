@@ -113,7 +113,7 @@
             <th>${message(code:'gasco.table.Ppovider')}</th>
             %{--Task ERMS-587: Temporäres Ausblenden dieser Spalte--}%
             %{--<th>${message(code:'gasco.licenceType')}</th>--}%
-            <th class="center aligned">${message(code:'gasco.table.consortium')}</th>
+            <th>${message(code:'gasco.table.consortium')}</th>
         </tr>
         </thead>
         <tbody>
@@ -141,7 +141,7 @@
                     %{--<td>--}%
                         %{--${sub.type?.getI10n('value')}--}%
                     %{--</td>--}%
-                    <td>
+                    <td class="la-break-all">
                     ${sub.getConsortia()?.name}
                         <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RefdataValue.getByValueAndCategory('GASCO-Contact', 'Person Function'), sub.getConsortia())}" var="person">
                             <div class="ui list">
@@ -157,7 +157,7 @@
                                             <div class="description">
                                                 <i class="icon globe"></i>
                                                 <span data-position="right center" data-tooltip="Diese URL aufrufen:  ${prsContact?.content}">
-                                                    <a href="${prsContact?.content}" target="_blank" class="icon globe">${prsContact?.content}</a>
+                                                    <a href="${prsContact?.content}" target="_blank">${prsContact?.content}</a>
                                                 </span>
 
                                             </div>
