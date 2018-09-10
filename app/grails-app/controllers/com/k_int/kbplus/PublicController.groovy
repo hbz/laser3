@@ -21,7 +21,7 @@ class PublicController {
 
         result.allConsortia = Org.findAllByOrgType(
                 RefdataValue.getByValueAndCategory('Consortium', 'OrgType')
-        ).sort{ it.getDesignation() }
+        ).sort{ it.name }
 
         if (! params.subTypes && ! params.consortia && ! params.q) {
             // init filter with checkboxes checked
