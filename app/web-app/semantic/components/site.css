@@ -701,3 +701,7 @@ body[class*="organisation"] .ui.label.la-object .icon:before {
 .la-space-right {
   padding-right: 20px;
 }
+.la-break-all {
+  word-wrap: break-word;
+  word-break: break-all;
+}

@@ -499,3 +499,7 @@ body[class*="organisation"] {
 .la-space-right {
     padding-right: 20px;
 }
+.la-break-all {
+    word-wrap: break-word;
+    word-break: break-all;
+}
