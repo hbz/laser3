@@ -49,6 +49,7 @@ class SubscriptionDetailsController {
     private static String INVOICES_FOR_SUB_HQL =
             'select co.invoice, sum(co.costInLocalCurrency), sum(co.costInBillingCurrency), co from CostItem as co where co.sub = :sub group by co.invoice order by min(co.invoice.startDate) desc';
 
+    // TODO Used in Cost per use tab, still needed?
     private static String USAGE_FOR_SUB_IN_PERIOD =
             'select f.reportingYear, f.reportingMonth+1, sum(factValue) ' +
                     'from Fact as f ' +
@@ -56,6 +57,7 @@ class SubscriptionDetailsController {
                     '( select ie.tipp.title from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.title = f.relatedTitle)' +
                     'group by f.reportingYear, f.reportingMonth order by f.reportingYear desc, f.reportingMonth desc';
 
+    // TODO Used in Cost per use tab, still needed?
     private static String TOTAL_USAGE_FOR_SUB_IN_PERIOD =
         'select sum(factValue) ' +
             'from Fact as f ' +
@@ -1434,6 +1436,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
     }
 
 
+    // TODO Cost per use tab, still needed?
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def costPerUse() {
