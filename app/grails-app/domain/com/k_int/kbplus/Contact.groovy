@@ -1,13 +1,19 @@
 package com.k_int.kbplus
 
+import groovy.transform.Sortable
 import groovy.util.logging.Log4j
 import org.apache.commons.logging.LogFactory
 import org.hibernate.Query
 import groovy.util.logging.*
 
 @Log4j
-class Contact {
-    
+class Contact implements Comparable<Contact>{
+    private static final String REFDATA_PHONE = "Phone"
+    private static final String REFDATA_FAX = "Fax"
+    private static final String REFDATA_MAIL = "Mail"
+    private static final String REFDATA_EMAIL = "E-Mail"
+    private static final String REFDATA_URL = "Url"
+
     String       content
     RefdataValue contentType    // RefdataCategory 'ContactContentType'
     RefdataValue type           // RefdataCategory 'ContactType'
@@ -111,4 +117,29 @@ class Contact {
         
         result
     }
+
+    @Override
+    int compareTo(Contact contact) {
+        int result
+        result = getCompareOrderValueForType(this).compareTo(getCompareOrderValueForType(contact))
+        if (result == 0) result = this.getContent().compareTo(contact.getContent())
+        return result
+    }
+
+    private int getCompareOrderValueForType(Contact contact){
+        switch (contact?.getContentType()?.getValue()){
+            case REFDATA_EMAIL:
+            case REFDATA_MAIL:
+                return 1;
+            case REFDATA_URL:
+                return 2;
+            case REFDATA_PHONE:
+                return 3;
+            case REFDATA_FAX:
+                return 4;
+            default:
+                return 5;
+        }
+    }
+
 }

@@ -180,7 +180,7 @@
                             <dt><g:message code="org.addresses.label" default="Addresses" /></dt>
                             <dd>
                                 <div class="ui divided middle aligned selection list la-flex-list">
-                                    <g:each in="${orgInstance?.addresses.sort{it.type?.getI10n('value')}}" var="a">
+                                    <g:each in="${orgInstance?.addresses?.sort{it.type?.getI10n('value')}}" var="a">
                                         <g:if test="${a.org}">
                                             <g:render template="/templates/cpa/address" model="${[
                                                     address: a,
@@ -205,7 +205,7 @@
                             <dt><g:message code="org.contacts.label" default="Contacts" /></dt>
                             <dd>
                                 <div class="ui divided middle aligned selection list la-flex-list">
-                                    <g:each in="${orgInstance?.contacts.sort{it.content}}" var="c">
+                                    <g:each in="${orgInstance?.contacts?.toSorted()}" var="c">
                                         <g:if test="${c.org}">
                                             <g:render template="/templates/cpa/contact" model="${[
                                                     contact: c,
@@ -230,11 +230,12 @@
                             <dt><g:message code="org.prsLinks.label" default="Kontaktpersonen" /></dt>
                             <dd>
                                 <%-- <div class="ui divided middle aligned selection list la-flex-list"> --%>
-                                    <g:each in="${orgInstance?.prsLinks}" var="pl">
+                                    <g:each in="${orgInstance?.prsLinks?.toSorted()}" var="pl">
                                         <g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value!='No'}">
                                             <g:render template="/templates/cpa/person_details" model="${[
                                                     personRole: pl,
                                                     tmplShowDeleteButton: true,
+                                                    tmplConfigShow: 'address',
                                                     controller: 'organisations',
                                                     action: 'show',
                                                     id: orgInstance.id
@@ -260,7 +261,7 @@
                         </dl>
                     </div>
                 </div><!-- .card -->
-                <g:if test="${orgInstance.orgType != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider','OrgType')}">
+                <g:if test="${orgInstance.orgType != RefdataValue.getByValueAndCategory('Provider','OrgType')}">
                 %{--<div class="ui card">
                     <div class="content">
                         <dl>
@@ -295,7 +296,7 @@
                                         <dd>
                                             <g:each in="${orgInstance.outgoingCombos.sort{it.toOrg.name}}" var="i">
                                                 <g:link controller="organisations" action="show" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
-                                                (<g:each in="${i.toOrg?.ids.sort{it.identifier.ns.ns}}" var="id_out">
+                                                (<g:each in="${i?.toOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_out">
                                                     ${id_out.identifier.ns.ns}: ${id_out.identifier.value}
                                                 </g:each>)
                                                 <br />
@@ -322,7 +323,7 @@
                                         <dd>
                                             <g:each in="${orgInstance.incomingCombos.sort{it.fromOrg.name}}" var="i">
                                                 <g:link controller="organisations" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
-                                                    (<g:each in="${i.fromOrg?.ids.sort{it.identifier.ns.ns}}" var="id_in">
+                                                    (<g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
                                                         ${id_in.identifier.ns.ns}: ${id_in.identifier.value}
                                                     </g:each>)
                                                     <br />

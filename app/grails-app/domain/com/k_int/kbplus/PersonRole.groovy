@@ -1,6 +1,9 @@
 package com.k_int.kbplus
 
-class PersonRole {
+import groovy.transform.Sortable
+
+class PersonRole implements Comparable<PersonRole>{
+    private static final String REFDATA_GENERAL_CONTACT_PRS = "General contact person"
 
     RefdataValue    functionType        // 'Person Function'; exclusive with responsibilityType
     RefdataValue    responsibilityType  // 'Person Responsibility'; exclusive with functionType
@@ -105,5 +108,25 @@ class PersonRole {
         )
 
         result.first()
+    }
+
+    @Override
+    int compareTo(PersonRole o) {
+        String this_FunctionType = this?.functionType?.getValue()
+        String pr_FunctionType = personRole?.functionType?.getValue()
+        int result = getCompareOrderValueForType(this_FunctionType).compareTo(getCompareOrderValueForType(pr_FunctionType))
+        if (result == 0) {
+            result = this_FunctionType.compareTo(pr_FunctionType)
+        }
+        print(this_FunctionType + " " + pr_FunctionType + "->" + result)
+        return result
+    }
+
+    private static int getCompareOrderValueForType(String functionType){
+        if  (REFDATA_GENERAL_CONTACT_PRS == functionType)
+            return 1
+        else
+            return -1
+
     }
 }

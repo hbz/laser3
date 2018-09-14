@@ -31,7 +31,7 @@ ${personInstance}
         <div class="la-inline-lists">
             <div class="ui card">
                 <div class="content">
-                    <dl><dt>${com.k_int.kbplus.RefdataCategory.findByDesc('Person Contact Type').getI10n('desc')}</dt>
+                    <dl><dt>${RefdataCategory.findByDesc('Person Contact Type').getI10n('desc')}</dt>
                         <dd>
                             <semui:xEditableRefData owner="${personInstance}" field="contactType" config="Person Contact Type"/>
 
@@ -87,7 +87,7 @@ ${personInstance}
                     <dl><dt><g:message code="person.contacts.label" default="Contacts"/></dt>
                         <dd>
                             <div class="ui divided middle aligned selection list la-flex-list">
-                                <g:each in="${personInstance.contacts.sort{it.content}}" var="c">
+                                <g:each in="${personInstance?.contacts?.toSorted()}" var="c">
 
                                     <g:render template="/templates/cpa/contact" model="${[
                                             contact: c,

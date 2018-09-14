@@ -16,14 +16,14 @@
 
         <g:if test="${person?.contacts}">
 
-            <g:each in="${person?.contacts.sort{it.content}}" var="contact">
+            <g:each in="${person?.contacts?.toSorted()}" var="contact">
                 <g:render template="/templates/cpa/contact" model="${[contact: contact, tmplShowDeleteButton: tmplShowDeleteButton]}"></g:render>
             </g:each>
 
         </g:if>
         <g:if test="${person?.addresses}">
 
-            <g:each in="${person?.addresses.sort{it.type?.getI10n('value')}}" var="address">
+            <g:each in="${person?.addresses?.sort{it?.type?.getI10n('value')}}" var="address">
                 <g:render template="/templates/cpa/address" model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton]}"></g:render>
             </g:each>
 
@@ -46,7 +46,8 @@
         <div class="ui divided middle aligned selection list la-flex-list">
 
         <div class="ui item person-details">
-            <g:link controller="person" action="show" id="${personRole?.prsId}">
+            <g:link controller="person" action="show" id="${person?.id}">
+            %{--<g:link controller="person" action="show" id="${personRole?.prsId}">--}%
                 ${personRole?.prs?.title}
                 ${personRole?.prs?.first_name}
                 ${personRole?.prs?.middle_name}
@@ -64,16 +65,15 @@
         </div><!-- .person-details -->
 
         <g:if test="${personRole?.prs?.contacts}">
-
-            <g:each in="${personRole?.prs?.contacts.sort{it.content}}" var="contact">
+            <g:each in="${personRole?.prs?.contacts?.toSorted()}" var="contact">
                 <g:render template="/templates/cpa/contact" model="${[contact: contact, tmplShowDeleteButton: tmplShowDeleteButton]}"></g:render>
             </g:each>
 
         </g:if>
 
-        <g:if test="${personRole?.prs?.addresses}">
+        <g:if test="${tmplConfigShow?.contains('address') && personRole?.prs?.addresses}">
 
-            <g:each in="${personRole?.prs?.addresses.sort{it.type?.getI10n('value')}}" var="address">
+            <g:each in="${personRole?.prs?.addresses?.sort{it.type?.getI10n('value')}}" var="address">
                 <g:render template="/templates/cpa/address" model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton]}"></g:render>
             </g:each>
 

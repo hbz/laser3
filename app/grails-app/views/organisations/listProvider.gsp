@@ -31,7 +31,7 @@
         <g:render template="/templates/filter/orgFilterTable"
               model="[orgList: orgList,
                       tmplShowCheckbox: false,
-                      tmplConfigShow: ['name', 'country']
+                      tmplConfigShow: ['lineNumber', 'shortname', 'name', 'publicContacts', 'country']
               ]"/>
         <semui:paginate total="${orgListTotal}" params="${params}" />
 
