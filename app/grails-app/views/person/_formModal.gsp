@@ -126,22 +126,31 @@
                     </h5>
                     <div class="field">
                         <div class="three fields">
-                            <div class="field wide eight">
-                                <g:select class="ui search dropdown"
-                                      name="functionOrg"
-                                      from="${Org.getAll()}"
-                                      value="${org?.id}"
-                                      optionKey="id"
-                                      optionValue="" />
-                            </div>
-
-                            <div class="field wide six">
+                            <div class="inline sixteen wide field">
                                 <laser:select class="ui dropdown values"
                                               name="functionType"
                                               from="${PersonRole.getAllRefdataValues('Person Function')}"
                                               optionKey="id"
                                               value="${presetFunctionType?.id}"
                                               optionValue="value" />
+
+                                <g:if test=" ${org?.name}">
+                                    <label for="org">
+                                        <g:message code="contact.org.label"  />
+                                        <div class="ui label">
+                                            ${org?.name}
+                                        </div>
+                                        <input id="org" name="org.id" type="hidden" value="${org?.name}" />
+                                    </label>
+                                </g:if>
+                                <g:else>
+                                    <g:select class="ui search dropdown"
+                                              name="functionOrg"
+                                              from="${Org.getAll()}"
+                                              value="${org?.id}"
+                                              optionKey="id"
+                                              optionValue="" />
+                                </g:else>
                             </div>
                         </div>
                     </div>
