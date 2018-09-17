@@ -136,12 +136,10 @@
 
                                 <g:if test=" ${org?.name}">
                                     <label for="org">
-                                        <g:message code="contact.org.label"  />
-                                        <div class="ui label">
-                                            ${org?.name}
-                                        </div>
-                                        <input id="org" name="org.id" type="hidden" value="${org?.name}" />
+                                        <g:message code="contact.belongesTo.label"  />
                                     </label>
+                                    <i class="icon university la-list-icon"></i>${org?.name}
+                                    <input id="org" name="org.id" type="hidden" value="${org?.name}" />
                                 </g:if>
                                 <g:else>
                                     <g:select class="ui search dropdown"

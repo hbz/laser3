@@ -60,10 +60,10 @@
         <g:if test="${!prsId}">
             <div class="field fieldcontain ${hasErrors(bean: contactInstance, field: 'org', 'error')} ">
                 <label for="org">
-                    <g:message code="contact.org.label" default="Org" />
+                    <g:message code="contact.belongesTo.uppercase.label"  />
                 </label>
                 <g:if test="${orgId}">
-                    ${com.k_int.kbplus.Org.findById(orgId)}
+                    <i class="icon university la-list-icon"></i>${com.k_int.kbplus.Org.findById(orgId)}
                     <input id="org" name="org.id" type="hidden" value="${orgId}" />
                 </g:if>
                 <g:else>
