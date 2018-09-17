@@ -126,7 +126,7 @@
                     </h5>
                     <div class="field">
                         <div class="three fields">
-                            <div class="inline ten wide field">
+                            <div class="inline sixteen wide field">
                                 <laser:select class="ui dropdown values"
                                               name="functionType"
                                               from="${PersonRole.getAllRefdataValues('Person Function')}"
