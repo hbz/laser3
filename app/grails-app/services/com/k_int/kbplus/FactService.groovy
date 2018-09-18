@@ -13,7 +13,7 @@ class FactService {
           'from Fact as f ' +
           'where f.factFrom >= :start and f.factTo <= :end and f.factType.value=:factType and exists ' +
           '(select 1 from IssueEntitlement as ie INNER JOIN ie.tipp as tipp ' +
-          'where ie.subscription= :sub  and tipp.title = f.relatedTitle and ie.status.value=:status) and f.inst = :inst'
+          'where ie.subscription= :sub  and tipp.title = f.relatedTitle and ie.status.value!=:status) and f.inst = :inst'
 
   static transactional = false
 
@@ -207,7 +207,7 @@ class FactService {
       }
       def y_axis_labels = []
       factList.factUid.each { li->
-        def metric = li.split(':')[5]+':'+li.split(':')[4]
+        def metric = getReportMetricLabel(li)
         y_axis_labels += metric
       }
       y_axis_labels = y_axis_labels.unique().sort()
@@ -232,6 +232,10 @@ class FactService {
     }
 
     result
+  }
+
+  private String getReportMetricLabel(uid) {
+    return uid.split(':')[5] + ':' + uid.split(':')[4]
   }
 
   private def generateUsageMDList(factList, firstAxis, secondAxis) {
@@ -259,14 +263,16 @@ class FactService {
           params['titleid'] = title_id
         } else {
           hql += ' and exists (select 1 from IssueEntitlement as ie INNER JOIN ie.tipp as tipp ' +
-              'where ie.subscription= :sub  and tipp.title = f.relatedTitle and ie.status.value=:status)'
+              'where ie.subscription= :sub  and tipp.title = f.relatedTitle and ie.status.value!=:status)'
           params['sub'] = sub
         }
     hql += ' group by f.factType, f.reportingYear, f.reportingMonth, f.factUid'
     hql += ' order by f.reportingYear desc,f.reportingMonth desc'
     params['supplierid'] = supplier_id
     params['orgid'] = org_id
-    params['status'] = 'Live'
+    if (! title_id) {
+      params['status'] = 'Deleted'
+    }
     def queryResult = Fact.executeQuery(hql, params)
     transformToListOfMaps(queryResult)
   }
@@ -339,13 +345,11 @@ class FactService {
     if (org_id != null &&
         supplier_id != null) {
 
-      //def factList = getUsageFacts(org_id, supplier_id, title_id)
       def factList = getTotalUsageFactsForSub(org_id, supplier_id, subscription, title_id)
       // todo add column metric to table fact + data migration
-      //def y_axis_labels = factList.factType.value.unique(false).sort()
       def y_axis_labels = []
       factList.factUid.each { li->
-        def metric = li.split(':')[5]+':'+li.split(':')[4]
+        def metric = getReportMetricLabel(li)
         y_axis_labels += metric
       }
       y_axis_labels = y_axis_labels.unique().sort()
@@ -364,7 +368,7 @@ class FactService {
         end  : sub.endDate,
         sub  : sub,
         factType : factType,
-        status : 'Live',
+        status : 'Deleted',
         inst : sub.subscriber]
     )[0]
   }
