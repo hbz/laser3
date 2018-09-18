@@ -272,26 +272,6 @@ class StatsSyncService {
         return "${c.get(Calendar.YEAR)}-${String.format('%02d',c.get(Calendar.MONTH)+1)}"
     }
 
-
-    private getMetricsForReport($report) {
-        def result
-        switch (report) {
-            case "JR1":
-                result = ["ft_total"]
-                break
-            case "JR1GOA":
-                result = ["ft_total"]
-                break
-            case "DB1":
-                result = ["record_view","result_click", "search_reg", "search_fed"]
-                break
-            default:
-                result = ["ft_total"]
-                break
-        }
-        return result
-    }
-
     private isAllowedMetric(metric) {
         if (metric in ['ft_total', 'search_reg', 'search_fed', 'record_view', 'result_click']) {
             return true
