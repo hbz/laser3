@@ -17596,6 +17596,18 @@ ol.ui.horizontal.list li:before,
   display: -ms-inline-flexbox;
   display: inline-flex;
 }
+
+.la-list-border-around {
+  border: 1px solid #eaeaea;
+}
+
+.ui.item.person-details:hover {
+  background: white!important;
+}
+
+.la-border-selected {
+  border: 1px solid #bb1600;
+}
 /*!
  * # Semantic UI 2.3.1 - Loader
  * http://github.com/semantic-org/semantic-ui/
