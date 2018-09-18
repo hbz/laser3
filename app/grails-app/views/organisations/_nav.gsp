@@ -17,7 +17,8 @@
 
     <semui:subNavItem controller="organisations" action="addressbook" params="${[id: params.id]}"
                       message="menu.institutions.myAddressbook"/>
-    <semui:subNavItem controller="organisations" action="accessPoints" params="${[id:params.id]}"
-                      message="org.nav.accessPoints" />
-
+    <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')}">
+    <semui:securedSubNavItem controller="organisations" action="accessPoints" params="${[id:params.id]}"
+                      message="org.nav.accessPoints" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
+    </g:if>
 </semui:subNav>
