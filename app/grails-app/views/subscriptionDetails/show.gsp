@@ -407,8 +407,8 @@
                                                         currencyCode="${currencyCode}" maxFractionDigits="2"
                                                         minFractionDigits="2" roundingMode="HALF_UP"/></dd>
                                 </dl>
+                                <div class="ui divider"></div>
                             </g:if>
-                            <div class="ui divider"></div>
                             <dl>
                                 <dt class="control-label">${message(code: 'default.usage.label')}</dt>
                                 <dd>
