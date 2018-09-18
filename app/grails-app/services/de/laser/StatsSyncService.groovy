@@ -86,6 +86,25 @@ class StatsSyncService {
         }
     }
 
+    private getReportType(report) {
+        def result
+        switch (report) {
+            case "JR1":
+                result = "journal"
+            break
+            case "JR1GOA":
+                result = "journal"
+            break
+            case "DB1":
+                result = "database"
+            break
+            default:
+                result = "journal"
+            break
+        }
+        return result
+    }
+
     def doSync() {
         initSync()
         executorService.submit({ internalDoSync() } as java.util.concurrent.Callable)
@@ -155,6 +174,7 @@ class StatsSyncService {
                 reports.each { statsReport ->
                     def reportValues = statsReport.toString().split(':')
                     def report = reportValues[1]
+                    def reportType = getReportType(report)
                     def titleId = title_io_inst.identifier.value
 
                     def fromPeriod = csr.haveUpTo ?: SYNC_STATS_FROM
@@ -175,7 +195,7 @@ class StatsSyncService {
                                         BeginDate     : beginDate,
                                         EndDate       : endDate,
                                         Platform      : platform,
-                                        ItemIdentifier: 'journal:zdbid:' + titleId
+                                        ItemIdentifier: "${reportType}:zdbid:" + titleId
                                 ]) { response, xml ->
                             if (xml) {
 
@@ -193,28 +213,24 @@ class StatsSyncService {
                                     }
                                     def usageMap = getPeriodUsageMap(itemPerformances)
                                     def cal = new GregorianCalendar()
-                                    usageMap.each { key, value ->
+                                    usageMap.each { key, countPerMetric ->
                                         def fact = [:]
-                                        def usageValue = ''
-                                        if (value.size() > 1){
-                                            usageValue = value*.toInteger().sum().toString()
-                                        } else {
-                                            usageValue = value.text()
-                                        }
-                                        fact.from = timeStampFormat.parse(key)
-                                        fact.to =timeStampFormat.parse(getLastDayOfMonth(key))
-                                        cal.setTime(fact.to)
-                                        fact.reportingYear=cal.get(Calendar.YEAR)
-                                        fact.reportingMonth=cal.get(Calendar.MONTH)+1
-                                        fact.type = statsReport.toString()
-                                        fact.value = usageValue
-                                        fact.uid = "${titleId}:${platform}:${customer}:${key}:${report}"
-                                        fact.title = title_inst
-                                        fact.supplier = supplier_inst
-                                        fact.inst = org_inst
-                                        fact.juspio = title_io_inst
-                                        if (factService.registerFact(fact)) {
-                                            ++newFactCount
+                                        countPerMetric.each { metric, count ->
+                                            fact.from = timeStampFormat.parse(key)
+                                            fact.to =timeStampFormat.parse(getLastDayOfMonth(key))
+                                            cal.setTime(fact.to)
+                                            fact.reportingYear=cal.get(Calendar.YEAR)
+                                            fact.reportingMonth=cal.get(Calendar.MONTH)+1
+                                            fact.type = statsReport.toString()
+                                            fact.value = count
+                                            fact.uid = "${titleId}:${platform}:${customer}:${key}:${metric}:${report}"
+                                            fact.title = title_inst
+                                            fact.supplier = supplier_inst
+                                            fact.inst = org_inst
+                                            fact.juspio = title_io_inst
+                                            if (factService.registerFact(fact)) {
+                                                ++newFactCount
+                                            }
                                         }
                                     }
                                     log.debug("Title: ${title_inst.title}")
@@ -256,17 +272,57 @@ class StatsSyncService {
         return "${c.get(Calendar.YEAR)}-${String.format('%02d',c.get(Calendar.MONTH)+1)}"
     }
 
+
+    private getMetricsForReport($report) {
+        def result
+        switch (report) {
+            case "JR1":
+                result = ["ft_total"]
+                break
+            case "JR1GOA":
+                result = ["ft_total"]
+                break
+            case "DB1":
+                result = ["record_view","result_click", "search_reg", "search_fed"]
+                break
+            default:
+                result = ["ft_total"]
+                break
+        }
+        return result
+    }
+
+    private isAllowedMetric(metric) {
+        if (metric in ['ft_total', 'search_reg', 'search_fed', 'record_view', 'result_click']) {
+            return true
+        }
+        return false
+    }
+
+    // period=>[metric1=>value,metric2=>value...]
     private Map getPeriodUsageMap(ArrayList itemPerformances) {
         def map = [:]
+        // every ItemPerformance can have several Instances (DB/PR Reports up to 2, JR1 up to 3...)
         itemPerformances.each {
             def begin = it.Period.Begin.text()
-            def usage = it.depthFirst().find { node->
-                node.name() == 'Count' && node.parent().MetricType.text() == 'ft_total'
+            if (! map[begin]){
+                map[begin] = [:]
             }
-            if (! map[begin]) {
-                map[begin] = usage
-            } else {
-                map[begin] += usage
+            def instances = it.depthFirst().findAll { node ->
+                node.name() == 'Instance'
+            }
+            instances.each {
+                def metric = it.MetricType.text()
+                if (isAllowedMetric(metric)) {
+                    def usage = it.Count.text()
+                    if (!map[begin][metric]){
+                        map[begin][metric] = usage
+                    } else {
+                        map[begin][metric] += usage
+                    }
+                } else {
+                    //log.debug("Metric ${metric} is not supported")
+                }
             }
         }
         return map

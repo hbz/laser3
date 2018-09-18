@@ -872,6 +872,8 @@ class BootStrap {
 
         RefdataValue.loc('FactType', [en: 'STATS:JR1'])
         RefdataValue.loc('FactType', [en: 'STATS:JR1GOA'])
+        RefdataValue.loc('FactType', [en: 'STATS:DB1'])
+
 
         RefdataValue.loc('Federal State',   [en: 'Baden-Wurttemberg', de: 'Baden-Württemberg'])
         RefdataValue.loc('Federal State',   [en: 'Bavaria', de: 'Bayern'])

@@ -240,7 +240,7 @@ class FactService {
 
   private def getTotalUsageFactsForSub(org_id, supplier_id, sub, title_id=null, restrictToSubscriptionPeriod=false)  {
     def params = [:]
-    def hql = 'select sum(f.factValue), f.reportingYear, f.reportingMonth, f.factType' +
+    def hql = 'select sum(f.factValue), f.reportingYear, f.reportingMonth, f.factType, f.factUid' +
         ' from Fact as f' +
         ' where f.supplier.id=:supplierid and f.inst.id=:orgid'
         if (restrictToSubscriptionPeriod) {
@@ -256,7 +256,7 @@ class FactService {
               'where ie.subscription= :sub  and tipp.title = f.relatedTitle and ie.status.value=:status)'
           params['sub'] = sub
         }
-    hql += ' group by f.factType, f.reportingYear, f.reportingMonth'
+    hql += ' group by f.factType, f.reportingYear, f.reportingMonth, f.factUid'
     hql += ' order by f.reportingYear desc,f.reportingMonth desc'
     params['supplierid'] = supplier_id
     params['orgid'] = org_id
@@ -273,6 +273,7 @@ class FactService {
       map['reportingYear'] = li[1]
       map['reportingMonth'] = li[2]
       map['factType'] = li[3]
+      map['factUid'] = li[4]
       list.add(map)
     }
     list
@@ -334,6 +335,8 @@ class FactService {
 
       //def factList = getUsageFacts(org_id, supplier_id, title_id)
       def factList = getTotalUsageFactsForSub(org_id, supplier_id, subscription, title_id)
+
+      // todo use metric as labels
       def y_axis_labels = factList.factType.value.unique(false).sort()
       def x_axis_labels = factList.reportingYear.unique(false).sort()*.intValue()
 
