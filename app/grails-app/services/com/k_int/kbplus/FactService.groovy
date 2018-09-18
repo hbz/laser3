@@ -205,7 +205,13 @@ class FactService {
       if (factList.size == 0){
         return result
       }
-      def y_axis_labels = factList.factType.value.unique(false).sort()
+      def y_axis_labels = []
+      factList.factUid.each { li->
+        def metric = li.split(':')[5]+':'+li.split(':')[4]
+        y_axis_labels += metric
+      }
+      y_axis_labels = y_axis_labels.unique().sort()
+
       def x_axis_labels = (firstSubscriptionYear..lastSubscriptionYear).toList()
 
       addFactsForSubscriptionPeriodWithoutUsage(x_axis_labels,factList)
@@ -232,7 +238,7 @@ class FactService {
     def usage = new long[firstAxis.size()][secondAxis.size()]
     factList.each { f ->
       def x_label = f.get('reportingYear').intValue()
-      def y_label = f.get('factType').toString()
+      def y_label = f.get('factUid').split(':')[5].toString()+':'+f.get('factUid').split(':')[4].toString()
       usage[firstAxis.indexOf(y_label)][secondAxis.indexOf(x_label)] += Long.parseLong(f.get('factValue'))
     }
     usage
@@ -335,9 +341,14 @@ class FactService {
 
       //def factList = getUsageFacts(org_id, supplier_id, title_id)
       def factList = getTotalUsageFactsForSub(org_id, supplier_id, subscription, title_id)
-
-      // todo use metric as labels
-      def y_axis_labels = factList.factType.value.unique(false).sort()
+      // todo add column metric to table fact + data migration
+      //def y_axis_labels = factList.factType.value.unique(false).sort()
+      def y_axis_labels = []
+      factList.factUid.each { li->
+        def metric = li.split(':')[5]+':'+li.split(':')[4]
+        y_axis_labels += metric
+      }
+      y_axis_labels = y_axis_labels.unique().sort()
       def x_axis_labels = factList.reportingYear.unique(false).sort()*.intValue()
 
       result.usage = generateUsageMDList(factList, y_axis_labels, x_axis_labels)
