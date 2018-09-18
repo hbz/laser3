@@ -21,8 +21,8 @@ grails.project.dependency.resolution = {
     inherits("global") {
         excludes "grails-docs"
         // uncomment to disable ehcache
-        excludes 'ehcache'
-        excludes 'ehcache-core' // to hibernate 4
+        excludes 'ehcache' // LEGACY
+        // excludes 'ehcache-core' // to hibernate 4
     }
     log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
     checksums true // Whether to verify checksums on resolve
@@ -63,7 +63,10 @@ grails.project.dependency.resolution = {
 
     dependencies {
 
+        compile "net.sf.ehcache:ehcache:2.7.0" // LEGACY
+
         //compile "net.sf.ehcache:ehcache:2.9.0" // to hibernate 4
+        //compile "org.hibernate:hibernate-ehcache:4.3.10.Final"
 
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
         runtime 'javax.servlet:jstl:1.1.2'
@@ -129,7 +132,8 @@ grails.project.dependency.resolution = {
 
     plugins {
 
-        runtime ':hibernate4:4.3.10'
+        runtime ':hibernate:3.6.10.19' // LEGACY
+        // runtime ':hibernate4:4.3.10' // hibernate 4
 
         runtime ":gsp-resources:0.4.4"
         runtime ":resources:1.2.8" // 1.2.14 won't work @ application.js.gsp
@@ -168,7 +172,7 @@ grails.project.dependency.resolution = {
         runtime ":executor:0.3"
         runtime ":markdown:1.1.1"
         runtime ":quartz:1.0.2"
-        compile ":grails-melody:1.59.0"
+        // compile ":grails-melody:1.59.0"
         compile ":jsonp:0.2"
 
         // runtime "com.k-int:domain-model-oai-pmh:0.1"

@@ -285,11 +285,12 @@ class BootStrap {
         def apiWriterRole      = Role.findByAuthority('ROLE_API_WRITER')      ?: new Role(authority: 'ROLE_API_WRITER', roleType: 'global').save(failOnError: true)
         def apiDataManagerRole = Role.findByAuthority('ROLE_API_DATAMANAGER') ?: new Role(authority: 'ROLE_API_DATAMANAGER', roleType: 'global').save(failOnError: true)
 
-        def globalDataRole    = Role.findByAuthority('ROLE_GLOBAL_DATA') ?: new Role(authority: 'ROLE_GLOBAL_DATA', roleType: 'global').save(failOnError: true)
-        def orgEditorRole     = Role.findByAuthority('ROLE_ORG_EDITOR')     ?: new Role(authority: 'ROLE_ORG_EDITOR', roleType: 'global').save(failOnError: true)
-        def orgComRole     = Role.findByAuthority('ROLE_ORG_COM_EDITOR')    ?: new Role(authority: 'ROLE_ORG_COM_EDITOR', roleType: 'global').save(failOnError: true)
-        def packageEditorRole = Role.findByAuthority('ROLE_PACKAGE_EDITOR') ?: new Role(authority: 'ROLE_PACKAGE_EDITOR', roleType: 'global').save(failOnError: true)
-        def ticketEditorRole  = Role.findByAuthority('ROLE_TICKET_EDITOR')  ?: new Role(authority: 'ROLE_TICKET_EDITOR', roleType: 'global').save(failOnError: true)
+        def globalDataRole    = Role.findByAuthority('ROLE_GLOBAL_DATA')        ?: new Role(authority: 'ROLE_GLOBAL_DATA', roleType: 'global').save(failOnError: true)
+        def orgEditorRole     = Role.findByAuthority('ROLE_ORG_EDITOR')         ?: new Role(authority: 'ROLE_ORG_EDITOR', roleType: 'global').save(failOnError: true)
+        def orgComRole        = Role.findByAuthority('ROLE_ORG_COM_EDITOR')     ?: new Role(authority: 'ROLE_ORG_COM_EDITOR', roleType: 'global').save(failOnError: true)
+        def packageEditorRole = Role.findByAuthority('ROLE_PACKAGE_EDITOR')     ?: new Role(authority: 'ROLE_PACKAGE_EDITOR', roleType: 'global').save(failOnError: true)
+        def statsEditorRole   = Role.findByAuthority('ROLE_STATISTICS_EDITOR')  ?: new Role(authority: 'ROLE_STATISTICS_EDITOR', roleType: 'global').save(failOnError: true)
+        def ticketEditorRole  = Role.findByAuthority('ROLE_TICKET_EDITOR')      ?: new Role(authority: 'ROLE_TICKET_EDITOR', roleType: 'global').save(failOnError: true)
 
         // Institutional Roles
 
@@ -943,6 +944,7 @@ class BootStrap {
         RefdataValue.loc('Person Contact Type', [en: 'Functional contact', de: 'Funktionskontakt'])
 
         RefdataValue.loc('Person Function',     [en: 'General contact person', de: 'Hauptkontakt'])
+        RefdataValue.loc('Person Function',     [en: 'GASCO-Contact', de: 'GASCO-Kontakt'])
         RefdataValue.loc('Person Function',     [en: 'Bestandsaufbau', de: 'Bestandsaufbau'])
         RefdataValue.loc('Person Function',     [en: 'Direktion', de: 'Direktion'])
         RefdataValue.loc('Person Function',     [en: 'Direktionsassistenz', de: 'Direktionsassistenz'])
@@ -981,6 +983,7 @@ class BootStrap {
         RefdataValue.loc('Subscription Status',      [en: 'Under Consortial Examination',   de: 'Wird konsortial geprüft'])
         RefdataValue.loc('Subscription Status',      [en: 'Under Institutional Examination',   de: 'Wird institutionell geprüft'])
         RefdataValue.loc('Subscription Status',      [en: 'Test Access',   de: 'Testzugriff'])
+        RefdataValue.loc('Subscription Status',      [en: 'Intended', de: 'Geplant'])
 
 		RefdataValue.loc('Subscription Type',      [en: 'Alliance Licence', de: 'Allianzlizenz'])
 		RefdataValue.loc('Subscription Type',      [en: 'National Licence', de: 'Nationallizenz'])

@@ -1,7 +1,6 @@
-<% def accService = grailsApplication.mainContext.getBean("accessService") %>
-<g:set var="license" value="${com.k_int.kbplus.License.get(params.id)}"/>
+<laser:serviceInjection />
 
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<g:set var="license" value="${com.k_int.kbplus.License.get(params.id)}"/>
 
 <semui:subNav actionName="${actionName}">
     <semui:subNavItem controller="licenseDetails" action="show" params="${[id:params.id]}" message="license.nav.details" />
@@ -23,7 +22,7 @@
     </sec:ifAnyGranted>
 
     <%--
-    <g:if test="${license.orgLinks?.find{it.roleType?.value == 'Licensing Consortium' && accService.checkMinUserOrgRole(user, it.org, 'INST_ADM') && license.licenseType == 'Template'}}">
+    <g:if test="${license.orgLinks?.find{it.roleType?.value == 'Licensing Consortium' && accessService.checkMinUserOrgRole(user, it.org, 'INST_ADM') && license.licenseType == 'Template'}}">
         <semui:subNavItem controller="licenseDetails" action="consortia" params="${[id:params.id]}" message="consortium.plural" />
     </g:if> --%>
 </semui:subNav>

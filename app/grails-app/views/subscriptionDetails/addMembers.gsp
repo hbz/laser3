@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.*" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
-<% def securityService = grailsApplication.mainContext.getBean("springSecurityService") %>
+<laser:serviceInjection />
+
 <!doctype html>
 <html>
 <head>
@@ -50,7 +50,7 @@
                           tmplDisableOrgIds: cons_members_disabled,
                           subInstance: subscriptionInstance,
                           tmplShowCheckbox: true,
-                          tmplConfigShow: ['name', 'wib', 'isil', 'federalState', 'libraryNetwork', 'libraryType', 'addSubMembers']
+                          tmplConfigShow: ['name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType', 'addSubMembers']
                           ]"/>
 
         <g:if test="${cons_members}">
@@ -72,7 +72,7 @@
                               optionKey="id"
                               optionValue="${{ it.getI10n('value') }}"
                               name="subStatus"
-                              value="${com.k_int.kbplus.RefdataValue.findByValueAndOwner('Current', rdcSubStatus)?.id}"/>
+                              value="${com.k_int.kbplus.Subscription.get(params.id).status?.id}"/>
                 </div>
 
                 <div class="field">
@@ -137,7 +137,7 @@
         </g:if>
     </g:form>
 
-    <g:if test="${securityService.getCurrentUser().hasAffiliation("INST_ADM") && contextService.getOrg().orgType?.value == 'Consortium'}">
+    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") && contextService.getOrg().orgType?.value == 'Consortium'}">
         <hr />
 
         <div class="ui info message">

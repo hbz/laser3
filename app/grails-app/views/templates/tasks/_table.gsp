@@ -1,7 +1,7 @@
-<% def accService = grailsApplication.mainContext.getBean("accessService") %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
-<!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->
-<g:set var="overwriteEditable" value="${editable || accService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}" />
+<laser:serviceInjection />
+
+<!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->
+<g:set var="overwriteEditable" value="${editable || accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}" />
 
 <div class="ui grid">
 
@@ -73,10 +73,10 @@
                                 <i class="write icon"></i>
                             </a>
                         </g:if>
-                        <g:if test="${user == taskInstance.creator}">
-                        <g:link action="tasks" params="[deleteId:taskInstance.id, id: params.id]" class="ui icon negative button">
-                            <i class="trash alternate icon"></i>
-                        </g:link>
+                        <g:if test="${(user == taskInstance.creator) || contextService.getUser().hasAffiliation("INST_ADM")}">
+                            <g:link action="tasks" params="[deleteId:taskInstance.id, id: params.id]" class="ui icon negative button">
+                                <i class="trash alternate icon"></i>
+                            </g:link>
                         </g:if>
                     </td>
                 </tr>

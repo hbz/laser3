@@ -81,11 +81,6 @@ import="com.k_int.kbplus.RefdataCategory"
                             max="${max}"
                             total="${num_visiblePersons}"/>
 
-
-
-
-
         </g:if>
-
-  </body>
+    </body>
 </html>

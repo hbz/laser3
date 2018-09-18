@@ -430,10 +430,10 @@ class OrganisationsController {
     def numbers() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
-        result.orgInstance = contextService.getOrg()
-        result.numbersInstanceList = Numbers.findAllByOrg(contextService.getOrg(), [sort: 'type'])
+        result.orgInstance = Org.get(params.id)
+        result.numbersInstanceList = Numbers.findAllByOrg(Org.get(params.id), [sort: 'type'])
 
         result
     }
@@ -448,7 +448,7 @@ class OrganisationsController {
           result.editable = true
         }
         else {
-          result.editable = permissionHelperService.hasUserWithRole(result.user, orgInstance, 'INST_ADM')
+          result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM')
         }
 
         if (!orgInstance) {

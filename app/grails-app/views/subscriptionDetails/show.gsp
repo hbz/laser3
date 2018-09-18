@@ -183,7 +183,7 @@
                                     <col width="300" />
                                     <col width="430"/>
                                 </colgroup>
-                                <g:each in="${subscriptionInstance.packages}" var="sp">
+                                <g:each in="${subscriptionInstance.packages.sort{it.pkg.name}}" var="sp">
                                 <tr>
                                 <th scope="row" class="control-label">${message(code:'subscription.packages.label')}</th>
                                     <td>

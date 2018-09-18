@@ -1328,6 +1328,11 @@ body[class*="organisation"] .ui.label.la-object .icon:before {
 .la-space-right {
   padding-right: 20px;
 }
+
+.la-break-all {
+  word-wrap: break-word;
+  word-break: break-all;
+}
 /*!
  * # Semantic UI 2.3.1 - Button
  * http://github.com/semantic-org/semantic-ui/
@@ -20317,7 +20322,7 @@ ol.ui.horizontal.list li:before,
   transition: color 0.1s ease, border-color 0.1s ease;
   font-size: 1em;
   line-height: 1.2857;
-  resize: vertical;
+  resize: both;
 }
 
 .ui.form textarea:not([rows]) {
@@ -28185,6 +28190,21 @@ Floated Menu / Item
   display: block;
   color: inherit;
   padding: 0.78571429em 0.78571429em;
+}
+
+.ui.table thead th.la-smaller-table-head {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* wrap small needed th to avoid table layout break */
+
+.ui.sortable.table thead th.la-th-wrap {
+  white-space: normal;
+}
+
+.ui.sortable.table thead th.la-hyphenation {
+  text-align: justify;
 }
 /*!
  * # Semantic UI 2.3.1 - Ad

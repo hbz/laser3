@@ -1,4 +1,7 @@
+<%@ page import="com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Numbers; com.k_int.kbplus.License; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
+<laser:serviceInjection />
 <table class="ui sortable celled la-table table">
+    <g:set var="sqlDateToday" value="${new java.sql.Date(System.currentTimeMillis())}"/>
     <thead>
     <tr>
         <g:if test="${tmplShowCheckbox}">
@@ -9,12 +12,24 @@
             </th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('name')}">
+            <g:sortableColumn title="${message(code: 'org.sortName.label')}" property="lower(o.sortname)"/>
+        </g:if>
+        <g:if test="${tmplConfigShow?.contains('name')}">
             <g:sortableColumn title="${message(code: 'org.name.label', default: 'Name')}" property="lower(o.name)"/>
+        </g:if>
+        <g:if test="${tmplConfigShow?.contains('mainContact')}">
+            <th>${message(code: 'org.mainContact.label', default: 'Main Contact')}</th>
+        </g:if>
+        <g:if test="${tmplConfigShow?.contains('currentFTEs')}">
+            <th>${message(code: 'org.currentFTEs.label', default: 'Current FTEs')}</th>
+        </g:if>
+        <g:if test="${tmplConfigShow?.contains('numberOfLicenses')}">
+            <th class="la-th-wrap">${message(code: 'org.numberOfLicenses.label', default: 'Number of Licenses')}</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('identifier')}">
             <th>Identifier</th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('wib')}">
+        <g:if test="${tmplConfigShow?.contains('wibid')}">
             <th>WIB</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('isil')}">
@@ -30,7 +45,7 @@
             <th>${message(code: 'org.federalState.label')}</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('libraryNetwork')}">
-            <th>${message(code: 'org.libraryNetwork.label')}</th>
+            <th class="la-th-wrap la-hyphenation">${message(code: 'org.libraryNetwork.label')}</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('libraryType')}">
             <th>${message(code: 'org.libraryType.label')}</th>
@@ -63,6 +78,20 @@
             </g:if>
             <td>
                 <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
+                    <g:if test="${org.sortname}">
+                        ${fieldValue(bean: org, field: "sortname")}
+                    </g:if>
+                </g:if>
+                <g:else>
+                    <g:link controller="organisations" action="show" id="${org.id}">
+                        <g:if test="${org.sortname}">
+                            ${fieldValue(bean: org, field: "sortname")}
+                        </g:if>
+                    </g:link>
+                </g:else>
+            </td>
+            <td>
+                <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
                         ${fieldValue(bean: org, field: "name")} <br>
                         <g:if test="${org.shortname}">
                             (${fieldValue(bean: org, field: "shortname")})
@@ -77,6 +106,45 @@
                     </g:link>
                 </g:else>
             </td>
+            <g:if test="${tmplConfigShow?.contains('mainContact')}">
+            <td>
+                <g:each in ="${com.k_int.kbplus.PersonRole.findAllByFunctionTypeAndOrg(RefdataValue.getByValueAndCategory('General contact person', 'Person Function'), org)}" var="person">
+                    ${person?.getPrs()?.getFirst_name()} ${person?.getPrs()?.getLast_name()}<br>
+                    <g:each in ="${com.k_int.kbplus.Contact.findAllByPrsAndContentType(
+                            person.getPrs(),
+                            RefdataValue.getByValueAndCategory('E-Mail', 'ContactContentType')
+                        )}" var="email">
+                            <i class="ui icon envelope outline"></i>
+                            <span data-position="right center" data-tooltip="Mail senden an ${person?.getPrs().getFirst_name()} ${person?.getPrs()?.getLast_name()}">
+                                <a href="mailto:${email?.content}" >${email?.content}</a>
+                            </span><br>
+                    </g:each>
+                    <g:each in ="${com.k_int.kbplus.Contact.findAllByPrsAndContentType(
+                        person.getPrs(),
+                        RefdataValue.getByValueAndCategory('Phone', 'ContactContentType')
+                        )}" var="telNr">
+                        <i class="ui icon phone"></i>
+                        <span data-position="right center">
+                            ${telNr?.content}
+                        </span><br>
+                    </g:each>
+                </g:each>
+            </td>
+        </g:if>
+            <g:if test="${tmplConfigShow?.contains('currentFTEs')}">
+                <td>
+                    <g:each in="${Numbers.findAllByOrg(org)?.sort {it.type?.getI10n("value")}}" var="fte">
+                        <g:if test="${fte.startDate <= sqlDateToday && fte.endDate >= sqlDateToday}">
+                            ${fte.type?.getI10n("value")} : ${fte.number} <br>
+                        </g:if>
+                    </g:each>
+                </td>
+            </g:if>
+            <g:if test="${tmplConfigShow?.contains('numberOfLicenses')}">
+                <td>
+                    ${com.k_int.kbplus.Subscription.executeQuery("SELECT distinct count(*) FROM Subscription as s WHERE status != :status and startDate <= :heute and endDate >= :heute and EXISTS (SELECT o FROM OrgRole as o WHERE s = o.sub AND o.roleType = :subscriber AND o.org = :org) AND EXISTS (SELECT o2 FROM OrgRole as o2 WHERE s = o2.sub AND o2.roleType = :consortia AND o2.org = :ctxOrg)", [status:RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'), heute:sqlDateToday, subscriber:RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'), org:org, consortia:RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role'), ctxOrg:contextService.getOrg()])[0]}
+                </td>
+            </g:if>
 
             <g:if test="${tmplConfigShow?.contains('identifier')}">
                 <td><g:if test="${org.ids}">
@@ -85,8 +153,8 @@
                     </ul>
                 </g:if></td>
             </g:if>
-            <g:if test="${tmplConfigShow?.contains('wib')}">
-                <td>${org.getIdentifiersByType('wib')?.value?.join(', ')}</td>
+            <g:if test="${tmplConfigShow?.contains('wibid')}">
+                <td>${org.getIdentifiersByType('wibid')?.value?.join(', ')}</td>
             </g:if>
             <g:if test="${tmplConfigShow?.contains('isil')}">
                 <td>${org.getIdentifiersByType('isil')?.value?.join(', ')}</td>

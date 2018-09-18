@@ -417,9 +417,8 @@ environments {
 }
 
 grails.cache.config = {
-
     cache {
-        name 'laser'
+        name = 'laser_experimental'
     }
     cache {
         name 'message'

@@ -28,7 +28,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		<g:each in="${persons}" var="person" status="c">
+		<g:each in="${persons.sort{it.last_name}}" var="person" status="c">
 			<tr>
                 <td>
                     ${c + 1 + (offset?:0)}
@@ -85,18 +85,20 @@
                 </td>
                 <td class="x">
                     <g:if test="${editable}">
-                        <g:form controller="person" action="delete">
-                            <g:hiddenField name="id" value="${person?.id}" />
-                                <g:link class="ui icon button" controller="person" action="show" id="${person?.id}">
-                                    <i class="write icon"></i>
-                                </g:link>
-                                <button class="ui icon negative button" type="submit" name="_action_delete">
-                                    <i class="trash alternate icon"></i>
-                                </button>
-                        </g:form>
+                            <g:form controller="person" action="delete" data-confirm-id="${person?.id.toString()+ '_form'}">
+                                <g:hiddenField name="id" value="${person?.id}" />
+                                    <g:link class="ui icon button" controller="person" action="show" id="${person?.id}">
+                                        <i class="write icon"></i>
+                                    </g:link>
+                                    <div class="ui icon negative button js-open-confirm-modal" data-confirm-term="diese Person" data-confirm-id="${person?.id}" >
+                                        <i class="trash alternate icon"></i>
+                                    </div>
+                            </g:form>
                     </g:if>
                 </td>
 			</tr>
 		</g:each>
 	</tbody>
 </table>
+
+

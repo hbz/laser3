@@ -387,6 +387,37 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
+    //  <semui:confirmationModal  />
+    // global included at semanticUI.gsp
+    // called by the specific delete button
+    //  - to send a form or
+    //        <g:form data-confirm-id="${person?.id.toString()+ '_form'}">
+    //        <div class="....... js-open-confirm-modal" data-confirm-term="diese Person" data-confirm-id="${person?.id}" >
+    //  - to call a link
+    //        <g:link class="..... js-open-confirm-modal" data-confirm-term="diese Kontaktdresse" ...... >
+    def confirmationModal = { attrs, body ->
+
+        def msgDelete  = "Entgültig löschen"
+        def msgCancel  = "Abbrechen"
+
+        out << '<div class="ui mini modal">'
+        out <<   '<div class="header">Wollen Sie <span id="js-confirmation-term"></span> wirklich aus dem System löschen?</div>'
+        if (body) {
+            out <<   '<div class="content">'
+            out << body()
+            out <<   '</div>'
+        }
+        out <<   '<div class="actions">'
+        out <<     '<div class="ui deny button">'+ msgCancel+ '</div>'
+        out <<     '<button class="ui positive right labeled icon button">'+ msgDelete
+        out <<     '    <i class="trash alternate icon"></i>'
+        out <<     '</button>'
+        out <<   '</div>'
+        out << '</div>'
+    }
+
+
+
     //<semui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="true" />
 
     def datepicker = { attrs, body ->
@@ -421,4 +452,6 @@ class SemanticUiTagLib {
 
     }
 
-    public SemanticUiTagLib ( ) { } }
+    public SemanticUiTagLib ( ) { }
+
+}

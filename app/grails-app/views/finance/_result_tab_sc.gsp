@@ -1,13 +1,13 @@
 <!-- _result_tab_sc.gsp -->
 <%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.FinanceController" %>
 
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
 
 <table id="costTable_${i}" class="ui celled sortable table table-tworow la-table ignore-floatThead">
 
 <thead>
     <tr>
-        <th>${message(code:'financials.newCosts.costTitle')}</th>
+        <th>Teilnehmer / ${message(code:'financials.newCosts.costTitle')}</th>
         <th class="two wide">${message(code:'financials.invoice_total')}</th>
         <th class="two wide">${message(code:'financials.newCosts.valueInEuro')}</th>
         <th>${message(code:'financials.costItemElement')}</th>
@@ -38,7 +38,7 @@
                     </g:each>
 
                     <br />
-                    &nbsp; &nbsp; <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" />
+                    <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" />
                 </td>
                 <td>
                     <span class="costData"

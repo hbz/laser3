@@ -1,5 +1,6 @@
 <%@ page import="org.codehaus.groovy.grails.web.errors.ExceptionUtils" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
+
 <% Throwable exception = (Throwable) exception %>
 <% def root = ExceptionUtils.getRootCause(exception) %>
 <% def causedby;

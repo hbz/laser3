@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
+import grails.plugin.cache.Cacheable;
 import grails.plugin.springsecurity.annotation.Secured;
 
 @Secured(['permitAll'])
@@ -9,13 +10,18 @@ class PublicController {
     def springSecurityService
     def genericOIDService
 
+    @Cacheable('laser_experimental')
+    @Secured(['permitAll'])
+    def index() {
+    }
+
     @Secured(['permitAll'])
     def gasco() {
         def result = [:]
 
         result.allConsortia = Org.findAllByOrgType(
                 RefdataValue.getByValueAndCategory('Consortium', 'OrgType')
-        ).sort{ it.getDesignation() }
+        ).sort{ it.name }
 
         if (! params.subTypes && ! params.consortia && ! params.q) {
             // init filter with checkboxes checked

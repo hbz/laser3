@@ -299,8 +299,8 @@ from License as l where (
             base_qry += " order by l.reference asc"
         }
 
-        log.debug("query = ${base_qry}");
-        log.debug("params = ${qry_params}");
+        //log.debug("query = ${base_qry}");
+        //log.debug("params = ${qry_params}");
 
         result.licenseCount = License.executeQuery("select count(l) ${base_qry}", qry_params)[0];
         result.licenses = License.executeQuery("select l ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
@@ -959,7 +959,8 @@ from Subscription as s where (
                                             // type: RefdataValue.findByValue("Subscription Taken"),
                                           type: subType,
                                           status: RefdataCategory.lookupOrCreate('Subscription Status', 'Current'),
-                                          name: params.newEmptySubName + " (${postfix})",
+                                          name: params.newEmptySubName,
+                                          // name: params.newEmptySubName + " (${postfix})",
                                           startDate: startDate,
                                           endDate: endDate,
                                           identifier: java.util.UUID.randomUUID().toString(),
@@ -3176,6 +3177,10 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
         result.budgetCodes = BudgetCode.findAllByOwner(result.institution, [sort: 'value'])
 
+        if (params.redirect) {
+            redirect(url: request.getHeader('referer'), params: params)
+        }
+
         result
     }
 
@@ -3203,6 +3208,9 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result.myTaskInstanceList = taskService.getTasksByCreator(result.user, null)
 
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+
+        def preCon = taskService.getPreconditions(contextService.getOrg())
+        result << preCon
 
         log.debug(result.taskInstanceList)
         result
@@ -3252,8 +3260,19 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         def result = setResultGenerics()
 
         // new: filter preset
-        params.orgType   = RefdataValue.getByValueAndCategory('Institution', 'OrgType')?.id.toString()
-        params.orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')?.id.toString()
+        params.orgType   = RefdataValue.getByValueAndCategory('Institution', 'OrgType')?.id?.toString()
+        params.orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')?.id?.toString()
+
+        result.propList =
+                PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
+                        defList: [PropertyDefinition.ORG_PROP],
+                ] // public properties
+                ) +
+                        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant = :tenant", [
+                                defList: [PropertyDefinition.ORG_PROP],
+                                tenant: contextService.getOrg()
+                        ]// private properties
+                        )
 
         if (params.selectedOrgs) {
             log.debug('remove orgs from consortia')
@@ -3267,9 +3286,19 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 cmb.delete()
             }
         }
-
         def fsq = filterService.getOrgComboQuery(params, result.institution)
-        result.consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams, params)
+
+        def consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams, params)
+
+        def tmpQuery        = ["SELECT o FROM Org o WHERE o.id IN (:oids)"]
+        def tmpQueryParams  = [oids: consortiaMembers.collect{ it.id }]
+
+        if (params.filterPropDef && tmpQueryParams.oids) {
+            (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, tmpQuery, 'o', tmpQueryParams)
+            result.consortiaMembers = Org.executeQuery( tmpQuery.join(' '), tmpQueryParams )
+        } else {
+            result.consortiaMembers = consortiaMembers
+        }
 
         result
     }

@@ -184,13 +184,12 @@ body.yoda_appSecurity .secInfoWrapper .ROLE_API_DATAMANAGER {
     color: #87CEEB;
     font-style: italic;
 }
-body.yoda_appSecurity .secInfoWrapper .ROLE_ORG_EDITOR {
-     color: #8B4513;
- }
-body.yoda_appSecurity .secInfoWrapper .ROLE_PACKAGE_EDITOR {
-    color: #8B4513;
-}
-body.yoda_appSecurity .secInfoWrapper .ROLE_ORG_COM_EDITOR {
+body.yoda_appSecurity .secInfoWrapper .ROLE_ORG_EDITOR,
+body.yoda_appSecurity .secInfoWrapper .ROLE_ORG_COM_EDITOR,
+body.yoda_appSecurity .secInfoWrapper .ROLE_PACKAGE_EDITOR,
+body.yoda_appSecurity .secInfoWrapper .ROLE_STATISTICS_EDITOR,
+body.yoda_appSecurity .secInfoWrapper .ROLE_TICKET_EDITOR
+{
     color: #8B4513;
 }
 

@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.*" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
-<% def securityService = grailsApplication.mainContext.getBean("springSecurityService") %>
+<laser:serviceInjection />
+
 <!doctype html>
 <html>
 <head>
@@ -40,6 +40,16 @@
 
 <g:if test="${institution?.orgType?.value == 'Consortium'}">
 
+    <div class="ui info message">
+        <div class="header">
+            Hinweis
+        </div>
+        <p>
+            Angezeigt werden die Konsorten der verknüpften Lizenzen.
+            Werden keine Konsorten angezeigt, dann sind evtl. die Lizenzen nicht verknüpft oder es sind diesen noch keine Teilnehmer zugeordnet.
+        </p>
+    </div>
+
     <semui:filter>
         <g:form action="addMembers" method="get" params="[id: params.id]" class="ui form">
             <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
@@ -58,7 +68,7 @@
                           tmplDisableOrgIds: cons_members_disabled,
                           subInstance: subscriptionInstance,
                           tmplShowCheckbox: true,
-                          tmplConfigShow: ['name', 'wib', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
+                          tmplConfigShow: ['name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
                           ]"/>
 
         <g:if test="${cons_members}">
@@ -112,7 +122,7 @@
         </g:if>
     </g:form>
 
-    <g:if test="${securityService.getCurrentUser().hasAffiliation("INST_ADM") && contextService.getOrg().orgType?.value == 'Consortium'}">
+    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") && contextService.getOrg().orgType?.value == 'Consortium'}">
         <hr />
 
         <div class="ui info message">

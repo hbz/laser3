@@ -13,7 +13,7 @@ class FactService {
           'from Fact as f ' +
           'where f.factFrom >= :start and f.factTo <= :end and f.factType.value=:factType and exists ' +
           '(select 1 from IssueEntitlement as ie INNER JOIN ie.tipp as tipp ' +
-          'where ie.subscription= :sub  and tipp.title = f.relatedTitle) and f.inst = :inst'
+          'where ie.subscription= :sub  and tipp.title = f.relatedTitle and ie.status.value=:status) and f.inst = :inst'
 
   static transactional = false
 
@@ -232,7 +232,7 @@ class FactService {
     def usage = new long[firstAxis.size()][secondAxis.size()]
     factList.each { f ->
       def x_label = f.get('reportingYear').intValue()
-      def y_label = f.get('factType')
+      def y_label = f.get('factType').toString()
       usage[firstAxis.indexOf(y_label)][secondAxis.indexOf(x_label)] += Long.parseLong(f.get('factValue'))
     }
     usage
@@ -253,13 +253,14 @@ class FactService {
           params['titleid'] = title_id
         } else {
           hql += ' and exists (select 1 from IssueEntitlement as ie INNER JOIN ie.tipp as tipp ' +
-              'where ie.subscription= :sub  and tipp.title = f.relatedTitle)'
+              'where ie.subscription= :sub  and tipp.title = f.relatedTitle and ie.status.value=:status)'
           params['sub'] = sub
         }
     hql += ' group by f.factType, f.reportingYear, f.reportingMonth'
     hql += ' order by f.reportingYear desc,f.reportingMonth desc'
     params['supplierid'] = supplier_id
     params['orgid'] = org_id
+    params['status'] = 'Live'
     def queryResult = Fact.executeQuery(hql, params)
     transformToListOfMaps(queryResult)
   }
@@ -349,6 +350,7 @@ class FactService {
         end  : sub.endDate,
         sub  : sub,
         factType : factType,
+        status : 'Live',
         inst : sub.subscriber]
     )[0]
   }

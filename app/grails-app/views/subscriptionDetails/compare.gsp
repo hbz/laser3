@@ -1,5 +1,5 @@
 <%@ page import ="com.k_int.kbplus.Subscription" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
 
 <!doctype html>
 <html>

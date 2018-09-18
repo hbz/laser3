@@ -1,5 +1,5 @@
 <%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
-<% def cService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
 
 <semui:modal id="personFormModal" text="${message(code: 'person.create_new.contactPerson.label')}">
 
@@ -89,8 +89,8 @@
         </div>
 
 
-        <g:if test="${cService.getOrg()}">
-            <input type="hidden" name="tenant.id" value="${cService.getOrg().id}" />
+        <g:if test="${contextService.getOrg()}">
+            <input type="hidden" name="tenant.id" value="${contextService.getOrg().id}" />
             <input id="isPublic" name="isPublic" type="hidden" value="${isPublic?.id}" />
         </g:if>
         <g:else>
@@ -101,7 +101,7 @@
                         <label for="tenant">
                             <g:message code="person.tenant.label" default="Tenant (Permissions to edit this person and depending addresses and contacts)" />
                         </label>
-                        <g:select id="tenant" name="tenant.id" from="${cService.getMemberships()}" optionKey="id" value="${cService.getOrg()?.id}" />
+                        <g:select id="tenant" name="tenant.id" from="${contextService.getMemberships()}" optionKey="id" value="${contextService.getOrg()?.id}" />
                     </div>
 
                     <div class="field wide four fieldcontain ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">
@@ -126,22 +126,29 @@
                     </h5>
                     <div class="field">
                         <div class="three fields">
-                            <div class="field wide eight">
-                                <g:select class="ui search dropdown"
-                                      name="functionOrg"
-                                      from="${Org.getAll()}"
-                                      value="${org?.id}"
-                                      optionKey="id"
-                                      optionValue="" />
-                            </div>
-
-                            <div class="field wide six">
+                            <div class="inline sixteen wide field">
                                 <laser:select class="ui dropdown values"
                                               name="functionType"
                                               from="${PersonRole.getAllRefdataValues('Person Function')}"
                                               optionKey="id"
                                               value="${presetFunctionType?.id}"
                                               optionValue="value" />
+
+                                <g:if test=" ${org?.name}">
+                                    <label for="org">
+                                        <g:message code="contact.belongesTo.label"  />
+                                    </label>
+                                    <i class="icon university la-list-icon"></i>${org?.name}
+                                    <input id="org" name="org.id" type="hidden" value="${org?.name}" />
+                                </g:if>
+                                <g:else>
+                                    <g:select class="ui search dropdown"
+                                              name="functionOrg"
+                                              from="${Org.getAll()}"
+                                              value="${org?.id}"
+                                              optionKey="id"
+                                              optionValue="" />
+                                </g:else>
                             </div>
                         </div>
                     </div>

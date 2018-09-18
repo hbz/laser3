@@ -152,12 +152,26 @@ class LicenseDetailsController {
           }
       }
 
+        def licensee = result.license.getLicensee();
+        def consortia = result.license.getLicensingConsortium();
+
         def subscrQuery = """
 select s from Subscription as s where (
   exists ( select o from s.orgRelations as o where (o.roleType.value IN ('Subscriber', 'Subscription Consortia')) and o.org = :co) ) 
   AND ( LOWER(s.status.value) != 'deleted' ) 
 )
 """
+
+        if(consortia)
+        {
+            subscrQuery = """
+select s from Subscription as s where (
+  exists ( select o from s.orgRelations as o where (o.roleType.value IN ('Subscription Consortia')) and o.org = :co) ) 
+  AND ( LOWER(s.status.value) != 'deleted' AND (s.instanceOf is null or s.instanceOf = '') 
+)
+"""
+        }
+
         result.availableSubs = Subscription.executeQuery("${subscrQuery} order by LOWER(s.name) asc", [co: contextService.getOrg()])
 
 
@@ -219,12 +233,28 @@ select s from Subscription as s where (
         }
         else if (result.license?.instanceOf && ! result.license?.instanceOf.isTemplate()) {
             log.debug( 'ignored setting.cons_members because: LCurrent.instanceOf (LParent.noTemplate)')
-        } else {
+        }
+        else {
             if (result.institution?.orgType?.value == 'Consortium') {
                 def fsq = filterService.getOrgComboQuery(params, result.institution)
-                result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+                def all_cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+
+                result.cons_members = []
+
+                // filter by members of subscription.owner -> this
+                all_cons_members.each { org ->
+                    Subscription.where { owner == result.license }.findAll().each { subscr ->
+                        subscr.getDerivedSubscribers().each { subOrg ->
+                            if (subOrg.id == org.id) {
+                                result.cons_members << org
+                            }
+                        }
+                    }
+                }
+
                 result.cons_members_disabled = []
-                result.cons_members.each { it ->
+
+                result.cons_members.unique().each { it ->
                     if (License.executeQuery("select l from License as l join l.orgLinks as lol where l.instanceOf = ? and lol.org.id = ?",
                             [result.license, it.id])
                     ) {
@@ -439,7 +469,50 @@ from Subscription as s where
             response.sendError(401); return
         }
 
+        def validMemberLicenses = License.where {
+            (instanceOf == result.license) && (status.value != 'Deleted')
+        }
+
+        result.validMemberLicenses = validMemberLicenses
         result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def deleteMember() {
+        log.debug(params)
+
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        // adopted from SubscriptionDetailsController.deleteMember()
+
+        def delLicense      = License.get(params.target)
+        def delInstitutions = delLicense.getAllLicensee()
+
+        def deletedStatus = RefdataCategory.lookupOrCreate('License Status', 'Deleted')
+
+        if (delLicense.hasPerm("edit", result.user)) {
+            def derived_lics = License.findByInstanceOfAndStatusNot(delLicense, deletedStatus)
+
+            if (! derived_lics) {
+                if (delLicense.getLicensingConsortium() && ! ( delInstitutions.contains(delLicense.getLicensingConsortium() ) ) ) {
+                    OrgRole.executeUpdate("delete from OrgRole where lic = :l and org IN (:orgs)", [l: delLicense, orgs: delInstitutions])
+
+                    delLicense.status = deletedStatus
+                    delLicense.save(flush: true)
+                }
+            } else {
+                flash.error = message(code: 'myinst.actionCurrentLicense.error', default: 'Unable to delete - The selected license has attached licenses')
+            }
+        } else {
+            log.warn("${result.user} attempted to delete license ${delLicense} without perms")
+            flash.message = message(code: 'license.delete.norights')
+        }
+
+        redirect action: 'members', params: [id: params.id], model: result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -749,6 +822,12 @@ from Subscription as s where
 
     def processcopyLicense() {
 
+        params.id = params.baseLicense
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
         def baseLicense = com.k_int.kbplus.License.get(params.baseLicense)
 
         if (baseLicense) {
@@ -761,7 +840,8 @@ from Subscription as s where
                     type: baseLicense.type,
                     startDate: params.license.copyDates ? baseLicense?.startDate : null,
                     endDate: params.license.copyDates ? baseLicense?.endDate : null,
-                    instanceOf: params.license.links ? baseLicense.instanceOf : null
+                    instanceOf: params.license.copyLinks ? baseLicense?.instanceOf : null,
+
             )
 
 
@@ -843,10 +923,8 @@ from Subscription as s where
 
                     }
                     //Copy References
-                    if (params.license.copyLinks){
-
                         baseLicense.orgLinks?.each { or ->
-
+                            if ((or.org == contextService.getOrg()) || (or.roleType.value in ["Licensee", "Licensee_Consortial"]) || (params.license.copyLinks)) {
                             OrgRole newOrgRole = new OrgRole()
                             InvokerHelper.setProperties(newOrgRole, or.properties)
                             newOrgRole.lic = licenseInstance

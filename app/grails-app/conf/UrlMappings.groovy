@@ -22,7 +22,7 @@ class UrlMappings {
         "/api/$version/spec"    (controller: 'api', action: 'loadSpec')
         "/api/$version/$obj"    (controller: 'api', action: 'dispatch')
 
-        "/"                     (view: "public/index")
+        "/"                     (controller: 'public', action: 'index')
         "/gasco"                (controller: 'public', action: 'gasco')
 
         "/oai/$id"(controller: 'oai', action: 'index')

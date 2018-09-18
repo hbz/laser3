@@ -1,5 +1,5 @@
 <%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
 
 <semui:modal id="personRoleFormModal" text="${message(code: 'person.function_new.label')}">
 
