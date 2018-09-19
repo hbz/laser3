@@ -1,6 +1,5 @@
 package com.k_int.kbplus
 
-import groovy.transform.Sortable
 import groovy.util.logging.Log4j
 import org.apache.commons.logging.LogFactory
 import org.hibernate.Query
@@ -9,10 +8,10 @@ import groovy.util.logging.*
 @Log4j
 class Contact implements Comparable<Contact>{
     private static final String REFDATA_PHONE = "Phone"
-    private static final String REFDATA_FAX = "Fax"
-    private static final String REFDATA_MAIL = "Mail"
+    private static final String REFDATA_FAX =   "Fax"
+    private static final String REFDATA_MAIL =  "Mail"
     private static final String REFDATA_EMAIL = "E-Mail"
-    private static final String REFDATA_URL = "Url"
+    private static final String REFDATA_URL =   "Url"
 
     String       content
     RefdataValue contentType    // RefdataCategory 'ContactContentType'

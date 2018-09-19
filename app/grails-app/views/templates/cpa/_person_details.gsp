@@ -71,10 +71,6 @@
                             tmplShowDeleteButton: tmplShowDeleteButton
                     ]}"/>
                 </g:if>
-                <g:else>
-                    %{--TODO: Nach erfolgreichem Test diesen else-Zweig bitte wieder entfernen.--}%
-                    TESTAUSGABE: ${contact?.contentType} (Hier könnte der gewünschte Kontakt fehlen!!!)<br>
-                </g:else>
             </g:each>
 
         </g:if>

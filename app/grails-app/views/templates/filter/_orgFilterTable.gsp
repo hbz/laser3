@@ -82,7 +82,7 @@
             </g:else>
             <g:if test="${tmplConfigShow?.contains('lineNumber')}">
                 <td class="center aligned">
-                    ${i + 1}
+                    ${(i + 1 + Integer.parseInt(params?.get('offset')?:'0'))}<br>
                 </td>
             </g:if>
             <g:if test="${tmplShowCheckbox}">
@@ -154,9 +154,7 @@
         </g:if>
             <g:if test="${tmplConfigShow?.contains('publicContacts')}">
                 <td>
-                    %{--TODO:Workaround entfernen: Bis Sortierung funktioniert werden die Funktionstypen alphabetisch sortiert--}%
-                    %{--<g:each in="${org?.prsLinks?.toSorted()}" var="pl">--}%
-                    <g:each in="${org?.prsLinks?.toSorted {it?.functionType?.getI10n('value')}}" var="pl">
+                    <g:each in="${org?.prsLinks?.toSorted()}" var="pl">
                         <g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value!='No'}">
                             <g:render template="/templates/cpa/person_details" model="${[
                                     personRole: pl,
