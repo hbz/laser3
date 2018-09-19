@@ -46,8 +46,7 @@
         <div class="ui divided middle aligned selection list la-flex-list">
 
         <div class="ui item person-details">
-            <g:link controller="person" action="show" id="${person?.id}">
-            %{--<g:link controller="person" action="show" id="${personRole?.prsId}">--}%
+            <g:link controller="person" action="show" id="${personRole?.prsId}">
                 ${personRole?.prs?.title}
                 ${personRole?.prs?.first_name}
                 ${personRole?.prs?.middle_name}
@@ -68,7 +67,8 @@
                 <g:if test="${tmplConfigShow.contains(contact?.contentType?.value)}">
                     <g:render template="/templates/cpa/contact" model="${[
                             contact: contact,
-                            tmplShowDeleteButton: tmplShowDeleteButton
+                            editable: true,
+                            tmplShowDeleteButton: true
                     ]}"/>
                 </g:if>
             </g:each>
