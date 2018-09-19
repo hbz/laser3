@@ -1,5 +1,5 @@
 <!-- _ajaxModal.gsp -->
-<%@ page import="com.k_int.kbplus.CostItem;com.k_int.kbplus.CostItemGroup;" %>
+<%@ page import="com.k_int.kbplus.CostItem;com.k_int.kbplus.CostItemGroup;com.k_int.kbplus.BudgetCode;" %>
 <laser:serviceInjection />
 
 <g:render template="vars" /><%-- setting vars --%>

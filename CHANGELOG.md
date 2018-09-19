@@ -1,4 +1,13 @@
 
+0.8.3
+
+- added: prev/next navigation for subscription
+- fixed: pagination on package view
+- fixed: hiding tipps with status 'deleted'
+- fixed: javascript dropdowns
+- fixed: org names and line breaks on gasco view
+- modified: filter on gasco view
+
 0.8.2
 
 - fixed: empty user dropdown when creating tasks
