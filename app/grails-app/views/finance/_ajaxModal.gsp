@@ -259,7 +259,11 @@
                                 $(function() {
                                     $('#newLicenseeTarget').on('change', function () {
                                         var $elems = $('#newPackageWrapper select, #newPackageWrapper .dropdown')
-                                        if ('com.k_int.kbplus.Subscription:null' == $(this).val()) {
+                                        if ( [
+                                                'com.k_int.kbplus.Subscription:forConsortia',
+                                                'com.k_int.kbplus.Subscription:forAllSubscribers'
+                                            ].includes($(this).val())
+                                        ) {
                                             $elems.removeAttr('disabled')
                                             $elems.removeClass('disabled')
                                         } else {

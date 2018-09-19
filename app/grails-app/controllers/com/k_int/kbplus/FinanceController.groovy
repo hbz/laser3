@@ -887,10 +887,16 @@ class FinanceController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def newCostItemsPresent() {
-        def dateTimeFormat  = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
         def institution = contextService.getOrg()
-        Date dateTo     = params.to? dateTimeFormat.parse(params.to):new Date()//getFromToDate(params.to,"to")
-        int counter     = CostItem.countByOwnerAndLastUpdatedGreaterThan(institution,dateTo)
+        def dateTimeFormat  = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
+        Date dateTo
+
+        try {
+            dateTo = dateTimeFormat.parse(params.to)
+        } catch(Exception e) {
+            dateTo = new Date()
+        }
+        int counter     = CostItem.countByOwnerAndLastUpdatedGreaterThan(institution, dateTo)
 
         def builder = new groovy.json.JsonBuilder()
         def root    = builder {
