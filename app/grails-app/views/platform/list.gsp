@@ -8,8 +8,12 @@
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
+	<semui:breadcrumbs>
+		<semui:crumb message="platforms.all_platforms.label" class="active" />
+	</semui:breadcrumbs>
 
-			<h1 class="ui header"><semui:headerIcon /><g:message code="default.list.label" args="[entityName]" /></h1>
+
+	<h1 class="ui header"><semui:headerIcon /><g:message code="platforms.all_platforms.label" args="[entityName]" /></h1>
 
 			<semui:messages data="${flash}" />
 

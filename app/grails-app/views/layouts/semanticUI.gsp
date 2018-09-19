@@ -109,6 +109,7 @@
                                     <g:link class="item" controller="organisations" action="index">${message(code:'menu.institutions.all_orgs')}</g:link>
                                 </sec:ifAnyGranted>
                                     <g:link class="item" controller="organisations" action="listProvider">${message(code:'menu.institutions.all_provider')}</g:link>
+                                    <g:link class="item" controller="platform" action="list">${message(code:'menu.institutions.all_platforms')}</g:link>
 
                                 <%--<div class="divider"></div>
 
