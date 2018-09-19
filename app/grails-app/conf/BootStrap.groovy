@@ -1155,6 +1155,12 @@ class BootStrap {
         RefdataValue.loc('Authority', [en: 'Institution', de: 'Institution'])
         RefdataValue.loc('Authority', [en: 'Author and Institution', de: 'Autor und Institution'])
 
+        RefdataCategory.loc('CostItem.Type',
+                [en: 'Type', de: 'Typ'])
+
+        RefdataValue.loc('CostItem.Type', [en: 'Actual', de: 'Konkrete Instanz'])
+        RefdataValue.loc('CostItem.Type', [en: 'Template', de: 'Vorlage'])
+
         RefdataCategory.loc('CostItemCategory',
                 [en: 'CostItemCategory', de: 'CostItemCategory'])
 
