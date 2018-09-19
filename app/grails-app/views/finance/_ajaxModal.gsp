@@ -249,8 +249,8 @@
                         <g:if test="${validSubChilds && ! costItem}">
                             <label>Teilnehmer</label>
                             <g:select name="newLicenseeTarget" id="newLicenseeTarget" class="ui dropdown"
-                                      from="${[{}] + validSubChilds}"
-                                      optionValue="${{it?.name ? it.getAllSubscribers().join(', ') : 'Gilt für die Konsortiallizenz'}}"
+                                      from="${[[id:'forConsortia', label:'Gilt für die Konsortiallizenz'], [id:'forAllSubscribers', label:'Für alle Teilnehmer']] + validSubChilds}"
+                                      optionValue="${{it?.name ? it.getAllSubscribers().join(', ') : it.label}}"
                                       optionKey="${{"com.k_int.kbplus.Subscription:" + it?.id}}"
                                       noSelection="['':'']"
                                       value="${'com.k_int.kbplus.Subscription:' + it?.id}" />
