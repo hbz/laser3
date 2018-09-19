@@ -1039,7 +1039,19 @@ class AjaxController {
                 obj.delete()
             }
         }
+        if (params.cmd?.equalsIgnoreCase('deletePersonRole')) {
+            deletePersonRole()
+        }
         redirect(url: request.getHeader('referer'))
+    }
+
+    //TODO: Überprüfuen, ob die Berechtigung korrekt funktioniert.
+    @Secured(['ROLE_ORG_EDITOR'])
+    def deletePersonRole(){
+        def obj = genericOIDService.resolveOID(params.oid)
+        if (obj) {
+                obj.delete()
+        }
     }
 
     @Secured(['ROLE_USER'])
