@@ -21,7 +21,7 @@
             <g:sortableColumn title="${message(code: 'org.shortname.label', default: 'Shortname')}" property="lower(o.shortname)"/>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('name')}">
-            <g:sortableColumn title="${message(code: 'org.name.label', default: 'Name')}" property="lower(o.name)"/>
+            <g:sortableColumn title="${message(code: 'org.fullName.label', default: 'Name')}" property="lower(o.name)"/>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('mainContact')}">
             <th>${message(code: 'org.mainContact.label', default: 'Main Contact')}</th>
@@ -80,9 +80,11 @@
             <g:else>
                 <tr>
             </g:else>
-            <td class="center aligned">
-                ${i + 1}
-            </td>
+            <g:if test="${tmplConfigShow?.contains('lineNumber')}">
+                <td class="center aligned">
+                    ${i + 1}
+                </td>
+            </g:if>
             <g:if test="${tmplShowCheckbox}">
                 <td>
                     <g:checkBox type="text" name="selectedOrgs" value="${org.id}" checked="false"/>
@@ -129,7 +131,7 @@
             <td>
                 <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RefdataValue.getByValueAndCategory('General contact person', 'Person Function'), org)}" var="person">
                     ${person?.getPrs()?.getFirst_name()} ${person?.getPrs()?.getLast_name()}<br>
-                    <g:each in ="${com.k_int.kbplus.Contact.findAllByPrsAndContentType(
+                    <g:each in ="${Contact.findAllByPrsAndContentType(
                             person.getPrs(),
                             RefdataValue.getByValueAndCategory('E-Mail', 'ContactContentType')
                         )}" var="email">
@@ -154,15 +156,16 @@
                 <td>
                     %{--TODO:Workaround entfernen: Bis Sortierung funktioniert werden die Funktionstypen alphabetisch sortiert--}%
                     %{--<g:each in="${org?.prsLinks?.toSorted()}" var="pl">--}%
-                    <g:each in="${org?.prsLinks?.toSorted {it.functionType?.getI10n('value')}}" var="pl">
+                    <g:each in="${org?.prsLinks?.toSorted {it?.functionType?.getI10n('value')}}" var="pl">
                         <g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value!='No'}">
                             <g:render template="/templates/cpa/person_details" model="${[
                                     personRole: pl,
                                     tmplShowDeleteButton: false,
+                                    tmplConfigShow: ['E-Mail', 'Mail', 'Phone'],
                                     controller: 'organisations',
                                     action: 'show',
                                     id: org.id
-                            ]}"></g:render>
+                            ]}"/>
                         </g:if>
                     </g:each>
                 </td>

@@ -17,14 +17,14 @@
         <g:if test="${person?.contacts}">
 
             <g:each in="${person?.contacts?.toSorted()}" var="contact">
-                <g:render template="/templates/cpa/contact" model="${[contact: contact, tmplShowDeleteButton: tmplShowDeleteButton]}"></g:render>
+                <g:render template="/templates/cpa/contact" model="${[contact: contact, tmplShowDeleteButton: tmplShowDeleteButton]}"/>
             </g:each>
 
         </g:if>
         <g:if test="${person?.addresses}">
 
             <g:each in="${person?.addresses?.sort{it?.type?.getI10n('value')}}" var="address">
-                <g:render template="/templates/cpa/address" model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton]}"></g:render>
+                <g:render template="/templates/cpa/address" model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton]}"/>
             </g:each>
 
         </g:if>
@@ -63,22 +63,28 @@
             </g:if>
 
         </div><!-- .person-details -->
-
         <g:if test="${personRole?.prs?.contacts}">
             <g:each in="${personRole?.prs?.contacts?.toSorted()}" var="contact">
-                <g:render template="/templates/cpa/contact" model="${[contact: contact, tmplShowDeleteButton: tmplShowDeleteButton]}"></g:render>
+                <g:if test="${tmplConfigShow.contains(contact?.contentType?.value)}">
+                    <g:render template="/templates/cpa/contact" model="${[
+                            contact: contact,
+                            tmplShowDeleteButton: tmplShowDeleteButton
+                    ]}"/>
+                </g:if>
+                <g:else>
+                    %{--TODO: Nach erfolgreichem Test diesen else-Zweig bitte wieder entfernen.--}%
+                    TESTAUSGABE: ${contact?.contentType} (Hier könnte der gewünschte Kontakt fehlen!!!)<br>
+                </g:else>
             </g:each>
 
         </g:if>
-
         <g:if test="${tmplConfigShow?.contains('address') && personRole?.prs?.addresses}">
 
             <g:each in="${personRole?.prs?.addresses?.sort{it.type?.getI10n('value')}}" var="address">
-                <g:render template="/templates/cpa/address" model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton]}"></g:render>
+                <g:render template="/templates/cpa/address" model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton]}"/>
             </g:each>
 
         </g:if>
-
         </div><!-- .la-flex-list -->
     </g:if>
 

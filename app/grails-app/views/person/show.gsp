@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue;" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue;" %>
 <!doctype html>
 <html>
 <head>
@@ -95,7 +95,7 @@ ${personInstance}
                                             controller: 'person',
                                             action: 'show',
                                             id: personInstance.id
-                                    ]}"></g:render>
+                                    ]}"/>
 
                                 </g:each>
                             </div>
@@ -118,7 +118,7 @@ ${personInstance}
                                             controller: 'person',
                                             action: 'show',
                                             id: personInstance.id
-                                    ]}"></g:render>
+                                    ]}"/>
 
                                 </g:each>
                             </div>

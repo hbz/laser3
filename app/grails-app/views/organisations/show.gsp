@@ -6,7 +6,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-        <g:if test="${orgInstance.orgType == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider','OrgType')}">
+        <g:if test="${orgInstance.orgType == RefdataValue.getByValueAndCategory('Provider','OrgType')}">
             <g:set var="entityName" value="${message(code: 'default.provider.label', default: 'Provider')}" />
         </g:if>
         <g:else>
@@ -102,7 +102,7 @@
 
                 <div class="ui card">
                     <div class="content">
-                        <g:if test="${orgInstance.orgType != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'OrgType')}">
+                        <g:if test="${orgInstance.orgType != RefdataValue.getByValueAndCategory('Provider', 'OrgType')}">
                         <dl>
                             <dt><g:message code="org.sector.label" default="Sector" /></dt>
                             <dd>
@@ -139,7 +139,7 @@
 
                 <div class="ui card">
                     <div class="content">
-                    <g:if test="${orgInstance.orgType != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'OrgType')}">
+                    <g:if test="${orgInstance.orgType != RefdataValue.getByValueAndCategory('Provider', 'OrgType')}">
                         <dl>
                             <dt><g:message code="org.libraryType.label" default="Library Type" /></dt>
                             <dd>
@@ -188,7 +188,7 @@
                                                     controller: 'org',
                                                     action: 'show',
                                                     id: orgInstance.id
-                                            ]}"></g:render>
+                                            ]}"/>
                                         </g:if>
                                     </g:each>
                                 </div>
@@ -213,7 +213,7 @@
                                                     controller: 'organisations',
                                                     action: 'show',
                                                     id: orgInstance.id
-                                            ]}"></g:render>
+                                            ]}"/>
                                         </g:if>
                                     </g:each>
                                 </div>
@@ -235,11 +235,11 @@
                                             <g:render template="/templates/cpa/person_details" model="${[
                                                     personRole: pl,
                                                     tmplShowDeleteButton: true,
-                                                    tmplConfigShow: 'address',
+                                                    tmplConfigShow: ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
                                                     controller: 'organisations',
                                                     action: 'show',
                                                     id: orgInstance.id
-                                            ]}"></g:render>
+                                            ]}"/>
                                         </g:if>
                                     </g:each>
                                 <%-- </div> --%>

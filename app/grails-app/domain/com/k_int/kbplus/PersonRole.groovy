@@ -112,7 +112,8 @@ class PersonRole implements Comparable<PersonRole>{
 
     @Override
     int compareTo(PersonRole o) {
-        String this_FunctionType = this?.functionType?.getValue()
+//        TODO: überprüfen, warum diese Sortierung selten aufgerufen wird bzw. nicht funktioniert
+        String this_FunctionType = this?.functionType?.getValue()/* Dieser Wert ist oft/immer NULL*/
         String pr_FunctionType = personRole?.functionType?.getValue()
         int result = getCompareOrderValueForType(this_FunctionType).compareTo(getCompareOrderValueForType(pr_FunctionType))
         if (result == 0) {
