@@ -366,7 +366,7 @@
             if (! isError("#newCostInBillingCurrency") && ! isError("#newCostCurrencyRate")) {
                 var input = $(this).siblings("input");
                 input.transition('glow');
-                input.val(($("#newCostInBillingCurrency").val() / $("#newCostCurrencyRate").val()).toFixed(2));
+                input.val(($("#newCostInBillingCurrency").val() * $("#newCostCurrencyRate").val()).toFixed(2));
 
                 $(".la-account-currency").find(".field").removeClass("error");
                 taxRateElem.trigger('change')
@@ -376,7 +376,7 @@
             if (! isError("#newCostInLocalCurrency") && ! isError("#newCostInBillingCurrency")) {
                 var input = $(this).siblings("input");
                 input.transition('glow');
-                input.val(($("#newCostInBillingCurrency").val() / $("#newCostInLocalCurrency").val()).toFixed(9));
+                input.val(($("#newCostInLocalCurrency").val() / $("#newCostInBillingCurrency").val()).toFixed(9));
 
                 $(".la-account-currency").find(".field").removeClass("error");
                 taxRateElem.trigger('change')
@@ -386,7 +386,7 @@
             if (! isError("#newCostInLocalCurrency") && ! isError("#newCostCurrencyRate")) {
                 var input = $(this).siblings("input");
                 input.transition('glow');
-                input.val(($("#newCostInLocalCurrency").val() * $("#newCostCurrencyRate").val()).toFixed(2));
+                input.val(($("#newCostInLocalCurrency").val() / $("#newCostCurrencyRate").val()).toFixed(2));
 
                 $(".la-account-currency").find(".field").removeClass("error");
                 taxRateElem.trigger('change')
