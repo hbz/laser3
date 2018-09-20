@@ -22,7 +22,6 @@ class MyInstitutionController {
     def dataSource
     def springSecurityService
     def ESSearchService
-    def gazetteerService
     def alertsService
     def genericOIDService
     def factService

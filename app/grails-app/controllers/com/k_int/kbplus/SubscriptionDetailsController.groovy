@@ -27,7 +27,6 @@ class SubscriptionDetailsController {
     def contextService
     def addressbookService
     def taskService
-    def gazetteerService
     def alertsService
     def genericOIDService
     def transformerService

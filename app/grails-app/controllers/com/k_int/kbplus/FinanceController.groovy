@@ -5,6 +5,7 @@ import de.laser.helper.DebugAnnotation
 import grails.converters.JSON;
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.codehaus.groovy.runtime.InvokerHelper
 
 //todo Refactor aspects into service
 //todo track state, opt 1: potential consideration of using get, opt 2: requests maybe use the #! stateful style syntax along with the history API or more appropriately history.js (cross-compatible, polyfill for HTML4)
@@ -126,7 +127,7 @@ class FinanceController {
 
           result.allCIInvoiceNumbers = (myCostItems.collect{ it -> it?.invoice?.invoiceNumber }).findAll{ it }.unique().sort()
           result.allCIOrderNumbers   = (myCostItems.collect{ it -> it?.order?.orderNumber }).findAll{ it }.unique().sort()
-          result.allCIBudgetCodes    = (myCostItems.collect{ it -> it?.budgetcodes?.value }).flatten().unique().sort()
+          result.allCIBudgetCodes    = (myCostItems.collect{ it -> it?.getBudgetcodes()?.value }).flatten().unique().sort()
 
           result.allCISPkgs = (myCostItems.collect{ it -> it?.subPkg }).findAll{ it }.unique().sort()
           result.allCISubs  = (myCostItems.collect{ it -> it?.sub }).findAll{ it }.unique().sort()
@@ -278,13 +279,13 @@ class FinanceController {
                 }
 
                 result.cost_items.each { c -> // TODO: CostItemGroup -> BudgetCode
-                    if (!c.budgetcodes.isEmpty())
+                    if (!c.getBudgetcodes().isEmpty())
                     {
-                        log.debug("${c.budgetcodes.size()} codes for Cost Item: ${c.id}")
+                        log.debug("${c.getBudgetcodes().size()} codes for Cost Item: ${c.id}")
 
                         def status = c?.costItemStatus?.value? c.costItemStatus.value.toString() : "Unknown"
 
-                        c.budgetcodes.each {bc ->
+                        c.getBudgetcodes().each {bc ->
                             if (! codeResult.containsKey(bc.value))
                                 codeResult[bc.value] //sets up with default values
 
@@ -597,6 +598,45 @@ class FinanceController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def copyCostItem() {
+        def result = [:]
+
+        result.inSubMode = params.sub ? true : false
+        if (result.inSubMode) {
+            result.fixedSubscription = params.int('sub') ? Subscription.get(params.sub) : null
+        }
+
+        def ci = CostItem.findById(params.id)
+
+        CostItem newCostItem = new CostItem()
+        InvokerHelper.setProperties(newCostItem, ci.properties)
+        newCostItem.globalUID = null
+
+        if (! newCostItem.validate())
+        {
+            result.error = newCostItem.errors.allErrors.collect {
+                log.error("Field: ${it.properties.field}, user input: ${it.properties.rejectedValue}, Reason! ${it.properties.code}")
+                message(code:'finance.addNew.error', args:[it.properties.field])
+            }
+            println result.error
+        }
+        else {
+            if ( newCostItem.save(flush: true) ) {
+                ci.getBudgetcodes().each{ bc ->
+                    if (! CostItemGroup.findByCostItemAndBudgetCode(newCostItem, bc)) {
+                        new CostItemGroup(costItem: newCostItem, budgetCode: bc).save(flush: true)
+                    }
+                }
+
+                result.costItem = newCostItem
+            }
+        }
+        redirect(uri: request.getHeader('referer') )
+        //render(template: "/finance/ajaxModal", model: result)
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def deleteCostItem() {
         def result = [:]
         def user = User.get(springSecurityService.principal.id)
@@ -617,7 +657,8 @@ class FinanceController {
             log.debug("deleting CostItem: " + ci)
             ci.delete()
         }
-        redirect(controller: 'myInstitution', action: 'finance')
+        //redirect(controller: 'myInstitution', action: 'finance')
+        redirect(uri: request.getHeader('referer') )
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')

@@ -16,7 +16,6 @@ class LicenseDetailsController {
     def springSecurityService
     def taskService
     def docstoreService
-    def gazetteerService
     def alertsService
     def genericOIDService
     def transformerService

@@ -48,8 +48,8 @@ class CostItem extends BaseDomainComponent implements TemplateSupport {
     Date dateCreated
     User createdBy
 
-    @Transient
-    def budgetcodes //Binds getBudgetcodes
+    //@Transient
+    //def budgetcodes //Binds getBudgetcodes
 
     @Transient
     def springSecurityService
