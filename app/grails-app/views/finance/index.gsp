@@ -290,7 +290,7 @@
         financeHelper.calcSumOfCosts()
     })
 
-    $('table[id^=costTable] .x .button:not(.negative)').on('click', function(e) {
+    $('table[id^=costTable] .x .trigger-modal').on('click', function(e) {
         e.preventDefault()
 
         $.ajax({

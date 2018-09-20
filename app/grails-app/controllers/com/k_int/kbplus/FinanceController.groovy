@@ -631,8 +631,8 @@ class FinanceController {
                 result.costItem = newCostItem
             }
         }
-        redirect(uri: request.getHeader('referer') )
         //render(template: "/finance/ajaxModal", model: result)
+        redirect(uri: request.getHeader('referer') )
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')

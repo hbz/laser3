@@ -66,7 +66,7 @@
             <td class="x">
                 <g:if test="${editable}">
                     <g:if test="${inSubMode}">
-                        <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}"]' class="ui icon button">
+                        <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}"]' class="ui icon button trigger-modal">
                             <i class="write icon"></i>
                         </g:link>
                         <span data-position="top right" data-tooltip="${message(code:'financials.costItem.copy.tooltip')}">
@@ -76,7 +76,7 @@
                         </span>
                     </g:if>
                     <g:else>
-                        <g:link controller="finance" action="editCostItem" id="${ci.id}" class="ui icon button">
+                        <g:link controller="finance" action="editCostItem" id="${ci.id}" class="ui icon button trigger-modal">
                             <i class="write icon"></i>
                         </g:link>
                         <span data-position="top right" data-tooltip="${message(code:'financials.costItem.copy.tooltip')}">
