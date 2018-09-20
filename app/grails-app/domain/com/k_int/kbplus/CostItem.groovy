@@ -29,10 +29,14 @@ class CostItem extends BaseDomainComponent implements TemplateSupport {
     Double costInLocalCurrency     //local amount entered
     Double currencyRate
 
-    Double costInBillingCurrencyAfterTax
-    Double costInLocalCurrencyAfterTax
     Integer taxRate
     Boolean finalCostRounding
+
+    @Transient
+    Double costInLocalCurrencyAfterTax
+    @Transient
+    Double costInBillingCurrencyAfterTax
+
     Date invoiceDate
 
     String costTitle
@@ -72,10 +76,10 @@ class CostItem extends BaseDomainComponent implements TemplateSupport {
         costDescription column: 'ci_cost_description', type:'text'
         costTitle       column: 'ci_cost_title'
         costInBillingCurrency           column: 'ci_cost_in_billing_currency'
-        costInBillingCurrencyAfterTax   column: 'ci_cost_in_billing_currency_after_tax'
+        //costInBillingCurrencyAfterTax   column: 'ci_cost_in_billing_currency_after_tax'
         datePaid            column: 'ci_date_paid'
         costInLocalCurrency             column: 'ci_cost_in_local_currency'
-        costInLocalCurrencyAfterTax     column: 'ci_cost_in_local_currency_after_tax'
+        //costInLocalCurrencyAfterTax     column: 'ci_cost_in_local_currency_after_tax'
         currencyRate    column: 'ci_currency_rate'
         finalCostRounding               column:'ci_final_cost_rounding'
         taxCode         column: 'ci_tax_code'
@@ -103,10 +107,10 @@ class CostItem extends BaseDomainComponent implements TemplateSupport {
         costDescription (nullable: true, blank: false)
         costTitle       (nullable: true, blank: false)
         costInBillingCurrency           (nullable: true, blank: false)
-        costInBillingCurrencyAfterTax   (nullable: true, blank: false)
+        //costInBillingCurrencyAfterTax   (nullable: true, blank: false)
         datePaid        (nullable: true, blank: false)
         costInLocalCurrency             (nullable: true, blank: false)
-        costInLocalCurrencyAfterTax     (nullable: true, blank: false)
+        //costInLocalCurrencyAfterTax     (nullable: true, blank: false)
         currencyRate    (nullable: true, blank: false, scale: 9)
         finalCostRounding               (nullable: true, blank: false)
         taxCode         (nullable: true, blank: false)
@@ -161,6 +165,14 @@ class CostItem extends BaseDomainComponent implements TemplateSupport {
         return CostItemGroup.findAllByCostItem(this).collect {
             [id:it.id, value:it.budgetcode.value]
         } */
+    }
+
+    def getCostInLocalCurrencyAfterTax() {
+        ( costInLocalCurrency ?: 0.0 ) * ( taxRate ? ((taxRate/100) + 1) : 1 )
+    }
+
+    def getCostInBillingCurrencyAfterTax() {
+        ( costInBillingCurrency ?: 0.0 ) * ( taxRate ? ((taxRate/100) + 1) : 1 )
     }
 
     /**
