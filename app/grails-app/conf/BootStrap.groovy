@@ -872,6 +872,8 @@ class BootStrap {
 
         RefdataValue.loc('FactType', [en: 'STATS:JR1'])
         RefdataValue.loc('FactType', [en: 'STATS:JR1GOA'])
+        RefdataValue.loc('FactType', [en: 'STATS:DB1'])
+
 
         RefdataValue.loc('Federal State',   [en: 'Baden-Wurttemberg', de: 'Baden-Württemberg'])
         RefdataValue.loc('Federal State',   [en: 'Bavaria', de: 'Bayern'])
@@ -1152,6 +1154,12 @@ class BootStrap {
         RefdataValue.loc('Authority', [en: 'Author', de: 'Autor'])
         RefdataValue.loc('Authority', [en: 'Institution', de: 'Institution'])
         RefdataValue.loc('Authority', [en: 'Author and Institution', de: 'Autor und Institution'])
+
+        RefdataCategory.loc('CostItem.Type',
+                [en: 'Type', de: 'Typ'])
+
+        RefdataValue.loc('CostItem.Type', [en: 'Actual', de: 'Konkrete Instanz'])
+        RefdataValue.loc('CostItem.Type', [en: 'Template', de: 'Vorlage'])
 
         RefdataCategory.loc('CostItemCategory',
                 [en: 'CostItemCategory', de: 'CostItemCategory'])

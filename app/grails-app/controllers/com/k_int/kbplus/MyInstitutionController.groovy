@@ -22,7 +22,6 @@ class MyInstitutionController {
     def dataSource
     def springSecurityService
     def ESSearchService
-    def gazetteerService
     def alertsService
     def genericOIDService
     def factService
@@ -3176,6 +3175,10 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
         result.budgetCodes = BudgetCode.findAllByOwner(result.institution, [sort: 'value'])
 
+        if (params.redirect) {
+            redirect(url: request.getHeader('referer'), params: params)
+        }
+
         result
     }
 
@@ -3203,6 +3206,9 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result.myTaskInstanceList = taskService.getTasksByCreator(result.user, null)
 
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+
+        def preCon = taskService.getPreconditions(contextService.getOrg())
+        result << preCon
 
         log.debug(result.taskInstanceList)
         result

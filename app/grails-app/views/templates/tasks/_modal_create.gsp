@@ -119,7 +119,7 @@
             </div>
         </div>
 
-        <div class="field">
+        <div class="field" id="radioGroup">
             <div class="two fields">
                 <div class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'responsible', 'error')}">
                     <label for="responsible">
@@ -197,14 +197,20 @@
         </r:script>
     </g:if>
     <r:script>
-        $("#radioresponsibleOrg").change(function () {
-            $("#responsibleUser").hide();
-        });
-        $("#radioresponsibleUser").change(function () {
-            $("#responsibleUser").show();
-        });
-        $("#radioresponsibleOrg").prop( "checked", true );
-        $("#responsibleUser").hide();
+            $("#radioresponsibleOrg").change(function () {
+                $('#radioGroup').find("#responsibleUser").toggle();
+
+            });
+            $("#radioresponsibleUser").change(function () {
+                $('#radioGroup').find("#responsibleUser").toggle();
+            });
+            if ($("#radioresponsibleUser").is(':checked')) {
+                $("#responsibleUser").show();
+            } else {
+                $("#responsibleUser").hide();
+            }
+
+
 
         function chooseRequiredDropdown(opt) {
             $('#create_task')

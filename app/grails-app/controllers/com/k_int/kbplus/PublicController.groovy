@@ -21,7 +21,7 @@ class PublicController {
 
         result.allConsortia = Org.findAllByOrgType(
                 RefdataValue.getByValueAndCategory('Consortium', 'OrgType')
-        ).sort{ it.getDesignation() }
+        ).sort{ it.name }
 
         if (! params.subTypes && ! params.consortia && ! params.q) {
             // init filter with checkboxes checked
@@ -104,7 +104,7 @@ class PublicController {
             if (scp) {
                 result.subscription = sub
 
-                def query = "SELECT tipp FROM TitleInstancePackagePlatform as tipp WHERE tipp.pkg = :pkg "
+                def query = "SELECT tipp FROM TitleInstancePackagePlatform as tipp WHERE tipp.pkg = :pkg and tipp.status.value != 'Deleted'"
                 def queryParams = [pkg: pkg]
 
                 result.tippsCount = TitleInstancePackagePlatform.executeQuery(query, queryParams).size()

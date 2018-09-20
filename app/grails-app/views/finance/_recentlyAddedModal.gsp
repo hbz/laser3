@@ -1,4 +1,4 @@
-<!-- _recentlyAdded.gsp -->
+<!-- _recentlyAddedModal.gsp -->
 
 <semui:modal id="recentlyAdded_modal" text="${message(code:'financials.recentCosts')}" hideSubmitButton="true">
 
@@ -50,4 +50,4 @@
 
 </semui:modal>
 
-<!-- _recentlyAdded.gsp -->
+<!-- _recentlyAddedModal.gsp -->

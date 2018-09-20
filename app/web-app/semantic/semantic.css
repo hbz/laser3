@@ -1328,6 +1328,11 @@ body[class*="organisation"] .ui.label.la-object .icon:before {
 .la-space-right {
   padding-right: 20px;
 }
+
+.la-break-all {
+  word-wrap: break-word;
+  word-break: break-all;
+}
 /*!
  * # Semantic UI 2.3.1 - Button
  * http://github.com/semantic-org/semantic-ui/
@@ -16483,6 +16488,10 @@ a.ui.basic.label:hover {
   left: calc(-2.8rem);
   top: -22px;
 }
+
+.ui.card .ui.label {
+  margin: 0;
+}
 /*!
  * # Semantic UI 2.3.1 - List
  * http://github.com/semantic-org/semantic-ui/
@@ -17595,6 +17604,18 @@ ol.ui.horizontal.list li:before,
   display: -webkit-inline-box;
   display: -ms-inline-flexbox;
   display: inline-flex;
+}
+
+.la-list-border-around {
+  border: 1px solid #eaeaea;
+}
+
+.ui.item.person-details:hover {
+  background: white!important;
+}
+
+.la-border-selected {
+  border: 1px solid #bb1600;
 }
 /*!
  * # Semantic UI 2.3.1 - Loader
@@ -28174,6 +28195,21 @@ Floated Menu / Item
   color: inherit;
   padding: 0.78571429em 0.78571429em;
 }
+
+.ui.table thead th.la-smaller-table-head {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* wrap small needed th to avoid table layout break */
+
+.ui.sortable.table thead th.la-th-wrap {
+  white-space: normal;
+}
+
+.ui.sortable.table thead th.la-hyphenation {
+  text-align: justify;
+}
 /*!
  * # Semantic UI 2.3.1 - Ad
  * http://github.com/semantic-org/semantic-ui/
@@ -29589,6 +29625,11 @@ a.ui.card:hover,
   z-index: '';
 }
 
+.ui.cards > .card,
+.ui.card {
+  width: 271px;
+}
+
 .ui.cards > .card > .content > .header,
 .ui.card > .content > .header {
   display: block;
@@ -29670,6 +29711,16 @@ a.ui.card:hover,
 .inline-lists > dl > dd {
   width: 70%;
   word-wrap: break-word;
+}
+
+.ui.card > .extra a:not(.ui),
+.ui.cards > .card > .extra a:not(.ui) {
+  color: #4183C4;
+}
+
+.ui.card > .content > a.header,
+.ui.cards > .card > .content > a.header {
+  color: #4183C4;
 }
 /*!
  * # Semantic UI 2.3.1 - Comment

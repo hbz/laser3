@@ -13,6 +13,7 @@ class UrlMappings {
         "/myInstitution/finance"        (controller: 'finance', action: 'index')
         name subfinance:        "/subscriptionDetails/$sub/finance/"   (controller: 'finance', action: 'index')
         name subfinanceEditCI:  "/subscriptionDetails/$sub/editCostItem/$id"   (controller: 'finance', action: 'editCostItem')
+        name subfinanceCopyCI:  "/subscriptionDetails/$sub/copyCostItem/$id"   (controller: 'finance', action: 'copyCostItem')
 
         "/ajax/$action?/$id?"(controller: 'ajax')
 

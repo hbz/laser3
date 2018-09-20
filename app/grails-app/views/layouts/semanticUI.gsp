@@ -109,6 +109,7 @@
                                     <g:link class="item" controller="organisations" action="index">${message(code:'menu.institutions.all_orgs')}</g:link>
                                 </sec:ifAnyGranted>
                                     <g:link class="item" controller="organisations" action="listProvider">${message(code:'menu.institutions.all_provider')}</g:link>
+                                    <g:link class="item" controller="platform" action="list">${message(code:'menu.institutions.all_platforms')}</g:link>
 
                                 <%--<div class="divider"></div>
 
@@ -581,7 +582,11 @@
             <div class="ui text loader active">Loading</div>
         </div>
 
-        <%-- <a href="#globalJumpMark" class="ui button icon" style="position:fixed;right:0;bottom:0;"><i class="angle up icon"></i></a> --%>
+        <%-- global confirmation modal --%>
+        <semui:confirmationModal  />
+
+
+    <%-- <a href="#globalJumpMark" class="ui button icon" style="position:fixed;right:0;bottom:0;"><i class="angle up icon"></i></a> --%>
 
         <r:layoutResources/>
 

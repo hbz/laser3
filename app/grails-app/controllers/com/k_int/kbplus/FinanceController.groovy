@@ -5,6 +5,7 @@ import de.laser.helper.DebugAnnotation
 import grails.converters.JSON;
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.codehaus.groovy.runtime.InvokerHelper
 
 //todo Refactor aspects into service
 //todo track state, opt 1: potential consideration of using get, opt 2: requests maybe use the #! stateful style syntax along with the history API or more appropriately history.js (cross-compatible, polyfill for HTML4)
@@ -126,7 +127,7 @@ class FinanceController {
 
           result.allCIInvoiceNumbers = (myCostItems.collect{ it -> it?.invoice?.invoiceNumber }).findAll{ it }.unique().sort()
           result.allCIOrderNumbers   = (myCostItems.collect{ it -> it?.order?.orderNumber }).findAll{ it }.unique().sort()
-          result.allCIBudgetCodes    = (myCostItems.collect{ it -> it?.budgetcodes?.value }).flatten().unique().sort()
+          result.allCIBudgetCodes    = (myCostItems.collect{ it -> it?.getBudgetcodes()?.value }).flatten().unique().sort()
 
           result.allCISPkgs = (myCostItems.collect{ it -> it?.subPkg }).findAll{ it }.unique().sort()
           result.allCISubs  = (myCostItems.collect{ it -> it?.sub }).findAll{ it }.unique().sort()
@@ -278,13 +279,13 @@ class FinanceController {
                 }
 
                 result.cost_items.each { c -> // TODO: CostItemGroup -> BudgetCode
-                    if (!c.budgetcodes.isEmpty())
+                    if (!c.getBudgetcodes().isEmpty())
                     {
-                        log.debug("${c.budgetcodes.size()} codes for Cost Item: ${c.id}")
+                        log.debug("${c.getBudgetcodes().size()} codes for Cost Item: ${c.id}")
 
                         def status = c?.costItemStatus?.value? c.costItemStatus.value.toString() : "Unknown"
 
-                        c.budgetcodes.each {bc ->
+                        c.getBudgetcodes().each {bc ->
                             if (! codeResult.containsKey(bc.value))
                                 codeResult[bc.value] //sets up with default values
 
@@ -597,6 +598,45 @@ class FinanceController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def copyCostItem() {
+        def result = [:]
+
+        result.inSubMode = params.sub ? true : false
+        if (result.inSubMode) {
+            result.fixedSubscription = params.int('sub') ? Subscription.get(params.sub) : null
+        }
+
+        def ci = CostItem.findById(params.id)
+
+        CostItem newCostItem = new CostItem()
+        InvokerHelper.setProperties(newCostItem, ci.properties)
+        newCostItem.globalUID = null
+
+        if (! newCostItem.validate())
+        {
+            result.error = newCostItem.errors.allErrors.collect {
+                log.error("Field: ${it.properties.field}, user input: ${it.properties.rejectedValue}, Reason! ${it.properties.code}")
+                message(code:'finance.addNew.error', args:[it.properties.field])
+            }
+            println result.error
+        }
+        else {
+            if ( newCostItem.save(flush: true) ) {
+                ci.getBudgetcodes().each{ bc ->
+                    if (! CostItemGroup.findByCostItemAndBudgetCode(newCostItem, bc)) {
+                        new CostItemGroup(costItem: newCostItem, budgetCode: bc).save(flush: true)
+                    }
+                }
+
+                result.costItem = newCostItem
+            }
+        }
+        redirect(uri: request.getHeader('referer') )
+        //render(template: "/finance/ajaxModal", model: result)
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def deleteCostItem() {
         def result = [:]
         def user = User.get(springSecurityService.principal.id)
@@ -617,7 +657,8 @@ class FinanceController {
             log.debug("deleting CostItem: " + ci)
             ci.delete()
         }
-        redirect(controller: 'myInstitution', action: 'finance')
+        //redirect(controller: 'myInstitution', action: 'finance')
+        redirect(uri: request.getHeader('referer') )
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -650,23 +691,35 @@ class FinanceController {
         if (params.newInvoiceNumber)
             invoice = Invoice.findByInvoiceNumberAndOwner(params.newInvoiceNumber, result.institution) ?: new Invoice(invoiceNumber: params.newInvoiceNumber, owner: result.institution).save(flush: true);
 
-        def sub = null;
+        def subsToDo = [];
         if (params.newSubscription?.contains("com.k_int.kbplus.Subscription:"))
         {
             try {
-                sub = Subscription.get(params.newSubscription.split(":")[1]);
+                subsToDo << genericOIDService.resolveOID(params.newSubscription)
             } catch (Exception e) {
                 log.error("Non-valid subscription sent ${params.newSubscription}",e)
             }
 
         }
 
-          // NEW: create cost items for members
-          // TODO
-          if (params.newLicenseeTarget && (params.newLicenseeTarget != "com.k_int.kbplus.Subscription:null")) {
-            sub = genericOIDService.resolveOID(params.newLicenseeTarget)
-          }
+          switch (params.newLicenseeTarget) {
 
+              case 'com.k_int.kbplus.Subscription:forConsortia':
+                  // keep current
+                  break
+              case 'com.k_int.kbplus.Subscription:forAllSubscribers':
+                  // iterate over members
+                  subsToDo = Subscription.findAllByInstanceOfAndStatusNotEqual(
+                          genericOIDService.resolveOID(params.newSubscription),
+                          RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+                  )
+                  break
+              default:
+                  if (params.newLicenseeTarget) {
+                      subsToDo = genericOIDService.resolveOID(params.newLicenseeTarget)
+                  }
+                  break
+          }
 
         def pkg = null;
         if (params.newPackage?.contains("com.k_int.kbplus.SubscriptionPackage:"))
@@ -729,63 +782,90 @@ class FinanceController {
 
         //def inclSub = params.includeInSubscription? (RefdataValue.get(params.long('includeInSubscription'))): defaultInclSub //todo Speak with Owen, unknown behaviour
 
-          if (params.oldCostItem && genericOIDService.resolveOID(params.oldCostItem)) {
-              newCostItem = genericOIDService.resolveOID(params.oldCostItem)
-          }
-          else {
-              newCostItem = new CostItem()
-          }
+          println subsToDo
 
-            newCostItem.owner               = result.institution
-            newCostItem.sub                 = sub
-            newCostItem.subPkg              = pkg
-            newCostItem.issueEntitlement    = ie
-            newCostItem.order               = order
-            newCostItem.invoice             = invoice
-            newCostItem.costItemCategory    = cost_item_category
-            newCostItem.costItemElement     = cost_item_element
-            newCostItem.costItemStatus      = cost_item_status
-            newCostItem.billingCurrency     = billing_currency //Not specified default to GDP
-            newCostItem.taxCode             = cost_tax_type
-            newCostItem.costDescription     = params.newDescription ? params.newDescription.trim() : null
-            newCostItem.costTitle           = params.newCostTitle ?: null
-            newCostItem.costInBillingCurrency = cost_billing_currency as Double
-            newCostItem.costInLocalCurrency = cost_local_currency as Double
+          subsToDo.each { sub ->
 
-            newCostItem.finalCostRounding   = params.newFinalCostRounding ? true : false
-            newCostItem.costInBillingCurrencyAfterTax = cost_billing_currency_after_tax as Double
-            newCostItem.costInLocalCurrencyAfterTax   = cost_local_currency_after_tax as Double
-            newCostItem.currencyRate                  = cost_currency_rate as Double
-            newCostItem.taxRate                       = new_tax_rate as Integer
+              if (params.oldCostItem && genericOIDService.resolveOID(params.oldCostItem)) {
+                  newCostItem = genericOIDService.resolveOID(params.oldCostItem)
+              }
+              else {
+                  newCostItem = new CostItem()
+              }
 
-            newCostItem.datePaid            = datePaid
-            newCostItem.startDate           = startDate
-            newCostItem.endDate             = endDate
-            newCostItem.invoiceDate         = invoiceDate
+              newCostItem.owner = result.institution
+              newCostItem.sub = sub
+              newCostItem.subPkg = pkg
+              newCostItem.issueEntitlement = ie
+              newCostItem.order = order
+              newCostItem.invoice = invoice
+              newCostItem.costItemCategory = cost_item_category
+              newCostItem.costItemElement = cost_item_element
+              newCostItem.costItemStatus = cost_item_status
+              newCostItem.billingCurrency = billing_currency //Not specified default to GDP
+              newCostItem.taxCode = cost_tax_type
+              newCostItem.costDescription = params.newDescription ? params.newDescription.trim() : null
+              newCostItem.costTitle = params.newCostTitle ?: null
+              newCostItem.costInBillingCurrency = cost_billing_currency as Double
+              newCostItem.costInLocalCurrency = cost_local_currency as Double
 
-            newCostItem.includeInSubscription = null //todo Discussion needed, nobody is quite sure of the functionality behind this...
-            newCostItem.reference           = params.newReference? params.newReference.trim()?.toLowerCase() : null
+              newCostItem.finalCostRounding = params.newFinalCostRounding ? true : false
+              newCostItem.costInBillingCurrencyAfterTax = cost_billing_currency_after_tax as Double
+              newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double
+              newCostItem.currencyRate = cost_currency_rate as Double
+              newCostItem.taxRate = new_tax_rate as Integer
 
-        if (!newCostItem.validate())
-        {
-            result.error = newCostItem.errors.allErrors.collect {
-                log.error("Field: ${it.properties.field}, user input: ${it.properties.rejectedValue}, Reason! ${it.properties.code}")
-                message(code:'finance.addNew.error',args:[it.properties.field])
-            }
-        }
-        else
-        {
-            if (newCostItem.save(flush: true))
-            {
-                if (params.newBudgetCode)
-                    createBudgetCodes(newCostItem, params.newBudgetCode?.trim()?.toLowerCase(), result.institution)
-            } else {
-                result.error = "Unable to save!"
-            }
-        }
+              newCostItem.datePaid = datePaid
+              newCostItem.startDate = startDate
+              newCostItem.endDate = endDate
+              newCostItem.invoiceDate = invoiceDate
+
+              newCostItem.includeInSubscription = null //todo Discussion needed, nobody is quite sure of the functionality behind this...
+              newCostItem.reference = params.newReference ? params.newReference.trim()?.toLowerCase() : null
+
+
+              if (! newCostItem.validate())
+              {
+                  result.error = newCostItem.errors.allErrors.collect {
+                      log.error("Field: ${it.properties.field}, user input: ${it.properties.rejectedValue}, Reason! ${it.properties.code}")
+                      message(code:'finance.addNew.error', args:[it.properties.field])
+                  }
+              }
+              else
+              {
+                  if (newCostItem.save(flush: true)) {
+                      def newBcObjs = []
+
+                      params.list('newBudgetCodes')?.each { newbc ->
+                          def bc = genericOIDService.resolveOID(newbc)
+                          if (bc) {
+                              newBcObjs << bc
+                              if (! CostItemGroup.findByCostItemAndBudgetCode( newCostItem, bc )) {
+                                  new CostItemGroup(costItem: newCostItem, budgetCode: bc).save(flush: true)
+                              }
+                          }
+                      }
+
+                      def toDelete = newCostItem.getBudgetcodes().minus(newBcObjs)
+                      toDelete.each{ bc ->
+                          def cig = CostItemGroup.findByCostItemAndBudgetCode( newCostItem, bc )
+                          if (cig) {
+                              log.debug('deleting ' + cig)
+                              cig.delete()
+                          }
+                      }
+
+                  } else {
+                      result.error = "Unable to save!"
+                  }
+              }
+          } // subsToDo.each
+
+
+
       }
       catch ( Exception e ) {
-        log.error("Problem in add cost item",e);
+        log.error("Problem in add cost item", e);
       }
 
       params.remove("Add")
@@ -794,6 +874,7 @@ class FinanceController {
         redirect(uri: request.getHeader('referer') )
     }
 
+    @Deprecated
     private def createBudgetCodes(CostItem costItem, String budgetcodes, Org budgetOwner)
     {
         def result = []
@@ -847,10 +928,16 @@ class FinanceController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def newCostItemsPresent() {
-        def dateTimeFormat  = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
         def institution = contextService.getOrg()
-        Date dateTo     = params.to? dateTimeFormat.parse(params.to):new Date()//getFromToDate(params.to,"to")
-        int counter     = CostItem.countByOwnerAndLastUpdatedGreaterThan(institution,dateTo)
+        def dateTimeFormat  = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
+        Date dateTo
+
+        try {
+            dateTo = dateTimeFormat.parse(params.to)
+        } catch(Exception e) {
+            dateTo = new Date()
+        }
+        int counter     = CostItem.countByOwnerAndLastUpdatedGreaterThan(institution, dateTo)
 
         def builder = new groovy.json.JsonBuilder()
         def root    = builder {
@@ -1068,6 +1155,7 @@ class FinanceController {
         render result as JSON
     }
 
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def createCode() {

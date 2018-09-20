@@ -32,6 +32,7 @@
     <semui:messages data="${flash}" />
 
     <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList]}"/>
+    <g:render template="/templates/tasks/js_taskedit"/>
 
 </body>
 </html>

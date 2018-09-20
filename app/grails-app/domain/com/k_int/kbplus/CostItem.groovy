@@ -2,10 +2,11 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.domain.BaseDomainComponent
+import de.laser.domain.TemplateSupport
 
 import javax.persistence.Transient
 
-class CostItem extends BaseDomainComponent {
+class CostItem extends BaseDomainComponent implements TemplateSupport {
 
     Org owner
     Subscription sub
@@ -13,6 +14,8 @@ class CostItem extends BaseDomainComponent {
     IssueEntitlement issueEntitlement
     Order order
     Invoice invoice
+
+    RefdataValue type               // RefdataCategory 'CostItem.Type'
 
     //Status & Costing Values...
     RefdataValue costItemStatus     // RefdataCategory 'CostItemStatus' : cost est,actual,etc
@@ -45,8 +48,8 @@ class CostItem extends BaseDomainComponent {
     Date dateCreated
     User createdBy
 
-    @Transient
-    def budgetcodes //Binds getBudgetcodes
+    //@Transient
+    //def budgetcodes //Binds getBudgetcodes
 
     @Transient
     def springSecurityService
@@ -55,7 +58,8 @@ class CostItem extends BaseDomainComponent {
 
     static mapping = {
         id              column: 'ci_id'
-        globalUID       column:'ci_guid'
+        globalUID       column: 'ci_guid'
+        type            column: 'ci_type_rv_fk'
         version         column: 'ci_version'
         sub             column: 'ci_sub_fk'
         owner           column: 'ci_owner'
@@ -89,6 +93,7 @@ class CostItem extends BaseDomainComponent {
     static constraints = {
         globalUID       (nullable:true, blank:false, unique:true, maxSize:255)
         owner           (nullable: false, blank: false)
+        type            (nullable: true, blank:false)
         sub             (nullable: true, blank: false)
         subPkg          (nullable: true, blank: false)
         issueEntitlement(nullable: true, blank: false)
@@ -137,6 +142,16 @@ class CostItem extends BaseDomainComponent {
             lastUpdatedBy = user
         else
             return false
+    }
+
+    @Override
+    def isTemplate() {
+        return (type != null) && (type == RefdataValue.getByValueAndCategory('Template', 'License Type'))
+    }
+
+    @Override
+    def hasTemplate() {
+        return instanceOf ? instanceOf.isTemplate() : false
     }
 
     def getBudgetcodes() {

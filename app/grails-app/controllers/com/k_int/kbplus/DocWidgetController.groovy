@@ -12,7 +12,6 @@ class DocWidgetController {
 
   def springSecurityService
   def docstoreService
-  def gazetteerService
   def alertsService
 
   @Secured(['ROLE_USER'])

@@ -34,7 +34,7 @@
         </thead>
     </g:if>
     <tbody>
-        <g:each in="${ownobj.privateProperties.sort{it.type.getI10n('name')}}" var="prop">
+        <g:each in="${ownobj.privateProperties.sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
             <g:if test="${prop.type?.tenant?.id == tenant?.id}">
                 <tr>
                     <td class="la-column-nowrap">

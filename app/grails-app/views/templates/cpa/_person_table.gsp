@@ -28,7 +28,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		<g:each in="${persons}" var="person" status="c">
+		<g:each in="${persons.sort{it.last_name}}" var="person" status="c">
 			<tr>
                 <td>
                     ${c + 1 + (offset?:0)}
@@ -90,7 +90,7 @@
                                     <g:link class="ui icon button" controller="person" action="show" id="${person?.id}">
                                         <i class="write icon"></i>
                                     </g:link>
-                                    <div class="ui icon negative button js-open-confirm-modal" data-confirm-id="${person?.id}" >
+                                    <div class="ui icon negative button js-open-confirm-modal" data-confirm-term="diese Person" data-confirm-id="${person?.id}" >
                                         <i class="trash alternate icon"></i>
                                     </div>
                             </g:form>
@@ -101,23 +101,4 @@
 	</tbody>
 </table>
 
-
-<semui:confirmationModal text="Wollen Sie diese Person wirklich aus dem System löschen?" deletemodal="true" />
-
-<r:script>
-    $(function(){
-        $(".js-open-confirm-modal").click(function(){
-            var tmp = this.getAttribute("data-confirm-id")+'_form';
-            $('.mini.modal')
-                    .modal({
-                closable  : false,
-                onApprove : function() {
-                    $('[data-confirm-id='+tmp+']').submit();
-                }
-            })
-                    .modal('show')
-            ;
-        });
-    });
-</r:script>
 
