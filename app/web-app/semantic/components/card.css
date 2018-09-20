@@ -1013,6 +1013,10 @@ a.ui.card:hover,
   transition: box-shadow 0.1s ease, transform 0.1s ease, -webkit-box-shadow 0.1s ease, -webkit-transform 0.1s ease;
   z-index: '';
 }
+.ui.cards > .card,
+.ui.card {
+  width: 271px;
+}
 .ui.cards > .card > .content > .header,
 .ui.card > .content > .header {
   display: block;
@@ -1080,4 +1084,12 @@ a.ui.card:hover,
 .inline-lists > dl > dd {
   width: 70%;
   word-wrap: break-word;
+}
+.ui.card > .extra a:not(.ui),
+.ui.cards > .card > .extra a:not(.ui) {
+  color: #4183C4;
+}
+.ui.card > .content > a.header,
+.ui.cards > .card > .content > a.header {
+  color: #4183C4;
 }
