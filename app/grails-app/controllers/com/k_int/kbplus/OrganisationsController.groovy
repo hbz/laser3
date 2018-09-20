@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.helper.DebugAnnotation
+import grails.converters.JSON
 import org.springframework.dao.DataIntegrityViolationException
 import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.*;
@@ -15,6 +16,8 @@ class OrganisationsController {
     def contextService
     def addressbookService
     def filterService
+    def genericOIDService
+    def propertyService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -79,20 +82,68 @@ class OrganisationsController {
 
     @Secured(['ROLE_USER'])
     def listProvider() {
-
         def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        params.max = params.max ?: result.user?.getDefaultPageSize()
+        result.propList =
+                PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
+                        defList: [PropertyDefinition.ORG_PROP],
+                ] // public properties
+                ) +
+                        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant = :tenant", [
+                                defList: [PropertyDefinition.ORG_PROP],
+                                tenant: contextService.getOrg()
+                        ]// private properties
+                        )
 
-        params.orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector').id.toString()
-        params.orgType = RefdataValue.getByValueAndCategory('Provider','OrgType').id.toString()
+        result.user       = User.get(springSecurityService.principal.id)
+        params.orgSector  = RefdataValue.getByValueAndCategory('Publisher','OrgSector')?.id?.toString()
+        params.orgType    = RefdataValue.getByValueAndCategory('Provider','OrgType')?.id?.toString()
+        params.max        = params.max ?: result.user?.getDefaultPageSize()
+        def paramsTotal   = params.clone()
+        if (paramsTotal.max) {
+            paramsTotal.remove("max")
+        }
 
-        def fsq = filterService.getOrgQuery(params)
+        def fsq           = filterService.getOrgQuery(params)
+        def fsqTotal      = filterService.getOrgQuery(paramsTotal)
 
-        result.orgList  = Org.findAll(fsq.query, fsq.queryParams, params)
-        result.orgListTotal = Org.executeQuery("select count (o) ${fsq.query}", fsq.queryParams)[0]
+        def orgList       = Org.findAll(fsq.query, fsq.queryParams, params)
+        def orgListTotal  = Org.findAll(fsqTotal.query, fsqTotal.queryParams)
 
+        if (isPropertyFilterUsed() && orgList.size() > 0) {
+            def tmpQuery             = ["SELECT o FROM Org o WHERE o.id IN (:oids)"]
+            def tmpQueryParams       = [oids: orgList.collect{ it1 -> it1.id }]
+            def tmpQueryParamsTotal  = [oids: orgListTotal.collect{ it2 -> it2.id }]
+
+            (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, tmpQuery, 'o', tmpQueryParamsTotal)
+            def orgListTotalMitParams  = Org.executeQuery( tmpQuery.join(' '), tmpQueryParams )
+
+            int startIndex      = Integer.parseInt(params?.offset? params.offset+"" : "0").intValue()
+            int tmpMax          = Integer.parseInt(params?.max? params.max+"": "10").intValue()
+            int endIndex        = (startIndex + tmpMax) > orgListTotalMitParams.size() ? orgListTotalMitParams.size() : startIndex + tmpMax
+
+            result.orgList      = orgListTotalMitParams.subList(startIndex, endIndex)
+            result.orgListTotal = orgListTotalMitParams.size()
+
+        } else {
+            result.orgList      = orgList
+            result.orgListTotal = Org.executeQuery("select count (o) ${fsq.query}", fsq.queryParams)[0]
+        }
         result
+    }
+
+    def isPropertyFilterUsed() {
+        params.filterPropDef
+    }
+
+    def meineMethode() {
+        def localParams = params.clone()
+        if (isPropertyFilterUsed()){
+            if (localParams.max) {
+                localParams.remove("max")
+            }
+
+        }
+        def fsq           = filterService.getOrgQuery(params)
     }
 
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
@@ -155,8 +206,49 @@ class OrganisationsController {
     @Secured(['ROLE_USER'])
     def show() {
         def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
+
         def orgInstance = Org.get(params.id)
+
+        def link_vals = RefdataCategory.getAllRefdataValues("Organisational Role")
+        def sorted_links = [:]
+        def offsets = [:]
+
+        link_vals.each { lv ->
+            def param_offset = 0
+
+            if(lv.id){
+                def cur_param = "rdvl_${String.valueOf(lv.id)}"
+
+                if(params[cur_param]){
+                    param_offset = params[cur_param]
+                    result[cur_param] = param_offset
+                }
+
+                def links = OrgRole.findAll {
+                            org == orgInstance &&
+                            roleType == lv
+                }
+                links = links.findAll{ it -> it.ownerStatus?.value != 'Deleted' }
+
+                def link_type_results = links.drop(param_offset.toInteger()).take(10) // drop from head, take 10
+
+                if(link_type_results){
+                    sorted_links["${String.valueOf(lv.id)}"] = [rdv: lv, rdvl: cur_param, links: link_type_results, total: links.size()]
+                }
+            }else{
+                log.debug("Could not read Refdata: ${lv}")
+            }
+        }
+
+        if (params.ajax) {
+            render template: '/templates/links/orgRoleContainer', model: [listOfLinks: sorted_links, orgInstance: orgInstance]
+            return
+        }
+
+        result.sorted_links = sorted_links
+
+        result.user = User.get(springSecurityService.principal.id)
+        result.orgInstance = orgInstance
 
         def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
         def orgType = RefdataValue.getByValueAndCategory('Provider','OrgType')
@@ -164,47 +256,16 @@ class OrganisationsController {
         //IF ORG is a Provider
         if(orgInstance.sector == orgSector || orgType == orgInstance.orgType)
         {
-            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_COM_EDITOR')
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_COM_EDITOR,ROLE_ORG_EDITOR')
         }else {
-            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
         }
-
-      if (!orgInstance) {
+        
+      if (! orgInstance) {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
         redirect action: 'list'
         return
       }
-
-      result.orgInstance = orgInstance
-      
-      def link_vals = RefdataCategory.getAllRefdataValues("Organisational Role")
-      def sorted_links = [:]
-      def offsets = [:]
-      
-      link_vals.each { lv ->
-        def param_offset = 0
-        
-        if(lv.id){
-          def cur_param = "rdvl_${String.valueOf(lv.id)}"
-          
-          if(params[cur_param]){ 
-            param_offset = params[cur_param]
-            result[cur_param] = param_offset
-          }
-          
-          def link_type_count = OrgRole.executeQuery("select count(*) from OrgRole as orgr where orgr.org = :oi and orgr.roleType.id = :lid",[oi: orgInstance, lid: lv.id])
-          def link_type_results = OrgRole.executeQuery("select orgr from OrgRole as orgr where orgr.org = :oi and orgr.roleType.id = :lid",[oi: orgInstance, lid: lv.id],[offset:param_offset,max:10])
-          
-          if(link_type_results){
-            sorted_links["${String.valueOf(lv.id)}"] = [rdv: lv, rdvl: cur_param, links: link_type_results, total: link_type_count[0]]
-          }
-        }else{
-          log.debug("Could not read Refdata: ${lv}")
-        }
-      }
-      
-      result.sorted_links = sorted_links
-
 
         // -- private properties
 
@@ -418,10 +479,10 @@ class OrganisationsController {
     def numbers() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
-        result.orgInstance = contextService.getOrg()
-        result.numbersInstanceList = Numbers.findAllByOrg(contextService.getOrg(), [sort: 'type'])
+        result.orgInstance = Org.get(params.id)
+        result.numbersInstanceList = Numbers.findAllByOrg(Org.get(params.id), [sort: 'type'])
 
         result
     }
@@ -436,7 +497,7 @@ class OrganisationsController {
           result.editable = true
         }
         else {
-          result.editable = permissionHelperService.hasUserWithRole(result.user, orgInstance, 'INST_ADM')
+          result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM')
         }
 
         if (!orgInstance) {

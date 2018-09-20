@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.*" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
-<% def securityService = grailsApplication.mainContext.getBean("springSecurityService") %>
+<laser:serviceInjection />
+
 <!doctype html>
 <html>
 <head>
@@ -9,23 +9,26 @@
 </head>
 
 <body>
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentSubscriptions"
-                 text="${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}"/>
-    <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}"
-                 text="${subscriptionInstance.name}"/>
-    <semui:crumb class="active"
-                 text="${message(code: 'subscription.details.addMembers.label', default: 'Add Members')}"/>
-</semui:breadcrumbs>
-<semui:controlButtons>
-    <g:render template="actions"/>
-</semui:controlButtons>
-<h1 class="ui header"><semui:headerIcon/>
-<g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name"
-               class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>
-</h1>
 
-<g:render template="nav" contextPath="."/>
+    <semui:breadcrumbs>
+        <semui:crumb controller="myInstitution" action="currentSubscriptions"
+                     text="${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}"/>
+        <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}"
+                     text="${subscriptionInstance.name}"/>
+        <semui:crumb class="active"
+                     text="${message(code: 'subscription.details.addMembers.label', default: 'Add Members')}"/>
+    </semui:breadcrumbs>
+
+    <semui:controlButtons>
+        <g:render template="actions"/>
+    </semui:controlButtons>
+
+    <h1 class="ui header"><semui:headerIcon/>
+        <g:inPlaceEdit domain="Subscription" pk="${subscriptionInstance.id}" field="name" id="name"
+                   class="newipe">${subscriptionInstance?.name}</g:inPlaceEdit>
+    </h1>
+
+    <g:render template="nav" contextPath="."/>
 
 <g:if test="${institution?.orgType?.value == 'Consortium'}">
 
@@ -47,43 +50,85 @@
                           tmplDisableOrgIds: cons_members_disabled,
                           subInstance: subscriptionInstance,
                           tmplShowCheckbox: true,
-                          tmplConfigOptions: ['addMembers'],
-                          tmplConfigShow: ['name', 'wib', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
+                          tmplConfigShow: ['name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType', 'addSubMembers']
                           ]"/>
 
-        <div class="ui two fields">
-            <g:set value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Status')}" var="rdcSubStatus"/>
-            <div class="field">
-                <label>Status </label>
-                <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubStatus)}" class="ui dropdown"
-                          optionKey="id"
-                          optionValue="${{ it.getI10n('value') }}"
-                          name="subStatus"
-                          value="${com.k_int.kbplus.RefdataValue.findByValueAndOwner('Current', rdcSubStatus)?.id}"/>
+        <g:if test="${cons_members}">
+            <div class="ui two fields">
+                <div class="field">
+                    <label>Lizenz kopieren</label>
+
+                    <div class="ui checkbox">
+                        <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked"
+                               readonly="readonly">
+                        <label>${message(code: 'myinst.emptySubscription.seperate_subs', default: 'Generate seperate Subscriptions for all Consortia Members')}</label>
+                    </div>
+
+                    <g:set value="${com.k_int.kbplus.RefdataCategory.findByDesc('Subscription Status')}" var="rdcSubStatus"/>
+
+                    <br />
+                    <br />
+                    <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(rdcSubStatus)}" class="ui dropdown"
+                              optionKey="id"
+                              optionValue="${{ it.getI10n('value') }}"
+                              name="subStatus"
+                              value="${com.k_int.kbplus.Subscription.get(params.id).status?.id}"/>
+                </div>
+
+                <div class="field">
+                    <label>Vertrag kopieren</label>
+                    <g:if test="${subscriptionInstance.owner}">
+                        <div class="ui radio checkbox">
+                            <g:if test="${subscriptionInstance.owner.derivedLicenses}">
+                                <input class="hidden" type="radio" name="generateSlavedLics" value="no">
+                            </g:if>
+                            <g:else>
+                                <input class="hidden" type="radio" name="generateSlavedLics" value="no" checked="checked">
+                            </g:else>
+                            <label>${message(code: 'myinst.emptySubscription.seperate_lics_no')}</label>
+                        </div>
+
+                        <div class="ui radio checkbox">
+                            <input class="hidden" type="radio" name="generateSlavedLics" value="shared">
+                            <label>${message(code: 'rolemyinst.emptySubscription.seperate_lics_shared')}</label>
+                        </div>
+
+                        <div class="ui radio checkbox">
+                            <input class="hidden" type="radio" name="generateSlavedLics" value="explicit">
+                            <label>${message(code: 'myinst.emptySubscription.seperate_lics_explicit')}</label>
+                        </div>
+
+                        <g:if test="${subscriptionInstance.owner.derivedLicenses}">
+                            <div class="ui radio checkbox">
+                                <input class="hidden" type="radio" name="generateSlavedLics" value="reference" checked="checked">
+                                <label>${message(code: 'myinst.emptySubscription.seperate_lics_reference')}</label>
+                            </div>
+
+                            <div class="generateSlavedLicsReference-wrapper hidden">
+                                <br />
+                                <g:select from="${subscriptionInstance.owner?.derivedLicenses}" class="ui search dropdown hide"
+                                          optionKey="${{ 'com.k_int.kbplus.License:' + it.id }}"
+                                          optionValue="${{ it.getGenericLabel() }}"
+                                          name="generateSlavedLicsReference"
+                                    />
+                            </div>
+                            <r:script>
+                                $('*[name=generateSlavedLics]').change( function(){
+                                    $('*[name=generateSlavedLics][value=reference]').prop('checked') ?
+                                            $('.generateSlavedLicsReference-wrapper').removeClass('hidden') :
+                                            $('.generateSlavedLicsReference-wrapper').addClass('hidden') ;
+                                })
+                                $('*[name=generateSlavedLics]').trigger('change')
+                            </r:script>
+                        </g:if>
+
+                    </g:if>
+                    <g:else>
+                        <semui:msg class="info" text="Es ist kein Vertrag vorhanden." />
+                    </g:else>
+                </div>
             </div>
-        </div>
-
-        <div class="ui two fields">
-            <div class="field">
-                <div class="ui radio checkbox">
-                    <input class="hidden" type="radio" name="generateSlavedLics" value="multiple">
-                    <label>${message(code: 'myinst.emptySubscription.seperate_lics1', default: 'Generate seperated Licenses for ANY Consortia Members')}</label>
-                </div>
-                <div class="ui radio checkbox">
-                    <input class="hidden" type="radio" name="generateSlavedLics" value="one" checked="checked">
-                    <label>${message(code: 'myinst.emptySubscription.seperate_lics2', default: 'Generate one copied License for ALL Consortia Members')}</label>
-                </div>
-
-                <br />
-                <br />
-
-                <div class="ui checkbox">
-                    <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked"
-                           readonly="readonly">
-                    <label>${message(code: 'myinst.emptySubscription.seperate_subs', default: 'Generate seperate Subscriptions for all Consortia Members')}</label>
-                </div>
-            </div>
-        </div>
+        </g:if>
 
         <br/>
         <g:if test="${cons_members}">
@@ -92,7 +137,7 @@
         </g:if>
     </g:form>
 
-    <g:if test="${securityService.getCurrentUser().hasAffiliation("INST_ADM") && contextService.getOrg().orgType?.value == 'Consortium'}">
+    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") && contextService.getOrg().orgType?.value == 'Consortium'}">
         <hr />
 
         <div class="ui info message">

@@ -2,10 +2,11 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.domain.BaseDomainComponent
+import de.laser.domain.TemplateSupport
 
 import javax.persistence.Transient
 
-class CostItem extends BaseDomainComponent {
+class CostItem extends BaseDomainComponent implements TemplateSupport {
 
     Org owner
     Subscription sub
@@ -13,6 +14,8 @@ class CostItem extends BaseDomainComponent {
     IssueEntitlement issueEntitlement
     Order order
     Invoice invoice
+
+    RefdataValue type               // RefdataCategory 'CostItem.Type'
 
     //Status & Costing Values...
     RefdataValue costItemStatus     // RefdataCategory 'CostItemStatus' : cost est,actual,etc
@@ -25,6 +28,16 @@ class CostItem extends BaseDomainComponent {
     Double costInBillingCurrency   //The actual amount - new cost ex tax
     Double costInLocalCurrency     //local amount entered
     Double currencyRate
+
+    Integer taxRate
+    Boolean finalCostRounding
+
+    @Transient
+    Double costInLocalCurrencyAfterTax
+    @Transient
+    Double costInBillingCurrencyAfterTax
+
+    Date invoiceDate
 
     String costTitle
     String costDescription
@@ -39,15 +52,18 @@ class CostItem extends BaseDomainComponent {
     Date dateCreated
     User createdBy
 
-    @Transient
-    def budgetcodes //Binds getBudgetcodes
+    //@Transient
+    //def budgetcodes //Binds getBudgetcodes
 
     @Transient
     def springSecurityService
 
+    static final TAX_RATES = [ 0, 7, 19 ]
+
     static mapping = {
         id              column: 'ci_id'
-        globalUID       column:'ci_guid'
+        globalUID       column: 'ci_guid'
+        type            column: 'ci_type_rv_fk'
         version         column: 'ci_version'
         sub             column: 'ci_sub_fk'
         owner           column: 'ci_owner'
@@ -59,11 +75,16 @@ class CostItem extends BaseDomainComponent {
         billingCurrency column: 'ci_billing_currency_rv_fk'
         costDescription column: 'ci_cost_description', type:'text'
         costTitle       column: 'ci_cost_title'
-        costInBillingCurrency column: 'ci_cost_in_billing_currency'
+        costInBillingCurrency           column: 'ci_cost_in_billing_currency'
+        //costInBillingCurrencyAfterTax   column: 'ci_cost_in_billing_currency_after_tax'
         datePaid            column: 'ci_date_paid'
-        costInLocalCurrency column: 'ci_cost_in_local_currency'
+        costInLocalCurrency             column: 'ci_cost_in_local_currency'
+        //costInLocalCurrencyAfterTax     column: 'ci_cost_in_local_currency_after_tax'
         currencyRate    column: 'ci_currency_rate'
+        finalCostRounding               column:'ci_final_cost_rounding'
         taxCode         column: 'ci_tax_code'
+        taxRate                         column: 'ci_tax_rate'
+        invoiceDate                     column: 'ci_invoice_date'
         includeInSubscription column: 'ci_include_in_subscr'
         costItemCategory    column: 'ci_cat_rv_fk'
         costItemElement     column: 'ci_element_rv_fk'
@@ -76,6 +97,7 @@ class CostItem extends BaseDomainComponent {
     static constraints = {
         globalUID       (nullable:true, blank:false, unique:true, maxSize:255)
         owner           (nullable: false, blank: false)
+        type            (nullable: true, blank:false)
         sub             (nullable: true, blank: false)
         subPkg          (nullable: true, blank: false)
         issueEntitlement(nullable: true, blank: false)
@@ -84,11 +106,16 @@ class CostItem extends BaseDomainComponent {
         billingCurrency (nullable: true, blank: false)
         costDescription (nullable: true, blank: false)
         costTitle       (nullable: true, blank: false)
-        costInBillingCurrency(nullable: true, blank: false)
+        costInBillingCurrency           (nullable: true, blank: false)
+        //costInBillingCurrencyAfterTax   (nullable: true, blank: false)
         datePaid        (nullable: true, blank: false)
-        costInLocalCurrency(nullable: true, blank: false)
+        costInLocalCurrency             (nullable: true, blank: false)
+        //costInLocalCurrencyAfterTax     (nullable: true, blank: false)
         currencyRate    (nullable: true, blank: false, scale: 9)
+        finalCostRounding               (nullable: true, blank: false)
         taxCode         (nullable: true, blank: false)
+        taxRate                         (nullable: true, blank: false)
+        invoiceDate                     (nullable: true, blank: false)
         includeInSubscription(nullable: true, blank: false)
         costItemCategory(nullable: true, blank: false)
         costItemStatus  (nullable: true, blank: false)
@@ -121,6 +148,16 @@ class CostItem extends BaseDomainComponent {
             return false
     }
 
+    @Override
+    def isTemplate() {
+        return (type != null) && (type == RefdataValue.getByValueAndCategory('Template', 'License Type'))
+    }
+
+    @Override
+    def hasTemplate() {
+        return instanceOf ? instanceOf.isTemplate() : false
+    }
+
     def getBudgetcodes() {
         def result = BudgetCode.executeQuery("select bc from BudgetCode as bc, CostItemGroup as cig, CostItem as ci where cig.costItem = ci and cig.budgetCode = bc and ci = ?", [this])
         return result
@@ -128,6 +165,14 @@ class CostItem extends BaseDomainComponent {
         return CostItemGroup.findAllByCostItem(this).collect {
             [id:it.id, value:it.budgetcode.value]
         } */
+    }
+
+    def getCostInLocalCurrencyAfterTax() {
+        ( costInLocalCurrency ?: 0.0 ) * ( taxRate ? ((taxRate/100) + 1) : 1 )
+    }
+
+    def getCostInBillingCurrencyAfterTax() {
+        ( costInBillingCurrency ?: 0.0 ) * ( taxRate ? ((taxRate/100) + 1) : 1 )
     }
 
     /**

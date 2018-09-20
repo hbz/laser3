@@ -9,7 +9,9 @@
             ${message(code:'template.pendingChanges', default:'There are pending change notifications')}
         </h3>
 
-        <g:if test="${editable && !processingpc}">
+        <g:if test="${editable}">
+
+        <g:if test="${! processingpc}">
             <g:link controller="pendingChange" action="acceptAll" params="[OID: model.class.name + ':' + model.id]"
                     class="ui positive button">
               ${message(code:'template.pendingChanges.accept_all', default:'Accept All')}
@@ -33,10 +35,12 @@
           <tbody>
             <g:each in="${pendingChanges}" var="pc">
               <tr>
-                <td>${pc.desc}</td>
-                  <td><g:formatDate format="${message(code: 'default.date.format')}" date="${pc.ts}"/></td>
+                <td>
+                    <% print pc.desc; /* avoid auto encodeAsHTML() */ %>
+                </td>
+                <td><g:formatDate format="${message(code: 'default.date.format')}" date="${pc.ts}"/></td>
                 <td class="x">
-                  <g:if test="${editable && !processingpc}">
+                  <g:if test="${! processingpc}">
                     <g:link controller="pendingChange" action="accept" id="${pc.id}" class="ui icon positive button">
                       <i class="checkmark icon"></i>
                       <!--${message(code:'default.button.accept.label', default:'Accept')}-->
@@ -51,6 +55,8 @@
             </g:each>
           </tbody>
         </table>
+
+        </g:if>
     </div>
 
     <br />

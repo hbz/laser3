@@ -11,7 +11,7 @@
     <div>
       <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-        <g:if test="${onixplLicense.license.licensee}">
+        <g:if test="${onixplLicense.license.getLicensee()}">
           <li> <g:link controller="myInstitution" action="currentLicenses" params="${[shortcode:onixplLicense.license.licensee.shortcode]}"> ${onixplLicense.license.licensee.name} Current Licenses</g:link> <span class="divider">/</span> </li>
         </g:if>
         <li> <g:link controller="onixplLicenseDetails" action="index" id="${params.id}">ONIX-PL License Details</g:link> <span class="divider">/</span></li>
@@ -26,8 +26,8 @@
 */ %>
 
         <semui:breadcrumbs>
-            <g:if test="${onixplLicense.license.licensee}">
-                <semui:crumb controller="myInstitution" action="currentLicenses" params="${[shortcode:onixplLicense.license.licensee.shortcode]}" text="${onixplLicense.license.licensee.name} Current Licenses" />
+            <g:if test="${onixplLicense.license.getLicensee()}">
+                <semui:crumb controller="myInstitution" action="currentLicenses" params="${[shortcode:onixplLicense.license.getLicensee().shortcode]}" text="${onixplLicense.license.getLicensee().name} Current Licenses" />
             </g:if>
             <semui:crumb controller="onixplLicenseDetails" action="index" id="${params.id}" text="ONIX-PL License Details" />
             <semui:crumb controller="onixplLicenseDetails" action="notes" id="${params.id}" text="License Notes" />
@@ -38,7 +38,7 @@
         </g:if>
 
 
-        <h1 class="ui header"><semui:headerIcon />${onixplLicense.license.licensee?.name} ${onixplLicense.license.type?.value} License : <span id="reference" style="padding-top: 5px;">${onixplLicense.license.reference}</span></h1>
+        <h1 class="ui header"><semui:headerIcon />${onixplLicense.license.getLicensee()?.name} ${onixplLicense.license.type?.value} License : <span id="reference" style="padding-top: 5px;">${onixplLicense.license.reference}</span></h1>
 
         <g:render template="nav" contextPath="." />
 

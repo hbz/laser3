@@ -7,6 +7,12 @@
         <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'package', default:'Package Details')}</title>
     </head>
     <body>
+
+    <semui:debugInfo>
+        <g:render template="/templates/debug/orgRoles" model="[debug: packageInstance.orgs]" />
+        <g:render template="/templates/debug/prsRoles" model="[debug: packageInstance.prsLinks]" />
+    </semui:debugInfo>
+
     <g:set var="locale" value="${RequestContextUtils.getLocale(request)}" />
 
     <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
@@ -34,11 +40,6 @@
         <g:render template="actions" />
     </semui:controlButtons>
 
-    <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_PACKAGE_EDITOR">
-        <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges, 'flash':flash, 'model':packageInstance]}"/>
-    </sec:ifAnyGranted>
-
-
       <h1 class="ui header"><semui:headerIcon />
         <g:if test="${params.asAt}">${message(code:'package.show.asAt', args:[params.asAt])}</g:if>
           <g:if test="${editable}"><span id="packageNameEdit"
@@ -51,6 +52,12 @@
       </h1>
 
     <g:render template="nav" />
+
+    <semui:objectStatus object="${packageInstance}" status="${packageInstance.packageStatus}" />
+
+    <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_PACKAGE_EDITOR">
+        <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges, 'flash':flash, 'model':packageInstance]}"/>
+    </sec:ifAnyGranted>
 
     <semui:meta>
         <div class="inline-lists">
@@ -99,9 +106,9 @@
         </div>
     </semui:meta>
 
- <semui:messages data="${flash}" />
+    <semui:messages data="${flash}" />
 
- <semui:errors bean="${packageInstance}" />
+    <semui:errors bean="${packageInstance}" />
 
     <div class="ui grid">
 
@@ -161,8 +168,6 @@
                             <dt>${message(code: 'package.show.pkg_name')}</dt>
                             <dd> <semui:xEditable owner="${packageInstance}" field="name"/></dd>
 
-
-
                             <% /*
                             <dt>${message(code: 'license.is_public')}</dt>
                             <dd>
@@ -176,25 +181,22 @@
                             </dd>
                             */ %>
                         </dl>
-                    </div>
-                </div>
-                <div class="ui card">
-                    <div class="content">
                         <dl>
-
                             <dt>${message(code: 'package.show.vendor_url')}</dt>
                             <dd>
                                 <semui:xEditable owner="${packageInstance}" field="vendorURL" />
                             </dd>
                         </dl>
+                    </div>
+                </div>
+                <div class="ui card">
+                    <div class="content">
 
                         <g:render template="/templates/links/orgLinksAsList"
                                   model="${[roleLinks: visibleOrgs,
                                             roleObject: packageInstance,
                                             roleRespValue: 'Specific package editor',
-                                            editmode: editable,
-                                            tmplButtonText: 'Anbieter hinzufügen',
-                                            tmplmodalID:'osel_add_modal'
+                                            editmode: editable
                                   ]}" />
 
                         <g:render template="/templates/links/orgLinksModal"
@@ -205,17 +207,15 @@
                                         tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role'),
                                         tmplText:'Anbieter hinzufügen',
                                         tmplID:'ContentProvider',
-                                        tmplmodalID:'osel_add_modal'
+                                        tmplButtonText: 'Anbieter hinzufügen',
+                                        tmplModalID:'osel_add_modal_anbieter',
+                                        editmode: editable
                               ]}" />
-<%--
-                        <g:render template="/templates/links/orgLinksAsListAddPrsModal"
-                                  model="[roleLinks: visibleOrgs,
-                                          'package': packageInstance,
-                                          parent: packageInstance.class.name + ':' + packageInstance.id,
-                                          role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
---%>
+
                     </div>
                 </div>
+
+
                 <div class="ui card">
                     <div class="content">
                         <dl>
@@ -225,7 +225,6 @@
                             </dd>
                         </dl>
                         <dl>
-
                             <dt>${message(code: 'package.consistent')}</dt>
                             <dd>
                                 <semui:xEditableRefData owner="${packageInstance}" field="consistent" config="${RefdataCategory.PKG_CONSISTENT}"/>

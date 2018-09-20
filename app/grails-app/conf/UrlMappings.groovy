@@ -13,16 +13,18 @@ class UrlMappings {
         "/myInstitution/finance"        (controller: 'finance', action: 'index')
         name subfinance:        "/subscriptionDetails/$sub/finance/"   (controller: 'finance', action: 'index')
         name subfinanceEditCI:  "/subscriptionDetails/$sub/editCostItem/$id"   (controller: 'finance', action: 'editCostItem')
+        name subfinanceCopyCI:  "/subscriptionDetails/$sub/copyCostItem/$id"   (controller: 'finance', action: 'copyCostItem')
 
         "/ajax/$action?/$id?"(controller: 'ajax')
 
         // new custom api
         "/api/push/orgs"        (controller: 'api', action: 'importInstitutions', parseRequest: false)
-        "/api/v0/spec"          (uri: '/rest/v0/laser.yaml.gsp')
-        "/api/v0/$obj"          (controller: 'api', action: 'v0')
 
-        "/"                     (view: "public/index")
-        "/public"               (view: "public/index")
+        "/api/$version/spec"    (controller: 'api', action: 'loadSpec')
+        "/api/$version/$obj"    (controller: 'api', action: 'dispatch')
+
+        "/"                     (controller: 'public', action: 'index')
+        "/gasco"                (controller: 'public', action: 'gasco')
 
         "/oai/$id"(controller: 'oai', action: 'index')
 

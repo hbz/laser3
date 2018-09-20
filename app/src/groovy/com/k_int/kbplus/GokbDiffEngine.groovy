@@ -9,9 +9,9 @@ public class GokbDiffEngine {
       return
     }
 
-    if ( oldpkg.packageName != newpkg.packageName ) {
+    if ( oldpkg.packageName != newpkg.packageName && oldpkg.packageName != null) {
       // println("packageName updated from ${oldpkg.packageName} to ${newpkg.packageName}");
-      pkgPropChangeClosure(ctx, 'title', newpkg.packageName, auto_accept);
+      pkgPropChangeClosure(ctx, 'title', newpkg.packageName, true);
     }
     else {
       // println("packageName consistent");

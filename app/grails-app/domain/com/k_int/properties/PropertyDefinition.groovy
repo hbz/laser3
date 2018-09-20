@@ -6,6 +6,7 @@ import com.k_int.kbplus.abstract_domain.AbstractProperty
 import de.laser.domain.I10nTranslatableAbstract
 import de.laser.domain.I10nTranslation
 import groovy.util.logging.*
+//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
 import javax.persistence.Transient
@@ -50,7 +51,6 @@ class PropertyDefinition extends I10nTranslatableAbstract {
             ORG_CONF,
             SUB_PROP,
             SYS_CONF,
-            PRS_PROP,
             ORG_PROP
     ]
     @Transient
@@ -77,12 +77,22 @@ class PropertyDefinition extends I10nTranslatableAbstract {
     boolean softData
 
     //Map keys can change and they wont affect any of the functionality
+    @Deprecated
     @Transient
     static def validTypes = ["Number":  Integer.toString(), 
                              "Text":    String.toString(), 
                              "Refdata": RefdataValue.toString(), 
                              "Decimal": BigDecimal.toString(),
                              "Date":    Date.toString()]
+
+    @Transient
+    static def validTypes2 = [
+            'class java.lang.Integer'     : ['de': 'Zahl', 'en': 'Number'],
+            'class java.lang.String'      : ['de': 'Text', 'en': 'Text'],
+            'class com.k_int.kbplus.RefdataValue'   : ['de': 'Referenzwert', 'en': 'Refdata'],
+            'class java.math.BigDecimal'  : ['de': 'Dezimalzahl', 'en': 'Decimal'],
+            'class java.util.Date'        : ['de': 'Datum', 'en': 'Date']
+    ]
 
     static mapping = {
                       id column: 'pd_id'
@@ -108,11 +118,11 @@ class PropertyDefinition extends I10nTranslatableAbstract {
         softData            (nullable: false, blank: false, default: false)
     }
 
-    private static def typeIsValid(value) {
-        if (validTypes.containsValue(value)) {
+    private static def typeIsValid(key) {
+        if (validTypes2.containsKey(key)) {
             return true;
         } else {
-            log.error("Provided prop type ${value.getClass()} is not valid. Allowed types are ${validTypes}")
+            log.error("Provided prop type ${key} is not valid. Allowed types are ${validTypes2}")
             throw new UnexpectedTypeException()
         }
     }
@@ -160,6 +170,7 @@ class PropertyDefinition extends I10nTranslatableAbstract {
     }
 
     static def lookupOrCreate(name, typeClass, descr, multipleOccurence, mandatory, Org tenant) {
+        println typeClass
         typeIsValid(typeClass)
 
         def type = findWhere(
@@ -212,18 +223,32 @@ class PropertyDefinition extends I10nTranslatableAbstract {
         result
     }
 
-    def countUsages() {
-        def table
-
+    def getImplClass(String customOrPrivate) {
         def parts = this.descr.split(" ")
-        if (parts.size() == 2) {
-            table = parts[0] + "PrivateProperty"
 
-            // TODO: change table names from Org<x>Property to Organisation<x>Property
-            if (parts[0] == "Organisation"){
-                table = "OrgPrivateProperty"
+        if (parts.size() >= 2) {
+            if (parts[0] == "Organisation") {
+                parts[0] = "Org"
+            }
+            def cp = 'com.k_int.kbplus.' + parts[0] + 'CustomProperty'
+            def pp = 'com.k_int.kbplus.' + parts[0] + 'PrivateProperty'
+
+            try {
+                if (customOrPrivate.equalsIgnoreCase('custom') && Class.forName(cp)) {
+                    return cp
+                }
+                if (customOrPrivate.equalsIgnoreCase('private') && Class.forName(pp)) {
+                    return pp
+                }
+            } catch (Exception e) {
+
             }
         }
+        null
+    }
+
+    def countUsages() {
+        def table = getImplClass('private')?.minus('com.k_int.kbplus.')
 
         if (table) {
             def c = PropertyDefinition.executeQuery("select count(c) from " + table + " as c where c.type = ?", [this])
@@ -293,6 +318,17 @@ class PropertyDefinition extends I10nTranslatableAbstract {
                 "com.k_int.kbplus.License"  : PropertyDefinition.LIC_PROP,
                 "com.k_int.kbplus.Person"   : PropertyDefinition.PRS_PROP
         ]
+    }
+
+    static getLocalizedValue(key){
+        def locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
+
+        println locale
+        if (PropertyDefinition.validTypes2.containsKey(key)) {
+            return (PropertyDefinition.validTypes2.get(key)."${locale}") ?: PropertyDefinition.validTypes2.get(key)
+        } else {
+            return null
+        }
     }
 }
 

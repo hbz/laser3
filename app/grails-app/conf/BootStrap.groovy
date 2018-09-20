@@ -236,7 +236,7 @@ class BootStrap {
 
         // Roles
 
-        def or_lc_role            = RefdataValue.loc('Organisational Role', [en: 'Licensing Consortium', de:'Lizenzkonsortium'])
+        def or_lc_role            = RefdataValue.loc('Organisational Role', [en: 'Licensing Consortium', de:'Konsortium'])
         def or_licensee_role      = RefdataValue.loc('Organisational Role', [en: 'Licensee', de: 'Lizenznehmer'])
         def or_licensee_cons_role = RefdataValue.loc('Organisational Role', [key: 'Licensee_Consortial', en: 'Consortial licensee', de: 'Konsortiallizenznehmer'])
 
@@ -278,7 +278,6 @@ class BootStrap {
         def yodaRole    = Role.findByAuthority('ROLE_YODA')        ?: new Role(authority: 'ROLE_YODA', roleType: 'transcendent').save(failOnError: true)
         def adminRole   = Role.findByAuthority('ROLE_ADMIN')       ?: new Role(authority: 'ROLE_ADMIN', roleType: 'global').save(failOnError: true)
         def dmRole      = Role.findByAuthority('ROLE_DATAMANAGER') ?: new Role(authority: 'ROLE_DATAMANAGER', roleType: 'global').save(failOnError: true)
-        def globalDataRole      = Role.findByAuthority('ROLE_GLOBAL_DATA') ?: new Role(authority: 'ROLE_GLOBAL_DATA', roleType: 'global').save(failOnError: true)
         def userRole    = Role.findByAuthority('ROLE_USER')        ?: new Role(authority: 'ROLE_USER', roleType: 'global').save(failOnError: true)
         def apiRole     = Role.findByAuthority('ROLE_API')         ?: new Role(authority: 'ROLE_API', roleType: 'global').save(failOnError: true)
 
@@ -286,9 +285,12 @@ class BootStrap {
         def apiWriterRole      = Role.findByAuthority('ROLE_API_WRITER')      ?: new Role(authority: 'ROLE_API_WRITER', roleType: 'global').save(failOnError: true)
         def apiDataManagerRole = Role.findByAuthority('ROLE_API_DATAMANAGER') ?: new Role(authority: 'ROLE_API_DATAMANAGER', roleType: 'global').save(failOnError: true)
 
-        def packageEditorRole = Role.findByAuthority('ROLE_PACKAGE_EDITOR') ?: new Role(authority: 'ROLE_PACKAGE_EDITOR', roleType: 'global').save(failOnError: true)
-        def orgEditorRole     = Role.findByAuthority('ROLE_ORG_EDITOR')     ?: new Role(authority: 'ROLE_ORG_EDITOR', roleType: 'global').save(failOnError: true)
-        def orgComRole     = Role.findByAuthority('ROLE_ORG_COM_EDITOR')     ?: new Role(authority: 'ROLE_ORG_COM_EDITOR', roleType: 'global').save(failOnError: true)
+        def globalDataRole    = Role.findByAuthority('ROLE_GLOBAL_DATA')        ?: new Role(authority: 'ROLE_GLOBAL_DATA', roleType: 'global').save(failOnError: true)
+        def orgEditorRole     = Role.findByAuthority('ROLE_ORG_EDITOR')         ?: new Role(authority: 'ROLE_ORG_EDITOR', roleType: 'global').save(failOnError: true)
+        def orgComRole        = Role.findByAuthority('ROLE_ORG_COM_EDITOR')     ?: new Role(authority: 'ROLE_ORG_COM_EDITOR', roleType: 'global').save(failOnError: true)
+        def packageEditorRole = Role.findByAuthority('ROLE_PACKAGE_EDITOR')     ?: new Role(authority: 'ROLE_PACKAGE_EDITOR', roleType: 'global').save(failOnError: true)
+        def statsEditorRole   = Role.findByAuthority('ROLE_STATISTICS_EDITOR')  ?: new Role(authority: 'ROLE_STATISTICS_EDITOR', roleType: 'global').save(failOnError: true)
+        def ticketEditorRole  = Role.findByAuthority('ROLE_TICKET_EDITOR')      ?: new Role(authority: 'ROLE_TICKET_EDITOR', roleType: 'global').save(failOnError: true)
 
         // Institutional Roles
 
@@ -713,7 +715,7 @@ class BootStrap {
                 [[en: 'Content Provider', de: 'Anbieter'], pkg],
                 [[en: 'Package Consortia'], pkg],
                 [[en: 'Publisher', de: 'Verlag'], null],
-                [[en: 'Agency', de: 'Agentur'], sub]
+                [[en: 'Agency', de: 'Lieferant'], sub]
         ]
 
         RefdataCategory.loc('Organisational Role',  [en: 'Organisational Role', de: 'Organisational Role'])
@@ -760,7 +762,7 @@ class BootStrap {
         RefdataCategory.loc('Funder Type',          	                    [en: 'Funder Type', de: 'Trägerschaft'])
         RefdataCategory.loc('Gender',               	                    [en: 'Gender', de: 'Geschlecht'])
         RefdataCategory.loc('OrgSector',            	                    [en: 'OrgSector', de: 'Bereich'])
-        RefdataCategory.loc('Library Network',      	                    [en: 'Library Network', de: 'Verbundszugehörigkeit'])
+        RefdataCategory.loc('Library Network',      	                    [en: 'Library Network', de: 'Verbundzugehörigkeit'])
         RefdataCategory.loc('Library Type',         	                    [en: 'Library Type', de: 'Bibliothekstyp'])
         RefdataCategory.loc('OrgType',              	                    [en: 'Organisation Type', de: 'Organisationstyp'])
         RefdataCategory.loc('Person Function',      	                    [en: 'Person Function', de: 'Funktion'])
@@ -770,6 +772,8 @@ class BootStrap {
         RefdataCategory.loc('Subscription Status',          	            [en: 'Subscription Status', de: 'Lizenzstatus'])
         RefdataCategory.loc('Task Priority',                	            [en: 'Task Priority', de: 'Aufgabenpriorität'])
         RefdataCategory.loc('Task Status',          	                    [en: 'Task Status', de: 'Aufgabenstatus'])
+        RefdataCategory.loc('Ticket.Category',          	                  [en: 'Ticket Category', de: 'Kategorie'])
+        RefdataCategory.loc('Ticket.Status',          	                      [en: 'Ticket Status', de: 'Ticketstatus'])
         RefdataCategory.loc('License.OA.ReceivingModalities',               [en: 'Receiving Modalities', de: 'Bezugsmodalitäten'])
         RefdataCategory.loc('License.OA.Repository',                        [en: 'Repository', de: 'Repositorium'])
         RefdataCategory.loc('License.OA.CorrespondingAuthorIdentification', [en: 'Corresponding Author Identification', de: 'Autorenindentifikation'])
@@ -827,7 +831,7 @@ class BootStrap {
         RefdataValue.loc('AddressType', [en: 'Postal address', de: 'Postanschrift'])
         RefdataValue.loc('AddressType', [en: 'Billing address', de: 'Rechnungsanschrift'])
         RefdataValue.loc('AddressType', [en: 'Delivery address', de: 'Lieferanschrift'])
-        RefdataValue.loc('AddressType', [en: 'Library address', de: 'Bibliotheksanschrift'])
+        RefdataValue.loc('AddressType', [en: 'Library address', de: 'Anschrift'])
         RefdataValue.loc('AddressType', [en: 'Legal patron address', de: 'Anschrift des rechtlichen Trägers'])
 
         RefdataValue.loc('ClusterType', [en: 'Undefined'])
@@ -868,6 +872,8 @@ class BootStrap {
 
         RefdataValue.loc('FactType', [en: 'STATS:JR1'])
         RefdataValue.loc('FactType', [en: 'STATS:JR1GOA'])
+        RefdataValue.loc('FactType', [en: 'STATS:DB1'])
+
 
         RefdataValue.loc('Federal State',   [en: 'Baden-Wurttemberg', de: 'Baden-Württemberg'])
         RefdataValue.loc('Federal State',   [en: 'Bavaria', de: 'Bayern'])
@@ -939,7 +945,8 @@ class BootStrap {
         RefdataValue.loc('Person Contact Type', [en: 'Personal contact', de: 'Personenkontakt'])
         RefdataValue.loc('Person Contact Type', [en: 'Functional contact', de: 'Funktionskontakt'])
 
-        RefdataValue.loc('Person Function',     [en: 'General contact person', de: 'Allgemeine Kontaktperson'])
+        RefdataValue.loc('Person Function',     [en: 'General contact person', de: 'Hauptkontakt'])
+        RefdataValue.loc('Person Function',     [en: 'GASCO-Contact', de: 'GASCO-Kontakt'])
         RefdataValue.loc('Person Function',     [en: 'Bestandsaufbau', de: 'Bestandsaufbau'])
         RefdataValue.loc('Person Function',     [en: 'Direktion', de: 'Direktion'])
         RefdataValue.loc('Person Function',     [en: 'Direktionsassistenz', de: 'Direktionsassistenz'])
@@ -947,6 +954,14 @@ class BootStrap {
         RefdataValue.loc('Person Function',     [en: 'Erwerbungsleitung', de: 'Erwerbungsleitung'])
         RefdataValue.loc('Person Function',     [en: 'Medienbearbeitung', de: 'Medienbearbeitung'])
         RefdataValue.loc('Person Function',     [en: 'Zeitschriftenabteilung', de: 'Zeitschriftenabteilung'])
+        RefdataValue.loc('Person Function',     [en: 'Fachreferat', de: 'Fachreferat'])
+        RefdataValue.loc('Person Function',     [en: 'Bereichsbibliotheksleitung', de: 'Bereichsbibliotheksleitung'])
+
+        RefdataValue.loc('Person Function', [key: 'Functional Contact Postal Address', en: 'Postal address', de: 'Postanschrift'])
+        RefdataValue.loc('Person Function', [key: 'Functional Contact Billing Adress', en: 'Billing contact', de: 'Rechnungskontakt'])
+        RefdataValue.loc('Person Function', [key: 'Functional Contact Delivery Address', en: 'Delivery address', de: 'Lieferanschrift'])
+        RefdataValue.loc('Person Function', [key: 'Functional Contact Library Address', en: 'Library address', de: 'Bibliotheksanschrift'])
+        RefdataValue.loc('Person Function', [key: 'Functional Contact Legal Patron Address', en: 'Legal patron contact', de: 'Anschrift des rechtlichen Trägers'])
 
         RefdataValue.loc('Person Position',     [en: 'Account Manager', de: 'Account Manager'])
         RefdataValue.loc('Person Position',     [en: 'Head Access Services', de: 'Erwerbungsleiter'])
@@ -970,6 +985,7 @@ class BootStrap {
         RefdataValue.loc('Subscription Status',      [en: 'Under Consortial Examination',   de: 'Wird konsortial geprüft'])
         RefdataValue.loc('Subscription Status',      [en: 'Under Institutional Examination',   de: 'Wird institutionell geprüft'])
         RefdataValue.loc('Subscription Status',      [en: 'Test Access',   de: 'Testzugriff'])
+        RefdataValue.loc('Subscription Status',      [en: 'Intended', de: 'Geplant'])
 
 		RefdataValue.loc('Subscription Type',      [en: 'Alliance Licence', de: 'Allianzlizenz'])
 		RefdataValue.loc('Subscription Type',      [en: 'National Licence', de: 'Nationallizenz'])
@@ -985,7 +1001,16 @@ class BootStrap {
         RefdataValue.loc('Task Status',      [en: 'Open', de: 'Offen'])
         RefdataValue.loc('Task Status',      [en: 'Done', de: 'Erledigt'])
         RefdataValue.loc('Task Status',      [en: 'Deferred', de: 'Zurückgestellt'])
-		
+
+        RefdataValue.loc('Ticket.Category',    [en: 'Bug', de: 'Fehler'])
+        RefdataValue.loc('Ticket.Category',    [en: 'Improvement', de: 'Verbesserungsvorschlag'])
+
+        RefdataValue.loc('Ticket.Status',      [en: 'New', de: 'Neu'])
+        RefdataValue.loc('Ticket.Status',      [en: 'Open', de: 'Angenommen'])
+        RefdataValue.loc('Ticket.Status',      [en: 'In Progress', de: 'In Bearbeitung'])
+        RefdataValue.loc('Ticket.Status',      [en: 'Done', de: 'Erledigt'])
+        RefdataValue.loc('Ticket.Status',      [en: 'Deferred', de: 'Zurückgestellt'])
+
         RefdataValue.loc('License.OA.ReceivingModalities',       [en: 'By Author', de: 'Über Autor'])
         RefdataValue.loc('License.OA.ReceivingModalities',       [en: 'On Demand', de: 'Auf Nachfrage'])
         RefdataValue.loc('License.OA.ReceivingModalities',       [en: 'From Database', de: 'Aus Datenank'])
@@ -1130,6 +1155,12 @@ class BootStrap {
         RefdataValue.loc('Authority', [en: 'Institution', de: 'Institution'])
         RefdataValue.loc('Authority', [en: 'Author and Institution', de: 'Autor und Institution'])
 
+        RefdataCategory.loc('CostItem.Type',
+                [en: 'Type', de: 'Typ'])
+
+        RefdataValue.loc('CostItem.Type', [en: 'Actual', de: 'Konkrete Instanz'])
+        RefdataValue.loc('CostItem.Type', [en: 'Template', de: 'Vorlage'])
+
         RefdataCategory.loc('CostItemCategory',
                 [en: 'CostItemCategory', de: 'CostItemCategory'])
 
@@ -1235,7 +1266,7 @@ class BootStrap {
         RefdataCategory.loc(RefdataCategory.LIC_TYPE,
                 [en: 'License Type', de: 'Lizenztyp'])
 
-        RefdataValue.loc(RefdataCategory.LIC_TYPE, [en: 'Actual', de: 'Lokal'])
+        RefdataValue.loc(RefdataCategory.LIC_TYPE, [en: 'Actual', de: 'Konkrete Instanz'])
         RefdataValue.loc(RefdataCategory.LIC_TYPE, [en: 'Template', de: 'Vorlage'])
         RefdataValue.loc(RefdataCategory.LIC_TYPE, [en: 'Unknown', de: 'Unbekannt'])
 

@@ -1,5 +1,6 @@
 <%@ page import="com.k_int.kbplus.Task" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
+
 <semui:modal id="modalCreateTask" message="task.create.new">
 
     <g:form class="ui form" id="create_task" url="[controller: 'task', action: 'create']" method="post">
@@ -118,7 +119,7 @@
             </div>
         </div>
 
-        <div class="field">
+        <div class="field" id="radioGroup">
             <div class="two fields">
                 <div class="field wide eight fieldcontain ${hasErrors(bean: taskInstance, field: 'responsible', 'error')}">
                     <label for="responsible">
@@ -155,66 +156,102 @@
     </g:form>
     <g:if test="${controllerName == 'myInstitution'}">
         <r:script>
-            $("#generalradio").change(function () {
-                $("#licensediv, #orgdiv, #pkgdiv, #subscriptiondiv").hide();
-            });
-            $("#licenseradio").change(function () {
-                $("#orgdiv, #pkgdiv, #subscriptiondiv").hide();
-                $("#licensediv").show();
-            });
-            $("#pkgradio").change(function () {
-                $("#licensediv, #orgdiv, #subscriptiondiv").hide();
-                $("#pkgdiv").show();
-            });
-            $("#subscriptionradio").change(function () {
-                $("#licensediv, #orgdiv, #pkgdiv").hide();
-                $("#subscriptiondiv").show();
-            });
-            $("#orgradio").change(function () {
-                $("#licensediv, #pkgdiv, #subscriptiondiv").hide();
-                $("#orgdiv").show();
-            });
-
+            // initial side call
             $("#generalradio").prop( "checked", true );
             $("#licensediv, #orgdiv, #pkgdiv, #subscriptiondiv").hide();
+
+            function showHideRequire (taskType) {
+                var arr = [ 'license', 'org', 'pkg', 'subscription' ];
+                $('#'+ taskType +'radio').change(function () {
+
+                    var hideArray = arr.filter(function(val, index, arr) {
+                        return val != taskType;
+                    });
+                    var hide = hideArray.map(function(val, index, arr) {
+                        return '#' + val + 'div';
+                    }).join(", ");
+
+                    $(hide).hide();
+                    $('#' + taskType + 'div').show();
+                    chooseRequiredDropdown(taskType);
+                });
+            }
+            showHideRequire (
+                'general'
+            );
+
+            showHideRequire (
+                    'license'
+            );
+            showHideRequire (
+                    'pkg'
+            );
+            showHideRequire (
+                    'subscription'
+            );
+            showHideRequire (
+                    'org'
+            );
+
+
         </r:script>
     </g:if>
     <r:script>
-        $("#radioresponsibleOrg").change(function () {
-            $("#responsibleUser").hide();
-        });
-        $("#radioresponsibleUser").change(function () {
-            $("#responsibleUser").show();
-        });
-        $("#radioresponsibleOrg").prop( "checked", true );
-        $("#responsibleUser").hide();
+            $("#radioresponsibleOrg").change(function () {
+                $('#radioGroup').find("#responsibleUser").toggle();
 
-        $('#create_task')
-                .form({
-            on: 'blur',
-            inline: true,
-            fields: {
-                title: {
-                    identifier  : 'title',
-                    rules: [
-                        {
-                            type   : 'empty',
-                            prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
-                        }
-                    ]
-                },
+            });
+            $("#radioresponsibleUser").change(function () {
+                $('#radioGroup').find("#responsibleUser").toggle();
+            });
+            if ($("#radioresponsibleUser").is(':checked')) {
+                $("#responsibleUser").show();
+            } else {
+                $("#responsibleUser").hide();
+            }
 
-                endDate: {
-                    identifier  : 'endDate',
-                    rules: [
-                        {
-                            type   : 'empty',
-                            prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
-                        }
-                    ]
-                }
-             }
-        });
+
+
+        function chooseRequiredDropdown(opt) {
+            $('#create_task')
+                    .form({
+
+                inline: true,
+                fields: {
+                    title: {
+                        identifier  : 'title',
+                        rules: [
+                            {
+                                type   : 'empty',
+                                prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                            }
+                        ]
+                    },
+
+                    endDate: {
+                        identifier  : 'endDate',
+                        rules: [
+                            {
+                                type   : 'empty',
+                                prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                            }
+                        ]
+                    },
+                    opt: {
+                        identifier  : opt,
+                        rules: [
+                            {
+                                type   : 'empty',
+                                prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                            }
+                        ]
+                    },
+                 }
+            });
+        }
+        chooseRequiredDropdown()
+
+
 
 
     </r:script>

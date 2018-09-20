@@ -1,5 +1,4 @@
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
-<% def securityService = grailsApplication.mainContext.getBean("springSecurityService") %>
+<laser:serviceInjection />
 
 <%@ page import="com.k_int.kbplus.Combo" %>
 <!doctype html>
@@ -34,7 +33,7 @@
                  </div>
 
                 <div class="two fields">
-                    <semui:datepicker label="subscription.startDate.label" name="valid_from" value="${defaultStartYear}" class="required" />
+                    <semui:datepicker label="subscription.startDate.label" name="valid_from" value="${defaultStartYear}" />
 
                     <semui:datepicker label="subscription.endDate.label" name="valid_to" value="${defaultEndYear}" />
                 </div>
@@ -44,7 +43,7 @@
                         <label>${message(code:'myinst.emptySubscription.create_as', default:'Create with the role of')}</label>
 
                         <select id="asOrgType" name="asOrgType" class="ui dropdown">
-                            <g:each in="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value <> ? and rdv.owner.desc = ?', ['Other', 'OrgType'])}" var="opt">
+                            <g:each in="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value in (:wl) and rdv.owner.desc = :ot', [wl:['Consortium', 'Institution'], ot:'OrgType'])}" var="opt">
                                 <option value="${opt.id}" data-value="${opt.value}">${opt.getI10n('value')}</option>
                             </g:each>
                         </select>
@@ -59,10 +58,13 @@
                 <input id="submitterFallback" type="submit" class="ui button js-click-control" value="${message(code:'default.button.create.label', default:'Create')}" />
             </g:form>
         </semui:form>
+
+    <hr>
+
         <g:if test="${orgType?.value == 'Consortium'}">
 
             <g:if test="${! cons_members}">
-                <g:if test="${securityService.getCurrentUser().hasAffiliation("INST_ADM")}">
+                <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
                     <hr />
 
                     <div class="ui info message">
@@ -128,16 +130,6 @@
                         fields: {
                             newEmptySubName: {
                                 identifier  : 'newEmptySubName',
-                                rules: [
-                                    {
-                                        type   : 'empty',
-                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
-                                    }
-                                ]
-                            },
-
-                            valid_from: {
-                                identifier  : 'valid_from',
                                 rules: [
                                     {
                                         type   : 'empty',

@@ -1,9 +1,16 @@
 <%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
 
+<div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'title', 'error')}">
+	<label for="title">
+		<g:message code="person.title.label" default="Title" />
+	</label>
+	<g:textField name="title" value="${personInstance?.title}"/>
+
+</div>
+
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'first_name', 'error')} required">
 	<label for="first_name">
 		<g:message code="person.first_name.label" default="Firstname" />
-		<span class="required-indicator">*</span>
 	</label>
 	<g:textField name="first_name" required="" value="${personInstance?.first_name}"/>
 
@@ -21,7 +28,6 @@
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'last_name', 'error')} required">
 	<label for="last_name">
 		<g:message code="person.last_name.label" default="Lastname" />
-		<span class="required-indicator">*</span>
 	</label>
 	<g:textField name="last_name" required="" value="${personInstance?.last_name}"/>
 
@@ -39,7 +45,7 @@
                   value="${personInstance?.gender?.id}"
                   noSelection="['': '']"/>
 </div>
-
+<%--
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')} ">
     <label for="roleType">
 		${com.k_int.kbplus.RefdataCategory.findByDesc('Person Position').getI10n('desc')}
@@ -52,7 +58,7 @@
                   value="${personInstance?.roleType?.id}"
                   noSelection="['': '']"/>
 </div>
-
+--%>
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'contactType', 'error')} ">
     <label for="contactType">
 		${com.k_int.kbplus.RefdataCategory.findByDesc('Person Contact Type').getI10n('desc')}
@@ -72,7 +78,7 @@
 	</label>
 	<ul class="one-to-many">
 		<g:each in="${personInstance?.contacts?}" var="c">
-		    <li><g:link controller="contact" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></li>
+		    <li><g:link controller="contact" action="show" id="${c.id}">${c}</g:link></li>
 		</g:each>
 	</ul>
     <% /* <input class="ui button" type="button" data-semui="modal" href="#contactFormModal"
@@ -91,7 +97,7 @@
 	</label>
 	<ul class="one-to-many">
 		<g:each in="${personInstance?.addresses?}" var="a">
-		    <li><g:link controller="address" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></li>
+		    <li><g:link controller="address" action="show" id="${a.id}">${a}</g:link></li>
 		</g:each>
         <% /* <input class="ui button" type="button" data-semui="modal" href="#addressFormModal"
 			   value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}"> */ %>
@@ -107,7 +113,6 @@
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'isPublic', 'error')} required">
     <label for="isPublic">
         <g:message code="person.isPublic.label" default="IsPublic" />
-        <span class="required-indicator">*</span>
     </label>
     <laser:select class="ui dropdown" id="isPublic" name="isPublic"
                   from="${com.k_int.kbplus.Person.getAllRefdataValues('YN')}"
@@ -119,7 +124,6 @@
 <div class="field fieldcontain ${hasErrors(bean: personInstance, field: 'tenant', 'error')} required">
     <label for="org">
         <g:message code="person.tenant.label" default="Tenant (Permissions to edit this person and depending addresses and contacts)" />
-        <span class="required-indicator">*</span>
     </label>
     <g:select id="tenant" name="tenant.id" class="ui dropdown" from="${userMemberships}"
               optionKey="id" value="${personInstance?.tenant?.id}" />

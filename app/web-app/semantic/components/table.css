@@ -1271,15 +1271,18 @@
 ---------------*/
 
 .ui.la-selectable.table {
+  margin: 0;
+}
+.ui.la-selectable.table tr {
   border-bottom: 1px solid rgba(34, 36, 38, 0.1);
   margin: 0;
 }
-.ui.la-selectable.table tr td {
-  border-top: none;
-}
-.ui.la-selectable.table:hover {
+.ui.la-selectable.table tr:hover {
   background: rgba(0, 0, 0, 0.05) !important;
   color: rgba(0, 0, 0, 0.95) !important;
+}
+.ui.la-selectable.table tr td {
+  border-top: none;
 }
 
 /* la-selectable Cell Link */
@@ -1290,4 +1293,16 @@
   display: block;
   color: inherit;
   padding: 0.78571429em 0.78571429em;
+}
+.ui.table thead th.la-smaller-table-head {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* wrap small needed th to avoid table layout break */
+.ui.sortable.table thead th.la-th-wrap {
+  white-space: normal;
+}
+.ui.sortable.table thead th.la-hyphenation {
+  text-align: justify;
 }

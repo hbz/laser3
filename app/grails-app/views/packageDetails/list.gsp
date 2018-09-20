@@ -30,7 +30,7 @@
 
               <div class="field">
                   <label>${message(code:'package.search.text')}</label>
-                  <input type="text" name="q" placeholder="${message(code:'package.search.ph')}" value="${params.q?.encodeAsHTML()}" />
+                  <input type="text" name="q" placeholder="${message(code:'package.search.ph')}" value="${params.q}" />
               </div>
 
               <div class="fields">
@@ -74,7 +74,7 @@
                         </td>
                         <td>
                             <g:each in="${packageInstance.orgs}" var="orgLink">
-                                <g:link action="show" id="${orgLink.org.id}">${orgLink.org.name}</g:link> <br/>
+                                <g:link controller="organisations" action="show" id="${orgLink.org.id}">${orgLink.org.name}</g:link> <br/>
                             </g:each>
                         </td>
                         <td><g:formatDate date="${packageInstance.dateCreated}" format="${message(code:'default.date.format.noZ', default:'yyyy-MM-dd HH:mm:ss')}"/></td>

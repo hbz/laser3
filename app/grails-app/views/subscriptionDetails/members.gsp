@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.Person" %>
 <%@ page import="com.k_int.kbplus.RefdataValue" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
 
 <!doctype html>
 <html>
@@ -19,6 +19,21 @@
     <h1 class="ui header">
         <semui:headerIcon />
         <semui:xEditable owner="${subscriptionInstance}" field="name" />
+
+        <span class="la-forward-back">
+            <g:if test="${navPrevSubscription}">
+                <g:link controller="subscriptionDetails" action="members" params="[id:navPrevSubscription.id]"><i class="chevron left icon"></i></g:link>
+            </g:if>
+            <g:else>
+                <i class="chevron left icon disabled"></i>
+            </g:else>
+            <g:if test="${navNextSubscription}">
+                <g:link controller="subscriptionDetails" action="members" params="[id:navNextSubscription.id]"><i class="chevron right icon"></i></g:link>
+            </g:if>
+            <g:else>
+                <i class="chevron right icon disabled"></i>
+            </g:else>
+        </span>
     </h1>
 
     <g:render template="nav" />
@@ -42,22 +57,21 @@
     </semui:filter>
     --%>
 
-    %{--<g:set var="validSubChilds" value="${subscriptionChildren.findAll{ it.status?.value != 'Deleted' }}" />
-    <g:set var="deletedSubChilds" value="${subscriptionChildren.findAll{ it.status?.value == 'Deleted' }}" />--}%
+    <g:if test="${validSubChilds}">
 
-    <g:if test="${validSubChilds || deletedSubChilds}">
-    <g:each in="${[validSubChilds, deletedSubChilds]}" status="i" var="outerLoop">
+    <g:each in="${[validSubChilds]}" status="i" var="outerLoop">
 
-        <br />
-
-        <h2><g:if test="${i==1}">${message(code:'subscriptionDetails.members.deleted')}</g:if> ${message(code:'subscriptionDetails.members.members')}</h2>
         <table class="ui celled la-table table">
             <thead>
                 <tr>
                     <th>
-                        <g:if test="${i==1}">${message(code:'subscriptionDetails.members.deleted')}</g:if> ${message(code:'subscriptionDetails.members.members')}
+                        ${message(code:'sidewide.number')}
                     </th>
-                    <th>${message(code:'person.contacts.label')}</th>
+                    <th>Sortiername</th>
+                    <th>
+                        ${message(code:'subscriptionDetails.members.members')}
+                    </th>
+
                     <th>${message(code:'default.startDate.label')}</th>
                     <th>${message(code:'default.endDate.label')}</th>
                     <th>${message(code:'subscription.details.status')}</th>
@@ -65,46 +79,55 @@
                 </tr>
             </thead>
             <tbody>
-                <g:each in="${outerLoop}" var="sub">
+                <g:each in="${outerLoop}" status="j" var="sub">
                     <tr>
-                        <td>
-                            <g:each in="${sub.getAllSubscribers()}" var="subscr">
+                        <td>${j + 1}</td>
+
+                        <g:each in="${sub.getAllSubscribers()}" var="subscr">
+
+                            <td>${subscr.sortname}</td>
+                            <td>
                                 <g:link controller="organisations" action="show" id="${subscr.id}">${subscr}</g:link>
-                            </g:each>
-                        </td>
-                        <td>
-                            <g:each in="${sub.getAllSubscribers()}" var="subscr">
+
                                 <g:set var="rdvGcp" value="${RefdataValue.findByValue('General contact person')}"/>
                                 <g:set var="rdvSse" value="${RefdataValue.findByValue('Specific subscription editor')}"/>
 
-                                <g:each in="${Person.getPublicByOrgAndFunc(subscr, 'General contact person')}" var="gcp">
-                                    ${rdvGcp.getI10n('value')}
-                                    <br />
-                                    <g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>
-                                    <br />
-                                </g:each>
-                                <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(subscr, 'General contact person', contextService.getOrg())}" var="gcp">
-                                    <i class="address book outline icon"></i>
-                                    ${rdvGcp.getI10n('value')}
-                                    <br />
-                                    <g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>
-                                    <br />
-                                </g:each>
-                                <g:each in="${Person.getPublicByOrgAndObjectResp(subscr, sub, 'Specific subscription editor')}" var="sse">
-                                    ${rdvSse.getI10n('value')}
-                                    <br />
-                                    <g:link controller="person" action="show" id="${sse.id}">${sse}</g:link>
-                                    <br />
-                                </g:each>
-                                <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(subscr, sub, 'Specific subscription editor', contextService.getOrg())}" var="sse">
-                                    <i class="address book outline icon"></i>
-                                    ${rdvSse.getI10n('value')}
-                                    <br />
-                                    <g:link controller="person" action="show" id="${sse.id}">${sse}</g:link>
-                                    <br />
-                                </g:each>
-                            </g:each>
-                        </td>
+                                <div class="ui list">
+
+                                    <g:each in="${Person.getPublicByOrgAndFunc(subscr, 'General contact person')}" var="gcp">
+                                        <div class="item">
+                                            <g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>
+                                            (${rdvGcp.getI10n('value')})
+                                        </div>
+                                    </g:each>
+                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(subscr, 'General contact person', contextService.getOrg())}" var="gcp">
+                                        <div class="item">
+                                            <g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>
+                                            (${rdvGcp.getI10n('value')} <i class="address book outline icon" style="display:inline-block"></i>)
+                                        </div>
+                                    </g:each>
+                                    <g:each in="${Person.getPublicByOrgAndObjectResp(subscr, sub, 'Specific subscription editor')}" var="sse">
+                                        <div class="item">
+                                            <g:link controller="person" action="show" id="${sse.id}">${sse}</g:link>
+                                            (${rdvSse.getI10n('value')})
+                                        </div>
+                                    </g:each>
+                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(subscr, sub, 'Specific subscription editor', contextService.getOrg())}" var="sse">
+                                        <div class="item">
+                                            <g:link controller="person" action="show" id="${sse.id}">${sse}</g:link>
+                                            (${rdvSse.getI10n('value')} <i class="address book outline icon" style="display:inline-block"></i>)
+                                        </div>
+                                    </g:each>
+
+                                </div>
+                            </td>
+
+                        </g:each>
+                        <g:if test="${! sub.getAllSubscribers()}">
+                            <td></td>
+                            <td></td>
+                        </g:if>
+
                         <td>
                             <g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/>
                         </td>
@@ -119,7 +142,7 @@
 
                             <g:if test="${editable && i<1}">
                                 <g:link controller="subscriptionDetails" action="deleteMember" class="ui icon negative button"
-                                        params="${[id:subscriptionInstance.id, basesubscription: sub.id]}"
+                                        params="${[id:subscriptionInstance.id, target: sub.id]}"
                                         onclick="return confirm('${message(code:'license.details.delete.confirm', args:[(sub.name?:'this subscription')])}')">
                                     <i class="trash alternate icon"></i>
                                 </g:link>
@@ -131,6 +154,7 @@
             </tbody>
         </table>
     </g:each>
+
     </g:if>
     <g:else>
         <br><strong><g:message code="subscription.details.nomembers.label" default="No members have been added to this license. You must first add members."/></strong>

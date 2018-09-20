@@ -1,48 +1,69 @@
-println('*** using local config file ***')
+println('*** INFO: using local config file ***')
 
-localauth=          true
-// no slash at end of SystemBaseURL
-SystemBaseURL=      'http://localhost:8080/laser'
-laserSystemId=     'LAS:eR-Demo'
-dataSource.url=     'jdbc:mysql://localhost/laserDev?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8'
-aggr_es_cluster=    'elasticsearch'
-aggr_es_index=      'laserIndex'
+// --- ---
+SystemBaseURL       = 'http://localhost:8080/laser' // no slash at end
+laserSystemId       = 'LAS:eR-Demo'
+localauth           = true
+
+// --- datasource ---
+dataSource.url      = 'jdbc:mysql://localhost/laserDev?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8'
+//dataSource.username
+//dataSource.password
+
+// --- elastic search ---
+aggr_es_cluster     = 'elasticsearch'
+aggr_es_index       = 'esIndex'
+aggr_es_hostname    = 'localhost'
+
+// --- statistics ---
+//statsApiUrl = 'http://statsServer'
+
+// --- jira ---
+
+// --- features ---
+//feature.eBooks
+//feature.issnl
+feature_finance = false
+//feature.notifications
+
+// --- others ---
+//globalDataSyncJobActiv
+//AdminReminderJobActiv
 onix_ghost_licence= 'Jisc Collections Model Journals Licence 2015'
 publicationService.baseurl='http://knowplus.edina.ac.uk:2012/kbplus/api'
 docstore=           'http://deprecated/deprecated'
 KBPlusMaster=       false
-juspThreadPoolSize= 10
 doDocstoreMigration=false
-JuspApiUrl=         'https://www.jusp.mimas.ac.uk/'
 
+// --- example users ---
 sysusers = [
-    [ 
-    name:'userb',
-    pass:'userb',
-    display:'UserB',
-    email:'read@localhost',
-    roles:['ROLE_USER','INST_USER']
+    [
+        name:'aaa',
+        pass:'aaa',
+        display:'User A',
+        email:'aaa@localhost',
+        roles:['ROLE_USER','INST_USER']
     ],
     [ 
-    name:'userc',
-    pass:'userc',
-    display:'UserC',
-    email:'read@localhost',
-    roles:['ROLE_USER','INST_USER']
+        name:'bbb',
+        pass:'bbb',
+        display:'User B',
+        email:'bbb@localhost',
+        roles:['ROLE_USER','INST_USER']
     ],
     [ 
-    name:'usera',
-    pass:'usera',
-    display:'UserA',
-    email:'read@localhost',
-    roles:['ROLE_USER','INST_USER']  
+        name:'ccc',
+        pass:'ccc',
+        display:'User C',
+        email:'ccc@localhost',
+        roles:['ROLE_USER','INST_USER']
     ],
     [ 
-    name:'admin',
-    pass:'admin',
-    display:'TestAdmin',
-    email:'read@localhost',
-    roles:['ROLE_USER','ROLE_ADMIN','INST_ADM']
+        name:'admin',
+        pass:'admin',
+        display:'Admin',
+        email:'admin@localhost',
+        roles:['ROLE_USER','ROLE_ADMIN','INST_ADM']
     ]
 ]
 

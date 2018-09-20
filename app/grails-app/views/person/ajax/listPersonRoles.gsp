@@ -1,3 +1,6 @@
+<%-- DEPRECATED --%>
+<%-- DEPRECATED --%>
+<%-- DEPRECATED --%>
 
 <g:each in="${existingPrsLinks}" var="link">
 	<div class="ui vertical ui-delete">

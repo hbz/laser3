@@ -51,8 +51,8 @@
                   </dd>
                   <dd>
                       <label class="property-label">Type:</label> <g:select 
-                          from="${PropertyDefinition.validTypes.entrySet()}"
-                                  optionKey="value" optionValue="key"
+                          from="${PropertyDefinition.validTypes2.entrySet()}"
+                                  optionKey="key" optionValue="${{PropertyDefinition.getLocalizedValue(it.key)}}"
                                   name="cust_prop_type"
                                   id="cust_prop_modal_select" />
                   </dd>

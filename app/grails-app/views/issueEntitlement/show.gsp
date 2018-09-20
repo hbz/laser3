@@ -30,24 +30,24 @@
                 <g:if test="${issueEntitlementInstance?.subscription}">
                     <dt><g:message code="subscription.label" default="Subscription" /></dt>
 
-                    <dd><g:link controller="subscriptionDetails" action="index" id="${issueEntitlementInstance?.subscription?.id}">${issueEntitlementInstance?.subscription?.name.encodeAsHTML()}</g:link></dd>
+                    <dd><g:link controller="subscriptionDetails" action="index" id="${issueEntitlementInstance?.subscription?.id}">${issueEntitlementInstance?.subscription?.name}</g:link></dd>
 
                 </g:if>
             <g:if test="${issueEntitlementInstance?.subscription.owner}">
                 <dt><g:message code="licence.label" default="License" /></dt>
 
-                <dd><g:link controller="licenseDetails" action="show" id="${issueEntitlementInstance?.subscription?.owner.id}">${issueEntitlementInstance?.subscription?.owner.reference.encodeAsHTML()}</g:link></dd>
+                <dd><g:link controller="licenseDetails" action="show" id="${issueEntitlementInstance?.subscription?.owner.id}">${issueEntitlementInstance?.subscription?.owner.reference}</g:link></dd>
 
             </g:if>
             <g:if test="${issueEntitlementInstance?.subscription?.owner?.onixplLicense}">
                 <dt><g:message code="onixplLicence.licence.label" default="ONIX-PL Licence" /></dt>
 
-                <dd><g:link controller="onixplLicenseDetails" action="index" id="${issueEntitlementInstance.subscription.owner.onixplLicense.id}">${issueEntitlementInstance.subscription.owner.onixplLicense.title.encodeAsHTML()}</g:link></dd>
+                <dd><g:link controller="onixplLicenseDetails" action="index" id="${issueEntitlementInstance.subscription.owner.onixplLicense.id}">${issueEntitlementInstance.subscription.owner.onixplLicense.title}</g:link></dd>
             </g:if>
 
             <g:if test="${issueEntitlementInstance?.tipp}">
                     <dt><g:message code="title.label" default="Title" /></dt>
-                    <dd><g:link controller="titleDetails" action="show" id="${issueEntitlementInstance?.tipp?.title.id}">${issueEntitlementInstance?.tipp?.title.title.encodeAsHTML()}</g:link> (${message(code:'title.type.label')}: ${issueEntitlementInstance?.tipp?.title.type.getI10n('value')})</dd>
+                    <dd><g:link controller="titleDetails" action="show" id="${issueEntitlementInstance?.tipp?.title.id}">${issueEntitlementInstance?.tipp?.title.title}</g:link> (${message(code:'title.type.label')}: ${issueEntitlementInstance?.tipp?.title.type.getI10n('value')})</dd>
                     <dt><g:message code="tipp.delayedOA" default="TIPP Delayed OA" /></dt>
                     <dd>${issueEntitlementInstance?.tipp.delayedOA?.value}</dd>
                     <dt><g:message code="tipp.hybridOA" default="TIPP Hybrid OA" /></dt>
@@ -312,7 +312,9 @@
 
 <div id="magicArea">
 
-<g:if test="${grailsApplication.config.showDebugInfo}">
+    <g:set var="yodaService" bean="yodaService" />
+
+<g:if test="${yodaService.showDebugInfo()}">
 <g:render template="coreAssertionsModal" contextPath="../templates" model="${[tipID:-1,coreDates:[]]}"/>
 </g:if>
 </div>

@@ -7,6 +7,7 @@ import grails.converters.*
 import com.k_int.kbplus.auth.*;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import grails.plugin.springsecurity.annotation.Secured
+import org.codehaus.groovy.runtime.InvokerHelper
 
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -15,7 +16,6 @@ class LicenseDetailsController {
     def springSecurityService
     def taskService
     def docstoreService
-    def gazetteerService
     def alertsService
     def genericOIDService
     def transformerService
@@ -26,6 +26,7 @@ class LicenseDetailsController {
     def accessService
     def contextService
     def addressbookService
+    def filterService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -65,7 +66,10 @@ class LicenseDetailsController {
           }
 
           log.debug("pc result is ${result.pendingChanges}");
-          if (result.license.incomingLinks.find { it?.isSlaved?.value == "Yes" } && pendingChanges) {
+          // refactoring: replace link table with instanceOf
+          // if (result.license.incomingLinks.find { it?.isSlaved?.value == "Yes" } && pendingChanges) {
+
+          if (result.license.isSlaved?.value == "Yes" && pendingChanges) {
               log.debug("Slaved lincence, auto-accept pending changes")
               def changesDesc = []
               pendingChanges.each { change ->
@@ -80,7 +84,8 @@ class LicenseDetailsController {
               result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
           }
       }
-      result.availableSubs = getAvailableSubscriptions(result.license, result.user)
+
+      //result.availableSubs = getAvailableSubscriptions(result.license, result.user)
 
       // tasks
       def contextOrg = contextService.getOrg()
@@ -91,7 +96,7 @@ class LicenseDetailsController {
         // restrict visible for templates/links/orgLinksAsList
         result.visibleOrgLinks = []
         result.license.orgLinks?.each { or ->
-            if (! (or.org == contextService.getOrg() && or.roleType.value in ["Licensee", "Licensee_Consortial"])) {
+            if (!(or.org == contextService.getOrg()) && !(or.roleType.value in ["Licensee", "Licensee_Consortial"])) {
                 result.visibleOrgLinks << or
             }
         }
@@ -146,7 +151,30 @@ class LicenseDetailsController {
           }
       }
 
-      withFormat {
+        def licensee = result.license.getLicensee();
+        def consortia = result.license.getLicensingConsortium();
+
+        def subscrQuery = """
+select s from Subscription as s where (
+  exists ( select o from s.orgRelations as o where (o.roleType.value IN ('Subscriber', 'Subscription Consortia')) and o.org = :co) ) 
+  AND ( LOWER(s.status.value) != 'deleted' ) 
+)
+"""
+
+        if(consortia)
+        {
+            subscrQuery = """
+select s from Subscription as s where (
+  exists ( select o from s.orgRelations as o where (o.roleType.value IN ('Subscription Consortia')) and o.org = :co) ) 
+  AND ( LOWER(s.status.value) != 'deleted' AND (s.instanceOf is null or s.instanceOf = '') 
+)
+"""
+        }
+
+        result.availableSubs = Subscription.executeQuery("${subscrQuery} order by LOWER(s.name) asc", [co: contextService.getOrg()])
+
+
+        withFormat {
       html result
       json {
         def map = exportService.addLicensesToMap([:], [result.license])
@@ -190,6 +218,117 @@ class LicenseDetailsController {
     }
   }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def addMembers() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (! result) {
+            response.sendError(401); return
+        }
+        result.institution = contextService.getOrg()
+
+        if (result.license?.instanceOf?.instanceOf?.isTemplate()) {
+            log.debug( 'ignored setting.cons_members because: LCurrent.instanceOf LParent.instanceOf LTemplate')
+        }
+        else if (result.license?.instanceOf && ! result.license?.instanceOf.isTemplate()) {
+            log.debug( 'ignored setting.cons_members because: LCurrent.instanceOf (LParent.noTemplate)')
+        }
+        else {
+            if (result.institution?.orgType?.value == 'Consortium') {
+                def fsq = filterService.getOrgComboQuery(params, result.institution)
+                def all_cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
+
+                result.cons_members = []
+
+                // filter by members of subscription.owner -> this
+                all_cons_members.each { org ->
+                    Subscription.where { owner == result.license }.findAll().each { subscr ->
+                        subscr.getDerivedSubscribers().each { subOrg ->
+                            if (subOrg.id == org.id) {
+                                result.cons_members << org
+                            }
+                        }
+                    }
+                }
+
+                result.cons_members_disabled = []
+
+                result.cons_members.unique().each { it ->
+                    if (License.executeQuery("select l from License as l join l.orgLinks as lol where l.instanceOf = ? and lol.org.id = ?",
+                            [result.license, it.id])
+                    ) {
+                        result.cons_members_disabled << it.id
+                    }
+                }
+            }
+        }
+        result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def processAddMembers() {
+        log.debug(params)
+
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        if (!result) {
+            response.sendError(401); return
+        }
+        result.institution = contextService.getOrg()
+
+        def orgType       = RefdataValue.get(params.asOrgType)
+        def role_lic      = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial')
+        def role_lic_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensing Consortium')
+
+        if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
+
+            if (orgType?.value == 'Consortium') {
+                def cons_members = []
+                def licenseCopy
+
+                params.list('selectedOrgs').each { it ->
+                    def fo = Org.findById(Long.valueOf(it))
+                    cons_members << Combo.executeQuery("select c.fromOrg from Combo as c where c.toOrg = ? and c.fromOrg = ?", [result.institution, fo])
+                }
+
+                cons_members.each { cm ->
+
+                    def postfix = (cons_members.size() > 1) ? 'Teilnehmervertrag' : (cm.get(0).shortname ?: cm.get(0).name)
+
+                    if (result.license) {
+                        def licenseParams = [
+                                lic_name: "${result.license.reference} (${postfix})",
+                                isSlaved: params.isSlaved,
+                                asOrgType: params.asOrgType,
+                                copyStartEnd: true
+                        ]
+
+                        if (params.generateSlavedLics == 'explicit') {
+                            licenseCopy = institutionsService.copyLicense(result.license, licenseParams)
+                            // licenseCopy.sortableReference = subLicense.sortableReference
+                        }
+                        else if (params.generateSlavedLics == 'shared' && ! licenseCopy) {
+                            licenseCopy = institutionsService.copyLicense(result.license, licenseParams)
+                        }
+                        else if (params.generateSlavedLics == 'reference' && ! licenseCopy) {
+                            licenseCopy = genericOIDService.resolveOID(params.generateSlavedLicsReference)
+                        }
+
+                        if (licenseCopy) {
+                            new OrgRole(org: cm, lic: licenseCopy, roleType: role_lic).save()
+                        }
+                    }
+                }
+                redirect controller: 'licenseDetails', action: 'members', params: [id: result.license?.id]
+            }
+            else {
+                redirect controller: 'licenseDetails', action: 'show', params: [id: result.license?.id]
+            }
+        } else {
+            redirect controller: 'licenseDetails', action: 'show', params: [id: result.license?.id]
+        }
+    }
+
     private def getAvailableSubscriptions(license, user) {
         def licenseInstitutions = license?.orgLinks?.findAll{ orgRole ->
           orgRole.roleType?.value in ["Licensee", "Licensee_Consortial"]
@@ -221,8 +360,11 @@ from Subscription as s where
     if(params.subscription && params.license){
       def sub = Subscription.get(params.subscription)
       def owner = License.get(params.license)
-      owner.addToSubscriptions(sub)
-      owner.save(flush:true)
+        // owner.addToSubscriptions(sub) // GORM problem
+        // owner.save()
+        sub.setOwner(owner)
+        sub.save()
+
     }
     redirect controller:'licenseDetails', action:'show', params: [id:params.license]
 
@@ -318,7 +460,7 @@ from Subscription as s where
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def links() {
+    def members() {
         log.debug("licenseDetails id:${params.id}");
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -326,7 +468,50 @@ from Subscription as s where
             response.sendError(401); return
         }
 
+        def validMemberLicenses = License.where {
+            (instanceOf == result.license) && (status.value != 'Deleted')
+        }
+
+        result.validMemberLicenses = validMemberLicenses
         result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def deleteMember() {
+        log.debug(params)
+
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        // adopted from SubscriptionDetailsController.deleteMember()
+
+        def delLicense      = License.get(params.target)
+        def delInstitutions = delLicense.getAllLicensee()
+
+        def deletedStatus = RefdataCategory.lookupOrCreate('License Status', 'Deleted')
+
+        if (delLicense.hasPerm("edit", result.user)) {
+            def derived_lics = License.findByInstanceOfAndStatusNot(delLicense, deletedStatus)
+
+            if (! derived_lics) {
+                if (delLicense.getLicensingConsortium() && ! ( delInstitutions.contains(delLicense.getLicensingConsortium() ) ) ) {
+                    OrgRole.executeUpdate("delete from OrgRole where lic = :l and org IN (:orgs)", [l: delLicense, orgs: delInstitutions])
+
+                    delLicense.status = deletedStatus
+                    delLicense.save(flush: true)
+                }
+            } else {
+                flash.error = message(code: 'myinst.actionCurrentLicense.error', default: 'Unable to delete - The selected license has attached licenses')
+            }
+        } else {
+            log.warn("${result.user} attempted to delete license ${delLicense} without perms")
+            flash.message = message(code: 'license.delete.norights')
+        }
+
+        redirect action: 'members', params: [id: params.id], model: result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -605,4 +790,174 @@ from Subscription as s where
 
         result
     }
+
+    def copyLicense()
+    {
+        log.debug("licenseDetails: ${params}");
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        result.visibleOrgLinks = []
+        result.license.orgLinks?.each { or ->
+            if (!(or.org == contextService.getOrg()) && !(or.roleType.value in ["Licensee", "Licensee_Consortial"])) {
+                result.visibleOrgLinks << or
+            }
+        }
+        result.visibleOrgLinks.sort{ it.org.sortname }
+
+        def contextOrg = contextService.getOrg()
+        result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.license)
+        def preCon = taskService.getPreconditions(contextOrg)
+        result << preCon
+
+
+        result.contextOrg = contextService.getOrg()
+
+        result
+
+    }
+
+    def processcopyLicense() {
+
+        params.id = params.baseLicense
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        def baseLicense = com.k_int.kbplus.License.get(params.baseLicense)
+
+        if (baseLicense) {
+
+            def lic_name = params.lic_name ?: "Kopie von ${baseLicense.reference}"
+
+            def licenseInstance = new License(
+                    reference: lic_name,
+                    status: baseLicense.status,
+                    type: baseLicense.type,
+                    startDate: params.license.copyDates ? baseLicense?.startDate : null,
+                    endDate: params.license.copyDates ? baseLicense?.endDate : null,
+                    instanceOf: params.license.copyLinks ? baseLicense?.instanceOf : null,
+
+            )
+
+
+            if (!licenseInstance.save(flush: true)) {
+                log.error("Problem saving license ${licenseInstance.errors}");
+                return licenseInstance
+            } else {
+                   log.debug("Save ok");
+
+                    baseLicense.documents?.each { dctx ->
+
+                        //Copy Docs
+                        if (params.license.copyDocs) {
+                            if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status?.value != 'Deleted')) {
+                                Doc clonedContents = new Doc(
+                                        blobContent: dctx.owner.blobContent,
+                                        status: dctx.owner.status,
+                                        type: dctx.owner.type,
+                                        alert: dctx.owner.alert,
+                                        content: dctx.owner.content,
+                                        uuid: dctx.owner.uuid,
+                                        contentType: dctx.owner.contentType,
+                                        title: dctx.owner.title,
+                                        creator: dctx.owner.creator,
+                                        filename: dctx.owner.filename,
+                                        mimeType: dctx.owner.mimeType,
+                                        user: dctx.owner.user,
+                                        migrated: dctx.owner.migrated
+                                ).save()
+
+                                DocContext ndc = new DocContext(
+                                        owner: clonedContents,
+                                        license: licenseInstance,
+                                        domain: dctx.domain,
+                                        status: dctx.status,
+                                        doctype: dctx.doctype
+                                ).save()
+                            }
+                        }
+                        //Copy Announcements
+                        if (params.license.copyAnnouncements) {
+                            if ((dctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
+                                Doc clonedContents = new Doc(
+                                        blobContent: dctx.owner.blobContent,
+                                        status: dctx.owner.status,
+                                        type: dctx.owner.type,
+                                        alert: dctx.owner.alert,
+                                        content: dctx.owner.content,
+                                        uuid: dctx.owner.uuid,
+                                        contentType: dctx.owner.contentType,
+                                        title: dctx.owner.title,
+                                        creator: dctx.owner.creator,
+                                        filename: dctx.owner.filename,
+                                        mimeType: dctx.owner.mimeType,
+                                        user: dctx.owner.user,
+                                        migrated: dctx.owner.migrated
+                                ).save()
+
+                                DocContext ndc = new DocContext(
+                                        owner: clonedContents,
+                                        license: licenseInstance,
+                                        domain: dctx.domain,
+                                        status: dctx.status,
+                                        doctype: dctx.doctype
+                                ).save()
+                            }
+                        }
+                    }
+                    //Copy Tasks
+                    if (params.license.copyTasks) {
+
+                        Task.findAllByLicense(baseLicense).each { task ->
+
+                            Task newTask = new Task()
+                            InvokerHelper.setProperties(newTask, task.properties)
+                            newTask.license = licenseInstance
+                            newTask.save(flush:true)
+                        }
+
+                    }
+                    //Copy References
+                        baseLicense.orgLinks?.each { or ->
+                            if ((or.org == contextService.getOrg()) || (or.roleType.value in ["Licensee", "Licensee_Consortial"]) || (params.license.copyLinks)) {
+                            OrgRole newOrgRole = new OrgRole()
+                            InvokerHelper.setProperties(newOrgRole, or.properties)
+                            newOrgRole.lic = licenseInstance
+                            newOrgRole.save(flush:true)
+
+                            }
+
+                    }
+
+                    if(params.license.copyCustomProperties) {
+                        //customProperties
+                        for (prop in baseLicense.customProperties) {
+                            def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
+                            copiedProp = prop.copyValueAndNote(copiedProp)
+                            licenseInstance.addToCustomProperties(copiedProp)
+                        }
+                    }
+                    if(params.license.copyPrivateProperties){
+                        //privatProperties
+                        def contextOrg = contextService.getOrg()
+
+                        baseLicense.privateProperties.each { prop ->
+                            if(prop.type?.tenant?.id == contextOrg?.id)
+                            {
+                                def copiedProp = new LicensePrivateProperty(type: prop.type, owner: licenseInstance)
+                                copiedProp = prop.copyValueAndNote(copiedProp)
+                                licenseInstance.addToPrivateProperties(copiedProp)
+                            }
+                        }
+                    }
+
+                redirect controller: 'licenseDetails', action: 'show', params: [id: licenseInstance.id]
+                }
+
+            }
+        }
 }

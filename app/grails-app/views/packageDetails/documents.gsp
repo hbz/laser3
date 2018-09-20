@@ -44,8 +44,6 @@
 
     <g:render template="/templates/documents/table" model="${[instance:packageInstance,context:'pkg',redirect:'documents']}"/>
 
-    <g:render template="/templates/documents/modal" model="${[doclist: packageInstance.documents, ownobj: packageInstance, owntp: 'pkg']}"/>
-
 </body>
 
 </html>

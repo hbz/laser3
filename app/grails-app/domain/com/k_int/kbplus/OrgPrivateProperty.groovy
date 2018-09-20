@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.properties.PropertyDefinition
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 
@@ -10,6 +11,8 @@ class OrgPrivateProperty extends PrivateProperty {
     Org owner
 
     static mapping = {
+        includes AbstractProperty.mapping
+
         id      column:'opp_id'
         version column:'opp_version'
         type    column:'opp_type_fk'
@@ -17,6 +20,8 @@ class OrgPrivateProperty extends PrivateProperty {
     }
 
     static constraints = {
+        importFrom AbstractProperty
+
         type    (nullable:false, blank:false)
         owner   (nullable:false, blank:false)
     }

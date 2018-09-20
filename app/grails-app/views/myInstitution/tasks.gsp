@@ -25,7 +25,7 @@
                         <div class="ui input">
                             <input type="text" name="taskName"
                                    placeholder="${message(code: 'default.search.ph', default: 'enter search term ..')}"
-                                   value="${params.taskName?.encodeAsHTML()}"/>
+                                   value="${params.taskName}"/>
                         </div>
                     </div>
 
@@ -46,10 +46,10 @@
                 </div>
                     <div class="fields">
                         <div class="field">
-                            <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.searchreset.label')}</a>
+                            <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.filterreset.label')}</a>
                         </div>
                         <div class="field">
-                            <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}"/>
+                            <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}"/>
                         </div>
                     </div>
             </form>
@@ -68,6 +68,8 @@
         <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList]}"/>
 
         <g:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList]}"/>
+
+        <g:render template="/templates/tasks/js_taskedit"/>
 
 
 

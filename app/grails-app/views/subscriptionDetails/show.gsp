@@ -16,7 +16,14 @@
         <g:javascript src="properties.js"/>
     </head>
     <body>
+
+        <semui:debugInfo>
+            <g:render template="/templates/debug/orgRoles" model="[debug: subscriptionInstance.orgRelations]" />
+            <g:render template="/templates/debug/prsRoles" model="[debug: subscriptionInstance.prsLinks]" />
+        </semui:debugInfo>
+
         <g:render template="breadcrumb" model="${[ params:params ]}"/>
+
         <semui:controlButtons>
             <g:render template="actions" />
         </semui:controlButtons>
@@ -46,11 +53,13 @@
 
         <g:render template="nav" />
 
+        <semui:objectStatus object="${subscriptionInstance}" status="${subscriptionInstance.status}" />
+
     <g:if test="${subscriptionInstance.instanceOf && (contextOrg == subscriptionInstance.getConsortia())}">
         <div class="ui negative message">
-            <div class="header"><g:message code="myinst.subscriptionDetails.message.attention" /></div>
+            <div class="header"><g:message code="myinst.message.attention" /></div>
             <p>
-                <g:message code="myinst.subscriptionDetails.message.SubscriptionView" />
+                <g:message code="myinst.subscriptionDetails.message.ChildView" />
                     <span class="ui label">${subscriptionInstance.getAllSubscribers()?.collect{itOrg -> itOrg.name}.join(',')}</span>.
                 <g:message code="myinst.subscriptionDetails.message.ConsortialView" />
                     <g:link controller="subscriptionDetails" action="show" id="${subscriptionInstance.instanceOf.id}"><g:message code="myinst.subscriptionDetails.message.here" /></g:link>.
@@ -167,7 +176,38 @@
 
                 <div class="ui card">
                         <div class="content">
-                            <g:each in="${subscriptionInstance.packages}" var="sp">
+
+                            <table class="ui la-selectable table">
+                                <colgroup>
+                                    <col width="130" />
+                                    <col width="300" />
+                                    <col width="430"/>
+                                </colgroup>
+                                <g:each in="${subscriptionInstance.packages.sort{it.pkg.name}}" var="sp">
+                                <tr>
+                                <th scope="row" class="control-label">${message(code:'subscription.packages.label')}</th>
+                                    <td>
+                                        <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
+
+                                        <g:if test="${sp.pkg?.contentProvider}">
+                                            (${sp.pkg?.contentProvider?.name})
+                                        </g:if>
+                                    </td>
+                                    <td>
+                                        <g:if test="${editable}">
+
+                                            <div class="ui mini icon buttons">
+                                                <button class="ui button la-selectable-button" onclick="unlinkPackage(${sp.pkg.id})">
+                                                    <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
+                                                </button>
+                                            </div>
+                                            <br />
+                                        </g:if>
+                                    </td>
+                                </tr>
+                                </g:each>
+                            </table>
+
                             <table class="ui la-selectable table">
                                 <colgroup>
                                     <col width="130" />
@@ -175,55 +215,40 @@
                                     <col width="430"/>
                                 </colgroup>
                                 <tr>
-                                <th scope="row" class="control-label">${message(code:'subscription.packages.label')}</th>
-                                <td>
-
-
-                                        <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
-
-                                        <g:if test="${sp.pkg?.contentProvider}">
-                                            (${sp.pkg?.contentProvider?.name})
-                                        </g:if>
-                                </td>
-                                <td>
-                                        <g:if test="${editable}">
-
-                                            <div class="ui mini icon buttons">
-                                                <button class="ui button" onclick="unlinkPackage(${sp.pkg.id})">
-                                                    <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
-                                                </button>
-                                            </div>
-                                            <br />
-                                        </g:if>
-                                </td>
-                            </table>
-                            </g:each>
-                            <dl>
-                                <dt class="control-label la-width-122">${message(code:'license')}</dt>
-                                <dd>
-
+                                    <th scope="row" class="control-label">${message(code:'license')}</th>
+                                    <td>
                                         <g:if test="${subscriptionInstance.owner == null}">
                                             <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
                                         </g:if>
-                                        <g:else><g:link controller="licenseDetails" action="show" id="${subscriptionInstance.owner.id}">
-                                                    ${subscriptionInstance.owner}
-                                                </g:link>
+                                        <g:else>
+                                            <g:link controller="licenseDetails" action="show" id="${subscriptionInstance.owner.id}">
+                                                ${subscriptionInstance.owner}
+                                            </g:link>
                                         </g:else>
-                                       %{-- <g:if test="${subscriptionInstance.owner != null}">
-                                            [<g:link controller="licenseDetails" action="show" id="${subscriptionInstance.owner.id}">
-                                                <i class="icon-share-alt"></i> ${message(code:'default.button.show.label', default:'Show')}
-                                            </g:link>]
-                                        </g:if>--}%
-
-                                        <br/><br/>
-                                        <g:if test="${editable}">
-                                            <g:if test="${subscriptionInstance.owner == null}">
-                                                <g:link  controller="myInstitution" class="ui button" action="addLicense" params="[sub: subscriptionInstance.id, subName: subscriptionInstance.name]">${message(code:'license.add.blank')}
-                                                </g:link>
-                                            </g:if>
+                                        %{-- <g:if test="${subscriptionInstance.owner != null}">
+                                             [<g:link controller="licenseDetails" action="show" id="${subscriptionInstance.owner.id}">
+                                                 <i class="icon-share-alt"></i> ${message(code:'default.button.show.label', default:'Show')}
+                                             </g:link>]
+                                         </g:if>--}%
+                                    </td>
+                                    <td>
+                                        <g:if test="${editable && subscriptionInstance.owner}">
+                                            <div class="ui mini icon buttons">
+                                                <a href="?cmd=unlinkLicense" class="ui button la-selectable-button">
+                                                    <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
+                                                </a>
+                                            </div>
+                                            <br />
                                         </g:if>
-                                </dd>
-                            </dl>
+                                    </td>
+                            </table>
+
+                            <g:if test="${editable}">
+                                <g:if test="${subscriptionInstance.owner == null}">
+                                    <g:link  controller="myInstitution" class="ui button la-new-item" action="emptyLicense" params="[sub: subscriptionInstance.id]">${message(code:'license.add.blank')}
+                                    </g:link>
+                                </g:if>
+                            </g:if>
                         </div>
                     </div>
 
@@ -238,35 +263,12 @@
                     <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="isPublic" config='YN' /></dd>
                 </dl>
                 */ %>
-                <% /* <dl>
-                   <dt>${message(code:'license.details.incoming.child', default:'Child')} </dt>
-                   <dd>${subscriptionInstance.getIsSlavedAsString()}</dd>
-               </dl> */ %>
-
-                <% /*
-                <dl>
-                    <dt>
-                        <g:annotatedLabel owner="${subscriptionInstance}" property="nominalPlatform">${message(code:'package.nominalPlatform', default:'Nominal Platform')}</g:annotatedLabel>
-                    </dt>
-                    <dd>
-                        <g:each in="${subscriptionInstance.packages}" var="sp">
-                            ${sp.pkg?.nominalPlatform?.name}<br/>
-                        </g:each>
-                    </dd>
-                </dl>
-                */ %>
-                <% /* <dl>
-                    <dt>${message(code:'financials.cancellationAllowances', default:'Cancellation Allowances')}</dt>
-                    <dd> <semui:xEditable owner="${subscriptionInstance}" field="cancellationAllowances" /></dd>
-                </dl> */ %>
 
                     <g:render template="/templates/links/orgLinksAsList"
                               model="${[roleLinks: visibleOrgRelations,
                                         roleObject: subscriptionInstance,
                                         roleRespValue: 'Specific subscription editor',
-                                        editmode: editable,
-                                        tmplButtonText:'Anbieter hinzufügen',
-                                        tmplmodalID:'osel_add_modal'
+                                        editmode: editable
                               ]}" />
 
                     <g:render template="/templates/links/orgLinksModal"
@@ -277,36 +279,24 @@
                                         tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'),
                                         tmplText:'Anbieter hinzufügen',
                                         tmplID:'ContentProvider',
-                                        tmplmodalID:'osel_add_modal'
+                                        tmplButtonText:'Anbieter hinzufügen',
+                                        tmplModalID:'osel_add_modal_anbieter',
+                                        editmode: editable
                               ]}" />
 
-
-                <g:render template="/templates/links/orgLinksAsList"
-                          model="${[roleLinks: visibleOrgAgencyRelations,
-                                    roleObject: subscriptionInstance,
-                                    roleRespValue: 'Specific subscription editor',
-                                    editmode: editable,
-                                    tmplButtonText:'Agentur hinzufügen',
-                                    tmplmodalID:'osel_add_modal1'
-                          ]}" />
-
-                <g:render template="/templates/links/orgLinksModal"
-                          model="${[linkType: subscriptionInstance?.class?.name,
+                    <g:render template="/templates/links/orgLinksModal"
+                                model="${[linkType: subscriptionInstance?.class?.name,
                                     parent: subscriptionInstance.class.name+':'+subscriptionInstance.id,
                                     property: 'orgs',
                                     recip_prop: 'sub',
                                     tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Agency', 'Organisational Role'),
-                                    tmplText:'Agentur hinzufügen',
+                                    tmplText:'Lieferant hinzufügen',
                                     tmplID:'ContentProvider',
-                                    tmplmodalID:'osel_add_modal1'
-                          ]}" />
-<%--
-                    <g:render template="/templates/links/orgLinksAsListAddPrsModal"
-                          model="[roleLinks: visibleOrgRelations,
-                                  'subscription': subscriptionInstance,
-                                  parent: subscriptionInstance.class.name + ':' + subscriptionInstance.id,
-                                  role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id]"/>
---%>
+                                    tmplButtonText:'Lieferant hinzufügen',
+                                    tmplModalID:'osel_add_modal_agentur',
+                                    editmode: editable
+                                ]}" />
+
                 <% /*
                <dl>
                     <dt><label class="control-label" for="licenseeRef">${message(code:'org.links.label', default:'Org Links')}</label></dt><dd>
@@ -345,7 +335,7 @@
                         </div>
                     </div>
 
-                <g:render template="/templates/debug/orgRoles" model="[debug: subscriptionInstance.orgRelations]" />
+                <%-- FINANCE
 
                 <g:if test="${subscriptionInstance.costItems}">
 
@@ -405,6 +395,8 @@
                         </div>
                     </div>
                 </g:if>
+
+                FINANCE --%>
                 <g:if test="${usage}">
                     <div class="ui card la-dl-no-table">
                         <div class="content">
@@ -415,8 +407,8 @@
                                                         currencyCode="${currencyCode}" maxFractionDigits="2"
                                                         minFractionDigits="2" roundingMode="HALF_UP"/></dd>
                                 </dl>
+                                <div class="ui divider"></div>
                             </g:if>
-                            <div class="ui divider"></div>
                             <dl>
                                 <dt class="control-label">${message(code: 'default.usage.label')}</dt>
                                 <dd>
@@ -537,8 +529,8 @@
 
         <aside class="four wide column la-sidekick">
             <g:render template="/templates/tasks/card" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
-            <g:render template="card" contextPath="../templates/documents" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
-            <g:render template="card" contextPath="../templates/notes" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
+            <g:render template="/templates/documents/card" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
+            <g:render template="/templates/notes/card" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
         </aside><!-- .four -->
     </div><!-- .grid -->
 
@@ -548,7 +540,7 @@
     <r:script language="JavaScript">
 
       function unlinkPackage(pkg_id){
-        var req_url = "${createLink(controller:'subscriptionDetails', action:'unlinkPackage',params:[subscription:subscriptionInstance.id])}&package="+pkg_id
+        var req_url = "${createLink(controller:'subscriptionDetails', action:'unlinkPackage', params:[subscription:subscriptionInstance.id])}&package="+pkg_id
 
         $.ajax({url: req_url,
           success: function(result){

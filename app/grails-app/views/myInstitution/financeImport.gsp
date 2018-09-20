@@ -17,7 +17,7 @@
 
         <g:if test="${loaderResult==null}">
           ${message(code:'myinst.financeImport.headline', default:'Bulk load cost item records')}
-          <a href="${resource(dir: 'rest/docs', file: 'bulk_load_cost_item_records_template_01.csv')}" download="template_bulk_load_cost_item_records.csv">
+          <a href="${resource(dir: 'swagger/docs', file: 'bulk_load_cost_item_records_template_01.csv')}" download="template_bulk_load_cost_item_records.csv">
             <p>${message(code:'myinst.financeImport.template', default:'Template for bulk import.')}</p>
           </a>
          <table class="ui celled striped table la-table">

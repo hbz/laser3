@@ -6,6 +6,12 @@ modules = {
         }
     }
 
+    /*
+    jquery {
+        resource url:'js/jquery-3.2.1.min.js', disposition: 'head'
+    }
+    */
+
     annotations {
         dependsOn 'semanticUI'
 
@@ -33,7 +39,7 @@ modules = {
         resource url:'js/legacy.onix.js'
     }
 
-    deprecatedCSS {
+    deprecated {
         resource url:'css/datatables.css'
         //resource url:'css/select2.css'
         resource url:"css/instances/deprecated.css" // legacy
@@ -44,7 +50,7 @@ modules = {
 
     semanticUI {
         dependsOn 'jquery'
-        dependsOn 'deprecatedCSS'
+        dependsOn 'deprecated'
 
         // legacy CRAP ..
         // legacy CRAP ..

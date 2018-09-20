@@ -21,7 +21,8 @@ grails.project.dependency.resolution = {
     inherits("global") {
         excludes "grails-docs"
         // uncomment to disable ehcache
-        excludes 'ehcache'
+        excludes 'ehcache' // LEGACY
+        // excludes 'ehcache-core' // to hibernate 4
     }
     log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
     checksums true // Whether to verify checksums on resolve
@@ -62,7 +63,10 @@ grails.project.dependency.resolution = {
 
     dependencies {
 
-        compile "net.sf.ehcache:ehcache-core:2.6.11"
+        compile "net.sf.ehcache:ehcache:2.7.0" // LEGACY
+
+        //compile "net.sf.ehcache:ehcache:2.9.0" // to hibernate 4
+        //compile "org.hibernate:hibernate-ehcache:4.3.10.Final"
 
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
         runtime 'javax.servlet:jstl:1.1.2'
@@ -78,21 +82,12 @@ grails.project.dependency.resolution = {
         runtime 'xerces:xercesImpl:2.11.0'
         runtime 'mysql:mysql-connector-java:5.1.30'
 
-//        runtime ('org.elasticsearch:elasticsearch:1.7.1') {
-//            excludes "org.ow2.asm:asm:4.1"
-//            //excludes "org.ow2.asm:asm-commons:4.1"
-//        }
-//        runtime ('org.elasticsearch:elasticsearch-groovy:1.7.0') {
-//            excludes "org.codehaus.groovy:groovy-all:2.4.3"
-//        }
-
         compile 'org.elasticsearch:elasticsearch:2.1.2'
         runtime ('org.elasticsearch:elasticsearch-groovy:2.1.2') {
             excludes "org.codehaus.groovy:groovy-all"
         }
 
         compile 'joda-time:joda-time:2.9.9'
-
 
         runtime 'gov.loc:bagit:4.0'
         runtime 'org.apache.poi:poi:3.8'
@@ -125,7 +120,6 @@ grails.project.dependency.resolution = {
         compile ("net.sf.jasperreports:jasperreports:5.6.1"){
             excludes "eclipse:jdtcore:3.1.0"
         }
-        compile "org.eclipse.jdt.core.compiler:ecj:4.3.1"
   
         // II Commented out..
         // compile 'cglib:cglib:2.2.2'
@@ -137,18 +131,19 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        runtime ':hibernate:3.6.10.19'  
-        runtime ":resources:1.2.8" // 1.2.14 won't work @ kbplusapp.js.gsp
+
+        runtime ':hibernate:3.6.10.19' // LEGACY
+        // runtime ':hibernate4:4.3.10' // hibernate 4
+
+        runtime ":gsp-resources:0.4.4"
+        runtime ":resources:1.2.8" // 1.2.14 won't work @ application.js.gsp
         compile ":scaffolding:2.1.2"
         runtime ':fields:1.5.1'
 
         //Sicherheitsrisko
         //compile ":file-viewer:0.3"
 
-        build (':tomcat:7.0.55.2'){
-            //This is crashing under Java8, we impport newer version manually
-            excludes "org.eclipse.jdt.core.compiler:ecj:3.7.2"
-        }
+        build (':tomcat:8.0.50')
 
         runtime ":database-migration:1.4.0"
 
@@ -172,18 +167,15 @@ grails.project.dependency.resolution = {
         //compile ':spring-security-ldap:1.0.6'
         //compile ':spring-security-shibboleth-native-sp:1.0.3'
 
-        runtime ":gsp-resources:0.4.4"
         runtime ":jquery:1.11.1"
-
         runtime ":audit-logging:1.0.3"
         runtime ":executor:0.3"
         runtime ":markdown:1.1.1"
         runtime ":quartz:1.0.2"
-        //runtime ":quartz:1.0.1"
-        //compile ":grails-melody:1.53.0"
-        // runtime "com.k-int:domain-model-oai-pmh:0.1"
+        // compile ":grails-melody:1.59.0"
         compile ":jsonp:0.2"
 
-        compile ":remote-pagination:0.4.8" //AJAX Pagination - Finance
+        // runtime "com.k-int:domain-model-oai-pmh:0.1"
+        // compile ":remote-pagination:0.4.8" //AJAX Pagination - Finance
     }
 }

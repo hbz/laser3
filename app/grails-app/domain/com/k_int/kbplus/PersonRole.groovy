@@ -1,6 +1,8 @@
 package com.k_int.kbplus
 
-class PersonRole {
+
+class PersonRole implements Comparable<PersonRole>{
+    private static final String REFDATA_GENERAL_CONTACT_PRS = "General contact person"
 
     RefdataValue    functionType        // 'Person Function'; exclusive with responsibilityType
     RefdataValue    responsibilityType  // 'Person Responsibility'; exclusive with functionType
@@ -106,4 +108,31 @@ class PersonRole {
 
         result.first()
     }
+
+    @Override
+    int compareTo(PersonRole that) {
+        String this_FunctionType = this?.functionType?.value
+        String that_FunctionType = that?.functionType?.value
+        int result;
+
+        if  (REFDATA_GENERAL_CONTACT_PRS == this_FunctionType){
+            if (REFDATA_GENERAL_CONTACT_PRS == that_FunctionType) {
+                String this_Name = (this?.prs?.last_name + this?.prs?.first_name)?:""
+                String that_Name = (that?.prs?.last_name + that?.prs?.first_name)?:""
+                result = (this_Name)?.compareTo(that_Name)
+            } else {
+                result = -1
+            }
+        } else {
+            if (REFDATA_GENERAL_CONTACT_PRS == that_FunctionType) {
+                result = 1
+            } else {
+                String this_fkType = (this?.functionType?.getI10n('value'))?:""
+                String that_fkType = (that?.functionType?.getI10n('value'))?:""
+                result = this_fkType?.compareTo(that_fkType)
+            }
+        }
+        result
+    }
+
 }

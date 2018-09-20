@@ -27,7 +27,7 @@
           Search Journal: <input placeholder="Title or Ident. kb: for ${message(code:'laser', default:'LAS:eR')} ID" name="journal" value="${journal}"/>
           Institution: <input placeholder="Shortcode or ${message(code:'laser', default:'LAS:eR')} ID" name="org" value="${org}"/>
                   
-          <button type="submit">${message(code:'default.button.search.label', default:'Search')}</button>
+          <button type="submit">${message(code:'default.button.filter.label', default:'Filter')}</button>
         </div>
       </g:form>
 
@@ -72,7 +72,7 @@
                             <g:if test="${point.getNote()}">
                               <span class='main-annotation' ><i class='icon-edit' data-content='Click the icon to view the annotations.' title='Annotations'></i></span>
                               <div class="textelement" > 
-                                <ul><li>${ point.getNote().encodeAsHTML() }</span></li></ul>
+                                <ul><li>${ point.getNote() }</span></li></ul>
                               </div>
                             </g:if>
                           </div>

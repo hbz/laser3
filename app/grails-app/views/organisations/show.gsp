@@ -1,12 +1,12 @@
 <%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
 
 <!doctype html>
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-        <g:if test="${orgInstance.orgType == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider','OrgType')}">
+        <g:if test="${orgInstance.orgType == RefdataValue.getByValueAndCategory('Provider','OrgType')}">
             <g:set var="entityName" value="${message(code: 'default.provider.label', default: 'Provider')}" />
         </g:if>
         <g:else>
@@ -18,9 +18,15 @@
     </head>
     <body>
 
+    <semui:debugInfo>
+        <g:render template="/templates/debug/orgRoles" model="[debug: orgInstance.links]" />
+        <g:render template="/templates/debug/prsRoles" model="[debug: orgInstance.prsLinks]" />
+    </semui:debugInfo>
+
     <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
 
-    <h1 class="ui header"><semui:headerIcon />
+    <h1 class="ui header">
+        <semui:headerIcon />
         ${orgInstance.name}
     </h1>
 
@@ -48,7 +54,7 @@
                 <dd>
                     <g:if test="${orgInstance?.ids}">
                         <g:each in="${orgInstance.ids.sort{it.identifier.ns.ns}}" var="i">
-                            <g:link controller="identifier" action="show" id="${i.identifier.id}">${i?.identifier?.ns?.ns?.encodeAsHTML()} : ${i?.identifier?.value?.encodeAsHTML()}</g:link>
+                            <g:link controller="identifier" action="show" id="${i.identifier.id}">${i?.identifier?.ns?.ns} : ${i?.identifier?.value}</g:link>
                             <br />
                         </g:each>
                     </g:if>
@@ -96,7 +102,7 @@
 
                 <div class="ui card">
                     <div class="content">
-                        <g:if test="${orgInstance.orgType != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'OrgType')}">
+                        <g:if test="${orgInstance.orgType != RefdataValue.getByValueAndCategory('Provider', 'OrgType')}">
                         <dl>
                             <dt><g:message code="org.sector.label" default="Sector" /></dt>
                             <dd>
@@ -133,7 +139,7 @@
 
                 <div class="ui card">
                     <div class="content">
-                    <g:if test="${orgInstance.orgType != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'OrgType')}">
+                    <g:if test="${orgInstance.orgType != RefdataValue.getByValueAndCategory('Provider', 'OrgType')}">
                         <dl>
                             <dt><g:message code="org.libraryType.label" default="Library Type" /></dt>
                             <dd>
@@ -173,10 +179,16 @@
                         <dl>
                             <dt><g:message code="org.addresses.label" default="Addresses" /></dt>
                             <dd>
-                                <div class="ui relaxed list">
-                                    <g:each in="${orgInstance?.addresses.sort{it.type?.getI10n('value')}}" var="a">
+                                <div class="ui divided middle aligned selection list la-flex-list">
+                                    <g:each in="${orgInstance?.addresses?.sort{it.type?.getI10n('value')}}" var="a">
                                         <g:if test="${a.org}">
-                                            <g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
+                                            <g:render template="/templates/cpa/address" model="${[
+                                                    address: a,
+                                                    tmplShowDeleteButton: true,
+                                                    controller: 'org',
+                                                    action: 'show',
+                                                    id: orgInstance.id
+                                            ]}"/>
                                         </g:if>
                                     </g:each>
                                 </div>
@@ -192,10 +204,16 @@
                         <dl>
                             <dt><g:message code="org.contacts.label" default="Contacts" /></dt>
                             <dd>
-                                <div class="ui relaxed list">
-                                    <g:each in="${orgInstance?.contacts.sort{it.content}}" var="c">
+                                <div class="ui divided middle aligned selection list la-flex-list">
+                                    <g:each in="${orgInstance?.contacts?.toSorted()}" var="c">
                                         <g:if test="${c.org}">
-                                            <g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
+                                            <g:render template="/templates/cpa/contact" model="${[
+                                                    contact: c,
+                                                    tmplShowDeleteButton: true,
+                                                    controller: 'organisations',
+                                                    action: 'show',
+                                                    id: orgInstance.id
+                                            ]}"/>
                                         </g:if>
                                     </g:each>
                                 </div>
@@ -211,13 +229,20 @@
                         <dl>
                             <dt><g:message code="org.prsLinks.label" default="Kontaktpersonen" /></dt>
                             <dd>
-                                <div class="ui relaxed list">
-                                    <g:each in="${orgInstance?.prsLinks}" var="pl">
+                                <%-- <div class="ui divided middle aligned selection list la-flex-list"> --%>
+                                    <g:each in="${orgInstance?.prsLinks?.toSorted()}" var="pl">
                                         <g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value!='No'}">
-                                            <g:render template="/templates/cpa/person_details" model="${[personRole: pl]}"></g:render>
+                                            <g:render template="/templates/cpa/person_details" model="${[
+                                                    personRole: pl,
+                                                    tmplShowDeleteButton: true,
+                                                    tmplConfigShow: ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
+                                                    controller: 'organisations',
+                                                    action: 'show',
+                                                    id: orgInstance.id
+                                            ]}"/>
                                         </g:if>
                                     </g:each>
-                                </div>
+                                <%-- </div> --%>
                                 <g:if test="${editable}">
                                     <g:if test="${ ! SpringSecurityUtils.ifAnyGranted('ROLE_ORG_COM_EDITOR') }">
                                         <input class="ui button"
@@ -229,15 +254,14 @@
                                                   model="['tenant': contextOrg,
                                                           'org': orgInstance,
                                                           'isPublic': RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc('YN'), 'Yes'),
-                                                          presetFunctionType: RefdataValue.getByValueAndCategory('General contact person', 'Person Function'),
-                                                          tmplHideResponsibilities: true]"/>
+                                                          'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', 'Person Function')]"/>
                                     </g:if>
                                 </g:if>
                             </dd>
                         </dl>
                     </div>
                 </div><!-- .card -->
-                <g:if test="${orgInstance.orgType != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider','OrgType')}">
+                <g:if test="${orgInstance.orgType != RefdataValue.getByValueAndCategory('Provider','OrgType')}">
                 %{--<div class="ui card">
                     <div class="content">
                         <dl>
@@ -256,18 +280,6 @@
                 </div><!--.card-->--}%
                 </g:if>
 
-            <% /*
-            <dt><g:message code="org.membership.label" default="Membership Organisation" /></dt>
-            <dd>
-                <g:if test="${editable}">
-                    <semui:xEditableRefData owner="${orgInstance}" field="membership" config='YN'/>
-                </g:if>
-                <g:else>
-                    <g:fieldValue bean="${orgInstance}" field="membership"/>
-                </g:else>
-            </dd>
-            */ %>
-
                     <g:if test="${orgInstance?.outgoingCombos && ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                         <g:if test="${orgInstance.id == contextService.getOrg().id}">
                             <div class="ui card">
@@ -284,7 +296,7 @@
                                         <dd>
                                             <g:each in="${orgInstance.outgoingCombos.sort{it.toOrg.name}}" var="i">
                                                 <g:link controller="organisations" action="show" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
-                                                (<g:each in="${i.toOrg?.ids.sort{it.identifier.ns.ns}}" var="id_out">
+                                                (<g:each in="${i?.toOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_out">
                                                     ${id_out.identifier.ns.ns}: ${id_out.identifier.value}
                                                 </g:each>)
                                                 <br />
@@ -311,7 +323,7 @@
                                         <dd>
                                             <g:each in="${orgInstance.incomingCombos.sort{it.fromOrg.name}}" var="i">
                                                 <g:link controller="organisations" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
-                                                    (<g:each in="${i.fromOrg?.ids.sort{it.identifier.ns.ns}}" var="id_in">
+                                                    (<g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
                                                         ${id_in.identifier.ns.ns}: ${id_in.identifier.value}
                                                     </g:each>)
                                                     <br />
@@ -333,69 +345,9 @@
                             <div class="ui card la-role-yoda">
                         </g:else>
                                 <div class="content">
-                                    <g:each in="${sorted_links}" var="rdv_id,link_cat">
 
-                                        <dl>
-                                            <dt>
-                                                <h5 class="ui header">Als ${link_cat.rdv.getI10n('value')}</h5>
-                                            <dd>
-                                                <div class="ui list">
-                                                  <g:each in="${link_cat.links}" var="i">
-                                                    <div class="item">
-                                                      <g:if test="${i.pkg}">
-                                                            <g:link controller="packageDetails" action="show" id="${i.pkg.id}">
-                                                                ${message(code:'package.label', default:'Package')}: ${i.pkg.name}
-                                                            </g:link>
-                                                            (${i.pkg?.packageStatus?.getI10n('value')})
-                                                      </g:if>
-                                                      <g:if test="${i.sub}">
-                                                            <g:link controller="subscriptionDetails" action="show" id="${i.sub.id}">
-                                                                ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name}
-                                                            </g:link>
-                                                            (${i.sub.status?.getI10n('value')})
-                                                      </g:if>
-                                                      <g:if test="${i.lic}">
-                                                            <g:link controller="licenseDetails" action="show" id="${i.lic.id}">
-                                                                ${message(code:'license.label', default:'License')}: ${i.lic.reference ?: i.lic.id}
-                                                            </g:link>
-                                                          (${i.lic.status?.getI10n('value')})
-                                                      </g:if>
-                                                      <g:if test="${i.title}">
-                                                            <g:link controller="titleDetails" action="show" id="${i.title.id}">
-                                                                ${message(code:'title.label', default:'Title')}: ${i.title.title}
-                                                            </g:link>
-                                                            (${i.title.status?.getI10n('value')})
-                                                      </g:if>
-                                                    </div>
-                                                  </g:each>
+                                   <g:render template="/templates/links/orgRoleContainer" model="[listOfLinks: sorted_links]" />
 
-                                                    <g:set var="local_offset" value="${params[link_cat.rdvl] ? Long.parseLong(params[link_cat.rdvl]) : null}" />
-
-                                                    <g:if test="${link_cat.total > 10}">
-                                                        <div class="item">
-                                                            ${message(code:'default.paginate.offset', args:[(local_offset ?: 1),(local_offset ? (local_offset + 10 > link_cat.total ? link_cat.total : local_offset + 10) : 10), link_cat.total])}
-                                                        </div>
-                                                        <div class="item">
-                                                            <g:if test="${local_offset}">
-                                                                <g:set var="os_prev" value="${local_offset > 9 ? (local_offset - 10) : 0}" />
-                                                                <g:link controller="organisations" action="show" class="ui icon button tiny"
-                                                                    id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_prev]}">
-                                                                        <i class="left arrow icon"></i>
-                                                                </g:link>
-                                                            </g:if>
-                                                            <g:if test="${!local_offset || ( local_offset < (link_cat.total - 10) )}">
-                                                                <g:set var="os_next" value="${local_offset ? (local_offset + 10) : 10}" />
-                                                                <g:link controller="organisations" action="show" class="ui icon button tiny"
-                                                                    id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_next]}">
-                                                                        <i class="right arrow icon"></i>
-                                                                </g:link>
-                                                            </g:if>
-                                                        </div>
-                                                    </g:if>
-                                                </div>
-                                            </dd>
-                                        </dl>
-                                    </g:each>
                                 </div>
                             </div><!--.card-->
                     </g:if>

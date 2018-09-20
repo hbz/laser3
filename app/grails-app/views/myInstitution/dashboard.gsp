@@ -6,6 +6,8 @@
     </head>
     <body>
 
+        <laser:serviceInjection />
+
         <semui:breadcrumbs>
             <semui:crumb text="${institution?.getDesignation()}" class="active" />
         </semui:breadcrumbs>
@@ -63,7 +65,7 @@
 
         <br />
 
-        <div class="ui top attached tabular menu">
+        <div class="ui secondary pointing tabular menu">
             <a class="item" data-tab="first">
                 <i class="alarm outline icon large"></i>
                 ${message(code:'myinst.todo.label', default:'To Do')}
@@ -78,14 +80,14 @@
             </a>
         </div>
 
-        <div class="ui bottom attached tab segment" data-tab="first">
+        <div class="ui bottom attached tab segment" data-tab="first" style="border-top: 1px solid #d4d4d5; ">
             <g:if test="${editable}">
                 <div class="pull-right">
                     <g:link action="changes" class="ui button">${message(code:'myinst.todo.submit.label', default:'View To Do List')}</g:link>
                 </div>
             </g:if>
 
-            <div class="ui relaxed divided list">
+            <div class="ui relaxed list" style="clear:both;padding-top:1rem;">
                 <g:each in="${todos}" var="todo">
                     <div class="item">
                         <div class="icon">
@@ -113,76 +115,111 @@
             </div>
         </div>
 
-        <div class="ui bottom attached tab segment" data-tab="second">
+        <div class="ui bottom attached tab segment" data-tab="second" style="border-top: 1px solid #d4d4d5; ">
             <g:if test="${editable}">
                 <div class="pull-right">
                     <g:link action="announcements" class="ui button">${message(code:'myinst.ann.view.label', default:'View All Announcements')}</g:link>
                 </div>
             </g:if>
 
-            <div class="ui relaxed divided list">
+            <div class="ui relaxed list" style="clear:both;padding-top:1rem;">
                 <g:each in="${recentAnnouncements}" var="ra">
                     <div class="item">
-                        <div class="icon">
-                            <i class="warning circle icon"></i>
-                        </div>
-                        <div class="message">
-                            <g:set var="ann_nws" value="${ra.title?.replaceAll(' ', '')}"/>
-                            <p>
-                                <strong>${message(code:"announcement.${ann_nws}", default:"${ra.title}")}</strong>
-                            </p>
-                            <div class="widget-content">${ra.content}</div>
-                            <p>
-                                ${message(code:'myinst.ann.posted_by', default:'Posted by')}
-                                <em><g:link controller="userDetails" action="show" id="${ra.user?.id}">${ra.user?.displayName}</g:link></em>
-                                <br/>
-                                ${message(code:'myinst.ann.posted_on', default:'on')}
-                                <g:formatDate date="${ra.dateCreated}" formatName="default.date.format"/>
-                            </p>
-                        </div>
+
+                        <div class="ui internally celled grid">
+                            <div class="row">
+                                <div class="three wide column">
+
+                                    <strong>${message(code:'myinst.ann.posted_by', default:'Posted by')}</strong>
+                                    <g:link controller="userDetails" action="show" id="${ra.user?.id}">${ra.user?.displayName}</g:link>
+                                    <br /><br />
+                                    <g:formatDate date="${ra.dateCreated}" formatName="default.date.format.noZ"/>
+
+                                </div><!-- .column -->
+                                <div class="thirteen wide column">
+
+                                    <div class="header" style="margin:0 0 1em 0">
+                                        <g:set var="ann_nws" value="${ra.title?.replaceAll(' ', '')}"/>
+                                        ${message(code:"announcement.${ann_nws}", default:"${ra.title}")}
+                                    </div>
+                                    <div>
+                                        <div class="widget-content"><% print ra.content; /* avoid auto encodeAsHTML() */ %></div>
+                                    </div>
+
+                                </div><!-- .column -->
+                            </div><!-- .row -->
+                        </div><!-- .grid -->
+
                     </div>
                 </g:each>
             </div>
         </div>
 
-        <div class="ui bottom attached active tab segment" data-tab="third">
-            <g:if test="${editable}">
-                <div class="pull-right">
-                    <input type="submit" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" href="#modalCreateTask" />
-                </div>
-            </g:if>
+        <div class="ui bottom attached active tab " data-tab="third">
 
-            <div class="ui relaxed divided list">
-                <g:each in="${tasks}" var="tsk">
-                    <div class="item">
-                        <div class="content">
-                            <div class="header">
-                                <a onclick="taskedit(${tsk?.id});">${tsk?.title}</a>
+            <g:if test="${editable}">
+                <div class="ui right aligned grid">
+                    <div class="right floated right aligned sixteen wide column">
+                        <input type="submit" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" href="#modalCreateTask" />
+                    </div>
+                </div>
+
+            </g:if>
+            <div class="ui cards">
+                <g:each in="${tasks.sort{ a,b -> b.endDate.compareTo(a.endDate) }}" var="tsk">
+                    <div class="ui card">
+
+                        <div class="ui label">
+                            <div class="right floated author">
+                                Status:
+                                <span>
+                                <semui:xEditableRefData config="Task Status" owner="${tsk}" field="status" />
+                                </span>
                             </div>
+                        </div>
+
+                        <div class="content">
+                            <div class="meta">
+                                <div class="">Fällig: <strong><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk?.endDate}"/></strong></div>
+                            </div>
+                            <a class="header" onclick="taskedit(${tsk?.id});">${tsk?.title}</a>
+
                             <div class="description">
                                 <g:if test="${tsk.description}">
                                     <span><em>${tsk.description}</em></span> <br />
                                 </g:if>
-                                <span>
-                                    <strong>Betrifft:</strong>
-                                    <g:if test="${tsk.getObjects()}">
-                                        <ul>
-                                    <g:each in="${tsk.getObjects()}" var="tskObj">
-                                        <li>${message(code: 'task.'+tskObj.controller)}: <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link></li>
-                                    </g:each>
-                                        </ul>
-                                    </g:if>
-                                    <g:else>${message(code: 'task.general')}</g:else>
-                                </span>
-                                <br />
-                                <span>
-                                    <strong>Fällig:</strong>
-                                    <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk?.endDate}"/>
-                                    &nbsp; / &nbsp;
-                                    <strong>Status:</strong>
-                                    <semui:xEditableRefData config="Task Status" owner="${tsk}" field="status" />
-                                </span>
                             </div>
+                        </div>
+                        <div class="extra content">
+                                <g:if test="${tsk.getObjects()}">
+                                    <g:each in="${tsk.getObjects()}" var="tskObj">
+                                        <div class="item">
+                                            <span data-tooltip="${message(code: 'task.' + tskObj.controller)}" data-position="left center" data-variation="tiny">
+                                                <g:if test="${tskObj.controller == 'organisations'}">
+                                                    <i class="university icon"></i>
+                                                </g:if>
+                                                <g:if test="${tskObj.controller.contains('subscription')}">
+                                                    <i class="folder open icon"></i>
+                                                </g:if>
+                                                <g:if test="${tskObj.controller.contains('package')}">
+                                                    <i class="gift icon"></i>
+                                                </g:if>
+                                                <g:if test="${tskObj.controller.contains('license')}">
+                                                    <i class="book icon"></i>
+                                                </g:if>
+                                            </span>
+
+
+
+                                            <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
+                                        </div>
+                                    </g:each>
+                                </g:if>
+                                <g:else>
+                                    <i class="checked calendar icon"></i>
+                                    ${message(code: 'task.general')}
+                                </g:else>
+                            </a>
                         </div>
                     </div>
                 </g:each>
@@ -191,63 +228,6 @@
 
         <g:render template="/templates/tasks/modal_create" />
 
-        <% /*
-        <g:if test="${grailsApplication.config.ZenDeskBaseURL}">
-        <div class="five wide column">
-           <table class="ui table dashboard-widget">
-              <thead>
-                <th>
-                  <h5 class="pull-left">${message(code:'myinst.dash.forum.label', default:'Latest Discussions')}</h5>
-                  <img src="${resource(dir: 'images', file: 'icon_discuss.png')}" alt="Discussions" class="pull-right" />
-                </th>
-              </thead>
-              <tbody>
-            <g:if test="${forumActivity}">
-                <g:each in="${forumActivity}" var="fa">
-                  <tr>
-                    <td>
-                      <div class="pull-left icon">
-                        <img src="${resource(dir: 'images', file: 'icon_discuss.png')}" alt="Discussion" />
-                      </div>
-                      <div class="pull-right message">
-                        <p><strong>${fa.title}</strong></p>
-                        <p>
-                        <g:if test="${fa.result_type=='topic'}">
-                          <g:formatDate date="${fa.updated_at}"  formatName="default.date.format"/>
-                          <a href="${grailsApplication.config.ZenDeskBaseURL}/entries/${fa.id}">View Topic</a>
-                          <a href="${grailsApplication.config.ZenDeskBaseURL}/entries/${fa.id}" title="View Topic (new Window)" target="_blank"><i class="icon-share-alt"></i></a>
-                        </g:if>
-                        <g:else>
-                          <a href="${fa.url}">View ${fa.result_type}</a>
-                        </g:else>
-                        </p>
-                      </div>
-                    </td>
-                  </tr>
-                </g:each>
-            </g:if>
-            <g:else>
-            <tr>
-              <td>
-                <p>${message(code:'myinst.dash.forum.noActivity', default:'Recent forum activity not available. Please retry later.')}</p>
-              </td>
-            </tr>
-            </g:else>
-            <tr>
-              <td>
-                <g:if test="${!grailsApplication.config.ZenDeskBaseURL.equals('https://projectname.zendesk.com')}">
-                  <a href="${grailsApplication.config.ZenDeskBaseURL}/forums" class="btn btn-primary pull-right">${message(code:'myinst.dash.forum.visit', default:'Visit Discussion Forum')}</a>
-                </g:if>
-                <g:else>
-                  <span class="btn btn-primary pull-right disabled">${message(code:'myinst.dash.forum.visit', default:'Visit Discussion Forum')}</span>
-                </g:else>
-              </td>
-            </tr>
-          </tbody>
-          </table>
-        </div><!-- .five -->
-        </g:if>
-        */ %>
     <g:javascript>
         function taskedit(id) {
 

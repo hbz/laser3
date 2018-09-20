@@ -19,13 +19,13 @@
             <div class="field">
                 <label>${message(code: 'globalDataSync.search.text')}</label>
                 <input type="text" name="q" placeholder="${message(code: 'globalDataSync.search.ph')}"
-                       value="${params.q?.encodeAsHTML()}"/>
+                       value="${params.q}"/>
             </div>
 
 
                 <div class="field">
                     <label>&nbsp;</label>
-                    <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.searchreset.label')}</a>
+                    <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.filterreset.label')}</a>
                 </div>
                 <div class="field">
                     <label>&nbsp;</label>

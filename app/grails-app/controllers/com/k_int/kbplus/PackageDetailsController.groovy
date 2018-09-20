@@ -442,13 +442,13 @@ class PackageDetailsController {
 
       result.transforms = grailsApplication.config.packageTransforms
 
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN, ROLE_PACKAGE_EDITOR')) {
-        result.editable=true
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_PACKAGE_EDITOR')) {
+            result.editable = true
         showDeletedTipps=true
-      }
-      else {
-        result.editable=false
-      }
+        }
+        else {
+            result.editable = false
+        }
 
       result.user = User.get(springSecurityService.principal.id)
       def packageInstance = Package.get(params.id)
@@ -465,11 +465,7 @@ class PackageDetailsController {
       log.debug("Package has ${result.pendingChanges?.size()} pending changes");
 
       result.pkg_link_str="${grailsApplication.config.grails.serverURL}/packageDetails/show/${params.id}"
-
-      if ( packageInstance.forumId != null && grailsApplication.config.ZenDeskBaseURL ) {
-        result.forum_url = "${grailsApplication.config.ZenDeskBaseURL}/forums/${packageInstance.forumId}"
-      }
-
+        
         // tasks
         def contextOrg  = contextService.getOrg()
         result.tasks    = taskService.getTasksByResponsiblesAndObject(User.get(springSecurityService.principal.id), contextOrg, packageInstance)
@@ -530,8 +526,7 @@ select s from Subscription as s where
          date_filter = null
          params.asAt = null
       }else if(params.asAt && params.asAt.length() > 0 ) {
-         date_filter = sdf.parse(params.asAt)    
-         result.editable= false
+         date_filter = sdf.parse(params.asAt)
       }else{
          date_filter = today
       }

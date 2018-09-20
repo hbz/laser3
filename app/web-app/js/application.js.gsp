@@ -126,13 +126,38 @@ r2d2 = {
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
                 },
                 detachable: true,
-                closable: true,
+                closable: false,
                 transition: 'scale',
                 onApprove : function() {
                     $(this).find('.ui.form').submit();
                     return false;
                 }
             }).modal('show')
+        });
+
+        // confirmation modal
+        $(".js-open-confirm-modal").click(function(event){
+            var dataAttr = this.getAttribute("data-confirm-id")? this.getAttribute("data-confirm-id")+'_form':false;
+            var tmpTerm = this.getAttribute("data-confirm-term")? this.getAttribute("data-confirm-term"):"dieses Element";
+            var url = this.getAttribute('href')? this.getAttribute('href'): false;
+
+            event.preventDefault();
+            $('#js-confirmation-term').text(tmpTerm);
+            $('.mini.modal')
+                .modal({
+
+                    closable  : false,
+                    onApprove : function() {
+                        if (dataAttr){
+                            $('[data-confirm-id='+dataAttr+']').submit();
+                        }
+                        if (url){
+                            window.location.href = url;
+                        }
+                    }
+                })
+                .modal('show')
+            ;
         });
     },
 
@@ -163,13 +188,17 @@ r2d2 = {
 
     initDynamicXEditableStuff : function(ctxSel) {
         console.log("r2d2.initDynamicXEditableStuff( " + ctxSel + " )");
+
         if (! ctxSel) {
             ctxSel = 'body'
         }
 
         $(ctxSel + ' .xEditable').editable({
             language: gspLocale,
-            format:   gspDateFormat
+            format:   gspDateFormat,
+            error: function (xhr, status, error) {
+                alert(xhr.status + ": " + xhr.statusText);
+            }
         });
 
         $(ctxSel + ' .xEditableValue').editable({
@@ -185,6 +214,9 @@ r2d2 = {
             success: function(response) {
                 // override newValue with response from backend
                 return {newValue: (response != 'null' ? response : null)}
+            },
+            error: function (xhr, status, error) {
+                alert(xhr.status + ": " + xhr.statusText);
             }
         }).on('save', function(e, params){
             if ($(this).attr('data-format')) {
@@ -254,6 +286,7 @@ r2d2 = {
         // close semui:messages alerts
         $(ctxSel + ' .close.icon').click(function() {
             $(this).parent().hide();
+            $(".table").trigger('reflow');
         });
 
         // accordions
@@ -275,7 +308,8 @@ r2d2 = {
         // dropdowns
         $(ctxSel + ' .ui.dropdown').dropdown({
             duration: 150,
-            transition: 'fade'
+            transition: 'fade',
+            showOnFocus: false
         });
         $(ctxSel + ' .ui.search.dropdown').dropdown({
             fullTextSearch: 'exact'

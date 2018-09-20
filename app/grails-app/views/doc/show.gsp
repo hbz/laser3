@@ -23,21 +23,21 @@
                         <g:if test="${docInstance?.status}">
                             <dt><g:message code="doc.status.label" default="Status" /></dt>
 
-                                <dd><g:link controller="refdataValue" action="show" id="${docInstance?.status?.id}">${docInstance?.status?.encodeAsHTML()}</g:link></dd>
+                                <dd><g:link controller="refdataValue" action="show" id="${docInstance?.status?.id}">${docInstance?.status}</g:link></dd>
 
                         </g:if>
 
                         <g:if test="${docInstance?.type}">
                             <dt><g:message code="doc.type.label" default="Type" /></dt>
 
-                                <dd><g:link controller="refdataValue" action="show" id="${docInstance?.type?.id}">${docInstance?.type?.encodeAsHTML()}</g:link></dd>
+                                <dd><g:link controller="refdataValue" action="show" id="${docInstance?.type?.id}">${docInstance?.type}</g:link></dd>
 
                         </g:if>
 
                         <g:if test="${docInstance?.alert}">
                             <dt><g:message code="doc.alert.label" default="Alert" /></dt>
 
-                                <dd><g:link controller="alert" action="show" id="${docInstance?.alert?.id}">${docInstance?.alert?.encodeAsHTML()}</g:link></dd>
+                                <dd><g:link controller="alert" action="show" id="${docInstance?.alert?.id}">${docInstance?.alert}</g:link></dd>
 
                         </g:if>
 

@@ -1,6 +1,4 @@
 <%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
-<% def securityService = grailsApplication.mainContext.getBean("springSecurityService") %>
 <!doctype html>
 
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
@@ -29,24 +27,24 @@
 
 </head>
 
-<body class="${controllerName}_${actionName}">
+<body class="${controllerName}_${actionName}" id="globalJumpMark">
 
-    <span id="jumpMark_top"></span>
+    <laser:serviceInjection />
 
     <g:set var="contextOrg" value="${contextService.getOrg()}" />
     <g:set var="contextUser" value="${contextService.getUser()}" />
     <g:set var="contextMemberships" value="${contextService.getMemberships()}" />
 
-    <g:if test="${'LAS:eR-Dev' == grailsApplication.config.laserSystemId}">
+    <g:if test="${grailsApplication.config.getCurrentServer() == contextService.SERVER_DEV}">
         <div class="ui green label big la-server-label">
             <span>DEV</span>
         </div>
-    </g:if><%-- debug --%>
-    <g:if test="${'LAS:eR-QA/Stage' == grailsApplication.config.laserSystemId}">
+    </g:if>
+    <g:if test="${grailsApplication.config.getCurrentServer() == contextService.SERVER_QA}">
         <div class="ui red label big la-server-label">
             <span>QA</span>
         </div>
-    </g:if><%-- debug --%>
+    </g:if>
 
     <div class="ui fixed inverted menu">
         <div class="ui container">
@@ -111,6 +109,7 @@
                                     <g:link class="item" controller="organisations" action="index">${message(code:'menu.institutions.all_orgs')}</g:link>
                                 </sec:ifAnyGranted>
                                     <g:link class="item" controller="organisations" action="listProvider">${message(code:'menu.institutions.all_provider')}</g:link>
+                                    <g:link class="item" controller="platform" action="list">${message(code:'menu.institutions.all_platforms')}</g:link>
 
                                 <%--<div class="divider"></div>
 
@@ -143,6 +142,10 @@
 
                                 <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentProviders" message="menu.institutions.myProviders" />
 
+                                <g:if test="${contextService.getOrg().orgType?.value == 'Consortium'}">
+                                    <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.myConsortia" />
+                                </g:if>
+
                                 <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.institutions.myTitles" />
 
                                 <%--<semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="tipview" message="menu.institutions.myCoreTitles" />--%>
@@ -160,7 +163,7 @@
 
                                 <div class="divider"></div>
 
-                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="addLicense" message="license.add.blank" />
+                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="emptyLicense" message="license.add.blank" />
 
                                 <semui:securedMainNavItem affiliation="INST_USER" controller="licenseCompare" action="index" message="menu.institutions.comp_lic" />
 
@@ -217,9 +220,9 @@
                                 <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageAffiliationRequests" message="menu.institutions.affiliation_requests" newAffiliationRequests="${newAffiliationRequests1}" />
 
 
-                                <g:if test="${contextService.getOrg().orgType?.value == 'Consortium'}">
-                                    <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.manage_consortia" />
-                                </g:if>
+                                %{--<g:if test="${contextService.getOrg().orgType?.value == 'Consortium'}">--}%
+                                    %{--<semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.manage_consortia" />--}%
+                                %{--</g:if>--}%
 
                                 <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
 
@@ -298,9 +301,17 @@
                         <i class="dropdown icon"></i>
 
                         <div class="menu">
+                            <g:link class="item" controller="profile" action="errorOverview">
+                                ${message(code: "menu.user.errorReport")}
+                                <g:set var="newTickets" value="${com.k_int.kbplus.SystemTicket.getNew().size()}" />
+                                <g:if test="${newTickets > 0}">
+                                    <div class="ui floating red circular label">${newTickets}</div>
+                                </g:if>
+                            </g:link>
+
                             <g:link class="item" controller="admin" action="manageAffiliationRequests">
                                 ${message(code: "menu.institutions.affiliation_requests")}
-                                <g:set var="newAffiliationRequests" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatus(0, [sort:'dateRequested']).size()}" />
+                                <g:set var="newAffiliationRequests" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatus(0).size()}" />
                                 <g:if test="${newAffiliationRequests > 0}">
                                     <div class="ui floating red circular label">${newAffiliationRequests}</div>
                                 </g:if>
@@ -311,23 +322,8 @@
                                 <i class="dropdown icon"></i>
 
                                 <div class="menu">
-                                    <g:link class="item" controller="yoda" action="settings">System Settings</g:link>
-                                    <g:link class="item" controller="yoda" action="appConfig">App Config</g:link>
-
-                                    <g:link class="item" controller="yoda" action="appSecurity">App Security</g:link>
+                                    <g:link class="item" controller="yoda" action="appInfo">App Info</g:link>
                                     <g:link class="item" controller="admin" action="eventLog">Event Log</g:link>
-
-                                    <div class="divider"></div>
-
-                                    <g:link class="item" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">Start Global Data Sync</g:link>
-                                    <g:link class="item" controller="yoda" action="manageGlobalSources">Manage Global Sources</g:link>
-
-                                    <div class="divider"></div>
-
-                                    <g:link class="item" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">Run Full ES Index Reset</g:link>
-                                    <g:link class="item" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">Start ES Index Update</g:link>
-                                    <%--<g:link class="item" controller="yoda" action="logViewer">Log Viewer</g:link>--%>
-                                    <g:link class="item" controller="yoda" action="manageESSources" >Manage ES Source</g:link>
 
                                     <div class="divider"></div>
 
@@ -341,9 +337,6 @@
                                 </div>
                             </div>
 
-                            <g:link class="item" controller="yoda" action="appInfo">App Info</g:link>
-                            <%--<g:link class="item" controller="yoda" action="appLogfile">App Logfile</g:link>--%>
-
                             <div class="divider"></div>
 
                             <g:link class="item" controller="organisations" action="index">Manage Organisations</g:link>
@@ -354,6 +347,7 @@
                             <% /* g:link class="item" controller="admin" action="forumSync">Run Forum Sync</g:link */ %>
                             <% /* g:link class="item" controller="admin" action="juspSync">Run JUSP Sync</g:link */ %>
                             <g:link class="item" controller="admin" action="forceSendNotifications">Send Pending Notifications</g:link>
+                            <g:link class="item" controller="admin" action="checkPackageTIPPs">Tipps Check of GOKB and LAS:eR</g:link>
 
                             <div class="ui dropdown item">
                                 Data Management
@@ -401,6 +395,37 @@
                 </sec:ifAnyGranted>
             </sec:ifLoggedIn>
 
+            <sec:ifLoggedIn>
+                <sec:ifAnyGranted roles="ROLE_YODA">
+                    <div class="ui simple dropdown item">
+                        Yoda
+                        <i class="dropdown icon"></i>
+
+                        <div class="menu">
+                            <g:link class="item" controller="yoda" action="settings">System Settings</g:link>
+                            <g:link class="item" controller="yoda" action="appConfig">App Config</g:link>
+                            <g:link class="item" controller="yoda" action="appSecurity">App Security</g:link>
+                            <g:link class="item" controller="yoda" action="cacheInfo">App Cache Info</g:link>
+                            <a class="item" href="${g.createLink(uri:'/monitoring')}">App Monitoring</a>
+
+                            <div class="divider"></div>
+
+                            <g:link class="item" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">Start Global Data Sync</g:link>
+                            <g:link class="item" controller="yoda" action="manageGlobalSources">Manage Global Sources</g:link>
+
+                            <div class="divider"></div>
+
+                            <g:link class="item" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">Run Full ES Index Reset</g:link>
+                            <g:link class="item" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">Start ES Index Update</g:link>
+                            <%--<g:link class="item" controller="yoda" action="logViewer">Log Viewer</g:link>--%>
+                            <g:link class="item" controller="yoda" action="manageESSources" >Manage ES Source</g:link>
+
+                        </div>
+
+                    </div>
+                </sec:ifAnyGranted>
+            </sec:ifLoggedIn>
+
             <div class="right menu">
                 <sec:ifLoggedIn>
                     <div id="mainSearch" class="ui category search">
@@ -444,6 +469,10 @@
                                 <div class="divider"></div>
 
                                 <g:link class="item" controller="logout">${message(code:'menu.user.logout')}</g:link>
+                                <div class="divider"></div>
+                                <g:if test="${grailsApplication.metadata['app.version']}">
+                                    <div class="header">Version: ${grailsApplication.metadata['app.version']} – ${grailsApplication.metadata['app.buildDate']}</div>
+                                </g:if>
                             </div>
                         </div>
                     </g:if>
@@ -465,11 +494,11 @@
                 <g:if test="${(params.mode)}">
                     <div class="ui buttons">
                             <g:if test="${params.mode=='advanced'}">
-                                <div class="ui label toggle button" data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                <div class="ui label toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right" data-variation="tiny">
                                     <i class="icon green eye"></i>
                             </g:if>
                             <g:else>
-                                <div class="ui label toggle button" data-tooltip="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                <div class="ui label toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right" data-variation="tiny">
                                     <i class="icon eye slash"></i>
                             </g:else>
                         </div>
@@ -477,7 +506,7 @@
 
 
                 <script>
-                    LaToggle = {};
+                    var LaToggle = {};
                     LaToggle.advanced = {};
                     LaToggle.advanced.button = {};
 
@@ -486,9 +515,8 @@
 
                         // selector cache
                         var
-                            $buttons = $('.ui.buttons .button'),
-                            $toggle  = $('.main .ui.toggle.button'),
-                            $button  = $('.ui.button').not($buttons).not($toggle),
+                            $button = $('.ui.buttons .button.la-toggle-advanced'),
+
                             // alias
                             handler = {
                                 activate: function() {
@@ -504,7 +532,7 @@
                                 }
                             }
                         ;
-                        $buttons
+                        $button
                             .on('click', handler.activate)
                         ;
                     };
@@ -553,6 +581,12 @@
         <div id="loadingIndicator" style="display: none">
             <div class="ui text loader active">Loading</div>
         </div>
+
+        <%-- global confirmation modal --%>
+        <semui:confirmationModal  />
+
+
+    <%-- <a href="#globalJumpMark" class="ui button icon" style="position:fixed;right:0;bottom:0;"><i class="angle up icon"></i></a> --%>
 
         <r:layoutResources/>
 

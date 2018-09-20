@@ -9,7 +9,7 @@
 		<g:each in="${clusterInstance?.orgs?}" var="o">
 		    <li class="ui-delete">
 		    	${o.roleType?.value} - <g:link controller="org" action="show" id="${o.org?.id}">${o.org?.name}</g:link>
-		    	<!-- <button type="button" name="delete" value="${o.encodeAsHTML()}">${message('code':'default.button.delete.label')}</button>-->
+		    	<!-- <button type="button" name="delete" value="${o}">${message('code':'default.button.delete.label')}</button>-->
 		    	<button type="button" name="delete" value="${o.id}">${message('code':'default.button.delete.label')}</button>
 		    </li>
 		</g:each>

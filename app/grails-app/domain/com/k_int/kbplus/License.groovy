@@ -3,13 +3,14 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.Role
 import de.laser.domain.BaseDomainComponent
 import de.laser.domain.Permissions
+import de.laser.domain.TemplateSupport
 
 import javax.persistence.Transient
 import java.text.Normalizer
 import com.k_int.properties.PropertyDefinition
 import com.k_int.ClassUtils
 
-class License extends BaseDomainComponent implements Permissions, Comparable<License> {
+class License extends BaseDomainComponent implements TemplateSupport, Permissions, Comparable<License> {
 
     @Transient
     def grailsApplication
@@ -26,6 +27,11 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
     static controlledProperties =    ['licenseUrl', 'noticePeriod', 'reference', 'startDate', 'endDate']
     static controlledRefProperties = ['isPublic' ]
 
+    License instanceOf
+
+    // If a license is slaved then any changes to instanceOf will automatically be applied to this license
+    RefdataValue isSlaved // RefdataCategory 'YN'
+
   RefdataValue status
   RefdataValue type
 
@@ -37,12 +43,9 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
 
   String noticePeriod
   String licenseUrl
-  //String licensorRef // - removed
-  //String licenseeRef // - removed
   String licenseType
   String licenseStatus
   String impId
-  //String contact // - removed
 
   long lastmod
   Date startDate
@@ -62,8 +65,9 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
           documents:    DocContext,
           orgLinks:     OrgRole,
           prsLinks:     PersonRole,
-          outgoinglinks:Link,
-          incomingLinks:Link,
+          //outgoinglinks:Link,
+          //incomingLinks:Link,
+          derivedLicenses:    License,
           pendingChanges:     PendingChange,
           customProperties:   LicenseCustomProperty,
           privateProperties:  LicensePrivateProperty
@@ -76,9 +80,10 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
           documents:     'license',
           orgLinks:      'lic',
           prsLinks:      'lic',
-          outgoinglinks: 'fromLic',
-          incomingLinks: 'toLic',
-          pendingChanges:'license',
+          //outgoinglinks: 'fromLic',
+          //incomingLinks: 'toLic',
+          derivedLicenses: 'instanceOf',
+          pendingChanges:  'license',
           customProperties:  'owner',
           privateProperties: 'owner'
   ]
@@ -90,14 +95,13 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
               globalUID column:'lic_guid'
                  status column:'lic_status_rv_fk'
                    type column:'lic_type_rv_fk'
-    // removed - contact column:'lic_contact'
               reference column:'lic_ref'
       sortableReference column:'lic_sortable_ref'
                isPublic column:'lic_is_public_rdv_fk'
            noticePeriod column:'lic_notice_period'
              licenseUrl column:'lic_license_url'
-    // removed - licensorRef column:'lic_licensor_ref'
-    // removed - licenseeRef column:'lic_licensee_ref'
+             instanceOf column:'lic_parent_lic_fk'
+               isSlaved column:'lic_is_slaved'
             licenseType column:'lic_license_type_str'
           licenseStatus column:'lic_license_status_str'
                 lastmod column:'lic_lastmod'
@@ -121,8 +125,8 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
         isPublic(nullable:true, blank:true)
         noticePeriod(nullable:true, blank:true)
         licenseUrl(nullable:true, blank:true)
-      // removed - licensorRef(nullable:true, blank:true)
-      // removed - licenseeRef(nullable:true, blank:true)
+        instanceOf(nullable:true, blank:false)
+        isSlaved(nullable:true, blank:false)
         licenseType(nullable:true, blank:true)
         licenseStatus(nullable:true, blank:true)
         lastmod(nullable:true, blank:true)
@@ -131,26 +135,53 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
         startDate(nullable: true, blank: true)
         endDate(nullable: true, blank: true)
         lastUpdated(nullable: true, blank: true)
-      // removed - contact(nullable:true,blank:true)
     }
 
-  def getLicensor() {
-    def result = null;
-    orgLinks.each { or ->
-      if ( or?.roleType?.value in ['Licensor', 'Licensing Consortium'] )
-        result = or.org;
+    @Override
+    def isTemplate() {
+        return (type != null) && (type == RefdataValue.getByValueAndCategory('Template', 'License Type'))
     }
-    result
+
+    @Override
+    def hasTemplate() {
+        return instanceOf ? instanceOf.isTemplate() : false
+    }
+
+    def getLicensingConsortium() {
+        def result = null;
+        orgLinks.each { or ->
+            if ( or?.roleType?.value in ['Licensing Consortium'] )
+                result = or.org;
+            }
+        result
+    }
+
+    def getLicensor() {
+        def result = null;
+        orgLinks.each { or ->
+            if ( or?.roleType?.value in ['Licensor'] )
+                result = or.org;
+        }
+        result
+    }
+
+    def getLicensee() {
+        def result = null;
+        orgLinks.each { or ->
+            if ( or?.roleType?.value in ['Licensee', 'Licensee_Consortial'] )
+                result = or.org;
+        }
+        result
+    }
+    def getAllLicensee() {
+        def result = [];
+        orgLinks.each { or ->
+            if ( or?.roleType?.value in ['Licensee', 'Licensee_Consortial'] )
+                result << or.org
+        }
+        result
   }
 
-  def getLicensee() {
-    def result = null;
-    orgLinks.each { or ->
-      if ( or?.roleType?.value in ['Licensee', 'Licensee_Consortial'] )
-        result = or.org;
-    }
-    result
-  }
   @Transient
   def getLicenseType() {
     return type?.value
@@ -354,7 +385,8 @@ class License extends BaseDomainComponent implements Permissions, Comparable<Lic
 
     // Find any licenses derived from this license
     // create a new pending change object
-    def derived_licenses = License.executeQuery('select l from License as l where exists ( select link from Link as link where link.toLic=l and link.fromLic=? )',this)
+    //def derived_licenses = License.executeQuery('select l from License as l where exists ( select link from Link as link where link.toLic=l and link.fromLic=? )',this)
+    def derived_licenses = License.executeQuery('select l from License as l where l.instanceOf=?', this)
     derived_licenses.each { dl ->
       if(dl.status.value != "Deleted"){
         log.debug("Send pending change to ${dl.id}");

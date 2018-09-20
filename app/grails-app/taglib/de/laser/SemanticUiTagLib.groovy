@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.User
 import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 import org.springframework.web.servlet.support.RequestContextUtils
@@ -9,6 +10,7 @@ import org.springframework.web.servlet.support.RequestContextUtils
 class SemanticUiTagLib {
 
     def springSecurityService
+    def yodaService
 
     //static defaultEncodeAs = [taglib:'html']
     //static encodeAsForTags = [tagName: [taglib:'html'], otherTagName: [taglib:'none']]
@@ -40,18 +42,31 @@ class SemanticUiTagLib {
         }
     }
 
-    // <semui:msg class="negative|positive|warning|.." text="${flash}" />
+    // <semui:msg class="negative|positive|warning|.." header="${text}" text="${text}" message="18n.token" />
 
     def msg = { attrs, body ->
 
-        if (attrs.text) {
-            out << '<div class="ui ' + attrs.class + ' message">'
-            out <<   '<i class="close icon"></i>'
-            out <<   '<p>'
-            out <<     attrs.text
-            out <<   '</p>'
+        out << '<div class="ui ' + attrs.class + ' message">'
+        out <<   '<i class="close icon"></i>'
+        out <<   '<div class="content">'
+
+        if (attrs.header ) {
+            out << '<div class="header">'
+            out << attrs.header
             out << '</div>'
         }
+
+        out <<     '<p>'
+        if (attrs.text ) {
+            out << attrs.text
+        }
+        if (attrs.message) {
+            out << "${message(code: attrs.message)}"
+        }
+        out <<     '</p>'
+
+        out <<   '</div>'
+        out << '</div>'
     }
 
     // <semui:errors bean="${instanceOfObject}" />
@@ -74,7 +89,19 @@ class SemanticUiTagLib {
             out << '</div>'
         }
     }
-    
+
+    // <semui:objectStatus object="${obj}" status="${status}"/>
+
+    def objectStatus = { attrs, body ->
+
+        if ('deleted'.equalsIgnoreCase(attrs.status?.value)) {
+
+            out << '<div class="ui segment inverted red">'
+            out << '<p><strong>' + message(code: 'default.object.isDeleted') + '</strong></p>'
+            out << '</div>'
+        }
+    }
+
     // <semui:card text="${text}" message="local.string" class="some_css_class">
     //
     // <semui:card>
@@ -114,12 +141,34 @@ class SemanticUiTagLib {
         }
     }
     */
+    def debugInfo = { attrs, body ->
+
+        if (yodaService.showDebugInfo()) {
+
+            out << '<a href="#debugInfo" id="showDebugInfo" class="ui button icon" data-semui="modal">'
+            out << '<i class="red bug icon"></i>'
+            out << '</a>'
+
+            out << '<div id="debugInfo" class="ui modal">'
+            out <<     '<h4 class="ui red header"> <i class="bug icon"></i> DEBUG-INFORMATION</h4>'
+            out <<     '<div class="scrolling content">'
+            out <<          body()
+            out <<          '<br />'
+            out <<     '</div>'
+            out <<     '<div class="actions">'
+            out <<         '<a href="#" class="ui button" onclick="$(\'#debugInfo\').modal(\'hide\')">Schließen</a>'
+            out <<     '</div>'
+            out << '</div>'
+        }
+    }
+
     def headerIcon = { attrs, body ->
 
-            out << '<div class="ui la-object circular label" style="margin-left:0; margin-right: 5px!important; ">'
-            out << '<i class="icon"></i>'
-            out << '</div>'
+        out << '<div class="ui la-object circular label" style="margin-left:0; margin-right: 5px!important; ">'
+        out << '<i class="icon"></i>'
+        out << '</div>'
     }
+
     def headerTitleIcon = { attrs, body ->
 
         switch(attrs.type) {
@@ -139,6 +188,7 @@ class SemanticUiTagLib {
         out << '<i class="icon"></i>'
         out << '</div>'
     }
+
     def listIcon = { attrs, body ->
 
         switch(attrs.type) {
@@ -149,7 +199,7 @@ class SemanticUiTagLib {
                 break
             case 'Database':
                 out << '<div class="la-inline-flexbox" data-tooltip="' + message(code:'spotlight.databasetitle') + '" data-position="left center" data-variation="tiny">'
-                out << '    <i class="icon database outline la-list-icon"></i>'
+                out << '    <i class="icon database la-list-icon"></i>'
                 out << '</div>'
                 break
             case 'EBook':
@@ -161,6 +211,38 @@ class SemanticUiTagLib {
                 out << '<div class="la-inline-flexbox" data-tooltip="' + message(code:'spotlight.title') + '" data-position="left center" data-variation="tiny">'
                 out << '    <i class="icon book la-list-icon"></i>'
                 out << '</div>'
+                break
+        }
+    }
+
+    def contactIcon = { attrs, body ->
+
+        switch(attrs.type) {
+            case 'E-Mail':
+            case 'Mail': // Deprecated
+                out << '<span  data-tooltip="' +message(code:'contact.icon.label.email') + '" data-position="left center" data-variation="tiny">'
+                out << '    <i class="ui icon envelope outline la-list-icon"></i>'
+                out << '</span>'
+                break
+            case 'Fax':
+                out << '<span  data-tooltip="' +message(code:'contact.icon.label.fax') + '" data-position="left center" data-variation="tiny">'
+                out << '    <i class="ui icon tty la-list-icon"></i>'
+                out << '</span>'
+                break
+            case 'Phone':
+                out << '<span  data-tooltip="' +message(code:'contact.icon.label.phone') + '" data-position="left center" data-variation="tiny">'
+                out << '<i class="icon phone la-list-icon"></i>'
+                out << '</span>'
+                break
+            case 'Url':
+                out << '<span  data-tooltip="' +message(code:'contact.icon.label.url') + '" data-position="left center" data-variation="tiny">'
+                out << '<i class="icon globe la-list-icon"></i>'
+                out << '</span>'
+                break
+            default:
+                out << '<span  data-tooltip="' +message(code:'contact.icon.label.contactinfo') + '" data-position="left center" data-variation="tiny">'
+                out << '<i class="icon address book la-list-icon"></i>'
+                out << '</span>'
                 break
         }
     }
@@ -305,6 +387,37 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
+    //  <semui:confirmationModal  />
+    // global included at semanticUI.gsp
+    // called by the specific delete button
+    //  - to send a form or
+    //        <g:form data-confirm-id="${person?.id.toString()+ '_form'}">
+    //        <div class="....... js-open-confirm-modal" data-confirm-term="diese Person" data-confirm-id="${person?.id}" >
+    //  - to call a link
+    //        <g:link class="..... js-open-confirm-modal" data-confirm-term="diese Kontaktdresse" ...... >
+    def confirmationModal = { attrs, body ->
+
+        def msgDelete  = "Entgültig löschen"
+        def msgCancel  = "Abbrechen"
+
+        out << '<div class="ui mini modal">'
+        out <<   '<div class="header">Wollen Sie <span id="js-confirmation-term"></span> wirklich aus dem System löschen?</div>'
+        if (body) {
+            out <<   '<div class="content">'
+            out << body()
+            out <<   '</div>'
+        }
+        out <<   '<div class="actions">'
+        out <<     '<div class="ui deny button">'+ msgCancel+ '</div>'
+        out <<     '<button class="ui positive right labeled icon button">'+ msgDelete
+        out <<     '    <i class="trash alternate icon"></i>'
+        out <<     '</button>'
+        out <<   '</div>'
+        out << '</div>'
+    }
+
+
+
     //<semui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="true" />
 
     def datepicker = { attrs, body ->
@@ -339,4 +452,6 @@ class SemanticUiTagLib {
 
     }
 
-    public SemanticUiTagLib ( ) { } }
+    public SemanticUiTagLib ( ) { }
+
+}

@@ -21,7 +21,7 @@
 					<g:if test="${creatorTitleInstance?.creator}">
 						<dt><g:message code="creatorTitle.creator.label" default="Creator" /></dt>
 						
-							<dd><g:link controller="creator" action="show" id="${creatorTitleInstance?.creator?.id}">${creatorTitleInstance?.creator?.encodeAsHTML()}</g:link></dd>
+							<dd><g:link controller="creator" action="show" id="${creatorTitleInstance?.creator?.id}">${creatorTitleInstance?.creator}</g:link></dd>
 						
 					</g:if>
 				
@@ -42,14 +42,14 @@
 					<g:if test="${creatorTitleInstance?.role}">
 						<dt><g:message code="creatorTitle.role.label" default="Role" /></dt>
 						
-							<dd><g:link controller="refdataValue" action="show" id="${creatorTitleInstance?.role?.id}">${creatorTitleInstance?.role?.encodeAsHTML()}</g:link></dd>
+							<dd><g:link controller="refdataValue" action="show" id="${creatorTitleInstance?.role?.id}">${creatorTitleInstance?.role}</g:link></dd>
 						
 					</g:if>
 				
 					<g:if test="${creatorTitleInstance?.title}">
 						<dt><g:message code="creatorTitle.title.label" default="Title" /></dt>
 						
-							<dd><g:link controller="titleInstance" action="show" id="${creatorTitleInstance?.title?.id}">${creatorTitleInstance?.title?.encodeAsHTML()}</g:link></dd>
+							<dd><g:link controller="titleInstance" action="show" id="${creatorTitleInstance?.title?.id}">${creatorTitleInstance?.title}</g:link></dd>
 						
 					</g:if>
 				

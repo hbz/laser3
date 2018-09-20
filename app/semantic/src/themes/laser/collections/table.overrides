@@ -150,15 +150,17 @@
 
 
 .ui.la-selectable.table {
-  border-bottom: @rowBorder;
   margin: 0;
-
-  tr td {
-    border-top: none;
-  }
-  &:hover {
-    background: @selectableBackground !important;
-    color: @selectableTextColor !important;
+  tr {
+    border-bottom: @rowBorder;
+    margin: 0;
+    &:hover {
+      background: @selectableBackground !important;
+      color: @selectableTextColor !important;
+    }
+    td {
+      border-top: none;
+    }
   }
 }
 
@@ -170,4 +172,15 @@
   display: block;
   color: inherit;
   padding: @cellVerticalPadding @cellHorizontalPadding;
+}
+.ui.table thead th.la-smaller-table-head {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+/* wrap small needed th to avoid table layout break */
+.ui.sortable.table thead th.la-th-wrap {
+  white-space: normal;
+}
+.ui.sortable.table thead th.la-hyphenation {
+  text-align: justify;
 }

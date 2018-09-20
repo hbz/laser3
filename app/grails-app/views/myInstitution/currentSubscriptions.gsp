@@ -34,12 +34,12 @@
         <div class="three fields">
             <!-- 1-1 -->
             <div class="field">
-                <label>${message(code: 'default.search.text', default: 'Search text')} (Lizenz, Vertrag, Paket, Anbieter, Konsortium, Agentur)</label>
+                <label>${message(code: 'default.search.text', default: 'Search text')} (Lizenz, Vertrag, Paket, Anbieter, Konsortium, Lieferant)</label>
 
                 <div class="ui input">
                     <input type="text" name="q"
                            placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
-                           value="${params.q?.encodeAsHTML()}"/>
+                           value="${params.q}"/>
                 </div>
             </div>
             <!-- 1-2 -->
@@ -139,43 +139,46 @@
 
             <div class="field">
                 <div class="two fields">
-                    <div class="field">
 
-                        <g:if test="${params.orgRole == 'Subscriber'}">
-                            <input id="radioSubscriber" type="hidden" value="Subscriber" name="orgRole" tabindex="0" class="hidden">
-                        </g:if>
-                        <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                            <input id="radioKonsortium" type="hidden" value="Subscription Consortia" name="orgRole" tabindex="0" class="hidden">
-                        </g:if>
+                    <g:if test="${institution?.orgType?.value == 'Consortium'}">
+                        <div class="field">
 
-                        <%--  explicit filter by orgRole removed
-                        <label>${message(code: 'myinst.currentSubscriptions.filter.filterForRole.label')}</label>
+                            <%--
+                            <g:if test="${params.orgRole == 'Subscriber'}">
+                                <input id="radioSubscriber" type="hidden" value="Subscriber" name="orgRole" tabindex="0" class="hidden">
+                            </g:if>
+                            <g:if test="${params.orgRole == 'Subscription Consortia'}">
+                                <input id="radioKonsortium" type="hidden" value="Subscription Consortia" name="orgRole" tabindex="0" class="hidden">
+                            </g:if>
+                            --%>
 
-                        <div class="inline fields la-filter-inline">
-                            <div class="field">
-                                <div class="ui radio checkbox">
-                                    <input id="radioSubscriber" type="radio" value="Subscriber" name="orgRole" tabindex="0" class="hidden"
-                                           <g:if test="${params.orgRole == 'Subscriber'}">checked=""</g:if>
-                                        >
-                                    <label for="radioSubscriber">${message(code: 'subscription.details.members.label')}</label>
+                            <label>${message(code: 'myinst.currentSubscriptions.filter.filterForRole.label')}</label>
+
+                            <div class="inline fields la-filter-inline">
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        <input id="radioSubscriber" type="radio" value="Subscriber" name="orgRole" tabindex="0" class="hidden"
+                                               <g:if test="${params.orgRole == 'Subscriber'}">checked=""</g:if>
+                                            >
+                                        <label for="radioSubscriber">${message(code: 'subscription.details.members.label')}</label>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="field">
-                                <div class="ui radio checkbox">
-                                    <input id="radioKonsortium" type="radio" value="Subscription Consortia" name="orgRole" tabindex="0" class="hidden"
-                                           <g:if test="${params.orgRole == 'Subscription Consortia'}">checked=""</g:if>
-                                        >
-                                    <label for="radioKonsortium">${message(code: 'myinst.currentSubscriptions.filter.consortium.label')}</label>
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        <input id="radioKonsortium" type="radio" value="Subscription Consortia" name="orgRole" tabindex="0" class="hidden"
+                                               <g:if test="${params.orgRole == 'Subscription Consortia'}">checked=""</g:if>
+                                            >
+                                        <label for="radioKonsortium">${message(code: 'myinst.currentSubscriptions.filter.consortium.label')}</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        --%>
-                    </div>
+                    </g:if>
 
-                    <div class="field la-filter-search ">
+                    <div class="field la-filter-search">
                         <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}">
+                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
                     </div>
                 </div>
             </div>
@@ -187,8 +190,11 @@
     <table class="ui celled sortable table table-tworow la-table">
         <thead>
         <tr>
-            <g:sortableColumn params="${params}" property="s.name" title="${message(code: 'license.slash.name')}"/>
-            <th>
+            <th rowspan="2" class="center aligned">
+
+            </th>
+            <g:sortableColumn params="${params}" property="s.name" title="${message(code: 'license.slash.name')}" rowspan="2" />
+            <th rowspan="2" >
                 <g:annotatedLabel owner="${institution}" property="linkedPackages">${message(code: 'license.details.linked_pkg', default: 'Linked Packages')}</g:annotatedLabel>
             </th>
             <% /*
@@ -198,27 +204,35 @@
             */ %>
 
             <g:if test="${params.orgRole == 'Subscriber'}">
-                <th>${message(code: 'consortium', default: 'Consortia')}</th>
+                <th rowspan="2" >${message(code: 'consortium', default: 'Consortia')}</th>
             </g:if>
 
-            <th>${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}</th>
+            <th rowspan="2" >${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}</th>
+
             <%--
             <g:if test="${params.orgRole == 'Subscription Consortia'}">
                 <th>${message(code: 'consortium.subscriber', default: 'Subscriber')}</th>
             </g:if>
             --%>
-            <g:sortableColumn params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
+            <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
 
-            <g:sortableColumn params="${params}" property="s.endDate" title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
+
 
             <% /* <g:sortableColumn params="${params}" property="s.manualCancellationDate"
                               title="${message(code: 'default.cancellationDate.label', default: 'Cancellation Date')}"/> */ %>
-            <th class="two wide"></th>
+            <th rowspan="2"  class="two wide"></th>
+        </tr>
+
+        <tr>
+            <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.endDate" title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
         </tr>
         </thead>
-        <g:each in="${subscriptions}" var="s">
+        <g:each in="${subscriptions}" var="s" status="i">
             <g:if test="${true || !s.instanceOf}">
                 <tr>
+                    <td class="center aligned">
+                        ${i + 1}
+                    </td>
                     <td>
                         <g:link controller="subscriptionDetails" action="show" id="${s.id}">
                             <g:if test="${s.name}">
@@ -228,10 +242,9 @@
                                 -- ${message(code: 'myinst.currentSubscriptions.name_not_set', default: 'Name Not Set')}  --
                             </g:else>
                             <g:if test="${s.instanceOf}">
-                                (${message(code: 'subscription.isInstanceOf.label', default: 'Dependent')}
                                 <g:if test="${s.consortia && s.consortia == institution}">
-                                    : ${s.subscriber?.name}
-                                </g:if>)
+                                    ( ${s.subscriber?.name} )
+                                </g:if>
                             </g:if>
                         </g:link>
                         <g:if test="${s.owner}">
@@ -294,8 +307,11 @@
                         </g:if>
                     </td>
                     --%>
-                    <td><g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/></td>
-                    <td><g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/></td>
+                    <td>
+                        <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br>
+                        <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
+                    </td>
+
 
                     <td class="x">
                         <g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.hasOrgWithUsageSupplierId()}">

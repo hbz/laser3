@@ -5,6 +5,7 @@ import de.laser.domain.I10nTranslatableAbstract
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import com.k_int.properties.PropertyDefinition
+//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Secured(['permitAll']) // TODO
@@ -13,6 +14,7 @@ class AjaxController {
     def genericOIDService
     def contextService
     def taskService
+    def addressbookService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -865,7 +867,8 @@ class AjaxController {
         error = message(code:'ajax.addCustomPropertyValue.error', default:'A property of this type is already added')
     }
 
-    owner.refresh()
+      owner.refresh()
+
     request.setAttribute("editable", params.editable == "true")
     render(template: "/templates/properties/custom", model:[
             ownobj:owner,
@@ -911,6 +914,7 @@ class AjaxController {
         }
 
         owner.refresh()
+
         request.setAttribute("editable", params.editable == "true")
         render(template: "/templates/properties/private", model:[
                 ownobj: owner,
@@ -1020,6 +1024,35 @@ class AjaxController {
       render(template:"/templates/coreAssertionsModal",model:[message:params.message,coreDates:dates,tipID:tip.id,tip:tip]);    
     }
   }
+
+    def delete() {
+
+        if (params.cmd?.equalsIgnoreCase('deleteAddress')) {
+            def obj = genericOIDService.resolveOID(params.oid)
+            if (obj) {
+                obj.delete()
+            }
+        }
+        if (params.cmd?.equalsIgnoreCase('deleteContact')) {
+            def obj = genericOIDService.resolveOID(params.oid)
+            if (obj) {
+                obj.delete()
+            }
+        }
+        if (params.cmd?.equalsIgnoreCase('deletePersonRole')) {
+            deletePersonRole()
+        }
+        redirect(url: request.getHeader('referer'))
+    }
+
+    //TODO: Überprüfuen, ob die Berechtigung korrekt funktioniert.
+    @Secured(['ROLE_ORG_EDITOR'])
+    def deletePersonRole(){
+        def obj = genericOIDService.resolveOID(params.oid)
+        if (obj) {
+                obj.delete()
+        }
+    }
 
     @Secured(['ROLE_USER'])
     def deleteCoreDate(){

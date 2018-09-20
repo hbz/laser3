@@ -43,8 +43,6 @@
         </g:each>
 </semui:card>
 
-<g:render template="/templates/notes/modal_create" />
-
 <r:script>
     function noteedit(id) {
 

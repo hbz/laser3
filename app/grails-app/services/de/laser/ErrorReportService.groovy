@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.SystemTicket
 import groovy.json.JsonBuilder
 import org.apache.http.HttpResponse
 import org.apache.http.client.HttpClient
@@ -10,6 +11,8 @@ import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.http.util.EntityUtils
 import org.springframework.http.HttpStatus
 import sun.misc.BASE64Encoder
+
+import java.text.SimpleDateFormat
 
 class ErrorReportService {
 
@@ -22,6 +25,7 @@ class ErrorReportService {
     def grailsApplication
     def springSecurityService
 
+    @Deprecated
     def getConfig() {
         def config = [:]
 
@@ -50,6 +54,7 @@ class ErrorReportService {
         }
     }
 
+    @Deprecated
     def sendReportAsAttachement(data) {
         def config = getConfig()
 
@@ -57,7 +62,6 @@ class ErrorReportService {
             log.info("ignored sending error report - no config and/or no data")
             return
         }
-
         HttpPost post = new HttpPost(config.url)
 
         config.headers.each{ k, v ->
@@ -65,7 +69,10 @@ class ErrorReportService {
         }
 
         def jb = new JsonBuilder(data)
-        def filename = (grailsApplication.config.laserSystemId ?: 'Quelle unbekannt') + " - ${springSecurityService.getCurrentUser().email}"
+        def sdf = new SimpleDateFormat('yMMdd:HHmmss')
+        def dd  = sdf.format(new Date())
+
+        def filename = (grailsApplication.config.laserSystemId ?: 'Quelle unbekannt') + " - ${springSecurityService.getCurrentUser().email} - ${dd}"
 
         MultipartEntityBuilder meb = MultipartEntityBuilder.create()
         meb.addPart('file', new ByteArrayBody( jb.toPrettyString().getBytes(), filename.replace('/', '') ))
@@ -82,6 +89,36 @@ class ErrorReportService {
         else {
             log.info(EntityUtils.toString(response.getEntity()))
             return false
+        }
+    }
+
+    def writeReportIntoDB(data) {
+
+        def ticket = new SystemTicket(
+                author:    data.author,
+                title:     data.title,
+                described: data.described,
+                expected:  data.expected,
+                info:      data.info,
+                status:    data.status,
+                category:  data.category
+        )
+
+        def meta = [
+                system:  grailsApplication.config.laserSystemId,
+                version: grailsApplication.metadata['app.version'],
+                build:   grailsApplication.metadata['repository.revision.number']
+        ]
+        ticket.meta = (new JsonBuilder(meta)).toString()
+
+        def date = new Date()
+        ticket.dateCreated = date
+        ticket.lastUpdated = date
+
+        if (ticket.save()) {
+            return ticket
+        } else {
+            null
         }
     }
 }

@@ -1,5 +1,9 @@
 <%@ page import="com.k_int.kbplus.PersonRole" %>
 
+<%-- DEPRECATED --%>
+<%-- DEPRECATED --%>
+<%-- DEPRECATED --%>
+
 <div class="ui vertical template-element template-element-${timestamp}">
 
 	<div class="field">

@@ -42,9 +42,7 @@
     <semui:messages data="${flash}" />
 
     <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList]}"/>
-
-
-    <g:render template="/templates/tasks/modal_create" model="${[ownobj:packageInstance, owntp:'pkg']}"/>
+    <g:render template="/templates/tasks/js_taskedit"/>
 
 </body>
 </html>

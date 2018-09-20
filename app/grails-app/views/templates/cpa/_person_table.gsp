@@ -1,63 +1,104 @@
 
 <table class="ui table la-table">
+    <colgroup>
+        <col style="width:  30px;">
+        <col style="width: 170px;">
+        <col style="width: 236px;">
+        <col style="width: 277px;">
+        <col style="width: 332px;">
+        <col style="width:  82px;">
+    </colgroup>
 	<thead>
 		<tr>
+            <th></th>
             <th>
-                ${message(code:'person.last_name.label')},
-                ${message(code:'person.first_name.label')}
+                ${message(code:'person.name.label')}
             </th>
-            <g:if test="${controllerName == 'myInstitution'}">
-			<th>Kontext</th>
-            </g:if>
+            <th>
+                <g:if test="${controllerName == 'myInstitution'}">
+                    ${message(code:'person.organisation.label')}
+                </g:if>
+                <g:else>
+                    Funktion
+                </g:else>
+            </th>
 			<th>${message(code:'person.contacts.label')}</th>
 			<th>${message(code:'person.addresses.label')}</th>
             <th></th>
 		</tr>
 	</thead>
 	<tbody>
-		<g:each in="${persons}" var="person">
+		<g:each in="${persons.sort{it.last_name}}" var="person" status="c">
 			<tr>
-				<td>
-
-                        ${person?.first_name?.encodeAsHTML() ? person?.last_name?.encodeAsHTML()+', '+person?.first_name?.encodeAsHTML() : person?.last_name?.encodeAsHTML()}
-
-                        ${person?.middle_name?.encodeAsHTML()}
-
-				</td>
-                <g:if test="${controllerName == 'myInstitution'}">
-				<td>
-					<g:each in="${person?.roleLinks.unique{ it.org }}" var="role">
-						<g:link controller="organisations" action="addressbook" id="${role.org?.id}">${role.org}</g:link>
-                        <br />
-					</g:each>
-				</td>
-                </g:if>
-
                 <td>
-                    <g:each in="${person.contacts.sort{it.content}}" var="contact">
-                        <g:render template="/templates/cpa/contact" model="${[contact: contact]}"></g:render>
-                    </g:each>
+                    ${c + 1 + (offset?:0)}
+                </td>
+				<td>
+                    ${person?.first_name? person?.last_name + ', ' + person?.first_name : person?.last_name}
+                    ${person?.middle_name}
+				</td>
+
+				<td>
+					<g:each in="${person?.roleLinks?.unique{ it?.org }}" var="role">
+                        <g:if test="${controllerName == 'myInstitution'}">
+                            <div class="la-flexbox">
+                                <i class="icon university la-list-icon"></i>
+                                <g:link controller="organisations" action="addressbook" id="${role.org?.id}">${role.org}</g:link>
+                            </div>
+                            <div>
+                                <g:if test="${role.functionType}">
+                                    (${role.functionType?.getI10n('value')})
+                                </g:if>
+                            </div>
+                        </g:if>
+                        <g:else>
+                            <div>
+                                <g:if test="${role.functionType}">
+                                    ${role.functionType?.getI10n('value')}
+                                </g:if>
+                            </div>
+                        </g:else>
+					</g:each>
+                </td>
+                <td>
+                    <div class="ui divided middle aligned selection list la-flex-list ">
+                        <g:each in="${person?.contacts?.toSorted()}" var="contact">
+                            <g:render template="/templates/cpa/contact" model="${[
+                                    contact: contact,
+                                    tmplShowDeleteButton: true
+                            ]}">
+
+                            </g:render>
+                        </g:each>
+                    </div>
                 </td>
 
                 <td>
-                    <g:each in="${person.addresses.sort{it.type?.getI10n('value')}}" var="address">
-                        <g:render template="/templates/cpa/address" model="${[address: address]}"></g:render>
-                    </g:each>
+                    <div class="ui divided middle aligned selection list la-flex-list ">
+                        <g:each in="${person.addresses.sort{it.type?.getI10n('value')}}" var="address">
+                            <g:render template="/templates/cpa/address" model="${[
+                                    address: address,
+                                    tmplShowDeleteButton: true
+                            ]}"></g:render>
+                        </g:each>
+                    </div>
                 </td>
                 <td class="x">
                     <g:if test="${editable}">
-                        <g:form controller="person" action="delete">
-                            <g:hiddenField name="id" value="${person?.id}" />
-                                <g:link class="ui icon button" controller="person" action="show" id="${person?.id}">
-                                    <i class="write icon"></i>
-                                </g:link>
-                                <button class="ui icon negative button" type="submit" name="_action_delete">
-                                    <i class="trash alternate icon"></i>
-                                </button>
-                        </g:form>
+                            <g:form controller="person" action="delete" data-confirm-id="${person?.id?.toString()+ '_form'}">
+                                <g:hiddenField name="id" value="${person?.id}" />
+                                    <g:link class="ui icon button" controller="person" action="show" id="${person?.id}">
+                                        <i class="write icon"></i>
+                                    </g:link>
+                                    <div class="ui icon negative button js-open-confirm-modal" data-confirm-term="diese Person" data-confirm-id="${person?.id}" >
+                                        <i class="trash alternate icon"></i>
+                                    </div>
+                            </g:form>
                     </g:if>
                 </td>
 			</tr>
 		</g:each>
 	</tbody>
 </table>
+
+

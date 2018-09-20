@@ -8,8 +8,12 @@
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
+	<semui:breadcrumbs>
+		<semui:crumb message="platforms.all_platforms.label" class="active" />
+	</semui:breadcrumbs>
 
-			<h1 class="ui header"><semui:headerIcon /><g:message code="default.list.label" args="[entityName]" /></h1>
+
+	<h1 class="ui header"><semui:headerIcon /><g:message code="platforms.all_platforms.label" args="[entityName]" /></h1>
 
 			<semui:messages data="${flash}" />
 
@@ -18,15 +22,15 @@
                     <div class="fields">
                         <div class="field">
                             <label>${message(code:'default.search.text', default:'Search text')}</label>
-                            <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q?.encodeAsHTML()}" />
+                            <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q}" />
                         </div>
 						<div class="field">
 							<label>&nbsp;</label>
-							<a href="${request.forwardURI}" class="ui button">${message(code:'default.button.searchreset.label')}</a>
+							<a href="${request.forwardURI}" class="ui button">${message(code:'default.button.filterreset.label')}</a>
 						</div>
                         <div class="field">
                             <label>&nbsp;</label>
-                            <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}" />
+                            <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}" />
                         </div>
                     </div>
 				</g:form>

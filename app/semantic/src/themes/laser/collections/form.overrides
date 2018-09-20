@@ -106,4 +106,14 @@ input#spotlightSearch[type="search"] {
 .ui.form .la-select2-fixed-width {
           width: 356.938px;
 }
+/*--------------------
+       Disabled
+---------------------*/
+
+.ui.form .disabled.fields .field,
+.ui.form .disabled.field,
+.ui.form .field :disabled {
+  pointer-events: none;
+  opacity: @disabledOpacity;
+}
 

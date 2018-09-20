@@ -10,7 +10,6 @@ class ChangeNotificationService {
   def executorService
   def genericOIDService
   def sessionFactory
-  def zenDeskSyncService
   def grailsApplication
 
   // N,B, This is critical for this service as it's called from domain object OnChange handlers
@@ -128,18 +127,7 @@ class ChangeNotificationService {
             contextObject.notificationEndpoints.each { ne ->
               // log.debug("  -> consider ${ne}");
               switch ( ne.service ) {
-                case 'zendesk.forum': 
-                  if ( ne.remoteid != null && grailsApplication.config.ZenDeskBaseURL ) {
-                    // log.debug("Send zendesk forum notification for ${ne.remoteid}");
-                    zenDeskSyncService.postTopicCommentInForum(announcement_content,
-                                                               ne.remoteid.toString(), 
-                                                               "Änderungen beziehen sich auf ${contextObject.toString()}".toString(),
-                                                               'System generated alerts and notifications will appear as comments under this topic');
-                  }
-                  else {
-                    log.warn("Context object has no forum... ${poidc}");
-                  }
-                  break;
+
                 case 'announcements':
                   def announcement_type = RefdataCategory.lookupOrCreate('Document Type','Announcement')
                   // result.recentAnnouncements = Doc.findAllByType(announcement_type,[max:10,sort:'dateCreated',order:'desc'])

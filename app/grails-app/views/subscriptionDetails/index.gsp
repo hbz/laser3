@@ -23,11 +23,38 @@
   <h1 class="ui header"><semui:headerIcon />
 
       <semui:xEditable owner="${subscriptionInstance}" field="name" />
+
+      <span class="la-forward-back">
+          <g:if test="${navPrevSubscription}">
+              <g:link controller="subscriptionDetails" action="index" params="[id:navPrevSubscription.id]"><i class="chevron left icon"></i></g:link>
+          </g:if>
+          <g:else>
+              <i class="chevron left icon disabled"></i>
+          </g:else>
+          <g:if test="${navNextSubscription}">
+              <g:link controller="subscriptionDetails" action="index" params="[id:navNextSubscription.id]"><i class="chevron right icon"></i></g:link>
+          </g:if>
+          <g:else>
+              <i class="chevron right icon disabled"></i>
+          </g:else>
+      </span>
   </h1>
 
     <g:render template="nav" />
 
     <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':subscriptionInstance]}"/>
+
+      <g:if test="${subscriptionInstance.instanceOf && (contextOrg == subscriptionInstance.getConsortia())}">
+          <div class="ui negative message">
+              <div class="header"><g:message code="myinst.message.attention" /></div>
+              <p>
+                  <g:message code="myinst.subscriptionDetails.message.ChildView" />
+                  <span class="ui label">${subscriptionInstance.getAllSubscribers()?.collect{itOrg -> itOrg.name}.join(',')}</span>.
+              <g:message code="myinst.subscriptionDetails.message.ConsortialView" />
+              <g:link controller="subscriptionDetails" action="show" id="${subscriptionInstance.instanceOf.id}"><g:message code="myinst.subscriptionDetails.message.here" /></g:link>.
+              </p>
+          </div>
+      </g:if>
 
     <div class="ui grid">
 

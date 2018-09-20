@@ -1,6 +1,7 @@
 // locations to search for config files that get merged into the main config
 // config files can either be Java properties files or ConfigSlurper scripts
 
+import de.laser.ContextService
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.apache.log4j.DailyRollingFileAppender
 import org.apache.log4j.RollingFileAppender
@@ -12,36 +13,12 @@ laserSystemId = 'local'
 
 //localauth = true
 
-// pilot version
-// access via grailsApplication.config.pilotDisableFlag
-// pilotDisableFlag = false
-// access via grailsApplication.config.showDebugInfo
-// showDebugInfo = true
-
-// STATS-CONFIG
-//statsApiUrl = 'http://statsServer'
+// showDebugInfo = false
 
 // @NotificationsJob
 // - enable notification
 // - enable reminder
 //hbzMaster = true
-
-// ES-CONFIG
-//aggr_es_cluster	= 'elasticsearch'
-//aggr_es_index		= 'laser'
-//aggr_es_hostname	= 'localhost'
-
-// JIRA-CONFIG
-
-// FEATURE-CONFIG
-//feature.eBooks = true
-//feature.issnl = true
-feature_finance = false
-//feature.notifications = true
-//globalDataSyncJobActiv = true
-//AdminReminderJobActiv = true
-
-
 
 // Database Migration Plugin
 grails.plugin.databasemigration.updateOnStart = false
@@ -49,6 +26,24 @@ grails.plugin.databasemigration.updateOnStartFileNames = [ 'changelog.groovy' ]
 
 System.out.println("\n~ local config override: ${grails.config.locations}")
 System.out.println("~ database migration plugin updateOnStart: ${grails.plugin.databasemigration.updateOnStart}")
+
+getCurrentServer = {
+    // laserSystemId mapping for runtime check
+    switch (grailsApplication.config.laserSystemId) {
+        case 'LAS:eR-Dev':
+            return ContextService.SERVER_DEV
+            break
+        case 'LAS:eR-QA/Stage':
+            return ContextService.SERVER_QA
+            break
+        case 'LAS:eR-Productive':
+            return ContextService.SERVER_PROD
+            break
+        default:
+            return ContextService.SERVER_LOCAL
+            break
+    }
+}
 
 customProperties =[
     "org":[
@@ -377,11 +372,16 @@ grails.mime.types = [
 //grails.urlmapping.cache.maxsize = 1000
 
 // What URL patterns should be processed by the resources plugin
-grails.resources.adhoc.patterns = ['/images/*', '/css/*', '/js/*', '/plugins/*', '/rest/*']
-grails.resources.adhoc.includes = ['/images/**', '/css/**', '/js/**', '/plugins/**', '/semantic/**', '/rest/**']
+//rails.resources.resourceLocatorEnabled = true // upgrade to 1.2.14
+//grails.resources.uriToUrlCacheTimeout = 0  // upgrade to 1.2.14
+//grails.resources.processing.startup = "delayed" // upgrade to 1.2.14
+grails.resources.adhoc.patterns = [
+        '/images/*', '/css/*', '/js/*', '/plugins/*', '/semantic/*', '/semantic-restoration/*', '/vendor/*']
+grails.resources.adhoc.includes = [
+        '/images/**', '/css/**', '/js/**', '/plugins/**', '/semantic/**', '/semantic-restoration/**', '/vendor/**']
 
 // The default codec used to encode data with ${}
-grails.views.default.codec = "none" // none, html, base64
+grails.views.default.codec = "html" // none, html, base64
 grails.views.gsp.encoding  = "UTF-8"
 grails.converters.encoding = "UTF-8"
 
@@ -416,13 +416,13 @@ environments {
     }
 }
 
-// enable query caching by default
-grails.hibernate.cache.queries = true
-
 grails.cache.config = {
-  cache {
-    name 'message'
-  }
+    cache {
+        name = 'laser_experimental'
+    }
+    cache {
+        name 'message'
+    }
 }
 
 subscriptionTransforms = [
@@ -527,7 +527,7 @@ log4j = {
       'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
       'org.springframework',
       'org.hibernate',
-      'net.sf.ehcache.hibernate',
+      'org.hibernate.cache.ehcache',
       'formfields',
       'com.k_int.kbplus.filter',
       // 'org.codehaus.groovy.grails.plugins.springsecurity'
@@ -557,7 +557,7 @@ grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'com.k_int.kbpl
 grails.plugin.springsecurity.userLookup.usernamePropertyName   = 'username'
 grails.plugin.springsecurity.authority.className               = 'com.k_int.kbplus.auth.Role'
 grails.plugin.springsecurity.securityConfigType                = "Annotation"
-grails.plugin.springsecurity.successHandler.alwaysUseDefault   = true
+grails.plugin.springsecurity.successHandler.alwaysUseDefault   = false //Change on 09.08.18 from true to false MD
 grails.plugin.springsecurity.successHandler.defaultTargetUrl   = '/home/index'
 grails.plugin.springsecurity.password.algorithm                = 'SHA-256' // default: 'bcrypt'
 grails.plugin.springsecurity.password.hash.iterations          = 1
@@ -579,9 +579,10 @@ grails.plugin.springsecurity.roleHierarchy = '''
     ROLE_GLOBAL_DATA > ROLE_USER
 '''
 
-/*grails.plugins.springsecurity.controllerAnnotations.staticRules = [
-  '/monitoring/**': ['ROLE_ADMIN']  // javaMelody ?
-]*/
+grails.plugin.springsecurity.controllerAnnotations.staticRules = [
+        [pattern: '/monitoring',                access: ['ROLE_YODA']],
+        [pattern: '/swagger/v0/laser.yaml.gsp', access: ['permitAll']]
+]
 
 auditLog {
   logFullClassName = true
@@ -598,7 +599,8 @@ auditLog {
       username = SpringSecurityUtils.switchedUserOriginalUsername+" AS "+username
     }
 
-    return username
+        def blacklist = com.k_int.kbplus.auth.User.executeQuery("SELECT u.username FROM User as u")
+        return username in blacklist ? 'anonymised' : username // DSGVO
   }
 }
 

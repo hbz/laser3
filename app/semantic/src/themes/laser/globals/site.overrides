@@ -490,9 +490,16 @@ body[class*="organisation"] {
     margin-top: -29px;
     margin-left: -3px;
 }
-dd .editable-container.editable-inline {
+.editable-container.editable-inline {
     position: absolute;
     z-index: 100;
     margin-top: -20px;
     margin-left: -3px;
+}
+.la-space-right {
+    padding-right: 20px;
+}
+.la-break-all {
+    word-wrap: break-word;
+    word-break: break-all;
 }

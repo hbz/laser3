@@ -16,7 +16,7 @@
 
                 <th>${message(code: 'task.object.label', default: 'Object')}</th>
 
-                <th>${message(code: 'task.creator.label', default: 'Creator')}</th>
+                <th>${message(code: 'task.responsibleEmployee.label')}</th>
 
                 <th>${message(code: 'task.createDate.label', default: 'Create Date')}</th>
 
@@ -24,7 +24,7 @@
             </tr>
             </thead>
             <tbody>
-            <g:each in="${taskInstanceList}" var="taskInstance">
+            <g:each in="${taskInstanceList.sort{ a,b -> b.endDate.compareTo(a.endDate) }}" var="taskInstance">
                 <tr>
                     <td>${fieldValue(bean: taskInstance, field: "title")}</td>
 
@@ -49,7 +49,8 @@
                         </g:if>
                     </td>
 
-                    <td>${fieldValue(bean: taskInstance, field: "creator")}</td>
+                    <td>${fieldValue(bean: taskInstance, field: "responsibleUser")}
+                    </td>
 
                     <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${taskInstance?.createDate}"/></td>
 
@@ -60,8 +61,8 @@
                         <g:link controller="myInstitution" action="tasks" params="[deleteId:taskInstance.id]" class="ui icon negative button">
                             <i class="trash alternate icon"></i>
                         </g:link>
-                    </td>
                 </tr>
+                    </td>
             </g:each>
             </tbody>
         </table>
@@ -71,18 +72,3 @@
     </div><!-- .sixteen -->
 
 </div><!-- .grid -->
-<r:script>
-    function taskedit(id) {
-
-        $.ajax({
-            url: '<g:createLink controller="ajax" action="TaskEdit"/>?id='+id,
-            success: function(result){
-                $("#dynamicModalContainer").empty();
-                $("#modalEditTask").remove();
-
-                $("#dynamicModalContainer").html(result);
-                $("#dynamicModalContainer .ui.modal").modal('show');
-            }
-        });
-    }
-</r:script>

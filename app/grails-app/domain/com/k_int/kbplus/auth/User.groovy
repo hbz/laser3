@@ -11,6 +11,7 @@ class User implements Permissions {
 
   transient springSecurityService
   def contextService
+  def yodaService
   def grailsApplication
 
   String username
@@ -256,10 +257,6 @@ class User implements Permissions {
 
     @Override
     String toString() {
-        if(grailsApplication.config.showDebugInfo) {
-            display + ' (' + id + ')'
-        }else {
-            display
-        }
+        yodaService.showDebugInfo() ? display + ' (' + id + ')' : display
     }
 }

@@ -35,7 +35,13 @@ class SemanticUiNavigationTagLib {
         def linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
 
         if (attrs.controller) {
-            out << g.link(linkBody,
+
+            if (attrs.controller != 'home') {
+                linkBody = linkBody.encodeAsHTML()
+            }
+
+            out << g.link(
+                    linkBody,
                     controller: attrs.controller,
                     action: attrs.action,
                     params: attrs.params,
@@ -44,7 +50,7 @@ class SemanticUiNavigationTagLib {
             )
         }
         else {
-            out << linkBody
+            out << linkBody.encodeAsHTML()
         }
         if (! "active".equalsIgnoreCase(attrs.class.toString())) {
             out << ' <div class="divider">/</div> '

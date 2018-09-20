@@ -5,6 +5,7 @@ import de.laser.domain.BaseDomainComponent
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.LogFactory
 import groovy.util.logging.*
+//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 import javax.persistence.Transient
@@ -100,6 +101,9 @@ class Org extends BaseDomainComponent {
        libraryType column:'org_library_type_rv_fk'
       importSource column:'org_import_source'
     lastImportDate column:'org_last_import_date'
+
+        addresses   lazy: false
+        contacts    lazy: false
     }
 
     static constraints = {
@@ -254,7 +258,7 @@ class Org extends BaseDomainComponent {
         }
 
         // No match by identifier, try and match by name
-        if (result == null) {
+        if (! result) {
             // log.debug("Match by name ${name}");
             def o = Org.executeQuery("select o from Org as o where lower(o.name) = ?", [name.toLowerCase()])
 
@@ -265,6 +269,10 @@ class Org extends BaseDomainComponent {
     }
 
     static def lookupOrCreate(name, sector, consortium, identifiers, iprange) {
+        lookupOrCreate2(name, sector, consortium, identifiers, iprange, null)
+    }
+
+    static def lookupOrCreate2(name, sector, consortium, identifiers, iprange, orgTyp) {
 
         def result = Org.lookup(name, identifiers)
 
@@ -278,7 +286,10 @@ class Org extends BaseDomainComponent {
                            name:name,
                            sector:sector,
                            ipRange:iprange,
-                           impId:java.util.UUID.randomUUID().toString()).save()
+                           impId:java.util.UUID.randomUUID().toString(),
+                           orgType: orgTyp
+          ).save()
+
 
             // SUPPORT MULTIPLE IDENTIFIERS
             if (identifiers instanceof ArrayList) {

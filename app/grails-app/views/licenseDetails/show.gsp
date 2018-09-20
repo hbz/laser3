@@ -11,16 +11,43 @@
 
     <body>
 
+        <semui:debugInfo>
+            <g:render template="/templates/debug/orgRoles" model="[debug: license.orgLinks]" />
+            <g:render template="/templates/debug/prsRoles" model="[debug: license.prsLinks]" />
+        </semui:debugInfo>
+
         <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-        <h1 class="ui header"><semui:headerIcon />
+        <semui:controlButtons>
+            <g:render template="actions" />
+        </semui:controlButtons>
 
-            %{--${license.licensee?.name}--}%
-            ${message(code:'license.details.type', args:["${license.type?.getI10n('value')}"], default:'License')} :
+        <h1 class="ui header"><semui:headerIcon />
+            <g:if test="${license.type?.value == 'Template'}">${message(code:'license.label')} (${license.type.getI10n('value')}):</g:if>
             <semui:xEditable owner="${license}" field="reference" id="reference"/>
         </h1>
 
         <g:render template="nav" />
+
+        <semui:objectStatus object="${license}" status="${license.status}" />
+
+        <g:if test="${! license.hasTemplate() && license.instanceOf && (contextOrg.id == license.getLicensingConsortium()?.id)}">
+            <div class="ui negative message">
+                <div class="header"><g:message code="myinst.message.attention" /></div>
+                <p>
+                    <g:message code="myinst.licenseDetails.message.ChildView" />
+                    <g:each in="${license.getAllLicensee()?.collect{itOrg -> itOrg.name}}" var="licensee">
+                        <span class="ui label">${licensee}</span> ,
+                    </g:each>
+
+                    <g:message code="myinst.licenseDetails.message.ConsortialView" />
+                    <g:link controller="licenseDetails" action="show" id="${license.instanceOf?.id}">
+                        <g:message code="myinst.subscriptionDetails.message.here" />
+                    </g:link>.
+
+                </p>
+            </div>
+        </g:if>
 
         <semui:meta>
             <div class="inline-lists">
@@ -73,7 +100,9 @@
 
         <semui:messages data="${flash}" />
 
-        <g:render template="/templates/pendingChanges" model="${['pendingChanges':pendingChanges, 'flash':flash, 'model':license]}"/>
+        <g:if test="${contextOrg.id == license.getLicensingConsortium()?.id || (! license.getLicensingConsortium() && contextOrg.id == license.getLicensee()?.id)}">
+            <g:render template="/templates/pendingChanges" model="${['pendingChanges':pendingChanges, 'flash':flash, 'model':license]}"/>
+        </g:if>
 
         <div class="ui grid">
 
@@ -127,6 +156,8 @@
                                 --%>
                                 <dl>
                                     <dt class="control-label">${message(code:'license.linktoLicense', default:'License Template')}</dt>
+
+                                    %{-- refactoring: replace link table with instanceOf
                                     <dd>
                                             <g:each in="${license?.incomingLinks}" var="il">
                                                 <g:link controller="licenseDetails" action="show" id="${il.fromLic.id}">${il.fromLic.reference} ${il.type?.value ?"("+il.type?.value+")":""}</g:link>
@@ -137,44 +168,65 @@
 
                                             </g:each>
                                     </dd>
+                                    --}%
+                                        <g:if test="${license.instanceOf}">
+                                            <g:link controller="licenseDetails" action="show" id="${license.instanceOf.id}">${license.instanceOf}</g:link>
+                                            <br />
+                                            ${message(code:'license.details.linktoLicense.pendingChange', default:'Automatically Accept Changes?')}
+                                            <br />
+                                            <semui:xEditableRefData owner="${license}" field="isSlaved" config='YN'/>
+
+                                        </g:if>
+                                    </dd>
                                 </dl>
                             </div>
                         </div>
                     </div>
+
                     <div class="ui card la-time-card">
                         <div class="content">
+
                             <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
                                 <g:each in="${license.subscriptions.sort{it.name}}" var="sub">
-                                    <table class="ui la-selectable table">
-                                        <colgroup>
-                                            <col width="130" />
-                                            <col width="300" />
-                                            <col width="430"/>
-                                        </colgroup>
-                                        <tr>
-                                            <th scope="row">${message(code:'license.linkedSubscription', default:'Linked Subscription')}</th>
-                                            <td>
-                                                        <g:link controller="subscriptionDetails" action="show" id="${sub.id}">${sub.name}</g:link>
-                                            </td>
-                                            <td>
-                                            <g:if test="${editable}">
-                                                <div class="ui mini icon buttons">
-                                                    <g:link class="ui button" name="unlinkSubscription"
-                                                            controller="licenseDetails" action="unlinkSubscription"
-                                                            params="['license':license.id, 'subscription':sub.id]"
-                                                            onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
-                                                        <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
-                                                    </g:link>
-                                                </div>
-                                            </g:if>
-                                            </td>
-                                        </tr>
-                                    </table>
+                                    <g:if test="${contextOrg in sub.orgRelations.org || contextOrg?.orgType?.value == 'Consortium'}">
+                                        <table class="ui la-selectable table">
+                                            <colgroup>
+                                                <col width="130" />
+                                                <col width="300" />
+                                                <col width="430"/>
+                                            </colgroup>
+                                            <tr>
+                                                <th scope="row">${message(code:'license.linkedSubscription', default:'Linked Subscription')}</th>
+                                                <td>
+                                                    <g:link controller="subscriptionDetails" action="show" id="${sub.id}">${sub.name }</g:link>
+                                                </td>
+                                                <td>
+                                                    <g:if test="${editable}">
+                                                        <div class="ui mini icon buttons">
+                                                            <g:link class="ui button la-selectable-button" name="unlinkSubscription"
+                                                                    controller="licenseDetails" action="unlinkSubscription"
+                                                                    params="['license':license.id, 'subscription':sub.id]"
+                                                                    onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
+                                                                <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
+                                                            </g:link>
+                                                        </div>
+                                                    </g:if>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </g:if>
+
                                 </g:each>
                             </g:if>
                             <g:else>
-                                ${message(code:'license.noLinkedSubscriptions', default:'No currently linked subscriptions.')}
+                                <dl>
+                                    <dt class="control-label">${message(code:'subscription.label')}</dt>
+                                    <dd>
+                                        ${message(code:'license.noLinkedSubscriptions', default:'No currently linked subscriptions.')}
+                                    </dd>
+                                </dl>
                             </g:else>
+
                             <dl>
                                 <dt></dt>
                                 <dd>
@@ -182,9 +234,9 @@
                                         <g:form id="linkSubscription" class="ui form" name="linkSubscription" action="linkToSubscription">
                                             <br />
                                             <input type="hidden" name="license" value="${license.id}"/>
-                                            <div class="two fields">
+                                            <div class="fields">
                                                 <div class="field">
-                                                    <g:select optionKey="id" optionValue="name" from="${availableSubs}" name="subscription" class="ui fluid dropdown"/>
+                                                    <g:select optionKey="id" optionValue="name" from="${availableSubs}" name="subscription" class="ui search selectable dropdown"/>
                                                 </div>
                                                 <div class="field">
                                                     <input type="submit" class="ui button" value="${message(code:'default.button.link.label', default:'Link')}"/>
@@ -218,13 +270,13 @@
                                         <g:if test="${license.onixplLicense}">
                                             <g:link controller="onixplLicenseDetails" action="index" id="${license.onixplLicense?.id}">${license.onixplLicense.title}</g:link>
                                             <g:if test="${editable}">
-                                                (
+
                                                 <div class="ui mini icon buttons">
                                                     <g:link class="ui button" controller="licenseDetails" action="unlinkLicense" params="[license_id: license.id, opl_id: onixplLicense.id]">
                                                         <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
                                                     </g:link>
                                                 </div>
-                                                )
+
                                             </g:if>
                                         </g:if>
                                         <g:else>
@@ -239,26 +291,11 @@
                     <div class="ui card">
                         <div class="content">
 
-                        <%--
-                        <dl>
-                            <dt><label class="control-label" for="licenseUrl"><g:message code="license" default="License"/> ${message(code:'license.Url', default:'URL')}</label></dt>
-                            <dd>
-                                <semui:xEditable owner="${license}" field="licenseUrl" id="licenseUrl"/>
-                                <g:if test="${license.licenseUrl}"><a href="${license.licenseUrl}">${message(code:'license.details.licenseLink', default:'License Link')}</a></g:if>
-                            </dd>
-                        </dl>
-                        --%>
-
-
-
-
                         <g:render template="/templates/links/orgLinksAsList"
                                   model="${[roleLinks: visibleOrgLinks,
                                             roleObject: license,
                                             roleRespValue: 'Specific license editor',
-                                            editmode: editable,
-                                            tmplButtonText: 'Lizenzgeber hinzufügen',
-                                            tmplmodalID:'osel_add_modal'
+                                            editmode: editable
                                   ]}" />
 
                         <g:render template="/templates/links/orgLinksModal"
@@ -269,20 +306,13 @@
                                             tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Licensor', 'Organisational Role'),
                                             tmplText:'Lizenzgeber hinzufügen',
                                             tmplID:'CommercialOrgs',
-                                            tmplmodalID:'osel_add_modal'
+                                            tmplButtonText: 'Lizenzgeber hinzufügen',
+                                            tmplModalID:'osel_add_modal_lizenzgeber',
+                                            editmode: editable
                                   ]}" />
-<%--
-                        <g:render template="/templates/links/orgLinksAsListAddPrsModal"
-                                  model="[roleLinks: visibleOrgLinks,
-                                          'license': license,
-                                          parent: license.class.name + ':' + license.id,
-                                          role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id
-                                  ]"/>
-                                  --%>
+
                         </div>
                     </div>
-
-                    <g:render template="/templates/debug/orgRoles" model="[debug: license.orgLinks]" />
 
                     <div class="ui card la-dl-no-table">
                         <div class="content">

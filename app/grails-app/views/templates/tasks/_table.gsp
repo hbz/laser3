@@ -1,15 +1,17 @@
-<% def accService = grailsApplication.mainContext.getBean("accessService") %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
-<!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->
-<g:set var="overwriteEditable" value="${editable || accService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}" />
+<laser:serviceInjection />
+
+<!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->
+<g:set var="overwriteEditable" value="${editable || accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}" />
 
 <div class="ui grid">
 
     <div class="sixteen wide column">
 
+        <%--
         <g:if test="${editable && controllerName != 'myInstitution'}">
             <input type="button" class="ui button" value="${message(code:'task.create.new', default:'Add new Task')}" data-semui="modal" href="#modalCreateTask"/>
         </g:if>
+        --%>
 
         <table class="ui sortable celled la-table table">
             <thead>
@@ -30,7 +32,7 @@
             </tr>
             </thead>
             <tbody>
-            <g:each in="${taskInstanceList}" var="taskInstance">
+            <g:each in="${taskInstanceList.sort{ a,b -> b.endDate.compareTo(a.endDate) }}" var="taskInstance">
                 <tr>
                     <td>${fieldValue(bean: taskInstance, field: "title")}</td>
 
@@ -71,10 +73,10 @@
                                 <i class="write icon"></i>
                             </a>
                         </g:if>
-                        <g:if test="${user == taskInstance.creator}">
-                        <g:link action="tasks" params="[deleteId:taskInstance.id, id: params.id]" class="ui icon negative button">
-                            <i class="trash alternate icon"></i>
-                        </g:link>
+                        <g:if test="${(user == taskInstance.creator) || contextService.getUser().hasAffiliation("INST_ADM")}">
+                            <g:link action="tasks" params="[deleteId:taskInstance.id, id: params.id]" class="ui icon negative button">
+                                <i class="trash alternate icon"></i>
+                            </g:link>
                         </g:if>
                     </td>
                 </tr>
@@ -89,18 +91,3 @@
 
 </div><!-- .grid -->
 
-<r:script>
-    function taskedit(id) {
-
-        $.ajax({
-            url: '<g:createLink controller="ajax" action="TaskEdit"/>?id='+id,
-            success: function(result){
-                $("#dynamicModalContainer").empty();
-                $("#modalEditTask").remove();
-
-                $("#dynamicModalContainer").html(result);
-                $("#dynamicModalContainer .ui.modal").modal('show');
-            }
-        });
-    }
-</r:script>

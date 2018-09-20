@@ -1,11 +1,147 @@
 package com.k_int.kbplus
 import com.k_int.kbplus.auth.*
+import com.k_int.properties.PropertyDefinition
+import grails.plugin.cache.Cacheable;
 import grails.plugin.springsecurity.annotation.Secured;
 
 @Secured(['permitAll'])
 class PublicController {
 
     def springSecurityService
+    def genericOIDService
+
+    @Cacheable('laser_experimental')
+    @Secured(['permitAll'])
+    def index() {
+    }
+
+    @Secured(['permitAll'])
+    def gasco() {
+        def result = [:]
+
+        result.allConsortia = Org.findAllByOrgType(
+                RefdataValue.getByValueAndCategory('Consortium', 'OrgType')
+        ).sort{ it.name }
+
+        if (! params.subTypes && ! params.consortia && ! params.q) {
+            // init filter with checkboxes checked
+            result.initQuery = 'true'
+        }
+        else {
+
+            def query = "from Subscription as s where ("
+            query += "      lower(s.status.value) = 'current'"
+            query += "      and lower(s.type.value) != 'local licence'"
+            query += "      and exists (select scp from s.customProperties as scp where scp.type = :gasco and lower(scp.refValue.value) = 'yes')"
+            query += " )"
+
+            def queryParams = [gasco: PropertyDefinition.findByName('GASCO Entry')]
+
+            def q = params.q?.trim()
+            if (q) {
+                query += " and ((lower(s.name) like :q) or exists ("
+                query += "    select ogr from s.orgRelations as ogr where ("
+                query += "          lower(ogr.org.name) like :q or lower(ogr.org.shortname) like :q or lower(ogr.org.sortname) like :q"
+                query += "      ) and ogr.roleType.value = 'Provider'"
+                query += "    )"
+                query += " )"
+
+                queryParams.put('q', '%' + q.toLowerCase() + '%')
+            }
+
+            def consortia = params.consortia ? genericOIDService.resolveOID(params.consortia) : null
+            if (consortia) {
+                query += " and exists ("
+                query += "    select cr from s.orgRelations as cr where lower(cr.roleType.value) = 'subscription consortia'"
+                query += "       and cr.org = :consortia"
+                query += " )"
+
+                queryParams.put('consortia', consortia)
+            }
+
+            def subTypes = params.list('subTypes')
+            if (subTypes) {
+                subTypes = subTypes.collect { it as Long }
+                query += " and s.type.id in (:subTypes) "
+
+                queryParams.put('subTypes', subTypes)
+            }
+            else {
+                query += " and s.type.id in (:subTypes) "
+                // fake negative result for query without checked subTypes
+                queryParams.put('subTypes', [0.longValue()])
+            }
+
+            if (q || consortia || subTypes) {
+                result.subscriptionsCount = Subscription.executeQuery("select count(s) " + query, queryParams)[0]
+                result.subscriptions = Subscription.executeQuery("select s ${query} order by lower(s.name) asc", queryParams)
+            }
+        }
+
+        result
+    }
+
+    @Secured(['permitAll'])
+    def gascoDetails() {
+        def result = [:]
+
+        result.tipps = []
+
+        result.idnsPreset = IdentifierNamespace.findAll {
+            ns in ['eissn', 'issn', 'zdb', 'ezb']
+        }
+
+        if (params.id) {
+            def sp  = SubscriptionPackage.get(params.long('id'))
+            def sub = sp?.subscription
+            def pkg = sp?.pkg
+            def scp = SubscriptionCustomProperty.findByOwnerAndTypeAndRefValue(
+                    sub,
+                    PropertyDefinition.findByDescrAndName('Subscription Property', 'GASCO Entry'),
+                    RefdataValue.getByValueAndCategory('Yes', 'YN')
+            )
+
+            if (scp) {
+                result.subscription = sub
+
+                def query = "SELECT tipp FROM TitleInstancePackagePlatform as tipp WHERE tipp.pkg = :pkg and tipp.status.value != 'Deleted'"
+                def queryParams = [pkg: pkg]
+
+                result.tippsCount = TitleInstancePackagePlatform.executeQuery(query, queryParams).size()
+
+                def q = params.q?.trim()
+                if (q) {
+                    query += " AND ( LOWER(tipp.title.title) LIKE :q ) "
+
+                    queryParams.put('q', '%' + q.toLowerCase() + '%')
+                }
+
+                def idv = params.idv?.trim()
+                if (idv) {
+                    query += " AND ( EXISTS ( " +
+                        " SELECT io FROM IdentifierOccurrence AS io " +
+                        " WHERE io.ti = tipp.title AND io.identifier.value LIKE :idv "
+
+                    if (params.idns) {
+                        query += " AND io.identifier.ns = :idns "
+
+                        queryParams.put('idns', IdentifierNamespace.get(params.idns))
+                    }
+
+                    query += " ) ) "
+
+                    queryParams.put('idv', '%' + idv.toLowerCase() + '%')
+                }
+
+                result.tipps = TitleInstancePackagePlatform.executeQuery(query, queryParams)
+            }
+            else {
+                redirect controller: 'public', action: 'gasco'
+            }
+        }
+
+        result
+    }
 
     @Deprecated
     @Secured(['ROLE_YODA'])
@@ -82,7 +218,6 @@ class PublicController {
     }
     return hasAccess
   }
-
 
   private def generateIELicenseMap(ies, result) {
     log.debug("generateIELicenseMap")

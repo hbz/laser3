@@ -21,21 +21,18 @@
         <h1 class="ui header"><semui:headerIcon /><g:message code="menu.institutions.all_provider" /> - ${orgListTotal} Treffer</h1>
 
         <semui:messages data="${flash}" />
-
         <semui:filter>
             <g:form action="listProvider" method="get" class="ui form">
                 <g:render template="/templates/filter/orgFilter"
-                          model="[tmplConfigShow: ['name', 'country']
+                          model="[tmplConfigShow: ['property', 'name', 'country']
                           ]"/>
             </g:form>
         </semui:filter>
-
         <g:render template="/templates/filter/orgFilterTable"
               model="[orgList: orgList,
                       tmplShowCheckbox: false,
-                      tmplConfigShow: ['name', 'country']
+                      tmplConfigShow: ['lineNumber', 'shortname', 'name', 'publicContacts', 'country']
               ]"/>
-
         <semui:paginate total="${orgListTotal}" params="${params}" />
 
     </body>

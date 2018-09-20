@@ -12,6 +12,7 @@ class PersonController {
 
     def springSecurityService
     def addressbookService
+    def genericOIDService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -30,11 +31,6 @@ class PersonController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
         def userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
-
-        // TODO remove this fallback !!!!
-        if(userMemberships.size() == 0){
-            userMemberships = Org.list()
-        }
         
         switch (request.method) {
 		case 'GET':
@@ -71,15 +67,20 @@ class PersonController {
             return
         }
 
-        [
-            personInstance: personInstance,
-            editable: true
-        ] // TODO
+        def result = [
+                personInstance: personInstance,
+                editable: addressbookService.isPersonEditable(personInstance, springSecurityService.getCurrentUser())
+        ]
+
+        result
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
+        redirect controller: 'person', action: 'show', params: params
+        return // ----- deprecated
+
         def userMemberships = User.get(springSecurityService.principal.id).authorizedOrgs
         def personInstance = Person.get(params.id)
 
@@ -202,7 +203,8 @@ class PersonController {
 
         [personInstance: personInstance, authorizedOrgs: user?.authorizedOrgs, editable: editable]
     }
-    
+
+    @Deprecated
     @Secured(['ROLE_USER'])
     def ajax() {        
         def person                  = Person.get(params.id)
@@ -295,6 +297,7 @@ class PersonController {
         }
     }
 
+    @Deprecated
     private deletePersonRoles(Person prs){
 
         params?.personRoleDeleteIds?.each{ key, value ->
@@ -306,15 +309,61 @@ class PersonController {
         }
     }
 
+
+    def addPersonRole() {
+        def result
+        def prs = Person.get(params.id)
+
+        if (addressbookService.isPersonEditable(prs, springSecurityService.getCurrentUser())) {
+
+            if (params.newPrsRoleOrg && params.newPrsRoleType) {
+                def org = Org.get(params.newPrsRoleOrg)
+                def rdv = RefdataValue.get(params.newPrsRoleType)
+
+                if (PersonRole.find("from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.functionType = ${rdv.id}")) {
+                    log.debug("ignore adding PersonRole because of existing duplicate")
+                }
+                else {
+                    result = new PersonRole(prs: prs, functionType: rdv, org: org)
+
+                    if (result.save(flush: true)) {
+                        log.debug("adding PersonRole ${result}")
+                    }
+                    else {
+                        log.error("problem saving new PersonRole ${result}")
+                    }
+                }
+            }
+        }
+        redirect action: 'show', id: params.id
+    }
+
+    def deletePersonRole() {
+        def prs = Person.get(params.id)
+
+        if (addressbookService.isPersonEditable(prs, springSecurityService.getCurrentUser())) {
+
+            if (params.oid) {
+                def pr = genericOIDService.resolveOID(params.oid)
+
+                if (pr && (pr.prs.id == prs.id) && pr.delete()) {
+                    log.debug("deleted PersonRole ${pr}")
+                } else {
+                    log.debug("problem deleting PersonRole ${pr}")
+                }
+            }
+        }
+        redirect action: 'show', id: params.id
+    }
+
+    @Deprecated
     private addPersonRoles(Person prs){
 
-        //IF functionType not seleced
-        if(!params?.functionType && params.org_id)
-        {
+        if (params.functionType) {
             def result
 
-            def roleRdv = RefdataValue.getByValueAndCategory('General contact person', 'Person Function')
-            def org     = Org.get(params.org_id)
+            def roleRdv = RefdataValue.get(params.functionType) ?: RefdataValue.getByValueAndCategory('General contact person', 'Person Function')
+            def org = Org.get(params.functionOrg)
 
             if (roleRdv && org) {
                 result = new PersonRole(prs: prs, functionType: roleRdv, org: org)
@@ -323,7 +372,7 @@ class PersonController {
                     log.debug("ignore adding PersonRole because of existing duplicate")
                 }
                 else if (result) {
-                    if (result.save(flush:true)) {
+                    if (result.save(flush: true)) {
                         log.debug("adding PersonRole ${result}")
                     }
                     else {
@@ -333,29 +382,7 @@ class PersonController {
             }
         }
 
-        params?.functionType?.each{ key, value ->
-            def result
-            
-            def roleRdv = RefdataValue.get(params.functionType[key])
-            def org     = Org.get(params.org[key])
-
-            if (roleRdv && org) {
-                result = new PersonRole(prs: prs, functionType: roleRdv, org: org)
-
-                if (PersonRole.find("from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.functionType = ${roleRdv.id}")) {
-                    log.debug("ignore adding PersonRole because of existing duplicate")
-                }
-                else if (result) {
-                    if (result.save(flush:true)) {
-                        log.debug("adding PersonRole ${result}")
-                    }
-                    else {
-                        log.error("problem saving new PersonRole ${result}")
-                    }
-                }
-            }
-       }
-        
+        //@Deprecated
        params?.responsibilityType?.each{ key, value ->
            def result
 

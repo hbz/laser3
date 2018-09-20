@@ -1318,11 +1318,20 @@ body[class*="organisation"] .ui.label.la-object .icon:before {
   margin-left: -3px;
 }
 
-dd .editable-container.editable-inline {
+.editable-container.editable-inline {
   position: absolute;
   z-index: 100;
   margin-top: -20px;
   margin-left: -3px;
+}
+
+.la-space-right {
+  padding-right: 20px;
+}
+
+.la-break-all {
+  word-wrap: break-word;
+  word-break: break-all;
 }
 /*!
  * # Semantic UI 2.3.1 - Button
@@ -5510,20 +5519,25 @@ dd .editable-container.editable-inline {
          Button Overrides
 *******************************/
 
-.ui.la-selectable.table .button {
+.ui.la-selectable.table tr .button.la-selectable-button {
   opacity: 0;
 }
 
-.ui.la-selectable.table :hover .button {
+.ui.la-selectable.table tr:hover .button.la-selectable-button {
   opacity: 1;
 }
 
-.ui.la-selectable.table .button:focus {
+.ui.la-selectable.table tr .button.la-selectable-button:focus {
   opacity: 1;
 }
 
 .la-width-122 {
   width: 122px;
+}
+
+.ui.button.la-new-item {
+  margin-left: 1rem;
+  margin-top: 1rem;
 }
 /*!
  * # Semantic UI 2.3.1 - Container
@@ -16474,6 +16488,10 @@ a.ui.basic.label:hover {
   left: calc(-2.8rem);
   top: -22px;
 }
+
+.ui.card .ui.label {
+  margin: 0;
+}
 /*!
  * # Semantic UI 2.3.1 - List
  * http://github.com/semantic-org/semantic-ui/
@@ -16681,7 +16699,7 @@ ol.ui.list ol li,
 
 .ui.list .list > a.item:hover,
 .ui.list > a.item:hover {
-  color: #1e70bf;
+  color: #39a1f2;
 }
 
 /* Linked Item Icons */
@@ -16701,7 +16719,7 @@ ol.ui.list ol li,
 
 .ui.list .list > .item a.header:hover,
 .ui.list > .item a.header:hover {
-  color: #1e70bf !important;
+  color: #39a1f2 !important;
 }
 
 /* Floated Content */
@@ -16877,7 +16895,7 @@ ol.ui.list ol li,
 
 .ui.inverted.list .list > a.item:hover,
 .ui.inverted.list > a.item:hover {
-  color: #1e70bf;
+  color: #39a1f2;
 }
 
 /* Linking Content */
@@ -16887,7 +16905,7 @@ ol.ui.list ol li,
 }
 
 .ui.inverted.list .item a:not(.ui):hover {
-  color: #1e70bf !important;
+  color: #39a1f2 !important;
 }
 
 /*-------------------
@@ -17225,7 +17243,7 @@ ol.ui.horizontal.list li:before,
 --------------------*/
 
 .ui.divided.list > .item {
-  border-top: 1px solid rgba(34, 36, 38, 0.15);
+  border-top: 1px solid #eaeaea;
 }
 
 .ui.divided.list .list > .item {
@@ -17304,7 +17322,7 @@ ol.ui.horizontal.list li:before,
 
 .ui.divided.horizontal.list > .item {
   border-top: none;
-  border-left: 1px solid rgba(34, 36, 38, 0.15);
+  border-left: 1px solid #eaeaea;
   margin: 0em;
   line-height: 0.6;
 }
@@ -17327,13 +17345,13 @@ ol.ui.horizontal.list li:before,
 
 .ui.celled.list > .item,
 .ui.celled.list > .list {
-  border-top: 1px solid rgba(34, 36, 38, 0.15);
+  border-top: 1px solid #eaeaea;
   padding-left: 0.5em;
   padding-right: 0.5em;
 }
 
 .ui.celled.list > .item:last-child {
-  border-bottom: 1px solid rgba(34, 36, 38, 0.15);
+  border-bottom: 1px solid #eaeaea;
 }
 
 /* Padding on all elements */
@@ -17401,7 +17419,7 @@ ol.ui.horizontal.list li:before,
 .ui.horizontal.celled.list .list > .item,
 .ui.horizontal.celled.list > .item {
   border-top: none;
-  border-left: 1px solid rgba(34, 36, 38, 0.15);
+  border-left: 1px solid #eaeaea;
   margin: 0em;
   padding-left: 0.5em;
   padding-right: 0.5em;
@@ -17411,7 +17429,7 @@ ol.ui.horizontal.list li:before,
 .ui.horizontal.celled.list .list > .item:last-child,
 .ui.horizontal.celled.list > .item:last-child {
   border-bottom: none;
-  border-right: 1px solid rgba(34, 36, 38, 0.15);
+  border-right: 1px solid #eaeaea;
 }
 
 /* Inverted */
@@ -17544,9 +17562,61 @@ ol.ui.horizontal.list li:before,
   font-size: 1.71428571rem;
 }
 
-/*******************************
-         Theme Overrides
-*******************************/
+.ui.divided.middle.la-flex-list .item {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.ui.divided.middle.la-flex-list .item .button {
+  opacity: 0;
+  -webkit-transition: opacity 1s;
+  /* For Safari 3.1 to 6.0 */
+  transition: opacity 1s;
+}
+
+.ui.divided.middle.la-flex-list .item:hover .button {
+  opacity: 1;
+}
+
+.ui.divided.middle.la-flex-list .item .button:focus {
+  opacity: 1;
+}
+
+.ui.list.la-flex-list > .item > span {
+  -ms-flex-item-align: center;
+  align-self: center;
+}
+
+.ui.list.la-flex-list > .item > span + .content {
+  -ms-flex-preferred-size: 90%;
+  flex-basis: 90%;
+  -ms-flex-item-align: center;
+  align-self: center;
+}
+
+.ui.list.la-flex-list > .item > span + .content + .content {
+  -ms-flex-preferred-size: 10%;
+  flex-basis: 10%;
+  -ms-flex-item-align: center;
+  align-self: center;
+  text-align: right;
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.la-list-border-around {
+  border: 1px solid #eaeaea;
+}
+
+.ui.item.person-details:hover {
+  background: white!important;
+}
+
+.la-border-selected {
+  border: 1px solid #bb1600;
+}
 /*!
  * # Semantic UI 2.3.1 - Loader
  * http://github.com/semantic-org/semantic-ui/
@@ -19299,6 +19369,11 @@ ol.ui.horizontal.list li:before,
 .ui.segment.la-role-yoda {
   border-right: 10px solid #98B500;
 }
+
+.ui.segment.la-gasco-search {
+  background: #f1ebe5;
+  border: none;
+}
 /*!
  * # Semantic UI 2.3.1 - Step
  * http://github.com/semantic-org/semantic-ui/
@@ -20251,7 +20326,7 @@ ol.ui.horizontal.list li:before,
   transition: color 0.1s ease, border-color 0.1s ease;
   font-size: 1em;
   line-height: 1.2857;
-  resize: vertical;
+  resize: both;
 }
 
 .ui.form textarea:not([rows]) {
@@ -20753,12 +20828,12 @@ ol.ui.horizontal.list li:before,
 .ui.form .disabled.field,
 .ui.form .field :disabled {
   pointer-events: none;
-  opacity: 0.1;
+  opacity: 0.45;
 }
 
 .ui.form .field.disabled > label,
 .ui.form .fields.disabled > label {
-  opacity: 0.1;
+  opacity: 0.45;
 }
 
 .ui.form .field.disabled :disabled {
@@ -21396,6 +21471,17 @@ input#spotlightSearch[type="search"] {
 
 .ui.form .la-select2-fixed-width {
   width: 356.938px;
+}
+
+/*--------------------
+       Disabled
+---------------------*/
+
+.ui.form .disabled.fields .field,
+.ui.form .disabled.field,
+.ui.form .field :disabled {
+  pointer-events: none;
+  opacity: 0.45;
 }
 /*!
  * # Semantic UI 2.3.1 - Grid
@@ -26088,7 +26174,7 @@ Floated Menu / Item
   transition: opacity 0.1s ease, color 0.1s ease, background 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: opacity 0.1s ease, color 0.1s ease, background 0.1s ease, box-shadow 0.1s ease;
   transition: opacity 0.1s ease, color 0.1s ease, background 0.1s ease, box-shadow 0.1s ease, -webkit-box-shadow 0.1s ease;
-  border-radius: 0.28571429rem;
+  border-radius: 0;
   -webkit-box-shadow: 0px 0px 0px 1px rgba(34, 36, 38, 0.22) inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
   box-shadow: 0px 0px 0px 1px rgba(34, 36, 38, 0.22) inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
 }
@@ -26267,9 +26353,9 @@ Floated Menu / Item
 
 .ui.attached.message {
   margin-bottom: -1px;
-  border-radius: 0.28571429rem 0.28571429rem 0em 0em;
-  -webkit-box-shadow: 0em 0em 0em 1px rgba(34, 36, 38, 0.15) inset;
-  box-shadow: 0em 0em 0em 1px rgba(34, 36, 38, 0.15) inset;
+  border-radius: 0 0 0em 0em;
+  -webkit-box-shadow: 0em 0em 0em 1px #eaeaea inset;
+  box-shadow: 0em 0em 0em 1px #eaeaea inset;
   margin-left: -1px;
   margin-right: -1px;
 }
@@ -26281,9 +26367,9 @@ Floated Menu / Item
 
 .ui.bottom.attached.message {
   margin-top: -1px;
-  border-radius: 0em 0em 0.28571429rem 0.28571429rem;
-  -webkit-box-shadow: 0em 0em 0em 1px rgba(34, 36, 38, 0.15) inset, 0px 1px 2px 0 rgba(34, 36, 38, 0.15);
-  box-shadow: 0em 0em 0em 1px rgba(34, 36, 38, 0.15) inset, 0px 1px 2px 0 rgba(34, 36, 38, 0.15);
+  border-radius: 0em 0em 0 0;
+  -webkit-box-shadow: 0em 0em 0em 1px #eaeaea inset, 0px 1px 2px 0 rgba(20, 20, 20, 0.3);
+  box-shadow: 0em 0em 0em 1px #eaeaea inset, 0px 1px 2px 0 rgba(20, 20, 20, 0.3);
 }
 
 .ui.bottom.attached.message:not(:last-child) {
@@ -26470,24 +26556,24 @@ Floated Menu / Item
 
 .ui.red.message {
   background-color: #FFE8E6;
-  color: #DB2828;
-  -webkit-box-shadow: 0px 0px 0px 1px #DB2828 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
-  box-shadow: 0px 0px 0px 1px #DB2828 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  color: #BB1600;
+  -webkit-box-shadow: 0px 0px 0px 1px #BB1600 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  box-shadow: 0px 0px 0px 1px #BB1600 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
 }
 
 .ui.red.message .header {
-  color: #c82121;
+  color: #a21300;
 }
 
 .ui.orange.message {
   background-color: #FFEDDE;
-  color: #F2711C;
-  -webkit-box-shadow: 0px 0px 0px 1px #F2711C inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
-  box-shadow: 0px 0px 0px 1px #F2711C inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  color: #fa820a;
+  -webkit-box-shadow: 0px 0px 0px 1px #fa820a inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  box-shadow: 0px 0px 0px 1px #fa820a inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
 }
 
 .ui.orange.message .header {
-  color: #e7640d;
+  color: #e67505;
 }
 
 .ui.yellow.message {
@@ -26536,24 +26622,24 @@ Floated Menu / Item
 
 .ui.blue.message {
   background-color: #DFF0FF;
-  color: #2185D0;
-  -webkit-box-shadow: 0px 0px 0px 1px #2185D0 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
-  box-shadow: 0px 0px 0px 1px #2185D0 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  color: #004678;
+  -webkit-box-shadow: 0px 0px 0px 1px #004678 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  box-shadow: 0px 0px 0px 1px #004678 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
 }
 
 .ui.blue.message .header {
-  color: #1e77ba;
+  color: #00375f;
 }
 
 .ui.violet.message {
   background-color: #EAE7FF;
-  color: #6435C9;
-  -webkit-box-shadow: 0px 0px 0px 1px #6435C9 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
-  box-shadow: 0px 0px 0px 1px #6435C9 inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  color: #76007A;
+  -webkit-box-shadow: 0px 0px 0px 1px #76007A inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
+  box-shadow: 0px 0px 0px 1px #76007A inset, 0px 0px 0px 0px rgba(0, 0, 0, 0);
 }
 
 .ui.violet.message .header {
-  color: #5a30b5;
+  color: #5d0061;
 }
 
 .ui.purple.message {
@@ -26626,8 +26712,12 @@ Floated Menu / Item
 }
 
 /*******************************
-         Theme Overrides
+        Site Overrides
 *******************************/
+
+.ui.message {
+  border-radius: 0;
+}
 /*!
  * # Semantic UI 2.3.1 - Table
  * http://github.com/semantic-org/semantic-ui/
@@ -28077,17 +28167,21 @@ Floated Menu / Item
 ---------------*/
 
 .ui.la-selectable.table {
+  margin: 0;
+}
+
+.ui.la-selectable.table tr {
   border-bottom: 1px solid rgba(34, 36, 38, 0.1);
   margin: 0;
 }
 
-.ui.la-selectable.table tr td {
-  border-top: none;
-}
-
-.ui.la-selectable.table:hover {
+.ui.la-selectable.table tr:hover {
   background: rgba(0, 0, 0, 0.05) !important;
   color: rgba(0, 0, 0, 0.95) !important;
+}
+
+.ui.la-selectable.table tr td {
+  border-top: none;
 }
 
 /* la-selectable Cell Link */
@@ -28100,6 +28194,21 @@ Floated Menu / Item
   display: block;
   color: inherit;
   padding: 0.78571429em 0.78571429em;
+}
+
+.ui.table thead th.la-smaller-table-head {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* wrap small needed th to avoid table layout break */
+
+.ui.sortable.table thead th.la-th-wrap {
+  white-space: normal;
+}
+
+.ui.sortable.table thead th.la-hyphenation {
+  text-align: justify;
 }
 /*!
  * # Semantic UI 2.3.1 - Ad
@@ -29516,6 +29625,11 @@ a.ui.card:hover,
   z-index: '';
 }
 
+.ui.cards > .card,
+.ui.card {
+  width: 271px;
+}
+
 .ui.cards > .card > .content > .header,
 .ui.card > .content > .header {
   display: block;
@@ -29597,6 +29711,16 @@ a.ui.card:hover,
 .inline-lists > dl > dd {
   width: 70%;
   word-wrap: break-word;
+}
+
+.ui.card > .extra a:not(.ui),
+.ui.cards > .card > .extra a:not(.ui) {
+  color: #4183C4;
+}
+
+.ui.card > .content > a.header,
+.ui.cards > .card > .content > a.header {
+  color: #4183C4;
 }
 /*!
  * # Semantic UI 2.3.1 - Comment
@@ -33324,7 +33448,7 @@ select.ui.dropdown {
 
 .ui.active.search.dropdown input.search:focus + .text .icon,
 .ui.active.search.dropdown input.search:focus + .text .flag {
-  opacity: 0.1;
+  opacity: 0.45;
 }
 
 .ui.active.search.dropdown input.search:focus + .text {

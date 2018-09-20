@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.properties.PropertyDefinition
 import javax.persistence.Transient
@@ -21,7 +22,7 @@ class LicensePrivateProperty extends PrivateProperty {
     License owner
 
     static mapping = {
-        includes PrivateProperty.mapping
+        includes AbstractProperty.mapping
 
         id      column:'lpp_id'
         version column:'lpp_version'
@@ -32,7 +33,7 @@ class LicensePrivateProperty extends PrivateProperty {
     }
 
     static constraints = {
-        importFrom PrivateProperty
+        importFrom AbstractProperty
 
         paragraph (nullable:true)
         owner     (nullable:false, blank:false)
@@ -43,33 +44,11 @@ class LicensePrivateProperty extends PrivateProperty {
         owner:  License
     ]
 
-    @Transient
-    def getValueType(){
-        if (stringValue) return "stringValue"
-        if (intValue)    return "intValue"
-        if (decValue)    return "decValue"
-        if (refValue)    return "refValue"
-        if (paragraph)   return "paragraph"
-    }
-
-    @Override
-    public String toString(){
-        if (stringValue)  return stringValue
-        if (intValue)     return intValue.toString()
-        if (decValue)     return decValue.toString()
-        if (refValue)     return refValue.toString()
-        if (paragraph)    return paragraph
-    }
-
     @Override
     def copyValueAndNote(newProp){
-        if (stringValue)    newProp.stringValue = stringValue
-        else if(intValue)   newProp.intValue = intValue
-        else if(decValue)   newProp.decValue = decValue
-        else if(refValue)   newProp.refValue = refValue
-        else if(paragraph)  newProp.paragraph = paragraph
+        newProp = super.copyValueAndNote(newProp)
 
-        newProp.note = note
+        newProp.paragraph = paragraph
         newProp
     }
 

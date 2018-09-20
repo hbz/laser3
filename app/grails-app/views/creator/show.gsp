@@ -61,7 +61,7 @@
                         </g:if>
 
                             <g:link controller="identifierOccurrence" action="show"
-                                    id="${creatorInstance?.gnd_id?.id}">${creatorInstance?.gnd_id?.encodeAsHTML()}</g:link></dd>
+                                    id="${creatorInstance?.gnd_id?.id}">${creatorInstance?.gnd_id}</g:link></dd>
 
 
                         <dt><g:message code="creator.globalUID.label" default="Global UID"/></dt>

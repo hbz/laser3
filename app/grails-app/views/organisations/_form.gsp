@@ -209,7 +209,7 @@
 
 	<ul class="one-to-many">
 		<g:each in="${orgInstance?.addresses?}" var="a">
-			<li><g:link controller="address" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></li>
+			<li><g:link controller="address" action="show" id="${a.id}">${a}</g:link></li>
 		</g:each>
 		<li class="add">
 			<g:link controller="address" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}</g:link>
@@ -224,7 +224,7 @@
 
 	<ul class="one-to-many">
 		<g:each in="${orgInstance?.affiliations?}" var="a">
-			<li><g:link controller="userOrg" action="show" id="${a.id}">${a?.encodeAsHTML()}</g:link></li>
+			<li><g:link controller="userOrg" action="show" id="${a.id}">${a}</g:link></li>
 		</g:each>
 		<li class="add">
 			<g:link controller="userOrg" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'userOrg.label', default: 'UserOrg')])}</g:link>
@@ -239,7 +239,7 @@
 
 	<ul class="one-to-many">
 		<g:each in="${orgInstance?.contacts?}" var="c">
-			<li><g:link controller="contact" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></li>
+			<li><g:link controller="contact" action="show" id="${c.id}">${c}</g:link></li>
 		</g:each>
 		<li class="add">
 			<g:link controller="contact" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}</g:link>
@@ -254,7 +254,7 @@
 
 	<ul class="one-to-many">
 		<g:each in="${orgInstance?.customProperties?}" var="c">
-			<li><g:link controller="orgCustomProperty" action="show" id="${c.id}">${c?.encodeAsHTML()}</g:link></li>
+			<li><g:link controller="orgCustomProperty" action="show" id="${c.id}">${c}</g:link></li>
 		</g:each>
 		<li class="add">
 			<g:link controller="orgCustomProperty" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'orgCustomProperty.label', default: 'OrgCustomProperty')])}</g:link>
@@ -269,7 +269,7 @@
 
 	<ul class="one-to-many">
 		<g:each in="${orgInstance?.ids?}" var="i">
-			<li><g:link controller="identifierOccurrence" action="show" id="${i.id}">${i?.encodeAsHTML()}</g:link></li>
+			<li><g:link controller="identifierOccurrence" action="show" id="${i.id}">${i}</g:link></li>
 		</g:each>
 		<li class="add">
 			<g:link controller="identifierOccurrence" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'identifierOccurrence.label', default: 'IdentifierOccurrence')])}</g:link>
@@ -284,7 +284,7 @@
 
 	<ul class="one-to-many">
 		<g:each in="${orgInstance?.incomingCombos?}" var="i">
-			<li><g:link controller="combo" action="show" id="${i.id}">${i?.encodeAsHTML()}</g:link></li>
+			<li><g:link controller="combo" action="show" id="${i.id}">${i}</g:link></li>
 		</g:each>
 		<li class="add">
 			<g:link controller="combo" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'combo.label', default: 'Combo')])}</g:link>
@@ -299,7 +299,7 @@
 
 	<ul class="one-to-many">
 		<g:each in="${orgInstance?.links?}" var="l">
-			<li><g:link controller="orgRole" action="show" id="${l.id}">${l?.encodeAsHTML()}</g:link></li>
+			<li><g:link controller="orgRole" action="show" id="${l.id}">${l}</g:link></li>
 		</g:each>
 		<li class="add">
 			<g:link controller="orgRole" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'orgRole.label', default: 'OrgRole')])}</g:link>
@@ -314,7 +314,7 @@
 
 	<ul class="one-to-many">
 		<g:each in="${orgInstance?.outgoingCombos?}" var="o">
-			<li><g:link controller="combo" action="show" id="${o.id}">${o?.encodeAsHTML()}</g:link></li>
+			<li><g:link controller="combo" action="show" id="${o.id}">${o}</g:link></li>
 		</g:each>
 		<li class="add">
 			<g:link controller="combo" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'combo.label', default: 'Combo')])}</g:link>
@@ -329,7 +329,7 @@
 
 	<ul class="one-to-many">
 		<g:each in="${orgInstance?.privateProperties?}" var="p">
-			<li><g:link controller="orgPrivateProperty" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
+			<li><g:link controller="orgPrivateProperty" action="show" id="${p.id}">${p}</g:link></li>
 		</g:each>
 		<li class="add">
 			<g:link controller="orgPrivateProperty" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'orgPrivateProperty.label', default: 'OrgPrivateProperty')])}</g:link>
@@ -344,7 +344,7 @@
 
 	<ul class="one-to-many">
 		<g:each in="${orgInstance?.prsLinks?}" var="p">
-			<li><g:link controller="personRole" action="show" id="${p.id}">${p?.encodeAsHTML()}</g:link></li>
+			<li><g:link controller="personRole" action="show" id="${p.id}">${p}</g:link></li>
 		</g:each>
 		<li class="add">
 			<g:link controller="personRole" action="create" params="['org.id': orgInstance?.id]">${message(code: 'default.add.label', args: [message(code: 'personRole.label', default: 'PersonRole')])}</g:link>

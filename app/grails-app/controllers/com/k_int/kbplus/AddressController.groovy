@@ -69,9 +69,13 @@ class AddressController {
         ] // TODO
     }
 
+    @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
+        redirect controller: 'address', action: 'show', params: params
+        return // ----- deprecated
+
         def addressInstance = Address.get(params.id)
         if (! addressInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label', default: 'Address'), params.id])

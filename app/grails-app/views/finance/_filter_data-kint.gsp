@@ -1,5 +1,5 @@
 <!-- _filter_data.gsp -->
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<laser:serviceInjection />
 %{--Two rows of data per CostItem--}%
 
 <g:each in="${cost_items}" var="ci">
@@ -10,7 +10,7 @@
                        data-owner="${ci.class.name}" baseClass="com.k_int.kbplus.Invoice"
                        data-relationID="${ci?.invoice!=null? ci.invoice.id:'create'}"
                        data-placeholder="${ci?.invoice==null? 'Enter invoice number':''}"
-                       data-defaultValue="${ci?.invoice?.invoiceNumber?.encodeAsHTML()}" data-ownerid="${ci.id}"
+                       data-defaultValue="${ci?.invoice?.invoiceNumber}" data-ownerid="${ci.id}"
                        data-ownerfield="invoice" name="invoiceField" data-relationField="invoiceNumber"/>
         </td>
         <td>
@@ -79,7 +79,7 @@
                 <div style="display: inline-block" class="budgetCodeWrapper">
                     <div id="budgetcodes_${ci.id}">
                         <g:each in="${ci.budgetcodes}" var="bc">
-                            <span class="budgetCode">${bc.value.encodeAsHTML()} </span>
+                            <span class="budgetCode">${bc.value} </span>
                             <a style="display: inline-block" id="bcci_${bc.id}_${ci.id}" class="badge budgetCode">x</a>
                         </g:each>
                         <a class="editable-empty budgetCode" style="cursor: pointer;" data-owner="${ci.id}">Add Codes...</a>
@@ -90,7 +90,7 @@
             </g:if>
             <g:else>
                 ${ci?.reference} &nbsp;/&nbsp;
-                <g:each in="${ci.budgetcodes}" var="bc" status="${i}">${(i+1)}. ${bc.value.encodeAsHTML()}&nbsp;</g:each> </br>
+                <g:each in="${ci.budgetcodes}" var="bc" status="${i}">${(i+1)}. ${bc.value}&nbsp;</g:each> </br>
                 <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ci?.startDate}"/> </br>
                 <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ci?.endDate}"/>
             </g:else>

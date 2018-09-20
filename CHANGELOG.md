@@ -1,7 +1,107 @@
 
-between ..
+0.8.3
 
-- removed needless copy of jquery-plugin
+- added: prev/next navigation for subscription
+- fixed: pagination on package view
+- fixed: hiding tipps with status 'deleted'
+- fixed: javascript dropdowns
+- fixed: org names and line breaks on gasco view
+- modified: filter on gasco view
+
+0.8.2
+
+- fixed: empty user dropdown when creating tasks
+- fixed: download files without filenames
+- fixed: confirm dialog javascript
+
+0.8.1
+
+- news on landing page
+
+0.8
+
+- improved public gasco views
+- improved subscription renewals
+- reworked subscription and package linkage
+- reworked cost items and cost calculation
+- reworked finance functionality and views
+- added functionality for copying licenses
+- added new role for statistics management
+- added default role for new users
+- improved address and contact management
+- added confirmation dialog before deleting persons and contacts
+- improved inline editing, e.g. textareas
+- responsible task user is now visible
+- added pagination on some views
+- added sortable columns for some tables
+- added cache management
+- fixed deletion of mandatory private properties
+- security: restricted permissions check to context org
+- fixed some wording issues
+- lots of markup and style changes 
+- minor bugfixes
+
+0.7.5
+
+- changed access for org editors 
+
+0.7.4
+
+- bugfix: matching organisations by name
+
+0.7.3
+
+- denied access to subscription list for licensees
+- bugfix: remove deleted subscriptions from dropdown
+- bugfix: faulty breadcrumbs due multiple licensees
+- bugfix: faulty menu entry on license views
+
+0.7.2
+
+- force explicit closing of modals
+- ignore cancellation date when adding child subscriptions
+- bugfix: double encoding of html entities
+- bugfix: deleting persons in addressbook
+- bugfix: on delete cascade addresses and contacts
+
+0.7.1
+
+- minors changes on dashboard
+- bufgix: avoid queries for person custom properties
+- bugfix: missing dropdown for person function
+- bugfix: ordering tasks by enddate
+
+0.7
+
+- added public gasco overview and details page 
+- added anonymisation for object histories (DSGVO)
+- added license handling for consortia and consortia members
+- improved package linking for subscriptions
+- switched to gokb ES index for package listing
+- improved error reporting ticket system
+- added list view and budget code handling 
+- reworked contact, address and person views
+- added filter for addressbooks
+- added functionality for deleting addresses and contacts 
+- added menu actions for adding tasks, documents and notes
+- reworked dashboard
+- reworked org role template, fixed javascript behaviour
+- added translations and increased text length for property definitions
+- added title field for persons
+- reworked structure of license linking
+- fixed javascript injection vulnerability
+- increased session timeout
+- removed legacy jusp and zendesk stuff
+- upgraded some plugins and dependencies
+- added java monitoring
+- added debug information views
+- lots of markup and style changes 
+- lots of bugfixes
+
+0.6.1
+
+- bugfix: javascript for creating person modal
+- disabled faulty function to copy licenses
 
 0.6
 

@@ -1,12 +1,7 @@
 package com.k_int.kbplus.batch
 
- 
-
-
-
 class NotificationsJob {
 
-  def zenDeskSyncService
   def changeNotificationService
   def grailsApplication
   def reminderService
@@ -21,8 +16,8 @@ class NotificationsJob {
   def execute() {
     log.debug("NotificationsJob");
     if ( grailsApplication.config.KBPlusMaster == true ) {
-      log.debug("This server is marked as KBPlus master. Running ZENDESK sync batch job");
-      zenDeskSyncService.doSync()
+      log.debug("This server is marked as KBPlus master");
+      //zenDeskSyncService.doSync()
       changeNotificationService.aggregateAndNotifyChanges();
       log.debug("About to start the Reminders Job...");
       reminderService.runReminders()
@@ -34,7 +29,7 @@ class NotificationsJob {
         reminderService.runReminders()
       }
     else {
-      log.debug("This server is NOT marked as KBPlus master. NOT Running ZENDESK SYNC batch job");
+      log.debug("This server is NOT marked as KBPlus master .. nothing done");
     }
   }
 

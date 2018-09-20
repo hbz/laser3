@@ -1,11 +1,6 @@
 package de.laser
 
-import com.k_int.kbplus.Org
-import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
-import grails.util.Holders
-import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
-import org.codehaus.groovy.grails.web.util.WebUtils
 
 class FilterService {
 
@@ -17,7 +12,9 @@ class FilterService {
         def queryParams = []
 
         if (params.orgNameContains?.length() > 0) {
-            query << "lower(o.name) like ?"
+            query << "(lower(o.name) like ? or lower(o.shortname) like ? or lower(o.sortname) like ?)"
+            queryParams << "%${params.orgNameContains.toLowerCase()}%"
+            queryParams << "%${params.orgNameContains.toLowerCase()}%"
             queryParams << "%${params.orgNameContains.toLowerCase()}%"
         }
         if (params.orgType?.length() > 0) {
@@ -44,11 +41,12 @@ class FilterService {
             query << "o.country.id = ?"
             queryParams << Long.parseLong(params.country)
         }
+        def defaultOrder = " order by " + (params.sort ?: " LOWER(o.name)") + " " + (params.order ?: "asc")
 
         if (query.size() > 0) {
-            query = "from Org o where " + query.join(" and ") + " order by LOWER(o.name) asc"
+            query = "from Org o where " + query.join(" and ") + defaultOrder
         } else {
-            query = "from Org o order by LOWER(o.name) asc"
+            query = "from Org o " + defaultOrder
         }
 
         result.query = query
@@ -90,10 +88,12 @@ class FilterService {
         queryParams << org
         queryParams << 'Consortium'
 
+        def defaultOrder = " order by " + (params.sort ?: " LOWER(o.sortname)") + " " + (params.order ?: "asc")
+
         if (query.size() > 0) {
-            query = "select o from Org as o, Combo as c where " + query.join(" and ") + " and c.fromOrg = o and c.toOrg = ? and c.type.value = ? " + " order by " + params.sort?:"LOWER(o.sortname)" + params.order?:"asc"
+            query = "select o from Org as o, Combo as c where " + query.join(" and ") + " and c.fromOrg = o and c.toOrg = ? and c.type.value = ? " + defaultOrder
         } else {
-            query = "select o from Org as o, Combo as c where c.fromOrg = o and c.toOrg = ? and c.type.value = ? " + " order by " + params.sort?:"LOWER(o.sortname)" + params.order?:"asc"
+            query = "select o from Org as o, Combo as c where c.fromOrg = o and c.toOrg = ? and c.type.value = ? " + defaultOrder
         }
 
         result.query = query
@@ -129,10 +129,12 @@ class FilterService {
             queryParams << sdFormat.parse(params.endDateTo)
         }
 
+        def defaultOrder = " order by " + (params.sort ?: "t.endDate") + (params.order ?: " desc")
+
         if (query.size() > 0) {
-            query = " and " + query.join(" and ") + " order by " + params.sort?:"t.endDate"+ params.order?:"desc"
+            query = " and " + query.join(" and ") + defaultOrder
         } else {
-            query = " order by " + params.sort?:"t.endDate"+ params.order?:"desc"
+            query = defaultOrder
         }
 
         result.query = query

@@ -3,10 +3,11 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.*
 import de.laser.domain.BaseDomainComponent
 import de.laser.domain.Permissions
+import de.laser.domain.TemplateSupport
 
 import javax.persistence.Transient
 
-class Subscription extends BaseDomainComponent implements Permissions {
+class Subscription extends BaseDomainComponent implements TemplateSupport, Permissions {
 
   static auditable = [ignore:['version','lastUpdated','pendingChanges']]
 
@@ -119,6 +120,19 @@ class Subscription extends BaseDomainComponent implements Permissions {
         // vendor(nullable:true, blank:false)
     }
 
+    // TODO: implement
+    @Override
+    def isTemplate() {
+        return false
+    }
+
+    // TODO: implement
+    @Override
+    def hasTemplate() {
+        return false
+    }
+
+
   def getIsSlavedAsString() {
     isSlaved?.value == "Yes" ? "Yes" : "No"
   }
@@ -165,7 +179,7 @@ class Subscription extends BaseDomainComponent implements Permissions {
         orgRelations.each { or ->
             if ( or?.roleType?.value=='Subscription Consortia' )
                 result = or.org
-            }
+        }
         result
     }
 

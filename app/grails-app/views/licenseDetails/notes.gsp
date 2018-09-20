@@ -7,18 +7,18 @@
 <body>
     <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-    <h1 class="ui header"><semui:headerIcon />
+    <semui:controlButtons>
+        <g:render template="actions" />
+    </semui:controlButtons>
 
-    %{--${license.licensee?.name}--}%
-    ${message(code:'license.details.type', args:["${license.type?.getI10n('value')}"], default:'License')} :
-    <semui:xEditable owner="${license}" field="reference" id="reference"/>
+    <h1 class="ui header"><semui:headerIcon />
+        <g:if test="${license.type?.value == 'Template'}">${message(code:'license.label')} (${license.type.getI10n('value')}):</g:if>
+        <semui:xEditable owner="${license}" field="reference" id="reference"/>
     </h1>
 
     <g:render template="nav" />
 
     <g:render template="/templates/notes/table" model="${[instance: license, redirect: 'notes']}"/>
-
-    <g:render template="/templates/notes/modal_create" model="${[doclist: license.documents, ownobj: license, owntp: 'license']}"/>
 
 </body>
 </html>

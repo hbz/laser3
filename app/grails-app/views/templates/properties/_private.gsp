@@ -3,11 +3,10 @@
 %{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_xxx"); --}%
 
 <%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition" %>
+<laser:serviceInjection />
 
-<% def accService = grailsApplication.mainContext.getBean("accessService") %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
-<!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->
-<g:set var="overwriteEditable" value="${editable || accService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}" />
+<!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->
+<g:set var="overwriteEditable" value="${editable || accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}" />
 
 <g:if test="${newProp}">
     <semui:errors bean="${newProp}" />
@@ -35,7 +34,7 @@
         </thead>
     </g:if>
     <tbody>
-        <g:each in="${ownobj.privateProperties}" var="prop">
+        <g:each in="${ownobj.privateProperties.sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
             <g:if test="${prop.type?.tenant?.id == tenant?.id}">
                 <tr>
                     <td class="la-column-nowrap">

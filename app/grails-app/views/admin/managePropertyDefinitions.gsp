@@ -24,16 +24,6 @@
                 </div>
             </div>
 
-<%--<pre>
-${usedPdList.join(", ")}
-
-<g:each in="${attrMap}" var="objs">
-    ${objs.key}
-    <g:each in="${objs.value}" var="attrs">    ${attrs}
-    </g:each>
-</g:each>
-</pre>--%>
-
 		<div class="ui styled fluid accordion">
 			<g:each in="${propertyDefinitions}" var="entry">
                 <div class="title">
@@ -84,7 +74,7 @@ ${usedPdList.join(", ")}
                                             <small>${pd.type?.split('\\.').last()}</small>
                                         </g:else>
                                     </td>
-                                    <td>
+                                    <td class="x">
                                         <g:if test="${pd.softData}">
                                             <span data-position="top right" data-tooltip="${message(code:'default.softData.tooltip')}">
                                                 <i class="tint icon teal"></i>
@@ -95,6 +85,19 @@ ${usedPdList.join(", ")}
                                                 <i class="redo icon orange"></i>
                                             </span>
                                         </g:if>
+
+                                        <%--
+                                        <g:if test="${usedPdList?.contains(pd.id)}">
+                                            <span data-position="top right" data-tooltip="${message(code:'propertyDefinition.exchange.label')}">
+                                                <button class="ui icon button" href="#replacePropertyDefinitionModal" data-semui="modal"
+                                                        data-xcg-pd="${pd.class.name}:${pd.id}"
+                                                        data-xcg-type="${pd.type}"
+                                                        data-xcg-rdc="${pd.refdataCategory}"
+                                                        data-xcg-debug="${pd.getI10n('name')} (${pd.name})"
+                                                ><i class="exchange icon"></i></button>
+                                            </span>
+                                        </g:if>
+                                        --%>
                                     </td>
                                     <%--
                                     <td><semui:xEditable owner="${pdI10nDescr}" field="valueDe" /></td>
@@ -108,6 +111,44 @@ ${usedPdList.join(", ")}
                 </div>
 			</g:each>
         </div>
+
+<%--
+        <semui:modal id="replacePropertyDefinitionModal" message="propertyDefinition.exchange.label" editmodal="editmodal">
+            <g:form class="ui form" url="[controller: 'admin', action: 'managePropertyDefinition']">
+                <input type="hidden" name="cmd" value="replacePropertyDefinition"/>
+                <input type="hidden" name="xcgPdFrom" value=""/>
+
+                <p>
+                    <strong>WARNUNG</strong>
+                </p>
+
+                <p>
+                    Alle Vorkommnisse von <strong class="xcgInfo"></strong> in der Datenbank durch folgenden Wert ersetzen:
+                </p>
+
+                <div class="field">
+                    <label for="xcgPdTo">&nbsp;</label>
+                    <select id="xcgPdTo"></select>
+                </div>
+
+            </g:form>
+
+            <r:script>
+                        $('button[data-xcg-pd]').on('click', function(){
+
+                            var pd = $(this).attr('data-xcg-pd');
+                            var type = $(this).attr('data-xcg-type');
+                            var rdc = $(this).attr('data-xcg-rdc');
+
+                            $('#replacePropertyDefinitionModal .xcgInfo').text($(this).attr('data-xcg-debug'));
+                            $('#replacePropertyDefinitionModal input[name=xcgPdFrom]').attr('value', pd);
+
+                            // TODO
+                        })
+            </r:script>
+
+        </semui:modal>
+--%>
 
         <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 
@@ -130,18 +171,17 @@ ${usedPdList.join(", ")}
                             </g:each>
                         </select>
                     </div>
-
                     <div class="field five wide">
-                        <label class="property-label">Type</label>
+                        <label class="property-label"><g:message code="propertyDefinition.type.label" /></label>
                         <g:select class="ui dropdown"
-                            from="${PropertyDefinition.validTypes.entrySet()}"
-                            optionKey="value" optionValue="key"
+                            from="${PropertyDefinition.validTypes2.entrySet()}"
+                            optionKey="key" optionValue="${{PropertyDefinition.getLocalizedValue(it.key)}}"
                             name="cust_prop_type"
                             id="cust_prop_modal_select" />
                     </div>
 
                     <div class="field six wide hide" id="cust_prop_ref_data_name">
-                        <label class="property-label">Kategorie</label>
+                        <label class="property-label"><g:message code="refdataCategory.label" /></label>
                         <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
                     </div>
                 </div>
@@ -161,7 +201,9 @@ ${usedPdList.join(", ")}
 
 			   if( $( "#cust_prop_modal_select option:selected" ).val() == "class com.k_int.kbplus.RefdataValue") {
 					$("#cust_prop_ref_data_name").show();
-			   }
+			   } else {
+                     $("#cust_prop_ref_data_name").hide();
+                }
 
 			$('#cust_prop_modal_select').change(function() {
 				var selectedText = $( "#cust_prop_modal_select option:selected" ).val();
@@ -173,8 +215,18 @@ ${usedPdList.join(", ")}
 			});
 
 			$("#cust_prop_refdatacatsearch").select2({
-				placeholder: "Type category...",
-				minimumInputLength: 1,
+				placeholder: "Kategorie eintippen...",
+                minimumInputLength: 1,
+
+                formatInputTooShort: function () {
+                    return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
+                },
+                formatNoMatches: function() {
+                    return "${message(code:'select2.noMatchesFound')}";
+                },
+                formatSearching:  function() {
+                    return "${message(code:'select2.formatSearching')}";
+                },
 				ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
 					url: '${createLink(controller:'ajax', action:'lookup')}',
 					dataType: 'json',
