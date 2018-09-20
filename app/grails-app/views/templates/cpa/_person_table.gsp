@@ -39,7 +39,7 @@
 				</td>
 
 				<td>
-					<g:each in="${person?.roleLinks.unique{ it.org }}" var="role">
+					<g:each in="${person?.roleLinks?.unique{ it?.org }}" var="role">
                         <g:if test="${controllerName == 'myInstitution'}">
                             <div class="la-flexbox">
                                 <i class="icon university la-list-icon"></i>
@@ -62,7 +62,7 @@
                 </td>
                 <td>
                     <div class="ui divided middle aligned selection list la-flex-list ">
-                        <g:each in="${person.contacts.sort{it.content}}" var="contact">
+                        <g:each in="${person?.contacts?.toSorted()}" var="contact">
                             <g:render template="/templates/cpa/contact" model="${[
                                     contact: contact,
                                     tmplShowDeleteButton: true
@@ -85,7 +85,7 @@
                 </td>
                 <td class="x">
                     <g:if test="${editable}">
-                            <g:form controller="person" action="delete" data-confirm-id="${person?.id.toString()+ '_form'}">
+                            <g:form controller="person" action="delete" data-confirm-id="${person?.id?.toString()+ '_form'}">
                                 <g:hiddenField name="id" value="${person?.id}" />
                                     <g:link class="ui icon button" controller="person" action="show" id="${person?.id}">
                                         <i class="write icon"></i>

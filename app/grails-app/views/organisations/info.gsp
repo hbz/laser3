@@ -24,7 +24,7 @@
         
 			<g:if test="${orgInstance?.addresses}">
 				<dt><g:message code="org.addresses.label" default="Addresses" /></dt>
-				<g:each in="${orgInstance?.addresses.sort{it.type?.getI10n('value')}}" var="a">
+				<g:each in="${orgInstance?.addresses?.sort{it?.type?.getI10n('value')}}" var="a">
 					<g:if test="${a.org}">
 						<g:render template="/templates/cpa/address" model="${[address: a]}"></g:render>
 					</g:if>
@@ -33,7 +33,7 @@
 		
 			<g:if test="${orgInstance?.contacts}">
 				<dt><g:message code="org.contacts.label" default="Contacts" /></dt>
-				<g:each in="${orgInstance?.contacts}" var="c">
+				<g:each in="${orgInstance?.contacts?.toSorted()}" var="c">
 					<g:if test="${c.org}">
 						<g:render template="/templates/cpa/contact" model="${[contact: c]}"></g:render>
 					</g:if>
@@ -42,9 +42,12 @@
 
         	<g:if test="${orgInstance?.prsLinks}">
 				<dt><g:message code="org.prsLinks.label" default="Persons" /></dt>
-				<g:each in="${orgInstance?.prsLinks}" var="pl">
+				<g:each in="${orgInstance?.prsLinks?.toSorted()}" var="pl">
 					<g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value!='No'}">		
-						<g:render template="/templates/cpa/person_details" model="${[personRole: pl]}"></g:render>
+						<g:render template="/templates/cpa/person_details" model="${[
+                                personRole: pl,
+                                tmplConfigShow: 'address'
+                        ]}"></g:render>
 					</g:if>
 				</g:each>
 			</g:if>
@@ -70,7 +73,7 @@
 
       </g:if>
         
-          <g:if test="${orgInstance?.ids.sort{it.identifier.ns.ns}}">
+          <g:if test="${orgInstance?.ids?.sort{it?.identifier?.ns?.ns}}">
             <dt><g:message code="org.ids.label" default="Ids" /></dt>
               <g:each in="${orgInstance.ids.sort{it.identifier.ns.ns}}" var="i">
               <dd><g:link controller="identifier" action="show" id="${i.identifier.id}">${i?.identifier?.ns?.ns} : ${i?.identifier?.value}</g:link></dd>
@@ -81,7 +84,7 @@
             <dt><g:message code="org.outgoingCombos.label" default="Outgoing Combos" /></dt>
             <g:each in="${orgInstance.outgoingCombos}" var="i">
               <dd>${i.type?.value} - <g:link controller="organisations" action="show" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
-                (<g:each in="${i.toOrg?.ids.sort{it.identifier.ns.ns}}" var="id">
+                (<g:each in="${i?.toOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id">
                   ${id.identifier.ns.ns}: ${id.identifier.value}
                 </g:each>)
               </dd>
@@ -92,7 +95,7 @@
             <dt><g:message code="org.incomingCombos.label" default="Incoming Combos" /></dt>
             <g:each in="${orgInstance.incomingCombos}" var="i">
               <dd>${i.type?.value} - <g:link controller="org" action="show" id="${i.toOrg.id}">${i.fromOrg?.name}</g:link>
-                (<g:each in="${i.fromOrg?.ids.sort{it.identifier.ns.ns}}" var="id">
+                (<g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id">
                   ${id.identifier.ns.ns}: ${id.identifier.value}
                 </g:each>)
               </dd>
