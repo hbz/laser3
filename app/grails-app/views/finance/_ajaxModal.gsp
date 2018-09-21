@@ -1,19 +1,26 @@
 <!-- _ajaxModal.gsp -->
-<%@ page import="com.k_int.kbplus.CostItem;com.k_int.kbplus.CostItemGroup;com.k_int.kbplus.BudgetCode;" %>
+<%@ page import="com.k_int.kbplus.CostItem;com.k_int.kbplus.CostItemGroup;com.k_int.kbplus.BudgetCode;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataValue"" %>
 <laser:serviceInjection />
 
 <g:render template="vars" /><%-- setting vars --%>
 
 <g:set var="modalText" value="${message(code:'financials.addNewCost')}" />
 
-<g:if test="${costItem}">
-    <g:set var="modalText" value="${message(code:'financials.editCost')} #${costItem?.id}" />
-</g:if>
+<%
+    if (costItem) {
+        modalText = g.message(code:'financials.editCost')
+    }
+
+    def subscriberExists = OrgRole.findBySubAndRoleType(costItem.sub, RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'));
+    if ( subscriberExists ) {
+        modalText = subscriberExists.org?.toString()
+    }
+%>
 
 <semui:modal id="costItem_ajaxModal" text="${modalText}">
     <g:if test="${costItem?.globalUID}">
         <div class="ui blue ribbon label">
-            <strong class="red">${message(code:'financials.newCosts.UID')}: </strong>${costItem?.globalUID}
+            <strong>${message(code:'financials.newCosts.UID')}: </strong>${costItem?.globalUID}
         </div>
     </g:if>
     <g:form class="ui small form" id="editCost" url="[controller:'finance', action:'newCostItem']">
@@ -88,26 +95,28 @@
                                   value="${costItem?.costItemElement?.id}" />
                 </div><!-- .field -->
 
-                <div class="field">
-                    <label>${message(code:'financials.newCosts.controllable')}</label>
-                    <laser:select name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCateogry')}" class="ui dropdown"
-                                  from="${taxType}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  noSelection="${['':'']}"
-                                  value="${costItem?.taxCode?.id}" />
-                </div><!-- .field -->
+                <div class="fields two">
+                    <div class="field">
+                        <label>${message(code:'financials.newCosts.controllable')}</label>
+                        <laser:select name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCateogry')}" class="ui dropdown"
+                                      from="${taxType}"
+                                      optionKey="id"
+                                      optionValue="value"
+                                      noSelection="${['':'']}"
+                                      value="${costItem?.taxCode?.id}" />
+                    </div><!-- .field -->
 
-                <div class="field">
-                    <label>${message(code:'financials.costItemStatus')}</label>
-                    <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
-                                  id="newCostItemStatus"
-                                  from="${costItemStatus}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  noSelection="${['':'']}"
-                                  value="${costItem?.costItemStatus?.id}" />
-                </div><!-- .field -->
+                    <div class="field">
+                        <label>${message(code:'financials.costItemStatus')}</label>
+                        <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
+                                      id="newCostItemStatus"
+                                      from="${costItemStatus}"
+                                      optionKey="id"
+                                      optionValue="value"
+                                      noSelection="${['':'']}"
+                                      value="${costItem?.costItemStatus?.id}" />
+                    </div><!-- .field -->
+                </div><!-- .fields two -->
 
             </div> <!-- 2/2 field -->
         </div><!-- two fields -->

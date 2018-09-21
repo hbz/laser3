@@ -5,8 +5,8 @@
 - added view for platforms
 - added bulk creation for cost items (consortia only)
 - added copy function for cost items
-- ? copy subscriptions
-- ? license / subscription assignment
+- added copy function for subscriptions
+- restricted subscription assignment for licenses (consortia only)
 - some markup, style and translations changes
 - minor improvements and bugfixes
 

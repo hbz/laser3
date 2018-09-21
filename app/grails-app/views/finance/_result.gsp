@@ -43,6 +43,7 @@
 </g:if><%-- FinanceController.MODE_CONS_SUBSCR --%>
 
     <g:if test="${! costItemsOwner}">
+        <br />
         <g:render template="result_tab_owner" model="[editable: editable, cost_items: [], i: 'empty']"></g:render>
     </g:if>
 
@@ -65,6 +66,7 @@
 
             <g:set var="cost_items" value="${subListItem.value}" />
 
+            <br />
             <g:render template="result_tab_owner" model="[editable: editable, cost_items: cost_items, i: i]"></g:render>
 
             <g:if test="${costItemsOwner.size() > 1}">

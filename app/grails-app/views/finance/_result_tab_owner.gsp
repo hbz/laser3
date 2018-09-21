@@ -5,6 +5,7 @@
 
 <thead>
     <tr>
+        <th></th>
         <th>${message(code:'financials.newCosts.costTitle')}</th>
         <th class="two wide">${message(code:'financials.invoice_total')}</th>
         <th class="two wide">${message(code:'financials.newCosts.valueInEuro')}</th>
@@ -18,7 +19,7 @@
     %{--Empty result set--}%
     <g:if test="${cost_items?.size() == 0}">
         <tr>
-            <td colspan="7" style="text-align:center">
+            <td colspan="8" style="text-align:center">
                 <br />
                 <g:if test="${msg}">${msg}</g:if>
                 <g:else>${message(code:'finance.result.filtered.empty')}</g:else>
@@ -28,8 +29,11 @@
     </g:if>
 <g:else>
 
-    <g:each in="${cost_items}" var="ci">
+    <g:each in="${cost_items}" var="ci" status="jj">
         <tr id="bulkdelete-b${ci.id}">
+            <td>
+                ${ jj + 1 }
+            </td>
             <td>
                 <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" />
             </td>
@@ -101,7 +105,7 @@
 </tbody>
     <tfoot>
         <tr>
-            <td colspan="7">
+            <td colspan="8">
                 <strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')} </strong>
                 <br/>
                 <span class="sumOfCosts_${i}"></span>
