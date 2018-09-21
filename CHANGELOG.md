@@ -1,4 +1,15 @@
 
+0.9 RC
+
+- reworked task list on dashbord
+- added view for platforms
+- added bulk creation for cost items (consortia only)
+- added copy function for cost items
+- ? copy subscriptions
+- ? license / subscription assignment
+- some markup, style and translations changes
+- minor improvements and bugfixes
+
 0.8.3
 
 - added: prev/next navigation for subscription
