@@ -8,12 +8,12 @@
 
 <%
     if (costItem) {
-        modalText = g.message(code:'financials.editCost')
-    }
+        modalText = g.message(code: 'financials.editCost')
 
-    def subscriberExists = OrgRole.findBySubAndRoleType(costItem.sub, RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'));
-    if ( subscriberExists ) {
-        modalText = subscriberExists.org?.toString()
+        def subscriberExists = OrgRole.findBySubAndRoleType(costItem.sub, RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'));
+        if ( subscriberExits ) {
+            modalText = subscriberExists.org?.toString()
+        }
     }
 %>
 

@@ -168,11 +168,15 @@ class CostItem extends BaseDomainComponent implements TemplateSupport {
     }
 
     def getCostInLocalCurrencyAfterTax() {
-        ( costInLocalCurrency ?: 0.0 ) * ( taxRate ? ((taxRate/100) + 1) : 1 )
+        Double result = ( costInLocalCurrency ?: 0.0 ) * ( taxRate ? ((taxRate/100) + 1) : 1.0 )
+
+        finalCostRounding ? result.round(0) : result
     }
 
     def getCostInBillingCurrencyAfterTax() {
-        ( costInBillingCurrency ?: 0.0 ) * ( taxRate ? ((taxRate/100) + 1) : 1 )
+        Double result = ( costInBillingCurrency ?: 0.0 ) * ( taxRate ? ((taxRate/100) + 1) : 1.0 )
+
+        finalCostRounding ? result.round(0) : result
     }
 
     /**

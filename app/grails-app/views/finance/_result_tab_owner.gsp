@@ -5,7 +5,7 @@
 
 <thead>
     <tr>
-        <th></th>
+        <th>${message(code:'sidewide.number')}</th>
         <th>${message(code:'financials.newCosts.costTitle')}</th>
         <th class="two wide">${message(code:'financials.invoice_total')}</th>
         <th class="two wide">${message(code:'financials.newCosts.valueInEuro')}</th>

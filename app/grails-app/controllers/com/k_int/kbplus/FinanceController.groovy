@@ -691,7 +691,7 @@ class FinanceController {
         if (params.newInvoiceNumber)
             invoice = Invoice.findByInvoiceNumberAndOwner(params.newInvoiceNumber, result.institution) ?: new Invoice(invoiceNumber: params.newInvoiceNumber, owner: result.institution).save(flush: true);
 
-        def subsToDo = [];
+        def subsToDo = []
         if (params.newSubscription?.contains("com.k_int.kbplus.Subscription:"))
         {
             try {
@@ -699,7 +699,6 @@ class FinanceController {
             } catch (Exception e) {
                 log.error("Non-valid subscription sent ${params.newSubscription}",e)
             }
-
         }
 
           switch (params.newLicenseeTarget) {
@@ -782,8 +781,9 @@ class FinanceController {
 
         //def inclSub = params.includeInSubscription? (RefdataValue.get(params.long('includeInSubscription'))): defaultInclSub //todo Speak with Owen, unknown behaviour
 
-          println subsToDo
-
+          if (! subsToDo) {
+              subsToDo << null // Fallback for editing cost items via myInstitution/finance // TODO: ugly
+          }
           subsToDo.each { sub ->
 
               if (params.oldCostItem && genericOIDService.resolveOID(params.oldCostItem)) {
