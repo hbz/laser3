@@ -121,9 +121,11 @@ class FinanceController {
           // TODO : MODE_CHILDREN & MODE_ALL
 
           // prepare filter dropdowns
-          def myCostItems = result.fixedSubscription ?
-                    CostItem.findAllWhere(owner: result.institution, sub: result.fixedSubscription)
-                  : CostItem.findAllWhere(owner: result.institution)
+          //def myCostItems = result.fixedSubscription ?
+          //          CostItem.findAllWhere(owner: result.institution, sub: result.fixedSubscription)
+          //        : CostItem.findAllWhere(owner: result.institution)
+
+          def myCostItems = CostItem.findAllWhere(owner: result.institution)
 
           result.allCIInvoiceNumbers = (myCostItems.collect{ it -> it?.invoice?.invoiceNumber }).findAll{ it }.unique().sort()
           result.allCIOrderNumbers   = (myCostItems.collect{ it -> it?.order?.orderNumber }).findAll{ it }.unique().sort()

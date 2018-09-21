@@ -49,7 +49,6 @@
 
     <g:if test="${costItemsOwner.size() > 1}">
         <div class="ui fluid accordion">
-            <br />
     </g:if>
 
         <g:each in="${costItemsOwner}" var="subListItem" status="i">
