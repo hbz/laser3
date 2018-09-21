@@ -63,12 +63,12 @@ class AddressbookService {
     }
 
     def isAddressEditable(Address address, User user) {
-        def org = address.getPrs().tenant ?: address?.org
+        def org = address.getPrs()?.tenant ?: address.org
         accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 //        true // TODO: Rechte nochmal überprüfen
     }
     def isContactEditable(Contact contact, User user) {
-        def org = contact.getPrs().tenant ?: contact?.org
+        def org = contact.getPrs()?.tenant ?: contact.org
         accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         //true // TODO: Rechte nochmal überprüfen
     }
