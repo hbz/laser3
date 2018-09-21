@@ -425,7 +425,8 @@
                                         <g:set var="counter" value="${0}"/>
                                         <g:each in="${usage}" var="v">
                                             <tr>
-                                                <td>${y_axis_labels[counter++]}</td>
+                                                <g:set var="reportMetric" value="${y_axis_labels[counter++]}" />
+                                                <td>${reportMetric}</td>
                                                 <g:each in="${v}" status="i" var="v2">
                                                     <td>
                                                         <laser:statsLink
@@ -437,6 +438,7 @@
                                                             params="[mode        : usageMode,
                                                                      packages    : subscription.getCommaSeperatedPackagesIsilList(),
                                                                      institutions: statsWibid,
+                                                                     reports     : reportMetric.split(':')[0]+'R4',
                                                                      years       : x_axis_labels[i]
                                                             ]"
                                                             title="Springe zu Statistik im Nationalen Statistikserver">
