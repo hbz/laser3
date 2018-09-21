@@ -37,7 +37,7 @@ class TaskService {
             def params = [user] + queryMap.queryParams
             tasks = Task.executeQuery(query, params)
         }
-        //tasks.sort{ it.endDate }
+        tasks
     }
 
     def getTasksByResponsible(Org org, Map queryMap) {
@@ -47,16 +47,22 @@ class TaskService {
             def params = [org] + queryMap.queryParams
             tasks = Task.executeQuery(query, params)
         }
-        //tasks.sort{ it.endDate }
+        tasks
     }
 
     def getTasksByResponsibles(User user, Org org, Map queryMap) {
         def tasks = []
-        def a = getTasksByResponsible(user, queryMap)
-        def b = getTasksByResponsible(org, queryMap)
 
-        tasks = a.plus(b).unique()
-        //tasks.sort{ it.endDate }
+        if (user && org) {
+            def query = "select t from Task t where ( t.responsibleUser = ? or t.responsibleOrg = ? ) " + queryMap.query
+            def params = [user, org] + queryMap.queryParams
+            tasks = Task.executeQuery(query, params)
+        } else if (user) {
+            tasks = getTasksByResponsible(user, queryMap)
+        } else if (org) {
+            tasks = getTasksByResponsible(org, queryMap)
+        }
+        tasks
     }
 
     def getTasksByResponsibleAndObject(User user, Object obj) {
@@ -109,6 +115,7 @@ class TaskService {
         tasks = a.plus(b).unique()
         tasks.sort{ it.endDate }
     }
+
     //Mit Sort Parameter
     def getTasksByResponsibleAndObject(User user, Object obj,  Object params) {
         def tasks = []
@@ -128,8 +135,9 @@ class TaskService {
                     break
             }
         }
-        //tasks.sort{ it.endDate }
+        tasks
     }
+
     //Mit Sort Parameter
     def getTasksByResponsibleAndObject(Org org, Object obj,  Object params) {
         def tasks = []
@@ -149,8 +157,9 @@ class TaskService {
                     break
             }
         }
-        //tasks.sort{ it.endDate }
+        tasks
     }
+
     //Mit Sort Parameter
     def getTasksByResponsiblesAndObject(User user, Org org, Object obj,  Object params) {
         def tasks = []
