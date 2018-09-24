@@ -66,44 +66,12 @@ class TaskService {
     }
 
     def getTasksByResponsibleAndObject(User user, Object obj) {
-        def tasks = []
-        if (user && obj) {
-            switch (obj.getClass().getSimpleName()) {
-                case 'License':
-                    tasks = Task.findAllByResponsibleUserAndLicense(user, obj)
-                    break
-                case 'Org':
-                    tasks = Task.findAllByResponsibleUserAndOrg(user, obj)
-                    break
-                case 'Package':
-                    tasks = Task.findAllByResponsibleUserAndPkg(user, obj)
-                    break
-                case 'Subscription':
-                    tasks = Task.findAllByResponsibleUserAndSubscription(user, obj)
-                    break
-            }
-        }
+        def tasks = getTasksByResponsibleAndObject(user, obj, [])
         tasks.sort{ it.endDate }
     }
 
     def getTasksByResponsibleAndObject(Org org, Object obj) {
-        def tasks = []
-        if (org && obj) {
-            switch (obj.getClass().getSimpleName()) {
-                case 'License':
-                    tasks = Task.findAllByResponsibleOrgAndLicense(org, obj)
-                    break
-                case 'Org':
-                    tasks = Task.findAllByResponsibleOrgAndOrg(org, obj)
-                    break
-                case 'Package':
-                    tasks = Task.findAllByResponsibleOrgAndPkg(org, obj)
-                    break
-                case 'Subscription':
-                    tasks = Task.findAllByResponsibleOrgAndSubscription(org, obj)
-                    break
-            }
-        }
+        def tasks = getTasksByResponsibleAndObject(org, obj, [])
         tasks.sort{ it.endDate }
     }
 
@@ -116,7 +84,6 @@ class TaskService {
         tasks.sort{ it.endDate }
     }
 
-    //Mit Sort Parameter
     def getTasksByResponsibleAndObject(User user, Object obj,  Object params) {
         def tasks = []
         if (user && obj) {
@@ -138,7 +105,6 @@ class TaskService {
         tasks
     }
 
-    //Mit Sort Parameter
     def getTasksByResponsibleAndObject(Org org, Object obj,  Object params) {
         def tasks = []
         if (org && obj) {
@@ -160,14 +126,13 @@ class TaskService {
         tasks
     }
 
-    //Mit Sort Parameter
     def getTasksByResponsiblesAndObject(User user, Org org, Object obj,  Object params) {
         def tasks = []
         def a = getTasksByResponsibleAndObject(user, obj, params)
         def b = getTasksByResponsibleAndObject(org, obj, params)
 
         tasks = a.plus(b).unique()
-        //tasks.sort{ it.endDate }
+        tasks
     }
 
     def getPreconditions(Org contextOrg) {
