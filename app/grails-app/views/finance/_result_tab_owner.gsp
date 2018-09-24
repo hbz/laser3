@@ -74,7 +74,7 @@
                             <i class="write icon"></i>
                         </g:link>
                         <span data-position="top right" data-tooltip="${message(code:'financials.costItem.copy.tooltip')}">
-                            <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}"]' class="ui icon button">
+                            <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}"]' class="ui icon button trigger-modal">
                                 <i class="copy icon"></i>
                             </g:link>
                         </span>
@@ -83,11 +83,13 @@
                         <g:link controller="finance" action="editCostItem" id="${ci.id}" class="ui icon button trigger-modal">
                             <i class="write icon"></i>
                         </g:link>
+                        <%--
                         <span data-position="top right" data-tooltip="${message(code:'financials.costItem.copy.tooltip')}">
-                            <g:link controller="finance" action="copyCostItem" id="${ci.id}" class="ui icon button">
+                            <g:link controller="finance" action="copyCostItem" id="${ci.id}" class="ui icon button trigger-modal">
                                 <i class="copy icon"></i>
                             </g:link>
                         </span>
+                        --%>
                     </g:else>
 
                 </g:if>

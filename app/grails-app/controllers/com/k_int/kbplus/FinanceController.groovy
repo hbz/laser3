@@ -588,7 +588,6 @@ class FinanceController {
     def editCostItem() {
         def result = [:]
 
-        //TODO: copied from index()
         result.inSubMode = params.sub ? true : false
         if (result.inSubMode) {
             result.fixedSubscription = params.int('sub') ? Subscription.get(params.sub) : null
@@ -603,38 +602,51 @@ class FinanceController {
     def copyCostItem() {
         def result = [:]
 
+        result.id = params.id
+        result.sub = params.sub
         result.inSubMode = params.sub ? true : false
+
         if (result.inSubMode) {
             result.fixedSubscription = params.int('sub') ? Subscription.get(params.sub) : null
         }
 
         def ci = CostItem.findById(params.id)
+        result.costItem = ci
 
-        CostItem newCostItem = new CostItem()
-        InvokerHelper.setProperties(newCostItem, ci.properties)
-        newCostItem.globalUID = null
+        if (ci && params.process) {
+            params.list('newLicenseeTargets')?.each{ target ->
 
-        if (! newCostItem.validate())
-        {
-            result.error = newCostItem.errors.allErrors.collect {
-                log.error("Field: ${it.properties.field}, user input: ${it.properties.rejectedValue}, Reason! ${it.properties.code}")
-                message(code:'finance.addNew.error', args:[it.properties.field])
-            }
-            println result.error
-        }
-        else {
-            if ( newCostItem.save(flush: true) ) {
-                ci.getBudgetcodes().each{ bc ->
-                    if (! CostItemGroup.findByCostItemAndBudgetCode(newCostItem, bc)) {
-                        new CostItemGroup(costItem: newCostItem, budgetCode: bc).save(flush: true)
+                def newSub = genericOIDService.resolveOID(target)
+
+                CostItem newCostItem = new CostItem()
+                InvokerHelper.setProperties(newCostItem, ci.properties)
+                newCostItem.globalUID = null
+                newCostItem.sub = newSub
+
+                if (! newCostItem.validate())
+                {
+                    result.error = newCostItem.errors.allErrors.collect {
+                        log.error("Field: ${it.properties.field}, user input: ${it.properties.rejectedValue}, Reason! ${it.properties.code}")
+                        message(code:'finance.addNew.error', args:[it.properties.field])
                     }
                 }
-
-                result.costItem = newCostItem
+                else {
+                    if ( newCostItem.save(flush: true) ) {
+                        ci.getBudgetcodes().each{ bc ->
+                            if (! CostItemGroup.findByCostItemAndBudgetCode(newCostItem, bc)) {
+                                new CostItemGroup(costItem: newCostItem, budgetCode: bc).save(flush: true)
+                            }
+                        }
+                    }
+                }
             }
+            redirect(uri: request.getHeader('referer') )
         }
-        //render(template: "/finance/ajaxModal", model: result)
-        redirect(uri: request.getHeader('referer') )
+        else {
+            result.formUrl = g.createLink(mapping:"subfinanceCopyCI", params:[sub:result.sub, id:result.id])
+
+            render(template: "/finance/copyModal", model: result)
+        }
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
