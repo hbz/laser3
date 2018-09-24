@@ -152,7 +152,7 @@
                                             <g:message code="contact.belongesTo.label"  />
                                         </label>
                                         <i class="icon university la-list-icon"></i>${org?.name}
-                                        <input id="org" name="org.id" type="hidden" value="${org?.name}" />
+                                        <input id="org" name="functionOrg" type="hidden" value="${org?.id}" />
                                 </g:else>
                             </div>
                         </div>
