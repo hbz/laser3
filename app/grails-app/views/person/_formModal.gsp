@@ -121,38 +121,44 @@
             <g:if test="${! tmplHideFunctions}">
                 <div class="person-role-function-manager">
 
-                    <h5 class="ui header">
-                        <g:message code="person.function.label" default="Function"/>
-                    </h5>
                     <div class="field">
-                        <div class="three fields">
-                            <div class="inline sixteen wide field">
+
+                        <div class="two fields">
+                            <div class="field">
+                                <label for="org">
+                                    <g:message code="person.function.label" default="Function"/>
+                                </label>
                                 <laser:select class="ui dropdown values"
                                               name="functionType"
                                               from="${PersonRole.getAllRefdataValues('Person Function')}"
                                               optionKey="id"
                                               value="${presetFunctionType?.id}"
                                               optionValue="value" />
-
-                                <g:if test=" ${org?.name}">
-                                    <label for="org">
-                                        <g:message code="contact.belongesTo.label"  />
-                                    </label>
-                                    <i class="icon university la-list-icon"></i>${org?.name}
-                                    <input id="org" name="org.id" type="hidden" value="${org?.name}" />
+                            </div>
+                            <div class="field">
+                                <g:if test="${institution}">
+                                        <label for="org">
+                                            <g:message code="contact.belongesTo.label"  />
+                                        </label>
+                                        <g:select class="ui search dropdown"
+                                                  name="functionOrg"
+                                                  from="${Org.getAll()}"
+                                                  value="${org?.id}"
+                                                  optionKey="id"
+                                                  optionValue="" />
                                 </g:if>
                                 <g:else>
-                                    <g:select class="ui search dropdown"
-                                              name="functionOrg"
-                                              from="${Org.getAll()}"
-                                              value="${org?.id}"
-                                              optionKey="id"
-                                              optionValue="" />
+                                        <label for="org">
+                                            <g:message code="contact.belongesTo.label"  />
+                                        </label>
+                                        <i class="icon university la-list-icon"></i>${org?.name}
+                                        <input id="org" name="org.id" type="hidden" value="${org?.name}" />
                                 </g:else>
                             </div>
                         </div>
                     </div>
                 </div>
+
 
             </g:if>
             <g:else>
