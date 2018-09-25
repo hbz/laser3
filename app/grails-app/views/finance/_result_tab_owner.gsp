@@ -9,9 +9,9 @@
         <th>${message(code:'financials.newCosts.costTitle')}</th>
         <th class="two wide">${message(code:'financials.invoice_total')}</th>
         <th class="two wide">${message(code:'financials.newCosts.valueInEuro')}</th>
-        <th>${message(code:'financials.costItemElement')}</th>
         <th>${message(code:'financials.costItemStatus')}</th>
-        <th>${message(code:'financials.dateFrom')} - ${message(code:'financials.dateTo')}</th>
+        <th>${message(code:'financials.dateFrom')}<br />${message(code:'financials.dateTo')}</th>
+        <th>${message(code:'financials.costItemElement')}</th>
         <th></th>
     </tr>
 </thead>
@@ -61,9 +61,7 @@
                 <br />
                 <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="EUR" />  (${ci.taxRate ?: 0}%)
             </td>
-            <td>
-                <semui:xEditableRefData config="CostItemElement" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemElement" />
-            </td>
+
             <td>
                 <semui:xEditableRefData config="CostItemStatus" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemStatus" />
             </td>
@@ -71,6 +69,10 @@
                 <semui:xEditable owner="${ci}" type="date" field="startDate" />
                 <br />
                 <semui:xEditable owner="${ci}" type="date" field="endDate" />
+            </td>
+
+            <td>
+                <semui:xEditableRefData config="CostItemElement" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemElement" />
             </td>
 
             <td class="x">
