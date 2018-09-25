@@ -96,7 +96,6 @@
                 <g:if test="${tmplConfigShow.contains(contact?.contentType?.value)}">
                     <g:render template="/templates/cpa/contact" model="${[
                             contact: contact,
-                            editable: true,
                             tmplShowDeleteButton: true
                     ]}"/>
                 </g:if>
