@@ -251,12 +251,20 @@
                 $(this).find('tbody tr span.costData').each( function() {
 
                     var ci = costs[$(this).attr('data-billingCurrency')]
-                    ci.local            += parseFloat($(this).attr('data-costInLocalCurrency'))
-                    ci.localAfterTax    += parseFloat($(this).attr('data-costInLocalCurrencyAfterTax'))
-                    ci.billing          += parseFloat($(this).attr('data-costInBillingCurrency'))
-                    ci.billingAfterTax  += parseFloat($(this).attr('data-costInBillingCurrencyAfterTax'))
+
+                    if ($(this).attr('data-costInLocalCurrency')) {
+                        ci.local += parseFloat($(this).attr('data-costInLocalCurrency'))
+                    }
+                    if ($(this).attr('data-costInLocalCurrencyAfterTax')) {
+                        ci.localAfterTax += parseFloat($(this).attr('data-costInLocalCurrencyAfterTax'))
+                    }
+                    if ($(this).attr('data-costInBillingCurrency')) {
+                        ci.billing += parseFloat($(this).attr('data-costInBillingCurrency'))
+                    }
+                    if ($(this).attr('data-costInBillingCurrencyAfterTax')) {
+                        ci.billingAfterTax += parseFloat($(this).attr('data-costInBillingCurrencyAfterTax'))
+                    }
                 })
-                var socClass = $(this).find('span[class^=sumOfCosts]').attr('class')
 
                 var finalLocal = 0.0
                 var finalLocalAfterTax = 0.0
@@ -266,7 +274,8 @@
                     finalLocalAfterTax += costs[ci].localAfterTax
                 }
 
-                var info = "Wert: "
+                var info = ""
+                    info += "Wert: "
                     info += Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(finalLocal)
                     info += "<br />"
                     info += "Endpreis nach Steuern: "
@@ -280,6 +289,8 @@
                     info += "Endpreis nach Steuern: "
                     info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billingAfterTax)
                 }
+
+                var socClass = $(this).find('span[class^=sumOfCosts]').attr('class')
                 $('.' + socClass).html( info )
             })
         }
