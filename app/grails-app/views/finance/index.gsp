@@ -155,9 +155,9 @@
             <div id="filterTemplateWrapper" class="wrapper">
                 <div id="filterTemplate">
 
-                    <g:render template="filter" model="['ciListOwner': cost_items, 'ciListConsSubsc': cost_items_CS]"/>
+                    <g:render template="filter" model="['ciList':cost_items, 'ciListCons':cost_items_CS, 'ciListSubscr':cost_items_SUBSCR]"/>
 
-                    <g:render template="result" model="['ciListOwner': cost_items, 'ciListConsSubsc': cost_items_CS]"/>
+                    <g:render template="result" model="['ciList':cost_items, 'ciListCons':cost_items_CS, 'ciListSubscr':cost_items_SUBSCR]"/>
                 </div>
             </div>
 

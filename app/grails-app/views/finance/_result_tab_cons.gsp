@@ -1,4 +1,4 @@
-<!-- _result_tab_sc.gsp -->
+<!-- _result_tab_cons.gsp -->
 <%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.FinanceController" %>
 
 <laser:serviceInjection />
@@ -101,4 +101,4 @@
     </tfoot>
 </table>
 
-<!-- _result_tab_sc.gsp -->
+<!-- _result_tab_cons.gsp -->

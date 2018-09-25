@@ -2,23 +2,25 @@
 <%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.FinanceController" %>
 <laser:serviceInjection />
 
-<g:if test="${queryMode == FinanceController.MODE_CONS_SUBSCR}">
-
-    <div id="financeFilterData" class="ui top attached tabular menu">
+<div id="financeFilterData" class="ui top attached tabular menu">
+    <g:if test="${queryMode != FinanceController.MODE_CONS_AT_SUBSCR}">
         <div class="item active" data-tab="OWNER">Eigene Kosten</div>
-        <div class="item" data-tab="CONS_SUBSCR">Teilnehmerkosten</div>
-    </div>
-
-    <r:script>
-        $('#financeFilterData .item').tab()
-    </r:script>
-
-</g:if><%-- FinanceController.MODE_CONS_SUBSCR --%>
+    </g:if>
+    <g:if test="${queryMode == FinanceController.MODE_CONS}">
+        <div class="item" data-tab="CONS">Teilnehmerkosten (Konsortialsicht)</div>
+    </g:if>
+    <g:if test="${queryMode == FinanceController.MODE_CONS_AT_SUBSCR}">
+        <div class="item active" data-tab="CONS">Teilnehmerkosten (Konsortialsicht)</div>
+    </g:if>
+    <g:if test="${queryMode == FinanceController.MODE_SUBSCR}">
+        <div class="item" data-tab="SUBSCR">Teilnehmerkosten</div>
+    </g:if>
+</div>
 
 <%
     // WORKAROUND; grouping costitems by subscription
     def costItemsOwner = ["clean":[]]
-    (ciListOwner?.collect{it.sub}).each{ item ->
+    (ciList?.collect{it.sub}).each{ item ->
         if (item) {
             costItemsOwner << ["${item.name}": []]
         }
@@ -32,15 +34,12 @@
         }
     }
     costItemsOwner = costItemsOwner.findAll{ ! it.value.isEmpty() }
+
 %>
 
-<%
-    def costItemsCS = ciListConsSubsc
-%>
 
-<g:if test="${queryMode == FinanceController.MODE_CONS_SUBSCR}">
-    <div class="ui bottom attached tab active" data-tab="OWNER">
-</g:if><%-- FinanceController.MODE_CONS_SUBSCR --%>
+<!-- OWNER -->
+<div class="ui bottom attached tab active" data-tab="OWNER">
 
     <g:if test="${! costItemsOwner}">
         <br />
@@ -48,6 +47,7 @@
     </g:if>
 
     <g:if test="${costItemsOwner.size() > 1}">
+        <br />
         <div class="ui fluid accordion">
     </g:if>
 
@@ -77,16 +77,32 @@
         </div><!-- .accordion -->
     </g:if>
 
+</div><!-- OWNER -->
 
-<g:if test="${queryMode == FinanceController.MODE_CONS_SUBSCR}">
+<g:if test="${queryMode == FinanceController.MODE_CONS}">
 
-    </div><!-- OWNER -->
-    <div class="ui bottom attached tab" data-tab="CONS_SUBSCR">
+    <!-- CONS --><div class="ui bottom attached tab" data-tab="CONS">
+        <br />
+        <g:render template="result_tab_cons" model="[editable: editable, cost_items: ciListCons, i: 'CONS']"></g:render>
+    </div><!-- CONS -->
+</g:if>
+<g:if test="${queryMode == FinanceController.MODE_CONS_AT_SUBSCR}">
 
-        <g:render template="result_tab_sc" model="[editable: editable, cost_items: costItemsCS, i: 'fake']"></g:render>
+    <!-- CONS --><div class="ui bottom attached tab" data-tab="CONS">
+    <br />
+    <g:render template="result_tab_cons" model="[editable: editable, cost_items: ciListCons, i: 'CONS']"></g:render>
+</div><!-- CONS -->
+</g:if>
+<g:if test="${queryMode == FinanceController.MODE_SUBSCR}">
 
-    </div><!-- CONS_SUBSCR -->
+    <!-- SUBSCR --><div class="ui bottom attached tab" data-tab="SUBSCR">
+        <br />
+        <g:render template="result_tab_subscr" model="[editable: editable, cost_items: ciListSubscr, i: 'SUBSCR']"></g:render>
+    </div><!-- SUBSCR -->
+</g:if>
 
-</g:if><%-- FinanceController.MODE_CONS_SUBSCR --%>
+<r:script>
+    $('#financeFilterData .item').tab()
+</r:script>
 
 <!-- _result.gsp -->
