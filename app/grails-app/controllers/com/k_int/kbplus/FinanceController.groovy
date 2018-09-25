@@ -810,7 +810,7 @@ class FinanceController {
           def cost_local_currency_after_tax     = params.newCostInLocalCurrencyAfterTax ? params.double( 'newCostInLocalCurrencyAfterTax') : cost_local_currency
           def new_tax_rate                      = params.newTaxRate ? params.int( 'newTaxRate' ) : 0
 
-        //def inclSub = params.includeInSubscription? (RefdataValue.get(params.long('includeInSubscription'))): defaultInclSub //todo Speak with Owen, unknown behaviour
+          def cost_item_isVisibleForSubscriber = (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber)?.value == 'Yes') : false)
 
           if (! subsToDo) {
               subsToDo << null // Fallback for editing cost items via myInstitution/finance // TODO: ugly
@@ -830,6 +830,7 @@ class FinanceController {
               newCostItem.issueEntitlement = ie
               newCostItem.order = order
               newCostItem.invoice = invoice
+              newCostItem.isVisibleForSubscriber = cost_item_isVisibleForSubscriber
               newCostItem.costItemCategory = cost_item_category
               newCostItem.costItemElement = cost_item_element
               newCostItem.costItemStatus = cost_item_status

@@ -36,6 +36,12 @@
             </td>
             <td>
                 <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" />
+
+                <g:if test="${ci.isVisibleForSubscriber}">
+                    <span data-position="top right" data-tooltip="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
+                        <i class="ui icon eye orange"></i>
+                    </span>
+                </g:if>
             </td>
             <td>
                 <span class="costData"

@@ -1,5 +1,5 @@
 <!-- _ajaxModal.gsp -->
-<%@ page import="com.k_int.kbplus.CostItem;com.k_int.kbplus.CostItemGroup;com.k_int.kbplus.BudgetCode;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataValue"" %>
+<%@ page import="com.k_int.kbplus.*;" %>
 <laser:serviceInjection />
 
 <g:render template="vars" /><%-- setting vars --%>
@@ -19,9 +19,16 @@
 
 <semui:modal id="costItem_ajaxModal" text="${modalText}">
     <g:if test="${costItem?.globalUID}">
-        <div class="ui blue ribbon label">
-            <strong>${message(code:'financials.newCosts.UID')}: </strong>${costItem?.globalUID}
-        </div>
+        <g:if test="${costItem?.isVisibleForSubscriber}">
+            <div class="ui orange ribbon label">
+                <strong>${message(code:'financials.isVisibleForSubscriber')}</strong>
+            </div>
+        </g:if>
+        <g:else><%--
+            <div class="ui blue ribbon label">
+                <strong>${message(code:'financials.newCosts.UID')}: </strong>${costItem?.globalUID}
+            </div>--%>
+        </g:else>
     </g:if>
     <g:form class="ui small form" id="editCost" url="[controller:'finance', action:'newCostItem']">
 
@@ -39,10 +46,33 @@
 
         <div class="fields">
             <div class="nine wide field">
-                <div class="field">
-                    <label>${message(code:'financials.newCosts.costTitle')}</label>
-                    <input type="text" name="newCostTitle" id="newCostTitle" value="${costItem?.costTitle}" />
-                </div><!-- .field -->
+                <g:if test="${OrgRole.findBySubAndOrgAndRoleType(fixedSubscription, contextService.getOrg(), RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role'))}">
+                    <div class="two fields la-fields-no-margin-button">
+                        <div class="field">
+                            <label>${message(code:'financials.newCosts.costTitle')}</label>
+                            <input type="text" name="newCostTitle" id="newCostTitle" value="${costItem?.costTitle}" />
+                        </div><!-- .field -->
+                        <div class="field">
+                            <label>${message(code:'financials.isVisibleForSubscriber')}</label>
+                            <g:set var="newIsVisibleForSubscriberValue" value="${
+                                costItem?.isVisibleForSubscriber ? RefdataValue.getByValueAndCategory('Yes', 'YN').id : RefdataValue.getByValueAndCategory('No', 'YN').id
+                            }" />
+                            <laser:select name="newIsVisibleForSubscriber" class="ui dropdown"
+                                      id="newIsVisibleForSubscriber"
+                                      from="${RefdataValue.findAllByOwner(RefdataCategory.findByDesc('YN'))}"
+                                      optionKey="id"
+                                      optionValue="value"
+                                      noSelection="${['':'']}"
+                                      value="${newIsVisibleForSubscriberValue}" />
+                        </div><!-- .field -->
+                    </div>
+                </g:if>
+                <g:else>
+                    <div class="field">
+                        <label>${message(code:'financials.newCosts.costTitle')}</label>
+                        <input type="text" name="newCostTitle" id="newCostTitle" value="${costItem?.costTitle}" />
+                    </div><!-- .field -->
+                </g:else>
 
                 <div class="two fields la-fields-no-margin-button">
                     <div class="field">
@@ -95,7 +125,7 @@
                                   value="${costItem?.costItemElement?.id}" />
                 </div><!-- .field -->
 
-                <div class="fields two">
+                <div class="two fields la-fields-no-margin-button">
                     <div class="field">
                         <label>${message(code:'financials.newCosts.controllable')}</label>
                         <laser:select name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCateogry')}" class="ui dropdown"

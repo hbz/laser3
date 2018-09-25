@@ -39,6 +39,12 @@
                     <g:set var="orgRoles" value="${OrgRole.findBySubAndRoleType(ci.sub, RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'))}" />
                     <g:each in="${orgRoles}" var="or">
                         <g:link mapping="subfinance" params="[sub:or.sub.id]">${or.org}</g:link>
+
+                        <g:if test="${ci.isVisibleForSubscriber}">
+                            <span data-position="top right" data-tooltip="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
+                                <i class="ui icon eye orange"></i>
+                            </span>
+                        </g:if>
                     </g:each>
 
                     <br />
