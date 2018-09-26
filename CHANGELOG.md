@@ -1,4 +1,9 @@
 
+0.8.4
+
+- fixed: copying properties with zero values
+- fixed: faulty query for adding license members
+
 0.8.3
 
 - added: prev/next navigation for subscription
