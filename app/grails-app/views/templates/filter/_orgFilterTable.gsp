@@ -61,7 +61,7 @@
             </g:else>
             <g:if test="${tmplShowCheckbox}">
                 <td>
-                    <g:checkBox type="text" name="selectedOrgs" value="${org.id}" checked="false"/>
+                    <g:checkBox type="text" id="" name="selectedOrgs" value="${org.id}" checked="false"/>
                 </td>
             </g:if>
             <td>

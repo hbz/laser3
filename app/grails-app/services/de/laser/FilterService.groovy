@@ -40,10 +40,17 @@ class FilterService {
             queryParams << Long.parseLong(params.country)
         }
 
+        // hack: applying filter on org subset
+        if (params.constraint_orgIds) {
+            query << "o.id in ( " + params.constraint_orgIds?.join(',') + " )"
+        }
+
+        def defaultOrder = " order by " + (params.sort ?: " LOWER(o.name)") + " " + (params.order ?: "asc")
+
         if (query.size() > 0) {
-            query = "from Org o where " + query.join(" and ") + " order by LOWER(o.name) asc"
+            query = "from Org o where " + query.join(" and ") + defaultOrder
         } else {
-            query = "from Org o order by LOWER(o.name) asc"
+            query = "from Org o " + defaultOrder
         }
 
         result.query = query
@@ -85,7 +92,7 @@ class FilterService {
         queryParams << org
         queryParams << 'Consortium'
 
-        def defaultOrder = " order by " + (params.sort ?: " LOWER(o.sortname) ") + (params.order ?: " asc")
+        def defaultOrder = " order by " + (params.sort ?: " LOWER(o.sortname)") + " " + (params.order ?: "asc")
 
         if (query.size() > 0) {
             query = "select o from Org as o, Combo as c where " + query.join(" and ") + " and c.fromOrg = o and c.toOrg = ? and c.type.value = ? " + defaultOrder
@@ -126,14 +133,13 @@ class FilterService {
             queryParams << sdFormat.parse(params.endDateTo)
         }
 
-        def defaultOrder = " order by " + (params.sort ?: "t.endDate") + (params.order ?: " desc")
+        def defaultOrder = " order by " + (params.sort ?: "t.endDate") + " " + (params.order ?: "desc")
 
         if (query.size() > 0) {
             query = " and " + query.join(" and ") + defaultOrder
         } else {
             query = defaultOrder
         }
-
         result.query = query
         result.queryParams = queryParams
 
