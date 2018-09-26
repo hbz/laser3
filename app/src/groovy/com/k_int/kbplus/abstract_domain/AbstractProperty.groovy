@@ -54,9 +54,9 @@ abstract class AbstractProperty implements Serializable {
     public String toString(){
         if(stringValue)
             return stringValue
-        if(intValue)
+        if(intValue != null)
             return intValue.toString()
-        if(decValue)
+        if(decValue != null)
             return decValue.toString()
         if(refValue)
             return refValue.toString()
@@ -67,9 +67,9 @@ abstract class AbstractProperty implements Serializable {
     def copyValueAndNote(newProp){
         if(stringValue)
             newProp.stringValue = stringValue
-        else if(intValue)
-            newProp.intValue = intValue
-        else if(decValue)
+        else if(intValue != null)
+            newProp.intValue = intValue.toInteger()
+        else if(decValue != null)
             newProp.decValue = decValue
         else if(refValue)
             newProp.refValue = refValue
