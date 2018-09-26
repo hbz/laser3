@@ -20,6 +20,7 @@ class StatsSyncService {
     def factService
     def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def queryParams = [:]
+    def errors = []
 
 
     static int submitCount=0
@@ -113,10 +114,10 @@ class StatsSyncService {
     def internalDoSync() {
         try {
             log.debug("create thread pool")
-
-            def statsApi = grailsApplication.config.statsApiUrl
-            if ((statsApi == null) || (statsApi == '')) {
+            def statsApi = grailsApplication.config.statsApiUrl ?: ''
+            if (statsApi == '') {
                 log.error("Stats API URL not set in config")
+                errors.add("Stats API URL not set in config")
                 return
             }
             def mostRecentClosedPeriod = getMostRecentClosedPeriod()
@@ -145,8 +146,11 @@ class StatsSyncService {
     }
 
     def processListItem(listItem, mostRecentClosedPeriod) {
-
-        def stats_api_endpoint = new RESTClient(grailsApplication.config.statsApiUrl)
+        def uri = new URIBuilder(grailsApplication.config.statsApiUrl)
+        def baseUrl = uri.getScheme()+"://"+uri.getHost()
+        def basePath = uri.getPath().endsWith('/') ? uri.getPath() : uri.getPath() + '/'
+        def path = basePath + 'Sushiservice/GetReport'
+        def stats_api_endpoint = new RESTClient(baseUrl)
         def timeStampFormat = new SimpleDateFormat('yyyy-MM-dd')
         def start_time = System.currentTimeMillis()
 
@@ -184,7 +188,7 @@ class StatsSyncService {
                         log.debug("Calling STATS API:  ${report}, Title with ID ${titleId}")
                         log.debug("Period Begin: ${beginDate}, Period End: ${endDate}")
                         stats_api_endpoint.get(
-                                path: 'Sushiservice/GetReport',
+                                path: path,
                                 contentType: ANY, // We get no XmlSlurper Objects for value XML
                                 query: [
                                         APIKey        : apiKey,
