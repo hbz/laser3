@@ -1233,6 +1233,11 @@ class BootStrap {
         RefdataValue.loc('Document Type', [en: 'Addendum', de: 'Zusatz'])
         RefdataValue.loc('Document Type', [en: 'Note', de: 'Anmerkung'])
         RefdataValue.loc('Document Type', [en: 'ONIX-PL License', de: 'ONIX-PL Lizenz'])
+        RefdataValue.loc('Document Type', [key: 'Usage Statistics', en: 'Usage Statistics', de: 'Nutzungsstatistik'])
+        RefdataValue.loc('Document Type', [key: 'Offer', en: 'Offer', de: 'Angebot'])
+        RefdataValue.loc('Document Type', [key: 'Renewal', en: 'Renewal', de: 'Renewal'])
+        RefdataValue.loc('Document Type', [key: 'Order', en: 'Order', de: 'Bestellung'])
+        RefdataValue.loc('Document Type', [key: 'Invoice', en: 'Invoice', de: 'Rechnung'])
 
         RefdataCategory.loc('Entitlement Issue Status',
                 [en: 'Entitlement Issue Status', de: 'Entitlement Issue Status'])
