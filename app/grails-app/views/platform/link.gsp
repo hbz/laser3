@@ -33,19 +33,5 @@
 <div id="dynamicUpdate">
   <g:render template="apLinkContent" model="result" />
 </div>
-<r:script language="JavaScript">
-    function selectAll() {
-        $('.bulkcheck').attr('checked')? $('.bulkcheck').attr('checked', false) : $('.bulkcheck').attr('checked', true);
-    }
-    function confirmSubmit() {
-        if ( $('#bulkOperationSelect').val() === 'remove' ) {
-          var agree=confirm('${message(code:'default.continue.confirm', default:'Are you sure you wish to continue?')}');
-          if (agree)
-            return true ;
-          else
-            return false ;
-        }
-      }
-</r:script>
 </body>
 </html>
