@@ -41,19 +41,20 @@ class AccessService {
 
     boolean checkMinUserOrgRole(user, org, role) {
 
+        def result = false
+        def rolesToCheck = []
+
         if (! user || ! org) {
-            return false
+            return result
         }
         if (role instanceof String) {
             role = Role.findByAuthority(role)
         }
-
-        def rolesToCheck = [role]
-        def result = false
+        rolesToCheck << role
 
         // NEW CONSTRAINT:
         if (org.id != contextService.getOrg()?.id) {
-            return false
+            return result
         }
 
         // sym. role hierarchy

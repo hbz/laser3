@@ -2,6 +2,12 @@
 <%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.FinanceController" %>
 <laser:serviceInjection />
 
+<%
+    def tabOwnerActive = (tab?.equalsIgnoreCase('owner')) ? 'active' : ''
+    def tabSCActive    = (tab?.equalsIgnoreCase('sc')) ? 'active' : ''
+%>
+
+
 <div id="financeFilterData" class="ui top attached tabular menu">
     <g:if test="${queryMode != FinanceController.MODE_CONS_AT_SUBSCR}">
         <div class="item active" data-tab="OWNER">Eigene Kosten</div>
@@ -16,6 +22,12 @@
         <div class="item" data-tab="SUBSCR">Teilnehmerkosten</div>
     </g:if>
 </div>
+
+<g:if test="${queryMode == FinanceController.MODE_CONS_SUBSCR}">
+    <div id="financeFilterData" class="ui top attached tabular menu">
+        <div class="item ${tabOwnerActive}" data-tab="OWNER">Eigene Kosten</div>
+        <div class="item ${tabSCActive}" data-tab="CONS_SUBSCR">Teilnehmerkosten</div>
+    </div>
 
 <%
     // WORKAROUND; grouping costitems by subscription
@@ -37,10 +49,10 @@
 
 %>
 
-
 <g:if test="${queryMode != FinanceController.MODE_CONS_AT_SUBSCR}">
     <!-- OWNER -->
-    <div class="ui bottom attached tab active" data-tab="OWNER">
+    <div class="ui bottom attached tab ${tabOwnerActive}" data-tab="OWNER">
+
 
         <g:if test="${! costItemsOwner}">
             <br />
@@ -100,7 +112,7 @@
 <g:if test="${queryMode == FinanceController.MODE_SUBSCR}">
 
     <!-- SUBSCR -->
-    <div class="ui bottom attached tab" data-tab="SUBSCR">
+    <div class="ui bottom attached tab ${tabSCActive}" data-tab="SUBSCR">
         <br />
         <g:render template="result_tab_subscr" model="[editable: editable, cost_items: ciListSubscr, i: 'SUBSCR']"></g:render>
     </div><!-- SUBSCR -->

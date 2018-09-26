@@ -102,15 +102,15 @@
 
                 <td class="x">
                     <g:if test="${editable}">
-                        <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}"]' class="ui icon button trigger-modal">
+                        <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", tab:"sc"]' class="ui icon button trigger-modal">
                             <i class="write icon"></i>
                         </g:link>
                         <span data-position="top right" data-tooltip="${message(code:'financials.costItem.copy.tooltip')}">
-                            <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}"]' class="ui icon button trigger-modal">
+                            <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", tab:"sc"]' class="ui icon button trigger-modal">
                                 <i class="copy icon"></i>
                             </g:link>
                         </span>
-                        <g:link controller="finance" action="deleteCostItem" id="${ci.id}" class="ui icon negative button" onclick="return confirm('${message(code: 'default.button.confirm.delete')}')">
+                        <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ tab:'sc']" class="ui icon negative button" onclick="return confirm('${message(code: 'default.button.confirm.delete')}')">
                             <i class="trash alternate icon"></i>
                         </g:link>
                     </g:if>

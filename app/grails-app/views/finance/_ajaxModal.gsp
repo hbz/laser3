@@ -30,7 +30,7 @@
             </div>--%>
         </g:else>
     </g:if>
-    <g:form class="ui small form" id="editCost" url="[controller:'finance', action:'newCostItem']">
+    <g:form class="ui small form" id="editCost" url="${formUrl}">
 
         <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}" />
         <g:if test="${costItem}">
@@ -175,7 +175,7 @@
                     </div><!-- .field -->
                     <div class="field">
                         <label>Endpreis</label>
-                        <input title="Rechnungssumme nach Steuer (in EUR)" type="number" class="calc" readonly="readonly"
+                        <input title="Rechnungssumme nach Steuer (in EUR)" type="text" readonly="readonly"
                                name="newCostInBillingCurrencyAfterTax" id="newCostInBillingCurrencyAfterTax"
                                value="${costItem?.costInBillingCurrencyAfterTax}" step="0.01"/>
 
@@ -203,7 +203,7 @@
                     </div><!-- .field -->
                     <div class="field">
                         <label>Steuersatz (in %)</label>
-                        <g:select class="ui dropdown" name="newTaxRate" title="TaxRate"
+                        <g:select class="ui dropdown calc" name="newTaxRate" title="TaxRate"
                               from="${CostItem.TAX_RATES}"
                               optionKey="${{it}}"
                               optionValue="${{it}}"
@@ -226,7 +226,7 @@
                     </div><!-- .field -->
                     <div class="field">
                         <label>Endpreis (in EUR)</label>
-                        <input title="Wert nach Steuer (in EUR)" type="number" class="calc" readonly="readonly"
+                        <input title="Wert nach Steuer (in EUR)" type="text" readonly="readonly"
                                name="newCostInLocalCurrencyAfterTax" id="newCostInLocalCurrencyAfterTax"
                                value="${costItem?.costInLocalCurrencyAfterTax}" step="0.01"/>
 
@@ -236,7 +236,7 @@
                 <div class="field">
                     <div class="ui checkbox">
                         <label>Finalen Preis runden</label>
-                        <input name="newFinalCostRounding" class="hidden" type="checkbox"
+                        <input name="newFinalCostRounding" class="hidden calc" type="checkbox"
                                <g:if test="${costItem?.finalCostRounding}"> checked="checked" </g:if>
                         />
                     </div>
@@ -408,7 +408,7 @@
                 input.val(($("#newCostInBillingCurrency").val() * $("#newCostCurrencyRate").val()).toFixed(2));
 
                 $(".la-account-currency").find(".field").removeClass("error");
-                taxRateElem.trigger('change')
+                calcTaxResults()
             }
         })
         $("#costButton2").click(function() {
@@ -418,7 +418,7 @@
                 input.val(($("#newCostInLocalCurrency").val() / $("#newCostInBillingCurrency").val()).toFixed(9));
 
                 $(".la-account-currency").find(".field").removeClass("error");
-                taxRateElem.trigger('change')
+                calcTaxResults()
             }
         })
         $("#costButton3").click(function() {
@@ -428,7 +428,7 @@
                 input.val(($("#newCostInLocalCurrency").val() / $("#newCostCurrencyRate").val()).toFixed(2));
 
                 $(".la-account-currency").find(".field").removeClass("error");
-                taxRateElem.trigger('change')
+                calcTaxResults()
             }
         });
         var isError = function(cssSel)  {
@@ -440,9 +440,11 @@
             return false
         }
 
-        var taxRateElem = $("*[name=newTaxRate]")
+        $('.calc').on('change', function() {
+            calcTaxResults()
+        })
 
-        taxRateElem.on('change', function(){
+        var calcTaxResults = function() {
             var roundF = $('*[name=newFinalCostRounding]').prop('checked')
             var taxF = 1.0 + (0.01 * $("*[name=newTaxRate]").val())
 
@@ -452,7 +454,7 @@
             $('#newCostInLocalCurrencyAfterTax').val(
                 roundF ? Math.round( $("#newCostInLocalCurrency").val() * taxF ) : ( $("#newCostInLocalCurrency").val() * taxF ).toFixed(2)
             )
-        })
+        }
 
         var costElems = $("#newCostInLocalCurrency, #newCostCurrencyRate, #newCostInBillingCurrency")
 
@@ -465,75 +467,9 @@
             }
         })
 
-        $('*[name=newFinalCostRounding]').on('change', function(){
-            if (! isError("#newCostInLocalCurrency") && ! isError("#newCostInBillingCurrency") && ! isError("#newCostCurrencyRate")) {
-                taxRateElem.trigger('change')
-            }
-        })
-
         var ajaxPostFunc = function () {
 
             console.log( "ajaxPostFunc")
-<%--
-            $('#costItem_ajaxModal #newBudgetCode').select2({
-                minimumInputLength: 0,
-                formatInputTooShort: function () {
-                    return "${message(code:'select2.minChars.note')}";
-                },
-                allowClear: true,
-                /*
-                tags: true,
-                tokenSeparators: [',', ' '],
-                */
-                ajax: {
-                    url: "<g:createLink controller='ajax' action='lookup'/>",
-                    dataType: 'json',
-                    data: function (term, page) {
-                        return {
-                            format: 'json',
-                            q: term,
-                            shortcode: "${contextService.getOrg()?.shortcode}",
-                            baseClass: 'com.k_int.kbplus.CostItemGroup'
-                        };
-                    },
-                    results: function (data, page) {
-                        return {results:
-                            data.values};
-                    }
-                },
-                createSearchChoice: function(term, data) {
-                    var existsAlready = false;
-                    for (var i = 0; i < data.length; i++) {
-                        if(term.toLowerCase() == data[i].text.toLowerCase()) {
-                            existsAlready = true;
-                            break;
-                        }
-                    }
-                    if(! existsAlready)
-                        return {id: -1 + term, text: "${message(code: 'default.newValue.label')}: " + term};
-                }
-            })
---%>
-            /*
-            $.ajax({
-                url: "<g:createLink controller='ajax' action='lookup'/>",
-                dataType: 'json',
-                data: {
-                    format: 'json',
-                    shortcode: "${contextService.getOrg()?.shortcode}",
-                    baseClass: 'com.k_int.kbplus.CostItemGroup'
-                },
-                success: function(data) {
-                    $('#costItem_ajaxModal #newBudgetCode').select2({
-                        tags: data.values
-                    })
-                    for (var i = 0; i < data.values.length; i++) {
-                        $('#costItem_ajaxModal #newBudgetCode').val(data.values[i].id).trigger('change')
-                    }
-                }
-            });
-*/
-
 
             <g:if test="${! inSubMode}">
 
