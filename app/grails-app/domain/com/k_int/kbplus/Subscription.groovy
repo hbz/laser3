@@ -46,7 +46,6 @@ class Subscription extends BaseDomainComponent implements TemplateSupport, Permi
 
   static transients = [ 'subscriber', 'provider', 'consortia' ]
 
-
   static hasMany = [
                      ids: IdentifierOccurrence,
                      packages : SubscriptionPackage,
@@ -58,7 +57,9 @@ class Subscription extends BaseDomainComponent implements TemplateSupport, Permi
                      pendingChanges: PendingChange,
                      customProperties: SubscriptionCustomProperty,
                      privateProperties: SubscriptionPrivateProperty,
-                     costItems: CostItem]
+                     costItems: CostItem,
+                     oapl: OrgAccessPointLink
+  ]
 
   static mappedBy = [
                       ids: 'sub',
@@ -70,7 +71,8 @@ class Subscription extends BaseDomainComponent implements TemplateSupport, Permi
                       derivedSubscriptions: 'instanceOf',
                       pendingChanges: 'subscription',
                       costItems: 'sub',
-                      privateProperties: 'owner'
+                      privateProperties: 'owner',
+                      oapl: 'subscription'
                       ]
 
     static mapping = {

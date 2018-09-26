@@ -117,7 +117,79 @@
                         </tbody>
                     </table>
                 </g:form>
-
+                <h5 class="ui header">${message(code: 'accessPoint.link.header', default: 'Access Config for Platform/License')}</h5>
+                <g:form class="ui form" url="[controller: 'accessPoint', action: 'linkPlatform']" id="linkPlatform" method="POST">
+                    <g:hiddenField name="id" value="${accessPoint?.id}" />
+                    <table class="ui celled la-table table compact collapsing ignore-floatThead">
+                        <thead>
+                        <tr>
+                            <g:sortableColumn property="platform" title="${message(code: "platform.label", default: "Platform")}" />
+                            <th>${message(code: 'accessPoint.actions', default: 'Actions')}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <g:each in="${linkedPlatformsMap}" var="linkedPlatform">
+                            <tr>
+                              <td><g:link controller="platform" action="show" id="${linkedPlatform.platform.id}">${linkedPlatform.platform.name}</g:link></td>
+                                <td class="center aligned">
+                                    <g:link class="ui negative icon button" controller="accessPoint" action="removeAPLink" id="${linkedPlatform.aplink.id}" onclick="return confirm('${message(code: "accessPoint.link.delete.confirm", default: "Remove Access Config?")}')">
+                                        <i class="delete icon"></i>
+                                    </g:link>
+                                </td>
+                            </tr>
+                            </g:each>
+                        <tr>
+                            <td>
+                                <g:select class="ui dropdown" name="platforms"
+                                          from="${platformList}"
+                                          optionKey="id"
+                                          optionValue="name"
+                                          value="1"
+                                          noSelection="${[null: message(code: 'default.select.choose.label')]}"/>
+                            </td>
+                        <td class="center aligned">
+                            <input type="Submit" class="ui tiny button" value="${message(code:'accessPoint.button.linkPlatform', default:'Create link')}" onClick="this.form.submit()" class="ui button"/>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </g:form>
+              <g:form class="ui form" url="[controller: 'accessPoint', action: 'linkSubscription']" id="linkLicense" method="POST">
+                <g:hiddenField name="id" value="${accessPoint?.id}" />
+                <table  class="ui celled collapsing la-table table compact ignore-floatThead">
+                  <thead>
+                  <tr>
+                    <g:sortableColumn property="license" title="${message(code: 'subscription.label', default: 'License')}" />
+                    <th>${message(code: 'accessPoint.actions', default: 'Actions')}</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <g:each in="${linkedSubscriptionsMap}" var="linkedSubscription">
+                    <tr>
+                      <td><g:link controller="subscriptionDetails" action="show" id="${linkedSubscription.subscription.id}">${linkedSubscription.subscription.name}</g:link></td>
+                      <td class="center aligned">
+                        <g:link class="ui negative icon button" controller="accessPoint" action="removeAPLink" id="${linkedSubscription.aplink.id}" onclick="return confirm('${message(code: "accessPoint.link.delete.confirm", default: "Remove Access Config?")}')">
+                          <i class="delete icon"></i>
+                        </g:link>
+                      </td>
+                    </tr>
+                  </g:each>
+                  <tr>
+                    <td>
+                      <g:select class="ui dropdown" name="subscriptions"
+                                from="${subscriptionList}"
+                                optionKey="id"
+                                optionValue="name"
+                                value="1"
+                                noSelection="${[null: message(code: 'default.select.choose.label')]}"/>
+                    </td>
+                    <td class="center aligned">
+                      <input type="Submit" class="ui tiny button" value="${message(code:'accessPoint.button.linkPlatform', default:'Verknüpfung erstellen')}" onClick="this.form.submit()" class="ui button"/>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </g:form>
                 <div class="ui segment form-actions">
                     <g:link class="ui button" action="accessPoints" controller="organisations" id="${orgId}" >${message(code:'accessPoint.button.back', default:'Back')}</g:link>
                     <g:link class="ui negative button" action="delete" controller="accessPoint"

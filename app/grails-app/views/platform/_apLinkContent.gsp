@@ -23,9 +23,7 @@
                           noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
             <div class="field">
-                <g:submitButton name="submit" class="ui button trash alternate" value="${message(code:'accessPoint.link.button.label', default:'Zugangsverfahren verknüpfen')}" onClick="return confirmSubmit()"/>
-
-                %{--<g:actionSubmit action="linkAccessPoint" class="ui primary button" value="${message(code:'accessPoint.link.button.label', default:'Zugangsverfahren verknüpfen')}" onClick="return confirmSubmit()"/>--}%
+                <g:submitButton name="submit" class="ui button trash alternate" value="${message(code:'platform.link.accessPoint.button.label', default:'Zugangsverfahren verknüpfen')}" onClick="return confirmSubmit()"/>
             </div>
         </div>
     </g:form>
@@ -33,8 +31,8 @@
 <table class="ui sortable celled la-table table ignore-floatThead la-bulk-header">
     <thead>
     <tr>
-        <th>Aktive Zugangspunkte</th>
-        <th>Aktion</th>
+        <th>${message(code:'platform.link.accessPoint.grid.activeConfiguration', default:'Active Access configuration')}</th>
+        <th>${message(code:'platform.link.accessPoint.grid.action', default:'Action')}</th>
     </tr>
     </thead>
     <tbody>
