@@ -3,31 +3,25 @@
 <laser:serviceInjection />
 
 <%
-    def tabOwnerActive = (tab?.equalsIgnoreCase('owner')) ? 'active' : ''
-    def tabSCActive    = (tab?.equalsIgnoreCase('sc')) ? 'active' : ''
+    def tabOwnerActive  = (tab?.equalsIgnoreCase('owner')) ? 'active' : ''
+    def tabSCActive     = (tab?.equalsIgnoreCase('sc')) ? 'active' : ''
 %>
 
 
 <div id="financeFilterData" class="ui top attached tabular menu">
     <g:if test="${queryMode != FinanceController.MODE_CONS_AT_SUBSCR}">
-        <div class="item active" data-tab="OWNER">Eigene Kosten</div>
+        <div class="item ${tabOwnerActive}" data-tab="OWNER">Eigene Kosten</div>
     </g:if>
     <g:if test="${queryMode == FinanceController.MODE_CONS}">
-        <div class="item" data-tab="CONS">Teilnehmerkosten (Konsortialsicht)</div>
+        <div class="item ${tabSCActive}" data-tab="CONS">Teilnehmerkosten (Konsortialsicht)</div>
     </g:if>
     <g:if test="${queryMode == FinanceController.MODE_CONS_AT_SUBSCR}">
-        <div class="item active" data-tab="CONS_AT_SUBSCR">Teilnehmerkosten (Konsortialsicht)</div>
+        <div class="item ${tabOwnerActive}" data-tab="CONS_AT_SUBSCR">Teilnehmerkosten (Konsortialsicht)</div>
     </g:if>
     <g:if test="${queryMode == FinanceController.MODE_SUBSCR}">
         <div class="item" data-tab="SUBSCR">Teilnehmerkosten</div>
     </g:if>
 </div>
-
-<g:if test="${queryMode == FinanceController.MODE_CONS_SUBSCR}">
-    <div id="financeFilterData" class="ui top attached tabular menu">
-        <div class="item ${tabOwnerActive}" data-tab="OWNER">Eigene Kosten</div>
-        <div class="item ${tabSCActive}" data-tab="CONS_SUBSCR">Teilnehmerkosten</div>
-    </div>
 
 <%
     // WORKAROUND; grouping costitems by subscription
@@ -96,7 +90,7 @@
 <g:if test="${queryMode == FinanceController.MODE_CONS}">
 
     <!-- CONS -->
-    <div class="ui bottom attached tab" data-tab="CONS">
+    <div class="ui bottom attached tab ${tabSCActive}" data-tab="CONS">
         <br />
         <g:render template="result_tab_cons" model="[editable: editable, cost_items: ciListCons, i: 'CONS']"></g:render>
     </div><!-- CONS -->
@@ -104,7 +98,7 @@
 <g:if test="${queryMode == FinanceController.MODE_CONS_AT_SUBSCR}">
 
     <!-- CONS_AT_SUBSCR -->
-    <div class="ui bottom attached tab active" data-tab="CONS_AT_SUBSCR">
+    <div class="ui bottom attached tab ${tabOwnerActive}" data-tab="CONS_AT_SUBSCR">
     <br />
     <g:render template="result_tab_cons" model="[editable: editable, cost_items: ciListCons, i: 'CONS_AT_SUBSCR']"></g:render>
 </div><!-- CONS_AT_SUBSCR -->
@@ -112,7 +106,7 @@
 <g:if test="${queryMode == FinanceController.MODE_SUBSCR}">
 
     <!-- SUBSCR -->
-    <div class="ui bottom attached tab ${tabSCActive}" data-tab="SUBSCR">
+    <div class="ui bottom attached tab" data-tab="SUBSCR">
         <br />
         <g:render template="result_tab_subscr" model="[editable: editable, cost_items: ciListSubscr, i: 'SUBSCR']"></g:render>
     </div><!-- SUBSCR -->
