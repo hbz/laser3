@@ -129,14 +129,13 @@ class FilterService {
             queryParams << sdFormat.parse(params.endDateTo)
         }
 
-        def defaultOrder = " order by " + (params.sort ?: "t.endDate") + (params.order ?: " desc")
+        def defaultOrder = " order by " + (params.sort ?: "t.endDate") + " " + (params.order ?: "desc")
 
         if (query.size() > 0) {
             query = " and " + query.join(" and ") + defaultOrder
         } else {
             query = defaultOrder
         }
-
         result.query = query
         result.queryParams = queryParams
 

@@ -1,4 +1,20 @@
 
+0.9 RC
+
+- reworked dashbord, e.g. tasks
+- reworked provider list view
+- added list view for platforms
+- improved filter and views for managing consortia members
+- added bulk creation for cost items (consortia only)
+- added copy function for cost items
+- added copy function for subscriptions
+- restricted subscription assignment for licenses (consortia only)
+- added sorting for contacts
+- fixed: cost items calculation
+- fixed: sorting tasks table
+- some markup, style and translations changes
+- minor improvements and bugfixes
+
 0.8.3
 
 - added: prev/next navigation for subscription

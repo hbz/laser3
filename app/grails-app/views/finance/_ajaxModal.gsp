@@ -1,20 +1,34 @@
 <!-- _ajaxModal.gsp -->
-<%@ page import="com.k_int.kbplus.CostItem;com.k_int.kbplus.CostItemGroup;com.k_int.kbplus.BudgetCode;" %>
+<%@ page import="com.k_int.kbplus.*;" %>
 <laser:serviceInjection />
 
 <g:render template="vars" /><%-- setting vars --%>
 
 <g:set var="modalText" value="${message(code:'financials.addNewCost')}" />
 
-<g:if test="${costItem}">
-    <g:set var="modalText" value="${message(code:'financials.editCost')} #${costItem?.id}" />
-</g:if>
+<%
+    if (costItem) {
+        modalText = g.message(code: 'financials.editCost')
+
+        def subscriberExists = OrgRole.findBySubAndRoleType(costItem.sub, RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'));
+        if ( subscriberExists ) {
+            modalText = subscriberExists.org?.toString()
+        }
+    }
+%>
 
 <semui:modal id="costItem_ajaxModal" text="${modalText}">
     <g:if test="${costItem?.globalUID}">
-        <div class="ui blue ribbon label">
-            <strong class="red">${message(code:'financials.newCosts.UID')}: </strong>${costItem?.globalUID}
-        </div>
+        <g:if test="${costItem?.isVisibleForSubscriber}">
+            <div class="ui orange ribbon label">
+                <strong>${message(code:'financials.isVisibleForSubscriber')}</strong>
+            </div>
+        </g:if>
+        <g:else><%--
+            <div class="ui blue ribbon label">
+                <strong>${message(code:'financials.newCosts.UID')}: </strong>${costItem?.globalUID}
+            </div>--%>
+        </g:else>
     </g:if>
     <g:form class="ui small form" id="editCost" url="[controller:'finance', action:'newCostItem']">
 
@@ -32,10 +46,33 @@
 
         <div class="fields">
             <div class="nine wide field">
-                <div class="field">
-                    <label>${message(code:'financials.newCosts.costTitle')}</label>
-                    <input type="text" name="newCostTitle" id="newCostTitle" value="${costItem?.costTitle}" />
-                </div><!-- .field -->
+                <g:if test="${OrgRole.findBySubAndOrgAndRoleType(fixedSubscription, contextService.getOrg(), RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role'))}">
+                    <div class="two fields la-fields-no-margin-button">
+                        <div class="field">
+                            <label>${message(code:'financials.newCosts.costTitle')}</label>
+                            <input type="text" name="newCostTitle" id="newCostTitle" value="${costItem?.costTitle}" />
+                        </div><!-- .field -->
+                        <div class="field">
+                            <label>${message(code:'financials.isVisibleForSubscriber')}</label>
+                            <g:set var="newIsVisibleForSubscriberValue" value="${
+                                costItem?.isVisibleForSubscriber ? RefdataValue.getByValueAndCategory('Yes', 'YN').id : RefdataValue.getByValueAndCategory('No', 'YN').id
+                            }" />
+                            <laser:select name="newIsVisibleForSubscriber" class="ui dropdown"
+                                      id="newIsVisibleForSubscriber"
+                                      from="${RefdataValue.findAllByOwner(RefdataCategory.findByDesc('YN'))}"
+                                      optionKey="id"
+                                      optionValue="value"
+                                      noSelection="${['':'']}"
+                                      value="${newIsVisibleForSubscriberValue}" />
+                        </div><!-- .field -->
+                    </div>
+                </g:if>
+                <g:else>
+                    <div class="field">
+                        <label>${message(code:'financials.newCosts.costTitle')}</label>
+                        <input type="text" name="newCostTitle" id="newCostTitle" value="${costItem?.costTitle}" />
+                    </div><!-- .field -->
+                </g:else>
 
                 <div class="two fields la-fields-no-margin-button">
                     <div class="field">
@@ -88,26 +125,28 @@
                                   value="${costItem?.costItemElement?.id}" />
                 </div><!-- .field -->
 
-                <div class="field">
-                    <label>${message(code:'financials.newCosts.controllable')}</label>
-                    <laser:select name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCateogry')}" class="ui dropdown"
-                                  from="${taxType}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  noSelection="${['':'']}"
-                                  value="${costItem?.taxCode?.id}" />
-                </div><!-- .field -->
+                <div class="two fields la-fields-no-margin-button">
+                    <div class="field">
+                        <label>${message(code:'financials.newCosts.controllable')}</label>
+                        <laser:select name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCateogry')}" class="ui dropdown"
+                                      from="${taxType}"
+                                      optionKey="id"
+                                      optionValue="value"
+                                      noSelection="${['':'']}"
+                                      value="${costItem?.taxCode?.id}" />
+                    </div><!-- .field -->
 
-                <div class="field">
-                    <label>${message(code:'financials.costItemStatus')}</label>
-                    <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
-                                  id="newCostItemStatus"
-                                  from="${costItemStatus}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  noSelection="${['':'']}"
-                                  value="${costItem?.costItemStatus?.id}" />
-                </div><!-- .field -->
+                    <div class="field">
+                        <label>${message(code:'financials.costItemStatus')}</label>
+                        <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
+                                      id="newCostItemStatus"
+                                      from="${costItemStatus}"
+                                      optionKey="id"
+                                      optionValue="value"
+                                      noSelection="${['':'']}"
+                                      value="${costItem?.costItemStatus?.id}" />
+                    </div><!-- .field -->
+                </div><!-- .fields two -->
 
             </div> <!-- 2/2 field -->
         </div><!-- two fields -->
@@ -366,7 +405,7 @@
             if (! isError("#newCostInBillingCurrency") && ! isError("#newCostCurrencyRate")) {
                 var input = $(this).siblings("input");
                 input.transition('glow');
-                input.val(($("#newCostInBillingCurrency").val() / $("#newCostCurrencyRate").val()).toFixed(2));
+                input.val(($("#newCostInBillingCurrency").val() * $("#newCostCurrencyRate").val()).toFixed(2));
 
                 $(".la-account-currency").find(".field").removeClass("error");
                 taxRateElem.trigger('change')
@@ -376,7 +415,7 @@
             if (! isError("#newCostInLocalCurrency") && ! isError("#newCostInBillingCurrency")) {
                 var input = $(this).siblings("input");
                 input.transition('glow');
-                input.val(($("#newCostInBillingCurrency").val() / $("#newCostInLocalCurrency").val()).toFixed(9));
+                input.val(($("#newCostInLocalCurrency").val() / $("#newCostInBillingCurrency").val()).toFixed(9));
 
                 $(".la-account-currency").find(".field").removeClass("error");
                 taxRateElem.trigger('change')
@@ -386,7 +425,7 @@
             if (! isError("#newCostInLocalCurrency") && ! isError("#newCostCurrencyRate")) {
                 var input = $(this).siblings("input");
                 input.transition('glow');
-                input.val(($("#newCostInLocalCurrency").val() * $("#newCostCurrencyRate").val()).toFixed(2));
+                input.val(($("#newCostInLocalCurrency").val() / $("#newCostCurrencyRate").val()).toFixed(2));
 
                 $(".la-account-currency").find(".field").removeClass("error");
                 taxRateElem.trigger('change')

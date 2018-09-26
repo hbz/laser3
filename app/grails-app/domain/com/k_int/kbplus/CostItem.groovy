@@ -15,6 +15,8 @@ class CostItem extends BaseDomainComponent implements TemplateSupport {
     Order order
     Invoice invoice
 
+    Boolean isVisibleForSubscriber
+
     RefdataValue type               // RefdataCategory 'CostItem.Type'
 
     //Status & Costing Values...
@@ -76,15 +78,14 @@ class CostItem extends BaseDomainComponent implements TemplateSupport {
         costDescription column: 'ci_cost_description', type:'text'
         costTitle       column: 'ci_cost_title'
         costInBillingCurrency           column: 'ci_cost_in_billing_currency'
-        //costInBillingCurrencyAfterTax   column: 'ci_cost_in_billing_currency_after_tax'
         datePaid            column: 'ci_date_paid'
         costInLocalCurrency             column: 'ci_cost_in_local_currency'
-        //costInLocalCurrencyAfterTax     column: 'ci_cost_in_local_currency_after_tax'
         currencyRate    column: 'ci_currency_rate'
         finalCostRounding               column:'ci_final_cost_rounding'
         taxCode         column: 'ci_tax_code'
         taxRate                         column: 'ci_tax_rate'
         invoiceDate                     column: 'ci_invoice_date'
+        isVisibleForSubscriber          column: 'ci_is_viewable'
         includeInSubscription column: 'ci_include_in_subscr'
         costItemCategory    column: 'ci_cat_rv_fk'
         costItemElement     column: 'ci_element_rv_fk'
@@ -107,15 +108,14 @@ class CostItem extends BaseDomainComponent implements TemplateSupport {
         costDescription (nullable: true, blank: false)
         costTitle       (nullable: true, blank: false)
         costInBillingCurrency           (nullable: true, blank: false)
-        //costInBillingCurrencyAfterTax   (nullable: true, blank: false)
         datePaid        (nullable: true, blank: false)
         costInLocalCurrency             (nullable: true, blank: false)
-        //costInLocalCurrencyAfterTax     (nullable: true, blank: false)
         currencyRate    (nullable: true, blank: false, scale: 9)
         finalCostRounding               (nullable: true, blank: false)
         taxCode         (nullable: true, blank: false)
         taxRate                         (nullable: true, blank: false)
         invoiceDate                     (nullable: true, blank: false)
+        isVisibleForSubscriber(nullable: true, blank: false)
         includeInSubscription(nullable: true, blank: false)
         costItemCategory(nullable: true, blank: false)
         costItemStatus  (nullable: true, blank: false)
@@ -161,18 +161,18 @@ class CostItem extends BaseDomainComponent implements TemplateSupport {
     def getBudgetcodes() {
         def result = BudgetCode.executeQuery("select bc from BudgetCode as bc, CostItemGroup as cig, CostItem as ci where cig.costItem = ci and cig.budgetCode = bc and ci = ?", [this])
         return result
-        /*
-        return CostItemGroup.findAllByCostItem(this).collect {
-            [id:it.id, value:it.budgetcode.value]
-        } */
     }
 
     def getCostInLocalCurrencyAfterTax() {
-        ( costInLocalCurrency ?: 0.0 ) * ( taxRate ? ((taxRate/100) + 1) : 1 )
+        Double result = ( costInLocalCurrency ?: 0.0 ) * ( taxRate ? ((taxRate/100) + 1) : 1.0 )
+
+        finalCostRounding ? result.round(0) : result
     }
 
     def getCostInBillingCurrencyAfterTax() {
-        ( costInBillingCurrency ?: 0.0 ) * ( taxRate ? ((taxRate/100) + 1) : 1 )
+        Double result = ( costInBillingCurrency ?: 0.0 ) * ( taxRate ? ((taxRate/100) + 1) : 1.0 )
+
+        finalCostRounding ? result.round(0) : result
     }
 
     /**
