@@ -2,11 +2,15 @@
 <%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.FinanceController" %>
 <laser:serviceInjection />
 
-<g:if test="${queryMode == FinanceController.MODE_CONS_SUBSCR}">
+<%
+    def tabOwnerActive = (tab?.equalsIgnoreCase('owner')) ? 'active' : ''
+    def tabSCActive    = (tab?.equalsIgnoreCase('sc')) ? 'active' : ''
+%>
 
+<g:if test="${queryMode == FinanceController.MODE_CONS_SUBSCR}">
     <div id="financeFilterData" class="ui top attached tabular menu">
-        <div class="item active" data-tab="OWNER">Eigene Kosten</div>
-        <div class="item" data-tab="CONS_SUBSCR">Teilnehmerkosten</div>
+        <div class="item ${tabOwnerActive}" data-tab="OWNER">Eigene Kosten</div>
+        <div class="item ${tabSCActive}" data-tab="CONS_SUBSCR">Teilnehmerkosten</div>
     </div>
 
     <r:script>
@@ -39,7 +43,7 @@
 %>
 
 <g:if test="${queryMode == FinanceController.MODE_CONS_SUBSCR}">
-    <div class="ui bottom attached tab active" data-tab="OWNER">
+    <div class="ui bottom attached tab ${tabOwnerActive}" data-tab="OWNER">
 </g:if><%-- FinanceController.MODE_CONS_SUBSCR --%>
 
     <g:if test="${! costItemsOwner}">
@@ -81,7 +85,7 @@
 <g:if test="${queryMode == FinanceController.MODE_CONS_SUBSCR}">
 
     </div><!-- OWNER -->
-    <div class="ui bottom attached tab" data-tab="CONS_SUBSCR">
+    <div class="ui bottom attached tab ${tabSCActive}" data-tab="CONS_SUBSCR">
 
         <g:render template="result_tab_sc" model="[editable: editable, cost_items: costItemsCS, i: 'fake']"></g:render>
 

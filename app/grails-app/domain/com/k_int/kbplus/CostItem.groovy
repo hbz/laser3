@@ -15,6 +15,8 @@ class CostItem extends BaseDomainComponent implements TemplateSupport {
     Order order
     Invoice invoice
 
+    // Boolean isViewableBySubscriber
+
     RefdataValue type               // RefdataCategory 'CostItem.Type'
 
     //Status & Costing Values...
@@ -161,10 +163,6 @@ class CostItem extends BaseDomainComponent implements TemplateSupport {
     def getBudgetcodes() {
         def result = BudgetCode.executeQuery("select bc from BudgetCode as bc, CostItemGroup as cig, CostItem as ci where cig.costItem = ci and cig.budgetCode = bc and ci = ?", [this])
         return result
-        /*
-        return CostItemGroup.findAllByCostItem(this).collect {
-            [id:it.id, value:it.budgetcode.value]
-        } */
     }
 
     def getCostInLocalCurrencyAfterTax() {

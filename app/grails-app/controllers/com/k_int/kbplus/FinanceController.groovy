@@ -53,6 +53,8 @@ class FinanceController {
         def dateTimeFormat  = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
         def result = [:]
 
+        result.tab = params.tab ?: 'owner'
+
       try {
         result.contextOrg = contextService.getOrg()
         result.institution = contextService.getOrg()
@@ -587,13 +589,15 @@ class FinanceController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def editCostItem() {
         def result = [:]
+        result.tab = params.tab ?: 'owner'
 
-        //TODO: copied from index()
         result.inSubMode = params.sub ? true : false
         if (result.inSubMode) {
             result.fixedSubscription = params.int('sub') ? Subscription.get(params.sub) : null
         }
         result.costItem = CostItem.findById(params.id)
+
+        result.formUrl = g.createLink(controller:'finance', action:'newCostItem', params:[tab:result.tab])
 
         render(template: "/finance/ajaxModal", model: result)
     }
@@ -603,44 +607,59 @@ class FinanceController {
     def copyCostItem() {
         def result = [:]
 
+        result.id = params.id
+        result.sub = params.sub
         result.inSubMode = params.sub ? true : false
+        result.tab = params.tab ?: 'owner'
+
         if (result.inSubMode) {
             result.fixedSubscription = params.int('sub') ? Subscription.get(params.sub) : null
         }
 
         def ci = CostItem.findById(params.id)
+        result.costItem = ci
 
-        CostItem newCostItem = new CostItem()
-        InvokerHelper.setProperties(newCostItem, ci.properties)
-        newCostItem.globalUID = null
+        if (ci && params.process) {
+            params.list('newLicenseeTargets')?.each{ target ->
 
-        if (! newCostItem.validate())
-        {
-            result.error = newCostItem.errors.allErrors.collect {
-                log.error("Field: ${it.properties.field}, user input: ${it.properties.rejectedValue}, Reason! ${it.properties.code}")
-                message(code:'finance.addNew.error', args:[it.properties.field])
-            }
-            println result.error
-        }
-        else {
-            if ( newCostItem.save(flush: true) ) {
-                ci.getBudgetcodes().each{ bc ->
-                    if (! CostItemGroup.findByCostItemAndBudgetCode(newCostItem, bc)) {
-                        new CostItemGroup(costItem: newCostItem, budgetCode: bc).save(flush: true)
+                def newSub = genericOIDService.resolveOID(target)
+
+                CostItem newCostItem = new CostItem()
+                InvokerHelper.setProperties(newCostItem, ci.properties)
+                newCostItem.globalUID = null
+                newCostItem.sub = newSub
+
+                if (! newCostItem.validate())
+                {
+                    result.error = newCostItem.errors.allErrors.collect {
+                        log.error("Field: ${it.properties.field}, user input: ${it.properties.rejectedValue}, Reason! ${it.properties.code}")
+                        message(code:'finance.addNew.error', args:[it.properties.field])
                     }
                 }
-
-                result.costItem = newCostItem
+                else {
+                    if ( newCostItem.save(flush: true) ) {
+                        ci.getBudgetcodes().each{ bc ->
+                            if (! CostItemGroup.findByCostItemAndBudgetCode(newCostItem, bc)) {
+                                new CostItemGroup(costItem: newCostItem, budgetCode: bc).save(flush: true)
+                            }
+                        }
+                    }
+                }
             }
+            redirect(uri: (request.getHeader('referer')).minus('?tab=owner').minus('?tab=sc'), params: [tab: result.tab])
         }
-        //render(template: "/finance/ajaxModal", model: result)
-        redirect(uri: request.getHeader('referer') )
+        else {
+            result.formUrl = g.createLink(mapping:"subfinanceCopyCI", params:[sub:result.sub, id:result.id, tab:result.tab])
+
+            render(template: "/finance/copyModal", model: result)
+        }
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def deleteCostItem() {
         def result = [:]
+
         def user = User.get(springSecurityService.principal.id)
         def institution = contextService.getOrg()
         if (!isFinanceAuthorised(institution, user)) {
@@ -660,7 +679,10 @@ class FinanceController {
             ci.delete()
         }
         //redirect(controller: 'myInstitution', action: 'finance')
-        redirect(uri: request.getHeader('referer') )
+
+        result.tab = params.tab ?: 'owner'
+
+        redirect(uri: (request.getHeader('referer')).minus('?tab=owner').minus('?tab=sc'), params: [tab: result.tab])
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -873,7 +895,9 @@ class FinanceController {
       params.remove("Add")
       // render ([newCostItem:newCostItem.id, error:result.error]) as JSON
 
-        redirect(uri: request.getHeader('referer') )
+        result.tab = params.tab ?: 'owner'
+
+        redirect(uri: (request.getHeader('referer')).minus('?tab=owner').minus('?tab=sc'), params: [tab: result.tab])
     }
 
     @Deprecated

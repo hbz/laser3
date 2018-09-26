@@ -166,7 +166,7 @@
 
             </g:if>
             <div class="ui cards">
-                <g:each in="${tasks.sort{ a,b -> b.endDate.compareTo(a.endDate) }}" var="tsk">
+                <g:each in="${tasks}" var="tsk">
                     <div class="ui card">
 
                         <div class="ui label">

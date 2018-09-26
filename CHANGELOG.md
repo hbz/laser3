@@ -11,6 +11,7 @@
 - restricted subscription assignment for licenses (consortia only)
 - added sorting for contacts
 - fixed: cost items calculation
+- fixed: sorting tasks table
 - some markup, style and translations changes
 - minor improvements and bugfixes
 
