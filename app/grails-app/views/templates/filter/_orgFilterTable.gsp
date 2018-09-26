@@ -30,8 +30,14 @@
         <g:if test="${tmplConfigShow?.contains('publicContacts')}">
             <th>${message(code: 'org.publicContacts.label', default: 'Public Contacts')}</th>
         </g:if>
+        <g:if test="${tmplConfigShow?.contains('privateContacts')}">
+            <th>${message(code: 'org.privateContacts.label', default: 'Public Contacts')}</th>
+        </g:if>
         <g:if test="${tmplConfigShow?.contains('currentFTEs')}">
             <th>${message(code: 'org.currentFTEs.label', default: 'Current FTEs')}</th>
+        </g:if>
+        <g:if test="${tmplConfigShow?.contains('licenses')}">
+            <th>${message(code: 'org.licenses.label', default: 'Public Contacts')}</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('numberOfLicenses')}">
             <th class="la-th-wrap">${message(code: 'org.numberOfLicenses.label', default: 'Number of Licenses')}</th>
@@ -171,6 +177,22 @@
                     </g:each>
                 </td>
             </g:if>
+            <g:if test="${tmplConfigShow?.contains('privateContacts')}">
+                <td>
+                    <g:each in="${org?.prsLinks?.toSorted()}" var="pl">
+                        <g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value=='No' && pl?.prs?.tenant?.id == contextService.getOrg()?.id}">
+                            <g:render template="/templates/cpa/person_details" model="${[
+                                    personRole: pl,
+                                    tmplShowDeleteButton: false,
+                                    tmplConfigShow: ['E-Mail', 'Mail', 'Phone'],
+                                    controller: 'organisations',
+                                    action: 'show',
+                                    id: org.id
+                            ]}"/>
+                        </g:if>
+                    </g:each>
+                </td>
+            </g:if>
             <g:if test="${tmplConfigShow?.contains('currentFTEs')}">
                 <td>
                     <g:each in="${Numbers.findAllByOrg(org)?.sort {it.type?.getI10n("value")}}" var="fte">
@@ -178,6 +200,20 @@
                             ${fte.type?.getI10n("value")} : ${fte.number} <br>
                         </g:if>
                     </g:each>
+                </td>
+            </g:if>
+            <g:if test="${tmplConfigShow?.contains('licenses')}">
+                <td>
+                    *** überprüfen!!! ***
+                    <br>
+                    ${Subscription.executeQuery("SELECT distinct count(*) FROM Subscription as s WHERE status != :status and startDate <= :heute and endDate >= :heute and EXISTS (SELECT o FROM OrgRole as o WHERE s = o.sub AND o.roleType = :subscriber AND o.org = :org) AND EXISTS (SELECT o2 FROM OrgRole as o2 WHERE s = o2.sub AND o2.roleType = :consortia AND o2.org = :ctxOrg)", [status:RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'), heute:sqlDateToday, subscriber:RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'), org:org, consortia:RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role'), ctxOrg:contextService.getOrg()])[0]}
+                    &nbsp
+                    <span data-tooltip="${message(code: 'org.licenses.tooltip', args: [org.name])}">
+                        <g:link controller="myInstitution" action="currentSubscriptions" params="${[q:org.name]}" class="ui mini icon blue button">
+                            <i class="share square icon"></i>
+                        </g:link>
+
+                    </span>
                 </td>
             </g:if>
             <g:if test="${tmplConfigShow?.contains('numberOfLicenses')}">

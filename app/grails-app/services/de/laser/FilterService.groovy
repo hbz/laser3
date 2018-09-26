@@ -41,6 +41,9 @@ class FilterService {
             query << "o.country.id = ?"
             queryParams << Long.parseLong(params.country)
         }
+        if (params.virtualOrgIds?.size() > 0) {
+            query << "o.id in (" + params.virtualOrgIds?.join(',') + ")"
+        }
         def defaultOrder = " order by " + (params.sort ?: " LOWER(o.name)") + " " + (params.order ?: "asc")
 
         if (query.size() > 0) {

@@ -83,16 +83,18 @@ class OrganisationsController {
     @Secured(['ROLE_USER'])
     def listProvider() {
         def result = [:]
-        result.propList =
-                PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
-                        defList: [PropertyDefinition.ORG_PROP],
-                ] // public properties
-                ) +
-                        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant = :tenant", [
-                                defList: [PropertyDefinition.ORG_PROP],
-                                tenant: contextService.getOrg()
-                        ]// private properties
-                        )
+//        result.propList =
+//                PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
+//                        defList: [PropertyDefinition.ORG_PROP],
+//                ] // public properties
+//                ) +
+//                        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant = :tenant", [
+//                                defList: [PropertyDefinition.ORG_PROP],
+//                                tenant: contextService.getOrg()
+//                        ]// private properties
+//                        ).sort(it.name)
+        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
+
 
         result.user       = User.get(springSecurityService.principal.id)
         params.orgSector  = RefdataValue.getByValueAndCategory('Publisher','OrgSector')?.id?.toString()

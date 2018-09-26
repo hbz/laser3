@@ -330,5 +330,17 @@ class PropertyDefinition extends I10nTranslatableAbstract {
             return null
         }
     }
+    static findAllPublicAndPrivateOrgProp(Org contextOrg){
+        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
+                defList: [PropertyDefinition.ORG_PROP],
+        ] // public properties
+        ) +
+                PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant = :tenant", [
+                        defList: [PropertyDefinition.ORG_PROP],
+                        tenant: contextOrg
+                ]// private properties
+                )//.sort(it -> it.name) TODO: Sortieren!
+    }
+
 }
 

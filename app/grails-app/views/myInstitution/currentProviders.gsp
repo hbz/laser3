@@ -15,11 +15,22 @@
     <h1 class="ui header"><semui:headerIcon /><g:message code="menu.institutions.myProviders" /></h1>
 
     <semui:messages data="${flash}" />
+    %{--FILTER EINGEBAUT--}%
+    <semui:filter>
+        <g:form action="currentProviders" method="get" class="ui form">
+            <g:render template="/templates/filter/orgFilter"
+                      model="[
+                              propList: propList,
+                              tmplConfigShow: ['property', 'name', 'country']
+                      ]"/>
+        </g:form>
+    </semui:filter>
+    %{--FILTER EINGEBAUT--}%
 
     <g:render template="/templates/filter/orgFilterTable"
               model="[orgList: orgList,
                       tmplShowCheckbox: false,
-                      tmplConfigShow: ['name', 'identifier', 'type', 'sector']
+                      tmplConfigShow: ['lineNumber', 'shortname', 'name', 'publicContacts', 'privateContacts', 'licenses', 'identifier', 'type', 'sector']
               ]"/>
 
   </body>

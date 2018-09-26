@@ -474,6 +474,18 @@ from License as l where (
         def role_sub_cons       = RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role')
         def role_sub_consortia  = RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')
 
+//        result.propList =
+//                PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
+//                        defList: [PropertyDefinition.ORG_PROP],
+//                ] // public properties
+//                ) +
+//                        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant = :tenant", [
+//                                defList: [PropertyDefinition.ORG_PROP],
+//                                tenant: contextService.getOrg()
+//                        ]// private properties
+//                        ).sort(it.name)
+        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
+
         def mySubs = Subscription.executeQuery( """
             select s from Subscription as s join s.orgRelations as ogr where 
                 ( s.status.value != 'Deleted' ) and
@@ -491,8 +503,25 @@ from License as l where (
                 result.orgList << provider.org
             }
         }
-        result.orgList.sort{a, b -> a.name.compareToIgnoreCase b.name}
+        params.virtualOrgIds = []
+
+        for (Org org : result.orgList){
+            params.virtualOrgIds.add(org.id)
+        }
+
         result.test = mySubs
+//--------------
+//        VORLAGE
+        result.user = User.get(springSecurityService.principal.id)
+//        params.max = params.max ?: result.user?.getDefaultPageSize()
+
+        def fsq = filterService.getOrgQuery(params)
+        params.remove('virtualOrgIds')
+
+        result.orgList  = Org.findAll(fsq.query, fsq.queryParams, params)
+//        result.orgListTotal = Org.executeQuery("select count (o) ${fsq.query}", fsq.queryParams)[0]
+
+//--------------
         result
     }
 
