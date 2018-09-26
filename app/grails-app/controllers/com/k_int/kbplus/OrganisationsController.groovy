@@ -83,19 +83,8 @@ class OrganisationsController {
     @Secured(['ROLE_USER'])
     def listProvider() {
         def result = [:]
-//        result.propList =
-//                PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
-//                        defList: [PropertyDefinition.ORG_PROP],
-//                ] // public properties
-//                ) +
-//                        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant = :tenant", [
-//                                defList: [PropertyDefinition.ORG_PROP],
-//                                tenant: contextService.getOrg()
-//                        ]// private properties
-//                        ).sort(it.name)
-        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
-
+        result.propList   = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         result.user       = User.get(springSecurityService.principal.id)
         params.orgSector  = RefdataValue.getByValueAndCategory('Publisher','OrgSector')?.id?.toString()
         params.orgType    = RefdataValue.getByValueAndCategory('Provider','OrgType')?.id?.toString()
@@ -113,7 +102,6 @@ class OrganisationsController {
 
         if (isPropertyFilterUsed() && orgList.size() > 0) {
             def tmpQuery             = ["SELECT o FROM Org o WHERE o.id IN (:oids)"]
-            def tmpQueryParams       = [oids: orgList.collect{ it1 -> it1.id }]
             def tmpQueryParamsTotal  = [oids: orgListTotal.collect{ it2 -> it2.id }]
 
             (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, tmpQuery, 'o', tmpQueryParamsTotal)

@@ -339,7 +339,7 @@ class PropertyDefinition extends I10nTranslatableAbstract {
                         defList: [PropertyDefinition.ORG_PROP],
                         tenant: contextOrg
                 ]// private properties
-                )//.sort(it -> it.name) TODO: Sortieren!
+                )
     }
 
 }
