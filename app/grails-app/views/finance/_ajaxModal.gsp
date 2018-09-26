@@ -23,7 +23,7 @@
             <strong>${message(code:'financials.newCosts.UID')}: </strong>${costItem?.globalUID}
         </div>
     </g:if>
-    <g:form class="ui small form" id="editCost" url="[controller:'finance', action:'newCostItem']">
+    <g:form class="ui small form" id="editCost" url="${formUrl}">
 
         <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}" />
         <g:if test="${costItem}">
