@@ -16,10 +16,10 @@
         <div class="field fieldcontain">
         <label><g:message code="org.orgRoleType.label" default="Organisation Type" />:</label>
 
-        <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.loc('OrgRoleType', [en: 'Organisation Type'])).sort{it.getI10n('value')}}"
+        <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.loc('OrgRoleType', [en: 'Organisation Type'])).sort{it?.getI10n('value')}}"
                   class="ui dropdown fluid"
                   optionKey="id"
-                  optionValue="${{ it.getI10n('value') }}"
+                  optionValue="${{ it?.getI10n('value') }}"
                   name="orgRoleType"
                   value=""/>
         </div>

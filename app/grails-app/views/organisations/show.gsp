@@ -120,13 +120,13 @@
                             <dl>
                                 <dt><g:message code="org.sector.label" default="Sector" /></dt>
                                 <dd>
-                                    ${orgInstance.sector.getI10n('value')}
+                                    ${orgInstance.sector?.getI10n('value')}
                                 </dd>
                             </dl>
                             <dl>
                                 <dt><g:message code="org.type.label" default="Org Type" /></dt>
                                 <dd>
-                                    ${orgInstance.orgType.getI10n('value')}
+                                    ${orgInstance.orgType?.getI10n('value')}
                                 </dd>
                             </dl>
                         </g:else>
