@@ -103,7 +103,10 @@ class Org extends BaseDomainComponent {
       importSource column:'org_import_source'
     lastImportDate column:'org_last_import_date'
 
-        orgRoleType joinTable: 'org_type_rv'
+        orgRoleType joinTable: [name: 'org_roletype',
+                                key: 'org_id',
+                                column: 'refdata_value_id',
+                                type: "BIGINT"]
 
         addresses   lazy: false
         contacts    lazy: false
