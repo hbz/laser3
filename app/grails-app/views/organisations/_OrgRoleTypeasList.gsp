@@ -2,7 +2,7 @@
     <g:each in="${OrgRoleTypes.sort { it?.getI10n("value") }}" var="type">
         <div class="ui item">
         <div class="content la-space-right">
-            <b>${type.getI10n("value")}</b>
+            <b>${type?.getI10n("value")}</b>
 
         </div>
         <g:if test="${editable}">
