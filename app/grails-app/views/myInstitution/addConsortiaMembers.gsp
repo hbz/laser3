@@ -37,7 +37,7 @@
                   model="[orgList: availableOrgs,
                           tmplDisableOrgIds: consortiaMemberIds,
                           tmplShowCheckbox: true,
-                          tmplConfigShow: ['name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
+                          tmplConfigShow: ['sortname', 'name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
                   ]"/>
 
         <br/>
