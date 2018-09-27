@@ -10,7 +10,7 @@
 </g:if>
 
 <semui:modal id="OrgType" message="org.orgRoleType.add.label">
-    <g:form  class="ui form" url="[controller: 'organisations', action: 'addOrgType']"
+    <g:form  class="ui form" url="[controller: 'organisations', action: 'addOrgRoleType']"
             method="post">
         <input type="hidden" name="org" value="${Org.id}"/>
         <div class="field fieldcontain">

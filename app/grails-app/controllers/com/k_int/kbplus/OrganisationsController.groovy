@@ -512,7 +512,7 @@ class OrganisationsController {
 
         result
     }
-    def addOrgType()
+    def addOrgRoleType()
     {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -535,6 +535,34 @@ class OrganisationsController {
         {
             orgInstance.addToOrgRoleType(RefdataValue.get(params.orgRoleType))
             orgInstance.save(flush: true)
+            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.name])
+            redirect action: 'show', id: orgInstance.id
+        }
+    }
+    def deleteOrgRoleType()
+    {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        def orgInstance = Org.get(params.org)
+
+        if (!orgInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+            redirect action: 'list'
+            return
+        }
+
+        if ( SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') ) {
+            result.editable = true
+        }
+        else {
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM')
+        }
+
+        if(result.editable)
+        {
+            orgInstance.removeFromOrgRoleType(RefdataValue.get(params.removeOrgRoleType))
+            orgInstance.save(flush: true)
+            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.name])
             redirect action: 'show', id: orgInstance.id
         }
     }
