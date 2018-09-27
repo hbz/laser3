@@ -91,7 +91,7 @@
         <tr><td>Requestor ID</td><td>${requestor}</td></tr>
     </g:if>
     <tr><td>${message(code: 'default.usage.adminPage.info.institutionContext')}</td>
-        <td><g:if test="${institution.orgType?.value == 'Institution'}">
+        <td><g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in  institution?.orgRoleType)}">
             ${institution.orgType?.value}
         </g:if>
         <g:else>
