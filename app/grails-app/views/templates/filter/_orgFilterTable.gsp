@@ -200,7 +200,11 @@
                 <td>${org.getIdentifiersByType('isil')?.value?.join(', ')}</td>
             </g:if>
             <g:if test="${tmplConfigShow?.contains('type')}">
-                <td>${org.orgType?.getI10n('value')}</td>
+                <td>
+                    <g:each in="${org.orgRoleType?.sort{it?.getI10n("value")}}" var="type">
+                        <p>${type.getI10n("value")}</p>
+                    </g:each>
+                </td>
             </g:if>
             <g:if test="${tmplConfigShow?.contains('sector')}">
                 <td>${org.sector?.getI10n('value')}</td>

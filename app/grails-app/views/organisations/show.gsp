@@ -139,6 +139,19 @@
 
                 <div class="ui card">
                     <div class="content">
+                        <dt><g:message code="org.orgRoleType.label" default="Organisation Type" /></dt>
+                        <dd>
+                            <g:render template="OrgRoleTypeasList"
+                                      model="${[OrgTypes:orgInstance.orgRoleType]}" />
+                        </dd>
+
+                        <g:render template="OrgRoleTypeModal"
+                                  model="${[Org:orgInstance, editable: editable]}" />
+                    </div>
+                </div>
+
+                <div class="ui card">
+                    <div class="content">
                     <g:if test="${orgInstance.orgType != RefdataValue.getByValueAndCategory('Provider', 'OrgType')}">
                         <dl>
                             <dt><g:message code="org.libraryType.label" default="Library Type" /></dt>
