@@ -1,5 +1,5 @@
 <semui:breadcrumbs>
-    <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'OrgType') in orgInstance.orgType)}">
+    <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType') in orgInstance.orgRoleType)}">
         <semui:crumb controller="organisations" action="show" id="${orgInstance.id}" text="${orgInstance.name}" />
         <semui:crumb message="" class="active"/>
     </g:if>

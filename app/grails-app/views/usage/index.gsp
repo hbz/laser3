@@ -92,7 +92,11 @@
     </g:if>
     <tr><td>${message(code: 'default.usage.adminPage.info.institutionContext')}</td>
         <td><g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in  institution?.orgRoleType)}">
-            ${institution.orgType?.value}
+            <ul>
+            <g:each in="${institution.orgRoleType.sort { it?.getI10n("value") }}" var="type">
+                <li>${type?.getI10n("value")}</li>
+            </g:each>
+            </ul>
         </g:if>
         <g:else>
             <div class="ui red basic label">

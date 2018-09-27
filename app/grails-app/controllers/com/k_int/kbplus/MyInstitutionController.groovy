@@ -234,7 +234,7 @@ class MyInstitutionController {
         def qry = INSTITUTIONAL_LICENSES_QUERY
 
         if (! params.orgRole) {
-            if (result.institution?.orgType?.value == 'Consortium') {
+            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution?.orgRoleType)) {
                 params.orgRole = 'Licensing Consortium'
             }
             else {
@@ -565,7 +565,7 @@ from License as l where (
         def qry_params
 
         if (! params.orgRole) {
-            if (result.institution?.orgType?.value == 'Consortium') {
+            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution?.orgRoleType)) {
                 params.orgRole = 'Subscription Consortia'
             }
             else {
@@ -660,7 +660,7 @@ from Subscription as s where (
 
         if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)) {
             result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
-            result.usageMode = (result.institution.orgType?.value == 'Consortium') ? 'package' : 'institution'
+            result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution?.orgRoleType)) ? 'package' : 'institution'
         }
 
         if ( params.exportXLS=='yes' ) {
@@ -874,7 +874,7 @@ from Subscription as s where (
             result.defaultEndYear = sdf.format(cal.getTime())
             result.defaultSubIdentifier = java.util.UUID.randomUUID().toString()
 
-            if(result.orgType?.value == 'Consortium') {
+            if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.orgRoleType)) {
                 def fsq = filterService.getOrgComboQuery(params, result.institution)
                 result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             }
@@ -901,7 +901,7 @@ from Subscription as s where (
         
         log.debug("found orgType ${result.orgType}")
         
-        if(result.orgType?.value == 'Consortium') {
+        if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.orgRoleType)) {
             orgRole = role_cons
             subType = RefdataValue.getByValueAndCategory('Consortial Licence', 'Subscription Type')
         }
@@ -932,9 +932,9 @@ from Subscription as s where (
                         sub: new_sub,
                         roleType: orgRole).save();
                         
-                // if(result.orgType?.value == 'Consortium' && params.linkToAll == "Y"){ // old code
+                // if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.orgRoleType) && params.linkToAll == "Y"){ // old code
 
-                if(result.orgType?.value == 'Consortium') {
+                if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.orgRoleType)) {
                     
                     def cons_members = []
 
@@ -3220,7 +3220,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         def result = setResultGenerics()
 
         // new: filter preset
-        params.orgType   = RefdataValue.getByValueAndCategory('Institution', 'OrgType')?.id.toString()
+        params.orgRoleType   = RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')?.id.toString()
         params.orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')?.id.toString()
 
         if (params.selectedOrgs) {
@@ -3258,7 +3258,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         def result = setResultGenerics()
 
         // new: filter preset
-        params.orgType   = RefdataValue.getByValueAndCategory('Institution', 'OrgType')?.id?.toString()
+        params.orgRoleType   = RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')?.id?.toString()
         params.orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')?.id?.toString()
 
         result.propList =
@@ -3437,12 +3437,12 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     def ajaxEmptySubscription() {
 
         def result = setResultGenerics()
-        result.orgType = result.institution.orgType
+        result.orgRoleType = result.institution.orgRoleType
 
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
         if (result.editable) {
 
-            if(result.orgType?.value == 'Consortium') {
+            if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.orgRoleType)) {
                 def fsq = filterService.getOrgComboQuery(params, result.institution)
                 result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             }

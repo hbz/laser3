@@ -717,7 +717,7 @@ class SubscriptionDetailsController {
             response.sendError(401); return
         }
 
-        if (result.institution?.orgType?.value == 'Consortium') {
+        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution?.orgRoleType)) {
             def fsq = filterService.getOrgComboQuery(params, result.institution)
             result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             result.cons_members_disabled = []
@@ -1250,7 +1250,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
             response.sendError(401); return
         }
 
-        if (result.institution?.orgType?.value == 'Consortium') {
+        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution?.orgRoleType)) {
 
         }
 
@@ -1623,7 +1623,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                 def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscriptionInstance)
                 def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscriptionInstance)
                 result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
-                result.usageMode = (result.institution.orgType?.value == 'Consortium') ? 'package' : 'institution'
+                result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution?.orgRoleType)) ? 'package' : 'institution'
                 result.usage = fsresult?.usage
                 result.x_axis_labels = fsresult?.x_axis_labels
                 result.y_axis_labels = fsresult?.y_axis_labels
@@ -1644,11 +1644,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
     def renewSubscriptionConsortia(){
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!(result || contextService.getOrg().orgType?.value == 'Consortium') ) {
+        if (!(result || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in contextService.getOrg().orgRoleType) ) ) {
                response.sendError(401); return
         }
 
-        if (result.institution?.orgType?.value == 'Consortium') {
+        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution?.orgRoleType)) {
             def baseSub = Subscription.get(params.baseSubscription ?: params.id)
 
             Date newStartDate

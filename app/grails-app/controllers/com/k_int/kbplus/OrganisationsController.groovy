@@ -96,7 +96,7 @@ class OrganisationsController {
 
         result.user       = User.get(springSecurityService.principal.id)
         params.orgSector  = RefdataValue.getByValueAndCategory('Publisher','OrgSector')?.id?.toString()
-        params.orgType    = RefdataValue.getByValueAndCategory('Provider','OrgType')?.id?.toString()
+        params.orgRoleType    = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')?.id?.toString()
         params.max        = params.max ?: result.user?.getDefaultPageSize()
         def paramsTotal   = params.clone()
         if (paramsTotal.max) {
@@ -178,8 +178,9 @@ class OrganisationsController {
     def createProvider() {
 
                 def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
-                def orgType = RefdataValue.getByValueAndCategory('Provider','OrgType')
-                def orgInstance = new Org(name: params.provider, orgType: orgType.id, sector: orgSector.id)
+                def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
+                def orgInstance = new Org(name: params.provider, sector: orgSector.id)
+                orgInstance.addToOrgRoleType(orgRoleType)
 
                 if ( orgInstance.save(flush:true) ) {
                     flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
@@ -251,10 +252,10 @@ class OrganisationsController {
         result.orgInstance = orgInstance
 
         def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
-        def orgType = RefdataValue.getByValueAndCategory('Provider','OrgType')
+        def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
 
         //IF ORG is a Provider
-        if(orgInstance.sector == orgSector || orgType == orgInstance.orgType)
+        if(orgInstance.sector == orgSector || orgRoleType in orgInstance.orgRoleType)
         {
             result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_COM_EDITOR,ROLE_ORG_EDITOR')
         }else {
