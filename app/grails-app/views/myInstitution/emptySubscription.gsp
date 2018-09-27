@@ -87,7 +87,6 @@
                     </semui:filter>
 
                     <div id="orgListTable">
-                    %{--TODO: name ist hier nicht ganz richtig. in klammern sollte der sortiername noch dazu angezeigt werden--}%
                         <g:render template="/templates/filter/orgFilterTable" model="[orgList: cons_members, tmplShowCheckbox: true, tmplConfigShow: ['sortname', 'name']]" />
                     </div>
 
