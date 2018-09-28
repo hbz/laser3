@@ -43,8 +43,6 @@
 
     <g:form action="processAddMembers" params="${[id: params.id]}" controller="subscriptionDetails" method="post" class="ui form">
 
-        <input type="hidden" name="asOrgType" value="${institution?.orgType?.id}">
-
         <g:render template="/templates/filter/orgFilterTable"
                   model="[orgList: cons_members,
                           tmplDisableOrgIds: cons_members_disabled,

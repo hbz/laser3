@@ -149,15 +149,6 @@ class OrganisationsController {
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
     def create() {
         switch (request.method) {
-            case 'GET':
-                if (!params.name && !params.sector) {
-                    params.sector = RefdataValue.findByValue('Higher Education')
-                }
-                if (!params.name && !params.orgType) {
-                    params.orgType = RefdataValue.findByValue('Institution')
-                }
-                [orgInstance: new Org(params)]
-                break
             case 'POST':
                 def orgInstance = new Org(params)
 
@@ -199,7 +190,8 @@ class OrganisationsController {
         def result=[:]
         if ( params.proposedProvider ) {
 
-            result.providerMatches= Org.findAllByNameIlikeAndOrgType("%${params.proposedProvider}%", RefdataValue.getByValueAndCategory('Provider','OrgType'))
+            result.providerMatches= Org.executeQuery("from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype = :provider ) and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName ) ",
+                    [provider: RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType'), searchName: "%${params.proposedProvider.toLowerCase()}%"])
         }
         result
     }

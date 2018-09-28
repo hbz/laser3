@@ -234,7 +234,7 @@ select s from Subscription as s where (
             log.debug( 'ignored setting.cons_members because: LCurrent.instanceOf (LParent.noTemplate)')
         }
         else {
-            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution?.orgRoleType)) {
+            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution?.getallOrgRoleType())) {
 
                 def consMembers = Org.executeQuery(
                         'select o from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :inst and c.type.value = :cons',
@@ -285,13 +285,16 @@ select s from Subscription as s where (
         }
         result.institution = contextService.getOrg()
 
-        def orgType       = RefdataValue.get(params.asOrgType)
+        def orgRoleType       = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType').id]
+        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution.getallOrgRoleType())) {
+            orgRoleType = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType').id]
+        }
         def role_lic      = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial')
         def role_lic_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensing Consortium')
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
-            if (orgType?.value == 'Consortium') {
+            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution.getallOrgRoleType())) {
                 def cons_members = []
                 def licenseCopy
 
@@ -308,7 +311,7 @@ select s from Subscription as s where (
                         def licenseParams = [
                                 lic_name: "${result.license.reference} (${postfix})",
                                 isSlaved: params.isSlaved,
-                                asOrgType: params.asOrgType,
+                                asOrgRoleType: orgRoleType,
                                 copyStartEnd: true
                         ]
 

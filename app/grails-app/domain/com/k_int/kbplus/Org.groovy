@@ -279,7 +279,7 @@ class Org extends BaseDomainComponent {
         lookupOrCreate2(name, sector, consortium, identifiers, iprange, null)
     }
 
-    static def lookupOrCreate2(name, sector, consortium, identifiers, iprange, orgTyp) {
+    static def lookupOrCreate2(name, sector, consortium, identifiers, iprange, orgRoleTyp) {
 
         def result = Org.lookup(name, identifiers)
 
@@ -289,14 +289,19 @@ class Org extends BaseDomainComponent {
             sector = RefdataCategory.lookupOrCreate('OrgSector', sector)
           }
 
+          if (orgRoleTyp instanceof String) {
+             orgRoleTyp = RefdataValue.getByValueAndCategory(orgRoleTyp, 'OrgRoleType')
+          }
+
           result = new Org(
                            name:name,
                            sector:sector,
                            ipRange:iprange,
-                           impId:java.util.UUID.randomUUID().toString(),
-                           orgType: orgTyp
+                           impId:java.util.UUID.randomUUID().toString()
           ).save()
-
+          if(orgRoleTyp) {
+              result.addToOrgRoleType(orgRoleTyp).save()
+          }
 
             // SUPPORT MULTIPLE IDENTIFIERS
             if (identifiers instanceof ArrayList) {
@@ -386,5 +391,14 @@ class Org extends BaseDomainComponent {
                 "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic.value != 'No' and pr.org = :org",
                 [org: this]
         )
+    }
+
+    def getallOrgRoleType()
+    {
+        def result = [];
+        orgRoleType.each {
+                result << it
+        }
+        result
     }
 }

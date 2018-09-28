@@ -49,17 +49,15 @@
                 <div class="field">
                     <label>${message(code:'myinst.emptySubscription.create_as', default:'Create with the role of')}</label>
 
-                    <select id="asOrgType" name="asOrgType" class="ui dropdown">
-                        <g:each in="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value in (:wl) and rdv.owner.desc = :ot', [wl:['Consortium', 'Institution'], ot:'OrgType'])}" var="opt">
+                    <select id="asOrgRoleType" name="asOrgRoleType" class="ui dropdown">
+                        <g:each in="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value in (:wl) and rdv.owner.desc = :ot', [wl:['Consortium', 'Institution'], ot:'OrgRoleType'])}" var="opt">
                             <option value="${opt.id}" data-value="${opt.value}">${opt.getI10n('value')}</option>
                         </g:each>
                     </select>
 
                 </div>
             </g:if>
-            <g:else>
-                <input type="hidden" name="asOrgType" value="${institution?.orgType?.id}">
-            </g:else>
+
 
             <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label', default: 'Create')}"/>
 

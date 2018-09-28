@@ -42,8 +42,8 @@
                     <div class="field">
                         <label>${message(code:'myinst.emptySubscription.create_as', default:'Create with the role of')}</label>
 
-                        <select id="asOrgType" name="asOrgType" class="ui dropdown">
-                            <g:each in="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value in (:wl) and rdv.owner.desc = :ot', [wl:['Consortium', 'Institution'], ot:'OrgType'])}" var="opt">
+                        <select id="asOrgRoleType" name="asOrgRoleType" class="ui dropdown">
+                            <g:each in="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value in (:wl) and rdv.owner.desc = :ot', [wl:['Consortium', 'Institution'], ot:'OrgRoleType'])}" var="opt">
                                 <option value="${opt.id}" data-value="${opt.value}">${opt.getI10n('value')}</option>
                             </g:each>
                         </select>
@@ -109,7 +109,7 @@
                     $(this).parents('form').submit()
                 })
 
-                $('#asOrgType').change(function() {
+                $('#asOrgRoleType').change(function() {
                     var selVal = $(this).find('option:selected').attr('data-value')
                     if ('Consortium' == selVal) {
                         $('.cons-options').show()
