@@ -173,7 +173,7 @@
             </g:if>
             <g:if test="${tmplConfigShow?.contains('currentFTEs')}">
                 <td>
-                    <g:each in="${Numbers.findAllByOrg(org)?.sort {it.type?.getI10n("value")}}" var="fte">
+                    <g:each in="${Numbers.findAllByOrgAndType(org, RefdataValue.getByValueAndCategory('Students', 'Number Type'))?.sort {it.type?.getI10n("value")}}" var="fte">
                         <g:if test="${fte.startDate <= sqlDateToday && fte.endDate >= sqlDateToday}">
                             ${fte.type?.getI10n("value")} : ${fte.number} <br>
                         </g:if>
