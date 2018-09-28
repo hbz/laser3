@@ -206,7 +206,18 @@
                 <td>
                     *** überprüfen!!! ***
                     <br>
-                    ${Subscription.executeQuery("SELECT distinct count(*) FROM Subscription as s WHERE status != :status and startDate <= :heute and endDate >= :heute and EXISTS (SELECT o FROM OrgRole as o WHERE s = o.sub AND o.roleType = :subscriber AND o.org = :org) AND EXISTS (SELECT o2 FROM OrgRole as o2 WHERE s = o2.sub AND o2.roleType = :consortia AND o2.org = :ctxOrg)", [status:RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'), heute:sqlDateToday, subscriber:RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'), org:org, consortia:RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role'), ctxOrg:contextService.getOrg()])[0]}
+                    ${Subscription.executeQuery("SELECT distinct count(*) FROM Subscription as s " +
+                            "WHERE status != :status and startDate <= :heute and endDate >= :heute " +
+                            "and EXISTS (SELECT o FROM OrgRole as o WHERE s = o.sub AND o.roleType = :provider AND o.org = :org) " +
+                            "AND EXISTS (SELECT o2 FROM OrgRole as o2 WHERE s = o2.sub AND (o2.roleType = :subscriber or o2.roleType = :subscriber_consortial) " +
+                            "AND o2.org = :ctxOrg)",
+                            [status:RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'),
+                             heute:sqlDateToday,
+                             provider:RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'),
+                             org:org,
+                             subscriber:RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role'),
+                             subscriber_consortial:RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'),
+                             ctxOrg:contextService.getOrg()])[0]}
                     &nbsp
                     <span data-tooltip="${message(code: 'org.licenses.tooltip', args: [org.name])}">
                         <g:link controller="myInstitution" action="currentSubscriptions" params="${[q:org.name]}" class="ui mini icon blue button">
@@ -218,7 +229,16 @@
             </g:if>
             <g:if test="${tmplConfigShow?.contains('numberOfLicenses')}">
                 <td>
-                    ${Subscription.executeQuery("SELECT distinct count(*) FROM Subscription as s WHERE status != :status and startDate <= :heute and endDate >= :heute and EXISTS (SELECT o FROM OrgRole as o WHERE s = o.sub AND o.roleType = :subscriber AND o.org = :org) AND EXISTS (SELECT o2 FROM OrgRole as o2 WHERE s = o2.sub AND o2.roleType = :consortia AND o2.org = :ctxOrg)", [status:RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'), heute:sqlDateToday, subscriber:RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'), org:org, consortia:RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role'), ctxOrg:contextService.getOrg()])[0]}
+                    ${Subscription.executeQuery("SELECT distinct count(*) FROM Subscription as s " +
+                            "WHERE status != :status and startDate <= :heute and endDate >= :heute " +
+                            "and EXISTS (SELECT o FROM OrgRole as o WHERE s = o.sub AND o.roleType = :subscriber AND o.org = :org) " +
+                            "AND EXISTS (SELECT o2 FROM OrgRole as o2 WHERE s = o2.sub AND o2.roleType = :consortia AND o2.org = :ctxOrg)",
+                            [status:RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'),
+                             heute:sqlDateToday,
+                             subscriber:RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'),
+                             org:org,
+                             consortia:RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role'),
+                             ctxOrg:contextService.getOrg()])[0]}
                 </td>
             </g:if>
 
