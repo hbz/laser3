@@ -41,9 +41,12 @@ class FilterService {
             query << "o.country.id = ?"
             queryParams << Long.parseLong(params.country)
         }
-        if (params.virtualOrgIds?.size() > 0) {
-            query << "o.id in (" + params.virtualOrgIds?.join(',') + ")"
+
+        // hack: applying filter on org subset
+        if (params.constraint_orgIds) {
+            query << "o.id in ( " + params.constraint_orgIds?.join(',') + " )"
         }
+
         def defaultOrder = " order by " + (params.sort ?: " LOWER(o.name)") + " " + (params.order ?: "asc")
 
         if (query.size() > 0) {
@@ -132,14 +135,13 @@ class FilterService {
             queryParams << sdFormat.parse(params.endDateTo)
         }
 
-        def defaultOrder = " order by " + (params.sort ?: "t.endDate") + (params.order ?: " desc")
+        def defaultOrder = " order by " + (params.sort ?: "t.endDate") + " " + (params.order ?: "desc")
 
         if (query.size() > 0) {
             query = " and " + query.join(" and ") + defaultOrder
         } else {
             query = defaultOrder
         }
-
         result.query = query
         result.queryParams = queryParams
 

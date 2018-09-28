@@ -16,9 +16,9 @@
         <table class="ui sortable celled la-table table">
             <thead>
             <tr>
-                <g:sortableColumn property="title" title="${message(code: 'task.title.label', default: 'Title')}"/>
-                <g:sortableColumn property="endDate" title="${message(code: 'task.endDate.label', default: 'End Date')}"/>
-               <g:sortableColumn property="status" title="${message(code: 'task.status.label', default: 'Status')}"/>
+                <g:sortableColumn property="lower(t.title)" title="${message(code: 'task.title.label', default: 'Title')}"/>
+                <g:sortableColumn property="t.endDate" title="${message(code: 'task.endDate.label', default: 'End Date')}"/>
+                <g:sortableColumn property="t.status" title="${message(code: 'task.status.label', default: 'Status')}"/>
                 <g:if test="${controllerName == 'myInstitution'}">
                     <th>${message(code: 'task.object.label', default: 'Object')}</th>
                 </g:if>
@@ -26,13 +26,13 @@
                     ${message(code: 'task.responsibleOrg.label', default: 'responsibleOrg')} <br />
                     ${message(code: 'task.responsibleUser.label', default: 'responsibleUser')}
                 </th>
-                <g:sortableColumn property="creator" title="${message(code: 'task.creator.label', default: 'Creator')}"/>
-                <g:sortableColumn property="createDate" title="${message(code: 'task.createDate.label', default: 'Create Date')}"/>
+                <g:sortableColumn property="lower(t.creator.username)" title="${message(code: 'task.creator.label', default: 'Creator')}"/>
+                <g:sortableColumn property="t.createDate" title="${message(code: 'task.createDate.label', default: 'Create Date')}"/>
                 <th></th>
             </tr>
             </thead>
             <tbody>
-            <g:each in="${taskInstanceList.sort{ a,b -> b.endDate.compareTo(a.endDate) }}" var="taskInstance">
+            <g:each in="${taskInstanceList}" var="taskInstance">
                 <tr>
                     <td>${fieldValue(bean: taskInstance, field: "title")}</td>
 

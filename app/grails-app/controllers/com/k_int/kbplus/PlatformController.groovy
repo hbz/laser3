@@ -235,9 +235,14 @@ class PlatformController {
 
         def authorizedOrgs = contextService.getUser().getAuthorizedOrgs()
         def hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
-            hql += "where ap.org =:institution and oapl.active=true"
+            hql += "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id}"
         def results = OrgAccessPointLink.executeQuery(hql,[institution : selectedInstitution])
-        def accessPointList = OrgAccessPoint.findAllByOrg(selectedInstitution)
+        def notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
+            notActiveAPLinkQuery += "and not exists ("
+            notActiveAPLinkQuery += "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true "
+            notActiveAPLinkQuery += "and oapl.platform.id = ${platformInstance.id})"
+
+        def accessPointList = OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : selectedInstitution])
 
         result.accessPointLinks = results
         result.platformInstance = platformInstance
@@ -264,9 +269,14 @@ class PlatformController {
             selectedInstitution = Org.get(params.institution_id)
         }
         def hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
-        hql += "where ap.org =:institution and oapl.active=true"
+        hql += "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id}"
         def results = OrgAccessPointLink.executeQuery(hql,[institution : selectedInstitution])
-        def accessPointList = OrgAccessPoint.findAllByOrg(selectedInstitution)
+        def notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
+        notActiveAPLinkQuery += "and not exists ("
+        notActiveAPLinkQuery += "select 1 from oap.oapp as oapl where oapl.oap=oap and oapl.active=true "
+        notActiveAPLinkQuery += "and oapl.platform.id = ${platformInstance.id})"
+
+        def accessPointList = OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : selectedInstitution])
 
         result.accessPointLinks = results
         result.platformInstance = platformInstance

@@ -72,6 +72,20 @@ class OrgAccessPoint extends BaseDomainComponent {
         }
     }
 
+    def getNotLinkedPlatforms()
+    {
+        // Platforms not in OrgAccessPointLink
+        def hql = 'select p from Platform p where not exists (select 1 from OrgAccessPointLink oapl where oapl.platform = p and oapl.active = true)'
+        return Platform.executeQuery(hql)
+    }
+
+    def getNotLinkedSubscriptions()
+    {
+        // Get not active subscriptions for the access point org
+        def hql = "select sub from Subscription sub join sub.orgRelations as orgrel where orgrel.org.id = ${org.id} and not exists (select 1 from OrgAccessPointLink oapl where oapl.subscription = sub and oapl.active = true)"
+        return License.executeQuery(hql)
+    }
+
     def hasActiveLink() {
         def active = false
         def oapps = this.oapp

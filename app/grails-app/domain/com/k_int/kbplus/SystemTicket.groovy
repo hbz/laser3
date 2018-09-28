@@ -39,9 +39,9 @@ class SystemTicket {
     static constraints = {
         author      (nullable:false, blank:false)
         title       (nullable:false, blank:false)
-        described   (nullable:false, blank:true)    // TODO: workaround: erms-534 .. (nullable:true, blank:true)
-        expected    (nullable:false, blank:true)    // TODO: workaround: erms-534 .. (nullable:true, blank:true)
-        info        (nullable:false, blank:true)    // TODO: workaround: erms-534 .. (nullable:true, blank:true)
+        described   (nullable:true, blank:true)
+        expected    (nullable:true, blank:true)
+        info        (nullable:true, blank:true)
         meta        (nullable:false, blank:true)
         status      (nullable:false, blank:false)
         category    (nullable:false, blank:false)

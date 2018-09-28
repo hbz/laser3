@@ -6,7 +6,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-        <g:if test="${orgInstance.orgType == RefdataValue.getByValueAndCategory('Provider','OrgType')}">
+        <g:if test="${RefdataValue.getByValueAndCategory('Provider','OrgRoleType' in orgInstance.orgRoleType)}">
             <g:set var="entityName" value="${message(code: 'default.provider.label', default: 'Provider')}" />
         </g:if>
         <g:else>
@@ -102,7 +102,7 @@
 
                 <div class="ui card">
                     <div class="content">
-                        <g:if test="${orgInstance.orgType != RefdataValue.getByValueAndCategory('Provider', 'OrgType')}">
+                        <g:if test="${(RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in orgInstance.orgRoleType)}">
                         <dl>
                             <dt><g:message code="org.sector.label" default="Sector" /></dt>
                             <dd>
@@ -120,13 +120,13 @@
                             <dl>
                                 <dt><g:message code="org.sector.label" default="Sector" /></dt>
                                 <dd>
-                                    ${orgInstance.sector.getI10n('value')}
+                                    ${orgInstance.sector?.getI10n('value')}
                                 </dd>
                             </dl>
                             <dl>
                                 <dt><g:message code="org.type.label" default="Org Type" /></dt>
                                 <dd>
-                                    ${orgInstance.orgType.getI10n('value')}
+                                    ${orgInstance.orgType?.getI10n('value')}
                                 </dd>
                             </dl>
                         </g:else>
@@ -139,7 +139,22 @@
 
                 <div class="ui card">
                     <div class="content">
-                    <g:if test="${orgInstance.orgType != RefdataValue.getByValueAndCategory('Provider', 'OrgType')}">
+                        <dt><g:message code="org.orgRoleType.label" default="Organisation Type" /></dt>
+                        <dd>
+                            <div class="ui divided middle aligned selection list la-flex-list">
+                            <g:render template="OrgRoleTypeasList"
+                                      model="${[OrgRoleTypes:orgInstance.orgRoleType, Org:orgInstance, editable: editable]}" />
+                            </div>
+                        </dd>
+
+                        <g:render template="OrgRoleTypeModal"
+                                  model="${[Org:orgInstance, editable: editable]}" />
+                    </div>
+                </div>
+
+                <div class="ui card">
+                    <div class="content">
+                    <g:if test="${(RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in orgInstance.orgRoleType)}">
                         <dl>
                             <dt><g:message code="org.libraryType.label" default="Library Type" /></dt>
                             <dd>
@@ -261,7 +276,7 @@
                         </dl>
                     </div>
                 </div><!-- .card -->
-                <g:if test="${orgInstance.orgType != RefdataValue.getByValueAndCategory('Provider','OrgType')}">
+                <g:if test="${(RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in orgInstance.orgRoleType)}">
                 %{--<div class="ui card">
                     <div class="content">
                         <dl>

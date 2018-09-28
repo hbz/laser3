@@ -48,14 +48,14 @@
         <div class="ui item person-details">
             <span></span>
             <div class="content" class="la-space-right">
-                <h3 class="ui header">
+                <h5 class="ui header">
                 <g:link controller="person" action="show" id="${personRole?.prs?.id}">
                     ${personRole?.prs?.title}
                     ${personRole?.prs?.first_name}
                     ${personRole?.prs?.middle_name}
                     ${personRole?.prs?.last_name}
                 </g:link>
-                </h3>
+                </h5>
                 <g:if test="${personRole?.functionType}">
                      (${personRole?.functionType?.getI10n('value')})
                 </g:if>
@@ -96,7 +96,6 @@
                 <g:if test="${tmplConfigShow.contains(contact?.contentType?.value)}">
                     <g:render template="/templates/cpa/contact" model="${[
                             contact: contact,
-                            editable: true,
                             tmplShowDeleteButton: true
                     ]}"/>
                 </g:if>

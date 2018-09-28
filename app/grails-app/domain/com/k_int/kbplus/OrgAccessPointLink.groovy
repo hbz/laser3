@@ -6,7 +6,7 @@ class OrgAccessPointLink extends BaseDomainComponent{
 
     OrgAccessPoint oap
     Platform platform
-    License license
+    Subscription subscription
     Boolean active
     Date dateCreated
     Date lastUpdated
@@ -14,12 +14,12 @@ class OrgAccessPointLink extends BaseDomainComponent{
     static belongsTo = [
         oap:OrgAccessPoint,
         platform:Platform,
-        license:License
+        subscription:Subscription
     ]
 
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
-        license(nullable:true)
+        subscription(nullable:true)
         platform(nullable:true)
         oap(nullable:false, blank:false)
     }

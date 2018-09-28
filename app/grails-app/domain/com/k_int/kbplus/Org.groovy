@@ -34,7 +34,7 @@ class Org extends BaseDomainComponent {
     int fteStudents
     int fteStaff
 
-    RefdataValue orgType        // RefdataCategory 'OrgType'
+    RefdataValue orgType        // RefdataCategory 'OrgType' OLD -> NEW: orgRoleType
     RefdataValue sector
     RefdataValue status
     RefdataValue membership
@@ -69,7 +69,8 @@ class Org extends BaseDomainComponent {
         addresses:          Address,
         affiliations:       UserOrg,
         customProperties:   OrgCustomProperty,
-        privateProperties:  OrgPrivateProperty
+        privateProperties:  OrgPrivateProperty,
+        orgRoleType: RefdataValue,
     ]
 
     static mapping = {
@@ -102,6 +103,8 @@ class Org extends BaseDomainComponent {
       importSource column:'org_import_source'
     lastImportDate column:'org_last_import_date'
 
+        orgRoleType joinTable: 'org_type_rv'
+
         addresses   lazy: false
         contacts    lazy: false
     }
@@ -132,6 +135,7 @@ class Org extends BaseDomainComponent {
          libraryType(nullable:true, blank:true)
         importSource(nullable:true, blank:true)
       lastImportDate(nullable:true, blank:true)
+        orgRoleType(nullable:true, blank:true)
     }
 
     @Override
