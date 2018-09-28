@@ -67,7 +67,7 @@ c3po = {
                 }
             },
             createSearchChoice: function (term, data) {
-                return {id: -1, text: "Neue Eigenschaft: " + term};
+                return null; // {id: -1, text: "Neue Eigenschaft: " + term};
             }
         });
     },

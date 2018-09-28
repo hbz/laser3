@@ -96,7 +96,6 @@
                 <g:else>
                     <td colspan="4">
                 </g:else>
-
                     <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']" method="post"
                                   name="cust_prop_add_value"
                                   class="ui form"
@@ -118,66 +117,3 @@
     </g:if>
 
 </table>
-
-<%--
-<div id="cust_prop_add_modal" class="modal hide">
-
-TODO !!! this modal dialog has not been refactored ..
-
-    <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyType']" method="post"
-                  id="create_cust_prop"
-                  name="modal_create_cust_prop"
-                  update="${custom_props_div}"
-                  onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
-        <input type="hidden" name="ownerId" value="${ownobj.id}"/>
-        <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
-        <input type="hidden" name="editable" value="${editable}"/>
-
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">×</button>
-
-            <h3 class="ui header">Create Custom Property Definition</h3>
-        </div>
-
-        <input type="hidden" name="parent" value="${parent}"/>
-
-        <div class="modal-body">
-            <dl>
-                <dt>
-                    <label class="control-label">Property Definition:</label>
-                </dt>
-                <dd>
-                    <label class="property-label">Name:</label>
-                    <input type="text" name="cust_prop_name" />
-                </dd>
-                <dd>
-                    <label class="property-label">Type:</label>
-                    <g:select from="${PropertyDefinition.validTypes.entrySet()}"
-                              optionKey="value" optionValue="key"
-                              name="cust_prop_type"
-                              id="cust_prop_modal_select" />
-                </dd>
-
-                <div class="hide" id="cust_prop_ref_data_name">
-                    <dd>
-                        <label class="property-label">Refdata Category:</label>
-                        <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
-                    </dd>
-                </div>
-                <dd>
-                    <label class="property-label">Context:</label> <g:select name="cust_prop_desc" from="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}"/>
-                </dd>
-                <dd>
-                    Create value for this property: <g:checkBox name="autoAdd" checked="true"/>
-                </dd>
-            </dl>
-        </div>
-
-        <div class="modal-footer">
-            <input id="new_cust_prop_add_btn" type="submit" class="ui button" value="${message(code:'default.button.add.label', default:'Add')}">
-            <a href="#" data-dismiss="modal" class="ui button">${message(code:'default.button.close.label', default:'Close')}</a>
-        </div>
-    </g:formRemote>
-
-</div>
---%>

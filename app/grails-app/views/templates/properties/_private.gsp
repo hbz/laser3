@@ -89,7 +89,6 @@
         <tfoot>
             <tr>
                 <td colspan="4">
-
                     <g:formRemote url="[controller: 'ajax', action: 'addPrivatePropertyValue']" method="post"
                                   name="cust_prop_add_value"
                                   class="ui form"
