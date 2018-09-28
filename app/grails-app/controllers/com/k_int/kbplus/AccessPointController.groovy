@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.DebugAnnotation
 import de.uni_freiburg.ub.IpRange
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
@@ -107,9 +108,18 @@ class AccessPointController {
         def ipv4Ranges = orgAccessPoint.getIpRangeStrings('ipv4', ipv4Format)
         def ipv6Ranges = orgAccessPoint.getIpRangeStrings('ipv6', ipv6Format)
 
+        def hql = "select new map(p as platform,oapl as aplink) from Platform p join p.oapp as oapl where oapl.active = true and oapl.oap=${orgAccessPoint.id}"
+        def linkedPlatformsMap = Platform.executeQuery(hql)
+        def linkedSubscriptionsQuery = "select new map(s as subscription,oapl as aplink) from Subscription s join s.oapl as oapl where oapl.active = true and oapl.oap=${orgAccessPoint.id}"
+        def linkedSubscriptionsMap = Subscription.executeQuery(linkedSubscriptionsQuery)
+
         switch (request.method) {
             case 'GET':
                 [accessPoint: orgAccessPoint, accessPointDataList: accessPointDataList, orgId: orgId,
+                 platformList: orgAccessPoint.getNotLinkedPlatforms(),
+                 linkedPlatformsMap: linkedPlatformsMap,
+                 subscriptionList: orgAccessPoint.getNotLinkedSubscriptions(),
+                 linkedSubscriptionsMap: linkedSubscriptionsMap,
                  ip: params.ip, editable: true,
                  ipv4Ranges: ipv4Ranges, ipv4Format: ipv4Format,
                  ipv6Ranges: ipv6Ranges, ipv6Format: ipv6Format,
@@ -126,7 +136,6 @@ class AccessPointController {
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
-
     def addIpRange() {
         try {
             def ipRange = IpRange.parseIpRange(params.ip)
@@ -158,12 +167,66 @@ class AccessPointController {
     }
 
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def linkSubscription() {
+        def accessPoint = OrgAccessPoint.get(params.id)
+        def oapl = new OrgAccessPointLink()
+        oapl.active = true
+        oapl.oap = accessPoint
+        oapl.subscription = Subscription.get(params.subscriptions)
+        def existingActiveAP = OrgAccessPointLink.findAll {
+            active == true && subscription == oapl.subscription && oap == accessPoint
+        }
+        if (! existingActiveAP.isEmpty()){
+            flash.error = "Existing active AccessPoint for Subscription"
+            redirect controller: 'accessPoint', action: 'edit_ip', id: accessPoint.id, params: [autofocus: true]
+        }
+        if (! oapl.save()) {
+            flash.error = "Could not link AccessPoint to Subscription"
+            redirect controller: 'accessPoint', action: 'edit_ip', id: accessPoint.id, params: [autofocus: true]
+        }
+        redirect controller: 'accessPoint', action: 'edit_ip', id: accessPoint.id, params: [autofocus: true]
+    }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def linkPlatform() {
+        def accessPoint = OrgAccessPoint.get(params.id)
+        def oapl = new OrgAccessPointLink()
+        oapl.active = true
+        oapl.oap = accessPoint
+        oapl.platform = Platform.get(params.platforms)
+        def existingActiveAP = OrgAccessPointLink.findAll {
+            active == true && platform == oapl.platform && oap == accessPoint
+        }
+        if (! existingActiveAP.isEmpty()){
+            flash.error = "Existing active AccessPoint for platform"
+            redirect controller: 'accessPoint', action: 'edit_ip', id: accessPoint.id, params: [autofocus: true]
+        }
+        if (! oapl.save()) {
+            flash.error = "Could not link AccessPoint to Platform"
+            redirect controller: 'accessPoint', action: 'edit_ip', id: accessPoint.id, params: [autofocus: true]
+        }
+        redirect controller: 'accessPoint', action: 'edit_ip', id: accessPoint.id, params: [autofocus: true]
+    }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def deleteIpRange() {
         def accessPointData = AccessPointData.get(params.id)
         def accessPoint = accessPointData.orgAccessPoint;
         accessPointData.delete(flush: true)
 
         redirect controller: 'accessPoint', action: 'edit_ip', id: accessPoint.id, params: [autofocus: true]
+    }
+
+    @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
+    def removeAPLink() {
+        def aoplInstance = OrgAccessPointLink.get(params.id)
+        aoplInstance.active = false
+        if (! aoplInstance.save()) {
+            log.debug("Error updateing AccessPoint for platform")
+            log.debug(aopl.errors)
+            // TODO flash
+        }
+        redirect controller: 'accessPoint', action: 'edit_ip', id: aoplInstance.oap.id, params: [autofocus: true]
     }
 
 }

@@ -65,7 +65,7 @@
 
         <br />
 
-        <div class="ui top attached tabular menu">
+        <div class="ui secondary pointing tabular menu">
             <a class="item" data-tab="first">
                 <i class="alarm outline icon large"></i>
                 ${message(code:'myinst.todo.label', default:'To Do')}
@@ -80,7 +80,7 @@
             </a>
         </div>
 
-        <div class="ui bottom attached tab segment" data-tab="first">
+        <div class="ui bottom attached tab segment" data-tab="first" style="border-top: 1px solid #d4d4d5; ">
             <g:if test="${editable}">
                 <div class="pull-right">
                     <g:link action="changes" class="ui button">${message(code:'myinst.todo.submit.label', default:'View To Do List')}</g:link>
@@ -115,7 +115,7 @@
             </div>
         </div>
 
-        <div class="ui bottom attached tab segment" data-tab="second">
+        <div class="ui bottom attached tab segment" data-tab="second" style="border-top: 1px solid #d4d4d5; ">
             <g:if test="${editable}">
                 <div class="pull-right">
                     <g:link action="announcements" class="ui button">${message(code:'myinst.ann.view.label', default:'View All Announcements')}</g:link>
@@ -155,56 +155,72 @@
             </div>
         </div>
 
-        <div class="ui bottom attached active tab segment" data-tab="third">
+        <div class="ui bottom attached active tab " data-tab="third">
+
             <g:if test="${editable}">
-                <div class="pull-right">
-                    <input type="submit" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" href="#modalCreateTask" />
+                <div class="ui right aligned grid">
+                    <div class="right floated right aligned sixteen wide column">
+                        <input type="submit" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" href="#modalCreateTask" />
+                    </div>
                 </div>
+
             </g:if>
+            <div class="ui cards">
+                <g:each in="${tasks}" var="tsk">
+                    <div class="ui card">
 
-            <div class="ui relaxed list" style="clear:both;padding-top:1rem;">
-                <g:each in="${tasks.sort{ a,b -> b.endDate.compareTo(a.endDate) }}" var="tsk">
-                    <div class="item">
-                        <div class="ui internally celled grid">
-                            <div class="row">
-                                <div class="three wide column">
+                        <div class="ui label">
+                            <div class="right floated author">
+                                Status:
+                                <span>
+                                <semui:xEditableRefData config="Task Status" owner="${tsk}" field="status" />
+                                </span>
+                            </div>
+                        </div>
 
-                                    <strong>Fällig:</strong>
-                                    <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk?.endDate}"/>
-                                    <br />
-                                    <br />
-                                    <strong>Status:</strong>
-                                    <semui:xEditableRefData config="Task Status" owner="${tsk}" field="status" />
+                        <div class="content">
+                            <div class="meta">
+                                <div class="">Fällig: <strong><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${tsk?.endDate}"/></strong></div>
+                            </div>
+                            <a class="header" onclick="taskedit(${tsk?.id});">${tsk?.title}</a>
 
-                                </div><!-- .column -->
-                                <div class="thirteen wide column">
+                            <div class="description">
+                                <g:if test="${tsk.description}">
+                                    <span><em>${tsk.description}</em></span> <br />
+                                </g:if>
+                            </div>
+                        </div>
+                        <div class="extra content">
+                                <g:if test="${tsk.getObjects()}">
+                                    <g:each in="${tsk.getObjects()}" var="tskObj">
+                                        <div class="item">
+                                            <span data-tooltip="${message(code: 'task.' + tskObj.controller)}" data-position="left center" data-variation="tiny">
+                                                <g:if test="${tskObj.controller == 'organisations'}">
+                                                    <i class="university icon"></i>
+                                                </g:if>
+                                                <g:if test="${tskObj.controller.contains('subscription')}">
+                                                    <i class="folder open icon"></i>
+                                                </g:if>
+                                                <g:if test="${tskObj.controller.contains('package')}">
+                                                    <i class="gift icon"></i>
+                                                </g:if>
+                                                <g:if test="${tskObj.controller.contains('license')}">
+                                                    <i class="book icon"></i>
+                                                </g:if>
+                                            </span>
 
-                                    <div class="header" style="margin:0 0 1em 0">
-                                        <a onclick="taskedit(${tsk?.id});">${tsk?.title}</a>
-                                    </div>
-                                    <div class="description"style="margin:0 0 1em 0">
-                                        <g:if test="${tsk.description}">
-                                            <span><em>${tsk.description}</em></span> <br />
-                                        </g:if>
-                                    </div>
-                                    <div>
-                                        <strong>Betrifft:</strong>
-                                        <g:if test="${tsk.getObjects()}">
-                                            <g:each in="${tsk.getObjects()}" var="tskObj">
-                                                <div class="item">
-                                                    <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
-                                                    &nbsp; (${message(code: 'task.' + tskObj.controller)})
-                                                </div>
-                                            </g:each>
-                                        </g:if>
-                                        <g:else>
-                                            ${message(code: 'task.general')}
-                                        </g:else>
-                                    </div>
 
-                                </div><!-- .column -->
-                            </div><!-- .row -->
-                        </div><!-- .grid -->
+
+                                            <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
+                                        </div>
+                                    </g:each>
+                                </g:if>
+                                <g:else>
+                                    <i class="checked calendar icon"></i>
+                                    ${message(code: 'task.general')}
+                                </g:else>
+                            </a>
+                        </div>
                     </div>
                 </g:each>
             </div>

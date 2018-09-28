@@ -121,21 +121,13 @@
             <g:if test="${! tmplHideFunctions}">
                 <div class="person-role-function-manager">
 
-                    <h5 class="ui header">
-                        <g:message code="person.function.label" default="Function"/>
-                    </h5>
                     <div class="field">
-                        <div class="three fields">
-                            <div class="field wide eight">
-                                <g:select class="ui search dropdown"
-                                      name="functionOrg"
-                                      from="${Org.getAll()}"
-                                      value="${org?.id}"
-                                      optionKey="id"
-                                      optionValue="" />
-                            </div>
 
-                            <div class="field wide six">
+                        <div class="two fields">
+                            <div class="field">
+                                <label for="org">
+                                    <g:message code="person.function.label" default="Function"/>
+                                </label>
                                 <laser:select class="ui dropdown values"
                                               name="functionType"
                                               from="${PersonRole.getAllRefdataValues('Person Function')}"
@@ -143,9 +135,30 @@
                                               value="${presetFunctionType?.id}"
                                               optionValue="value" />
                             </div>
+                            <div class="field">
+                                <g:if test="${institution}">
+                                        <label for="org">
+                                            <g:message code="contact.belongesTo.label"  />
+                                        </label>
+                                        <g:select class="ui search dropdown"
+                                                  name="functionOrg"
+                                                  from="${Org.getAll()}"
+                                                  value="${org?.id}"
+                                                  optionKey="id"
+                                                  optionValue="" />
+                                </g:if>
+                                <g:else>
+                                        <label for="org">
+                                            <g:message code="contact.belongesTo.label"  />
+                                        </label>
+                                        <i class="icon university la-list-icon"></i>${org?.name}
+                                        <input id="org" name="functionOrg" type="hidden" value="${org?.id}" />
+                                </g:else>
+                            </div>
                         </div>
                     </div>
                 </div>
+
 
             </g:if>
             <g:else>

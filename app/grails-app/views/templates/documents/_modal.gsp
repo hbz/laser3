@@ -33,11 +33,17 @@
                     <label>${message(code: 'template.addDocument.type', default: 'Document Type')}:</label>
                 </dt>
                 <dd>
-                    <select class="ui dropdown fluid" name="doctype">
-                        <option value="${com.k_int.kbplus.RefdataValue.loc('Document Type', [en:'License'])}"><g:message code="license" default="License"/></option>
-                        <option value="${com.k_int.kbplus.RefdataValue.loc('Document Type', [en:'General'])}"><g:message code="template.addDocument.type.general" default="General"/></option>
-                        <option value="${com.k_int.kbplus.RefdataValue.loc('Document Type', [en:'Addendum'])}"><g:message code="template.addDocument.type.addendum" default="Addendum"/></option>
-                    </select>
+                    <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwnerAndValueNotInList(
+                                            com.k_int.kbplus.RefdataCategory.loc('Document Type', [en: 'Document Type', de: 'Dokumenttyp']),
+                                           [com.k_int.kbplus.RefdataValue.loc('Document Type', [en: 'ONIX-PL License', de: 'ONIX-PL Lizenz']),
+                                            com.k_int.kbplus.RefdataValue.loc('Document Type', [en: 'Note', de: 'Anmerkung']),
+                                            com.k_int.kbplus.RefdataValue.loc('Document Type', [en: 'Announcement', de: 'Angekündigung'])
+                                           ]).sort{it.getI10n('value')}}"
+                              class="ui dropdown fluid"
+                              optionKey="value"
+                              optionValue="${{ it.getI10n('value') }}"
+                              name="doctype"
+                              value=""/>
                 </dd>
             </dl>
         </div>

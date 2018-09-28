@@ -68,7 +68,7 @@
                           tmplDisableOrgIds: cons_members_disabled,
                           subInstance: subscriptionInstance,
                           tmplShowCheckbox: true,
-                          tmplConfigShow: ['name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
+                          tmplConfigShow: ['sortname', 'name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
                           ]"/>
 
         <g:if test="${cons_members}">
@@ -76,21 +76,23 @@
                 <div class="field">
                     <label>Vertrag kopieren</label>
                     <div class="ui radio checkbox">
+                        <input class="hidden" type="radio" name="generateSlavedLics" value="shared" checked="checked">
+                        <label>${message(code: 'rolemyinst.emptySubscription.seperate_lics_shared')}</label>
+                    </div>
+
+                    <div class="ui radio checkbox">
                         <g:if test="${license.derivedLicenses}">
                             <input class="hidden" type="radio" name="generateSlavedLics" value="explicit">
                         </g:if>
                         <g:else>
-                            <input class="hidden" type="radio" name="generateSlavedLics" value="explicit" checked="checked">
+                            <input class="hidden" type="radio" name="generateSlavedLics" value="explicit">
                         </g:else>
                         <label>${message(code: 'myinst.emptySubscription.seperate_lics_explicit')}</label>
                     </div>
-                    <div class="ui radio checkbox">
-                        <input class="hidden" type="radio" name="generateSlavedLics" value="shared">
-                        <label>${message(code: 'rolemyinst.emptySubscription.seperate_lics_shared')}</label>
-                    </div>
+
                     <g:if test="${license.derivedLicenses}">
                         <div class="ui radio checkbox">
-                            <input class="hidden" type="radio" name="generateSlavedLics" value="reference" checked="checked">
+                            <input class="hidden" type="radio" name="generateSlavedLics" value="reference">
                             <label>${message(code: 'myinst.emptySubscription.seperate_lics_reference')}</label>
                         </div>
 

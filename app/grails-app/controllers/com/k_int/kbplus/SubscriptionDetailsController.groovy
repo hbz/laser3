@@ -27,7 +27,6 @@ class SubscriptionDetailsController {
     def contextService
     def addressbookService
     def taskService
-    def gazetteerService
     def alertsService
     def genericOIDService
     def transformerService
@@ -49,6 +48,7 @@ class SubscriptionDetailsController {
     private static String INVOICES_FOR_SUB_HQL =
             'select co.invoice, sum(co.costInLocalCurrency), sum(co.costInBillingCurrency), co from CostItem as co where co.sub = :sub group by co.invoice order by min(co.invoice.startDate) desc';
 
+    // TODO Used in Cost per use tab, still needed?
     private static String USAGE_FOR_SUB_IN_PERIOD =
             'select f.reportingYear, f.reportingMonth+1, sum(factValue) ' +
                     'from Fact as f ' +
@@ -56,6 +56,7 @@ class SubscriptionDetailsController {
                     '( select ie.tipp.title from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.title = f.relatedTitle)' +
                     'group by f.reportingYear, f.reportingMonth order by f.reportingYear desc, f.reportingMonth desc';
 
+    // TODO Used in Cost per use tab, still needed?
     private static String TOTAL_USAGE_FOR_SUB_IN_PERIOD =
         'select sum(factValue) ' +
             'from Fact as f ' +
@@ -199,6 +200,10 @@ class SubscriptionDetailsController {
         if (executorWrapperService.hasRunningProcess(result.subscriptionInstance)) {
             result.processingpc = true
         }
+
+        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
+        result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
+
         withFormat {
             html result
             csv {
@@ -696,6 +701,9 @@ class SubscriptionDetailsController {
         //            [result.subscriptionInstance]
         //    )
         //}
+
+        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
+        result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
         result
     }
 
@@ -1434,6 +1442,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
     }
 
 
+    // TODO Cost per use tab, still needed?
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def costPerUse() {
@@ -1704,7 +1713,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                         /* Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
                             [result.subscriptionInstance, it.id])*/
 
-                        Subscription newSubscription = new Subscription(
+                        def newSubscription = new Subscription(
                                 type: subMember.type,
                                 status: newSubConsortia.status,
                                 name: subMember.name,
@@ -1713,12 +1722,12 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                                 manualRenewalDate: subMember.manualRenewalDate,
                                 /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
                                 identifier: java.util.UUID.randomUUID().toString(),
-                                instanceOf: newSubConsortia,
-                                previousSubscription: subMember,
+                                instanceOf: newSubConsortia?.id,
+                                previousSubscription: subMember?.id,
                                 isSlaved: subMember.isSlaved,
                                 isPublic: subMember.isPublic,
                                 impId: java.util.UUID.randomUUID().toString(),
-                                owner: newSubConsortia.owner ? subMember.owner : null
+                                owner: newSubConsortia.owner?.id ? subMember.owner?.id : null
                         )
                         newSubscription.save(flush: true)
 
@@ -1728,18 +1737,18 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                             for (prop in subMember.customProperties) {
                                 def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscription)
                                 copiedProp = prop.copyValueAndNote(copiedProp)
-                                newSub.addToCustomProperties(copiedProp)
+                                newSubscription.addToCustomProperties(copiedProp)
                             }
                         }
                         if (subMember.privateProperties) {
                             //privatProperties
                             def contextOrg = contextService.getOrg()
 
-                            subMember.privateProperties.each { prop ->
+                            subMember.privateProperties?.each { prop ->
                                 if (prop.type?.tenant?.id == contextOrg?.id) {
                                     def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscription)
                                     copiedProp = prop.copyValueAndNote(copiedProp)
-                                    newSub.addToPrivateProperties(copiedProp)
+                                    newSubscription.addToPrivateProperties(copiedProp)
                                 }
                             }
                         }
@@ -1755,7 +1764,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                         }
                         if (subMember.issueEntitlements && newSubConsortia.issueEntitlements) {
 
-                            subMember.issueEntitlements.each { ie ->
+                            subMember.issueEntitlements?.each { ie ->
 
                                 if (ie.status != RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted')) {
                                     def ieProperties = ie.properties
@@ -1792,6 +1801,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                             }
                         }
                     }
+
                 }
 
 

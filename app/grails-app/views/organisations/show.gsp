@@ -6,7 +6,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-        <g:if test="${orgInstance.orgType == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider','OrgType')}">
+        <g:if test="${RefdataValue.getByValueAndCategory('Provider','OrgRoleType' in orgInstance.orgRoleType)}">
             <g:set var="entityName" value="${message(code: 'default.provider.label', default: 'Provider')}" />
         </g:if>
         <g:else>
@@ -102,7 +102,7 @@
 
                 <div class="ui card">
                     <div class="content">
-                        <g:if test="${orgInstance.orgType != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'OrgType')}">
+                        <g:if test="${(RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in orgInstance.orgRoleType)}">
                         <dl>
                             <dt><g:message code="org.sector.label" default="Sector" /></dt>
                             <dd>
@@ -120,13 +120,13 @@
                             <dl>
                                 <dt><g:message code="org.sector.label" default="Sector" /></dt>
                                 <dd>
-                                    ${orgInstance.sector.getI10n('value')}
+                                    ${orgInstance.sector?.getI10n('value')}
                                 </dd>
                             </dl>
                             <dl>
                                 <dt><g:message code="org.type.label" default="Org Type" /></dt>
                                 <dd>
-                                    ${orgInstance.orgType.getI10n('value')}
+                                    ${orgInstance.orgType?.getI10n('value')}
                                 </dd>
                             </dl>
                         </g:else>
@@ -139,7 +139,22 @@
 
                 <div class="ui card">
                     <div class="content">
-                    <g:if test="${orgInstance.orgType != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'OrgType')}">
+                        <dt><g:message code="org.orgRoleType.label" default="Organisation Type" /></dt>
+                        <dd>
+                            <div class="ui divided middle aligned selection list la-flex-list">
+                            <g:render template="OrgRoleTypeasList"
+                                      model="${[OrgRoleTypes:orgInstance.orgRoleType, Org:orgInstance, editable: editable]}" />
+                            </div>
+                        </dd>
+
+                        <g:render template="OrgRoleTypeModal"
+                                  model="${[Org:orgInstance, editable: editable]}" />
+                    </div>
+                </div>
+
+                <div class="ui card">
+                    <div class="content">
+                    <g:if test="${(RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in orgInstance.orgRoleType)}">
                         <dl>
                             <dt><g:message code="org.libraryType.label" default="Library Type" /></dt>
                             <dd>
@@ -180,7 +195,7 @@
                             <dt><g:message code="org.addresses.label" default="Addresses" /></dt>
                             <dd>
                                 <div class="ui divided middle aligned selection list la-flex-list">
-                                    <g:each in="${orgInstance?.addresses.sort{it.type?.getI10n('value')}}" var="a">
+                                    <g:each in="${orgInstance?.addresses?.sort{it.type?.getI10n('value')}}" var="a">
                                         <g:if test="${a.org}">
                                             <g:render template="/templates/cpa/address" model="${[
                                                     address: a,
@@ -188,7 +203,7 @@
                                                     controller: 'org',
                                                     action: 'show',
                                                     id: orgInstance.id
-                                            ]}"></g:render>
+                                            ]}"/>
                                         </g:if>
                                     </g:each>
                                 </div>
@@ -205,7 +220,7 @@
                             <dt><g:message code="org.contacts.label" default="Contacts" /></dt>
                             <dd>
                                 <div class="ui divided middle aligned selection list la-flex-list">
-                                    <g:each in="${orgInstance?.contacts.sort{it.content}}" var="c">
+                                    <g:each in="${orgInstance?.contacts?.toSorted()}" var="c">
                                         <g:if test="${c.org}">
                                             <g:render template="/templates/cpa/contact" model="${[
                                                     contact: c,
@@ -213,7 +228,7 @@
                                                     controller: 'organisations',
                                                     action: 'show',
                                                     id: orgInstance.id
-                                            ]}"></g:render>
+                                            ]}"/>
                                         </g:if>
                                     </g:each>
                                 </div>
@@ -230,15 +245,16 @@
                             <dt><g:message code="org.prsLinks.label" default="Kontaktpersonen" /></dt>
                             <dd>
                                 <%-- <div class="ui divided middle aligned selection list la-flex-list"> --%>
-                                    <g:each in="${orgInstance?.prsLinks}" var="pl">
+                                    <g:each in="${orgInstance?.prsLinks?.toSorted()}" var="pl">
                                         <g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value!='No'}">
                                             <g:render template="/templates/cpa/person_details" model="${[
                                                     personRole: pl,
                                                     tmplShowDeleteButton: true,
+                                                    tmplConfigShow: ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
                                                     controller: 'organisations',
                                                     action: 'show',
                                                     id: orgInstance.id
-                                            ]}"></g:render>
+                                            ]}"/>
                                         </g:if>
                                     </g:each>
                                 <%-- </div> --%>
@@ -260,7 +276,7 @@
                         </dl>
                     </div>
                 </div><!-- .card -->
-                <g:if test="${orgInstance.orgType != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider','OrgType')}">
+                <g:if test="${(RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in orgInstance.orgRoleType)}">
                 %{--<div class="ui card">
                     <div class="content">
                         <dl>
@@ -295,7 +311,7 @@
                                         <dd>
                                             <g:each in="${orgInstance.outgoingCombos.sort{it.toOrg.name}}" var="i">
                                                 <g:link controller="organisations" action="show" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
-                                                (<g:each in="${i.toOrg?.ids.sort{it.identifier.ns.ns}}" var="id_out">
+                                                (<g:each in="${i?.toOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_out">
                                                     ${id_out.identifier.ns.ns}: ${id_out.identifier.value}
                                                 </g:each>)
                                                 <br />
@@ -322,7 +338,7 @@
                                         <dd>
                                             <g:each in="${orgInstance.incomingCombos.sort{it.fromOrg.name}}" var="i">
                                                 <g:link controller="organisations" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
-                                                    (<g:each in="${i.fromOrg?.ids.sort{it.identifier.ns.ns}}" var="id_in">
+                                                    (<g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
                                                         ${id_in.identifier.ns.ns}: ${id_in.identifier.value}
                                                     </g:each>)
                                                     <br />

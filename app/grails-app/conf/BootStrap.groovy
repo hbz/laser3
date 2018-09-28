@@ -765,6 +765,7 @@ class BootStrap {
         RefdataCategory.loc('Library Network',      	                    [en: 'Library Network', de: 'Verbundzugehörigkeit'])
         RefdataCategory.loc('Library Type',         	                    [en: 'Library Type', de: 'Bibliothekstyp'])
         RefdataCategory.loc('OrgType',              	                    [en: 'Organisation Type', de: 'Organisationstyp'])
+        RefdataCategory.loc('OrgRoleType',              	                    [en: 'Organisation Type', de: 'Organisationstyp'])
         RefdataCategory.loc('Person Function',      	                    [en: 'Person Function', de: 'Funktion'])
         RefdataCategory.loc('Person Contact Type',  	                    [en: 'Person: Contact Type', de: 'Kontaktart'])
         RefdataCategory.loc('Person Position',      	                    [en: 'Person Position', de: 'Position'])
@@ -872,6 +873,8 @@ class BootStrap {
 
         RefdataValue.loc('FactType', [en: 'STATS:JR1'])
         RefdataValue.loc('FactType', [en: 'STATS:JR1GOA'])
+        RefdataValue.loc('FactType', [en: 'STATS:DB1'])
+
 
         RefdataValue.loc('Federal State',   [en: 'Baden-Wurttemberg', de: 'Baden-Württemberg'])
         RefdataValue.loc('Federal State',   [en: 'Bavaria', de: 'Bayern'])
@@ -935,6 +938,20 @@ class BootStrap {
         RefdataValue.loc('OrgType',      [en: 'Publisher', de: 'Verlag'])
         RefdataValue.loc('OrgType',      [en: 'Provider', de: 'Anbieter'])
         RefdataValue.loc('OrgType',      [en: 'Other', de: 'Andere'])
+
+        RefdataValue.loc('OrgRoleType',      [en: 'Consortium', de: 'Konsortium'])
+        RefdataValue.loc('OrgRoleType',      [en: 'Institution', de: 'Einrichtung'])
+        RefdataValue.loc('OrgRoleType',      [en: 'Publisher', de: 'Verlag'])
+        RefdataValue.loc('OrgRoleType',      [en: 'Provider', de: 'Anbieter'])
+        RefdataValue.loc('OrgRoleType',      [en: 'Other', de: 'Andere'])
+        RefdataValue.loc('OrgRoleType',      [en: 'Licensor', de: 'Lizenzgeber']).save()
+        RefdataValue.loc('OrgRoleType',      [en: 'Licensee', de: 'Lizenznehmer']).save()
+        RefdataValue.loc('OrgRoleType',      [en: 'Broker', de: 'Vermittler']).save()
+        RefdataValue.loc('OrgRoleType',      [en: 'Vendor', de: 'Verkäufer']).save()
+        RefdataValue.loc('OrgRoleType',      [en: 'Content Provider', de:'Inhalt Anbieter']).save()
+        RefdataValue.loc('OrgRoleType',      [en: 'Platform Provider', de: 'Plattformanbieter']).save()
+        RefdataValue.loc('OrgRoleType',      [en: 'Issuing Body']).save()
+        RefdataValue.loc('OrgRoleType',      [en: 'Imprint']).save()
 
         RefdataValue.loc('Package Status',      [en: 'Deleted', de: 'Gelöscht'])
         RefdataValue.loc('Package Status',      [en: 'Current', de: 'Aktuell'])
@@ -1153,6 +1170,12 @@ class BootStrap {
         RefdataValue.loc('Authority', [en: 'Institution', de: 'Institution'])
         RefdataValue.loc('Authority', [en: 'Author and Institution', de: 'Autor und Institution'])
 
+        RefdataCategory.loc('CostItem.Type',
+                [en: 'Type', de: 'Typ'])
+
+        RefdataValue.loc('CostItem.Type', [en: 'Actual', de: 'Konkrete Instanz'])
+        RefdataValue.loc('CostItem.Type', [en: 'Template', de: 'Vorlage'])
+
         RefdataCategory.loc('CostItemCategory',
                 [en: 'CostItemCategory', de: 'CostItemCategory'])
 
@@ -1225,6 +1248,11 @@ class BootStrap {
         RefdataValue.loc('Document Type', [en: 'Addendum', de: 'Zusatz'])
         RefdataValue.loc('Document Type', [en: 'Note', de: 'Anmerkung'])
         RefdataValue.loc('Document Type', [en: 'ONIX-PL License', de: 'ONIX-PL Lizenz'])
+        RefdataValue.loc('Document Type', [key: 'Usage Statistics', en: 'Usage Statistics', de: 'Nutzungsstatistik'])
+        RefdataValue.loc('Document Type', [key: 'Offer', en: 'Offer', de: 'Angebot'])
+        RefdataValue.loc('Document Type', [key: 'Renewal', en: 'Renewal', de: 'Renewal'])
+        RefdataValue.loc('Document Type', [key: 'Order', en: 'Order', de: 'Bestellung'])
+        RefdataValue.loc('Document Type', [key: 'Invoice', en: 'Invoice', de: 'Rechnung'])
 
         RefdataCategory.loc('Entitlement Issue Status',
                 [en: 'Entitlement Issue Status', de: 'Entitlement Issue Status'])

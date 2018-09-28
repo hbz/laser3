@@ -16,7 +16,6 @@ class LicenseDetailsController {
     def springSecurityService
     def taskService
     def docstoreService
-    def gazetteerService
     def alertsService
     def genericOIDService
     def transformerService
@@ -240,28 +239,37 @@ select s from Subscription as s where (
         }
         else {
             if (result.institution?.orgType?.value == 'Consortium') {
-                def fsq = filterService.getOrgComboQuery(params, result.institution)
-                def all_cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
 
-                result.cons_members = []
+                def consMembers = Org.executeQuery(
+                        'select o from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :inst and c.type.value = :cons',
+                        [inst:result.institution, cons:'Consortium']
+                )
 
-                // filter by members of subscription.owner -> this
-                all_cons_members.each { org ->
-                    Subscription.where { owner == result.license }.findAll().each { subscr ->
-                        subscr.getDerivedSubscribers().each { subOrg ->
-                            if (subOrg.id == org.id) {
-                                result.cons_members << org
-                            }
-                        }
-                    }
-                }
+                def memberSubs = Subscription.executeQuery(
+                        'select distinct sub from Subscription sub join sub.instanceOf cons join cons.owner lic where lic = :license',
+                        [license: result.license]
+                )
 
+                def validOrgs = Org.executeQuery(
+                    'select distinct o from OrgRole ogr join ogr.org o where o in (:orgs) and ogr.roleType.value in (:roleTypes) and ogr.sub in (:subs)',
+                        [orgs: consMembers, roleTypes: ['Subscriber', 'Subscriber_Consortial'], subs:memberSubs]
+                )
+
+                // applying filter AFTER valid orgs are found
+                def fsq = filterService.getOrgQuery([constraint_orgIds: validOrgs.collect({it.id})] << params)
+
+                result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
                 result.cons_members_disabled = []
 
-                result.cons_members.unique().each { it ->
-                    if (License.executeQuery("select l from License as l join l.orgLinks as lol where l.instanceOf = ? and lol.org.id = ?",
-                            [result.license, it.id])
-                    ) {
+
+                def memberLics = License.executeQuery(
+                        'select l from License l where l.instanceOf = :lic', [lic: result.license]
+                )
+                result.cons_members.each { it ->
+                    if (memberLics && OrgRole.executeQuery('' +
+                            'select ogr from OrgRole ogr join ogr.lic lc where lc in :lic and ogr.org = :org',
+                            [lic: memberLics, org: it]
+                    )) {
                         result.cons_members_disabled << it.id
                     }
                 }

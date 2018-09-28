@@ -24,7 +24,7 @@
             </tr>
             </thead>
             <tbody>
-            <g:each in="${taskInstanceList.sort{ a,b -> b.endDate.compareTo(a.endDate) }}" var="taskInstance">
+            <g:each in="${taskInstanceList}" var="taskInstance">
                 <tr>
                     <td>${fieldValue(bean: taskInstance, field: "title")}</td>
 
@@ -72,18 +72,3 @@
     </div><!-- .sixteen -->
 
 </div><!-- .grid -->
-<r:script>
-    function taskedit(id) {
-
-        $.ajax({
-            url: '<g:createLink controller="ajax" action="TaskEdit"/>?id='+id,
-            success: function(result){
-                $("#dynamicModalContainer").empty();
-                $("#modalEditTask").remove();
-
-                $("#dynamicModalContainer").html(result);
-                $("#dynamicModalContainer .ui.modal").modal('show');
-            }
-        });
-    }
-</r:script>

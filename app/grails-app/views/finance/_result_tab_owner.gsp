@@ -5,12 +5,13 @@
 
 <thead>
     <tr>
+        <th>${message(code:'sidewide.number')}</th>
         <th>${message(code:'financials.newCosts.costTitle')}</th>
         <th class="two wide">${message(code:'financials.invoice_total')}</th>
         <th class="two wide">${message(code:'financials.newCosts.valueInEuro')}</th>
-        <th>${message(code:'financials.costItemElement')}</th>
         <th>${message(code:'financials.costItemStatus')}</th>
-        <th>${message(code:'financials.dateFrom')} - ${message(code:'financials.dateTo')}</th>
+        <th>${message(code:'financials.dateFrom')}<br />${message(code:'financials.dateTo')}</th>
+        <th>${message(code:'financials.costItemElement')}</th>
         <th></th>
     </tr>
 </thead>
@@ -18,7 +19,7 @@
     %{--Empty result set--}%
     <g:if test="${cost_items?.size() == 0}">
         <tr>
-            <td colspan="7" style="text-align:center">
+            <td colspan="8" style="text-align:center">
                 <br />
                 <g:if test="${msg}">${msg}</g:if>
                 <g:else>${message(code:'finance.result.filtered.empty')}</g:else>
@@ -28,10 +29,19 @@
     </g:if>
 <g:else>
 
-    <g:each in="${cost_items}" var="ci">
+    <g:each in="${cost_items}" var="ci" status="jj">
         <tr id="bulkdelete-b${ci.id}">
             <td>
+                ${ jj + 1 }
+            </td>
+            <td>
                 <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" />
+
+                <g:if test="${ci.isVisibleForSubscriber}">
+                    <span data-position="top right" data-tooltip="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
+                        <i class="ui icon eye orange"></i>
+                    </span>
+                </g:if>
             </td>
             <td>
                 <span class="costData"
@@ -51,9 +61,7 @@
                 <br />
                 <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="EUR" />  (${ci.taxRate ?: 0}%)
             </td>
-            <td>
-                <semui:xEditableRefData config="CostItemElement" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemElement" />
-            </td>
+
             <td>
                 <semui:xEditableRefData config="CostItemStatus" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemStatus" />
             </td>
@@ -63,21 +71,31 @@
                 <semui:xEditable owner="${ci}" type="date" field="endDate" />
             </td>
 
+            <td>
+                <semui:xEditableRefData config="CostItemElement" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemElement" />
+            </td>
+
             <td class="x">
                 <g:if test="${editable}">
                     <g:if test="${inSubMode}">
-                        <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}"]' class="ui icon button">
+                        <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", tab:"owner"]' class="ui icon button trigger-modal">
                             <i class="write icon"></i>
                         </g:link>
+                        <span data-position="top right" data-tooltip="${message(code:'financials.costItem.copy.tooltip')}">
+                            <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", tab:"owner"]' class="ui icon button trigger-modal">
+                                <i class="copy icon"></i>
+                            </g:link>
+                        </span>
                     </g:if>
                     <g:else>
-                        <g:link controller="finance" action="editCostItem" id="${ci.id}" class="ui icon button">
+                        <g:link controller="finance" action="editCostItem" id="${ci.id}" class="ui icon button trigger-modal">
                             <i class="write icon"></i>
                         </g:link>
                     </g:else>
+
                 </g:if>
                 <g:if test="${editable}">
-                    <g:link controller="finance" action="deleteCostItem" id="${ci.id}" class="ui icon negative button" onclick="return confirm('${message(code: 'default.button.confirm.delete')}')">
+                    <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ tab:'owner']" class="ui icon negative button" onclick="return confirm('${message(code: 'default.button.confirm.delete')}')">
                         <i class="trash alternate icon"></i>
                     </g:link>
                 </g:if>
@@ -90,7 +108,7 @@
 </tbody>
     <tfoot>
         <tr>
-            <td colspan="7">
+            <td colspan="8">
                 <strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')} </strong>
                 <br/>
                 <span class="sumOfCosts_${i}"></span>

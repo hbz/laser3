@@ -2,23 +2,31 @@
 <%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.FinanceController" %>
 <laser:serviceInjection />
 
-<g:if test="${queryMode == FinanceController.MODE_CONS_SUBSCR}">
+<%
+    def tabOwnerActive  = (tab?.equalsIgnoreCase('owner')) ? 'active' : ''
+    def tabSCActive     = (tab?.equalsIgnoreCase('sc')) ? 'active' : ''
+%>
 
-    <div id="financeFilterData" class="ui top attached tabular menu">
-        <div class="item active" data-tab="OWNER">Eigene Kosten</div>
-        <div class="item" data-tab="CONS_SUBSCR">Teilnehmerkosten</div>
-    </div>
 
-    <r:script>
-        $('#financeFilterData .item').tab()
-    </r:script>
-
-</g:if><%-- FinanceController.MODE_CONS_SUBSCR --%>
+<div id="financeFilterData" class="ui top attached tabular menu">
+    <g:if test="${queryMode != FinanceController.MODE_CONS_AT_SUBSCR}">
+        <div class="item ${tabOwnerActive}" data-tab="OWNER">Eigene Kosten</div>
+    </g:if>
+    <g:if test="${queryMode == FinanceController.MODE_CONS}">
+        <div class="item ${tabSCActive}" data-tab="CONS">Teilnehmerkosten (Konsortialsicht)</div>
+    </g:if>
+    <g:if test="${queryMode == FinanceController.MODE_CONS_AT_SUBSCR}">
+        <div class="item ${tabOwnerActive}" data-tab="CONS_AT_SUBSCR">Teilnehmerkosten (Konsortialsicht)</div>
+    </g:if>
+    <g:if test="${queryMode == FinanceController.MODE_SUBSCR}">
+        <div class="item" data-tab="SUBSCR">Teilnehmerkosten</div>
+    </g:if>
+</div>
 
 <%
     // WORKAROUND; grouping costitems by subscription
     def costItemsOwner = ["clean":[]]
-    (ciListOwner?.collect{it.sub}).each{ item ->
+    (ciList?.collect{it.sub}).each{ item ->
         if (item) {
             costItemsOwner << ["${item.name}": []]
         }
@@ -32,60 +40,80 @@
         }
     }
     costItemsOwner = costItemsOwner.findAll{ ! it.value.isEmpty() }
+
 %>
 
-<%
-    def costItemsCS = ciListConsSubsc
-%>
+<g:if test="${queryMode != FinanceController.MODE_CONS_AT_SUBSCR}">
+    <!-- OWNER -->
+    <div class="ui bottom attached tab ${tabOwnerActive}" data-tab="OWNER">
 
-<g:if test="${queryMode == FinanceController.MODE_CONS_SUBSCR}">
-    <div class="ui bottom attached tab active" data-tab="OWNER">
-</g:if><%-- FinanceController.MODE_CONS_SUBSCR --%>
 
-    <g:if test="${! costItemsOwner}">
-        <g:render template="result_tab_owner" model="[editable: editable, cost_items: [], i: 'empty']"></g:render>
-    </g:if>
-
-    <g:if test="${costItemsOwner.size() > 1}">
-        <div class="ui fluid accordion">
+        <g:if test="${! costItemsOwner}">
             <br />
-    </g:if>
+            <g:render template="result_tab_owner" model="[editable: editable, cost_items: [], i: 'empty']"></g:render>
+        </g:if>
 
-        <g:each in="${costItemsOwner}" var="subListItem" status="i">
+        <g:if test="${costItemsOwner.size() > 1}">
+            <br />
+            <div class="ui fluid accordion">
+        </g:if>
 
-            <g:if test="${costItemsOwner.size() > 1}">
-                <div class="title">
-                    <i class="dropdown icon"></i>
-                    ${subListItem.key != 'clean' ? subListItem.key : 'Ohne konkrete Zuordnung'}
-                    ( ${subListItem.value?.size()} )
-                </div>
+            <g:each in="${costItemsOwner}" var="subListItem" status="i">
 
-                <div class="content">
-            </g:if>
+                <g:if test="${costItemsOwner.size() > 1}">
+                    <div class="title">
+                        <i class="dropdown icon"></i>
+                        ${subListItem.key != 'clean' ? subListItem.key : 'Ohne konkrete Zuordnung'}
+                        ( ${subListItem.value?.size()} )
+                    </div>
 
-            <g:set var="cost_items" value="${subListItem.value}" />
+                    <div class="content">
+                </g:if>
 
-            <g:render template="result_tab_owner" model="[editable: editable, cost_items: cost_items, i: i]"></g:render>
+                <g:set var="cost_items" value="${subListItem.value}" />
 
-            <g:if test="${costItemsOwner.size() > 1}">
-                </div><!-- .content -->
-            </g:if>
-        </g:each>
+                <br />
+                <g:render template="result_tab_owner" model="[editable: editable, cost_items: cost_items, i: i]"></g:render>
 
-    <g:if test="${costItemsOwner.size() > 1}">
-        </div><!-- .accordion -->
-    </g:if>
+                <g:if test="${costItemsOwner.size() > 1}">
+                    </div><!-- .content -->
+                </g:if>
+            </g:each>
 
-
-<g:if test="${queryMode == FinanceController.MODE_CONS_SUBSCR}">
+        <g:if test="${costItemsOwner.size() > 1}">
+            </div><!-- .accordion -->
+        </g:if>
 
     </div><!-- OWNER -->
-    <div class="ui bottom attached tab" data-tab="CONS_SUBSCR">
+</g:if>
 
-        <g:render template="result_tab_sc" model="[editable: editable, cost_items: costItemsCS, i: 'fake']"></g:render>
+<g:if test="${queryMode == FinanceController.MODE_CONS}">
 
-    </div><!-- CONS_SUBSCR -->
+    <!-- CONS -->
+    <div class="ui bottom attached tab ${tabSCActive}" data-tab="CONS">
+        <br />
+        <g:render template="result_tab_cons" model="[editable: editable, cost_items: ciListCons, i: 'CONS']"></g:render>
+    </div><!-- CONS -->
+</g:if>
+<g:if test="${queryMode == FinanceController.MODE_CONS_AT_SUBSCR}">
 
-</g:if><%-- FinanceController.MODE_CONS_SUBSCR --%>
+    <!-- CONS_AT_SUBSCR -->
+    <div class="ui bottom attached tab ${tabOwnerActive}" data-tab="CONS_AT_SUBSCR">
+    <br />
+    <g:render template="result_tab_cons" model="[editable: editable, cost_items: ciListCons, i: 'CONS_AT_SUBSCR']"></g:render>
+</div><!-- CONS_AT_SUBSCR -->
+</g:if>
+<g:if test="${queryMode == FinanceController.MODE_SUBSCR}">
+
+    <!-- SUBSCR -->
+    <div class="ui bottom attached tab" data-tab="SUBSCR">
+        <br />
+        <g:render template="result_tab_subscr" model="[editable: editable, cost_items: ciListSubscr, i: 'SUBSCR']"></g:render>
+    </div><!-- SUBSCR -->
+</g:if>
+
+<r:script>
+    $('#financeFilterData .item').tab()
+</r:script>
 
 <!-- _result.gsp -->

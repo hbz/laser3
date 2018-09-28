@@ -17,6 +17,7 @@ class OrganisationsController {
     def addressbookService
     def filterService
     def genericOIDService
+    def propertyService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -82,19 +83,67 @@ class OrganisationsController {
     @Secured(['ROLE_USER'])
     def listProvider() {
         def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        params.max = params.max ?: result.user?.getDefaultPageSize()
+        result.propList =
+                PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
+                        defList: [PropertyDefinition.ORG_PROP],
+                ] // public properties
+                ) +
+                        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant = :tenant", [
+                                defList: [PropertyDefinition.ORG_PROP],
+                                tenant: contextService.getOrg()
+                        ]// private properties
+                        )
 
+        result.user       = User.get(springSecurityService.principal.id)
+        params.orgSector  = RefdataValue.getByValueAndCategory('Publisher','OrgSector')?.id?.toString()
+        params.orgType    = RefdataValue.getByValueAndCategory('Provider','OrgType')?.id?.toString()
+        params.max        = params.max ?: result.user?.getDefaultPageSize()
+        def paramsTotal   = params.clone()
+        if (paramsTotal.max) {
+            paramsTotal.remove("max")
+        }
 
-        params.orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector').id.toString()
-        params.orgType = RefdataValue.getByValueAndCategory('Provider','OrgType').id.toString()
+        def fsq           = filterService.getOrgQuery(params)
+        def fsqTotal      = filterService.getOrgQuery(paramsTotal)
 
-        def fsq = filterService.getOrgQuery(params)
+        def orgList       = Org.findAll(fsq.query, fsq.queryParams, params)
+        def orgListTotal  = Org.findAll(fsqTotal.query, fsqTotal.queryParams)
 
-        result.orgList  = Org.findAll(fsq.query, fsq.queryParams, params)
-        result.orgListTotal = Org.executeQuery("select count (o) ${fsq.query}", fsq.queryParams)[0]
+        if (isPropertyFilterUsed() && orgList.size() > 0) {
+            def tmpQuery             = ["SELECT o FROM Org o WHERE o.id IN (:oids)"]
+            def tmpQueryParams       = [oids: orgList.collect{ it1 -> it1.id }]
+            def tmpQueryParamsTotal  = [oids: orgListTotal.collect{ it2 -> it2.id }]
 
+            (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, tmpQuery, 'o', tmpQueryParamsTotal)
+            def orgListTotalMitParams  = Org.executeQuery( tmpQuery.join(' '), tmpQueryParams )
+
+            int startIndex      = Integer.parseInt(params?.offset? params.offset+"" : "0").intValue()
+            int tmpMax          = Integer.parseInt(params?.max? params.max+"": "10").intValue()
+            int endIndex        = (startIndex + tmpMax) > orgListTotalMitParams.size() ? orgListTotalMitParams.size() : startIndex + tmpMax
+
+            result.orgList      = orgListTotalMitParams.subList(startIndex, endIndex)
+            result.orgListTotal = orgListTotalMitParams.size()
+
+        } else {
+            result.orgList      = orgList
+            result.orgListTotal = Org.executeQuery("select count (o) ${fsq.query}", fsq.queryParams)[0]
+        }
         result
+    }
+
+    def isPropertyFilterUsed() {
+        params.filterPropDef
+    }
+
+    def meineMethode() {
+        def localParams = params.clone()
+        if (isPropertyFilterUsed()){
+            if (localParams.max) {
+                localParams.remove("max")
+            }
+
+        }
+        def fsq           = filterService.getOrgQuery(params)
     }
 
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
@@ -462,5 +511,59 @@ class OrganisationsController {
         result.orgInstance = orgInstance
 
         result
+    }
+    def addOrgRoleType()
+    {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        def orgInstance = Org.get(params.org)
+
+        if (!orgInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+            redirect action: 'list'
+            return
+        }
+
+        if ( SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') ) {
+            result.editable = true
+        }
+        else {
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM')
+        }
+
+        if(result.editable)
+        {
+            orgInstance.addToOrgRoleType(RefdataValue.get(params.orgRoleType))
+            orgInstance.save(flush: true)
+            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.name])
+            redirect action: 'show', id: orgInstance.id
+        }
+    }
+    def deleteOrgRoleType()
+    {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        def orgInstance = Org.get(params.org)
+
+        if (!orgInstance) {
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
+            redirect action: 'list'
+            return
+        }
+
+        if ( SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') ) {
+            result.editable = true
+        }
+        else {
+            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM')
+        }
+
+        if(result.editable)
+        {
+            orgInstance.removeFromOrgRoleType(RefdataValue.get(params.removeOrgRoleType))
+            orgInstance.save(flush: true)
+            flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.name])
+            redirect action: 'show', id: orgInstance.id
+        }
     }
 }

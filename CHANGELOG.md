@@ -1,4 +1,40 @@
 
+0.9 RC
+
+- reworked dashbord, e.g. tasks
+- reworked provider list view
+- added list view for platforms
+- improved filter and views for managing consortia members
+- added bulk creation for cost items (consortia only)
+- added copy function for cost items
+- added copy function for subscriptions
+- restricted subscription assignment for licenses (consortia only)
+- added sorting for contacts
+- fixed: cost items calculation
+- fixed: sorting tasks table
+- some markup, style and translations changes
+- minor improvements and bugfixes
+
+0.8.4
+
+- fixed: copying properties with zero values
+- fixed: faulty query for adding license members
+
+0.8.3
+
+- added: prev/next navigation for subscription
+- fixed: pagination on package view
+- fixed: hiding tipps with status 'deleted'
+- fixed: javascript dropdowns
+- fixed: org names and line breaks on gasco view
+- modified: filter on gasco view
+
+0.8.2
+
+- fixed: empty user dropdown when creating tasks
+- fixed: download files without filenames
+- fixed: confirm dialog javascript
+
 0.8.1
 
 - news on landing page

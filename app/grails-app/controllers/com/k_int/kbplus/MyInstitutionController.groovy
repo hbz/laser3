@@ -22,7 +22,6 @@ class MyInstitutionController {
     def dataSource
     def springSecurityService
     def ESSearchService
-    def gazetteerService
     def alertsService
     def genericOIDService
     def factService
@@ -74,7 +73,6 @@ class MyInstitutionController {
 
           if ((result.user.affiliations == null) || (result.user.affiliations.size() == 0)) {
               redirect controller: 'profile', action: 'index'
-          } else {
           }
         }
         else {
@@ -3208,6 +3206,9 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result.myTaskInstanceList = taskService.getTasksByCreator(result.user, null)
 
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+
+        def preCon = taskService.getPreconditions(contextService.getOrg())
+        result << preCon
 
         log.debug(result.taskInstanceList)
         result

@@ -1,5 +1,5 @@
 
-<%@ page import="com.k_int.kbplus.Address" %>
+<%@ page import="com.k_int.kbplus.Address; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue" %>
 <!doctype html>
 <html>
 	<head>
@@ -9,7 +9,7 @@
 	</head>
 	<body>
 	<semui:breadcrumbs>
-		<g:if test="${addressInstance?.org?.orgType == com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'OrgType')}">
+		<g:if test="${addressInstance?.org?.orgType == RefdataValue.getByValueAndCategory('Provider', 'OrgType')}">
 			<semui:crumb message="menu.institutions.all_provider" controller="organisations" action="listProvider"/>
 			<semui:crumb message="${addressInstance?.org?.getDesignation()}" controller="organisations" action="show" id="${addressInstance?.org?.id}"/>
 			<semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
@@ -35,7 +35,7 @@
 				<div class="inline-lists">
 
 					<dl>
-                            <dt>${com.k_int.kbplus.RefdataCategory.findByDesc('AddressType').getI10n('desc')}</dt>
+                            <dt>${RefdataCategory.findByDesc('AddressType').getI10n('desc')}</dt>
                             <dd><semui:xEditableRefData owner="${addressInstance}" field="type" config="AddressType" /></dd>
 
                             <g:if test="${addressInstance?.prs}">
@@ -104,21 +104,6 @@
                         </dl>
                     </div>
 
-				<g:if test="${false && editable}">
-					<g:form>
-						<g:hiddenField name="id" value="${addressInstance?.id}" />
-						<div class="ui form-actions">
-							<g:link class="ui button" action="edit" id="${addressInstance?.id}">
-								<i class="write icon"></i>
-								<g:message code="default.button.edit.label" default="Edit" />
-							</g:link>
-							<button class="ui negative button" type="submit" name="_action_delete">
-								<i class="trash alternate icon"></i>
-								<g:message code="default.button.delete.label" default="Delete" />
-							</button>
-						</div>
-					</g:form>
-				</g:if>
 
 			</div><!-- .twelve -->
 

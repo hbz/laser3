@@ -2,3 +2,6 @@
   left: calc(-1rem - 1.8em);
   top: -22px;
 }
+.ui.card .ui.label {
+  margin: 0;
+}
