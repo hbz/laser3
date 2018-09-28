@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import de.laser.domain.Permissions
+import de.laser.interfaces.Permissions
 
 import javax.persistence.Transient
 

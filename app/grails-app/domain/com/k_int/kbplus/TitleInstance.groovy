@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.traits.AuditTrait
-import de.laser.domain.BaseDomainComponent
+import de.laser.domain.AbstractBaseDomain
 
 import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
@@ -11,7 +11,7 @@ import java.text.Normalizer
 import groovy.util.logging.*
 
 @Log4j
-class TitleInstance extends BaseDomainComponent implements AuditTrait {
+class TitleInstance extends AbstractBaseDomain implements AuditTrait {
 
   @Transient
   def grailsApplication

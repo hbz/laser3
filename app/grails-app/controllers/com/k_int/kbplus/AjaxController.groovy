@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
-import de.laser.domain.I10nTranslatableAbstract
+import de.laser.domain.AbstractI10nTranslatable
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import com.k_int.properties.PropertyDefinition
@@ -505,7 +505,7 @@ class AjaxController {
         rq.each { it ->
             def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
 
-            if ( it instanceof I10nTranslatableAbstract) {
+            if ( it instanceof AbstractI10nTranslatable) {
                 result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
             }
             else {
@@ -577,7 +577,7 @@ class AjaxController {
       rq.each { it ->
         def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
 
-          if ( it instanceof I10nTranslatableAbstract) {
+          if ( it instanceof AbstractI10nTranslatable) {
               result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
           }
           else {

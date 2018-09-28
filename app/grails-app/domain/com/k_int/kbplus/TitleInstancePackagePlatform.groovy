@@ -10,7 +10,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 import org.apache.commons.logging.*
 import groovy.time.TimeCategory
 
-class TitleInstancePackagePlatform extends BaseDomainComponent implements AuditTrait {
+class TitleInstancePackagePlatform extends AbstractBaseDomain implements AuditTrait {
   @Transient
   def grailsLinkGenerator
 

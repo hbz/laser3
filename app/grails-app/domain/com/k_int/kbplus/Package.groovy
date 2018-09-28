@@ -1,10 +1,10 @@
 package com.k_int.kbplus
 
-import de.laser.domain.BaseDomainComponent
+import de.laser.domain.AbstractBaseDomain
 import java.text.Normalizer
 import javax.persistence.Transient
 
-class Package extends BaseDomainComponent {
+class Package extends AbstractBaseDomain {
 
     // TODO AuditTrail
   static auditable = [ignore:['version','lastUpdated','pendingChanges']]

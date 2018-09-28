@@ -2,13 +2,13 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
 import de.laser.traits.AuditTrait
-import de.laser.domain.BaseDomainComponent
-import de.laser.domain.Permissions
-import de.laser.domain.TemplateSupport
+import de.laser.domain.AbstractBaseDomain
+import de.laser.interfaces.Permissions
+import de.laser.interfaces.TemplateSupport
 
 import javax.persistence.Transient
 
-class Subscription extends BaseDomainComponent implements TemplateSupport, Permissions, AuditTrait {
+class Subscription extends AbstractBaseDomain implements TemplateSupport, Permissions, AuditTrait {
 
     // AuditTrait
     static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]

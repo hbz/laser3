@@ -2,16 +2,16 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
 import de.laser.traits.AuditTrait
-import de.laser.domain.BaseDomainComponent
-import de.laser.domain.Permissions
-import de.laser.domain.TemplateSupport
+import de.laser.domain.AbstractBaseDomain
+import de.laser.interfaces.Permissions
+import de.laser.interfaces.TemplateSupport
 
 import javax.persistence.Transient
 import java.text.Normalizer
 import com.k_int.properties.PropertyDefinition
 import com.k_int.ClassUtils
 
-class License extends BaseDomainComponent implements TemplateSupport, Permissions, Comparable<License>, AuditTrait {
+class License extends AbstractBaseDomain implements TemplateSupport, Permissions, Comparable<License>, AuditTrait {
 
     @Transient
     def grailsApplication

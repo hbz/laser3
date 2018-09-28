@@ -1,18 +1,9 @@
 package com.k_int.kbplus
 
-import de.laser.domain.BaseDomainComponent
-
-import java.util.Date
-import java.util.List
-
-import javax.persistence.Transient
-import groovy.util.logging.Log4j
-import org.apache.commons.logging.LogFactory
-import com.sun.org.apache.xalan.internal.xsltc.compiler.Sort
-import groovy.util.logging.*
+import de.laser.domain.AbstractBaseDomain
 
 @Log4j
-class Person extends BaseDomainComponent {
+class Person extends AbstractBaseDomain {
 
     String       title
     String       first_name
