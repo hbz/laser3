@@ -14,7 +14,6 @@
                 </g:if>
             </th>
         </g:if>
-
         <g:if test="${tmplConfigShow?.contains('sortname')}">
             <g:sortableColumn title="${message(code: 'org.sortname.label', default: 'Sortname')}" property="lower(o.sortname)"/>
         </g:if>
@@ -83,7 +82,7 @@
             </g:else>
             <g:if test="${tmplConfigShow?.contains('lineNumber')}">
                 <td class="center aligned">
-                    ${(i + 1 + Integer.parseInt(params?.get('offset')?:'0'))}<br>
+                    ${ (params.int('offset') ?: 0)  + i + 1 }<br>
                 </td>
             </g:if>
             <g:if test="${tmplShowCheckbox}">

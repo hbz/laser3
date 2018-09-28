@@ -19,7 +19,7 @@
     <g:render template="/templates/filter/orgFilterTable"
               model="[orgList: orgList,
                       tmplShowCheckbox: false,
-                      tmplConfigShow: ['name', 'identifier', 'type', 'sector']
+                      tmplConfigShow: ['lineNumber', 'name', 'identifier', 'type', 'sector']
               ]"/>
 
   </body>

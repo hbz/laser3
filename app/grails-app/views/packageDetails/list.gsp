@@ -58,6 +58,7 @@
         <table class="ui sortable celled la-table table">
             <thead>
                 <tr>
+                    <th>${message(code:'sidewide.number')}</th>
                     <g:sortableColumn property="name" title="${message(code: 'package.name.label', default: 'Name')}" />
                     <th>
                         ${message(code: 'package.content_provider')}
@@ -67,8 +68,9 @@
                 </tr>
             </thead>
             <tbody>
-                <g:each in="${packageInstanceList}" var="packageInstance">
+                <g:each in="${packageInstanceList}" var="packageInstance" status="jj">
                     <tr>
+                        <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
                         <td>
                             <g:link action="show" id="${packageInstance.id}">${packageInstance.name}</g:link>
                         </td>

@@ -111,6 +111,7 @@
           <table class="ui sortable celled la-table table">
             <thead>
               <tr>
+                  <th>${message(code:'sidewide.number')}</th>
                 <g:sortableColumn params="${params}" property="reference" title="${message(code:'license.slash.name')}" />
                 <g:if test="${params.orgRole == 'Licensee'}">
                     <th>${message(code:'license.licensor.label', default:'Licensor')}</th>
@@ -124,8 +125,9 @@
               </tr>
             </thead>
             <tbody>
-              <g:each in="${licenses}" var="l">
+              <g:each in="${licenses}" var="l" status="jj">
                 <tr>
+                    <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
                   <td>
                     <g:link action="show" controller="licenseDetails" id="${l.id}">
                       ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}
