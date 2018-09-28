@@ -41,6 +41,12 @@ class FilterService {
             query << "o.country.id = ?"
             queryParams << Long.parseLong(params.country)
         }
+
+        // hack: applying filter on org subset
+        if (params.constraint_orgIds) {
+            query << "o.id in ( " + params.constraint_orgIds?.join(',') + " )"
+        }
+
         def defaultOrder = " order by " + (params.sort ?: " LOWER(o.name)") + " " + (params.order ?: "asc")
 
         if (query.size() > 0) {
