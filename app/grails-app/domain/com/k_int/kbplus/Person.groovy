@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import groovy.util.logging.*
 
 @Log4j
 class Person extends AbstractBaseDomain {

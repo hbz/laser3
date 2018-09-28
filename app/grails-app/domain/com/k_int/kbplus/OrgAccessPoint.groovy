@@ -3,6 +3,7 @@ import de.laser.domain.AbstractBaseDomain
 import groovy.json.JsonSlurper
 import de.uni_freiburg.ub.IpRange
 import de.uni_freiburg.ub.IpRangeCollection
+import groovy.util.logging.*
 
 @Log4j
 class OrgAccessPoint extends AbstractBaseDomain {
