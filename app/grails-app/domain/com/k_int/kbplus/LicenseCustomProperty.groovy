@@ -11,25 +11,35 @@ class LicenseCustomProperty extends CustomProperty implements AuditTrait  {
 
     @Transient
     def changeNotificationService
+    @Transient
+    def grailsApplication
+    @Transient
+    def messageSource
 
     // AuditTrait
     static auditable = true
     static controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
 
-  @Transient
-  String paragraph
+    PropertyDefinition type
+    License owner
+    LicenseCustomProperty instanceOf
+    String paragraph
 
     static mapping = {
-        includes AbstractProperty.mapping
-
-        paragraph    type: 'text'
+        includes   AbstractProperty.mapping
+        paragraph  type: 'text'
     }
 
     static constraints = {
         importFrom AbstractProperty
-
-        paragraph(nullable: true)
+        instanceOf (nullable: true)
+        paragraph  (nullable: true)
     }
+
+    static belongsTo = [
+        type : PropertyDefinition,
+        owner: License
+    ]
 
     def copyValueAndNote(newProp){
         newProp = super.copyValueAndNote(newProp)
@@ -37,20 +47,6 @@ class LicenseCustomProperty extends CustomProperty implements AuditTrait  {
         newProp.paragraph = paragraph
         newProp
     }
-
-  @Transient
-  def grailsApplication
-
-  @Transient
-  def messageSource
-
-  static belongsTo = [
-      type : PropertyDefinition,
-      owner: License
-  ]
-
-  PropertyDefinition type
-  License owner
 
   @Transient
   def onDelete = { oldMap ->

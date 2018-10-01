@@ -16,9 +16,17 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditTrait {
     static auditable = true
     static controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
 
+    PropertyDefinition type
+    Subscription owner
+    SubscriptionCustomProperty instanceOf
 
     static mapping = {
         includes AbstractProperty.mapping
+    }
+
+    static constraints = {
+        importFrom  AbstractProperty
+        instanceOf (nullable: true)
     }
 
     static belongsTo = [

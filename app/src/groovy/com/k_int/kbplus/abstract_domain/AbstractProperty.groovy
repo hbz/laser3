@@ -5,10 +5,7 @@ import com.k_int.kbplus.RefdataValue
 
 import javax.persistence.Transient
 
-abstract class AbstractProperty implements Serializable /* AuditTrait */ {
-
-    // AuditTrait
-    //static controlledProperties = ['stringValue','intValue','decValue','refValue','note','dateValue']
+abstract class AbstractProperty implements Serializable {
 
     String          stringValue
     Integer         intValue
