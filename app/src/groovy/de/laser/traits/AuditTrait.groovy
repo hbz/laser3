@@ -44,20 +44,26 @@ trait AuditTrait {
                 def event
                 def clazz = this."${cp}".getClass().getName()
 
-                log?.debug("notifyChangeEvent() for property class " + clazz)
+                log?.debug("notifyChangeEvent() " + this + " : " + clazz)
 
                 if (this instanceof CustomProperty || this instanceof PrivateProperty) {
 
-                    event = [
-                            OID        : "${this.owner.class.name}:${this.owner.id}",
-                            event      : "${this.class.simpleName}.updated",
-                            prop       : cp,
-                            name       : type.name,
-                            type       : this."${cp}".getClass().toString(),
-                            old        : oldMap[cp] instanceof RefdataValue ? oldMap[cp].toString() : oldMap[cp],
-                            new        : newMap[cp] instanceof RefdataValue ? newMap[cp].toString() : newMap[cp],
-                            propertyOID: "${this.class.name}:${this.id}"
-                    ]
+                    if (AuditConfig.getConfig(this)) {
+
+                        event = [
+                                OID        : "${this.owner.class.name}:${this.owner.id}",
+                                event      : "${this.class.simpleName}.updated",
+                                prop       : cp,
+                                name       : type.name,
+                                type       : this."${cp}".getClass().toString(),
+                                old        : oldMap[cp] instanceof RefdataValue ? oldMap[cp].toString() : oldMap[cp],
+                                new        : newMap[cp] instanceof RefdataValue ? newMap[cp].toString() : newMap[cp],
+                                propertyOID: "${this.class.name}:${this.id}"
+                        ]
+                    }
+                    else {
+                        log?.debug("ignored because no audit config")
+                    }
                 } else {
 
                     if (clazz.equals("com.k_int.kbplus.RefdataValue")) {

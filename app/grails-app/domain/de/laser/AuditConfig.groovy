@@ -26,7 +26,7 @@ class AuditConfig {
     static constraints = {
         referenceId     (nullable:false, blank:false)
         referenceClass  (nullable:false, blank:false, maxSize:255)
-        referenceField  (nullable:false, blank:false, maxSize:255)
+        referenceField  (nullable:true,  blank:false, maxSize:255)
     }
 
     static addConfig(Object obj, String field) {
@@ -43,6 +43,7 @@ class AuditConfig {
             result = AuditConfig.findAllWhere(
                 referenceId: obj.getId(),
                 referenceClass: obj.getClass().name,
+                referenceField: null
             )
         } catch(Exception e) {
             log.error(e)
@@ -67,7 +68,8 @@ class AuditConfig {
     static removeConfig(Object obj) {
         AuditConfig.findAllWhere(
                 referenceId: obj.getId(),
-                referenceClass: obj.getClass().name
+                referenceClass: obj.getClass().name,
+                referenceField: null
         ).delete(flush:true)
     }
 
