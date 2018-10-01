@@ -370,7 +370,7 @@ class GlobalSourceSyncService {
                 null,
                 [
                         newObjectClass: "com.k_int.kbplus.TitleInstancePackagePlatform",
-                        changeType    : 'New Object',
+                        changeType    : PendingChangeService.EVENT_OBJECT_NEW,
                         changeDoc     : change_doc
                 ])
 
@@ -434,7 +434,7 @@ class GlobalSourceSyncService {
                   null,
                   [
                           changeTarget: "com.k_int.kbplus.TitleInstancePackagePlatform:${db_tipp.id}",
-                          changeType  : 'Update Object',
+                          changeType  : PendingChangeService.EVENT_OBJECT_UPDATE,
                           changeDoc   : change_doc
                   ])
         } else {
@@ -467,7 +467,7 @@ class GlobalSourceSyncService {
                 null,
                 [
                         changeTarget: "com.k_int.kbplus.TitleInstancePackagePlatform:${db_tipp.id}",
-                        changeType  : 'Update Object',
+                        changeType  : PendingChangeService.EVENT_OBJECT_UPDATE,
                         changeDoc   : change_doc
                 ])
         println("deleted tipp");

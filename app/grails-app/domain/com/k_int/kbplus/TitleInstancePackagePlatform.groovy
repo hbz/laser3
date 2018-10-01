@@ -297,7 +297,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements AuditTr
                                                           "Der Paketeintrag für den Titel \"${this.title.title}\" wurde gelöscht. Wenden Sie diese Änderung an, um die entsprechende Problemberechtigung aus dieser Lizenz zu entfernen",
                                                           sub.getSubscriber(),
                                                           [
-                                                            changeType:'TIPPDeleted',
+                                                            changeType:PendingChangeService.EVENT_TIPP_DELETE,
                                                             tippId:"${this.class.name}:${this.id}",
                                                             subId:"${sub.id}"
                                                           ])
@@ -331,7 +331,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements AuditTr
                                                         sub?.getSubscriber(),
                                                         [
                                                           changeTarget:"com.k_int.kbplus.IssueEntitlement:${dep_ie.id}",
-                                                          changeType:'PropertyChange',
+                                                          changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
                                                           changeDoc:changeDocument
                                                         ])
           

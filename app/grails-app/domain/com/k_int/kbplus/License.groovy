@@ -379,7 +379,7 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
                               dl.getLicensee(), // objowner TODO !!!!???
                               [
                                 changeTarget:"com.k_int.kbplus.License:${dl.id}",
-                                changeType:'PropertyChange',
+                                changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
                                 changeDoc:changeDocument
                               ])
 

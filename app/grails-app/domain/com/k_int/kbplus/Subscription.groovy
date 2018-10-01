@@ -338,7 +338,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
                     ds.getSubscriber(),
                     [
                             changeTarget:"com.k_int.kbplus.Subscription:${ds.id}",
-                            changeType:'PropertyChange',
+                            changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
                             changeDoc:changeDocument
                     ])
 

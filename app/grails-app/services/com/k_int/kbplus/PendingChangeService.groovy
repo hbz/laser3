@@ -9,8 +9,17 @@ import com.k_int.properties.PropertyDefinition
 
 class PendingChangeService {
 
-def genericOIDService
-def grailsApplication
+    def genericOIDService
+    def grailsApplication
+
+    final static EVENT_OBJECT_NEW = 'New Object'
+    final static EVENT_OBJECT_UPDATE = 'Update Object'
+
+    final static EVENT_TIPP_EDIT = 'TIPPEdit'
+    final static EVENT_TIPP_DELETE = 'TIPPDeleted'
+
+    final static EVENT_PROPERTY_CHANGE = 'PropertyChange'
+
 
 def performAccept(change,httpRequest) {
     def result = true
@@ -21,7 +30,8 @@ def performAccept(change,httpRequest) {
         def event = JSON.parse(change.changeDoc)
         log.debug("Process change ${event}");
         switch ( event.changeType ) {
-          case 'TIPPDeleted' :
+
+          case EVENT_TIPP_DELETE :
             // "changeType":"TIPPDeleted","tippId":"com.k_int.kbplus.TitleInstancePackagePlatform:6482"}
             def sub_to_change = change.subscription
             def tipp = genericOIDService.resolveOID(event.tippId)
@@ -31,7 +41,8 @@ def performAccept(change,httpRequest) {
               ie_to_update.save();
             }
             break;
-          case 'PropertyChange' :  // Generic property change
+
+          case EVENT_PROPERTY_CHANGE :  // Generic property change
             if ( ( event.changeTarget != null ) && ( event.changeTarget.length() > 0 ) ) {
               def target_object = genericOIDService.resolveOID(event.changeTarget);
               target_object.refresh()
@@ -74,10 +85,12 @@ def performAccept(change,httpRequest) {
               }
             }
             break;
-          case 'TIPPEdit':
+
+          case EVENT_TIPP_EDIT :
             // A tipp was edited, the user wants their change applied to the IE
             break;
-          case 'New Object' :
+
+          case EVENT_OBJECT_NEW :
              def new_domain_class = grailsApplication.getArtefact('Domain',event.newObjectClass);
              if ( new_domain_class != null ) {
                def new_instance = new_domain_class.getClazz().newInstance()
@@ -86,7 +99,8 @@ def performAccept(change,httpRequest) {
                new_instance.save();
              }
             break;
-          case 'Update Object' :
+
+          case EVENT_OBJECT_UPDATE :
             if ( ( event.changeTarget != null ) && ( event.changeTarget.length() > 0 ) ) {
               def target_object = genericOIDService.resolveOID(event.changeTarget);
               if ( target_object ) {
@@ -95,6 +109,7 @@ def performAccept(change,httpRequest) {
               }
             }
             break;
+
           default:
             log.error("Unhandled change type : ${pc.changeDoc}");
             break;
