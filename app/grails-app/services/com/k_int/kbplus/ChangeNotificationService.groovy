@@ -17,8 +17,6 @@ class ChangeNotificationService {
 
   def broadcastEvent(contextObjectOID, changeDetailDocument) {
     // log.debug("broadcastEvent(${contextObjectOID},${changeDetailDocument})");
-
-    
     def contextObject = genericOIDService.resolveOID(contextObjectOID);
 
     def jsonChangeDocument = changeDetailDocument as JSON

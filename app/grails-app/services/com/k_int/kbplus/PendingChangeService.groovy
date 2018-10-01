@@ -170,18 +170,30 @@ def performAccept(change,httpRequest) {
                 def srcProperty = genericOIDService.resolveOID(changeDoc.propertyOID)
                 def srcObject = genericOIDService.resolveOID(changeDoc.OID)
 
+                // A: get existing targetProperty by instanceOf
                 def targetProperty = srcProperty.getClass().findByOwnerAndInstanceOf(changeTarget, srcProperty)
+                def setInstanceOf
 
+                // B: get existing targetProperty by name if not multiple allowed
+                if (! targetProperty) {
+                    if (! srcProperty.type.multipleOccurrence) {
+                        targetProperty = srcProperty.getClass().findByOwnerAndType(changeTarget, srcProperty.type)
+                        setInstanceOf = true
+                    }
+                }
+                // C: create new targetProperty
                 if (! targetProperty) {
                     targetProperty = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, changeTarget, srcProperty.type)
-                    if (targetProperty.hasProperty('instanceOf')) {
-                        targetProperty.instanceOf = srcProperty
-                        targetProperty.save(flush: true)
-                    }
+                    setInstanceOf = true
                 }
 
                 //def updateProp = target_object.customProperties.find{it.type.name == changeDoc.name}
                 if (targetProperty) {
+                    // in case of C or B set instanceOf
+                    if (setInstanceOf && targetProperty.hasProperty('instanceOf')) {
+                        targetProperty.instanceOf = srcProperty
+                        targetProperty.save(flush: true)
+                    }
 
                     if (changeDoc.event.endsWith('CustomProperty.deleted')) {
 
