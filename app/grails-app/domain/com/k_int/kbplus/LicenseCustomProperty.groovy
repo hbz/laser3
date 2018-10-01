@@ -60,6 +60,6 @@ class LicenseCustomProperty extends CustomProperty implements AuditTrait  {
                      name: this.type.name
                      ]
     //def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
-    changeNotificationService.notifyChangeEvent(changeDoc) 
+    changeNotificationService.fireEvent(changeDoc)
   }
 }

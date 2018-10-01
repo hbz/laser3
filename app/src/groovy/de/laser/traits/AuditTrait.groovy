@@ -24,22 +24,14 @@ trait AuditTrait {
 
     // static controlledProperties = ['name', 'date', 'etc']
 
-    def getWatchedProperties() {
-        def cp = getAuditConfig().collect{ it ->
-            it.referenceField
-        }
+    @Transient
+    def onDelete = { oldMap ->
+        log?.debug("onDelete() ${this}")
+    }
 
-        if (controlledProperties) {
-            cp.addAll(controlledProperties)
-            cp.unique()
-        }
-
-        /*
-        if (defaultControlledProperties) {
-            cp.addAll(defaultControlledProperties).unique()
-        }
-        */
-        cp
+    @Transient
+    def onSave = {
+        log?.debug("onSave() ${this}")
     }
 
     @Transient
@@ -98,7 +90,7 @@ trait AuditTrait {
                     if (! changeNotificationService) {
                         log?.error("changeNotificationService not implemented @ ${it}")
                     } else {
-                        changeNotificationService.notifyChangeEvent(event)
+                        changeNotificationService.fireEvent(event)
                     }
                 }
             }
@@ -106,18 +98,26 @@ trait AuditTrait {
     }
 
     @Transient
-    def onDelete = { oldMap ->
-        log?.debug("onDelete() ${this}")
-    }
-
-    @Transient
-    def onSave = {
-        log?.debug("onSave() ${this}")
-    }
-
-    @Transient
     def notifyDependencies(changeDocument) {
         log?.debug("notifyDependencies() not implemented => ${changeDocument}")
+    }
+
+    def getWatchedProperties() {
+        def cp = getAuditConfig().collect{ it ->
+            it.referenceField
+        }
+
+        if (controlledProperties) {
+            cp.addAll(controlledProperties)
+            cp.unique()
+        }
+
+        /*
+        if (defaultControlledProperties) {
+            cp.addAll(defaultControlledProperties).unique()
+        }
+        */
+        cp
     }
 
     @Transient

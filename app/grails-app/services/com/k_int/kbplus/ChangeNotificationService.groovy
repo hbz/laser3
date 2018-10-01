@@ -165,33 +165,36 @@ class ChangeNotificationService {
  
   }
 
-  /**
-   *  An object has changed. Because we don't want to do heavy work of calculating dependent objects in the thread doing the DB
-   *  commit, responsibility for handling the change is delegated to this method. However, the source object is the seat of
-   *  knowledge for what dependencies there are (For example, a title change should propagate to all packages using that title).
-   *  Therefore, we get a new handle to the object
-   */
-  def notifyChangeEvent(changeDocument) {
-    log.debug("notifyChangeEvent(${changeDocument})");
-    def future = executorService.submit({
-      try {
-        log.debug("inside executor task submission... ${changeDocument.OID}");
-        def contextObject = genericOIDService.resolveOID(changeDocument.OID);
-        log.debug("Context object: ${contextObject}")
-        contextObject?.notifyDependencies(changeDocument)
-      }
-      catch ( Exception e ) {
-        log.error("Problem with event transmission for ${changeDocument.OID}",e);
-      }
-    } as java.util.concurrent.Callable)
-  }
+    /**
+    *  An object has changed. Because we don't want to do heavy work of calculating dependent objects in the thread doing the DB
+    *  commit, responsibility for handling the change is delegated to this method. However, the source object is the seat of
+    *  knowledge for what dependencies there are (For example, a title change should propagate to all packages using that title).
+    *  Therefore, we get a new handle to the object
+    */
+    def fireEvent(changeDocument) {
+        log.debug("fireEvent(${changeDocument})")
 
-  def cleanUpGorm() {
-    log.debug("Clean up GORM");
-    def session = sessionFactory.currentSession
-    session.flush()
-    session.clear()
-  }
+        def submit = executorService.submit({
+            try {
+                log.debug("inside executor task submission .. ${changeDocument.OID}")
+                def contextObject = genericOIDService.resolveOID(changeDocument.OID)
+
+                log.debug("Context object: ${contextObject}")
+                contextObject?.notifyDependencies(changeDocument)
+            }
+            catch (Exception e) {
+                log.error("Problem with event transmission for ${changeDocument.OID}" ,e)
+            }
+        } as java.util.concurrent.Callable)
+
+    }
+
+    def cleanUpGorm() {
+        log.debug("Clean up GORM")
+        def session = sessionFactory.currentSession
+        session.flush()
+        session.clear()
+    }
 
 
   def registerPendingChange(prop, target, desc, objowner, changeMap ) {

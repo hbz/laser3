@@ -308,7 +308,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     log.debug("onSave")
     def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
 
-    changeNotificationService.notifyChangeEvent([
+    changeNotificationService.fireEvent([
                                                  OID:"com.k_int.kbplus.Package:${id}",
                                                  event:'Package.created'
                                                 ])

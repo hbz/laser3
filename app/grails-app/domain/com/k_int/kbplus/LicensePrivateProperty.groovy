@@ -65,6 +65,6 @@ class LicensePrivateProperty extends PrivateProperty {
                          ]
         def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
         // changeNotificationService.broadcastEvent("com.k_int.kbplus.License:${owner.id}", changeDoc);
-        changeNotificationService.notifyChangeEvent(changeDoc)
+        changeNotificationService.fireEvent(changeDoc)
     }
 }

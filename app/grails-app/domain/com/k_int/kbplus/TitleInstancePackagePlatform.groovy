@@ -206,7 +206,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements AuditTr
         }
 
         log.debug("notify change event")
-        changeNotificationService.notifyChangeEvent([
+        changeNotificationService.fireEvent([
                                                      OID:"${this.class.name}:${this.id}",
                                                      event:'TitleInstancePackagePlatform.updated',
                                                      prop:cp, 
@@ -240,7 +240,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements AuditTr
     log.debug("onSave")
     def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
 
-    changeNotificationService.notifyChangeEvent([
+    changeNotificationService.fireEvent([
                                                  OID:"${this.class.name}:${this.id}",
                                                  event:'TitleInstancePackagePlatform.added',
                                                  linkedTitle:title.title,
@@ -256,7 +256,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements AuditTr
     log.debug("onDelete")
     def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
 
-    changeNotificationService.notifyChangeEvent([
+    changeNotificationService.fireEvent([
                                                  OID:"${this.class.name}:${this.id}",
                                                  event:'TitleInstancePackagePlatform.deleted',
                                                  linkedTitle:title.title,
