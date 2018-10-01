@@ -38,7 +38,7 @@
     </div>
 </g:if>
 
-<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  institution?.orgRoleType)}">
+<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  institution.getallOrgRoleType())}">
 
     <div class="ui info message">
         <div class="header">

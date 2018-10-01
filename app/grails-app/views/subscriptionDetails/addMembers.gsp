@@ -30,7 +30,7 @@
 
     <g:render template="nav" contextPath="."/>
 
-<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  institution?.orgRoleType)}">
+<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  institution.getallOrgRoleType())}">
 
     <semui:filter>
         <g:form action="addMembers" method="get" params="[id: params.id]" class="ui form">

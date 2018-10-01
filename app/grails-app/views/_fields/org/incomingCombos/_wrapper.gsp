@@ -8,7 +8,7 @@
         </g:each>
       </ul>
     </g:if>
-    <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  institution?.orgRoleType)}">
+    <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  institution.getallOrgRoleType())}">
         <g:form name="addIncomingCombo" controller="organisations" action="addOrgCombo" class="form-search" method="get">
           <g:hiddenField name="toOrg" value="${orgInstance.id}" />
           <g:select name="fromOrg"
