@@ -48,6 +48,8 @@ class LicenseDetailsController {
       def filename = "licenseDetails_${license_reference_str.replace(" ", "_")}"
       result.onixplLicense = result.license.onixplLicense;
 
+        // ---- pendingChanges : start
+
       if (executorWrapperService.hasRunningProcess(result.license)) {
           log.debug("PendingChange processing in progress")
           result.processingpc = true
@@ -84,6 +86,8 @@ class LicenseDetailsController {
               result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
           }
       }
+
+         // ---- pendingChanges : end
 
       //result.availableSubs = getAvailableSubscriptions(result.license, result.user)
 

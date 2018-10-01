@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
-import de.laser.domain.I10nTranslatableAbstract
+import de.laser.domain.AbstractI10nTranslatable
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import com.k_int.properties.PropertyDefinition
@@ -292,6 +292,7 @@ class AjaxController {
         if ( target && value ) {
           def binding_properties = [ "${params.name}":value ]
           bindData(target, binding_properties)
+            target.owner?.save()  // avoid .. not processed by flush
           target.save(flush:true);
           
           // We should clear the session values for a user if this is a user to force reload of the,
@@ -504,7 +505,7 @@ class AjaxController {
         rq.each { it ->
             def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
 
-            if ( it instanceof I10nTranslatableAbstract) {
+            if ( it instanceof AbstractI10nTranslatable) {
                 result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
             }
             else {
@@ -576,7 +577,7 @@ class AjaxController {
       rq.each { it ->
         def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
 
-          if ( it instanceof I10nTranslatableAbstract) {
+          if ( it instanceof AbstractI10nTranslatable) {
               result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
           }
           else {
@@ -1275,6 +1276,7 @@ class AjaxController {
                         // delete existing date
                         target_object."${params.name}" = null
                     }
+                    target_object.owner?.save() // avoid owner.xyz not processed by flush
                     target_object.save(failOnError: true, flush: true);
                 }
                 catch(Exception e) {
@@ -1291,7 +1293,8 @@ class AjaxController {
                 def binding_properties = [:]
                 binding_properties[params.name] = params.value
                 bindData(target_object, binding_properties)
-                // target_object."${params.name}" = params.value
+
+                target_object.owner?.save() // avoid owner.xyz not processed by flush
                 target_object.save(failOnError: true, flush: true);
 
                 result = target_object."${params.name}"
@@ -1303,7 +1306,6 @@ class AjaxController {
         def outs = response.outputStream
 
         outs << result
-
         outs.flush()
         outs.close()
     }

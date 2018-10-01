@@ -116,13 +116,13 @@
                         <div class="ui card ">
                             <div class="content">
                                 <dl>
-                                    <dt class="control-label">${message(code:'license.startDate', default:'Start Date')}</dt>
+                                    <semui:dtAuditCheck message="license.startDate" auditable="[license, 'startDate']" />
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="startDate" />
                                     </dd>
                                 </dl>
                                 <dl>
-                                    <dt class="control-label">${message(code:'license.endDate', default:'End Date')}</dt>
+                                    <semui:dtAuditCheck message="license.endDate" auditable="[license, 'endDate']" />
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="endDate" />
                                     </dd>
@@ -132,7 +132,7 @@
                         <div class="ui card ">
                             <div class="content">
                                 <dl>
-                                    <dt class="control-label">${message(code:'license.status',default:'Status')}</dt>
+                                    <semui:dtAuditCheck message="license.status" auditable="[license, 'status']" />
                                     <dd>
                                         <semui:xEditableRefData owner="${license}" field="status" config='License Status'/>
                                     </dd>
@@ -316,7 +316,22 @@
 
                     <div class="ui card la-dl-no-table">
                         <div class="content">
-                            <h5 class="ui header">${message(code:'license.properties')}</h5>
+                            <h5 class="ui header">
+                                ${message(code:'license.properties')}
+                                <%
+                                    if (license.instanceOf && ! license.instanceOf.isTemplate()) {
+                                        if (license.isSlaved?.value?.equalsIgnoreCase('yes')) {
+                                            println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                                        }
+                                        else {
+                                            println '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                        }
+                                    }
+                                    else {
+                                        println '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                                    }
+                                %>
+                            </h5>
 
                             <div id="custom_props_div_props">
                                 <g:render template="/templates/properties/custom" model="${[

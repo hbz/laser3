@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
-import de.laser.domain.BaseDomainComponent
+import de.laser.domain.AbstractBaseDomain
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.LogFactory
 import groovy.util.logging.*
@@ -11,7 +11,7 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import javax.persistence.Transient
 
 @Log4j
-class Org extends BaseDomainComponent {
+class Org extends AbstractBaseDomain {
 
     String name
     String shortname

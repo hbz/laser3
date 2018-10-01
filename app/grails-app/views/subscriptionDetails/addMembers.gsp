@@ -48,7 +48,7 @@
                           tmplDisableOrgIds: cons_members_disabled,
                           subInstance: subscriptionInstance,
                           tmplShowCheckbox: true,
-                          tmplConfigShow: ['name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType', 'addSubMembers']
+                          tmplConfigShow: ['sortname', 'name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType', 'addSubMembers']
                           ]"/>
 
         <g:if test="${cons_members}">

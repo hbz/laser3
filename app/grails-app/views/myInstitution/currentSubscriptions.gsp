@@ -191,7 +191,7 @@
         <thead>
         <tr>
             <th rowspan="2" class="center aligned">
-
+                ${message(code:'sidewide.number')}
             </th>
             <g:sortableColumn params="${params}" property="s.name" title="${message(code: 'license.slash.name')}" rowspan="2" />
             <th rowspan="2" >
@@ -231,7 +231,7 @@
             <g:if test="${true || !s.instanceOf}">
                 <tr>
                     <td class="center aligned">
-                        ${i + 1}
+                        ${ (params.int('offset') ?: 0)  + i + 1 }
                     </td>
                     <td>
                         <g:link controller="subscriptionDetails" action="show" id="${s.id}">
