@@ -90,7 +90,7 @@
 
       <div class="ui grid">
 
-%{--          <g:if test="${institution?.orgType?.value == 'Consortium' && (com.k_int.kbplus.Subscription.findAllByInstanceOf(com.k_int.kbplus.Subscription.get(params.id)).size() > 0) }">
+%{--          <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  institution.getallOrgRoleType()) && (com.k_int.kbplus.Subscription.findAllByInstanceOf(com.k_int.kbplus.Subscription.get(params.id)).size() > 0) }">
               <div class="sixteen wide column">
                   <div class="field">
                                 <div class="ui checkbox">

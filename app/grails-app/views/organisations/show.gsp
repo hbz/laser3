@@ -102,7 +102,7 @@
 
                 <div class="ui card">
                     <div class="content">
-                        <g:if test="${(RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in orgInstance.orgRoleType)}">
+                        <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in orgInstance.orgRoleType)}">
                         <dl>
                             <dt><g:message code="org.sector.label" default="Sector" /></dt>
                             <dd>
@@ -154,7 +154,7 @@
 
                 <div class="ui card">
                     <div class="content">
-                    <g:if test="${(RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in orgInstance.orgRoleType)}">
+                    <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in orgInstance.orgRoleType)}">
                         <dl>
                             <dt><g:message code="org.libraryType.label" default="Library Type" /></dt>
                             <dd>
@@ -276,7 +276,7 @@
                         </dl>
                     </div>
                 </div><!-- .card -->
-                <g:if test="${(RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in orgInstance.orgRoleType)}">
+                <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in orgInstance.orgRoleType)}">
                 %{--<div class="ui card">
                     <div class="content">
                         <dl>

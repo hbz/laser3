@@ -38,12 +38,12 @@
                     <semui:datepicker label="subscription.endDate.label" name="valid_to" value="${defaultEndYear}" />
                 </div>
 
-                <g:if test="${orgType?.value == 'Consortium'}">
+                <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  orgRoleType)}">
                     <div class="field">
                         <label>${message(code:'myinst.emptySubscription.create_as', default:'Create with the role of')}</label>
 
-                        <select id="asOrgType" name="asOrgType" class="ui dropdown">
-                            <g:each in="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value in (:wl) and rdv.owner.desc = :ot', [wl:['Consortium', 'Institution'], ot:'OrgType'])}" var="opt">
+                        <select id="asOrgRoleType" name="asOrgRoleType" class="ui dropdown">
+                            <g:each in="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value in (:wl) and rdv.owner.desc = :ot', [wl:['Consortium', 'Institution'], ot:'OrgRoleType'])}" var="opt">
                                 <option value="${opt.id}" data-value="${opt.value}">${opt.getI10n('value')}</option>
                             </g:each>
                         </select>
@@ -61,7 +61,7 @@
 
     <hr>
 
-        <g:if test="${orgType?.value == 'Consortium'}">
+        <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  orgRoleType)}">
 
             <g:if test="${! cons_members}">
                 <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
@@ -109,7 +109,7 @@
                     $(this).parents('form').submit()
                 })
 
-                $('#asOrgType').change(function() {
+                $('#asOrgRoleType').change(function() {
                     var selVal = $(this).find('option:selected').attr('data-value')
                     if ('Consortium' == selVal) {
                         $('.cons-options').show()

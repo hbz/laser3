@@ -14,17 +14,17 @@
 <div class="fields">
     <g:if test="${tmplConfigShow?.contains('type')}">
         <div class="field">
-            <label>${message(code: 'org.orgType.label')}</label>
-            <laser:select class="ui dropdown" name="orgType"
-                          from="${RefdataCategory.getAllRefdataValues('OrgType')}"
+            <label>${message(code: 'org.orgRoleType.label')}</label>
+            <laser:select class="ui dropdown" name="orgRoleType"
+                          from="${RefdataCategory.getAllRefdataValues('OrgRoleType')}"
                           optionKey="id"
                           optionValue="value"
-                          value="${params.orgType}"
+                          value="${params.orgRoleType}"
                           noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"/>
         </div>
     </g:if>
     <g:else>
-        <input type="hidden" name="orgType" value="${params.orgType}" />
+        <input type="hidden" name="orgRoleType" value="${params.orgRoleType}" />
     </g:else>
 
     <g:if test="${tmplConfigShow?.contains('sector')}">

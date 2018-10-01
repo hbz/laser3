@@ -203,7 +203,7 @@
             <g:if test="${tmplConfigShow?.contains('type')}">
                 <td>
                     <g:each in="${org.orgRoleType?.sort{it?.getI10n("value")}}" var="type">
-                        <p>${type.getI10n("value")}</p>
+                        <li>${type.getI10n("value")}</li>
                     </g:each>
                 </td>
             </g:if>

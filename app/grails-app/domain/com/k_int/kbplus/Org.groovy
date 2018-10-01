@@ -103,7 +103,10 @@ class Org extends AbstractBaseDomain {
       importSource column:'org_import_source'
     lastImportDate column:'org_last_import_date'
 
-        orgRoleType joinTable: 'org_type_rv'
+        orgRoleType joinTable: [name: 'org_roletype',
+                                key: 'org_id',
+                                column: 'refdata_value_id',
+                                type: "BIGINT"]
 
         addresses   lazy: false
         contacts    lazy: false
@@ -276,7 +279,7 @@ class Org extends AbstractBaseDomain {
         lookupOrCreate2(name, sector, consortium, identifiers, iprange, null)
     }
 
-    static def lookupOrCreate2(name, sector, consortium, identifiers, iprange, orgTyp) {
+    static def lookupOrCreate2(name, sector, consortium, identifiers, iprange, orgRoleTyp) {
 
         def result = Org.lookup(name, identifiers)
 
@@ -286,14 +289,19 @@ class Org extends AbstractBaseDomain {
             sector = RefdataCategory.lookupOrCreate('OrgSector', sector)
           }
 
+          if (orgRoleTyp instanceof String) {
+             orgRoleTyp = RefdataValue.getByValueAndCategory(orgRoleTyp, 'OrgRoleType')
+          }
+
           result = new Org(
                            name:name,
                            sector:sector,
                            ipRange:iprange,
-                           impId:java.util.UUID.randomUUID().toString(),
-                           orgType: orgTyp
+                           impId:java.util.UUID.randomUUID().toString()
           ).save()
-
+          if(orgRoleTyp) {
+              result.addToOrgRoleType(orgRoleTyp).save()
+          }
 
             // SUPPORT MULTIPLE IDENTIFIERS
             if (identifiers instanceof ArrayList) {
@@ -383,5 +391,14 @@ class Org extends AbstractBaseDomain {
                 "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic.value != 'No' and pr.org = :org",
                 [org: this]
         )
+    }
+
+    def getallOrgRoleType()
+    {
+        def result = [];
+        orgRoleType.each {
+                result << it
+        }
+        result
     }
 }

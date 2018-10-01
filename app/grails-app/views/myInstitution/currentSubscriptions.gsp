@@ -140,7 +140,7 @@
             <div class="field">
                 <div class="two fields">
 
-                    <g:if test="${institution?.orgType?.value == 'Consortium'}">
+                    <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  institution.getallOrgRoleType())}">
                         <div class="field">
 
                             <%--

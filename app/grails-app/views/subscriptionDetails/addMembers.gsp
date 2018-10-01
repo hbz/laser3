@@ -30,7 +30,7 @@
 
     <g:render template="nav" contextPath="."/>
 
-<g:if test="${institution?.orgType?.value == 'Consortium'}">
+<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  institution.getallOrgRoleType())}">
 
     <semui:filter>
         <g:form action="addMembers" method="get" params="[id: params.id]" class="ui form">
@@ -42,8 +42,6 @@
     </semui:filter>
 
     <g:form action="processAddMembers" params="${[id: params.id]}" controller="subscriptionDetails" method="post" class="ui form">
-
-        <input type="hidden" name="asOrgType" value="${institution?.orgType?.id}">
 
         <g:render template="/templates/filter/orgFilterTable"
                   model="[orgList: cons_members,
@@ -137,7 +135,7 @@
         </g:if>
     </g:form>
 
-    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") && contextService.getOrg().orgType?.value == 'Consortium'}">
+    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") && (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  contextService.getOrg().orgRoleType)}">
         <hr />
 
         <div class="ui info message">
