@@ -19,8 +19,8 @@ class AjaxController {
     def refdata_config = [
     "ContentProvider" : [
       domain:'Org',
-      countQry:"select count(o) from Org as o where o.orgType.value = 'Provider' and lower(o.name) like ?",
-      rowQry:"select o from Org as o where o.orgType.value = 'Provider' and lower(o.name) like ? order by o.name asc",
+      countQry:"select count(o) from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ?",
+      rowQry:"select o from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? order by o.name asc",
       qryParams:[
               [
                 param:'sSearch',

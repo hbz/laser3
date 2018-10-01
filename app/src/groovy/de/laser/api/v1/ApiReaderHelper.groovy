@@ -151,7 +151,7 @@ class ApiReaderHelper {
         }
 
         // TODO check orgRole.roleType
-        if (org.id == context?.id || context?.orgType?.value == 'Consortium') {
+        if (org.id == context?.id || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in context?.getallOrgRoleType())) {
             hasAccess = true
         }
         if (hasAccess) {
@@ -162,6 +162,7 @@ class ApiReaderHelper {
             result.sortname     = org.sortname
 
             result.orgType      = org.orgType?.value
+            result.orgRoleType  = resolveOrgRoleTypes(org.orgRoleType)
             result.libraryType  = org.libraryType?.value
 
             // References
@@ -1013,4 +1014,16 @@ class ApiReaderHelper {
         return cleanUp(result, true, true)
     }
     */
+
+    static resolveOrgRoleTypes(list) {
+        def result = []
+        list.each { it ->
+            def tmp         = [:]
+            tmp.value       = it.value
+
+            tmp = cleanUp(tmp, true, true)
+            result << tmp
+        }
+        result
+    }
 }

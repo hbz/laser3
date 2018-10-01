@@ -275,9 +275,9 @@ class GlobalSourceSyncService {
         if ( newpkg.packageProvider ) {
 
           def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
-          def orgType = RefdataValue.getByValueAndCategory('Provider','OrgType')
+          def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
           def orgRole = RefdataValue.loc('Organisational Role',  [en: 'Content Provider', de: 'Anbieter']);
-          def provider = Org.lookupOrCreate2(newpkg.packageProvider , orgSector , null, [:], null, orgType)
+          def provider = Org.lookupOrCreate2(newpkg.packageProvider , orgSector , null, [:], null, orgRoleType)
 
           OrgRole.assertOrgPackageLink(provider, pkg, orgRole)
         }

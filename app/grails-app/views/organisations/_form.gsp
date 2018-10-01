@@ -117,13 +117,13 @@
 	<g:textField name="categoryId" maxlength="128" value="${orgInstance?.categoryId}"/>
 </div> --%>
 
-<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'orgType', 'error')} ">
+%{--<div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'orgType', 'error')} ">
 	<label for="orgType">
 		<g:message code="org.orgType.label" default="Org Type" />
 	</label>
 	<laser:select id="orgType" name="orgType.id" from="${com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgType')}"
 			  optionKey="id" optionValue="value"  value="${orgInstance?.orgType?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
-</div>
+</div>--}%
 
 <%--
 <div class="field fieldcontain ${hasErrors(bean: orgInstance, field: 'status', 'error')} ">

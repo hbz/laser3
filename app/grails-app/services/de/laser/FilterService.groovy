@@ -17,9 +17,9 @@ class FilterService {
             queryParams << "%${params.orgNameContains.toLowerCase()}%"
             queryParams << "%${params.orgNameContains.toLowerCase()}%"
         }
-        if (params.orgType?.length() > 0) {
-            query << "o.orgType.id = ?"
-            queryParams << Long.parseLong(params.orgType)
+        if (params.orgRoleType?.length() > 0) {
+            query << " exists (select roletype from o.orgRoleType as roletype where roletype.id = ? )"
+            queryParams << Long.parseLong(params.orgRoleType)
         }
         if (params.orgSector?.length() > 0) {
             query << "o.sector.id = ?"
@@ -70,9 +70,13 @@ class FilterService {
             query << "lower(o.name) like ?"
             queryParams << "%${params.orgNameContains.toLowerCase()}%"
         }
-        if (params.orgType?.length() > 0) {
+       /* if (params.orgType?.length() > 0) {
             query << "o.orgType.id = ?"
             queryParams << Long.parseLong(params.orgType)
+        }*/
+        if (params.orgRoleType?.length() > 0) {
+            query << " exists (select roletype from o.orgRoleType as roletype where roletype.id = ? )"
+            queryParams << Long.parseLong(params.orgRoleType)
         }
         if (params.orgSector?.length() > 0) {
             query << "o.sector.id = ?"

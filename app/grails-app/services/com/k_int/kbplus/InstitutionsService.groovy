@@ -50,8 +50,8 @@ class InstitutionsService {
 
             log.debug("adding org link to new license");
 
-            if (params.asOrgType) {
-                if (RefdataValue.get(params.asOrgType)?.value == 'Consortium') {
+            if (params.asOrgRoleType) {
+                if (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType').id in params.asOrgRoleType) {
                     org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role))
                 } else {
                     org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role))
@@ -141,7 +141,7 @@ class InstitutionsService {
 
             log.debug("adding org link to new license");
 
-            if (params.asOrgType && RefdataValue.get(params.asOrgType)?.value == 'Consortium') {
+            if (params.asOrgRoleType && com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType').id in params.asOrgRoleType) {
                 org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role))
             } else {
                 org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role))

@@ -3,13 +3,13 @@
         <dt></dt>
         <dd>
             <br/>
-            <a class="ui button" data-semui="modal" href="#OrgType"><g:message code="org.orgRoleType.add.label"
+            <a class="ui button" data-semui="modal" href="#OrgRoleType"><g:message code="org.orgRoleType.add.label"
                                                                                default="Add new Organisation Type"/></a>
         </dd>
     </dl>
 </g:if>
 
-<semui:modal id="OrgType" message="org.orgRoleType.add.label">
+<semui:modal id="OrgRoleType" message="org.orgRoleType.add.label">
     <g:form  class="ui form" url="[controller: 'organisations', action: 'addOrgRoleType']"
             method="post">
         <input type="hidden" name="org" value="${Org.id}"/>
