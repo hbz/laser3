@@ -3,7 +3,7 @@ package com.k_int.properties
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.abstract_domain.AbstractProperty
-import de.laser.domain.I10nTranslatableAbstract
+import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.I10nTranslation
 import groovy.util.logging.*
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -13,7 +13,7 @@ import javax.persistence.Transient
 import javax.validation.UnexpectedTypeException
 
 @Log4j
-class PropertyDefinition extends I10nTranslatableAbstract {
+class PropertyDefinition extends AbstractI10nTranslatable {
 
     @Transient
     final static TRUE  = true
@@ -158,12 +158,13 @@ class PropertyDefinition extends I10nTranslatableAbstract {
         def newProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: type, owner: owner)
         newProp.setNote("")
 
+        /*
         if (flag == PropertyDefinition.CUSTOM_PROPERTY) {
             owner.customProperties.add(newProp)
         }
         else if (flag == PropertyDefinition.PRIVATE_PROPERTY) {
             owner.privateProperties.add(newProp)
-        }
+        } */
 
         newProp.save(flush:true)
         GrailsHibernateUtil.unwrapIfProxy(newProp)

@@ -1,8 +1,8 @@
 package com.k_int.kbplus
 
-import de.laser.domain.BaseDomainComponent
+import de.laser.domain.AbstractBaseDomain
 
-class OrgAccessPointLink extends BaseDomainComponent{
+class OrgAccessPointLink extends AbstractBaseDomain{
 
     OrgAccessPoint oap
     Platform platform

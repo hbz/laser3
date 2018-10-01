@@ -1,16 +1,17 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
-import de.laser.domain.BaseDomainComponent
-import de.laser.domain.Permissions
-import de.laser.domain.TemplateSupport
+import de.laser.traits.AuditTrait
+import de.laser.domain.AbstractBaseDomain
+import de.laser.interfaces.Permissions
+import de.laser.interfaces.TemplateSupport
 
 import javax.persistence.Transient
 import java.text.Normalizer
 import com.k_int.properties.PropertyDefinition
 import com.k_int.ClassUtils
 
-class License extends BaseDomainComponent implements TemplateSupport, Permissions, Comparable<License> {
+class License extends AbstractBaseDomain implements TemplateSupport, Permissions, Comparable<License>, AuditTrait {
 
     @Transient
     def grailsApplication
@@ -20,12 +21,13 @@ class License extends BaseDomainComponent implements TemplateSupport, Permission
     def genericOIDService
     @Transient
     def messageSource
+    @Transient
+    def changeNotificationService
 
-  
-  static auditable = [ignore:['version','lastUpdated','pendingChanges']]
 
-    static controlledProperties =    ['licenseUrl', 'noticePeriod', 'reference', 'startDate', 'endDate']
-    static controlledRefProperties = ['isPublic' ]
+    // AuditTrait
+    static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
+    static controlledProperties = [ 'startDate', 'endDate', 'licenseUrl', 'status', 'type' ]
 
     License instanceOf
 
@@ -315,46 +317,6 @@ class License extends BaseDomainComponent implements TemplateSupport, Permission
     result
   }
 
-  def onChange = { oldMap,newMap ->
-    log.debug("license onChange....${oldMap} || ${newMap}");
-    def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
-
-    controlledProperties.each { cp ->
-     // log.debug("MAP TYPE ${oldMap[cp]?.class} OLD MAP: ${oldMap[cp]} NEW MAP: ${newMap[cp]}")
-      if ( oldMap[cp] != newMap[cp] ) {
-        log.debug("Sending reference change...");
-        changeNotificationService.notifyChangeEvent([
-                                                     OID:"${this.class.name}:${this.id}",
-                                                     event:'License.updated',
-                                                     prop:cp,
-                                                     old:oldMap[cp],
-                                                     new:newMap[cp]
-                                                    ])
-      }
-    }
-
-    controlledRefProperties.each { crp ->
-//      log.debug("MAP TYPE ${oldMap[crp]?.class} OLD MAP: ${oldMap[crp]} NEW MAP: ${newMap[crp]}")
-
-      if ( oldMap[crp] != newMap[crp] ) {
-
-        log.debug("Sending reference change...");
-        def old_oid = oldMap[crp] ? "${oldMap[crp].class.name}:${oldMap[crp].id}" : null;
-        def new_oid = newMap[crp] ? "${newMap[crp].class.name}:${newMap[crp].id}" : null;
-        changeNotificationService.notifyChangeEvent([
-                                                     OID:"${this.class.name}:${this.id}",
-                                                     event:'License.updated',
-                                                     prop:crp,
-                                                     old:old_oid,
-                                                     oldLabel:oldMap[crp]?.toString(),
-                                                     new:new_oid,
-                                                     newLabel:newMap[crp]?.toString()
-                                                    ])
-      }
-    }
-
-    log.debug("On change complete");
-  }
   @Override
   public boolean equals (Object o) {
     def obj = ClassUtils.deproxy(o)
@@ -377,19 +339,19 @@ class License extends BaseDomainComponent implements TemplateSupport, Permission
   }
 
 
-  @Transient
-  def notifyDependencies(changeDocument) {
-    log.debug("notifyDependencies(${changeDocument})");
-
-    def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
+    @Transient
+    def notifyDependencies(changeDocument) {
+        log.debug("notifyDependencies(${changeDocument})")
+        //def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
 
     // Find any licenses derived from this license
     // create a new pending change object
     //def derived_licenses = License.executeQuery('select l from License as l where exists ( select link from Link as link where link.toLic=l and link.fromLic=? )',this)
-    def derived_licenses = License.executeQuery('select l from License as l where l.instanceOf=?', this)
+    def derived_licenses = getNonDeletedDerivedLicenses()
+
     derived_licenses.each { dl ->
-      if(dl.status.value != "Deleted"){
-        log.debug("Send pending change to ${dl.id}");
+        log.debug("Send pending change to ${dl.id}")
+
         def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
         ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.license."+changeDocument.prop,locale.toString())
         def description = messageSource.getMessage('default.accept.placeholder',null, locale)
@@ -400,23 +362,33 @@ class License extends BaseDomainComponent implements TemplateSupport, Permission
             if( defaultMsg)
                 description = defaultMsg.content
         }
-        def propName = changeDocument.name ? ((messageSource.getMessage("license.${changeDocument.name}",null,locale))?:(changeDocument.name)) : (messageSource.getMessage("license.${changeDocument.prop}",null,locale)?:(changeDocument.prop))
-        changeNotificationService
-        .registerPendingChange('license',
-                              dl,
+
+          def propName
+          try {
+              // UGLY
+              propName = changeDocument.name ? ((messageSource.getMessage("license.${changeDocument.name}", null, locale)) ?: (changeDocument.name)) : (messageSource.getMessage("license.${changeDocument.prop}", null, locale) ?: (changeDocument.prop))
+
+          } catch(Exception e) {
+              propName = changeDocument.name ?: changeDocument.prop
+          }
+
+          changeNotificationService
+        .registerPendingChange('license', // prop
+                              dl, // target
                               "<b>${propName}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Vertragsvorlage geändert. " + description,
-                              dl.getLicensee(),
+                              dl.getLicensee(), // objowner TODO !!!!???
                               [
                                 changeTarget:"com.k_int.kbplus.License:${dl.id}",
                                 changeType:'PropertyChange',
                                 changeDoc:changeDocument
                               ])
 
-      }else{
-        log.debug("License ${dl} has status deleted, no pending notification will be generated.")
-      }  
-    }
+      }
   }
+
+    def getNonDeletedDerivedLicenses() {
+        License.where{ instanceOf == this && status.value != 'Deleted' }
+    }
 
     @Override
     def beforeInsert() {

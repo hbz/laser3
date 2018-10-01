@@ -2,8 +2,8 @@ package de.laser.api.v1
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
-import de.laser.api.v0.ApiWriter
-import de.laser.api.v0.entities.*
+import de.laser.api.v1.ApiWriter
+import de.laser.api.v1.entities.*
 import de.laser.api.v1.entities.ApiCostItem
 import de.laser.domain.Constants
 import grails.converters.JSON

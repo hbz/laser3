@@ -1,10 +1,10 @@
 package com.k_int.kbplus
 
-import de.laser.domain.BaseDomainComponent
+import de.laser.domain.AbstractBaseDomain
 
 import javax.persistence.Transient
 
-class IssueEntitlement extends BaseDomainComponent implements Comparable {
+class IssueEntitlement extends AbstractBaseDomain implements Comparable {
 
   Date accessStartDate
   Date accessEndDate

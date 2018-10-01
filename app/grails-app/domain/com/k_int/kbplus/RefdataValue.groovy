@@ -1,11 +1,11 @@
 package com.k_int.kbplus
 import com.k_int.ClassUtils
-import de.laser.domain.I10nTranslatableAbstract
+import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.I10nTranslation
 import org.springframework.context.i18n.LocaleContextHolder
 import javax.persistence.Transient
 
-class RefdataValue extends I10nTranslatableAbstract {
+class RefdataValue extends AbstractI10nTranslatable {
 
     @Transient
     def grailsApplication

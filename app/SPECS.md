@@ -8,12 +8,12 @@ context organisation and authorized memberships.
 
 #### GlobalUID
 
-Extend **de.laser.domain.BaseDomainComponent** to use the globalUID attribute 
+Extend **de.laser.domain.AbstractBaseDomain** to use the globalUID attribute 
 in your domain class.
 
 #### Translation via i10n
 
-Extend **de.laser.domain.I10nTranslatableAbstract** to support
+Extend **de.laser.domain.AbstractI10nTranslatable** to support
 db based translation mechanism in your domain class.
 
 #### Database Migration Scripts

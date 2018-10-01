@@ -39,16 +39,15 @@
 			<table class="ui sortable celled la-table table">
 				<thead>
 					<tr>
-
+						<th>${message(code:'sidewide.number')}</th>
 						<g:sortableColumn property="name" title="${message(code: 'platform.name.label', default: 'Name')}" />
-
 						<th></th>
 					</tr>
 				</thead>
 				<tbody>
-				<g:each in="${platformInstanceList}" var="platformInstance">
+				<g:each in="${platformInstanceList}" var="platformInstance" status="jj">
 					<tr>
-
+						<td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
 						<td>${fieldValue(bean: platformInstance, field: "name")}</td>
 
 						<td class="x">

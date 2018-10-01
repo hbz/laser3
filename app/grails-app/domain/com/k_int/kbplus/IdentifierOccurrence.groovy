@@ -4,6 +4,7 @@ import javax.persistence.Transient
 
 class IdentifierOccurrence {
 
+    // TODO AuditTrail
     static auditable = true
 
     Identifier identifier

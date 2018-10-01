@@ -145,6 +145,7 @@
           <table  class="ui sortable celled la-table table">
             <thead>
                 <tr>
+                    <th>${message(code:'sidewide.number')}</th>
                   <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
                   <th>ISSN</th>
                   <th>eISSN</th>
@@ -153,8 +154,9 @@
                   <th>${message(code:'myinst.currentTitles.sub_content', default:'Subscribed Content')}</th>
                 </tr>
             </thead>
-            <g:each in="${titles}" var="ti">
+            <g:each in="${titles}" var="ti" status="jj">
               <tr>
+                  <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
                 <td>
                     <semui:listIcon type="${ti.type.('value')}"/>
                     <g:link controller="titleDetails" action="show" id="${ti.id}"><strong>${ti.title}</strong></g:link>

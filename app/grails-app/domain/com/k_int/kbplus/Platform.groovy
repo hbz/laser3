@@ -1,14 +1,12 @@
 package com.k_int.kbplus
 
-import de.laser.domain.BaseDomainComponent
+import de.laser.domain.AbstractBaseDomain
 
 import javax.persistence.Transient
 import com.k_int.ClassUtils
 import org.apache.commons.logging.*
-import groovy.util.logging.*
-import org.apache.commons.logging.LogFactory
 
-class Platform extends BaseDomainComponent {
+class Platform extends AbstractBaseDomain {
 
   @Transient
   def grailsApplication
