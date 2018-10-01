@@ -38,6 +38,19 @@
                 <tr>
                     <td class="la-column-nowrap">
                         ${prop.type.getI10n('name')}
+                        <%
+                            if (prop.instanceOf) {
+                                if (ownobj.isSlaved?.value?.equalsIgnoreCase('yes')) {
+                                    println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                                }
+                                else {
+                                    println '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                }
+                            }
+                            else if (prop.getClass().findByInstanceOf(prop)) {
+                                println '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                            }
+                        %>
                         <g:if test="${prop.type.multipleOccurrence}">
                             <span data-position="top right" data-tooltip="${message(code:'default.multipleOccurrence.tooltip')}">
                                 <i class="redo icon orange"></i>
