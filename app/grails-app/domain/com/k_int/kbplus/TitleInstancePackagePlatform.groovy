@@ -294,6 +294,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements AuditTr
         else if(sub.status.value != "Deleted") {
           changeNotificationService.registerPendingChange('subscription',
                                                           dep_ie.subscription,
+                  // pendingChange.message_TP01
                                                           "Der Paketeintrag für den Titel \"${this.title.title}\" wurde gelöscht. Wenden Sie diese Änderung an, um die entsprechende Problemberechtigung aus dieser Lizenz zu entfernen",
                                                           sub.getSubscriber(),
                                                           [
@@ -325,6 +326,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements AuditTr
         def pkgLink =  grailsLinkGenerator.link(controller: 'packageDetails', action: 'show', id: this.pkg.id, absolute: true)
         changeNotificationService.registerPendingChange('subscription',
                                                         dep_ie.subscription,
+                // pendingChange.message_TP02
                                                         "Die Information vom Titel <a href=\"${titleLink}\">${this.title.title}</a> haben sich im Paket <a href=\"${pkgLink}\">${this.pkg.name}</a> geändert. " +
                                                                 "<b>${messageSource.getMessage("tipp.${changeDocument.prop}",null,loc)?:changeDocument.prop}</b> wurde aktualisiert von <b>\"${changeDocument.oldLabel}\"</b>(${changeDocument.old}) zu <b>\"${changeDocument.newLabel}\"</b>" +
                                                                 "(${changeDocument.new}). "+description,

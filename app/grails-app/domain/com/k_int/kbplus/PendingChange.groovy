@@ -1,8 +1,14 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import org.springframework.context.MessageSource
+
+import javax.persistence.Transient
 
 class PendingChange {
+
+    @Transient
+    MessageSource messageSource
 
   Subscription subscription
   License license
@@ -12,7 +18,12 @@ class PendingChange {
   Org owner
   String oid
   String changeDoc
-  String desc
+    String msgToken
+    String msgParams
+
+    @Deprecated
+    String desc
+
   RefdataValue status
   Date actionDate
   User user
@@ -25,6 +36,8 @@ class PendingChange {
                pkg column:'pc_pkg_fk'
                oid column:'pc_oid', index:'pending_change_oid_idx'
          changeDoc column:'pc_change_doc', type:'text'
+          msgToken column:'pc_msg_token'
+         msgParams column:'pc_msg_doc', type:'text'
                 ts column:'pc_ts'
              owner column:'pc_owner'
               desc column:'pc_desc', type:'text'
@@ -39,6 +52,8 @@ class PendingChange {
     subscription(nullable:true, blank:false);
     license(nullable:true, blank:false);
     changeDoc(nullable:true, blank:false);
+      msgToken(nullable:true, blank:false)
+      msgParams(nullable:true, blank:false)
     pkg(nullable:true, blank:false);
     ts(nullable:true, blank:false);
     owner(nullable:true, blank:false);
@@ -48,4 +63,21 @@ class PendingChange {
     actionDate(nullable:true, blank:false);
     user(nullable:true, blank:false);
   }
+
+    /*
+    def myMessage() {
+        def result = "n/a"
+        if (msgToken && msgToken.length()>0) {
+            def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+
+            if (msgParams && msgParams.length()>0) {
+                result = messageSource.getMessage(msgToken, msgParams, locale)
+            }
+            else {
+                Object[] tmp = {"a"; "b"; "c"}
+                result = messageSource.getMessage(msgToken, tmp, locale)
+            }
+        }
+        result
+    } */
 }

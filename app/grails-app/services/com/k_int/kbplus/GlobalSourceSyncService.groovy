@@ -366,6 +366,7 @@ class GlobalSourceSyncService {
 
         changeNotificationService.registerPendingChange('pkg',
                 ctx,
+                // pendingChange.message_GS01
                 "Eine neue Verknüpfung (TIPP) für den Titel ${title_instance.title} mit der Plattform ${plat_instance.name}",
                 null,
                 [
@@ -430,6 +431,7 @@ class GlobalSourceSyncService {
         if (change_doc) {
           changeNotificationService.registerPendingChange('pkg',
                   ctx,
+                  // pendingChange.message_GS02
                   "Eine TIPP/Coverage Änderung für den Titel \"${title_of_tipp_to_update.title}\", ${changetext}, Status: ${TippStatus}",
                   null,
                   [
@@ -463,6 +465,7 @@ class GlobalSourceSyncService {
 
         changeNotificationService.registerPendingChange('pkg',
                 ctx,
+                // pendingChange.message_GS03
                 "Eine Änderung des Status der Verknüpfung (TIPP) für den Titel \"${title_of_tipp_to_update.title}\", Status: ${TippStatus}",
                 null,
                 [

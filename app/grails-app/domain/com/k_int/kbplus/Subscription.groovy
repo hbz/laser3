@@ -334,7 +334,8 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
             changeNotificationService
                     .registerPendingChange('subscription',
                     ds,
-                    "<b>${propName}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Lizenzvorlage geändert. " + description,
+                // pendingChange.message_SU01
+                "<b>${propName}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Lizenzvorlage geändert. " + description,
                     ds.getSubscriber(),
                     [
                             changeTarget:"com.k_int.kbplus.Subscription:${ds.id}",

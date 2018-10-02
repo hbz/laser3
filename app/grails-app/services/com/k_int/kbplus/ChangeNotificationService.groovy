@@ -65,9 +65,11 @@ class ChangeNotificationService {
 
         if ( contextObject ) {
           if ( contextObject.metaClass.respondsTo(contextObject, 'getURL') ) {
+              // pendingChange.message_1001
             sw.write("<p>Änderungen an <a href=\"${contextObject.getURL()}\">${contextObject.toString()}</a> ${new Date().toString()}</p><p><ul>");
           }
           else  {
+              // pendingChange.message_1002
             sw.write("<p>Änderungen an ${contextObject.toString()} ${new Date().toString()}</p><p><ul>");
           }
         }
@@ -99,10 +101,12 @@ class ChangeNotificationService {
               sw.write(tmpl.toString());
               sw.write("</li>");
             }else{
+              // pendingChange.message_1003
               sw.write("<li>Komponente ${parsed_event_info.OID} wurde gelöscht!</li>")
             }
           }
           else {
+            // pendingChange.message_1004
             sw.write("<li>Template für das Ereignis \"ChangeNotification.${parsed_event_info.event}\" kann nicht gefunden werden. Infos zum Ereignis:\n\n${pc.changeDocument}</li>");
           }
           contr++;
