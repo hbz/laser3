@@ -16491,6 +16491,7 @@ a.ui.basic.label:hover {
 
 .ui.card .ui.label {
   margin: 0;
+  background-color: #d3dae3;
 }
 /*!
  * # Semantic UI 2.3.1 - List

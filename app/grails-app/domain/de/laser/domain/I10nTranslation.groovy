@@ -156,17 +156,17 @@ class I10nTranslation {
             switch (I10nTranslation.decodeLocale(locale.toString())) {
                 case 'en':
                     matches = I10nTranslation.findAllByReferenceClassAndReferenceFieldAndValueEnIlike(
-                            referenceClass, referenceField, "${query}%"
+                            referenceClass, referenceField, "%${query}%"
                     )
                     break
                 case 'de':
                     matches = I10nTranslation.findAllByReferenceClassAndReferenceFieldAndValueDeIlike(
-                            referenceClass, referenceField, "${query}%"
+                            referenceClass, referenceField, "%${query}%"
                     )
                     break
                 case 'fr':
                     matches = I10nTranslation.findAllByReferenceClassAndReferenceFieldAndValueFrIlike(
-                            referenceClass, referenceField, "${query}%"
+                            referenceClass, referenceField, "%${query}%"
                     )
                     break
             }
