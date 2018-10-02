@@ -246,10 +246,13 @@ select s from Subscription as s where (
                         [license: result.license]
                 )
 
-                def validOrgs = Org.executeQuery(
-                    'select distinct o from OrgRole ogr join ogr.org o where o in (:orgs) and ogr.roleType.value in (:roleTypes) and ogr.sub in (:subs)',
-                        [orgs: consMembers, roleTypes: ['Subscriber', 'Subscriber_Consortial'], subs:memberSubs]
-                )
+                def validOrgs = [[id:0]] // erms-582
+                if (memberSubs) {
+                    validOrgs = Org.executeQuery(
+                            'select distinct o from OrgRole ogr join ogr.org o where o in (:orgs) and ogr.roleType.value in (:roleTypes) and ogr.sub in (:subs)',
+                            [orgs: consMembers, roleTypes: ['Subscriber', 'Subscriber_Consortial'], subs: memberSubs]
+                    )
+                }
 
                 // applying filter AFTER valid orgs are found
                 def fsq = filterService.getOrgQuery([constraint_orgIds: validOrgs.collect({it.id})] << params)
