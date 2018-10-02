@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.AuditConfig
 import de.laser.domain.AbstractI10nTranslatable
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
@@ -936,30 +937,96 @@ class AjaxController {
         redirect(url: request.getHeader('referer'))
     }
 
-  @Secured(['ROLE_USER'])
-  def deleteCustomProperty(){
-    def className = params.propclass.split(" ")[1]
-    def propClass = Class.forName(className)
-    def property  = propClass.get(params.id)
-    def owner     =  grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
-    def prop_desc = property.getType().getDescr()
-    owner.customProperties.remove(property)
-    property.delete(flush:true)
+    @Secured(['ROLE_USER'])
+    def toggleAuditConfig() {
+        def className = params.propClass.split(" ")[1]
+        def propClass = Class.forName(className)
+        def owner     = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ", ""))?.getClazz()?.get(params.ownerId)
+        def property  = propClass.get(params.id)
+        def prop_desc = property.getType().getDescr()
 
-    if(property.hasErrors()) {
-        log.error(property.errors)
+        if (AuditConfig.getConfig(property, AuditConfig.COMPLETE_OBJECT)) {
+
+            property.getClass().findByInstanceOf(property).each{ prop ->
+                prop.instanceOf = null
+                prop.save(flush: true)
+            }
+            AuditConfig.removeAllConfigs(property)
+
+        }
+        else {
+
+            owner.getClass().findByInstanceOf(owner).each { member ->
+
+                def existingProp = property.getClass().findByOwnerAndInstanceOf(member, property)
+                if (! existingProp) {
+
+                    // multi occurrence props; add one additional with backref
+                    if (property.type.multipleOccurrence) {
+                        def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type)
+                        additionalProp = property.copyValueAndNote(additionalProp)
+                        additionalProp.instanceOf = property
+                        additionalProp.save(flush: true)
+                    }
+                    else {
+                        def matchingProps = property.getClass().findByOwnerAndType(member, property.type)
+                        // unbound prop found with matching type, set backref
+                        if (matchingProps) {
+                            matchingProps.each { memberProp ->
+                                memberProp.instanceOf = property
+                                memberProp.save(flush: true)
+                            }
+                        }
+                        else {
+                            // no match found, creating new prop with backref
+                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type)
+                            newProp = property.copyValueAndNote(newProp)
+                            newProp.instanceOf = property
+                            newProp.save(flush: true)
+                        }
+                    }
+                }
+            }
+
+            AuditConfig.addConfig(property, AuditConfig.COMPLETE_OBJECT)
+        }
+
+        request.setAttribute("editable", params.editable == "true")
+        render(template: "/templates/properties/custom", model:[
+                ownobj:owner,
+                newProp:property,
+                custom_props_div: "${params.custom_props_div}", // JS markup id
+                prop_desc: prop_desc // form data
+        ])
     }
-    else {
-        log.debug("Deleted custom property: " + property.type.name)
+
+    @Secured(['ROLE_USER'])
+    def deleteCustomProperty() {
+        def className = params.propClass.split(" ")[1]
+        def propClass = Class.forName(className)
+        def owner     = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ", ""))?.getClazz()?.get(params.ownerId)
+        def property  = propClass.get(params.id)
+        def prop_desc = property.getType().getDescr()
+
+        AuditConfig.removeAllConfigs(property)
+
+        owner.customProperties.remove(property)
+        property.delete(flush:true)
+
+        if(property.hasErrors()) {
+            log.error(property.errors)
+        }
+        else {
+            log.debug("Deleted custom property: " + property.type.name)
+        }
+        request.setAttribute("editable", params.editable == "true")
+        render(template: "/templates/properties/custom", model:[
+                ownobj:owner,
+                newProp:property,
+                custom_props_div: "${params.custom_props_div}", // JS markup id
+                prop_desc: prop_desc // form data
+        ])
     }
-    request.setAttribute("editable", params.editable == "true")
-    render(template: "/templates/properties/custom", model:[
-            ownobj:owner,
-            newProp:property,
-            custom_props_div: "${params.custom_props_div}", // JS markup id
-            prop_desc: prop_desc // form data
-    ])
-  }
 
   /**
     * Delete domain specific private property
@@ -968,7 +1035,7 @@ class AjaxController {
     */
   @Secured(['ROLE_USER'])
   def deletePrivateProperty(){
-    def className = params.propclass.split(" ")[1]
+    def className = params.propClass.split(" ")[1]
     def propClass = Class.forName(className)
     def property  = propClass.get(params.id)
     def tenant    = property.type.tenant

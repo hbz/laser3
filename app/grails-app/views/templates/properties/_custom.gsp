@@ -28,7 +28,7 @@
                     <th>${message(code:'property.table.paragraph')}</th>
                 </g:if>
                 <th>${message(code:'property.table.notes')}</th>
-                <th class="x">${message(code:'property.table.delete')}</th>
+                <th></th>
             </tr>
         </thead>
     </g:if>
@@ -85,14 +85,26 @@
                     </td>
                     <td class="x">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
                         <g:if test="${editable == true}">
+                            <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />
+
+                            <span data-position="top right" data-tooltip="${message(code:'property.audit.tooltip')}">
+                            <g:remoteLink controller="ajax" action="toggleAuditConfig"
+                                          before="if(!confirm('${auditMsg}')) return false"
+                                          params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}"]' id="${prop.id}"
+                                          onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                          update="${custom_props_div}" class="ui icon button">
+                                <i class="thumbtack icon"></i>
+                            </g:remoteLink>
+                            </span>
+
                             <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
+
                             <g:remoteLink controller="ajax" action="deleteCustomProperty"
                                           before="if(!confirm('${confirmMsg}')) return false"
-                                          params='[propclass: prop.getClass(),ownerId:"${ownobj.id}",ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}"]' id="${prop.id}"
+                                          params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}"]' id="${prop.id}"
                                           onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                           update="${custom_props_div}" class="ui icon negative button">
                                 <i class="trash alternate icon"></i>
-                                <!--${message(code:'default.button.delete.label', default:'Delete')}-->
                             </g:remoteLink>
                         </g:if>
                     </td>

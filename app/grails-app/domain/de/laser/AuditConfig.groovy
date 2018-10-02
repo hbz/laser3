@@ -10,6 +10,8 @@ class AuditConfig {
     @Transient
     def grailsApplication
 
+    final static COMPLETE_OBJECT = 'COMPLETE_OBJECT'
+
     Long   referenceId
     String referenceClass
 
@@ -26,7 +28,17 @@ class AuditConfig {
     static constraints = {
         referenceId     (nullable:false, blank:false)
         referenceClass  (nullable:false, blank:false, maxSize:255)
-        referenceField  (nullable:true,  blank:false, maxSize:255)
+        referenceField  (nullable:false, blank:false, maxSize:255)
+    }
+
+    static addConfig(Object obj) {
+        addConfig(obj, COMPLETE_OBJECT)
+    }
+    static getConfig(Object obj) {
+        getConfig(obj, COMPLETE_OBJECT)
+    }
+    static removeConfig(Object obj) {
+        removeConfig(obj, COMPLETE_OBJECT)
     }
 
     static addConfig(Object obj, String field) {
@@ -37,40 +49,12 @@ class AuditConfig {
         ).save(flush: true)
     }
 
-    static getConfig(Object obj) {
-        def result = []
-        try {
-            result = AuditConfig.findAllWhere(
-                referenceId: obj.getId(),
-                referenceClass: obj.getClass().name,
-                referenceField: null
-            )
-        } catch(Exception e) {
-            log.error(e)
-        }
-        result
-    }
-
     static getConfig(Object obj, String field) {
-        def result = []
-        try {
-            result = AuditConfig.findAllWhere(
-                referenceId: obj.getId(),
-                referenceClass: obj.getClass().name,
-                referenceField: field
-            )
-        } catch(Exception e) {
-            log.error(e)
-        }
-        result
-    }
-
-    static removeConfig(Object obj) {
         AuditConfig.findAllWhere(
-                referenceId: obj.getId(),
-                referenceClass: obj.getClass().name,
-                referenceField: null
-        ).delete(flush:true)
+            referenceId: obj.getId(),
+            referenceClass: obj.getClass().name,
+            referenceField: field
+        )
     }
 
     static removeConfig(Object obj, String field) {
@@ -78,6 +62,13 @@ class AuditConfig {
                 referenceId: obj.getId(),
                 referenceClass: obj.getClass().name,
                 referenceField: field
-        ).delete(flush:true)
+        ).each{ it.delete() }
+    }
+
+    static removeAllConfigs(Object obj) {
+        AuditConfig.findAllWhere(
+                referenceId: obj.getId(),
+                referenceClass: obj.getClass().name
+        ).each{ it.delete() }
     }
 }
