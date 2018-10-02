@@ -25,7 +25,7 @@
     <semui:msg class="positive" text="Ihr Fehlerbericht wurde übertragen." />
 </g:if>
 <g:if test="${'fail'.equalsIgnoreCase(sendingStatus)}">
-    <semui:msg class="negative" text="Ihr Fehlerbericht konnte leider nicht übertragen werden. Versuchen Sie es bitte später noch einmal." />
+    <semui:msg class="negative" text="Ihr Fehlerbericht konnte leider nicht übertragen werden. Beachten Sie bitte die Pflichtfelder." />
 </g:if>
 
 <div class="ui warning message">
@@ -47,9 +47,9 @@
     <form method="post">
         <div class="ui form">
 
-            <div class="field">
+            <div class="required field">
                 <label>Titel</label>
-                <input name="title" type="text" value="${title}" />
+                <input name="title" type="text" value="${title}"/>
             </div>
 
             <div class="field">
@@ -73,5 +73,13 @@
     </form>
 </semui:form>
 
+<r:script>
+    $('.ui.form').form({
+        on: 'blur',
+        fields: {
+            title: 'empty'
+        }
+    })
+</r:script>
 </body>
 </html>
