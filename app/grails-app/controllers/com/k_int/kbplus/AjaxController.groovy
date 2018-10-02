@@ -964,7 +964,7 @@ class AjaxController {
                     // multi occurrence props; add one additional with backref
                     if (property.type.multipleOccurrence) {
                         def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type)
-                        additionalProp = property.copyValueAndNote(additionalProp)
+                        additionalProp = property.copyInto(additionalProp)
                         additionalProp.instanceOf = property
                         additionalProp.save(flush: true)
                     }
@@ -980,7 +980,7 @@ class AjaxController {
                         else {
                             // no match found, creating new prop with backref
                             def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type)
-                            newProp = property.copyValueAndNote(newProp)
+                            newProp = property.copyInto(newProp)
                             newProp.instanceOf = property
                             newProp.save(flush: true)
                         }

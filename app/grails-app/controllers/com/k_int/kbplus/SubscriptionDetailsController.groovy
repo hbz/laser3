@@ -1741,7 +1741,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                             //customProperties
                             for (prop in subMember.customProperties) {
                                 def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscription)
-                                copiedProp = prop.copyValueAndNote(copiedProp)
+                                copiedProp = prop.copyInto(copiedProp)
                                 newSubscription.addToCustomProperties(copiedProp)
                             }
                         }
@@ -1752,7 +1752,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                             subMember.privateProperties?.each { prop ->
                                 if (prop.type?.tenant?.id == contextOrg?.id) {
                                     def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscription)
-                                    copiedProp = prop.copyValueAndNote(copiedProp)
+                                    copiedProp = prop.copyInto(copiedProp)
                                     newSubscription.addToPrivateProperties(copiedProp)
                                 }
                             }
@@ -1969,7 +1969,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                                 //customProperties
                                 for (prop in baseSub.customProperties) {
                                     def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSub)
-                                    copiedProp = prop.copyValueAndNote(copiedProp)
+                                    copiedProp = prop.copyInto(copiedProp)
                                     newSub.addToCustomProperties(copiedProp)
                                 }
                             }
@@ -1980,7 +1980,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                                 baseSub.privateProperties.each { prop ->
                                     if (prop.type?.tenant?.id == contextOrg?.id) {
                                         def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSub)
-                                        copiedProp = prop.copyValueAndNote(copiedProp)
+                                        copiedProp = prop.copyInto(copiedProp)
                                         newSub.addToPrivateProperties(copiedProp)
                                     }
                                 }
@@ -2272,7 +2272,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                     //customProperties
                     for (prop in baseSubscription.customProperties) {
                         def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscriptionInstance)
-                        copiedProp = prop.copyValueAndNote(copiedProp)
+                        copiedProp = prop.copyInto(copiedProp)
                         newSubscriptionInstance.addToCustomProperties(copiedProp)
                     }
                 }
@@ -2283,7 +2283,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                     baseSubscription.privateProperties.each { prop ->
                         if (prop.type?.tenant?.id == contextOrg?.id) {
                             def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscriptionInstance)
-                            copiedProp = prop.copyValueAndNote(copiedProp)
+                            copiedProp = prop.copyInto(copiedProp)
                             newSubscriptionInstance.addToPrivateProperties(copiedProp)
                         }
                     }

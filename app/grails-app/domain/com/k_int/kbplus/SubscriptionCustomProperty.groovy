@@ -34,8 +34,8 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditTrait {
         owner: Subscription
     ]
 
-    def copyValueAndNote(newProp){
-        newProp = super.copyValueAndNote(newProp)
+    def copyInto(newProp){
+        newProp = super.copyInto(newProp)
         newProp
     }
 

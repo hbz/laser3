@@ -35,7 +35,7 @@ class InstitutionsService {
         }
         for (prop in base.customProperties) {
             def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
-            copiedProp = prop.copyValueAndNote(copiedProp)
+            copiedProp = prop.copyInto(copiedProp)
             licenseInstance.addToCustomProperties(copiedProp)
         }
 
@@ -126,7 +126,7 @@ class InstitutionsService {
         }
         for (prop in baseLicense?.customProperties) {
             def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
-            copiedProp = prop.copyValueAndNote(copiedProp)
+            copiedProp = prop.copyInto(copiedProp)
             licenseInstance.addToCustomProperties(copiedProp)
         }
         // the url will set the shortcode of the organisation that this license should be linked with.

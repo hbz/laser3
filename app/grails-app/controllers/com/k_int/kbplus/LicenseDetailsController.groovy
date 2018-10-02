@@ -953,7 +953,7 @@ from Subscription as s where
                         //customProperties
                         for (prop in baseLicense.customProperties) {
                             def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
-                            copiedProp = prop.copyValueAndNote(copiedProp)
+                            copiedProp = prop.copyInto(copiedProp)
                             licenseInstance.addToCustomProperties(copiedProp)
                         }
                     }
@@ -965,7 +965,7 @@ from Subscription as s where
                             if(prop.type?.tenant?.id == contextOrg?.id)
                             {
                                 def copiedProp = new LicensePrivateProperty(type: prop.type, owner: licenseInstance)
-                                copiedProp = prop.copyValueAndNote(copiedProp)
+                                copiedProp = prop.copyInto(copiedProp)
                                 licenseInstance.addToPrivateProperties(copiedProp)
                             }
                         }
