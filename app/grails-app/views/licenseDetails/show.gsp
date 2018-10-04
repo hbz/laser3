@@ -236,7 +236,7 @@
                                             <input type="hidden" name="license" value="${license.id}"/>
                                             <div class="fields">
                                                 <div class="field">
-                                                    <g:select optionKey="id" optionValue="name" from="${availableSubs}" name="subscription" class="ui search selectable dropdown"/>
+                                                    <g:select optionKey="id" optionValue="${{it.getNameConcatenated()}}" from="${availableSubs}" name="subscription" class="ui search selectable dropdown"/>
                                                 </div>
                                                 <div class="field">
                                                     <input type="submit" class="ui button" value="${message(code:'default.button.link.label', default:'Link')}"/>
