@@ -491,7 +491,7 @@ from License as l where (
                 result.orgList << provider.org
             }
         }
-        if (params?.sort?.contains("o.name") && params?.order?.equalsIgnoreCase("asc")){
+        if (params?.sort?.contains("o.name") && params?.order?.equalsIgnoreCase("desc")){
             result.orgList.sort{a, b -> b.name.compareToIgnoreCase a.name}
         } else {
             result.orgList.sort{a, b -> a.name.compareToIgnoreCase b.name}
