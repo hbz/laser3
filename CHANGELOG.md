@@ -1,5 +1,5 @@
 
-0.9 RC
+0.9
 
 - reworked dashbord, e.g. tasks
 - reworked provider list view
