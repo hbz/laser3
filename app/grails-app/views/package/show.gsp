@@ -26,7 +26,7 @@
           <g:if test="${packageInstance?.contentProvider}">
               <dl>
                  <dt><g:message code="package.content_provider" default="Content Provider" /></dt>
-                <dd><g:link controller="org" action="show" id="${packageInstance.contentProvider.id}"><g:fieldValue bean="${packageInstance}" field="contentProvider.name"/></g:link></dd>
+                <dd><g:link controller="organisations" action="show" id="${packageInstance.contentProvider.id}"><g:fieldValue bean="${packageInstance}" field="contentProvider.name"/></g:link></dd>
               </dl>
           </g:if>
         

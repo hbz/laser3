@@ -53,7 +53,7 @@
                               <g:link controller="cluster" action="show" id="${p.cluster.id}">Cluster: ${p.cluster.name}</g:link>
                       </g:if>
                       <g:if test="${p.org}">
-                              <g:link controller="org" action="show" id="${p.org.id}">${message(code:'org.label', default:'Org')}: ${p.org.name}</g:link>
+                              <g:link controller="organisations" action="show" id="${p.org.id}">${message(code:'org.label', default:'Org')}: ${p.org.name}</g:link>
                       </g:if>
                       <g:if test="${p.pkg}">
                               <g:link controller="packageDetails" action="show" id="${p.pkg.id}">${message(code:'package.label', default:'Package')}: ${p.pkg.name}</g:link>

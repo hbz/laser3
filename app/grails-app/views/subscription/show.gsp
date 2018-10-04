@@ -110,7 +110,7 @@
                   <g:each in="${subscriptionInstance.orgRelations}" var="or">
                       <tr>
                           <td>${or.roleType?.value}</td>
-                          <td><g:link controller="org" action="show" id="${or.org.id}">${or.org.name}</g:link></td>
+                          <td><g:link controller="organisations" action="show" id="${or.org.id}">${or.org.name}</g:link></td>
                       </tr>
                   </g:each>
               </table>
