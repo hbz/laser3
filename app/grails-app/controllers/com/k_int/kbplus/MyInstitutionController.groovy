@@ -493,29 +493,14 @@ from License as l where (
                 result.orgList << provider.org
             }
         }
-        params.virtualOrgIds = []
-
-        for (Org org : result.orgList){
-            params.virtualOrgIds.add(org.id)
-        }
-
-        result.test = mySubs
-        result.user = User.get(springSecurityService.principal.id)
-        params.max = params.max ?: result.user?.getDefaultPageSize()
-
-        def fsq = filterService.getOrgQuery(params)
-        params.remove('virtualOrgIds')
-
+      result.user = User.get(springSecurityService.principal.id)
+//      params.max = params.max ?: result.user?.getDefaultPageSize()
+        def fsq = filterService.getOrgQuery([constraint_orgIds: result.orgList.collect({ it.id })] << params)
         result.orgList  = Org.findAll(fsq.query, fsq.queryParams, params)
-        result.orgListTotal = Org.executeQuery("select count (o) ${fsq.query}", fsq.queryParams)[0]
-//TODO Liste ändern analog zu OrganisatinsController.listPrivider
-// isPropertyFilterUsed - Fall einfügen
-
+        result.orgList.sort{a, b -> a.name.compareToIgnoreCase b.name}
+//        result.orgListTotal = Org.executeQuery("select count (o) ${fsq.query}", fsq.queryParams)[0]
+//        result.test = mySubs
         result
-    }
-
-    def isPropertyFilterUsed() {
-        params.filterPropDef
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
