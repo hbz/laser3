@@ -139,6 +139,20 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
         return false
     }
 
+    // used for views and dropdowns
+    def getNameConcatenated() {
+        def cons = getConsortia()
+        def subscr = getAllSubscribers()
+        if (subscr) {
+            "${name} (" + subscr.join(', ') + ")"
+        }
+        else if (cons){
+            "${name} (${cons})"
+        }
+        else {
+            name
+        }
+    }
 
   def getIsSlavedAsString() {
     isSlaved?.value == "Yes" ? "Yes" : "No"

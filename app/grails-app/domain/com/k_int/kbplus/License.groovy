@@ -149,6 +149,21 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
         return instanceOf ? instanceOf.isTemplate() : false
     }
 
+    // used for views and dropdowns
+    def getReferenceConcatenated() {
+        def cons = getLicensingConsortium()
+        def subscr = getAllLicensee()
+        if (subscr) {
+            "${reference} (" + subscr.join(', ') + ")"
+        }
+        else if (cons){
+            "${reference} (${cons})"
+        }
+        else {
+            reference
+        }
+    }
+
     def getLicensingConsortium() {
         def result = null;
         orgLinks.each { or ->
