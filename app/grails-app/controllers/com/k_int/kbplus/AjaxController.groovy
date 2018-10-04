@@ -1343,7 +1343,7 @@ class AjaxController {
                         // delete existing date
                         target_object."${params.name}" = null
                     }
-                    target_object.owner?.save() // avoid owner.xyz not processed by flush
+                    //target_object.owner?.save() // avoid owner.xyz not processed by flush
                     target_object.save(failOnError: true, flush: true);
                 }
                 catch(Exception e) {
