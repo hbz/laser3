@@ -279,7 +279,7 @@ class TitleDetailsController {
         switch(hl.className) {
           case 'com.k_int.kbplus.TitleInstance':
             def instance_obj = TitleInstance.get(hl.persistedObjectId);
-            line_to_add = [ link: createLink(controller:'titleInstance', action: 'show', id:hl.persistedObjectId),
+            line_to_add = [ link: createLink(controller:'titleDetails', action: 'show', id:hl.persistedObjectId),
                             name: instance_obj.title,
                             lastUpdated: hl.lastUpdated,
                             propertyName: hl.propertyName,
