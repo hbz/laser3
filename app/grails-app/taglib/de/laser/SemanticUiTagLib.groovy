@@ -203,7 +203,7 @@ class SemanticUiTagLib {
                 if (obj.instanceOf && ! obj.instanceOf.isTemplate()) {
                     if (obj.instanceOf?.getWatchedProperties()?.contains(attrs.auditable[1])) {
                         if (obj.isSlaved?.value?.equalsIgnoreCase('yes')) {
-                            out << '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                            out << '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
                         }
                         else {
                             out << '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
@@ -212,7 +212,7 @@ class SemanticUiTagLib {
                 }
                 else {
                     if (obj.getWatchedProperties()?.contains(attrs.auditable[1])) {
-                        out << '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                        out << '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
                     }
                 }
             } catch(Exception e) {}
