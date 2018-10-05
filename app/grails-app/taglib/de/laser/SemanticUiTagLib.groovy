@@ -189,6 +189,37 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
+
+    def dtAuditCheck = { attrs, body ->
+        def text    = attrs.text ? attrs.text : ''
+        def message = attrs.message ? "${message(code: attrs.message)}" : ''
+        def label   = (text && message) ? text + " - " + message : text + message
+
+        out << '<dt class="control-label">' + label
+
+        if (attrs.auditable) {
+            try {
+                def obj = attrs.auditable[0]
+                if (obj.instanceOf && ! obj.instanceOf.isTemplate()) {
+                    if (obj.instanceOf?.getWatchedProperties()?.contains(attrs.auditable[1])) {
+                        if (obj.isSlaved?.value?.equalsIgnoreCase('yes')) {
+                            out << '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                        }
+                        else {
+                            out << '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                        }
+                    }
+                }
+                else {
+                    if (obj.getWatchedProperties()?.contains(attrs.auditable[1])) {
+                        out << '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                    }
+                }
+            } catch(Exception e) {}
+        }
+        out << '</dt>'
+    }
+
     def listIcon = { attrs, body ->
 
         switch(attrs.type) {
@@ -397,11 +428,11 @@ class SemanticUiTagLib {
     //        <g:link class="..... js-open-confirm-modal" data-confirm-term="diese Kontaktdresse" ...... >
     def confirmationModal = { attrs, body ->
 
-        def msgDelete  = "Entgültig löschen"
+        def msgDelete  = "Endgültig löschen"
         def msgCancel  = "Abbrechen"
 
         out << '<div class="ui mini modal">'
-        out <<   '<div class="header">Wollen Sie <span id="js-confirmation-term"></span> wirklich aus dem System löschen?</div>'
+        out <<   '<div class="header">Wollen Sie <span id="js-confirmation-term"></span> wirklich aus Ihrem Adressbuch löschen?</div>'
         if (body) {
             out <<   '<div class="content">'
             out << body()

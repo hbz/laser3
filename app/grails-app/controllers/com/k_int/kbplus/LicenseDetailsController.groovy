@@ -48,6 +48,8 @@ class LicenseDetailsController {
       def filename = "licenseDetails_${license_reference_str.replace(" ", "_")}"
       result.onixplLicense = result.license.onixplLicense;
 
+        // ---- pendingChanges : start
+
       if (executorWrapperService.hasRunningProcess(result.license)) {
           log.debug("PendingChange processing in progress")
           result.processingpc = true
@@ -84,6 +86,8 @@ class LicenseDetailsController {
               result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
           }
       }
+
+         // ---- pendingChanges : end
 
       //result.availableSubs = getAvailableSubscriptions(result.license, result.user)
 
@@ -234,7 +238,7 @@ select s from Subscription as s where (
             log.debug( 'ignored setting.cons_members because: LCurrent.instanceOf (LParent.noTemplate)')
         }
         else {
-            if (result.institution?.orgType?.value == 'Consortium') {
+            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution?.getallOrgRoleType())) {
 
                 def consMembers = Org.executeQuery(
                         'select o from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :inst and c.type.value = :cons',
@@ -246,10 +250,13 @@ select s from Subscription as s where (
                         [license: result.license]
                 )
 
-                def validOrgs = Org.executeQuery(
-                    'select distinct o from OrgRole ogr join ogr.org o where o in (:orgs) and ogr.roleType.value in (:roleTypes) and ogr.sub in (:subs)',
-                        [orgs: consMembers, roleTypes: ['Subscriber', 'Subscriber_Consortial'], subs:memberSubs]
-                )
+                def validOrgs = [[id:0]] // erms-582
+                if (memberSubs) {
+                    validOrgs = Org.executeQuery(
+                            'select distinct o from OrgRole ogr join ogr.org o where o in (:orgs) and ogr.roleType.value in (:roleTypes) and ogr.sub in (:subs)',
+                            [orgs: consMembers, roleTypes: ['Subscriber', 'Subscriber_Consortial'], subs: memberSubs]
+                    )
+                }
 
                 // applying filter AFTER valid orgs are found
                 def fsq = filterService.getOrgQuery([constraint_orgIds: validOrgs.collect({it.id})] << params)
@@ -285,13 +292,16 @@ select s from Subscription as s where (
         }
         result.institution = contextService.getOrg()
 
-        def orgType       = RefdataValue.get(params.asOrgType)
+        def orgRoleType       = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType').id]
+        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution.getallOrgRoleType())) {
+            orgRoleType = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType').id]
+        }
         def role_lic      = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial')
         def role_lic_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensing Consortium')
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
-            if (orgType?.value == 'Consortium') {
+            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution.getallOrgRoleType())) {
                 def cons_members = []
                 def licenseCopy
 
@@ -308,7 +318,7 @@ select s from Subscription as s where (
                         def licenseParams = [
                                 lic_name: "${result.license.reference} (${postfix})",
                                 isSlaved: params.isSlaved,
-                                asOrgType: params.asOrgType,
+                                asOrgRoleType: orgRoleType,
                                 copyStartEnd: true
                         ]
 
@@ -521,6 +531,49 @@ from Subscription as s where
         }
 
         redirect action: 'members', params: [id: params.id], model: result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def pendingChanges() {
+        log.debug("licenseDetails id:${params.id}");
+
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        def validMemberLicenses = License.where {
+            (instanceOf == result.license) && (status.value != 'Deleted')
+        }
+
+        validMemberLicenses.each{ member ->
+
+            def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+            def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
+
+/*
+            if (member.isSlaved?.value == "Yes" && pendingChanges) {
+
+                def changesDesc = []
+                pendingChanges.each { change ->
+                    if (!pendingChangeService.performAccept(change, request)) {
+                        log.debug("Auto-accepting pending change has failed.")
+                    } else {
+                        changesDesc.add(PendingChange.get(change).desc)
+                    }
+                }
+                flash.message = changesDesc
+            } else {
+                result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
+            }
+*/
+            result.pendingChanges << [ "${member.id}" : pendingChanges.collect { PendingChange.get(it) }]
+
+        }
+
+
+        result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -946,7 +999,7 @@ from Subscription as s where
                         //customProperties
                         for (prop in baseLicense.customProperties) {
                             def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
-                            copiedProp = prop.copyValueAndNote(copiedProp)
+                            copiedProp = prop.copyInto(copiedProp)
                             licenseInstance.addToCustomProperties(copiedProp)
                         }
                     }
@@ -958,7 +1011,7 @@ from Subscription as s where
                             if(prop.type?.tenant?.id == contextOrg?.id)
                             {
                                 def copiedProp = new LicensePrivateProperty(type: prop.type, owner: licenseInstance)
-                                copiedProp = prop.copyValueAndNote(copiedProp)
+                                copiedProp = prop.copyInto(copiedProp)
                                 licenseInstance.addToPrivateProperties(copiedProp)
                             }
                         }

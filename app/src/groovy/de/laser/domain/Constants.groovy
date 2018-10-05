@@ -1,6 +1,6 @@
 package de.laser.domain
 
-abstract class Constants {
+class Constants {
 
     static final HTTP_CREATED                = "CREATED" // 200
     static final HTTP_BAD_REQUEST            = "BAD_REQUEST" // 400

@@ -70,6 +70,7 @@
                   <table class="ui sortable celled la-table table">
                     <thead>
                       <tr>
+                          <th>${message(code:'sidewide.number')}</th>
                       <g:sortableColumn property="sortTitle" title="${message(code: 'title.title.label', default: 'Title')}" params="${params}" />
                       <g:sortableColumn property="typTitle" title="${message(code: 'title.type.label')}" params="${params}" />
                       <g:sortableColumn property="publisher" style="white-space:nowrap" title="${message(code: 'title.publisher.label', default: 'Publisher')}" params="${params}" />
@@ -77,8 +78,9 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <g:each in="${hits}" var="hit">
+                      <g:each in="${hits}" var="hit" status="jj">
                         <tr>
+                          <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
                           <td>
                             <semui:listIcon type="${hit.getSource().typTitle}"/>
                             <strong><g:link controller="titleDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().title}</g:link></strong>

@@ -49,7 +49,7 @@
 					<g:if test="${creatorTitleInstance?.title}">
 						<dt><g:message code="creatorTitle.title.label" default="Title" /></dt>
 						
-							<dd><g:link controller="titleInstance" action="show" id="${creatorTitleInstance?.title?.id}">${creatorTitleInstance?.title}</g:link></dd>
+							<dd><g:link controller="titleDetails" action="show" id="${creatorTitleInstance?.title?.id}">${creatorTitleInstance?.title}</g:link></dd>
 						
 					</g:if>
 				

@@ -543,7 +543,7 @@ select s from Subscription as s where
 
       if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), contextOrg)) {
           result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
-          result.usageMode = (contextOrg.orgType?.value == 'Consortium') ? 'package' : 'institution'
+          result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in contextOrg.getallOrgRoleType()) ) ? 'package' : 'institution'
           result.packageIdentifier = packageInstance.getIdentifierByType('isil')?.value
       }
 

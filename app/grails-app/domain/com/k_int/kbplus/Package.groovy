@@ -1,12 +1,14 @@
 package com.k_int.kbplus
 
-import de.laser.domain.BaseDomainComponent
+import de.laser.domain.AbstractBaseDomain
 import java.text.Normalizer
 import javax.persistence.Transient
 
-class Package extends BaseDomainComponent {
+class Package extends AbstractBaseDomain {
 
+    // TODO AuditTrail
   static auditable = [ignore:['version','lastUpdated','pendingChanges']]
+    // ??? org.quartz.JobExecutionException: groovy.lang.MissingPropertyException: No such property: auditable for class: com.k_int.kbplus.Package
 
   @Transient
   def grailsApplication
@@ -278,6 +280,10 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     "${grailsApplication.config.grails.serverURL}/packageDetails/show/${id}".toString();
   }
 
+    def onChange = { oldMap, newMap ->
+        log.debug("OVERWRITE onChange")
+    }
+
   // @Transient
   // def onChange = { oldMap,newMap ->
 
@@ -302,7 +308,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     log.debug("onSave")
     def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
 
-    changeNotificationService.notifyChangeEvent([
+    changeNotificationService.fireEvent([
                                                  OID:"com.k_int.kbplus.Package:${id}",
                                                  event:'Package.created'
                                                 ])

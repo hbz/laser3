@@ -1,16 +1,16 @@
 package com.k_int.kbplus
 
 import de.laser.domain.*
+import de.laser.traits.AuditTrait
 
 import javax.persistence.Transient
- 
-import org.hibernate.proxy.HibernateProxy
+
 import com.k_int.ClassUtils
 import org.springframework.context.i18n.LocaleContextHolder
 import org.apache.commons.logging.*
 import groovy.time.TimeCategory
 
-class TitleInstancePackagePlatform extends BaseDomainComponent {
+class TitleInstancePackagePlatform extends AbstractBaseDomain implements AuditTrait {
   @Transient
   def grailsLinkGenerator
 
@@ -21,9 +21,10 @@ class TitleInstancePackagePlatform extends BaseDomainComponent {
   def messageSource
 
   static Log static_logger = LogFactory.getLog(TitleInstancePackagePlatform)
- 
-  static auditable = true
-  static def controlledProperties = ['status',
+
+    // AuditTrait
+    static auditable = true
+    static controlledProperties = ['status',
                                      'startDate',
                                      'startVolume',
                                      'startIssue',
@@ -205,7 +206,7 @@ class TitleInstancePackagePlatform extends BaseDomainComponent {
         }
 
         log.debug("notify change event")
-        changeNotificationService.notifyChangeEvent([
+        changeNotificationService.fireEvent([
                                                      OID:"${this.class.name}:${this.id}",
                                                      event:'TitleInstancePackagePlatform.updated',
                                                      prop:cp, 
@@ -239,7 +240,7 @@ class TitleInstancePackagePlatform extends BaseDomainComponent {
     log.debug("onSave")
     def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
 
-    changeNotificationService.notifyChangeEvent([
+    changeNotificationService.fireEvent([
                                                  OID:"${this.class.name}:${this.id}",
                                                  event:'TitleInstancePackagePlatform.added',
                                                  linkedTitle:title.title,
@@ -255,7 +256,7 @@ class TitleInstancePackagePlatform extends BaseDomainComponent {
     log.debug("onDelete")
     def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
 
-    changeNotificationService.notifyChangeEvent([
+    changeNotificationService.fireEvent([
                                                  OID:"${this.class.name}:${this.id}",
                                                  event:'TitleInstancePackagePlatform.deleted',
                                                  linkedTitle:title.title,
@@ -293,10 +294,11 @@ class TitleInstancePackagePlatform extends BaseDomainComponent {
         else if(sub.status.value != "Deleted") {
           changeNotificationService.registerPendingChange('subscription',
                                                           dep_ie.subscription,
+                  // pendingChange.message_TP01
                                                           "Der Paketeintrag für den Titel \"${this.title.title}\" wurde gelöscht. Wenden Sie diese Änderung an, um die entsprechende Problemberechtigung aus dieser Lizenz zu entfernen",
                                                           sub.getSubscriber(),
                                                           [
-                                                            changeType:'TIPPDeleted',
+                                                            changeType:PendingChangeService.EVENT_TIPP_DELETE,
                                                             tippId:"${this.class.name}:${this.id}",
                                                             subId:"${sub.id}"
                                                           ])
@@ -324,13 +326,14 @@ class TitleInstancePackagePlatform extends BaseDomainComponent {
         def pkgLink =  grailsLinkGenerator.link(controller: 'packageDetails', action: 'show', id: this.pkg.id, absolute: true)
         changeNotificationService.registerPendingChange('subscription',
                                                         dep_ie.subscription,
+                // pendingChange.message_TP02
                                                         "Die Information vom Titel <a href=\"${titleLink}\">${this.title.title}</a> haben sich im Paket <a href=\"${pkgLink}\">${this.pkg.name}</a> geändert. " +
                                                                 "<b>${messageSource.getMessage("tipp.${changeDocument.prop}",null,loc)?:changeDocument.prop}</b> wurde aktualisiert von <b>\"${changeDocument.oldLabel}\"</b>(${changeDocument.old}) zu <b>\"${changeDocument.newLabel}\"</b>" +
                                                                 "(${changeDocument.new}). "+description,
                                                         sub?.getSubscriber(),
                                                         [
                                                           changeTarget:"com.k_int.kbplus.IssueEntitlement:${dep_ie.id}",
-                                                          changeType:'PropertyChange',
+                                                          changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
                                                           changeDoc:changeDocument
                                                         ])
           

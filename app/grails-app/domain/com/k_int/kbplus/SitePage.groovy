@@ -1,10 +1,9 @@
 package com.k_int.kbplus
- 
-import com.k_int.kbplus.auth.User
-import de.laser.domain.BaseDomainComponent
+
+import de.laser.domain.AbstractBaseDomain
 
 
-class SitePage extends BaseDomainComponent {
+class SitePage extends AbstractBaseDomain {
 	String alias
 	String action
 	String controller

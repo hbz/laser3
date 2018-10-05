@@ -41,7 +41,7 @@
 					<g:if test="${identifierOccurrenceInstance?.org}">
 						<dt><g:message code="identifierOccurrence.org.label" default="Org" /></dt>
 						
-							<dd><g:link controller="org" action="show" id="${identifierOccurrenceInstance?.org?.id}">${identifierOccurrenceInstance?.org}</g:link></dd>
+							<dd><g:link controller="organisations" action="show" id="${identifierOccurrenceInstance?.org?.id}">${identifierOccurrenceInstance?.org}</g:link></dd>
 						
 					</g:if>
 				

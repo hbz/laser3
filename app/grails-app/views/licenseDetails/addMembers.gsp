@@ -38,7 +38,7 @@
     </div>
 </g:if>
 
-<g:if test="${institution?.orgType?.value == 'Consortium'}">
+<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  institution.getallOrgRoleType())}">
 
     <div class="ui info message">
         <div class="header">
@@ -61,14 +61,12 @@
 
     <g:form action="processAddMembers" params="${[id: params.id]}" controller="licenseDetails" method="post" class="ui form">
 
-        <input type="hidden" name="asOrgType" value="${institution?.orgType?.id}">
-
         <g:render template="/templates/filter/orgFilterTable"
                   model="[orgList: cons_members,
                           tmplDisableOrgIds: cons_members_disabled,
                           subInstance: subscriptionInstance,
                           tmplShowCheckbox: true,
-                          tmplConfigShow: ['name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
+                          tmplConfigShow: ['sortname', 'name', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
                           ]"/>
 
         <g:if test="${cons_members}">
@@ -124,7 +122,7 @@
         </g:if>
     </g:form>
 
-    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") && contextService.getOrg().orgType?.value == 'Consortium'}">
+    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") && (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  contextService.getOrg().orgRoleType)}">
         <hr />
 
         <div class="ui info message">

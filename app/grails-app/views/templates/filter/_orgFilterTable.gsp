@@ -14,10 +14,9 @@
                 </g:if>
             </th>
         </g:if>
-
         <g:if test="${tmplConfigShow?.contains('sortname')}">
             <g:sortableColumn title="${message(code: 'org.sortname.label', default: 'Sortname')}" property="lower(o.sortname)"/>
-            </g:if>
+        </g:if>
         <g:if test="${tmplConfigShow?.contains('shortname')}">
             <g:sortableColumn title="${message(code: 'org.shortname.label', default: 'Shortname')}" property="lower(o.shortname)"/>
         </g:if>
@@ -89,7 +88,7 @@
             </g:else>
             <g:if test="${tmplConfigShow?.contains('lineNumber')}">
                 <td class="center aligned">
-                    ${(i + 1 + Integer.parseInt(params?.get('offset')?:'0'))}<br>
+                    ${ (params.int('offset') ?: 0)  + i + 1 }<br>
                 </td>
             </g:if>
             <g:if test="${tmplShowCheckbox}">
@@ -106,9 +105,8 @@
             <g:if test="${tmplConfigShow?.contains('shortname')}">
                 <td>
                     <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
-                            ${fieldValue(bean: org, field: "name")} <br>
                             <g:if test="${org.shortname}">
-                                (${fieldValue(bean: org, field: "shortname")})
+                                ${fieldValue(bean: org, field: "shortname")}
                             </g:if>
                     </g:if>
                     <g:else>
@@ -124,13 +122,16 @@
                 <td>
                     <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
                             ${fieldValue(bean: org, field: "name")} <br>
-                            <g:if test="${org.shortname}">
+                            <g:if test="${org.shortname && !tmplConfigShow?.contains('shortname')}">
                                 (${fieldValue(bean: org, field: "shortname")})
                             </g:if>
                     </g:if>
                     <g:else>
                         <g:link controller="organisations" action="show" id="${org.id}">
                             ${fieldValue(bean: org, field: "name")} <br>
+                            <g:if test="${org.shortname && !tmplConfigShow?.contains('shortname')}">
+                                (${fieldValue(bean: org, field: "shortname")})
+                            </g:if>
                         </g:link>
                     </g:else>
                 </td>
@@ -195,7 +196,7 @@
             </g:if>
             <g:if test="${tmplConfigShow?.contains('currentFTEs')}">
                 <td>
-                    <g:each in="${Numbers.findAllByOrg(org)?.sort {it.type?.getI10n("value")}}" var="fte">
+                    <g:each in="${Numbers.findAllByOrgAndType(org, RefdataValue.getByValueAndCategory('Students', 'Number Type'))?.sort {it.type?.getI10n("value")}}" var="fte">
                         <g:if test="${fte.startDate <= sqlDateToday && fte.endDate >= sqlDateToday}">
                             ${fte.type?.getI10n("value")} : ${fte.number} <br>
                         </g:if>
@@ -258,7 +259,7 @@
             <g:if test="${tmplConfigShow?.contains('type')}">
                 <td>
                     <g:each in="${org.orgRoleType?.sort{it?.getI10n("value")}}" var="type">
-                        <p>${type.getI10n("value")}</p>
+                        <li>${type.getI10n("value")}</li>
                     </g:each>
                 </td>
             </g:if>

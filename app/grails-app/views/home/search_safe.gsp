@@ -72,7 +72,7 @@
                           <g:if test="${hit.type=='com.k_int.kbplus.License'}"><span class="label label-info">License</span></g:if> 
                         </td>
                         <g:if test="${hit.type=='com.k_int.kbplus.Org'}">
-                            <td><g:link controller="org" action="show" id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
+                            <td><g:link controller="organisations" action="show" id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
                         </g:if> 
                         <g:if test="${hit.type=='com.k_int.kbplus.TitleInstance'}">
                           <td><g:link controller="titleDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().title}</g:link></td>

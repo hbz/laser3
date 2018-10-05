@@ -62,7 +62,7 @@
             </div>
 
 
-            <g:if test="${institution?.orgType?.value == 'Consortium'}">
+            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  institution.getallOrgRoleType())}">
 
                 <div class="two fields">
                     <div class="field">
@@ -97,7 +97,7 @@
                         <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}" />
                     </div>
 
-            <g:if test="${institution?.orgType?.value == 'Consortium'}">
+            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  institution.getallOrgRoleType())}">
                 </div><!--.two fields-->
             </g:if>
 
@@ -111,6 +111,7 @@
           <table class="ui sortable celled la-table table">
             <thead>
               <tr>
+                  <th>${message(code:'sidewide.number')}</th>
                 <g:sortableColumn params="${params}" property="reference" title="${message(code:'license.slash.name')}" />
                 <g:if test="${params.orgRole == 'Licensee'}">
                     <th>${message(code:'license.licensor.label', default:'Licensor')}</th>
@@ -124,8 +125,9 @@
               </tr>
             </thead>
             <tbody>
-              <g:each in="${licenses}" var="l">
+              <g:each in="${licenses}" var="l" status="jj">
                 <tr>
+                    <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
                   <td>
                     <g:link action="show" controller="licenseDetails" id="${l.id}">
                       ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}
@@ -133,7 +135,7 @@
                     <g:if test="${l.subscriptions && ( l.subscriptions.size() > 0 )}">
                         <g:each in="${l.subscriptions.sort{it.name}}" var="sub">
                           <g:if test="${sub.status?.value != 'Deleted'}">
-                                  <g:if test="${institution in sub.orgRelations.org || institution?.orgType?.value == 'Consortium'}">
+                                  <g:if test="${institution in sub.orgRelations.org || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  institution.getallOrgRoleType())}">
                                   <div class="la-flexbox">
                                       <i class="icon folder open outline la-list-icon"></i>
                                       <g:link controller="subscriptionDetails" action="index" id="${sub.id}">${sub.name}</g:link><br/>

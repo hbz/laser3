@@ -1,12 +1,12 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
-import de.laser.domain.BaseDomainComponent
-import de.laser.domain.TemplateSupport
+import de.laser.domain.AbstractBaseDomain
+import de.laser.interfaces.TemplateSupport
 
 import javax.persistence.Transient
 
-class CostItem extends BaseDomainComponent implements TemplateSupport {
+class CostItem extends AbstractBaseDomain implements TemplateSupport {
 
     Org owner
     Subscription sub

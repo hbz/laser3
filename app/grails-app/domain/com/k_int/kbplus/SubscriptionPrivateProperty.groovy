@@ -30,8 +30,8 @@ class SubscriptionPrivateProperty extends PrivateProperty {
         owner   (nullable:false, blank:false)
     }
 
-    def copyValueAndNote(newProp){
-        newProp = super.copyValueAndNote(newProp)
+    def copyInto(newProp){
+        newProp = super.copyInto(newProp)
         newProp
     }
 }

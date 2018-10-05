@@ -2,7 +2,7 @@ package de.laser.domain
 
 import org.springframework.context.i18n.LocaleContextHolder
 
-abstract class I10nTranslatableAbstract {
+abstract class AbstractI10nTranslatable {
 
     protected i10nStorage = [:]
 

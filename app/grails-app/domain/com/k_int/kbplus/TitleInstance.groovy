@@ -1,28 +1,28 @@
 package com.k_int.kbplus
 
-import de.laser.domain.BaseDomainComponent
+import de.laser.traits.AuditTrait
+import de.laser.domain.AbstractBaseDomain
 
-import java.util.Iterator;
-import java.util.TreeSet;
 import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import javax.persistence.Transient
 import org.apache.commons.logging.*
 import java.text.Normalizer
 import groovy.util.logging.*
-import org.apache.commons.logging.LogFactory
 
 @Log4j
-class TitleInstance extends BaseDomainComponent {
+class TitleInstance extends AbstractBaseDomain implements AuditTrait {
 
   @Transient
   def grailsApplication
 
+    // AuditTrait
+    static auditable = true
+    static controlledProperties = ['title']
+
   static Log static_logger = LogFactory.getLog(TitleInstance)
 
   static final Pattern alphanum = Pattern.compile("\\p{Punct}|\\p{Cntrl}");
-
-  static auditable = true
 
   String title
   String normTitle
@@ -808,6 +808,7 @@ class TitleInstance extends BaseDomainComponent {
     return result.toString()
   }
 
+    /*
   @Transient
   def onChange = { oldMap,newMap ->
 
@@ -828,6 +829,7 @@ class TitleInstance extends BaseDomainComponent {
       }
     }
   }
+*/
 
   @Transient
   def notifyDependencies(changeDocument) {

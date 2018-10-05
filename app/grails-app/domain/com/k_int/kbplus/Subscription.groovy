@@ -1,20 +1,27 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
-import de.laser.domain.BaseDomainComponent
-import de.laser.domain.Permissions
-import de.laser.domain.TemplateSupport
+import de.laser.traits.AuditTrait
+import de.laser.domain.AbstractBaseDomain
+import de.laser.interfaces.Permissions
+import de.laser.interfaces.TemplateSupport
 
 import javax.persistence.Transient
 
-class Subscription extends BaseDomainComponent implements TemplateSupport, Permissions {
+class Subscription extends AbstractBaseDomain implements TemplateSupport, Permissions, AuditTrait {
 
-  static auditable = [ignore:['version','lastUpdated','pendingChanges']]
+    // AuditTrait
+    static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
+    static controlledProperties = [ 'startDate', 'endDate', 'status', 'type' ]
 
     @Transient
     def grailsApplication
     @Transient
     def contextService
+    @Transient
+    def messageSource
+    @Transient
+    def changeNotificationService
 
   RefdataValue status
   RefdataValue type         // RefdataCatagory 'Subscription Type'
@@ -132,6 +139,20 @@ class Subscription extends BaseDomainComponent implements TemplateSupport, Permi
         return false
     }
 
+    // used for views and dropdowns
+    def getNameConcatenated() {
+        def cons = getConsortia()
+        def subscr = getAllSubscribers()
+        if (subscr) {
+            "${name} (" + subscr.join(', ') + ")"
+        }
+        else if (cons){
+            "${name} (${cons})"
+        }
+        else {
+            name
+        }
+    }
 
   def getIsSlavedAsString() {
     isSlaved?.value == "Yes" ? "Yes" : "No"
@@ -284,27 +305,6 @@ class Subscription extends BaseDomainComponent implements TemplateSupport, Permi
     result
   }
 
-  def onChange = { oldMap,newMap ->
-
-    log.debug("onChange")
-
-    def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
-    def controlledProperties = ['name','startDate','endDate']
-
-    controlledProperties.each { cp ->
-      if ( oldMap[cp] != newMap[cp] ) {
-        //changeNotificationService.notifySubscriptionChange(this.id, cp, oldMap[cp], newMap[cp], null, 'S');
-        changeNotificationService.notifyChangeEvent([
-                                                     OID:"${this.class.name}:${this.id}",
-                                                     event:'Subscription.updated',
-                                                     prop:cp,
-                                                     old:oldMap[cp],
-                                                     new:newMap[cp]
-                                                    ])
-      }
-    }
-  }
-
   @Override
   def beforeInsert() {
     if (impId == null) {
@@ -313,10 +313,56 @@ class Subscription extends BaseDomainComponent implements TemplateSupport, Permi
     super.beforeInsert()
   }
 
-  @Transient
-  def notifyDependencies(changeDocument) {
-    log.debug("notifyDependencies(${changeDocument})");
-  }
+    @Transient
+    def notifyDependencies(changeDocument) {
+        log.debug("notifyDependencies(${changeDocument})")
+        //def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
+
+        def derived_subscriptions = getNonDeletedDerivedSubscriptions()
+
+        derived_subscriptions.each { ds ->
+
+            log.debug("Send pending change to ${ds.id}")
+
+            def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+            ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.subscription."+changeDocument.prop, locale.toString())
+            def description = messageSource.getMessage('default.accept.placeholder',null, locale)
+            if (contentItemDesc) {
+                description = contentItemDesc.content
+            }
+            else {
+                def defaultMsg = ContentItem.findByKeyAndLocale("kbplus.change.subscription.default", locale.toString())
+                if( defaultMsg)
+                    description = defaultMsg.content
+            }
+
+            def propName
+            try {
+                // UGLY
+                propName = changeDocument.name ? ((messageSource.getMessage("subscription.${changeDocument.name}", null, locale)) ?: (changeDocument.name)) : (messageSource.getMessage("subscription.${changeDocument.prop}", null, locale) ?: (changeDocument.prop))
+
+            } catch(Exception e) {
+                propName = changeDocument.name ?: changeDocument.prop
+            }
+
+            changeNotificationService
+                    .registerPendingChange('subscription',
+                    ds,
+                // pendingChange.message_SU01
+                "<b>${propName}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Lizenzvorlage geändert. " + description,
+                    ds.getSubscriber(),
+                    [
+                            changeTarget:"com.k_int.kbplus.Subscription:${ds.id}",
+                            changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
+                            changeDoc:changeDocument
+                    ])
+
+        }
+    }
+
+    def getNonDeletedDerivedSubscriptions() {
+        Subscription.where{ instanceOf == this && status.value != 'Deleted' }
+    }
 
   public String toString() {
       name ? "${name}" : "Subscription ${id}"

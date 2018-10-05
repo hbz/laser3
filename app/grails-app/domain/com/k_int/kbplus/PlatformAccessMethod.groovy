@@ -1,10 +1,10 @@
 package com.k_int.kbplus
 
-import de.laser.domain.BaseDomainComponent
+import de.laser.domain.AbstractBaseDomain
 import groovy.util.logging.Log4j
 
 @Log4j
-class PlatformAccessMethod extends BaseDomainComponent {
+class PlatformAccessMethod extends AbstractBaseDomain {
 
     Date validFrom
     Date validTo

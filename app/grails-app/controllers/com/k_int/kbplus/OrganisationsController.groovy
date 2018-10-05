@@ -88,7 +88,7 @@ class OrganisationsController {
         result.propList   = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         result.user       = User.get(springSecurityService.principal.id)
         params.orgSector  = RefdataValue.getByValueAndCategory('Publisher','OrgSector')?.id?.toString()
-        params.orgType    = RefdataValue.getByValueAndCategory('Provider','OrgType')?.id?.toString()
+        params.orgRoleType    = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')?.id?.toString()
         params.sort       = " LOWER(o.shortname), LOWER(o.name)"
 
         def fsq           = filterService.getOrgQuery(params)
@@ -114,15 +114,6 @@ class OrganisationsController {
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
     def create() {
         switch (request.method) {
-            case 'GET':
-                if (!params.name && !params.sector) {
-                    params.sector = RefdataValue.findByValue('Higher Education')
-                }
-                if (!params.name && !params.orgType) {
-                    params.orgType = RefdataValue.findByValue('Institution')
-                }
-                [orgInstance: new Org(params)]
-                break
             case 'POST':
                 def orgInstance = new Org(params)
 
@@ -143,8 +134,9 @@ class OrganisationsController {
     def createProvider() {
 
                 def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
-                def orgType = RefdataValue.getByValueAndCategory('Provider','OrgType')
-                def orgInstance = new Org(name: params.provider, orgType: orgType.id, sector: orgSector.id)
+                def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
+                def orgInstance = new Org(name: params.provider, sector: orgSector.id)
+                orgInstance.addToOrgRoleType(orgRoleType)
 
                 if ( orgInstance.save(flush:true) ) {
                     flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
@@ -163,7 +155,8 @@ class OrganisationsController {
         def result=[:]
         if ( params.proposedProvider ) {
 
-            result.providerMatches= Org.findAllByNameIlikeAndOrgType("%${params.proposedProvider}%", RefdataValue.getByValueAndCategory('Provider','OrgType'))
+            result.providerMatches= Org.executeQuery("from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype = :provider ) and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName ) ",
+                    [provider: RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType'), searchName: "%${params.proposedProvider.toLowerCase()}%"])
         }
         result
     }
@@ -216,10 +209,10 @@ class OrganisationsController {
         result.orgInstance = orgInstance
 
         def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
-        def orgType = RefdataValue.getByValueAndCategory('Provider','OrgType')
+        def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
 
         //IF ORG is a Provider
-        if(orgInstance.sector == orgSector || orgType == orgInstance.orgType)
+        if(orgInstance.sector == orgSector || orgRoleType in orgInstance.orgRoleType)
         {
             result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_COM_EDITOR,ROLE_ORG_EDITOR')
         }else {

@@ -154,17 +154,19 @@
                   <table class="ui sortable celled la-table table">
                     <thead>
                       <tr>
-                      <g:sortableColumn property="name" title="${message(code:'package.show.pkg_name', default:'Package Name')}" params="${params}" />
-                      <th>${message(code:'package.show.status')}</th>
-                      <th>${message(code:'package.compare.overview.tipps')}</th>
-                      <th>${message(code:'package.content_provider')}</th>
-                      <th>${message(code:'package.nominalPlatform')}</th>
-                      <th>${message(code:'package.scope')}</th>
+                          <th>${message(code:'sidewide.number')}</th>
+                          <g:sortableColumn property="name" title="${message(code:'package.show.pkg_name', default:'Package Name')}" params="${params}" />
+                          <th>${message(code:'package.show.status')}</th>
+                          <th>${message(code:'package.compare.overview.tipps')}</th>
+                          <th>${message(code:'package.content_provider')}</th>
+                          <th>${message(code:'package.nominalPlatform')}</th>
+                          <th>${message(code:'package.scope')}</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <g:each in="${hits}" var="hit">
+                      <g:each in="${hits}" var="hit" status="jj">
                         <tr>
+                            <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
                           <td>
                             <g:if test="${com.k_int.kbplus.Package.findByImpId(hit.id)}">
                                 <g:link controller="packageDetails" action="show" id="${com.k_int.kbplus.Package.findByImpId(hit.id).id}">${hit.getSource().name}</g:link>

@@ -94,7 +94,7 @@
           <g:if test="${orgInstance?.incomingCombos}">
             <dt><g:message code="org.incomingCombos.label" default="Incoming Combos" /></dt>
             <g:each in="${orgInstance.incomingCombos}" var="i">
-              <dd>${i.type?.value} - <g:link controller="org" action="show" id="${i.toOrg.id}">${i.fromOrg?.name}</g:link>
+              <dd>${i.type?.value} - <g:link controller="organisations" action="show" id="${i.toOrg.id}">${i.fromOrg?.name}</g:link>
                 (<g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id">
                   ${id.identifier.ns.ns}: ${id.identifier.value}
                 </g:each>)

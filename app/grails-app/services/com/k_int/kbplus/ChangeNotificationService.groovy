@@ -17,8 +17,6 @@ class ChangeNotificationService {
 
   def broadcastEvent(contextObjectOID, changeDetailDocument) {
     // log.debug("broadcastEvent(${contextObjectOID},${changeDetailDocument})");
-
-    
     def contextObject = genericOIDService.resolveOID(contextObjectOID);
 
     def jsonChangeDocument = changeDetailDocument as JSON
@@ -67,9 +65,11 @@ class ChangeNotificationService {
 
         if ( contextObject ) {
           if ( contextObject.metaClass.respondsTo(contextObject, 'getURL') ) {
+              // pendingChange.message_1001
             sw.write("<p>Änderungen an <a href=\"${contextObject.getURL()}\">${contextObject.toString()}</a> ${new Date().toString()}</p><p><ul>");
           }
           else  {
+              // pendingChange.message_1002
             sw.write("<p>Änderungen an ${contextObject.toString()} ${new Date().toString()}</p><p><ul>");
           }
         }
@@ -101,10 +101,12 @@ class ChangeNotificationService {
               sw.write(tmpl.toString());
               sw.write("</li>");
             }else{
+              // pendingChange.message_1003
               sw.write("<li>Komponente ${parsed_event_info.OID} wurde gelöscht!</li>")
             }
           }
           else {
+            // pendingChange.message_1004
             sw.write("<li>Template für das Ereignis \"ChangeNotification.${parsed_event_info.event}\" kann nicht gefunden werden. Infos zum Ereignis:\n\n${pc.changeDocument}</li>");
           }
           contr++;
@@ -165,33 +167,36 @@ class ChangeNotificationService {
  
   }
 
-  /**
-   *  An object has changed. Because we don't want to do heavy work of calculating dependent objects in the thread doing the DB
-   *  commit, responsibility for handling the change is delegated to this method. However, the source object is the seat of
-   *  knowledge for what dependencies there are (For example, a title change should propagate to all packages using that title).
-   *  Therefore, we get a new handle to the object
-   */
-  def notifyChangeEvent(changeDocument) {
-    log.debug("notifyChangeEvent(${changeDocument})");
-    def future = executorService.submit({
-      try {
-        log.debug("inside executor task submission... ${changeDocument.OID}");
-        def contextObject = genericOIDService.resolveOID(changeDocument.OID);
-        log.debug("Context object: ${contextObject}")
-        contextObject?.notifyDependencies(changeDocument)
-      }
-      catch ( Exception e ) {
-        log.error("Problem with event transmission for ${changeDocument.OID}",e);
-      }
-    } as java.util.concurrent.Callable)
-  }
+    /**
+    *  An object has changed. Because we don't want to do heavy work of calculating dependent objects in the thread doing the DB
+    *  commit, responsibility for handling the change is delegated to this method. However, the source object is the seat of
+    *  knowledge for what dependencies there are (For example, a title change should propagate to all packages using that title).
+    *  Therefore, we get a new handle to the object
+    */
+    def fireEvent(changeDocument) {
+        log.debug("fireEvent(${changeDocument})")
 
-  def cleanUpGorm() {
-    log.debug("Clean up GORM");
-    def session = sessionFactory.currentSession
-    session.flush()
-    session.clear()
-  }
+        def submit = executorService.submit({
+            try {
+                log.debug("inside executor task submission .. ${changeDocument.OID}")
+                def contextObject = genericOIDService.resolveOID(changeDocument.OID)
+
+                log.debug("Context object: ${contextObject}")
+                contextObject?.notifyDependencies(changeDocument)
+            }
+            catch (Exception e) {
+                log.error("Problem with event transmission for ${changeDocument.OID}" ,e)
+            }
+        } as java.util.concurrent.Callable)
+
+    }
+
+    def cleanUpGorm() {
+        log.debug("Clean up GORM")
+        def session = sessionFactory.currentSession
+        session.flush()
+        session.clear()
+    }
 
 
   def registerPendingChange(prop, target, desc, objowner, changeMap ) {

@@ -23,8 +23,7 @@
                     <th>${message(code: 'task.object.label', default: 'Object')}</th>
                 </g:if>
                 <th>
-                    ${message(code: 'task.responsibleOrg.label', default: 'responsibleOrg')} <br />
-                    ${message(code: 'task.responsibleUser.label', default: 'responsibleUser')}
+                    ${message(code: 'task.assignedTo.label')}
                 </th>
                 <g:sortableColumn property="lower(t.creator.username)" title="${message(code: 'task.creator.label', default: 'Creator')}"/>
                 <g:sortableColumn property="t.createDate" title="${message(code: 'task.createDate.label', default: 'Create Date')}"/>

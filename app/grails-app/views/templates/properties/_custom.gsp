@@ -2,7 +2,7 @@
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_xxx"); --}%
 
-<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.License" %>
+<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.License; de.laser.AuditConfig" %>
 
 <g:if test="${newProp}">
     <semui:errors bean="${newProp}" />
@@ -16,7 +16,9 @@
         <colgroup>
             <col style="width: 129px;">
             <col style="width: 96px;">
-            <col style="width: 359px;">
+            <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                <col style="width: 359px;">
+            </g:if>
             <col style="width: 148px;">
             <col style="width: 76px;">
         </colgroup>
@@ -28,7 +30,7 @@
                     <th>${message(code:'property.table.paragraph')}</th>
                 </g:if>
                 <th>${message(code:'property.table.notes')}</th>
-                <th class="x">${message(code:'property.table.delete')}</th>
+                <th></th>
             </tr>
         </thead>
     </g:if>
@@ -38,6 +40,20 @@
                 <tr>
                     <td class="la-column-nowrap">
                         ${prop.type.getI10n('name')}
+                        <%
+                            if (AuditConfig.getConfig(prop)) {
+                                println '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                            }
+
+                            if (prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) {
+                                if (ownobj.isSlaved?.value?.equalsIgnoreCase('yes')) {
+                                    println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                                }
+                                else {
+                                    println '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                }
+                            }
+                        %>
                         <g:if test="${prop.type.multipleOccurrence}">
                             <span data-position="top right" data-tooltip="${message(code:'default.multipleOccurrence.tooltip')}">
                                 <i class="redo icon orange"></i>
@@ -71,14 +87,27 @@
                     </td>
                     <td class="x">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
                         <g:if test="${editable == true}">
+                            <g:if test="${(! ownobj.instanceOf) || ownobj.hasTemplate()}">
+                                <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />
+
+                                <span data-position="top right" data-tooltip="${message(code:'property.audit.tooltip')}">
+                                <g:remoteLink controller="ajax" action="toggleAuditConfig"
+                                              before="if(!confirm('${auditMsg}')) return false"
+                                              params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}"]' id="${prop.id}"
+                                              onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                              update="${custom_props_div}" class="ui icon button">
+                                    <i class="thumbtack icon"></i>
+                                </g:remoteLink>
+                                </span>
+                            </g:if>
                             <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
+
                             <g:remoteLink controller="ajax" action="deleteCustomProperty"
                                           before="if(!confirm('${confirmMsg}')) return false"
-                                          params='[propclass: prop.getClass(),ownerId:"${ownobj.id}",ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}"]' id="${prop.id}"
+                                          params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}"]' id="${prop.id}"
                                           onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                           update="${custom_props_div}" class="ui icon negative button">
                                 <i class="trash alternate icon"></i>
-                                <!--${message(code:'default.button.delete.label', default:'Delete')}-->
                             </g:remoteLink>
                         </g:if>
                     </td>
@@ -96,7 +125,6 @@
                 <g:else>
                     <td colspan="4">
                 </g:else>
-
                     <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']" method="post"
                                   name="cust_prop_add_value"
                                   class="ui form"
@@ -118,66 +146,3 @@
     </g:if>
 
 </table>
-
-<%--
-<div id="cust_prop_add_modal" class="modal hide">
-
-TODO !!! this modal dialog has not been refactored ..
-
-    <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyType']" method="post"
-                  id="create_cust_prop"
-                  name="modal_create_cust_prop"
-                  update="${custom_props_div}"
-                  onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
-        <input type="hidden" name="ownerId" value="${ownobj.id}"/>
-        <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
-        <input type="hidden" name="editable" value="${editable}"/>
-
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal">×</button>
-
-            <h3 class="ui header">Create Custom Property Definition</h3>
-        </div>
-
-        <input type="hidden" name="parent" value="${parent}"/>
-
-        <div class="modal-body">
-            <dl>
-                <dt>
-                    <label class="control-label">Property Definition:</label>
-                </dt>
-                <dd>
-                    <label class="property-label">Name:</label>
-                    <input type="text" name="cust_prop_name" />
-                </dd>
-                <dd>
-                    <label class="property-label">Type:</label>
-                    <g:select from="${PropertyDefinition.validTypes.entrySet()}"
-                              optionKey="value" optionValue="key"
-                              name="cust_prop_type"
-                              id="cust_prop_modal_select" />
-                </dd>
-
-                <div class="hide" id="cust_prop_ref_data_name">
-                    <dd>
-                        <label class="property-label">Refdata Category:</label>
-                        <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
-                    </dd>
-                </div>
-                <dd>
-                    <label class="property-label">Context:</label> <g:select name="cust_prop_desc" from="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}"/>
-                </dd>
-                <dd>
-                    Create value for this property: <g:checkBox name="autoAdd" checked="true"/>
-                </dd>
-            </dl>
-        </div>
-
-        <div class="modal-footer">
-            <input id="new_cust_prop_add_btn" type="submit" class="ui button" value="${message(code:'default.button.add.label', default:'Add')}">
-            <a href="#" data-dismiss="modal" class="ui button">${message(code:'default.button.close.label', default:'Close')}</a>
-        </div>
-    </g:formRemote>
-
-</div>
---%>

@@ -146,7 +146,7 @@
                                             class="label label-info">License</span></g:if>
                                 </td>
                                 <g:if test="${hit.getSource().rectype == 'Org'}">
-                                    <td><g:link controller="org" action="show"
+                                    <td><g:link controller="organisations" action="show"
                                                 id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
                                 </g:if>
                                 <g:if test="${hit.getSource().rectype == 'Title'}">

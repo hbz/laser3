@@ -275,9 +275,9 @@ class GlobalSourceSyncService {
         if ( newpkg.packageProvider ) {
 
           def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
-          def orgType = RefdataValue.getByValueAndCategory('Provider','OrgType')
+          def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
           def orgRole = RefdataValue.loc('Organisational Role',  [en: 'Content Provider', de: 'Anbieter']);
-          def provider = Org.lookupOrCreate2(newpkg.packageProvider , orgSector , null, [:], null, orgType)
+          def provider = Org.lookupOrCreate2(newpkg.packageProvider , orgSector , null, [:], null, orgRoleType)
 
           OrgRole.assertOrgPackageLink(provider, pkg, orgRole)
         }
@@ -366,11 +366,12 @@ class GlobalSourceSyncService {
 
         changeNotificationService.registerPendingChange('pkg',
                 ctx,
+                // pendingChange.message_GS01
                 "Eine neue Verknüpfung (TIPP) für den Titel ${title_instance.title} mit der Plattform ${plat_instance.name}",
                 null,
                 [
                         newObjectClass: "com.k_int.kbplus.TitleInstancePackagePlatform",
-                        changeType    : 'New Object',
+                        changeType    : PendingChangeService.EVENT_OBJECT_NEW,
                         changeDoc     : change_doc
                 ])
 
@@ -430,11 +431,12 @@ class GlobalSourceSyncService {
         if (change_doc) {
           changeNotificationService.registerPendingChange('pkg',
                   ctx,
+                  // pendingChange.message_GS02
                   "Eine TIPP/Coverage Änderung für den Titel \"${title_of_tipp_to_update.title}\", ${changetext}, Status: ${TippStatus}",
                   null,
                   [
                           changeTarget: "com.k_int.kbplus.TitleInstancePackagePlatform:${db_tipp.id}",
-                          changeType  : 'Update Object',
+                          changeType  : PendingChangeService.EVENT_OBJECT_UPDATE,
                           changeDoc   : change_doc
                   ])
         } else {
@@ -463,11 +465,12 @@ class GlobalSourceSyncService {
 
         changeNotificationService.registerPendingChange('pkg',
                 ctx,
+                // pendingChange.message_GS03
                 "Eine Änderung des Status der Verknüpfung (TIPP) für den Titel \"${title_of_tipp_to_update.title}\", Status: ${TippStatus}",
                 null,
                 [
                         changeTarget: "com.k_int.kbplus.TitleInstancePackagePlatform:${db_tipp.id}",
-                        changeType  : 'Update Object',
+                        changeType  : PendingChangeService.EVENT_OBJECT_UPDATE,
                         changeDoc   : change_doc
                 ])
         println("deleted tipp");

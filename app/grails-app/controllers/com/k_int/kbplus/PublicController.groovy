@@ -19,9 +19,10 @@ class PublicController {
     def gasco() {
         def result = [:]
 
-        result.allConsortia = Org.findAllByOrgType(
-                RefdataValue.getByValueAndCategory('Consortium', 'OrgType')
+        result.allConsortia = Org.executeQuery("from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype = :consortium )",
+                [consortium: RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')]
         ).sort { it.name?.toLowerCase() }
+
 
         if (! params.subTypes && ! params.consortia && ! params.q) {
             // init filter with checkboxes checked

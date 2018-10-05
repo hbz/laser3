@@ -1,7 +1,8 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
-import de.laser.domain.I10nTranslatableAbstract
+import de.laser.AuditConfig
+import de.laser.domain.AbstractI10nTranslatable
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import com.k_int.properties.PropertyDefinition
@@ -19,8 +20,8 @@ class AjaxController {
     def refdata_config = [
     "ContentProvider" : [
       domain:'Org',
-      countQry:"select count(o) from Org as o where o.orgType.value = 'Provider' and lower(o.name) like ?",
-      rowQry:"select o from Org as o where o.orgType.value = 'Provider' and lower(o.name) like ? order by o.name asc",
+      countQry:"select count(o) from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ?",
+      rowQry:"select o from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? order by o.name asc",
       qryParams:[
               [
                 param:'sSearch',
@@ -292,6 +293,7 @@ class AjaxController {
         if ( target && value ) {
           def binding_properties = [ "${params.name}":value ]
           bindData(target, binding_properties)
+            target.owner?.save()  // avoid .. not processed by flush
           target.save(flush:true);
           
           // We should clear the session values for a user if this is a user to force reload of the,
@@ -504,7 +506,7 @@ class AjaxController {
         rq.each { it ->
             def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
 
-            if ( it instanceof I10nTranslatableAbstract) {
+            if ( it instanceof AbstractI10nTranslatable) {
                 result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
             }
             else {
@@ -576,7 +578,7 @@ class AjaxController {
       rq.each { it ->
         def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
 
-          if ( it instanceof I10nTranslatableAbstract) {
+          if ( it instanceof AbstractI10nTranslatable) {
               result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
           }
           else {
@@ -935,30 +937,96 @@ class AjaxController {
         redirect(url: request.getHeader('referer'))
     }
 
-  @Secured(['ROLE_USER'])
-  def deleteCustomProperty(){
-    def className = params.propclass.split(" ")[1]
-    def propClass = Class.forName(className)
-    def property  = propClass.get(params.id)
-    def owner     =  grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
-    def prop_desc = property.getType().getDescr()
-    owner.customProperties.remove(property)
-    property.delete(flush:true)
+    @Secured(['ROLE_USER'])
+    def toggleAuditConfig() {
+        def className = params.propClass.split(" ")[1]
+        def propClass = Class.forName(className)
+        def owner     = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ", ""))?.getClazz()?.get(params.ownerId)
+        def property  = propClass.get(params.id)
+        def prop_desc = property.getType().getDescr()
 
-    if(property.hasErrors()) {
-        log.error(property.errors)
+        if (AuditConfig.getConfig(property, AuditConfig.COMPLETE_OBJECT)) {
+
+            property.getClass().findByInstanceOf(property).each{ prop ->
+                prop.instanceOf = null
+                prop.save(flush: true)
+            }
+            AuditConfig.removeAllConfigs(property)
+
+        }
+        else {
+
+            owner.getClass().findByInstanceOf(owner).each { member ->
+
+                def existingProp = property.getClass().findByOwnerAndInstanceOf(member, property)
+                if (! existingProp) {
+
+                    // multi occurrence props; add one additional with backref
+                    if (property.type.multipleOccurrence) {
+                        def additionalProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type)
+                        additionalProp = property.copyInto(additionalProp)
+                        additionalProp.instanceOf = property
+                        additionalProp.save(flush: true)
+                    }
+                    else {
+                        def matchingProps = property.getClass().findByOwnerAndType(member, property.type)
+                        // unbound prop found with matching type, set backref
+                        if (matchingProps) {
+                            matchingProps.each { memberProp ->
+                                memberProp.instanceOf = property
+                                memberProp.save(flush: true)
+                            }
+                        }
+                        else {
+                            // no match found, creating new prop with backref
+                            def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, member, property.type)
+                            newProp = property.copyInto(newProp)
+                            newProp.instanceOf = property
+                            newProp.save(flush: true)
+                        }
+                    }
+                }
+            }
+
+            AuditConfig.addConfig(property, AuditConfig.COMPLETE_OBJECT)
+        }
+
+        request.setAttribute("editable", params.editable == "true")
+        render(template: "/templates/properties/custom", model:[
+                ownobj:owner,
+                newProp:property,
+                custom_props_div: "${params.custom_props_div}", // JS markup id
+                prop_desc: prop_desc // form data
+        ])
     }
-    else {
-        log.debug("Deleted custom property: " + property.type.name)
+
+    @Secured(['ROLE_USER'])
+    def deleteCustomProperty() {
+        def className = params.propClass.split(" ")[1]
+        def propClass = Class.forName(className)
+        def owner     = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ", ""))?.getClazz()?.get(params.ownerId)
+        def property  = propClass.get(params.id)
+        def prop_desc = property.getType().getDescr()
+
+        AuditConfig.removeAllConfigs(property)
+
+        owner.customProperties.remove(property)
+        property.delete(flush:true)
+
+        if(property.hasErrors()) {
+            log.error(property.errors)
+        }
+        else {
+            log.debug("Deleted custom property: " + property.type.name)
+        }
+        request.setAttribute("editable", params.editable == "true")
+        render(template: "/templates/properties/custom", model:[
+                ownobj:owner,
+                newProp:property,
+                custom_props_div: "${params.custom_props_div}", // JS markup id
+                prop_desc: prop_desc // form data
+        ])
     }
-    request.setAttribute("editable", params.editable == "true")
-    render(template: "/templates/properties/custom", model:[
-            ownobj:owner,
-            newProp:property,
-            custom_props_div: "${params.custom_props_div}", // JS markup id
-            prop_desc: prop_desc // form data
-    ])
-  }
 
   /**
     * Delete domain specific private property
@@ -967,7 +1035,7 @@ class AjaxController {
     */
   @Secured(['ROLE_USER'])
   def deletePrivateProperty(){
-    def className = params.propclass.split(" ")[1]
+    def className = params.propClass.split(" ")[1]
     def propClass = Class.forName(className)
     def property  = propClass.get(params.id)
     def tenant    = property.type.tenant
@@ -1275,6 +1343,7 @@ class AjaxController {
                         // delete existing date
                         target_object."${params.name}" = null
                     }
+                    //target_object.owner?.save() // avoid owner.xyz not processed by flush
                     target_object.save(failOnError: true, flush: true);
                 }
                 catch(Exception e) {
@@ -1291,7 +1360,8 @@ class AjaxController {
                 def binding_properties = [:]
                 binding_properties[params.name] = params.value
                 bindData(target_object, binding_properties)
-                // target_object."${params.name}" = params.value
+
+                target_object.owner?.save() // avoid owner.xyz not processed by flush
                 target_object.save(failOnError: true, flush: true);
 
                 result = target_object."${params.name}"
@@ -1303,7 +1373,6 @@ class AjaxController {
         def outs = response.outputStream
 
         outs << result
-
         outs.flush()
         outs.close()
     }

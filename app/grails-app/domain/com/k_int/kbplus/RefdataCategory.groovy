@@ -1,12 +1,12 @@
 package com.k_int.kbplus
 
-import de.laser.domain.I10nTranslatableAbstract
+import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.I10nTranslation
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 
-class RefdataCategory extends I10nTranslatableAbstract {
+class RefdataCategory extends AbstractI10nTranslatable {
 
     @Transient
     public static final PKG_SCOPE = "Package.Scope"

@@ -717,7 +717,7 @@ class SubscriptionDetailsController {
             response.sendError(401); return
         }
 
-        if (result.institution?.orgType?.value == 'Consortium') {
+        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution?.getallOrgRoleType())) {
             def fsq = filterService.getOrgComboQuery(params, result.institution)
             result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             result.cons_members_disabled = []
@@ -743,7 +743,11 @@ class SubscriptionDetailsController {
             response.sendError(401); return
         }
 
-        def orgType       = RefdataValue.get(params.asOrgType)
+        def orgRoleType       = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType').id]
+        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution.getallOrgRoleType())) {
+            orgRoleType = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType').id]
+        }
+
         def subStatus     = RefdataValue.get(params.subStatus) ?: RefdataCategory.lookupOrCreate('Subscription Status', 'Current')
 
         def role_sub      = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial')
@@ -755,9 +759,10 @@ class SubscriptionDetailsController {
         def role_provider = RefdataCategory.lookupOrCreate('Organisational Role', 'Provider')
         def role_agency   = RefdataCategory.lookupOrCreate('Organisational Role', 'Agency')
 
+
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
-            if (orgType?.value == 'Consortium') {
+            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution.getallOrgRoleType())) {
                 def cons_members = []
                 def licenseCopy
 
@@ -776,7 +781,7 @@ class SubscriptionDetailsController {
                         def subLicenseParams = [
                                 lic_name: "${subLicense.reference} (${postfix})",
                                 isSlaved: params.isSlaved,
-                                asOrgType: params.asOrgType,
+                                asOrgRoleType: orgRoleType,
                                 copyStartEnd: true
                         ]
 
@@ -905,6 +910,57 @@ class SubscriptionDetailsController {
         }
 
         redirect action: 'members', params: [id: params.id], model: result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def pendingChanges() {
+        log.debug("subscriptionDetails id:${params.id}");
+
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
+                result.subscriptionInstance,
+                RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+        )
+
+        validSubChilds = validSubChilds.sort{ a, b ->
+            def sa = a.getSubscriber()
+            def sb = b.getSubscriber()
+            (sa.sortname ?: sa.name).compareTo( (sb.sortname ?: sb.name) )
+        }
+
+        result.pendingChanges = [:]
+
+        validSubChilds.each{ member ->
+
+            def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+            def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
+
+/*
+            if (member.isSlaved?.value == "Yes" && pendingChanges) {
+
+                def changesDesc = []
+                pendingChanges.each { change ->
+                    if (!pendingChangeService.performAccept(change, request)) {
+                        log.debug("Auto-accepting pending change has failed.")
+                    } else {
+                        changesDesc.add(PendingChange.get(change).desc)
+                    }
+                }
+                flash.message = changesDesc
+            } else {
+                result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
+            }
+*/
+            result.pendingChanges << [ "${member.id}" : pendingChanges.collect { PendingChange.get(it) }]
+        }
+
+
+        result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -1250,7 +1306,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
             response.sendError(401); return
         }
 
-        if (result.institution?.orgType?.value == 'Consortium') {
+        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution?.getallOrgRoleType())) {
 
         }
 
@@ -1534,6 +1590,39 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
         result.navPrevSubscription = result.subscriptionInstance.previousSubscription
         result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
 
+
+        // ---- pendingChanges : start
+
+        if (executorWrapperService.hasRunningProcess(result.institution)) {
+            log.debug("PendingChange processing in progress")
+            result.processingpc = true
+        } else {
+
+            def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+            def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.subscription, pending_change_pending_status])
+
+            log.debug("pc result is ${result.pendingChanges}")
+
+            if (result.subscription.isSlaved?.value == "Yes" && pendingChanges) {
+                log.debug("Slaved subscription, auto-accept pending changes")
+                def changesDesc = []
+                pendingChanges.each { change ->
+                    if (!pendingChangeService.performAccept(change, request)) {
+                        log.debug("Auto-accepting pending change has failed.")
+                    } else {
+                        changesDesc.add(PendingChange.get(change).desc)
+                    }
+                }
+                flash.message = changesDesc
+            } else {
+                result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
+            }
+        }
+
+        // ---- pendingChanges : end
+
+
+
         // tasks
         def contextOrg  = contextService.getOrg()
         result.tasks    = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
@@ -1623,7 +1712,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                 def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscriptionInstance)
                 def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscriptionInstance)
                 result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
-                result.usageMode = (result.institution.orgType?.value == 'Consortium') ? 'package' : 'institution'
+                result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution?.getallOrgRoleType())) ? 'package' : 'institution'
                 result.usage = fsresult?.usage
                 result.x_axis_labels = fsresult?.x_axis_labels
                 result.y_axis_labels = fsresult?.y_axis_labels
@@ -1644,11 +1733,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
     def renewSubscriptionConsortia(){
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!(result || contextService.getOrg().orgType?.value == 'Consortium') ) {
+        if (!(result || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in contextService.getOrg().orgRoleType) ) ) {
                response.sendError(401); return
         }
 
-        if (result.institution?.orgType?.value == 'Consortium') {
+        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution?.getallOrgRoleType())) {
             def baseSub = Subscription.get(params.baseSubscription ?: params.id)
 
             Date newStartDate
@@ -1703,7 +1792,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                             //customProperties
                             for (prop in subMember.customProperties) {
                                 def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscription)
-                                copiedProp = prop.copyValueAndNote(copiedProp)
+                                copiedProp = prop.copyInto(copiedProp)
                                 newSubscription.addToCustomProperties(copiedProp)
                             }
                         }
@@ -1714,7 +1803,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                             subMember.privateProperties?.each { prop ->
                                 if (prop.type?.tenant?.id == contextOrg?.id) {
                                     def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscription)
-                                    copiedProp = prop.copyValueAndNote(copiedProp)
+                                    copiedProp = prop.copyInto(copiedProp)
                                     newSubscription.addToPrivateProperties(copiedProp)
                                 }
                             }
@@ -1931,7 +2020,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                                 //customProperties
                                 for (prop in baseSub.customProperties) {
                                     def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSub)
-                                    copiedProp = prop.copyValueAndNote(copiedProp)
+                                    copiedProp = prop.copyInto(copiedProp)
                                     newSub.addToCustomProperties(copiedProp)
                                 }
                             }
@@ -1942,7 +2031,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                                 baseSub.privateProperties.each { prop ->
                                     if (prop.type?.tenant?.id == contextOrg?.id) {
                                         def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSub)
-                                        copiedProp = prop.copyValueAndNote(copiedProp)
+                                        copiedProp = prop.copyInto(copiedProp)
                                         newSub.addToPrivateProperties(copiedProp)
                                     }
                                 }
@@ -2234,7 +2323,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                     //customProperties
                     for (prop in baseSubscription.customProperties) {
                         def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscriptionInstance)
-                        copiedProp = prop.copyValueAndNote(copiedProp)
+                        copiedProp = prop.copyInto(copiedProp)
                         newSubscriptionInstance.addToCustomProperties(copiedProp)
                     }
                 }
@@ -2245,7 +2334,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                     baseSubscription.privateProperties.each { prop ->
                         if (prop.type?.tenant?.id == contextOrg?.id) {
                             def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscriptionInstance)
-                            copiedProp = prop.copyValueAndNote(copiedProp)
+                            copiedProp = prop.copyInto(copiedProp)
                             newSubscriptionInstance.addToPrivateProperties(copiedProp)
                         }
                     }

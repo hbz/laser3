@@ -91,8 +91,12 @@
         <tr><td>Requestor ID</td><td>${requestor}</td></tr>
     </g:if>
     <tr><td>${message(code: 'default.usage.adminPage.info.institutionContext')}</td>
-        <td><g:if test="${institution.orgType?.value == 'Institution'}">
-            ${institution.orgType?.value}
+        <td><g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in  institution.getallOrgRoleType())}">
+            <ul>
+            <g:each in="${institution.orgRoleType.sort { it?.getI10n("value") }}" var="type">
+                <li>${type?.getI10n("value")}</li>
+            </g:each>
+            </ul>
         </g:if>
         <g:else>
             <div class="ui red basic label">
