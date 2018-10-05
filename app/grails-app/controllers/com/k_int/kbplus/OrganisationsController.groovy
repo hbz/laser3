@@ -71,6 +71,7 @@ class OrganisationsController {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
         params.max = params.max ?: result.user?.getDefaultPageSize()
+        params.sort = " LOWER(o.sortname), LOWER(o.name)"
 
         def fsq = filterService.getOrgQuery(params)
 
@@ -88,6 +89,7 @@ class OrganisationsController {
         result.user       = User.get(springSecurityService.principal.id)
         params.orgSector  = RefdataValue.getByValueAndCategory('Publisher','OrgSector')?.id?.toString()
         params.orgType    = RefdataValue.getByValueAndCategory('Provider','OrgType')?.id?.toString()
+        params.sort       = " LOWER(o.shortname), LOWER(o.name)"
 
         def fsq           = filterService.getOrgQuery(params)
         def orgListTotal  = Org.findAll(fsq.query, fsq.queryParams, params)

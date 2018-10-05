@@ -474,35 +474,45 @@ from License as l where (
         def role_sub_cons       = RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role')
         def role_sub_consortia  = RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')
 
-        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
+        result.propList         = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
+        params.sort             = " LOWER(o.shortname), LOWER(o.name)"
 
         def mySubs = Subscription.executeQuery( """
-            select s from Subscription as s join s.orgRelations as ogr where 
+            select s from Subscription as s join s.orgRelations as ogr where
                 ( s.status.value != 'Deleted' ) and
                 ( s = ogr.sub and ogr.org = :subOrg ) and
                 ( ogr.roleType = (:roleSub) or ogr.roleType = (:roleSubCons) or ogr.roleType = (:roleSubConsortia) )
         """, [subOrg: contextService.getOrg(), roleSub: role_sub, roleSubCons: role_sub_cons, roleSubConsortia: role_sub_consortia])
 
-        result.orgList = []
+        def orgListTotal = []
         mySubs.each { sub ->
             def provider = OrgRole.findWhere(
                     sub: sub,
                     roleType: RefdataValue.getByValueAndCategory('Provider','Organisational Role')
             )
-            if (provider && ! result.orgList.contains(provider.org)) {
-                result.orgList << provider.org
+            if (provider && ! orgListTotal.contains(provider.org)) {
+                orgListTotal << provider.org
             }
         }
-      result.user = User.get(springSecurityService.principal.id)
-//      params.max = params.max ?: result.user?.getDefaultPageSize()
-        def fsq = filterService.getOrgQuery([constraint_orgIds: result.orgList.collect({ it.id })] << params)
-        result.orgList  = Org.findAll(fsq.query, fsq.queryParams, params)
-        result.orgList.sort{a, b -> a.name.compareToIgnoreCase b.name}
-//        result.orgListTotal = Org.executeQuery("select count (o) ${fsq.query}", fsq.queryParams)[0]
-//        result.test = mySubs
+        result.user = User.get(springSecurityService.principal.id)
+        params.max = params.max ?: result.user?.getDefaultPageSize()
+
+        def fsq2 = null
+        if (isPropertyFilterUsed() && orgListTotal?.size() > 0) {
+            fsq2 = filterService.getOrgQuery([constraint_orgIds: orgListTotal?.collect{ it2 -> it2.id }] << params)
+        } else {
+            fsq2 = filterService.getOrgQuery(params)
+        }
+
+        result.orgList      = Org.findAll(fsq2.query, fsq2.queryParams, params)
+        result.orgListTotal = Org.executeQuery("select count (o) ${fsq2.query}", fsq2.queryParams)[0]
+        result.test = mySubs //TODO wofür ist das gut?
         result
     }
 
+    def isPropertyFilterUsed() {
+        params.filterPropDef
+    }
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentSubscriptions() {
