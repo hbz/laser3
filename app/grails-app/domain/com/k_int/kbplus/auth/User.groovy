@@ -1,5 +1,6 @@
 package com.k_int.kbplus.auth
 
+import com.k_int.kbplus.UserSettings
 import de.laser.interfaces.Permissions
 import grails.plugin.springsecurity.SpringSecurityUtils
 
@@ -73,6 +74,15 @@ class User implements Permissions {
       encodePassword()
     }
   }
+
+    def getSetting(UserSettings.KEYS key) {
+        def us = UserSettings.get(this, key)
+        (us == UserSettings.SETTING_NOT_FOUND) ? UserSettings.add(this, key, null) : us
+    }
+
+    def setSetting(UserSettings.KEYS key, def value) {
+        UserSettings.add(this, key, value)
+    }
 
   @Transient
   def getDisplayName() {

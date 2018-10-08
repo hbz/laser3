@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataValue;com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserOrg" %>
+<%@ page import="com.k_int.kbplus.UserSettings_FUCKIT; com.k_int.kbplus.UserSettings; com.k_int.kbplus.UserSetting; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserOrg" %>
 <!doctype html>
 <html>
 <head>
@@ -118,6 +118,21 @@
                 <div class="field">
                     <label>${message(code: 'profile.pagesize', default:'Default Page Size')}</label>
                     <semui:xEditable owner="${user}" field="defaultPageSize" />
+                </div>
+
+                <div class="field">
+                    <br />SHOW_SIMPLE_VIEWS
+<%
+                    def xyz = user.getSetting(UserSetting.KEYSET.SHOW_SIMPLE_VIEWS);
+
+                    //def abc = user.getSetting(UserSetting.KEYS.PAGE_SIZE);
+                    //abc.setValue(999);
+  %>
+                    <%--semui:xEditableRefData owner="${xyz}" field="value" config="${xyz.key.rdc}" /--%>
+                    <br />DASHBOARD
+                    <semui:xEditable owner="${user.getSetting(UserSettings.KEYS.DASHBOARD)}" field="stringValue" />
+                    <br />PAGE_SIZE
+                    <semui:xEditable owner="${user.getSetting(UserSettings.KEYS.PAGE_SIZE)}" field="stringValue" />
                 </div>
             </div>
         </div><!-- .segment -->

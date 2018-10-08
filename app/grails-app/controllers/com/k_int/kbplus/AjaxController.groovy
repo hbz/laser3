@@ -291,10 +291,19 @@ class AjaxController {
         def value=resolveOID(value_components);
   
         if ( target && value ) {
-          def binding_properties = [ "${params.name}":value ]
-          bindData(target, binding_properties)
-            target.owner?.save()  // avoid .. not processed by flush
-          target.save(flush:true);
+
+            if (target instanceof UserSettings) {
+                target.setValue(value)
+            }
+            else {
+                def binding_properties = [ "${params.name}":value ]
+                bindData(target, binding_properties)
+                if (target.hasProperty('owner')) {
+                    target.owner.save()  // avoid .. not processed by flush
+                }
+            }
+
+            target.save(flush:true);
           
           // We should clear the session values for a user if this is a user to force reload of the,
           // parameters.
@@ -1343,7 +1352,9 @@ class AjaxController {
                         // delete existing date
                         target_object."${params.name}" = null
                     }
-                    //target_object.owner?.save() // avoid owner.xyz not processed by flush
+                    if (target_object.hasProperty('owner')) {
+                        target_object.owner.save() // avoid owner.xyz not processed by flush
+                    }
                     target_object.save(failOnError: true, flush: true);
                 }
                 catch(Exception e) {
@@ -1361,7 +1372,9 @@ class AjaxController {
                 binding_properties[params.name] = params.value
                 bindData(target_object, binding_properties)
 
-                target_object.owner?.save() // avoid owner.xyz not processed by flush
+                if (target_object.hasProperty('owner')) {
+                    target_object.owner.save() // avoid owner.xyz not processed by flush
+                }
                 target_object.save(failOnError: true, flush: true);
 
                 result = target_object."${params.name}"
