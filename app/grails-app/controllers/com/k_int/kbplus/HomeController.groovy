@@ -22,8 +22,8 @@ class HomeController {
         if (result.user) {
             def uao = result.user.getAuthorizedOrgsIds()
 
-            if (result.user.getDefaultDashTMP()) {
-                if (result.user.getDefaultDashTMP().id in uao) {
+            if (result.user.getSettingsValue(UserSettings.KEYS.DASHBOARD)) {
+                if (result.user.getSettingsValue(UserSettings.KEYS.DASHBOARD).id in uao) {
                     redirect(controller: 'myInstitution', action: 'dashboard')
                     return
                 }

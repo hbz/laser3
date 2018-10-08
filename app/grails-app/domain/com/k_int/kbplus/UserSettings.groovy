@@ -12,9 +12,10 @@ class UserSettings {
     def genericOIDService
 
     static enum KEYS {
-        PAGE_SIZE (Long),
-        DASHBOARD (Org),
-        SHOW_SIMPLE_VIEWS (RefdataValue, 'YN')
+        PAGE_SIZE         (Long),
+        DASHBOARD         (Org),
+        SHOW_SIMPLE_VIEWS (RefdataValue, 'YN'),
+        SHOW_INFO_ICON    (RefdataValue, 'YN')
 
         KEYS(type, rdc) {
             this.type = type
@@ -37,7 +38,7 @@ class UserSettings {
         id         column:'us_id'
         version    column:'us_version'
         user       column:'us_user_fk'
-        key        column:'us_key'
+        key        column:'us_key_enum'
         strValue   column:'us_string_value'
         rdValue    column:'us_refdata_value_fk'
     }
@@ -47,14 +48,23 @@ class UserSettings {
         key        (nullable: false)
         strValue   (nullable: true)
         rdValue    (nullable: true)
+
+        strValue(unique: ['user', 'key'])
+        rdValue(unique: ['user', 'key'])
     }
 
+    /*
+        returns user depending setting for given key
+     */
     static get(User user, KEYS key) {
 
         def uss = findWhere(user: user, key: key)
         uss ?: SETTING_NOT_FOUND
     }
 
+    /*
+        adds user depending setting (with value) for given key
+     */
     static add(User user, KEYS key, def value) {
 
         def uss = new UserSettings(user: user, key: key)
@@ -64,12 +74,18 @@ class UserSettings {
         uss
     }
 
+    /*
+        deletes user depending setting for given key
+     */
     static delete(User user, KEYS key) {
 
         def uss = findWhere(user: user, key: key)
         uss.delete(flush: true)
     }
 
+    /*
+        gets parsed value by key.type
+     */
     def getValue() {
 
         def result = null
@@ -91,6 +107,9 @@ class UserSettings {
         result
     }
 
+    /*
+        sets value by key.type
+     */
     def setValue(def value) {
 
         switch (key.type) {
@@ -101,5 +120,6 @@ class UserSettings {
                 strValue = (value ? value.toString() : null)
                 break
         }
+        save(flush: true)
     }
 }

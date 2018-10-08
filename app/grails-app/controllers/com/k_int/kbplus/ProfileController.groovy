@@ -170,7 +170,9 @@ class ProfileController {
       }
     }
 
-    if ( params.defaultDash != user.getDefaultDashTMP()?.id.toString() ) {
+      user.save();
+
+    if ( params.defaultDash != user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.id.toString() ) {
       flash.message+= message(code:'profile.updateProfile.updated.dash', default:"User default dashboard updated<br/>")
       if ( params.defaultDash == '' ) {
         user.setDefaultDashTMP(null)
@@ -179,9 +181,6 @@ class ProfileController {
         user.setDefaultDashTMP(Org.get(params.defaultDash))
       }
     }
-
-    user.save();
-
 
     redirect(action: "index")
   }

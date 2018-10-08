@@ -112,12 +112,12 @@
                 --%>
                 <div class="field">
                     <label>${message(code: 'profile.simpleViews', default:'Show simple Views')}</label>
-                    <semui:xEditableRefData owner="${user}" field="showSimpleViews" config="YN" />
+                    <semui:xEditableRefData owner="${user.getSetting(UserSettings.KEYS.SHOW_SIMPLE_VIEWS)}" field="rdValue" config="${user.getSetting().key.rdc}" />
                 </div>
 
                 <div class="field">
                     <label>${message(code: 'profile.pagesize', default:'Default Page Size')}</label>
-                    <semui:xEditable owner="${user}" field="defaultPageSize" />
+                    <semui:xEditable owner="${user.getSetting(UserSettings.KEYS.PAGE_SIZE)}" field="strValue" />
                 </div>
 
             </div>

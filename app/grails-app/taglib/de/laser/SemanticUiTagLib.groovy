@@ -1,6 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
 import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 import org.springframework.web.servlet.support.RequestContextUtils
@@ -298,7 +299,7 @@ class SemanticUiTagLib {
         def mode = (attrs.params.mode=='basic') ? 'basic' : ((attrs.params.mode == 'advanced') ? 'advanced' : null)
         if (!mode) {
             def user = User.get(springSecurityService.principal.id)
-            mode = (user.showSimpleViews?.value == 'No') ? 'advanced' : 'basic'
+            mode = (user.getSettingsValue(UserSettings.KEYS.SHOW_SIMPLE_VIEWS)?.value == 'No') ? 'advanced' : 'basic'
 
             // CAUTION: inject default mode
             attrs.params.mode = mode
