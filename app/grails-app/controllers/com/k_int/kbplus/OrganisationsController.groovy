@@ -70,7 +70,7 @@ class OrganisationsController {
 
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        params.max = params.max ?: result.user?.getDefaultPageSize()
+        params.max = params.max ?: result.user?.getDefaultPageSizeTMP()
 
         def fsq = filterService.getOrgQuery(params)
 
@@ -97,7 +97,7 @@ class OrganisationsController {
         result.user       = User.get(springSecurityService.principal.id)
         params.orgSector  = RefdataValue.getByValueAndCategory('Publisher','OrgSector')?.id?.toString()
         params.orgRoleType    = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')?.id?.toString()
-        params.max        = params.max ?: result.user?.getDefaultPageSize()
+        params.max        = params.max ?: result.user?.getDefaultPageSizeTMP()
         def paramsTotal   = params.clone()
         if (paramsTotal.max) {
             paramsTotal.remove("max")

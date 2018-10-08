@@ -156,10 +156,10 @@ class ProfileController {
         long l = Long.parseLong(params.defaultPageSize);
         if ( ( l >= 5 ) && ( l <= 100 ) ) {
           Long new_long = new Long(l);
-          if ( new_long != user.defaultPageSize ) {
+          if ( new_long != user.getDefaultPageSizeTMP() ) {
             flash.message += message(code:'profile.updateProfile.updated.pageSize', default:"User default page size updated<br/>")
           }
-          user.defaultPageSize = new_long
+          user.setDefaultPageSizeTMP(new_long)
      
         }
         else {
@@ -170,13 +170,13 @@ class ProfileController {
       }
     }
 
-    if ( params.defaultDash != user.defaultDash?.id.toString() ) {
+    if ( params.defaultDash != user.getDefaultDashTMP()?.id.toString() ) {
       flash.message+= message(code:'profile.updateProfile.updated.dash', default:"User default dashboard updated<br/>")
       if ( params.defaultDash == '' ) {
-        user.defaultDash = null
+        user.setDefaultDashTMP(null)
       }
       else {
-        user.defaultDash = Org.get(params.defaultDash);
+        user.setDefaultDashTMP(Org.get(params.defaultDash))
       }
     }
 

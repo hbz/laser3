@@ -91,7 +91,7 @@ class MyInstitutionController {
         def result = [:]
 
         result.user = User.get(springSecurityService.principal.id)
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         def current_inst = contextService.getOrg()
         //if(params.shortcode) current_inst = Org.findByShortcode(params.shortcode);
@@ -217,7 +217,7 @@ class MyInstitutionController {
                             ]// private properties
                         )
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         result.max = params.format ? 10000 : result.max
         result.offset = params.format? 0 : result.offset
@@ -395,7 +395,7 @@ from License as l where (
     def emptyLicense() {
         def result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
@@ -503,7 +503,7 @@ from License as l where (
     def currentSubscriptions() {
         def result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [result.institution])
@@ -818,7 +818,7 @@ from Subscription as s where (
 
         def public_flag = RefdataCategory.lookupOrCreate('YN', 'Yes');
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         // def base_qry = " from Subscription as s where s.type.value = 'Subscription Offered' and s.isPublic=?"
@@ -1313,7 +1313,7 @@ from Subscription as s where (
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
 
         // Set offset and max
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         def filterSub = params.list("filterSub")
@@ -2937,7 +2937,7 @@ AND EXISTS (
             return;
         }
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         getTodoForInst(result)
 
@@ -2949,7 +2949,7 @@ AND EXISTS (
     def announcements() {
         def result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         def announcement_type = RefdataCategory.lookupOrCreate('Document Type', 'Announcement')
@@ -2976,7 +2976,7 @@ AND EXISTS (
           result.offset = 0;
         }
         else {
-          result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+          result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
           result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         }
 
@@ -3099,7 +3099,7 @@ AND EXISTS (
 
         def result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         def qParts = [
                 'p.tenant = :tenant',

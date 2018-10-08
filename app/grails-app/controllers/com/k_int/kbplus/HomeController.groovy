@@ -22,19 +22,19 @@ class HomeController {
         if (result.user) {
             def uao = result.user.getAuthorizedOrgsIds()
 
-            if (result.user.defaultDash) {
-                if (result.user.defaultDash.id in uao) {
+            if (result.user.getDefaultDashTMP()) {
+                if (result.user.getDefaultDashTMP().id in uao) {
                     redirect(controller: 'myInstitution', action: 'dashboard')
                     return
                 }
                 else {
-                    result.user.defaultDash = null
+                    result.user.setDefaultDashTMP(null)
                     result.user.save()
                 }
             }
 
             if (uao.size() == 1) {
-                result.user.defaultDash = Org.findById(uao.first())
+                result.user.setDefaultDashTMP(Org.findById(uao.first()))
                 result.user.save()
                 redirect(controller:'myInstitution', action:'dashboard')
                 return
@@ -56,7 +56,7 @@ class HomeController {
     def result = [:]
   
     result.user = springSecurityService.getCurrentUser()
-    params.max = result.user.defaultPageSize
+    params.max = result.user.getDefaultPageSizeTMP()
 
     if (springSecurityService.isLoggedIn()) {
         params.sort = "name"

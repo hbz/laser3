@@ -27,7 +27,7 @@ class TitleDetailsController {
         if (springSecurityService.isLoggedIn()) {
             params.rectype = "Title" // Tells ESSearchService what to look for
             result.user = springSecurityService.getCurrentUser()
-            params.max = result.user.defaultPageSize
+            params.max = result.user.getDefaultPageSizeTMP()
 
 
             if(params.search.equals("yes")){
@@ -69,7 +69,7 @@ class TitleDetailsController {
         if (springSecurityService.isLoggedIn()) {
             params.rectype = "Title" // Tells ESSearchService what to look for
             result.user = springSecurityService.getCurrentUser()
-            params.max = result.user.defaultPageSize
+            params.max = result.user.getDefaultPageSizeTMP()
 
             if (params.search.equals("yes")) {
                 //when searching make sure results start from first page
@@ -252,7 +252,7 @@ class TitleDetailsController {
     }
     else {
       def user = User.get(springSecurityService.principal.id)
-      result.max = params.max ? Integer.parseInt(params.max) : user.defaultPageSize
+      result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeTMP()
       params.max = result.max
       result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
     }
@@ -329,7 +329,7 @@ class TitleDetailsController {
     }
     def user = User.get(springSecurityService.principal.id)
     def result = [:]
-    result.max = params.max ? Integer.parseInt(params.max) : user.defaultPageSize
+    result.max = params.max ? Integer.parseInt(params.max) : user.getDefaultPageSizeTMP()
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
     
     def ti_cat = RefdataCategory.findByDesc(RefdataCategory.TI_STATUS)

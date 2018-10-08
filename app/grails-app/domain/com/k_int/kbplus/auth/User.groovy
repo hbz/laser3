@@ -84,6 +84,23 @@ class User implements Permissions {
         UserSettings.add(this, key, value)
     }
 
+    // refactoring -- tmp changes
+
+    def getDefaultDashTMP() {
+        defaultDash
+    }
+    def setDefaultDashTMP(def org) {
+        defaultDash = org
+    }
+    def getDefaultPageSizeTMP() {
+        defaultPageSize
+    }
+    def setDefaultPageSizeTMP(def size) {
+        defaultPageSize = size
+    }
+
+    // refactoring -- tmp changes
+
   @Transient
   def getDisplayName() {
     def result = null;

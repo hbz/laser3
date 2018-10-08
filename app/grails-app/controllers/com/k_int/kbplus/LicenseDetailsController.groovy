@@ -586,7 +586,7 @@ from Subscription as s where
             response.sendError(401); return
         }
 
-    result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+    result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
     result.offset = params.offset ?: 0;
 
 
@@ -620,7 +620,7 @@ from Subscription as s where
             response.sendError(401); return
         }
 
-    result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+    result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
     result.offset = params.offset ?: 0;
 
     result.todoHistoryLines = PendingChange.executeQuery("select pc from PendingChange as pc where pc.license=? order by pc.ts desc", [result.license],[max:result.max,offset:result.offset]);

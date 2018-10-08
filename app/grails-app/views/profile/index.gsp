@@ -44,10 +44,10 @@
                 <div class="field">
                     <label>${message(code: 'profile.dash', default:'Default Dashboard')}</label>
 
-                    <select name="defaultDash" value="${user.defaultDash?.id}" class="ui fluid dropdown">
+                    <select name="defaultDash" value="${user.getDefaultDashTMP()?.id}" class="ui fluid dropdown">
                         <option value=""></option>
                         <g:each in="${user.authorizedOrgs}" var="o">
-                            <option value="${o.id}" ${user.defaultDash?.id==o.id?'selected':''}>${o.name}</option>
+                            <option value="${o.id}" ${user.getDefaultDashTMP()?.id==o.id?'selected':''}>${o.name}</option>
                         </g:each>
                     </select>
                 </div>
@@ -120,20 +120,6 @@
                     <semui:xEditable owner="${user}" field="defaultPageSize" />
                 </div>
 
-                <div class="field">
-                    <br />SHOW_SIMPLE_VIEWS
-<%
-                    def xyz = user.getSetting(UserSetting.KEYSET.SHOW_SIMPLE_VIEWS);
-
-                    //def abc = user.getSetting(UserSetting.KEYS.PAGE_SIZE);
-                    //abc.setValue(999);
-  %>
-                    <%--semui:xEditableRefData owner="${xyz}" field="value" config="${xyz.key.rdc}" /--%>
-                    <br />DASHBOARD
-                    <semui:xEditable owner="${user.getSetting(UserSettings.KEYS.DASHBOARD)}" field="stringValue" />
-                    <br />PAGE_SIZE
-                    <semui:xEditable owner="${user.getSetting(UserSettings.KEYS.PAGE_SIZE)}" field="stringValue" />
-                </div>
             </div>
         </div><!-- .segment -->
     </div><!-- .column -->

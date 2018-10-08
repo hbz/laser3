@@ -26,7 +26,7 @@ class IdentifierController {
         redirect controller: 'home', action: 'index'
         return // ----- deprecated
 
-		params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
+		params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
         [identifierInstanceList: Identifier.list(params), identifierInstanceTotal: Identifier.count()]
     }
 
