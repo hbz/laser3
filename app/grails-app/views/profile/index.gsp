@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.UserSettings_FUCKIT; com.k_int.kbplus.UserSettings; com.k_int.kbplus.UserSetting; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserOrg" %>
+<%@ page import="com.k_int.kbplus.UserSettings; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserOrg" %>
 <!doctype html>
 <html>
 <head>
@@ -44,10 +44,10 @@
                 <div class="field">
                     <label>${message(code: 'profile.dash', default:'Default Dashboard')}</label>
 
-                    <select name="defaultDash" value="${user.getDefaultDashTMP()?.id}" class="ui fluid dropdown">
+                    <select name="defaultDash" value="${user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.id}" class="ui fluid dropdown">
                         <option value=""></option>
                         <g:each in="${user.authorizedOrgs}" var="o">
-                            <option value="${o.id}" ${user.getDefaultDashTMP()?.id==o.id?'selected':''}>${o.name}</option>
+                            <option value="${o.id}" ${user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.id==o.id?'selected':''}>${o.name}</option>
                         </g:each>
                     </select>
                 </div>
@@ -112,12 +112,14 @@
                 --%>
                 <div class="field">
                     <label>${message(code: 'profile.simpleViews', default:'Show simple Views')}</label>
-                    <semui:xEditableRefData owner="${user.getSetting(UserSettings.KEYS.SHOW_SIMPLE_VIEWS)}" field="rdValue" config="${user.getSetting().key.rdc}" />
+                    <g:set var="US_SHOW_SIMPLE_VIEWS" value="${user.getSetting(UserSettings.KEYS.SHOW_SIMPLE_VIEWS, null)}" />
+                    <semui:xEditableRefData owner="${US_SHOW_SIMPLE_VIEWS}" field="rdValue" config="${US_SHOW_SIMPLE_VIEWS.key.rdc}" />
                 </div>
 
                 <div class="field">
                     <label>${message(code: 'profile.pagesize', default:'Default Page Size')}</label>
-                    <semui:xEditable owner="${user.getSetting(UserSettings.KEYS.PAGE_SIZE)}" field="strValue" />
+                    <g:set var="US_PAGE_SIZE" value="${user.getSetting(UserSettings.KEYS.PAGE_SIZE, 10)}" />
+                    <semui:xEditable owner="${US_PAGE_SIZE}" field="strValue" />
                 </div>
 
             </div>

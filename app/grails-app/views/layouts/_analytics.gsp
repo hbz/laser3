@@ -10,7 +10,7 @@
             2                      // Sets the scope to session-level.  Optional parameter.
          ]);
       </g:if>
-      <g:if test="${user?.getDefaultDashTMP()?.shortcode}">
+      <g:if test="${user?.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.shortcode}">
       _gaq.push(['_setCustomVar',
             2,                     // This custom var is set to slot #2.  Required parameter.
             'UserDefaultOrg',         // The name acts as a kind of category for the user activity.  Required parameter.

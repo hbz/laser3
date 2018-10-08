@@ -96,21 +96,10 @@ class User implements Permissions {
 
     // refactoring -- tmp changes
 
-    def setDefaultDashTMP(def org) {
-        //defaultDash = org
-        def setting = getSetting(UserSettings.KEYS.DASHBOARD, null)
-        setting.setValue(org?.getId())
-    }
-
     def getDefaultPageSizeTMP() {
         //defaultPageSize
         def setting = getSetting(UserSettings.KEYS.PAGE_SIZE, 10)
         setting.getValue()
-    }
-    def setDefaultPageSizeTMP(def size) {
-        //defaultPageSize = size
-        def setting = getSetting(UserSettings.KEYS.PAGE_SIZE, null)
-        setting.setValue(size)
     }
 
     // refactoring -- tmp changes

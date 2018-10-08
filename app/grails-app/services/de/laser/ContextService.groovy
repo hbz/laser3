@@ -1,6 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.Org
+import com.k_int.kbplus.UserSettings
 import org.codehaus.groovy.grails.web.util.WebUtils
 
 class ContextService {
@@ -19,7 +20,7 @@ class ContextService {
 
     def getOrg() {
         def session = WebUtils.retrieveGrailsWebRequest().getSession()
-        def context = session.getAttribute('contextOrg') ?: Org.findByShortcode(getUser()?.getDefaultDashTMP()?.shortcode)
+        def context = session.getAttribute('contextOrg') ?: Org.findByShortcode(getUser()?.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.shortcode)
         context?.refresh()
     }
 

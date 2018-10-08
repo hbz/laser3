@@ -159,7 +159,9 @@ class ProfileController {
           if ( new_long != user.getDefaultPageSizeTMP() ) {
             flash.message += message(code:'profile.updateProfile.updated.pageSize', default:"User default page size updated<br/>")
           }
-          user.setDefaultPageSizeTMP(new_long)
+            //user.setDefaultPageSizeTMP(new_long)
+            def setting = user.getSetting(UserSettings.KEYS.PAGE_SIZE, null)
+            setting.setValue(size)
      
         }
         else {
@@ -174,11 +176,13 @@ class ProfileController {
 
     if ( params.defaultDash != user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.id.toString() ) {
       flash.message+= message(code:'profile.updateProfile.updated.dash', default:"User default dashboard updated<br/>")
+        def setting = user.getSetting(UserSettings.KEYS.DASHBOARD, null)
+
       if ( params.defaultDash == '' ) {
-        user.setDefaultDashTMP(null)
+          setting.setValue(null)
       }
       else {
-        user.setDefaultDashTMP(Org.get(params.defaultDash))
+          setting.setValue(Org.get(params.defaultDash)?.getId())
       }
     }
 

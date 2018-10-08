@@ -28,14 +28,19 @@ class HomeController {
                     return
                 }
                 else {
-                    result.user.setDefaultDashTMP(null)
-                    result.user.save()
+                    //result.user.setDefaultDashTMP(null)
+                    //result.user.save()
+                    def setting = result.user.getSetting(UserSettings.KEYS.DASHBOARD, null)
+                    setting.setValue(null)
                 }
             }
 
             if (uao.size() == 1) {
-                result.user.setDefaultDashTMP(Org.findById(uao.first()))
-                result.user.save()
+                //result.user.setDefaultDashTMP(Org.findById(uao.first()))
+                //result.user.save()
+                def setting = result.user.getSetting(UserSettings.KEYS.DASHBOARD, null)
+                setting.setValue(Org.findById(uao.first())?.getId())
+
                 redirect(controller:'myInstitution', action:'dashboard')
                 return
             }
