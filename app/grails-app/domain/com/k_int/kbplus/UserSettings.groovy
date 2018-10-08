@@ -15,16 +15,17 @@ class UserSettings {
         PAGE_SIZE         (Long),
         DASHBOARD         (Org),
         SHOW_SIMPLE_VIEWS (RefdataValue, 'YN'),
-        SHOW_INFO_ICON    (RefdataValue, 'YN')
+        SHOW_INFO_ICON    (RefdataValue, 'YN'),
+        SHOW_EDIT_MODE    (RefdataValue, 'YN')
 
         KEYS(type, rdc) {
             this.type = type
             this.rdc = rdc
         }
-
         KEYS(type) {
             this.type = type
         }
+
         public def type
         public def rdc
     }
@@ -33,6 +34,7 @@ class UserSettings {
     KEYS         key
     String       strValue
     RefdataValue rdValue
+    Org          orgValue
 
     static mapping = {
         id         column:'us_id'
@@ -40,21 +42,21 @@ class UserSettings {
         user       column:'us_user_fk'
         key        column:'us_key_enum'
         strValue   column:'us_string_value'
-        rdValue    column:'us_refdata_value_fk'
+        rdValue    column:'us_rv_fk'
+        orgValue   column:'us_org_fk'
     }
 
     static constraints = {
-        user       (nullable: false)
-        key        (nullable: false)
+        user       (nullable: false, unique: 'key')
+        key        (nullable: false, unique: 'user')
         strValue   (nullable: true)
         rdValue    (nullable: true)
-
-        strValue(unique: ['user', 'key'])
-        rdValue(unique: ['user', 'key'])
+        orgValue   (nullable: true)
     }
 
     /*
         returns user depending setting for given key
+        or SETTING_NOT_FOUND if not
      */
     static get(User user, KEYS key) {
 
@@ -63,7 +65,7 @@ class UserSettings {
     }
 
     /*
-        adds user depending setting (with value) for given key
+        adds new user depending setting (with value) for given key
      */
     static add(User user, KEYS key, def value) {
 
@@ -95,7 +97,7 @@ class UserSettings {
                 result = Long.parseLong(strValue)
                 break
             case Org:
-                result = Org.get(strValue)
+                result = orgValue
                 break
             case RefdataValue:
                 result = rdValue
@@ -113,6 +115,9 @@ class UserSettings {
     def setValue(def value) {
 
         switch (key.type) {
+            case Org:
+                orgValue = value
+                break
             case RefdataValue:
                 rdValue = value
                 break

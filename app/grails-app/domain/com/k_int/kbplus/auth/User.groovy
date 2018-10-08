@@ -81,15 +81,28 @@ class User implements Permissions {
     }
   }
 
+    /*
+        gets UserSetting
+        creating new one (with value) if not existing
+     */
     def getSetting(UserSettings.KEYS key, def defaultValue) {
         def us = UserSettings.get(this, key)
         (us == UserSettings.SETTING_NOT_FOUND) ? UserSettings.add(this, key, defaultValue) : us
     }
 
+    /*
+        gets VALUE of UserSettings
+        creating new UserSettings (with value) if not existing
+     */
     def getSettingsValue(UserSettings.KEYS key, def defaultValue) {
         def setting = getSetting(key, defaultValue)
         setting.getValue()
     }
+
+    /*
+        gets VALUE of UserSettings
+        creating new UserSettings if not existing
+     */
     def getSettingsValue(UserSettings.KEYS key) {
         getSettingsValue(key, null)
     }

@@ -47,7 +47,7 @@
                     <select name="defaultDash" value="${user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.id}" class="ui fluid dropdown">
                         <option value=""></option>
                         <g:each in="${user.authorizedOrgs}" var="o">
-                            <option value="${o.id}" ${user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.id==o.id?'selected':''}>${o.name}</option>
+                            <option value="${o.class.name}:${o.id}" ${user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.id==o.id?'selected':''}>${o.name}</option>
                         </g:each>
                     </select>
                 </div>
@@ -111,6 +111,12 @@
                 </div>
                 --%>
                 <div class="field">
+                    <label>${message(code: 'profile.editMode', default:'Show Edit Mode')}</label>
+                    <g:set var="US_SHOW_EDIT_MODE" value="${user.getSetting(UserSettings.KEYS.SHOW_EDIT_MODE, null)}" />
+                    <semui:xEditableRefData owner="${US_SHOW_EDIT_MODE}" field="rdValue" config="${US_SHOW_EDIT_MODE.key.rdc}" />
+                </div>
+
+                <div class="field">
                     <label>${message(code: 'profile.simpleViews', default:'Show simple Views')}</label>
                     <g:set var="US_SHOW_SIMPLE_VIEWS" value="${user.getSetting(UserSettings.KEYS.SHOW_SIMPLE_VIEWS, null)}" />
                     <semui:xEditableRefData owner="${US_SHOW_SIMPLE_VIEWS}" field="rdValue" config="${US_SHOW_SIMPLE_VIEWS.key.rdc}" />
@@ -118,8 +124,7 @@
 
                 <div class="field">
                     <label>${message(code: 'profile.pagesize', default:'Default Page Size')}</label>
-                    <g:set var="US_PAGE_SIZE" value="${user.getSetting(UserSettings.KEYS.PAGE_SIZE, 10)}" />
-                    <semui:xEditable owner="${US_PAGE_SIZE}" field="strValue" />
+                    <semui:xEditable owner="${user.getSetting(UserSettings.KEYS.PAGE_SIZE, 10)}" field="strValue" />
                 </div>
 
             </div>

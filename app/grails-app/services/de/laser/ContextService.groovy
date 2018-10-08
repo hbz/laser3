@@ -20,7 +20,7 @@ class ContextService {
 
     def getOrg() {
         def session = WebUtils.retrieveGrailsWebRequest().getSession()
-        def context = session.getAttribute('contextOrg') ?: Org.findByShortcode(getUser()?.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.shortcode)
+        def context = session.getAttribute('contextOrg') ?: getUser()?.getSettingsValue(UserSettings.KEYS.DASHBOARD)
         context?.refresh()
     }
 

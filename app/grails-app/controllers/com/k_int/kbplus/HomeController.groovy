@@ -23,7 +23,7 @@ class HomeController {
             def uao = result.user.getAuthorizedOrgsIds()
 
             if (result.user.getSettingsValue(UserSettings.KEYS.DASHBOARD)) {
-                if (result.user.getSettingsValue(UserSettings.KEYS.DASHBOARD).id in uao) {
+                if (result.user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.id in uao) {
                     redirect(controller: 'myInstitution', action: 'dashboard')
                     return
                 }
@@ -39,7 +39,7 @@ class HomeController {
                 //result.user.setDefaultDashTMP(Org.findById(uao.first()))
                 //result.user.save()
                 def setting = result.user.getSetting(UserSettings.KEYS.DASHBOARD, null)
-                setting.setValue(Org.findById(uao.first())?.getId())
+                setting.setValue(Org.findById(uao.first()))
 
                 redirect(controller:'myInstitution', action:'dashboard')
                 return

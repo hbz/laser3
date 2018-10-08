@@ -14,6 +14,7 @@ import com.k_int.kbplus.Org
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ProfileController {
 
+    def genericOIDService
     def springSecurityService
     def passwordEncoder
     def errorReportService
@@ -174,7 +175,7 @@ class ProfileController {
 
       user.save();
 
-    if ( params.defaultDash != user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.id.toString() ) {
+    if ( params.defaultDash != user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.getId().toString() ) {
       flash.message+= message(code:'profile.updateProfile.updated.dash', default:"User default dashboard updated<br/>")
         def setting = user.getSetting(UserSettings.KEYS.DASHBOARD, null)
 
@@ -182,7 +183,8 @@ class ProfileController {
           setting.setValue(null)
       }
       else {
-          setting.setValue(Org.get(params.defaultDash)?.getId())
+          def org = genericOIDService.resolveOID(params.defaultDash)
+          setting.setValue(org)
       }
     }
 
