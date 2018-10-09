@@ -1708,3 +1708,28 @@ i.icon.youtube.play:before { content: "\f167"; }
 .loadBrandIcons();
 
 
+i.icon.la-buttons,
+i.icon.hand.pointer.outline.slash {
+  font-family: 'icomoon';
+}
+// to turn off all the buttons on a side
+// the other part of the button is the SEMANTIC UI Icon: 'hand pointer outline'
+
+i.icon.hand.pointer.outline.slash:before { content: "\e901"; }
+
+/*******************************
+           Laser Icons
+*******************************/
+
+/* Load & Define Laser Font */
+
+@font-face {
+  font-family: 'icomoon';
+  src: url("./themes/laser/assets/fonts/icomoon.eot");
+  src: url("./themes/laser/assets/fonts/icomoon.eot?#iefix") format('embedded-opentype'), url("./themes/laser/assets/fonts/icomoon.woff") format('woff'), url("./themes/laser/assets/fonts/icomoon.ttf") format('truetype'), url("./themes/laser/assets/fonts/icomoon.svg#icons") format('svg');
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-decoration: inherit;
+  text-transform: none;
+}

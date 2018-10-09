@@ -490,59 +490,70 @@
         <div class="ui container">
             <div class="ui sub header item la-context-org">${contextOrg?.name}</div>
 
+                <div class="ui buttons">
+
+                </div>
+
             <div class="right menu la-advanced-view">
-                <g:if test="${(params.mode)}">
+                <div class="item">
                     <div class="ui buttons">
-                            <g:if test="${params.mode=='advanced'}">
-                                <div class="ui label toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right" data-variation="tiny">
-                                    <i class="icon green eye"></i>
-                            </g:if>
-                            <g:else>
-                                <div class="ui label toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right" data-variation="tiny">
-                                    <i class="icon eye slash"></i>
-                            </g:else>
+                        <div class="ui label button" data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right" data-variation="tiny">
+                            <i class="icon hand pointer outline slash"></i>
                         </div>
+                        <g:if test="${(params.mode)}">
+
+                                <g:if test="${params.mode=='advanced'}">
+                                    <div class="ui label toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                        <i class="icon green eye"></i>
+                                </g:if>
+                                <g:else>
+                                    <div class="ui label toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                        <i class="icon eye slash"></i>
+                                </g:else>
+                            </div>
+
+
+
+                        <script>
+                            var LaToggle = {};
+                            LaToggle.advanced = {};
+                            LaToggle.advanced.button = {};
+
+                            // ready event
+                            LaToggle.advanced.button.ready = function() {
+
+                                // selector cache
+                                var
+                                    $button = $('.ui.buttons .button.la-toggle-advanced'),
+
+                                    // alias
+                                    handler = {
+                                        activate: function() {
+                                            $icon = $(this).find('.icon');
+                                            if ($icon.hasClass("slash")) {
+                                                $icon.removeClass("slash");
+                                                window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'advanced']}" />";
+                                            }
+                                             else {
+                                                $icon.addClass("slash");
+                                                window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'basic']}" />" ;
+                                            }
+                                        }
+                                    }
+                                ;
+                                $button
+                                    .on('click', handler.activate)
+                                ;
+                            };
+
+                            // attach ready event
+                            $(document)
+                                .ready(LaToggle.advanced.button.ready)
+                            ;
+                        </script>
+                        </g:if>
                     </div>
-
-
-                <script>
-                    var LaToggle = {};
-                    LaToggle.advanced = {};
-                    LaToggle.advanced.button = {};
-
-                    // ready event
-                    LaToggle.advanced.button.ready = function() {
-
-                        // selector cache
-                        var
-                            $button = $('.ui.buttons .button.la-toggle-advanced'),
-
-                            // alias
-                            handler = {
-                                activate: function() {
-                                    $icon = $(this).find('.icon');
-                                    if ($icon.hasClass("slash")) {
-                                        $icon.removeClass("slash");
-                                        window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'advanced']}" />";
-                                    }
-                                     else {
-                                        $icon.addClass("slash");
-                                        window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'basic']}" />" ;
-                                    }
-                                }
-                            }
-                        ;
-                        $button
-                            .on('click', handler.activate)
-                        ;
-                    };
-
-                    // attach ready event
-                    $(document)
-                        .ready(LaToggle.advanced.button.ready)
-                    ;
-                </script>
-                </g:if>
+                </div>
                 <%--semui:editableLabel editable="${editable}" /--%>
             </div>
         </div>
