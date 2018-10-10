@@ -51,14 +51,15 @@ trait AuditTrait {
                     if (AuditConfig.getConfig(this)) {
 
                         event = [
-                                OID        : "${this.owner.class.name}:${this.owner.id}",
+                                OID        : "${this.class.name}:${this.id}",
+                                //OID        : "${this.owner.class.name}:${this.owner.id}",
                                 event      : "${this.class.simpleName}.updated",
                                 prop       : cp,
                                 name       : type.name,
                                 type       : this."${cp}".getClass().toString(),
                                 old        : oldMap[cp] instanceof RefdataValue ? oldMap[cp].toString() : oldMap[cp],
                                 new        : newMap[cp] instanceof RefdataValue ? newMap[cp].toString() : newMap[cp],
-                                propertyOID: "${this.class.name}:${this.id}"
+                                //propertyOID: "${this.class.name}:${this.id}"
                         ]
                     }
                     else {

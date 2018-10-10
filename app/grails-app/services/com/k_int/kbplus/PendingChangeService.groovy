@@ -167,24 +167,24 @@ def performAccept(change,httpRequest) {
                     return
                 }
 
-                def srcProperty = genericOIDService.resolveOID(changeDoc.propertyOID)
+                //def srcProperty = genericOIDService.resolveOID(changeDoc.propertyOID)
                 def srcObject = genericOIDService.resolveOID(changeDoc.OID)
 
                 // A: get existing targetProperty by instanceOf
-                def targetProperty = srcProperty.getClass().findByOwnerAndInstanceOf(changeTarget, srcProperty)
+                def targetProperty = srcObject.getClass().findByOwnerAndInstanceOf(changeTarget, srcObject)
 
                 def setInstanceOf
 
                 // B: get existing targetProperty by name if not multiple allowed
                 if (! targetProperty) {
-                    if (! srcProperty.type.multipleOccurrence) {
-                        targetProperty = srcProperty.getClass().findByOwnerAndType(changeTarget, srcProperty.type)
+                    if (! srcObject.type.multipleOccurrence) {
+                        targetProperty = srcObject.getClass().findByOwnerAndType(changeTarget, srcObject.type)
                         setInstanceOf = true
                     }
                 }
                 // C: create new targetProperty
                 if (! targetProperty) {
-                    targetProperty = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, changeTarget, srcProperty.type)
+                    targetProperty = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, changeTarget, srcObject.type)
                     setInstanceOf = true
                 }
 
@@ -192,7 +192,7 @@ def performAccept(change,httpRequest) {
                 if (targetProperty) {
                     // in case of C or B set instanceOf
                     if (setInstanceOf && targetProperty.hasProperty('instanceOf')) {
-                        targetProperty.instanceOf = srcProperty
+                        targetProperty.instanceOf = srcObject
                         targetProperty.save(flush: true)
                     }
 

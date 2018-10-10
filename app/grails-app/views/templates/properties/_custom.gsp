@@ -86,7 +86,7 @@
                         <semui:xEditable owner="${prop}" type="textarea" field="note"/>
                     </td>
                     <td class="x">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
-                        
+
                         <g:if test="${editable == true}">
                             <g:if test="${(! ownobj.hasProperty('instanceOf')) || (! ownobj.instanceOf) || ( ownobj in de.laser.interfaces.TemplateSupport && ownobj.hasTemplate())}">
                                 <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />
@@ -101,15 +101,18 @@
                                 </g:remoteLink>
                                 </span>
                             </g:if>
-                            <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
 
-                            <g:remoteLink controller="ajax" action="deleteCustomProperty"
-                                          before="if(!confirm('${confirmMsg}')) return false"
-                                          params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}"]' id="${prop.id}"
-                                          onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                          update="${custom_props_div}" class="ui icon negative button">
-                                <i class="trash alternate icon"></i>
-                            </g:remoteLink>
+                            <g:if test="${! AuditConfig.getConfig(prop)}">
+                                <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
+
+                                <g:remoteLink controller="ajax" action="deleteCustomProperty"
+                                              before="if(!confirm('${confirmMsg}')) return false"
+                                              params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}"]' id="${prop.id}"
+                                              onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                              update="${custom_props_div}" class="ui icon negative button">
+                                    <i class="trash alternate icon"></i>
+                                </g:remoteLink>
+                            </g:if>
                         </g:if>
                     </td>
                 </tr>
