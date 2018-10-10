@@ -1,0 +1,9 @@
+/*--------------
+     Page
+---------------*/
+
+h1.ui.header {
+  font-size: 2.3em;
+  font-weight: normal;
+  color: @darkBlueGrey;
+}

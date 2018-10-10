@@ -234,6 +234,12 @@
 @grey             : #767676;
 @black            : #1B1C1D; /* laser-black -matching the blue */
 
+/*-------------------
+      Laser Shades of Gray
+--------------------*/
+@darkGrey           : #454545;
+@darkBlueGrey       : #2e3948
+
 /*---  Colors for Objects---*/
 
 @o-yellow:#FBC71C;
