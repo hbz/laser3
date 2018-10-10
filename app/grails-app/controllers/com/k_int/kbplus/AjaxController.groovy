@@ -964,10 +964,11 @@ class AjaxController {
         }
         else {
 
-            owner.getClass().findByInstanceOf(owner).each { member ->
+            owner.getClass().findAllByInstanceOf(owner).each { member ->
 
                 def existingProp = property.getClass().findByOwnerAndInstanceOf(member, property)
                 if (! existingProp) {
+                    // TODO: add event to create custom property and copy content into ..
 
                     // multi occurrence props; add one additional with backref
                     if (property.type.multipleOccurrence) {
