@@ -45,7 +45,7 @@
                                 println '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
                             }
 
-                            if (prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) {
+                            if (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) {
                                 if (ownobj.isSlaved?.value?.equalsIgnoreCase('yes')) {
                                     println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
                                 }
@@ -86,8 +86,9 @@
                         <semui:xEditable owner="${prop}" type="textarea" field="note"/>
                     </td>
                     <td class="x">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
+                        
                         <g:if test="${editable == true}">
-                            <g:if test="${(! ownobj.instanceOf) || ownobj.hasTemplate()}">
+                            <g:if test="${(! ownobj.hasProperty('instanceOf')) || (! ownobj.instanceOf) || ( ownobj in de.laser.interfaces.TemplateSupport && ownobj.hasTemplate())}">
                                 <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />
 
                                 <span data-position="top right" data-tooltip="${message(code:'property.audit.tooltip')}">
