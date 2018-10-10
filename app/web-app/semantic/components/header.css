@@ -131,7 +131,7 @@
 ---------------*/
 
 h1.ui.header {
-  font-size: 2rem;
+  font-size: 1.8rem;
 }
 h2.ui.header {
   font-size: 1.71428571rem;
@@ -169,7 +169,7 @@ h5.ui.header .sub.header {
 
 .ui.huge.header {
   min-height: 1em;
-  font-size: 2em;
+  font-size: 1.8em;
 }
 .ui.large.header {
   font-size: 1.71428571em;
@@ -233,7 +233,7 @@ h5.ui.header .sub.header {
 .ui.icon.header {
   display: inline-block;
   text-align: center;
-  margin: 2rem 0em 1rem;
+  margin: 1rem 0em 1rem;
 }
 .ui.icon.header:after {
   content: '';
@@ -281,7 +281,7 @@ h5.ui.header .sub.header {
 *******************************/
 
 .ui.disabled.header {
-  opacity: 0.45;
+  opacity: 0.1;
 }
 
 
@@ -327,13 +327,13 @@ h5.ui.header .sub.header {
 /*--- Red ---*/
 
 .ui.red.header {
-  color: #DB2828 !important;
+  color: #BB1600 !important;
 }
 a.ui.red.header:hover {
-  color: #d01919 !important;
+  color: #a21300 !important;
 }
 .ui.red.dividing.header {
-  border-bottom: 2px solid #DB2828;
+  border-bottom: 2px solid #BB1600;
 }
 
 /* Inverted */
@@ -347,21 +347,21 @@ a.ui.inverted.red.header:hover {
 /*--- Orange ---*/
 
 .ui.orange.header {
-  color: #F2711C !important;
+  color: #fa820a !important;
 }
 a.ui.orange.header:hover {
-  color: #f26202 !important;
+  color: #eb7500 !important;
 }
 .ui.orange.dividing.header {
-  border-bottom: 2px solid #F2711C;
+  border-bottom: 2px solid #fa820a;
 }
 
 /* Inverted */
 .ui.inverted.orange.header {
-  color: #FF851B !important;
+  color: #F95E1B !important;
 }
 a.ui.inverted.orange.header:hover {
-  color: #ff7701 !important;
+  color: #fb4c00 !important;
 }
 
 /*--- Olive ---*/
@@ -407,13 +407,13 @@ a.ui.inverted.yellow.header:hover {
 /*--- Green ---*/
 
 .ui.green.header {
-  color: #21BA45 !important;
+  color: #98B500 !important;
 }
 a.ui.green.header:hover {
-  color: #16ab39 !important;
+  color: #839c00 !important;
 }
 .ui.green.dividing.header {
-  border-bottom: 2px solid #21BA45;
+  border-bottom: 2px solid #98B500;
 }
 
 /* Inverted */
@@ -438,42 +438,42 @@ a.ui.teal.header:hover {
 
 /* Inverted */
 .ui.inverted.teal.header {
-  color: #6DFFFF !important;
+  color: #4192B0 !important;
 }
 a.ui.inverted.teal.header:hover {
-  color: #54ffff !important;
+  color: #3585a2 !important;
 }
 
 /*--- Blue ---*/
 
 .ui.blue.header {
-  color: #2185D0 !important;
+  color: #004678 !important;
 }
 a.ui.blue.header:hover {
-  color: #1678c2 !important;
+  color: #00375f !important;
 }
 .ui.blue.dividing.header {
-  border-bottom: 2px solid #2185D0;
+  border-bottom: 2px solid #004678;
 }
 
 /* Inverted */
 .ui.inverted.blue.header {
-  color: #54C8FF !important;
+  color: #39a1f2 !important;
 }
 a.ui.inverted.blue.header:hover {
-  color: #3ac0ff !important;
+  color: #1797fb !important;
 }
 
 /*--- Violet ---*/
 
 .ui.violet.header {
-  color: #6435C9 !important;
+  color: #76007A !important;
 }
 a.ui.violet.header:hover {
-  color: #5829bb !important;
+  color: #5d0061 !important;
 }
 .ui.violet.dividing.header {
-  border-bottom: 2px solid #6435C9;
+  border-bottom: 2px solid #76007A;
 }
 
 /* Inverted */
@@ -617,7 +617,7 @@ a.ui.inverted.grey.header:hover {
 
 .ui.dividing.header {
   padding-bottom: 0.21428571rem;
-  border-bottom: 1px solid rgba(34, 36, 38, 0.15);
+  border-bottom: 1px solid #eaeaea;
 }
 .ui.dividing.header .sub.header {
   padding-bottom: 0.21428571rem;
@@ -639,7 +639,7 @@ a.ui.inverted.grey.header:hover {
   -webkit-box-shadow: none;
           box-shadow: none;
   border: 1px solid #D4D4D5;
-  border-radius: 0.28571429rem;
+  border-radius: 0;
 }
 .ui.tiny.block.header {
   font-size: 0.85714286rem;
@@ -681,12 +681,12 @@ a.ui.inverted.grey.header:hover {
 }
 .ui.top.attached.header {
   margin-bottom: 0em;
-  border-radius: 0.28571429rem 0.28571429rem 0em 0em;
+  border-radius: 0 0 0em 0em;
 }
 .ui.bottom.attached.header {
   margin-top: 0em;
   border-top: none;
-  border-radius: 0em 0em 0.28571429rem 0.28571429rem;
+  border-radius: 0em 0em 0 0;
 }
 
 /* Attached Sizes */
@@ -713,9 +713,98 @@ a.ui.inverted.grey.header:hover {
 .ui.header:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) {
   font-size: 1.28571429em;
 }
-
-
-/*******************************
-         Theme Overrides
-*******************************/
-
+.ui.icon.header .circular.icon.la-object,
+.ui.icon.header .circular.icon.la-object-journal,
+.ui.icon.header .circular.icon.la-object-database,
+.ui.icon.header .circular.icon.la-object-ebook {
+  display: none;
+  color: white;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  font-size: 0.9em;
+}
+body[class*="License"] .ui.icon.header .circular.icon.la-object,
+body[class*="license"] .ui.icon.header .circular.icon.la-object {
+  display: inline-block;
+  background-color: #008C25;
+  border-color: #008C25;
+}
+body[class*="License"] .ui.icon.header .circular.icon.la-object:before,
+body[class*="license"] .ui.icon.header .circular.icon.la-object:before {
+  content: "\f24e";
+}
+body[class*="Package"] .ui.icon.header .circular.icon.la-object,
+body[class*="package"] .ui.icon.header .circular.icon.la-object {
+  display: inline-block;
+  background-color: #76007A;
+  border-color: #76007A;
+}
+body[class*="Package"] .ui.icon.header .circular.icon.la-object:before,
+body[class*="package"] .ui.icon.header .circular.icon.la-object:before {
+  content: "\f06b";
+}
+body[class*="Subscription"] .ui.icon.header .circular.icon.la-object,
+body[class*="subscription"] .ui.icon.header .circular.icon.la-object {
+  display: inline-block;
+  background-color: #fa820a;
+  border-color: #fa820a;
+}
+body[class*="Subscription"] .ui.icon.header .circular.icon.la-object:before,
+body[class*="subscription"] .ui.icon.header .circular.icon.la-object:before {
+  content: "\f07c";
+}
+body[class*="subscription"] .ui.icon.header .circular.icon.la-object {
+  display: inline-block;
+  background-color: #fa820a;
+  border-color: #fa820a;
+}
+body[class*="subscription"] .ui.icon.header .circular.icon.la-object:before {
+  content: "\f07c";
+}
+body[class*="Title"] .ui.icon.header .circular.icon.la-object,
+body[class*="title"] .ui.icon.header .circular.icon.la-object {
+  display: inline-block;
+  background-color: #004678;
+  border-color: #004678;
+}
+body[class*="Title"] .ui.icon.header .circular.icon.la-object:before,
+body[class*="title"] .ui.icon.header .circular.icon.la-object:before {
+  content: "\f02d";
+}
+body[class*="Organisation"] .ui.icon.header .circular.icon.la-object,
+body[class*="organisation"] .ui.icon.header .circular.icon.la-object {
+  display: inline-block;
+  background-color: #00B5AD;
+  border-color: #00B5AD;
+}
+body[class*="Organisation"] .ui.icon.header .circular.icon.la-object:before,
+body[class*="organisation"] .ui.icon.header .circular.icon.la-object:before {
+  content: "\f19c";
+}
+.ui.icon.header .circular.icon.la-object-journal {
+  display: inline-block;
+  background-color: #004678;
+  border-color: #004678;
+}
+.ui.icon.header .circular.icon.la-object-journal:before {
+  content: "\f1ea";
+}
+.ui.icon.header .circular.icon.la-object-database {
+  display: inline-block;
+  background-color: #004678;
+  border-color: #004678;
+}
+.ui.icon.header .circular.icon.la-object-database:before {
+  content: "\f1c0";
+}
+.ui.icon.header .circular.icon.la-object-ebook {
+  display: inline-block;
+  background-color: #004678;
+  border-color: #004678;
+}
+.ui.icon.header .circular.icon.la-object-ebook:before {
+  content: "\f3fa";
+}

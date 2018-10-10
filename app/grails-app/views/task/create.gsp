@@ -33,7 +33,7 @@
 			<div class="twelve wide column">
 
 				<div class="page-header">
-					<h1 class="ui header"><semui:headerIcon /><g:message code="default.create.label" args="[entityName]" /></h1>
+					<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="default.create.label" args="[entityName]" /></h1>
 				</div>
 
 				<g:if test="${flash.message}">

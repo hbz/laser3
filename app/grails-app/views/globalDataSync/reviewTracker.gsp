@@ -8,7 +8,7 @@
   <body>
 
 
-        <h1 class="ui header"><semui:headerIcon /><g:message code="globalDataSync.newTracker" args="[item.name,item.identifier,item.source.name]" /></h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="globalDataSync.newTracker" args="[item.name,item.identifier,item.source.name]" /></h1>
         <semui:messages data="${flash}" />
 
     <g:form action="createTracker" controller="globalDataSync" id="${params.id}">
@@ -17,7 +17,7 @@
       <input type="hidden" name="synctype" value="${type}"/>
 
       <div class="ui segment">
-        <h1 class="ui header"><semui:headerIcon /><g:message code="globalDataSync.reviewTracker"/></h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="globalDataSync.reviewTracker"/></h1>
         <g:if test="${type=='new'}">
           <p><g:message code="globalDataSync.reviewTrackerinfo" args="[item.name,item.source.name]" /></p>
           <dl>
@@ -64,7 +64,7 @@
     </script>
 
     <div class="ui segment">
-      <h1 class="ui header"><semui:headerIcon /><g:message code="globalDataSync.packageSyncImpact" /></h1>
+      <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="globalDataSync.packageSyncImpact" /></h1>
       <table class="ui celled la-table table">
         <tr>
             <g:if test="${type=='new'}">

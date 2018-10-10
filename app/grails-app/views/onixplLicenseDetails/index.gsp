@@ -16,7 +16,7 @@
         <semui:crumbAsBadge message="default.editable" class="orange" />
     </g:if>
 
-    <h1 class="ui header"><semui:headerIcon />ONIX-PL License : ${onixplLicense?.title}</h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />ONIX-PL License : ${onixplLicense?.title}</h1>
 
     <h6 class="ui header">${message(code:'laser', default:'LAS:eR')} ${message(code:'license.information')}</h6>
 

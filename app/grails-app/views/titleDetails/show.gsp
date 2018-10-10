@@ -15,7 +15,7 @@
           <semui:crumb class="active" text="${message(code:'title.title.label')}: ${ti.title}" />
       </semui:breadcrumbs>
 
-        <h1 class="ui header">
+  <h1 class="ui left aligned icon header">
             <semui:headerTitleIcon type="${ti.type.('value')}"/>
 
             <% /*

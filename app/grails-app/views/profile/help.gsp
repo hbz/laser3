@@ -12,7 +12,7 @@
     <semui:crumb message="menu.institutions.help" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui header"><semui:headerIcon />${message(code: 'menu.user.help')}</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'menu.user.help')}</h1>
 
 <div class="ui styled accordion">
     <div class="active title">

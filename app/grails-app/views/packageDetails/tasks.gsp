@@ -32,7 +32,7 @@
     </semui:controlButtons>
     <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
 
-    <h1 class="ui header"><semui:headerIcon />
+    <h1 class="ui left aligned icon header"><semui:headerIcon />
 
         ${packageInstance?.name}
     </h1>
