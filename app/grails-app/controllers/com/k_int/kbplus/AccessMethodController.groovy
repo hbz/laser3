@@ -12,7 +12,7 @@ class AccessMethodController {
     
     @Secured(['ROLE_USER', 'IS_AUTHENTICATED_FULLY'])
     def create() {
-        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
+        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
         
         def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
         if (params.validFrom) {

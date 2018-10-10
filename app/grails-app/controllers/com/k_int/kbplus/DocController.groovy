@@ -25,7 +25,7 @@ class DocController {
       	def result = [:]
       	result.user = User.get(springSecurityService.principal.id)
 
-		params.max = params.max ?: result.user?.getDefaultPageSize()
+		params.max = params.max ?: result.user?.getDefaultPageSizeTMP()
 
       	result.docInstanceList = Doc.list(params)
       	result.docInstanceTotal = Doc.count()

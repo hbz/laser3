@@ -21,7 +21,7 @@ class ContactController {
 
     @Secured(['ROLE_USER'])
     def list() {
-		params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
+		params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
         [contactInstanceList: Contact.list(params), contactInstanceTotal: Contact.count()]
     }
 

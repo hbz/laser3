@@ -15,7 +15,7 @@ class ${className}Controller {
     def list() {
 		if (! params.max) {
 			User user   = springSecurityService.getCurrentUser()
-			params.max = user?.getDefaultPageSize()
+			params.max = user?.getDefaultPageSizeTMP()
 		}
         [${propertyName}List: ${className}.list(params), ${propertyName}Total: ${className}.count()]
     }

@@ -70,7 +70,7 @@ class OrganisationsController {
 
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        params.max = params.max ?: result.user?.getDefaultPageSize()
+        params.max  = params.max ?: result.user?.getDefaultPageSizeTMP()
         params.sort = " LOWER(o.sortname), LOWER(o.name)"
 
         def fsq = filterService.getOrgQuery(params)
@@ -93,14 +93,14 @@ class OrganisationsController {
 
         def fsq            = filterService.getOrgQuery(params)
         def orgListTotal   = Org.findAll(fsq.query, fsq.queryParams)
-        params.max         = params.max ?: result.user?.getDefaultPageSize()
+        params.max        = params.max ?: result.user?.getDefaultPageSizeTMP()
         def fsq2           = null
 
         if (params.filterPropDef) {
             def tmpQuery
             def tmpQueryParams
             fsq2 = filterService.getOrgQuery([constraint_orgIds: orgListTotal.collect{ it2 -> it2.id }] << params)
-           (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, fsq2.query, 'o', [:])
+            (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, fsq2.query, 'o', [:])
             def tmpQueryParams2 = fsq2.queryParams << tmpQueryParams
             result.orgList      = Org.findAll(tmpQuery, tmpQueryParams2, params)
             result.orgListTotal = Org.executeQuery("select count (o) ${tmpQuery}", tmpQueryParams2)[0]

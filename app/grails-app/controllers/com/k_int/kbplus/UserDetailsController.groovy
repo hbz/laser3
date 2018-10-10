@@ -31,7 +31,7 @@ class UserDetailsController {
         result.editable = true // TODO; checked in gsp against ROLE_YODA
 
 
-        params.max = params.max ?: result.user?.getDefaultPageSize()
+        params.max = params.max ?: result.user?.getDefaultPageSizeTMP()
         def results = null;
         def count = null;
 

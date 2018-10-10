@@ -22,7 +22,7 @@ class TaskController {
     def list() {
 		if (! params.max) {
 			User user   = springSecurityService.getCurrentUser()
-			params.max  = user?.getDefaultPageSize()
+			params.max  = user?.getDefaultPageSizeTMP()
 		}
         [taskInstanceList: Task.list(params), taskInstanceTotal: Task.count()]
     }

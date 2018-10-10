@@ -14,6 +14,7 @@ import com.k_int.kbplus.Org
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ProfileController {
 
+    def genericOIDService
     def springSecurityService
     def passwordEncoder
     def errorReportService
@@ -156,10 +157,12 @@ class ProfileController {
         long l = Long.parseLong(params.defaultPageSize);
         if ( ( l >= 5 ) && ( l <= 100 ) ) {
           Long new_long = new Long(l);
-          if ( new_long != user.defaultPageSize ) {
+          if ( new_long != user.getDefaultPageSizeTMP() ) {
             flash.message += message(code:'profile.updateProfile.updated.pageSize', default:"User default page size updated<br/>")
           }
-          user.defaultPageSize = new_long
+            //user.setDefaultPageSizeTMP(new_long)
+            def setting = user.getSetting(UserSettings.KEYS.PAGE_SIZE, null)
+            setting.setValue(size)
      
         }
         else {
@@ -170,18 +173,20 @@ class ProfileController {
       }
     }
 
-    if ( params.defaultDash != user.defaultDash?.id.toString() ) {
+      user.save();
+
+    if ( params.defaultDash != user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.getId().toString() ) {
       flash.message+= message(code:'profile.updateProfile.updated.dash', default:"User default dashboard updated<br/>")
+        def setting = user.getSetting(UserSettings.KEYS.DASHBOARD, null)
+
       if ( params.defaultDash == '' ) {
-        user.defaultDash = null
+          setting.setValue(null)
       }
       else {
-        user.defaultDash = Org.get(params.defaultDash);
+          def org = genericOIDService.resolveOID(params.defaultDash)
+          setting.setValue(org)
       }
     }
-
-    user.save();
-
 
     redirect(action: "index")
   }

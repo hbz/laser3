@@ -91,7 +91,7 @@ class MyInstitutionController {
         def result = [:]
 
         result.user = User.get(springSecurityService.principal.id)
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         def current_inst = contextService.getOrg()
         //if(params.shortcode) current_inst = Org.findByShortcode(params.shortcode);
@@ -217,7 +217,7 @@ class MyInstitutionController {
                             ]// private properties
                         )
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         result.max = params.format ? 10000 : result.max
         result.offset = params.format? 0 : result.offset
@@ -395,7 +395,7 @@ from License as l where (
     def emptyLicense() {
         def result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
@@ -502,7 +502,7 @@ from License as l where (
         def fsq2 = null
         //TODO Testen, was passiert, wenn orgListToal null oder leer ist
 //        if (isPropertyFilterUsed() && orgListTotal?.size() > 0) {
-        if (isPropertyFilterUsed()) {
+        if (params.filterPropDef) {
             fsq2 = filterService.getOrgQuery([constraint_orgIds: orgListTotal?.collect{ it2 -> it2.id }] << params)
             //            (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, tmpQuery, 'o', tmpQueryParams)
         } else {
@@ -511,19 +511,21 @@ from License as l where (
 
         result.orgList      = Org.findAll(fsq2.query, fsq2.queryParams, params)
         result.orgListTotal = Org.executeQuery("select count (o) ${fsq2.query}", fsq2.queryParams)[0]
+        if (params?.sort?.contains("o.name") && params?.order?.equalsIgnoreCase("desc")){
+            result.orgList.sort{a, b -> b.name.compareToIgnoreCase a.name}
+        } else {
+            result.orgList.sort{a, b -> a.name.compareToIgnoreCase b.name}
+        }
         result.test = mySubs //TODO wofür ist das gut?
         result
     }
 
-    def isPropertyFilterUsed() {
-        params.filterPropDef
-    }
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentSubscriptions() {
         def result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [result.institution])
@@ -838,7 +840,7 @@ from Subscription as s where (
 
         def public_flag = RefdataCategory.lookupOrCreate('YN', 'Yes');
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         // def base_qry = " from Subscription as s where s.type.value = 'Subscription Offered' and s.isPublic=?"
@@ -1333,7 +1335,7 @@ from Subscription as s where (
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
 
         // Set offset and max
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         def filterSub = params.list("filterSub")
@@ -2957,7 +2959,7 @@ AND EXISTS (
             return;
         }
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         getTodoForInst(result)
 
@@ -2969,7 +2971,7 @@ AND EXISTS (
     def announcements() {
         def result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         def announcement_type = RefdataCategory.lookupOrCreate('Document Type', 'Announcement')
@@ -2996,7 +2998,7 @@ AND EXISTS (
           result.offset = 0;
         }
         else {
-          result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+          result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
           result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         }
 
@@ -3119,7 +3121,7 @@ AND EXISTS (
 
         def result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         def qParts = [
                 'p.tenant = :tenant',

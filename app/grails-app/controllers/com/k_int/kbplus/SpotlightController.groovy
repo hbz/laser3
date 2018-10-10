@@ -71,7 +71,7 @@ class SpotlightController {
     def filtered
     def query = params.query
     result.user = springSecurityService.getCurrentUser()
-    //params.max = result.user.defaultPageSize ?: 15
+    //params.max = result.user.getDefaultPageSizeTMP() ?: 15
     params.max = 50
 
         if (!query) {

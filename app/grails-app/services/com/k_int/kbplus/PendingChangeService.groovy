@@ -172,7 +172,7 @@ def performAccept(change,httpRequest) {
 
                 // A: get existing targetProperty by instanceOf
                 def targetProperty = srcProperty.getClass().findByOwnerAndInstanceOf(changeTarget, srcProperty)
-                /*
+
                 def setInstanceOf
 
                 // B: get existing targetProperty by name if not multiple allowed
@@ -187,14 +187,14 @@ def performAccept(change,httpRequest) {
                     targetProperty = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, changeTarget, srcProperty.type)
                     setInstanceOf = true
                 }
-                */
+
                 //def updateProp = target_object.customProperties.find{it.type.name == changeDoc.name}
                 if (targetProperty) {
                     // in case of C or B set instanceOf
-                    /*if (setInstanceOf && targetProperty.hasProperty('instanceOf')) {
+                    if (setInstanceOf && targetProperty.hasProperty('instanceOf')) {
                         targetProperty.instanceOf = srcProperty
                         targetProperty.save(flush: true)
-                    }*/
+                    }
 
                     if (changeDoc.event.endsWith('CustomProperty.deleted')) {
 
