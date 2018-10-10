@@ -457,7 +457,15 @@ class SemanticUiTagLib {
         def label       = attrs.label ? "${message(code: attrs.label)}" : '&nbsp'
         def name        = attrs.name ? "${message(code: attrs.name)}" : ''
         def placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : 'Date'
-        def value       = attrs.value ?: ''
+
+        def sdf         = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def value       = ''
+        try {
+            value = attrs.value ? sdf.format(attrs.value) : value
+        }
+        catch (Exception e) {
+        }
+
         def classes     = attrs.required ? 'field fieldcontain required' : 'field fieldcontain'
         def required    = attrs.required ? 'required="true"' : ''
         def hideLabel   = attrs.hideLabel ? false : true

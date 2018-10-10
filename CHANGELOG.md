@@ -1,4 +1,9 @@
 
+0.9.1
+
+- fixed: datepicker format
+- fixed: list sorting for provider and organisations
+
 0.9
 
 - reworked dashbord, e.g. tasks
