@@ -9,42 +9,43 @@ class FilterService {
     def getOrgQuery(params) {
         def result = [:]
         def query = []
-        def queryParams = []
+        def queryParams = [:]
 
         if (params.orgNameContains?.length() > 0) {
-            query << "(lower(o.name) like ? or lower(o.shortname) like ? or lower(o.sortname) like ?)"
-            queryParams << "%${params.orgNameContains.toLowerCase()}%"
-            queryParams << "%${params.orgNameContains.toLowerCase()}%"
-            queryParams << "%${params.orgNameContains.toLowerCase()}%"
+            query << "(lower(o.name) like :orgNameContains1 or lower(o.shortname) like :orgNameContains2 or lower(o.sortname) like :orgNameContains3)"
+            queryParams.put("orgNameContains1", "%${params.orgNameContains.toLowerCase()}%")
+            queryParams.put("orgNameContains2", "%${params.orgNameContains.toLowerCase()}%")
+            queryParams.put("orgNameContains3", "%${params.orgNameContains.toLowerCase()}%")
         }
         if (params.orgRoleType?.length() > 0) {
-            query << " exists (select roletype from o.orgRoleType as roletype where roletype.id = ? )"
-            queryParams << Long.parseLong(params.orgRoleType)
+            query << " exists (select roletype from o.orgRoleType as roletype where roletype.id = :orgRoleType )"
+            queryParams.put("orgRoleType", Long.parseLong(params.orgRoleType))
         }
         if (params.orgSector?.length() > 0) {
-            query << "o.sector.id = ?"
-            queryParams << Long.parseLong(params.orgSector)
+            query << "o.sector.id = :orgSector"
+            queryParams.put("orgSector", Long.parseLong(params.orgSector))
         }
         if (params.federalState?.length() > 0) {
-            query << "o.federalState.id = ?"
-            queryParams << Long.parseLong(params.federalState)
+            query << "o.federalState.id = :federalState"
+            queryParams.put("federalState", Long.parseLong(params.federalState))
         }
         if (params.libraryNetwork?.length() > 0) {
-            query << "o.libraryNetwork.id = ?"
-            queryParams << Long.parseLong(params.libraryNetwork)
+            query << "o.libraryNetwork.id = :libraryNetwork"
+            queryParams.put("libraryNetwork", Long.parseLong(params.libraryNetwork))
         }
         if (params.libraryType?.length() > 0) {
-            query << "o.libraryType.id = ?"
-            queryParams << Long.parseLong(params.libraryType)
+            query << "o.libraryType.id = :libraryType"
+            queryParams.put("libraryType", Long.parseLong(params.libraryType))
         }
         if (params.country?.length() > 0) {
-            query << "o.country.id = ?"
-            queryParams << Long.parseLong(params.country)
+            query << "o.country.id = :country"
+            queryParams.put("country", Long.parseLong(params.country))
         }
 
         // hack: applying filter on org subset
         if (params.constraint_orgIds) {
-            query << "o.id in ( " + params.constraint_orgIds?.join(',') + " )"
+            query << "o.id in ( :constraint_orgIds )"
+            queryParams.put("constraint_orgIds", params.constraint_orgIds)
         }
 
         def defaultOrder = " order by " + (params.sort ?: " LOWER(o.name)") + " " + (params.order ?: "asc")

@@ -500,8 +500,11 @@ from License as l where (
         params.max = params.max ?: result.user?.getDefaultPageSize()
 
         def fsq2 = null
-        if (isPropertyFilterUsed() && orgListTotal?.size() > 0) {
+        //TODO Testen, was passiert, wenn orgListToal null oder leer ist
+//        if (isPropertyFilterUsed() && orgListTotal?.size() > 0) {
+        if (isPropertyFilterUsed()) {
             fsq2 = filterService.getOrgQuery([constraint_orgIds: orgListTotal?.collect{ it2 -> it2.id }] << params)
+            //            (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, tmpQuery, 'o', tmpQueryParams)
         } else {
             fsq2 = filterService.getOrgQuery(params)
         }
