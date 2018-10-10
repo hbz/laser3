@@ -957,11 +957,10 @@ class AjaxController {
         if (AuditConfig.getConfig(property, AuditConfig.COMPLETE_OBJECT)) {
 
             property.getClass().findByInstanceOf(property).each{ prop ->
-                prop.instanceOf = null
-                prop.save(flush: true)
+                prop.delete(flush: true)
             }
             AuditConfig.removeAllConfigs(property)
-
+            // TODO: delete pending changes
         }
         else {
 

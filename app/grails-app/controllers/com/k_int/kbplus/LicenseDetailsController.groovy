@@ -547,6 +547,8 @@ from Subscription as s where
             (instanceOf == result.license) && (status.value != 'Deleted')
         }
 
+        result.pendingChanges = [:]
+
         validMemberLicenses.each{ member ->
 
             def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
