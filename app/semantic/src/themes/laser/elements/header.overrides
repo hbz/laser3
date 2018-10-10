@@ -1,8 +1,4 @@
 
-.ui.icon.header .circular.icon.la-object {
-  font-size: 0.9em;
-}
-
 .ui.icon.header .circular.icon.la-object,
 .ui.icon.header .circular.icon.la-object-journal,
 .ui.icon.header .circular.icon.la-object-database,
@@ -11,6 +7,7 @@
   color: white;
   box-shadow: none;
   align-items: center;
+  font-size: 0.9em;
 }
 
 body[class*="License"]

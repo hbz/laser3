@@ -713,9 +713,6 @@ a.ui.inverted.grey.header:hover {
 .ui.header:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) {
   font-size: 1.28571429em;
 }
-.ui.icon.header .circular.icon.la-object {
-  font-size: 0.9em;
-}
 .ui.icon.header .circular.icon.la-object,
 .ui.icon.header .circular.icon.la-object-journal,
 .ui.icon.header .circular.icon.la-object-database,
@@ -727,6 +724,7 @@ a.ui.inverted.grey.header:hover {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
+  font-size: 0.9em;
 }
 body[class*="License"] .ui.icon.header .circular.icon.la-object,
 body[class*="license"] .ui.icon.header .circular.icon.la-object {
