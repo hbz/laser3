@@ -956,11 +956,21 @@ class AjaxController {
 
         if (AuditConfig.getConfig(property, AuditConfig.COMPLETE_OBJECT)) {
 
-            property.getClass().findByInstanceOf(property).each{ prop ->
+            property.getClass().findAllByInstanceOf(property).each{ prop ->
                 prop.delete(flush: true)
             }
             AuditConfig.removeAllConfigs(property)
-            // TODO: delete pending changes
+
+            // delete pending changes
+
+            def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
+            openPD.each { pc ->
+                def event = JSON.parse(pc.changeDoc)
+                def scp = genericOIDService.resolveOID(event.changeDoc.OID)
+                if (scp?.id == property.id) {
+                    pc.delete(flush: true)
+                }
+            }
         }
         else {
 
@@ -1019,8 +1029,14 @@ class AjaxController {
 
         AuditConfig.removeAllConfigs(property)
 
-        owner.customProperties.remove(property)
-        property.delete(flush:true)
+        //owner.customProperties.remove(property)
+
+        try {
+            property.delete(flush:true)
+        } catch (Exception e) {
+            log.error(" TODO: fix property.delete() when instanceOf ")
+        }
+
 
         if(property.hasErrors()) {
             log.error(property.errors)
