@@ -26,7 +26,7 @@ import="com.k_int.kbplus.RefdataCategory"
         </semui:controlButtons>
 
 
-        <h1 class="ui header"><semui:headerIcon />${institution?.name} - ${message(code:'menu.institutions.myAddressbook', default:'My Addressbook')}</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${institution?.name} - ${message(code:'menu.institutions.myAddressbook', default:'My Addressbook')}</h1>
 
         <semui:messages data="${flash}" />
 

@@ -20,7 +20,7 @@
 		</g:else>
 	</semui:breadcrumbs>
 
-		<h1 class="ui header"><semui:headerIcon /><g:message code="default.show.label" args="[entityName]" /></h1>
+		<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="default.show.label" args="[entityName]" /></h1>
 
         <button class="ui button" onclick="window.location.href = document.referrer">
             Zurück

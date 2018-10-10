@@ -14,7 +14,7 @@
 	<semui:crumb message="menu.institutions.comp_onix" class="active" />
 </semui:breadcrumbs>
 
-	<h1 class="ui header"><semui:headerIcon />${message(code:'menu.institutions.comp_onix')}</h1>
+	<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.comp_onix')}</h1>
 
 	<div>
 		<div class="row">

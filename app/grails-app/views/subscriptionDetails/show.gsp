@@ -29,10 +29,10 @@
         </semui:controlButtons>
 
         <g:if test="${params.asAt}">
-            <h1 class="ui header"><semui:headerIcon />${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])}</h1>
+            <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])}</h1>
         </g:if>
 
-        <h1 class="ui header"><semui:headerIcon />
+        <h1 class="ui left aligned icon header"><semui:headerIcon />
             <semui:xEditable owner="${subscriptionInstance}" field="name" />
 
             <span class="la-forward-back">

@@ -17,7 +17,7 @@
 
         <g:render template="actions" />
 
-        <h1 class="ui header"><semui:headerIcon />${institution?.name} - ${message(code:'myinst.addSubscription.label')}</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${institution?.name} - ${message(code:'myinst.addSubscription.label')}</h1>
 
         <semui:messages data="${flash}"/>
 

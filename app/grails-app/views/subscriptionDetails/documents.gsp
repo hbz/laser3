@@ -13,7 +13,7 @@
     </semui:controlButtons>
     <semui:messages data="${flash}" />
 
-      <h1 class="ui header"><semui:headerIcon />
+      <h1 class="ui left aligned icon header"><semui:headerIcon />
 
           <semui:xEditable owner="${subscriptionInstance}" field="name" />
       </h1>

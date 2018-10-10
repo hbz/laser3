@@ -22,7 +22,7 @@
         </semui:breadcrumbs>
 
 
-        <h1 class="ui header"><semui:headerIcon />Org Info</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />Org Info</h1>
 
         <table class="ui celled la-table table">
             <thead>

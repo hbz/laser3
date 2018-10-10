@@ -11,7 +11,7 @@
     <semui:crumb text="Application Security" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui header"><semui:headerIcon />Application Security</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon />Application Security</h1>
 
 <h3 class="ui header">Hierarchical Global Roles</h3>
 
