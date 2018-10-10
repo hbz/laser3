@@ -20,7 +20,8 @@
             <g:render template="/templates/filter/orgFilter"
                       model="[
                               propList: propList,
-                              tmplConfigShow: ['property', 'name', 'country']
+                              orgRoleTypes: orgRoleTypes,
+                              tmplConfigShow: ['type', 'property', 'name', 'country']
                       ]"/>
         </g:form>
     </semui:filter>
