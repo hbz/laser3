@@ -1,3 +1,9 @@
+.ui.icon.header .icon {
+  display: inline-block;
+}
+.ui.icon.header .editable-clear-x {
+  font-size: 1em;
+}
 
 .ui.icon.header .circular.icon.la-object,
 .ui.icon.header .circular.icon.la-object-journal,
@@ -101,5 +107,13 @@ body[class*="organisation"] {
   border-color: @title;
   &:before {
     content: "\f3fa";
+  }
+}
+.ui.icon.header .icon.button {
+  padding: .78571429em .78571429em .78571429em;
+  font-size: 1em;
+  margin: 0 .25em 0 0;
+  i.icon {
+    font-size: 1em;
   }
 }
