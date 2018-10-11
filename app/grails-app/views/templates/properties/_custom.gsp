@@ -92,7 +92,7 @@
                                 <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />
 
                                 <span data-position="top right" data-tooltip="${message(code:'property.audit.tooltip')}">
-                                <g:remoteLink controller="ajax" action="toggleAuditConfig"
+                                <g:remoteLink controller="ajax" action="togglePropertyAuditConfig"
                                               before="if(!confirm('${auditMsg}')) return false"
                                               params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}"]' id="${prop.id}"
                                               onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"

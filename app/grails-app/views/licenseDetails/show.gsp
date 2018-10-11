@@ -450,6 +450,7 @@
                 <g:render template="/templates/documents/card" model="${[ownobj:license, owntp:'license']}" />
                 <g:render template="/templates/notes/card"  model="${[ownobj:license, owntp:'license']}" />
 
+                <g:render template="/templates/audit/config" model="${[ownobj:license]}" />
             </aside><!-- .four -->
         </div><!-- .grid -->
 

@@ -947,7 +947,76 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
-    def toggleAuditConfig() {
+    def showAuditConfigManager() {
+
+        def owner = genericOIDService.resolveOID(params.target)
+        if (owner) {
+            render(template: "/templates/audit/modal_config", model:[
+                    ownobj: owner,
+                    target: params.target,
+                    properties: owner.getClass().controlledProperties
+            ])
+        }
+    }
+    @Secured(['ROLE_USER'])
+    def processAuditConfigManager() {
+
+        def owner = genericOIDService.resolveOID(params.target)
+        if (owner) {
+            def objProps = owner.getClass().controlledProperties
+            def positiveList = params.list('properties')
+            def negativeList = objProps.minus(positiveList)
+
+            println " + " + positiveList
+            println " - " + negativeList
+
+            def member = owner.getClass().findAllByInstanceOf(owner)
+
+            positiveList.each{ prop ->
+                if (! AuditConfig.getConfig(owner, prop)) {
+                    AuditConfig.addConfig(owner, prop)
+
+                    member.each { m ->
+                        m."${prop}" = owner."${prop}"
+                        m.save(flush: true)
+                    }
+                }
+            }
+            negativeList.each{ prop ->
+                if (AuditConfig.getConfig(owner, prop)) {
+                    AuditConfig.removeConfig(owner, prop)
+
+                    member.each { m ->
+                        //m."${prop}" = null
+                        //m.save(flush: true)
+                        println " TODO: ${m} -> DELETE: ${prop}"
+                    }
+                    // todo remove pending changes
+
+                    // delete pending changes
+
+                    def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
+                    openPD.each { pc ->
+                        def event = JSON.parse(pc.changeDoc)
+                        def eventObj = genericOIDService.resolveOID(event.changeDoc.OID)
+                        def eventProp = event.changeDoc.prop
+
+                        println eventObj
+                        println eventProp
+
+                        if (eventObj?.id == owner.id && eventProp.equalsIgnoreCase(prop)) {
+                            pc.delete(flush: true)
+                        }
+                    }
+                }
+            }
+        }
+
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_USER'])
+    def togglePropertyAuditConfig() {
         def className = params.propClass.split(" ")[1]
         def propClass = Class.forName(className)
         def owner     = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ", ""))?.getClazz()?.get(params.ownerId)
