@@ -515,7 +515,6 @@ from License as l where (
             result.orgList      = Org.findAll(fsq2.query, fsq2.queryParams, params)
             result.orgListTotal = Org.executeQuery("select count (o) ${fsq2.query}", fsq2.queryParams)[0]
         }
-        result.test = mySubs
         result
     }
 

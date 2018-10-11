@@ -205,7 +205,6 @@
             </g:if>
             <g:if test="${tmplConfigShow?.contains('licenses')}">
                 <td>
-                    *** überprüfen!!! ***
                     <br>
                     ${Subscription.executeQuery("SELECT distinct count(*) FROM Subscription as s " +
                             "WHERE status != :status and startDate <= :heute and endDate >= :heute " +

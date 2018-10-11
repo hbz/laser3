@@ -71,7 +71,7 @@ class OrganisationsController {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
         params.max  = params.max ?: result.user?.getDefaultPageSizeTMP()
-        params.sort        = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
+        params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
         def fsq = filterService.getOrgQuery(params)
 
@@ -93,7 +93,7 @@ class OrganisationsController {
 
         def fsq            = filterService.getOrgQuery(params)
         def orgListTotal   = Org.findAll(fsq.query, fsq.queryParams)
-        params.max        = params.max ?: result.user?.getDefaultPageSizeTMP()
+        params.max         = params.max ?: result.user?.getDefaultPageSizeTMP()
         def fsq2           = null
 
         if (params.filterPropDef) {
