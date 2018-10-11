@@ -1,10 +1,6 @@
 .ui.icon.header .icon {
   display: inline-block;
 }
-.ui.icon.header .editable-clear-x {
-  font-size: 1em;
-}
-
 .ui.icon.header .circular.icon.la-object,
 .ui.icon.header .circular.icon.la-object-journal,
 .ui.icon.header .circular.icon.la-object-database,
@@ -13,7 +9,6 @@
   color: white;
   box-shadow: none;
   align-items: center;
-  font-size: 0.9em;
 }
 
 body[class*="License"]
@@ -109,6 +104,7 @@ body[class*="organisation"] {
     content: "\f3fa";
   }
 }
+
 .ui.icon.header .icon.button {
   padding: .78571429em .78571429em .78571429em;
   font-size: 1em;
@@ -117,3 +113,10 @@ body[class*="organisation"] {
     font-size: 1em;
   }
 }
+.ui.icon.header .editable-clear-x {
+  font-size: @21px;
+}
+
+.ui.icon.header .ui.form input[type=text] {
+  font-size: @14px;
+ }
