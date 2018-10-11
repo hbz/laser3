@@ -479,7 +479,7 @@ from License as l where (
         def roletype_agency     = RefdataValue.getByValueAndCategory('Agency', 'OrgRoleType')
         result.orgRoleTypes     = [roletype_provider, roletype_agency]
         result.propList         = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-        params.sort             = " LOWER(o.shortname), LOWER(o.name)"
+        params.sort             = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
         def mySubs = Subscription.executeQuery( """
             select s from Subscription as s join s.orgRelations as ogr where
@@ -498,7 +498,7 @@ from License as l where (
                 orgListTotal << provider.org
             }
         }
-        result.user = User.get(springSecurityService.principal.id)
+//        result.user = User.get(springSecurityService.principal.id)
         params.max        = params.max ?: result.user?.getDefaultPageSizeTMP()
 
         def fsq2  = filterService.getOrgQuery([constraint_orgIds: orgListTotal.collect{ it2 -> it2.id }] << params)
@@ -506,18 +506,16 @@ from License as l where (
         if (params.filterPropDef) {
             def tmpQuery
             def tmpQueryParams
-//            fsq2 = filterService.getOrgQuery([constraint_orgIds: orgListTotal.collect{ it2 -> it2.id }] << params)
             (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, fsq2.query, 'o', [:])
             def tmpQueryParams2 = fsq2.queryParams << tmpQueryParams
             result.orgList      = Org.findAll(tmpQuery, tmpQueryParams2, params)
             result.orgListTotal = Org.executeQuery("select count (o) ${tmpQuery}", tmpQueryParams2)[0]
 
         } else {
-//            fsq2 = filterService.getOrgQuery(params)
             result.orgList      = Org.findAll(fsq2.query, fsq2.queryParams, params)
             result.orgListTotal = Org.executeQuery("select count (o) ${fsq2.query}", fsq2.queryParams)[0]
         }
-        result.test = mySubs //TODO wofür ist das gut?
+        result.test = mySubs
         result
     }
 
