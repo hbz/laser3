@@ -299,7 +299,7 @@ class AjaxController {
                 def binding_properties = [ "${params.name}":value ]
                 bindData(target, binding_properties)
                 if (target.hasProperty('owner')) {
-                    target.owner.save()  // avoid .. not processed by flush
+                    target.owner?.save()  // avoid .. not processed by flush
                 }
             }
 
@@ -1438,7 +1438,7 @@ class AjaxController {
                         target_object."${params.name}" = null
                     }
                     if (target_object.hasProperty('owner')) {
-                        target_object.owner.save() // avoid owner.xyz not processed by flush
+                        target_object.owner?.save() // avoid owner.xyz not processed by flush
                     }
                     target_object.save(failOnError: true, flush: true);
                 }
@@ -1458,7 +1458,7 @@ class AjaxController {
                 bindData(target_object, binding_properties)
 
                 if (target_object.hasProperty('owner')) {
-                    target_object.owner.save() // avoid owner.xyz not processed by flush
+                    target_object.owner?.save() // avoid owner.xyz not processed by flush
                 }
                 target_object.save(failOnError: true, flush: true);
 
