@@ -4,6 +4,7 @@ import com.k_int.kbplus.RefdataValue
 
 class FilterService {
 
+    private static final String FAKE_QUERY_CONSTRAINT_OHNE_TREFFER = "o.id = -1"
     def springSecurityService
 
     def getOrgQuery(params) {
@@ -43,9 +44,14 @@ class FilterService {
         }
 
         // hack: applying filter on org subset
-        if (params.constraint_orgIds) {
+        if (params.constraint_orgIds?.size() < 1) {
+            query << "o.id = :oid"
+            queryParams.put("oid", new Long(-1L))
+        }else if (params.constraint_orgIds?.size() > 0) {
             query << "o.id in ( :constraint_orgIds )"
             queryParams.put("constraint_orgIds", params.constraint_orgIds)
+        } else {
+            print "Dieser Fall sollte nicht auftreten."
         }
 
         def defaultOrder = " order by " + (params.sort ?: " LOWER(o.name)") + " " + (params.order ?: "asc")
