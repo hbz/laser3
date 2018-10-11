@@ -252,7 +252,7 @@ h5.ui.header .sub.header {
   height: auto;
   line-height: 1;
   padding: 0em;
-  font-size: 1.5em;
+  font-size: 22px;
   margin: 0em auto 0.5rem;
   opacity: 1;
 }
@@ -261,7 +261,7 @@ h5.ui.header .sub.header {
   padding: 0em;
 }
 .ui.icon.header .circular.icon {
-  font-size: 2em;
+  font-size: 22px;
 }
 .ui.icon.header .square.icon {
   font-size: 2em;
@@ -716,9 +716,6 @@ a.ui.inverted.grey.header:hover {
 .ui.icon.header .icon {
   display: inline-block;
 }
-.ui.icon.header .editable-clear-x {
-  font-size: 1em;
-}
 .ui.icon.header .circular.icon.la-object,
 .ui.icon.header .circular.icon.la-object-journal,
 .ui.icon.header .circular.icon.la-object-database,
@@ -730,7 +727,6 @@ a.ui.inverted.grey.header:hover {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  font-size: 0.9em;
 }
 body[class*="License"] .ui.icon.header .circular.icon.la-object,
 body[class*="license"] .ui.icon.header .circular.icon.la-object {
@@ -821,4 +817,10 @@ body[class*="organisation"] .ui.icon.header .circular.icon.la-object:before {
 }
 .ui.icon.header .icon.button i.icon {
   font-size: 1em;
+}
+.ui.icon.header .editable-clear-x {
+  font-size: 1.5rem;
+}
+.ui.icon.header .ui.form input[type=text] {
+  font-size: 1rem;
 }
