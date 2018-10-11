@@ -60,6 +60,9 @@
                         <g:elseif test="${prop.type.type == BigDecimal.toString()}">
                             <semui:xEditable owner="${prop}" type="text" field="decValue" overwriteEditable="${overwriteEditable}" />
                         </g:elseif>
+                        <g:elseif test="${prop.type.type == Date.toString()}">
+                            <semui:xEditable owner="${prop}" type="date" field="dateValue" overwriteEditable="${overwriteEditable}" />
+                        </g:elseif>
                         <g:elseif test="${prop.type.type == RefdataValue.toString()}">
                             <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}" />
                         </g:elseif>

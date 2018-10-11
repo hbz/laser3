@@ -432,6 +432,7 @@ class SemanticUiTagLib {
             value = attrs.value ? sdf.format(attrs.value) : value
         }
         catch (Exception e) {
+            value = attrs.value ?: value
         }
 
         def classes     = attrs.required ? 'field fieldcontain required' : 'field fieldcontain'
