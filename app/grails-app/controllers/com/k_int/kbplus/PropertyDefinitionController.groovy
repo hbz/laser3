@@ -20,7 +20,7 @@ class PropertyDefinitionController {
         redirect controller: 'home', action: 'index'
         return // ----- deprecated
 
-        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
+        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
         [propDefInstanceList: PropertyDefinition.list(params), propertyDefinitionTotal: PropertyDefinition.count(), editable:false]
     }
 

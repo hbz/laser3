@@ -10,7 +10,7 @@
 
         <g:render template="breadcrumb" model="${[ params:params ]}"/>
 
-        <h1 class="ui header"><semui:headerIcon />${message(code:'user.create_new.label')}</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'user.create_new.label')}</h1>
 
         <semui:messages data="${flash}" />
 

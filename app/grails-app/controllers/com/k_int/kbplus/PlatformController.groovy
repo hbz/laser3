@@ -23,7 +23,7 @@ class PlatformController {
     def list() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        result.max = params.max ?: result.user.defaultPageSize
+        result.max = params.max ?: result.user.getDefaultPageSizeTMP()
 
         result.offset = params.offset ?: 0
 

@@ -11,7 +11,7 @@
       <semui:crumb message="menu.datamanager.dash" class="active"/>
     </semui:breadcrumbs>
 
-    <h1 class="ui header"><semui:headerIcon />${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.datamanager.dash', default:'Data Manager Dashboard')}</h1>
 
   <semui:messages data="${flash}" />
 

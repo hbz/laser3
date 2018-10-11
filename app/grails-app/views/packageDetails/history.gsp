@@ -16,7 +16,7 @@
 
     <semui:messages data="${flash}" />
 
-    <h1 class="ui header"><semui:headerIcon />
+    <h1 class="ui left aligned icon header"><semui:headerIcon />
 
         ${packageInstance?.name}
     </h1>

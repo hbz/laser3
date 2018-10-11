@@ -12,7 +12,7 @@
     <semui:crumb message="menu.user.properties" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui header"><semui:headerIcon />${message(code: 'menu.user.properties', default: 'Properties and Refdatas')}</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'menu.user.properties', default: 'Properties and Refdatas')}</h1>
 
 
 <h3>${message(code: 'propertyDefinition.plural', default: 'Properties')}</h3>

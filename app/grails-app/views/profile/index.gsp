@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataValue;com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserOrg" %>
+<%@ page import="com.k_int.kbplus.UserSettings; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserOrg" %>
 <!doctype html>
 <html>
 <head>
@@ -12,7 +12,7 @@
     <semui:crumb message="profile.bc.profile" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui header"><semui:headerIcon />${message(code: 'profile', default: 'LAS:eR User Profile')}</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'profile', default: 'LAS:eR User Profile')}</h1>
 
 <semui:messages data="${flash}" />
 
@@ -44,10 +44,10 @@
                 <div class="field">
                     <label>${message(code: 'profile.dash', default:'Default Dashboard')}</label>
 
-                    <select name="defaultDash" value="${user.defaultDash?.id}" class="ui fluid dropdown">
+                    <select name="defaultDash" value="${user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.id}" class="ui fluid dropdown">
                         <option value=""></option>
                         <g:each in="${user.authorizedOrgs}" var="o">
-                            <option value="${o.id}" ${user.defaultDash?.id==o.id?'selected':''}>${o.name}</option>
+                            <option value="${o.class.name}:${o.id}" ${user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.id==o.id?'selected':''}>${o.name}</option>
                         </g:each>
                     </select>
                 </div>
@@ -111,14 +111,22 @@
                 </div>
                 --%>
                 <div class="field">
+                    <label>${message(code: 'profile.editMode', default:'Show Edit Mode')}</label>
+                    <g:set var="US_SHOW_EDIT_MODE" value="${user.getSetting(UserSettings.KEYS.SHOW_EDIT_MODE, null)}" />
+                    <semui:xEditableRefData owner="${US_SHOW_EDIT_MODE}" field="rdValue" config="${US_SHOW_EDIT_MODE.key.rdc}" />
+                </div>
+
+                <div class="field">
                     <label>${message(code: 'profile.simpleViews', default:'Show simple Views')}</label>
-                    <semui:xEditableRefData owner="${user}" field="showSimpleViews" config="YN" />
+                    <g:set var="US_SHOW_SIMPLE_VIEWS" value="${user.getSetting(UserSettings.KEYS.SHOW_SIMPLE_VIEWS, null)}" />
+                    <semui:xEditableRefData owner="${US_SHOW_SIMPLE_VIEWS}" field="rdValue" config="${US_SHOW_SIMPLE_VIEWS.key.rdc}" />
                 </div>
 
                 <div class="field">
                     <label>${message(code: 'profile.pagesize', default:'Default Page Size')}</label>
-                    <semui:xEditable owner="${user}" field="defaultPageSize" />
+                    <semui:xEditable owner="${user.getSetting(UserSettings.KEYS.PAGE_SIZE, 10)}" field="strValue" />
                 </div>
+
             </div>
         </div><!-- .segment -->
     </div><!-- .column -->

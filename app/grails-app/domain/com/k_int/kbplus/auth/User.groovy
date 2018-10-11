@@ -1,5 +1,6 @@
 package com.k_int.kbplus.auth
 
+import com.k_int.kbplus.UserSettings
 import de.laser.interfaces.Permissions
 import grails.plugin.springsecurity.SpringSecurityUtils
 
@@ -27,15 +28,21 @@ class User implements Permissions {
   boolean accountExpired
   boolean accountLocked
   boolean passwordExpired
-  Long defaultPageSize = new Long(10);
+
+    @Deprecated
+    Long defaultPageSize = new Long(10); // will be removed
 
   SortedSet affiliations
   SortedSet roles
-  Org defaultDash
+
+    @Deprecated
+    Org defaultDash   // will be removed
   
   // TODO: move to new table
-  RefdataValue showInfoIcon
-  RefdataValue showSimpleViews
+    @Deprecated
+    RefdataValue showInfoIcon     // will be removed
+    @Deprecated
+    RefdataValue showSimpleViews  // will be removed
 
   static hasMany = [ affiliations: com.k_int.kbplus.auth.UserOrg, roles: com.k_int.kbplus.auth.UserRole, reminders: com.k_int.kbplus.Reminder ]
   static mappedBy = [ affiliations: 'user', roles: 'user' ]
@@ -48,12 +55,12 @@ class User implements Permissions {
     instcode blank: true, nullable: true
     email blank: true, nullable: true
     shibbScope blank: true, nullable: true
-    defaultDash blank: true, nullable: true
-    defaultPageSize blank: true, nullable: true
+    defaultDash blank: true, nullable: true         // will be removed
+    defaultPageSize blank: true, nullable: true     // will be removed
     apikey blank: true, nullable: true
     apisecret blank: true, nullable: true
-    showInfoIcon blank:false, nullable:true
-    showSimpleViews blank:false, nullable:true
+    showInfoIcon blank:false, nullable:true         // will be removed
+    showSimpleViews blank:false, nullable:true      // will be removed
   }
 
   static mapping = {
@@ -73,6 +80,42 @@ class User implements Permissions {
       encodePassword()
     }
   }
+
+    /*
+        gets UserSetting
+        creating new one (with value) if not existing
+     */
+    def getSetting(UserSettings.KEYS key, def defaultValue) {
+        def us = UserSettings.get(this, key)
+        (us == UserSettings.SETTING_NOT_FOUND) ? UserSettings.add(this, key, defaultValue) : us
+    }
+
+    /*
+        gets VALUE of UserSettings
+        creating new UserSettings (with value) if not existing
+     */
+    def getSettingsValue(UserSettings.KEYS key, def defaultValue) {
+        def setting = getSetting(key, defaultValue)
+        setting.getValue()
+    }
+
+    /*
+        gets VALUE of UserSettings
+        creating new UserSettings if not existing
+     */
+    def getSettingsValue(UserSettings.KEYS key) {
+        getSettingsValue(key, null)
+    }
+
+    // refactoring -- tmp changes
+
+    def getDefaultPageSizeTMP() {
+        //defaultPageSize
+        def setting = getSetting(UserSettings.KEYS.PAGE_SIZE, 10)
+        setting.getValue()
+    }
+
+    // refactoring -- tmp changes
 
   @Transient
   def getDisplayName() {
@@ -161,7 +204,7 @@ class User implements Permissions {
   
   transient def getUserPreferences() {
     def userPrefs = [
-      "showInfoIcon" : (showInfoIcon?.value?.equalsIgnoreCase("Yes") ? true : false)
+      "showInfoIcon" : (getSettingsValue(UserSettings.KEYS.SHOW_INFO_ICON)?.value?.equalsIgnoreCase("Yes") ? true : false)
     ]
     
     // Return the prefs.

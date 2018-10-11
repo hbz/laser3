@@ -11,7 +11,7 @@
     <g:render template="public_navbar" contextPath="/templates" model="['active': 'journals']"/>
 
     <div class="ui container">
-      <h1 class="ui header"><semui:headerIcon />${message(code:'menu.public.journalLicense')}</h1>
+      <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.public.journalLicense')}</h1>
 
       <g:if test="${flash.error}">
         <div>

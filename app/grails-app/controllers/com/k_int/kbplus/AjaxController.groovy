@@ -291,10 +291,19 @@ class AjaxController {
         def value=resolveOID(value_components);
   
         if ( target && value ) {
-          def binding_properties = [ "${params.name}":value ]
-          bindData(target, binding_properties)
-            target.owner?.save()  // avoid .. not processed by flush
-          target.save(flush:true);
+
+            if (target instanceof UserSettings) {
+                target.setValue(value)
+            }
+            else {
+                def binding_properties = [ "${params.name}":value ]
+                bindData(target, binding_properties)
+                if (target.hasProperty('owner')) {
+                    target.owner.save()  // avoid .. not processed by flush
+                }
+            }
+
+            target.save(flush:true);
           
           // We should clear the session values for a user if this is a user to force reload of the,
           // parameters.
@@ -947,19 +956,29 @@ class AjaxController {
 
         if (AuditConfig.getConfig(property, AuditConfig.COMPLETE_OBJECT)) {
 
-            property.getClass().findByInstanceOf(property).each{ prop ->
-                prop.instanceOf = null
-                prop.save(flush: true)
+            property.getClass().findAllByInstanceOf(property).each{ prop ->
+                prop.delete(flush: true)
             }
             AuditConfig.removeAllConfigs(property)
 
+            // delete pending changes
+
+            def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
+            openPD.each { pc ->
+                def event = JSON.parse(pc.changeDoc)
+                def scp = genericOIDService.resolveOID(event.changeDoc.OID)
+                if (scp?.id == property.id) {
+                    pc.delete(flush: true)
+                }
+            }
         }
         else {
 
-            owner.getClass().findByInstanceOf(owner).each { member ->
+            owner.getClass().findAllByInstanceOf(owner).each { member ->
 
                 def existingProp = property.getClass().findByOwnerAndInstanceOf(member, property)
                 if (! existingProp) {
+                    // TODO: add event to create custom property and copy content into ..
 
                     // multi occurrence props; add one additional with backref
                     if (property.type.multipleOccurrence) {
@@ -1010,8 +1029,14 @@ class AjaxController {
 
         AuditConfig.removeAllConfigs(property)
 
-        owner.customProperties.remove(property)
-        property.delete(flush:true)
+        //owner.customProperties.remove(property)
+
+        try {
+            property.delete(flush:true)
+        } catch (Exception e) {
+            log.error(" TODO: fix property.delete() when instanceOf ")
+        }
+
 
         if(property.hasErrors()) {
             log.error(property.errors)
@@ -1343,7 +1368,9 @@ class AjaxController {
                         // delete existing date
                         target_object."${params.name}" = null
                     }
-                    target_object.owner?.save() // avoid owner.xyz not processed by flush
+                    if (target_object.hasProperty('owner')) {
+                        target_object.owner.save() // avoid owner.xyz not processed by flush
+                    }
                     target_object.save(failOnError: true, flush: true);
                 }
                 catch(Exception e) {
@@ -1361,7 +1388,9 @@ class AjaxController {
                 binding_properties[params.name] = params.value
                 bindData(target_object, binding_properties)
 
-                target_object.owner?.save() // avoid owner.xyz not processed by flush
+                if (target_object.hasProperty('owner')) {
+                    target_object.owner.save() // avoid owner.xyz not processed by flush
+                }
                 target_object.save(failOnError: true, flush: true);
 
                 result = target_object."${params.name}"

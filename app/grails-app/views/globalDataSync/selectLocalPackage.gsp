@@ -8,7 +8,7 @@
   <body>
 
 
-        <h1 class="ui header"><semui:headerIcon /><g:message code="globalDataSync.newTracker" args="[item.name,item.identifier,item.source.name]" /></h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="globalDataSync.newTracker" args="[item.name,item.identifier,item.source.name]" /></h1>
 
       <semui:messages data="${flash}" />
 

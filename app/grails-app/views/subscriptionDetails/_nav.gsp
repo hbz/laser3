@@ -13,6 +13,9 @@
 
     <g:if test="${(subscriptionInstance?.getConsortia()?.id == contextService.getOrg()?.id) && !subscriptionInstance.instanceOf}">
         <semui:subNavItem controller="subscriptionDetails" action="members" params="${[id:params.id]}" message="subscription.details.members.label" />
+        <sec:ifAnyGranted roles="ROLE_ADMIN">
+            <semui:subNavItem controller="subscriptionDetails" action="pendingChanges" params="${[id:params.id]}" text="!!!" />
+        </sec:ifAnyGranted>
     </g:if>
 
     <semui:subNavItem controller="subscriptionDetails" action="tasks" params="${[id:params.id]}" message="task.plural" />

@@ -27,7 +27,7 @@ class IssueEntitlementController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def list() {
-        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
+        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
         [issueEntitlementInstanceList: IssueEntitlement.list(params), issueEntitlementInstanceTotal: IssueEntitlement.count()]
     }
 

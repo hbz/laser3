@@ -23,7 +23,7 @@ class PersonController {
 
     @Secured(['ROLE_ADMIN'])
     def list() {
-        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
+        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
         [personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
     }
 

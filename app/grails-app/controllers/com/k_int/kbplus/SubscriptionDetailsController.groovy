@@ -78,7 +78,7 @@ class SubscriptionDetailsController {
 
         result.transforms = grailsApplication.config.subscriptionTransforms
 
-        result.max = params.max ? Integer.parseInt(params.max) : ((response.format && response.format != "html" && response.format != "all") ? 10000 : result.user.defaultPageSize);
+        result.max = params.max ? Integer.parseInt(params.max) : ((response.format && response.format != "html" && response.format != "all") ? 10000 : result.user.getDefaultPageSizeTMP());
         result.offset = (params.offset && response.format && response.format != "html") ? Integer.parseInt(params.offset) : 0;
 
         log.debug("max = ${result.max}");
@@ -349,7 +349,7 @@ class SubscriptionDetailsController {
         result.unionList = []
 
         result.user = User.get(springSecurityService.principal.id)
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         if (params.subA?.length() > 0 && params.subB?.length() > 0) {
@@ -601,7 +601,7 @@ class SubscriptionDetailsController {
             response.sendError(401); return
         }
 
-        result.max = params.max ? Integer.parseInt(params.max) : request.user.defaultPageSize;
+        result.max = params.max ? Integer.parseInt(params.max) : request.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         def tipp_deleted = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS, 'Deleted');
@@ -914,6 +914,57 @@ class SubscriptionDetailsController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def pendingChanges() {
+        log.debug("subscriptionDetails id:${params.id}");
+
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        if (!result) {
+            response.sendError(401); return
+        }
+
+        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
+                result.subscriptionInstance,
+                RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+        )
+
+        validSubChilds = validSubChilds.sort{ a, b ->
+            def sa = a.getSubscriber()
+            def sb = b.getSubscriber()
+            (sa.sortname ?: sa.name).compareTo( (sb.sortname ?: sb.name) )
+        }
+
+        result.pendingChanges = [:]
+
+        validSubChilds.each{ member ->
+
+            def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+            def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
+
+/*
+            if (member.isSlaved?.value == "Yes" && pendingChanges) {
+
+                def changesDesc = []
+                pendingChanges.each { change ->
+                    if (!pendingChangeService.performAccept(change, request)) {
+                        log.debug("Auto-accepting pending change has failed.")
+                    } else {
+                        changesDesc.add(PendingChange.get(change).desc)
+                    }
+                }
+                flash.message = changesDesc
+            } else {
+                result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
+            }
+*/
+            result.pendingChanges << [ "${member.id}" : pendingChanges.collect { PendingChange.get(it) }]
+        }
+
+
+        result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def expected() {
         previousAndExpected(params, 'expected');
     }
@@ -932,7 +983,7 @@ class SubscriptionDetailsController {
             return
         }
 
-        result.max = params.max ? Integer.parseInt(params.max) : request.user.defaultPageSize
+        result.max = params.max ? Integer.parseInt(params.max) : request.user.getDefaultPageSizeTMP()
         params.max = result.max
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
@@ -1364,7 +1415,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
     }
     log.debug("Going for ES")
     User user   = springSecurityService.getCurrentUser()
-    params.max = user?.getDefaultPageSize()?:25
+    params.max = user?.getDefaultPageSizeTMP()?:25
 
     result.putAll(ESSearchService.search(params))
         result
@@ -1416,7 +1467,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
             response.sendError(401); return
         }
         result.contextOrg = contextService.getOrg()
-        result.max = params.max ?: result.user.defaultPageSize;
+        result.max = params.max ?: result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ?: 0;
 
         def qry_params = [result.subscription.class.name, "${result.subscription.id}"]
@@ -1434,7 +1485,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
             response.sendError(401); return
         }
         result.contextOrg = contextService.getOrg()
-        result.max = params.max ?: result.user.defaultPageSize;
+        result.max = params.max ?: result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ?: 0;
 
         def qry_params = [result.subscription.class.name, "${result.subscription.id}"]

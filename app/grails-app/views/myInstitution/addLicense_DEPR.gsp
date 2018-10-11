@@ -15,7 +15,7 @@
 <semui:controlButtons>
     <g:render template="actions"/>
 </semui:controlButtons>
-<h1 class="ui header"><semui:headerIcon/>${institution?.name} - ${message(code: 'license.new')}</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon />${institution?.name} - ${message(code: 'license.new')}</h1>
 
 <!--
 <semui:subNav actionName="${actionName}">

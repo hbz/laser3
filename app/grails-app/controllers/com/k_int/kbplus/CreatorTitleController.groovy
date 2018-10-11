@@ -22,7 +22,7 @@ class CreatorTitleController {
     def list() {
 		if (! params.max) {
 			User user   = springSecurityService.getCurrentUser()
-			params.max = user?.getDefaultPageSize()
+			params.max = user?.getDefaultPageSizeTMP()
 		}
         [creatorTitleInstanceList: CreatorTitle.list(params), creatorTitleInstanceTotal: CreatorTitle.count()]
     }

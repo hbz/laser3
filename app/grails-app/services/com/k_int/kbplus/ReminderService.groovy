@@ -56,7 +56,7 @@ class ReminderService implements ApplicationContextAware{
      * @return List of Subscriptions
      */
     def getAuthorisedSubsciptionsByUser(User user) {
-        def qry_params = [user.defaultDash, LocalDate.now().minusMonths(13).toDate()]
+        def qry_params = [user.getSettingsValue(UserSettings.KEYS.DASHBOARD), LocalDate.now().minusMonths(13).toDate()]
         log.debug("Looking up subscriptions for user : ${user.username} Restricting to Subscriptions with renewal date one year previous to today!")
         def base_qry = """
 select s from Subscription as s where 

@@ -15,7 +15,7 @@
         <g:message code="default.show.label" args="[entityName]" class="active"/>
     </semui:breadcrumbs>
 
-    <h1 class="ui header"><semui:headerIcon/>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />
         <g:if test="${personInstance?.contactType == RefdataValue.getByValueAndCategory('Functional contact', 'Person Contact Type')}">
             ${personInstance.contactType?.getI10n('value') + ': ' + personInstance?.last_name}
         </g:if>

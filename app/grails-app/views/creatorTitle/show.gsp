@@ -8,7 +8,7 @@
 		<title><g:message code="default.show.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<h1 class="ui header"><semui:headerIcon /><g:message code="default.show.label" args="[entityName]" /></h1>
+		<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="default.show.label" args="[entityName]" /></h1>
 
         <semui:messages data="${flash}" />
 
@@ -49,7 +49,7 @@
 					<g:if test="${creatorTitleInstance?.title}">
 						<dt><g:message code="creatorTitle.title.label" default="Title" /></dt>
 						
-							<dd><g:link controller="titleInstance" action="show" id="${creatorTitleInstance?.title?.id}">${creatorTitleInstance?.title}</g:link></dd>
+							<dd><g:link controller="titleDetails" action="show" id="${creatorTitleInstance?.title?.id}">${creatorTitleInstance?.title}</g:link></dd>
 						
 					</g:if>
 				

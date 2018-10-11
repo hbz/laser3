@@ -51,7 +51,7 @@
       <semui:crumb message="package.show.all" class="active"/>
     </semui:breadcrumbs>
 
-  <h1 class="ui header"><semui:headerIcon />${message(code:'package.show.all')}</h1>
+  <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'package.show.all')}</h1>
 
   <semui:messages data="${flash}" />
 

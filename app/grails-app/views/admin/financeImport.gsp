@@ -6,7 +6,7 @@
   </head>
 
   <body>
-        <h1 class="ui header"><semui:headerIcon />Import Financials Data</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />Import Financials Data</h1>
 
         <g:if test="${loaderResult==null}">
           <p>This service allows administrators to bulk load cost item records. It understands the following column mappings in the uploaded .tsv file</p>

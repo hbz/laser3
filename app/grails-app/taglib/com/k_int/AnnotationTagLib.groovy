@@ -1,5 +1,6 @@
 package com.k_int
 
+import com.k_int.kbplus.UserSettings
 import org.codehaus.groovy.grails.io.support.GrailsResourceUtils
 import org.codehaus.groovy.grails.web.pages.GroovyPage
 import com.k_int.kbplus.auth.Role
@@ -81,7 +82,7 @@ class AnnotationTagLib {
     }
 
     // Should the annotation be shown?
-    boolean show_annotation = session?.userPereferences?.showInfoIcon && (isAdmin || annotation?.value != null)
+    boolean show_annotation = session?.userPereferences?.getSettingsValue(UserSettings.KEYS.SHOW_INFO_ICON) && (isAdmin || annotation?.value != null)
 
     // Add the necessary class if we need it.
     if ( show_annotation ) {

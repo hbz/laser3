@@ -61,7 +61,7 @@ class AdminController {
     changes.each{
         def parsed_change_info = JSON.parse(it.changeDoc)
         parsed_change_info.changeType = "PropertyChange"
-        parsed_change_info.changeDoc.propertyOID = parsed_change_info.changeDoc.OID
+        //parsed_change_info.changeDoc.propertyOID = parsed_change_info.changeDoc.OID
         it.changeDoc = parsed_change_info
         it.save(failOnError:true)
     }
@@ -106,7 +106,7 @@ class AdminController {
         params.search = null
     }
     result.user = User.get(springSecurityService.principal.id)
-    result.max = params.max ? Integer.parseInt(params.max) : result.user.defaultPageSize;
+    result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
     result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
     if(params.id){
@@ -915,7 +915,7 @@ class AdminController {
     params.esgokb = "Package"
     params.sort = "name.sort"
 
-    params.max = (result.user?.getDefaultPageSize() >= Package.getAll().size())? result.user?.getDefaultPageSize() : Package.getAll().size()
+    params.max = (result.user?.getDefaultPageSizeTMP() >= Package.getAll().size())? result.user?.getDefaultPageSizeTMP() : Package.getAll().size()
     params.q = ""
 
     if(params.onlyNotEqual){

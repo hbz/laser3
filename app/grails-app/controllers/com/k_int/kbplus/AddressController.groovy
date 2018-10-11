@@ -21,7 +21,7 @@ class AddressController {
 
     @Secured(['ROLE_ADMIN'])
     def list() {
-		params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
+		params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
         [addressInstanceList: Address.list(params), addressInstanceTotal: Address.count()]
     }
 

@@ -10,7 +10,7 @@
 
     <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
 
-      <h1 class="ui header"><semui:headerIcon />
+      <h1 class="ui left aligned icon header"><semui:headerIcon />
 
         ${orgInstance.name}
       </h1>
@@ -36,9 +36,9 @@
             <td>
                 <g:link controller="userDetails" action="edit" id="${userOrg[0].user.id}">
                     ${userOrg[0].user.displayName}
-                  <g:if test="${userOrg[0].user.defaultDash?.name}">
+                  <g:if test="${userOrg[0].user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.name}">
                     <br>
-                    ${userOrg[0].user.defaultDash.name}
+                    ${userOrg[0].user.getSettingsValue(UserSettings.KEYS.DASHBOARD).name}
                   </g:if>
                 </g:link>
             </td>

@@ -76,7 +76,7 @@ class OnixplLicenseDetailsController {
 
     @Secured(['ROLE_ADMIN'])
     def list() {
-        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSize()
+        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
         [onixplLicenseInstanceList: OnixplLicense.list(params), onixplLicenseInstanceTotal: OnixplLicense.count()]
     }
 }

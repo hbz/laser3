@@ -1,6 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
 import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 import org.springframework.web.servlet.support.RequestContextUtils
@@ -164,29 +165,25 @@ class SemanticUiTagLib {
 
     def headerIcon = { attrs, body ->
 
-        out << '<div class="ui la-object circular label" style="margin-left:0; margin-right: 5px!important; ">'
-        out << '<i class="icon"></i>'
-        out << '</div>'
+        out << '<i class="circular icon la-object"></i> '
     }
 
     def headerTitleIcon = { attrs, body ->
 
         switch(attrs.type) {
             case 'Journal':
-                out << '<div class="ui la-object-journal circular label" style="margin-left:0; margin-right: 5px!important; ">'
+                out << '<i class="circular icon la-object-journal"></i> '
                 break
             case 'Database':
-                out << '<div class="ui la-object-database circular label" style="margin-left:0; margin-right: 5px!important; ">'
+                out << '<i class="circular icon la-object-database"></i> '
                 break
             case 'EBook':
-                out << '<div class="ui la-object-ebook circular label" style="margin-left:0; margin-right: 5px!important; ">'
+                out << '<i class="circular icon la-object-ebook"></i> '
                 break
             default:
-                out << '<div class="ui la-object circular label" style="margin-left:0; margin-right: 5px!important; ">'
+                out << '<i class="circular icon la-object"></i> '
                 break
         }
-        out << '<i class="icon"></i>'
-        out << '</div>'
     }
 
 
@@ -298,7 +295,7 @@ class SemanticUiTagLib {
         def mode = (attrs.params.mode=='basic') ? 'basic' : ((attrs.params.mode == 'advanced') ? 'advanced' : null)
         if (!mode) {
             def user = User.get(springSecurityService.principal.id)
-            mode = (user.showSimpleViews?.value == 'No') ? 'advanced' : 'basic'
+            mode = (user.getSettingsValue(UserSettings.KEYS.SHOW_SIMPLE_VIEWS)?.value == 'No') ? 'advanced' : 'basic'
 
             // CAUTION: inject default mode
             attrs.params.mode = mode
@@ -456,7 +453,15 @@ class SemanticUiTagLib {
         def label       = attrs.label ? "${message(code: attrs.label)}" : '&nbsp'
         def name        = attrs.name ? "${message(code: attrs.name)}" : ''
         def placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : 'Date'
-        def value       = attrs.value ?: ''
+
+        def sdf         = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def value       = ''
+        try {
+            value = attrs.value ? sdf.format(attrs.value) : value
+        }
+        catch (Exception e) {
+        }
+
         def classes     = attrs.required ? 'field fieldcontain required' : 'field fieldcontain'
         def required    = attrs.required ? 'required="true"' : ''
         def hideLabel   = attrs.hideLabel ? false : true

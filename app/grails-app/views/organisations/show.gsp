@@ -25,8 +25,7 @@
 
     <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
 
-    <h1 class="ui header">
-        <semui:headerIcon />
+    <h1 class="ui left aligned icon header"><semui:headerIcon />
         ${orgInstance.name}
     </h1>
 
