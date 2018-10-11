@@ -224,7 +224,7 @@ class BootStrap {
 
         log.debug("setJSONFormatDate ..")
         JSON.registerObjectMarshaller(Date) {
-            return it?.format("yyyy-MM-dd'T'HH:mm:ssZ")
+            return it?.format("yyyy-MM-dd'T'HH:mm:ss'Z'")
         }
 
 
