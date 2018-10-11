@@ -10,7 +10,7 @@
   <body>
     <div>
 
-          <h1 class="ui header"><semui:headerIcon /><g:message code="default.list.label" args="[entityName]" /> (Showing ${titleInstancePackagePlatformInstanceTotal})...</h1>
+          <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="default.list.label" args="[entityName]" /> (Showing ${titleInstancePackagePlatformInstanceTotal})...</h1>
 
         <semui:messages data="${flash}" />
         

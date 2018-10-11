@@ -7,7 +7,7 @@
 		<title><g:message code="default.edit.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<h1 class="ui header"><semui:headerIcon /><g:message code="default.edit.label" args="[entityName]" /></h1>
+		<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="default.edit.label" args="[entityName]" /></h1>
 
         <semui:messages data="\${flash}" />
 

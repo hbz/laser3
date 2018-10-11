@@ -8,7 +8,7 @@
   </head>
   <body>
 
-    <h1 class="ui header"><semui:headerIcon />Subscription Offered - Manual Upload</h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />Subscription Offered - Manual Upload</h1>
 
     <semui:messages data="${flash}" />
 

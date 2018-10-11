@@ -12,7 +12,7 @@
         <semui:crumb message="menu.institutions.gen_renewals" class="active"/>
     </semui:breadcrumbs>
 
-    <h1 class="ui header"><semui:headerIcon />${message(code:'menu.institutions.gen_renewals')}</h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.gen_renewals')}</h1>
 
     <g:form class="ui form" action="renewalsSearch" method="get" params="${params}">
         <input type="hidden" name="offset" value="${params.offset}"/>

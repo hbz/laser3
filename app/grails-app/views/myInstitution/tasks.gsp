@@ -15,7 +15,7 @@
             <semui:crumb message="menu.institutions.tasks" class="active"/>
         </semui:breadcrumbs>
 
-        <h1 class="ui header"><semui:headerIcon />${institution.name}</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${institution.name}</h1>
 
         <semui:filter>
             <form class="ui form">

@@ -13,7 +13,7 @@
 <div id='login' class="container">
     <div class='inner'>
         <div class='header'>
-            <h1 class="ui header"><semui:headerIcon /><g:message code="springSecurity.login.header"/></h1>
+            <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="springSecurity.login.header"/></h1>
         </div>
     <p>
         <semui:messages data="${flash}" />

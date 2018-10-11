@@ -34,7 +34,7 @@
       </semui:controlButtons>
 
 
-          <h1 class="ui header"><semui:headerIcon />
+          <h1 class="ui left aligned icon header"><semui:headerIcon />
 
               <g:if test="${editable}"><span id="packageNameEdit"
                         class="xEditableValue"

@@ -23,7 +23,7 @@
         <semui:crumbAsBadge message="default.editable" class="orange" />
     </g:if>
 
-    <h1 class="ui header"><semui:headerIcon />${onixplLicense.license.getLicensee()?.name} ${onixplLicense.license.type?.value} License : <span id="reference"
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${onixplLicense.license.getLicensee()?.name} ${onixplLicense.license.type?.value} License : <span id="reference"
                                                                                                      style="padding-top: 5px;">${onixplLicense.license.reference}</span>
     </h1>
 

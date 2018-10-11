@@ -9,7 +9,7 @@
 
     <g:render template="breadcrumb" model="${[ params:params ]}"/>
 
-     <h1 class="ui header"><semui:headerIcon />
+     <h1 class="ui left aligned icon header"><semui:headerIcon />
 
          ${ui.username} :
          <span id="displayEdit"

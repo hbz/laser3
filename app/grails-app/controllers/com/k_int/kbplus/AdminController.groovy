@@ -61,7 +61,7 @@ class AdminController {
     changes.each{
         def parsed_change_info = JSON.parse(it.changeDoc)
         parsed_change_info.changeType = "PropertyChange"
-        parsed_change_info.changeDoc.propertyOID = parsed_change_info.changeDoc.OID
+        //parsed_change_info.changeDoc.propertyOID = parsed_change_info.changeDoc.OID
         it.changeDoc = parsed_change_info
         it.save(failOnError:true)
     }
