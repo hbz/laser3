@@ -15,12 +15,22 @@
     <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.institutions.myProviders" /></h1>
 
     <semui:messages data="${flash}" />
+    <semui:filter>
+        <g:form action="currentProviders" method="get" class="ui form">
+            <g:render template="/templates/filter/orgFilter"
+                      model="[
+                              propList: propList,
+                              orgRoleTypes: orgRoleTypes,
+                              tmplConfigShow: ['type', 'property', 'name', 'country']
+                      ]"/>
+        </g:form>
+    </semui:filter>
 
     <g:render template="/templates/filter/orgFilterTable"
               model="[orgList: orgList,
                       tmplShowCheckbox: false,
-                      tmplConfigShow: ['lineNumber', 'name', 'identifier', 'type', 'sector']
+                      tmplConfigShow: ['lineNumber', 'shortname', 'name', 'publicContacts', 'privateContacts', 'licenses', 'identifier', 'type', 'sector']
               ]"/>
-
+    <semui:paginate total="${orgListTotal}" params="${params}" />
   </body>
 </html>
