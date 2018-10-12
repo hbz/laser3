@@ -1,4 +1,10 @@
 
+0.9.2
+
+- added JSON date marshaller
+- added date format fallback for datepicker
+- fixed: private property date type
+
 0.9.1
 
 - fixed: datepicker format

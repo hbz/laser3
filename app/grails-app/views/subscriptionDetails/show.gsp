@@ -162,7 +162,7 @@
                                     </g:else>
                                 </dd>
                             </dl>
-                            <g:if test="${subscriptionInstance.instanceOf && (contextOrg == subscriptionInstance.getConsortia())}">
+                            <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id == subscriptionInstance.getConsortia()?.id)}">
                                 <dl>
                                     <dt class="control-label">${message(code:'subscription.isInstanceOfSub.label')}</dt>
                                     <dd>
@@ -555,6 +555,11 @@
             <g:render template="/templates/tasks/card" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
             <g:render template="/templates/documents/card" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
             <g:render template="/templates/notes/card" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
+
+            <g:render template="/templates/audit/config" model="${[
+                    ownobj:     subscriptionInstance,
+                    showOpener: showConsortiaFunctions
+            ]}" />
         </aside><!-- .four -->
     </div><!-- .grid -->
 

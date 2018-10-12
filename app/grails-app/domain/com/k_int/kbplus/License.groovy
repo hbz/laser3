@@ -399,7 +399,7 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
   }
 
     def getNonDeletedDerivedLicenses() {
-        License.where{ instanceOf == this && status.value != 'Deleted' }
+        License.where{ instanceOf == this && (status == null || status.value != 'Deleted') }
     }
 
     @Override

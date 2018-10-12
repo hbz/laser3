@@ -17,7 +17,7 @@
 
 <g:set var="personType" value="${!personInstance.contactType || personInstance.contactType?.value?.equals('Personal contact')}" />
 
-<h1 class="ui header"><semui:headerIcon/>
+<h1 class="ui left aligned icon header"><semui:headerIcon />
 ${personInstance}
 </h1>
 

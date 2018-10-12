@@ -2354,6 +2354,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
         result.subscription         = Subscription.get(params.id)
         result.institution          = result.subscription?.subscriber
 
+        result.showConsortiaFunctions = showConsortiaFunctions(result.subscription)
+
         if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
             if (! result.subscriptionInstance?.isVisibleBy(result.user)) {
                 log.debug( "--- NOT VISIBLE ---")
@@ -2370,5 +2372,10 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
         }
 
         result
+    }
+
+    def showConsortiaFunctions (def subscription) {
+
+        return ((subscription?.getConsortia()?.id == contextService.getOrg()?.id) && ! subscription.instanceOf)
     }
 }
