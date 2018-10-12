@@ -279,7 +279,7 @@ class AjaxController {
     String[] target_components = params.pk.split(":");
     def result = ''
 
-    def target=resolveOID(target_components);
+    def target = genericOIDService.resolveOID(target_components);
     if ( target ) {
       if ( params.value == '' ) {
         // Allow user to set a rel to null be calling set rel ''
@@ -288,7 +288,7 @@ class AjaxController {
       }
       else {
         String[] value_components = params.value.split(":");
-        def value=resolveOID(value_components);
+        def value = genericOIDService.resolveOID(value_components);
   
         if ( target && value ) {
 
@@ -338,26 +338,6 @@ class AjaxController {
     //outs << result
     //outs.flush()
     //outs.close()
-  }
-
-  def resolveOID(oid_components) {
-    def result = null;
-
-    def domain_class=null;
-
-    if ( oid_components[0].startsWith("com.k_int.kbplus") ) 
-      domain_class = grailsApplication.getArtefact('Domain',oid_components[0])
-    else 
-      domain_class = grailsApplication.getArtefact('Domain',"com.k_int.kbplus.${oid_components[0]}")
-
-
-    if ( domain_class ) {
-      result = domain_class.getClazz().get(oid_components[1])
-    }
-    else {
-      log.error("resolve OID failed to identify a domain class. Input was ${oid_components}");
-    }
-    result
   }
 
   def orgs() {
@@ -620,14 +600,14 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def addOrgRole() {
-        def owner  = resolveOID(params.parent?.split(":"))
+        def owner  = genericOIDService.resolveOID(params.parent?.split(":"))
         def rel    = RefdataValue.get(params.orm_orgRole)
 
 
 
         def orgIds = params.list('orm_orgoid')
         orgIds.each{ oid ->
-            def org_to_link = resolveOID(oid.split(":"))
+            def org_to_link = genericOIDService.resolveOID(oid.split(":"))
             def duplicateOrgRole = false
 
             if(params.recip_prop == 'sub')
@@ -667,10 +647,10 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def addPrsRole() {
-        def org     = resolveOID(params.org?.split(":"))
-        def parent  = resolveOID(params.parent?.split(":"))
-        def person  = resolveOID(params.person?.split(":"))
-        def role    = resolveOID(params.role?.split(":"))
+        def org     = genericOIDService.resolveOID(params.org?.split(":"))
+        def parent  = genericOIDService.resolveOID(params.parent?.split(":"))
+        def person  = genericOIDService.resolveOID(params.person?.split(":"))
+        def role    = genericOIDService.resolveOID(params.role?.split(":"))
 
         def newPrsRole
         def existingPrsRole
@@ -988,7 +968,7 @@ class AjaxController {
 
                     member.each { m ->
                         //m."${prop}" = null
-                        //m.save(flush: true)
+                        //m.save()
                         println " TODO: ${m} -> DELETE: ${prop}"
                     }
                     // todo remove pending changes
