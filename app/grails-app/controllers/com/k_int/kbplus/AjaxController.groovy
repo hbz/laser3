@@ -279,7 +279,7 @@ class AjaxController {
     String[] target_components = params.pk.split(":");
     def result = ''
 
-    def target = genericOIDService.resolveOID(target_components);
+    def target = genericOIDService.resolveOID(params.pk);
     if ( target ) {
       if ( params.value == '' ) {
         // Allow user to set a rel to null be calling set rel ''
@@ -288,7 +288,7 @@ class AjaxController {
       }
       else {
         String[] value_components = params.value.split(":");
-        def value = genericOIDService.resolveOID(value_components);
+        def value = genericOIDService.resolveOID(params.value);
   
         if ( target && value ) {
 
@@ -327,7 +327,7 @@ class AjaxController {
       }
     }
     else {
-      log.error("no target (target=${target_components}, value=${value_components}");
+      log.error("no target (target=${target_components}");
     }
 
     // response.setContentType('text/plain')
@@ -600,14 +600,14 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def addOrgRole() {
-        def owner  = genericOIDService.resolveOID(params.parent?.split(":"))
+        def owner  = genericOIDService.resolveOID(params.parent)
         def rel    = RefdataValue.get(params.orm_orgRole)
 
 
 
         def orgIds = params.list('orm_orgoid')
         orgIds.each{ oid ->
-            def org_to_link = genericOIDService.resolveOID(oid.split(":"))
+            def org_to_link = genericOIDService.resolveOID(oid)
             def duplicateOrgRole = false
 
             if(params.recip_prop == 'sub')
@@ -647,10 +647,10 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def addPrsRole() {
-        def org     = genericOIDService.resolveOID(params.org?.split(":"))
-        def parent  = genericOIDService.resolveOID(params.parent?.split(":"))
-        def person  = genericOIDService.resolveOID(params.person?.split(":"))
-        def role    = genericOIDService.resolveOID(params.role?.split(":"))
+        def org     = genericOIDService.resolveOID(params.org)
+        def parent  = genericOIDService.resolveOID(params.parent)
+        def person  = genericOIDService.resolveOID(params.person)
+        def role    = genericOIDService.resolveOID(params.role)
 
         def newPrsRole
         def existingPrsRole
@@ -1029,7 +1029,6 @@ class AjaxController {
 
                 def existingProp = property.getClass().findByOwnerAndInstanceOf(member, property)
                 if (! existingProp) {
-                    // TODO: add event to create custom property and copy content into ..
 
                     // multi occurrence props; add one additional with backref
                     if (property.type.multipleOccurrence) {
