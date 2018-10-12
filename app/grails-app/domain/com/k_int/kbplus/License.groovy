@@ -404,7 +404,7 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
 
     @Override
     def beforeInsert() {
-        if ( reference != null ) {
+         if ( reference != null && !sortableReference) {
             sortableReference = generateSortableReference(reference)
         }
         if (impId == null) {
@@ -415,7 +415,7 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
 
     @Override
     def beforeUpdate() {
-        if ( reference != null ) {
+        if ( reference != null && !sortableReference) {
             sortableReference = generateSortableReference(reference)
         }
         if (impId == null) {

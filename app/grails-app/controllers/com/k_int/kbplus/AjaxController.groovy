@@ -947,31 +947,28 @@ class AjaxController {
             def positiveList = params.list('properties')
             def negativeList = objProps.minus(positiveList)
 
-            println " + " + positiveList
-            println " - " + negativeList
-
-            def member = owner.getClass().findAllByInstanceOf(owner)
+            def members = owner.getClass().findAllByInstanceOf(owner)
 
             positiveList.each{ prop ->
                 if (! AuditConfig.getConfig(owner, prop)) {
                     AuditConfig.addConfig(owner, prop)
 
-                    member.each { m ->
-                        m."${prop}" = owner."${prop}"
+                    members.each { m ->
+                        m.setProperty(prop, owner.getProperty(prop))
                         m.save(flush: true)
                     }
                 }
             }
+
+            def queue = []
+
             negativeList.each{ prop ->
                 if (AuditConfig.getConfig(owner, prop)) {
                     AuditConfig.removeConfig(owner, prop)
 
-                    member.each { m ->
-                        //m."${prop}" = null
-                        //m.save()
-                        println " TODO: ${m} -> DELETE: ${prop}"
+                    members.each { m ->
+                        queue << [m, prop]
                     }
-                    // todo remove pending changes
 
                     // delete pending changes
 
@@ -981,14 +978,19 @@ class AjaxController {
                         def eventObj = genericOIDService.resolveOID(event.changeDoc.OID)
                         def eventProp = event.changeDoc.prop
 
-                        println eventObj
-                        println eventProp
-
                         if (eventObj?.id == owner.id && eventProp.equalsIgnoreCase(prop)) {
                             pc.delete(flush: true)
                         }
                     }
                 }
+            }
+
+            queue.each{ q ->
+                def member = q[0]
+                def prop   = q[1]
+
+                member.setProperty(prop, null)
+                member.save(flush: true)
             }
         }
 
