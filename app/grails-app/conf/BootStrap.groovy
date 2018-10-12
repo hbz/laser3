@@ -950,6 +950,7 @@ class BootStrap {
         RefdataValue.loc('OrgRoleType',      [en: 'Institution', de: 'Einrichtung'])
         RefdataValue.loc('OrgRoleType',      [en: 'Publisher', de: 'Verlag'])
         RefdataValue.loc('OrgRoleType',      [en: 'Provider', de: 'Anbieter'])
+        RefdataValue.loc('OrgRoleType',      [en: 'Agency', de: 'Lieferant'])
         RefdataValue.loc('OrgRoleType',      [en: 'Other', de: 'Andere'])
         RefdataValue.loc('OrgRoleType',      [en: 'Licensor', de: 'Lizenzgeber']).save()
         RefdataValue.loc('OrgRoleType',      [en: 'Licensee', de: 'Lizenznehmer']).save()
