@@ -831,30 +831,6 @@ from Subscription as s where
       redirect(action: 'show', id: license.id);
   }
 
-    private LinkedHashMap setResultGenericsAndCheckAccess(checkOption) {
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.license = License.get(params.id)
-        result.licenseInstance = License.get(params.id)
-
-        if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
-            if (! result.licenseInstance.isVisibleBy(result.user)) {
-                log.debug( "--- NOT VISIBLE ---")
-                return null
-            }
-        }
-        result.editable = result.license.isEditableBy(result.user)
-
-        if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
-            if (! result.editable) {
-                log.debug( "--- NOT EDITABLE ---")
-                return null
-            }
-        }
-
-        result
-    }
-
     def copyLicense()
     {
         log.debug("licenseDetails: ${params}");
@@ -911,7 +887,8 @@ from Subscription as s where
             if (!licenseInstance.save(flush: true)) {
                 log.error("Problem saving license ${licenseInstance.errors}");
                 return licenseInstance
-            } else {
+            }
+            else {
                    log.debug("Save ok");
 
                     baseLicense.documents?.each { dctx ->
@@ -1023,5 +1000,41 @@ from Subscription as s where
                 }
 
             }
+    }
+
+    private LinkedHashMap setResultGenericsAndCheckAccess(checkOption) {
+        def result             = [:]
+        result.user            = User.get(springSecurityService.principal.id)
+        result.license         = License.get(params.id)
+        result.licenseInstance = License.get(params.id)
+
+        result.showConsortiaFunctions = showConsortiaFunctions(result.license)
+
+        if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
+            if (! result.licenseInstance.isVisibleBy(result.user)) {
+                log.debug( "--- NOT VISIBLE ---")
+                return null
+            }
         }
+        result.editable = result.license.isEditableBy(result.user)
+
+        if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
+            if (! result.editable) {
+                log.debug( "--- NOT EDITABLE ---")
+                return null
+            }
+        }
+
+        result
+    }
+
+    def showConsortiaFunctions(def license) {
+
+        def a = (license.getLicensingConsortium()?.id == contextService.getOrg()?.id && ! license.isTemplate())
+        def b = ! (license.instanceOf && ! license.hasTemplate())
+
+        return a && b
+
+    }
+
 }

@@ -556,7 +556,10 @@
             <g:render template="/templates/documents/card" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
             <g:render template="/templates/notes/card" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
 
-            <g:render template="/templates/audit/config" model="${[ownobj:subscriptionInstance]}" />
+            <g:render template="/templates/audit/config" model="${[
+                    ownobj:     subscriptionInstance,
+                    showOpener: showConsortiaFunctions
+            ]}" />
         </aside><!-- .four -->
     </div><!-- .grid -->
 

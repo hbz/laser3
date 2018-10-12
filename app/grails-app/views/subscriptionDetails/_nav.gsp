@@ -11,7 +11,7 @@
         <g:link controller="subscriptionDetails" action="index" params="${[id:params.id]}" class="item">${message('code': 'subscription.details.current_ent')}</g:link>
     </g:else>
 
-    <g:if test="${(subscriptionInstance?.getConsortia()?.id == contextService.getOrg()?.id) && !subscriptionInstance.instanceOf}">
+    <g:if test="${showConsortiaFunctions}">
         <semui:subNavItem controller="subscriptionDetails" action="members" params="${[id:params.id]}" message="subscription.details.members.label" />
         <sec:ifAnyGranted roles="ROLE_ADMIN">
             <semui:subNavItem controller="subscriptionDetails" action="pendingChanges" params="${[id:params.id]}" text="!!!" />
