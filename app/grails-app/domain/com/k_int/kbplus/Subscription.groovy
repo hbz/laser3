@@ -361,7 +361,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
     }
 
     def getNonDeletedDerivedSubscriptions() {
-        Subscription.where{ instanceOf == this && status.value != 'Deleted' }
+        Subscription.where{ instanceOf == this && (status == null || status.value != 'Deleted') }
     }
 
   public String toString() {

@@ -279,7 +279,7 @@ class AjaxController {
     String[] target_components = params.pk.split(":");
     def result = ''
 
-    def target=resolveOID(target_components);
+    def target = genericOIDService.resolveOID(target_components);
     if ( target ) {
       if ( params.value == '' ) {
         // Allow user to set a rel to null be calling set rel ''
@@ -288,7 +288,7 @@ class AjaxController {
       }
       else {
         String[] value_components = params.value.split(":");
-        def value=resolveOID(value_components);
+        def value = genericOIDService.resolveOID(value_components);
   
         if ( target && value ) {
 
@@ -299,7 +299,7 @@ class AjaxController {
                 def binding_properties = [ "${params.name}":value ]
                 bindData(target, binding_properties)
                 if (target.hasProperty('owner')) {
-                    target.owner.save()  // avoid .. not processed by flush
+                    target.owner?.save()  // avoid .. not processed by flush
                 }
             }
 
@@ -338,26 +338,6 @@ class AjaxController {
     //outs << result
     //outs.flush()
     //outs.close()
-  }
-
-  def resolveOID(oid_components) {
-    def result = null;
-
-    def domain_class=null;
-
-    if ( oid_components[0].startsWith("com.k_int.kbplus") ) 
-      domain_class = grailsApplication.getArtefact('Domain',oid_components[0])
-    else 
-      domain_class = grailsApplication.getArtefact('Domain',"com.k_int.kbplus.${oid_components[0]}")
-
-
-    if ( domain_class ) {
-      result = domain_class.getClazz().get(oid_components[1])
-    }
-    else {
-      log.error("resolve OID failed to identify a domain class. Input was ${oid_components}");
-    }
-    result
   }
 
   def orgs() {
@@ -620,14 +600,14 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def addOrgRole() {
-        def owner  = resolveOID(params.parent?.split(":"))
+        def owner  = genericOIDService.resolveOID(params.parent?.split(":"))
         def rel    = RefdataValue.get(params.orm_orgRole)
 
 
 
         def orgIds = params.list('orm_orgoid')
         orgIds.each{ oid ->
-            def org_to_link = resolveOID(oid.split(":"))
+            def org_to_link = genericOIDService.resolveOID(oid.split(":"))
             def duplicateOrgRole = false
 
             if(params.recip_prop == 'sub')
@@ -667,10 +647,10 @@ class AjaxController {
 
     @Secured(['ROLE_USER'])
     def addPrsRole() {
-        def org     = resolveOID(params.org?.split(":"))
-        def parent  = resolveOID(params.parent?.split(":"))
-        def person  = resolveOID(params.person?.split(":"))
-        def role    = resolveOID(params.role?.split(":"))
+        def org     = genericOIDService.resolveOID(params.org?.split(":"))
+        def parent  = genericOIDService.resolveOID(params.parent?.split(":"))
+        def person  = genericOIDService.resolveOID(params.person?.split(":"))
+        def role    = genericOIDService.resolveOID(params.role?.split(":"))
 
         def newPrsRole
         def existingPrsRole
@@ -947,7 +927,76 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
-    def toggleAuditConfig() {
+    def showAuditConfigManager() {
+
+        def owner = genericOIDService.resolveOID(params.target)
+        if (owner) {
+            render(template: "/templates/audit/modal_config", model:[
+                    ownobj: owner,
+                    target: params.target,
+                    properties: owner.getClass().controlledProperties
+            ])
+        }
+    }
+    @Secured(['ROLE_USER'])
+    def processAuditConfigManager() {
+
+        def owner = genericOIDService.resolveOID(params.target)
+        if (owner) {
+            def objProps = owner.getClass().controlledProperties
+            def positiveList = params.list('properties')
+            def negativeList = objProps.minus(positiveList)
+
+            println " + " + positiveList
+            println " - " + negativeList
+
+            def member = owner.getClass().findAllByInstanceOf(owner)
+
+            positiveList.each{ prop ->
+                if (! AuditConfig.getConfig(owner, prop)) {
+                    AuditConfig.addConfig(owner, prop)
+
+                    member.each { m ->
+                        m."${prop}" = owner."${prop}"
+                        m.save(flush: true)
+                    }
+                }
+            }
+            negativeList.each{ prop ->
+                if (AuditConfig.getConfig(owner, prop)) {
+                    AuditConfig.removeConfig(owner, prop)
+
+                    member.each { m ->
+                        //m."${prop}" = null
+                        //m.save()
+                        println " TODO: ${m} -> DELETE: ${prop}"
+                    }
+                    // todo remove pending changes
+
+                    // delete pending changes
+
+                    def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
+                    openPD.each { pc ->
+                        def event = JSON.parse(pc.changeDoc)
+                        def eventObj = genericOIDService.resolveOID(event.changeDoc.OID)
+                        def eventProp = event.changeDoc.prop
+
+                        println eventObj
+                        println eventProp
+
+                        if (eventObj?.id == owner.id && eventProp.equalsIgnoreCase(prop)) {
+                            pc.delete(flush: true)
+                        }
+                    }
+                }
+            }
+        }
+
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_USER'])
+    def togglePropertyAuditConfig() {
         def className = params.propClass.split(" ")[1]
         def propClass = Class.forName(className)
         def owner     = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ", ""))?.getClazz()?.get(params.ownerId)
@@ -1369,7 +1418,7 @@ class AjaxController {
                         target_object."${params.name}" = null
                     }
                     if (target_object.hasProperty('owner')) {
-                        target_object.owner.save() // avoid owner.xyz not processed by flush
+                        target_object.owner?.save() // avoid owner.xyz not processed by flush
                     }
                     target_object.save(failOnError: true, flush: true);
                 }
@@ -1389,7 +1438,7 @@ class AjaxController {
                 bindData(target_object, binding_properties)
 
                 if (target_object.hasProperty('owner')) {
-                    target_object.owner.save() // avoid owner.xyz not processed by flush
+                    target_object.owner?.save() // avoid owner.xyz not processed by flush
                 }
                 target_object.save(failOnError: true, flush: true);
 
