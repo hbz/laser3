@@ -21,7 +21,11 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
     @Transient
     def messageSource
     @Transient
+    def pendingChangeService
+    @Transient
     def changeNotificationService
+    @Transient
+            def springSecurityService
 
   RefdataValue status
   RefdataValue type         // RefdataCatagory 'Subscription Type'
@@ -316,8 +320,8 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
     @Transient
     def notifyDependencies(changeDocument) {
         log.debug("notifyDependencies(${changeDocument})")
-        //def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
 
+        def slavedPendingChanges = []
         def derived_subscriptions = getNonDeletedDerivedSubscriptions()
 
         derived_subscriptions.each { ds ->
@@ -345,11 +349,10 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
                 propName = changeDocument.name ?: changeDocument.prop
             }
 
-            changeNotificationService
-                    .registerPendingChange('subscription',
+            def newPendingChange = changeNotificationService.registerPendingChange('subscription',
                     ds,
-                // pendingChange.message_SU01
-                "<b>${propName}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Lizenzvorlage geändert. " + description,
+                    // pendingChange.message_SU01
+                    "<b>${propName}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Lizenzvorlage geändert. " + description,
                     ds.getSubscriber(),
                     [
                             changeTarget:"com.k_int.kbplus.Subscription:${ds.id}",
@@ -357,6 +360,15 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
                             changeDoc:changeDocument
                     ])
 
+            if (newPendingChange && ds.isSlaved?.value == "Yes") {
+                slavedPendingChanges << newPendingChange
+            }
+        }
+
+        slavedPendingChanges.each { spc ->
+            log.debug('autoAccept! performing: ' + spc)
+            def user = null
+            pendingChangeService.performAccept(spc.getId(), user)
         }
     }
 

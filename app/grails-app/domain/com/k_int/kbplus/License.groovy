@@ -22,6 +22,8 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
     @Transient
     def messageSource
     @Transient
+    def pendingChangeService
+    @Transient
     def changeNotificationService
 
 
@@ -353,41 +355,40 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
     @Transient
     def notifyDependencies(changeDocument) {
         log.debug("notifyDependencies(${changeDocument})")
-        //def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
 
-    // Find any licenses derived from this license
-    // create a new pending change object
-    //def derived_licenses = License.executeQuery('select l from License as l where exists ( select link from Link as link where link.toLic=l and link.fromLic=? )',this)
-    def derived_licenses = getNonDeletedDerivedLicenses()
+        def slavedPendingChanges = []
+        // Find any licenses derived from this license
+        // create a new pending change object
+        //def derived_licenses = License.executeQuery('select l from License as l where exists ( select link from Link as link where link.toLic=l and link.fromLic=? )',this)
+        def derived_licenses = getNonDeletedDerivedLicenses()
 
-    derived_licenses.each { dl ->
-        log.debug("Send pending change to ${dl.id}")
+        derived_licenses.each { dl ->
+            log.debug("Send pending change to ${dl.id}")
 
-        def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-        ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.license."+changeDocument.prop,locale.toString())
-        def description = messageSource.getMessage('default.accept.placeholder',null, locale)
-        if(contentItemDesc){
-            description = contentItemDesc.content
-        }else{
-            def defaultMsg = ContentItem.findByKeyAndLocale("kbplus.change.license.default",locale.toString());
-            if( defaultMsg)
-                description = defaultMsg.content
-        }
+            def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+            ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.license."+changeDocument.prop,locale.toString())
+            def description = messageSource.getMessage('default.accept.placeholder',null, locale)
+            if(contentItemDesc){
+                description = contentItemDesc.content
+            }else{
+                def defaultMsg = ContentItem.findByKeyAndLocale("kbplus.change.license.default",locale.toString());
+                if( defaultMsg)
+                    description = defaultMsg.content
+            }
 
-          def propName
-          try {
-              // UGLY
-              propName = changeDocument.name ? ((messageSource.getMessage("license.${changeDocument.name}", null, locale)) ?: (changeDocument.name)) : (messageSource.getMessage("license.${changeDocument.prop}", null, locale) ?: (changeDocument.prop))
+            def propName
+            try {
+                // UGLY
+                propName = changeDocument.name ? ((messageSource.getMessage("license.${changeDocument.name}", null, locale)) ?: (changeDocument.name)) : (messageSource.getMessage("license.${changeDocument.prop}", null, locale) ?: (changeDocument.prop))
 
-          } catch(Exception e) {
-              propName = changeDocument.name ?: changeDocument.prop
-          }
+            } catch(Exception e) {
+                propName = changeDocument.name ?: changeDocument.prop
+            }
 
-          changeNotificationService
-        .registerPendingChange('license', // prop
-                              dl, // target
-                  //pendingChange.message_LI01
-                  "<b>${propName}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Vertragsvorlage geändert. " + description,
+            def newPendingChange = changeNotificationService.registerPendingChange('license', // prop
+                        dl, // target
+                        //pendingChange.message_LI01
+                        "<b>${propName}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Vertragsvorlage geändert. " + description,
                               dl.getLicensee(), // objowner TODO !!!!???
                               [
                                 changeTarget:"com.k_int.kbplus.License:${dl.id}",
@@ -395,8 +396,17 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
                                 changeDoc:changeDocument
                               ])
 
-      }
-  }
+            if (newPendingChange && dl.isSlaved?.value == "Yes") {
+                slavedPendingChanges << newPendingChange
+            }
+        }
+
+        slavedPendingChanges.each { spc ->
+            log.debug('autoAccept! performing: ' + spc)
+            def user = null
+            pendingChangeService.performAccept(spc.getId(), user)
+        }
+    }
 
     def getNonDeletedDerivedLicenses() {
         License.where{ instanceOf == this && (status == null || status.value != 'Deleted') }

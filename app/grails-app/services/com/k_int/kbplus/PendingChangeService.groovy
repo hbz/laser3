@@ -1,7 +1,5 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.AbstractProperty
-import com.k_int.kbplus.auth.*;
 import grails.converters.*
 import org.codehaus.groovy.grails.web.binding.DataBindingUtils
 import org.springframework.transaction.TransactionStatus
