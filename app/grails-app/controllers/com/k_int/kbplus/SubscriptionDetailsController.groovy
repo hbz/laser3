@@ -937,28 +937,17 @@ class SubscriptionDetailsController {
 
         validSubChilds.each{ member ->
 
-            def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
-            def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
-
-/*
-            if (member.isSlaved?.value == "Yes" && pendingChanges) {
-
-                def changesDesc = []
-                pendingChanges.each { change ->
-                    if (!pendingChangeService.performAccept(change, request)) {
-                        log.debug("Auto-accepting pending change has failed.")
-                    } else {
-                        changesDesc.add(PendingChange.get(change).desc)
-                    }
-                }
-                flash.message = changesDesc
-            } else {
-                result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
+            if (executorWrapperService.hasRunningProcess(member)) {
+                log.debug("PendingChange processing in progress")
+                result.processingpc = true
             }
-*/
-            result.pendingChanges << [ "${member.id}" : pendingChanges.collect { PendingChange.get(it) }]
-        }
+            else {
+                def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+                def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
 
+                result.pendingChanges << [ "${member.id}" : pendingChanges.collect { PendingChange.get(it) }]
+            }
+        }
 
         result
     }
@@ -1593,7 +1582,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
 
         // ---- pendingChanges : start
 
-        if (executorWrapperService.hasRunningProcess(result.institution)) {
+        if (executorWrapperService.hasRunningProcess(result.subscriptionInstance)) {
             log.debug("PendingChange processing in progress")
             result.processingpc = true
         } else {

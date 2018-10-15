@@ -20,6 +20,8 @@ class PendingChangeService {
 
 
 def performAccept(change,httpRequest) {
+    log.debug('performAccept')
+
     def result = true
     PendingChange.withNewTransaction { TransactionStatus status ->
       change = PendingChange.get(change)
