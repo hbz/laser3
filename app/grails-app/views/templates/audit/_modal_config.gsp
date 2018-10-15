@@ -1,8 +1,8 @@
-<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.kbplus.License; de.laser.AuditConfig" %>
+<%@ page import="com.k_int.kbplus.RefdataValue; de.laser.AuditConfig" %>
 
 <laser:serviceInjection />
 
-<semui:modal id="audit_config_modal" message="property.audit.tooltip" editmodal="editmodal">
+<semui:modal id="audit_config_modal" message="property.audit.menu" editmodal="editmodal">
 
     <g:form id="audit_config_form" class="ui form" url="[controller:'ajax', action:'processAuditConfigManager']" method="post">
         <g:hiddenField name="target" value="${target}"/>
@@ -20,10 +20,15 @@
                     <g:each in="${properties}" var="prop">
                         <tr>
                             <td>
-                                ${prop}
+                                <g:message code="license.${prop}" default="${prop} *" />
                             </td>
                             <td>
-                                ${ownobj.getProperty(prop)}
+                                <g:if test="${ownobj.getProperty(prop) instanceof RefdataValue}">
+                                    ${ownobj.getProperty(prop).getI10n('value')}
+                                </g:if>
+                                <g:else>
+                                    ${ownobj.getProperty(prop)}
+                                </g:else>
                             </td>
                             <td class="x">
                                 <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [])}" />

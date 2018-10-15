@@ -14,10 +14,18 @@
             </g:if>
         </g:if>
 
+        <div class="divider"></div>
+
         <semui:actionsDropdownItem controller="licenseDetails" action="copyLicense" params="${[id:license?.id]}" message="myinst.copyLicense" />
+
+        <g:if test="${showConsortiaFunctions}">
+            <semui:actionsDropdownItem id="audit_config_opener" message="property.audit.menu"/>
+        </g:if>
     </semui:actionsDropdown>
 
     <g:render template="/templates/tasks/modal_create" model="${[ownobj:license, owntp:'license']}"/>
     <g:render template="/templates/documents/modal" model="${[ownobj:license, owntp:'license']}"/>
     <g:render template="/templates/notes/modal_create" model="${[ownobj: license, owntp: 'license']}"/>
+
+    <g:render template="/templates/audit/config" model="${[ownobj: license]}" />
 </g:if>
