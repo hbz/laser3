@@ -47,7 +47,7 @@
                value="${message(code: 'default.button.revoke.label', default: 'Revoke')}"/>
         </g:if>
     </g:form>
-
+    <g:render template="../templates/copyEmailaddresses" model="[orgList: consortiaMembers]"/>
 
 </body>
 </html>

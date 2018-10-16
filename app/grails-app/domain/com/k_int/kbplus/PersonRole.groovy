@@ -72,7 +72,7 @@ class PersonRole implements Comparable<PersonRole>{
     }
 
     static getAllRefdataValues(String category) {
-        RefdataCategory.getAllRefdataValues(category)
+        RefdataCategory.getAllRefdataValues(category).sort{ it.value }
     }
 
     static def lookup(prs, lic, org, cluster, pkg, sub, title, start_date, end_date, functionType) {
