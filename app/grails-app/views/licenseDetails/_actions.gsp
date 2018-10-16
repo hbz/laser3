@@ -27,5 +27,5 @@
     <g:render template="/templates/documents/modal" model="${[ownobj:license, owntp:'license']}"/>
     <g:render template="/templates/notes/modal_create" model="${[ownobj: license, owntp: 'license']}"/>
 
-    <g:render template="/templates/audit/config" model="${[ownobj: license]}" />
+    <g:render template="/templates/audit/modal_script" model="${[ownobj: license]}" />
 </g:if>

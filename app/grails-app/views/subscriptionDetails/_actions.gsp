@@ -53,5 +53,5 @@
     <g:render template="/templates/documents/modal" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
     <g:render template="/templates/notes/modal_create" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
 
-    <g:render template="/templates/audit/config" model="${[ownobj: subscriptionInstance]}" />
+    <g:render template="/templates/audit/modal_script" model="${[ownobj: subscriptionInstance]}" />
 </g:if>
