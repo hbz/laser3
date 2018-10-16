@@ -416,7 +416,7 @@
                                     <dd><g:formatNumber number="${totalCostPerUse}" type="currency"
                                                         currencyCode="${currencyCode}" maxFractionDigits="2"
                                                         minFractionDigits="2" roundingMode="HALF_UP"/>
-                                        (verwendete Metrik: ${costPerUseMetric})
+                                        (${message(code: 'subscription.details.costPerUse.usedMetric')}: ${costPerUseMetric})
                                     </dd>
                                 </dl>
                                 <div class="ui divider"></div>
