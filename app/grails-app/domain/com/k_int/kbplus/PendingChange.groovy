@@ -7,6 +7,10 @@ import javax.persistence.Transient
 
 class PendingChange {
 
+    final static PROP_LICENSE       = 'license'
+    final static PROP_PKG           = 'pkg'
+    final static PROP_SUBSCRIPTION  = 'subscription'
+
     @Transient
     MessageSource messageSource
 

@@ -105,10 +105,11 @@ class LicenseCustomProperty extends CustomProperty implements AuditTrait  {
             def depedingProps = LicenseCustomProperty.findAllByInstanceOf( this )
             depedingProps.each{ lcp ->
 
-                def newPendingChange =  changeNotificationService.registerPendingChange('license',
+                def newPendingChange =  changeNotificationService.registerPendingChange(
+                        PendingChange.PROP_LICENSE,
                         propName,
-                        // pendingChange.message_SU01
-                        "<b>${lcp.type.name}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Vertragsvorlage geändert. " + description,
+                        // pendingChange.message_LI02
+                        "Das Merkmal <b>${lcp.type.name}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Vertragsvorlage geändert. " + description,
                         lcp.owner.getSubscriber(),
                         [
                                 changeTarget:"com.k_int.kbplus.License:${lcp.owner.id}",

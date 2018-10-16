@@ -199,10 +199,21 @@ class ChangeNotificationService {
     }
 
 
-    def registerPendingChange(prop, target, desc, objowner, changeMap ) {
+    @Deprecated
+    def registerPendingChange(prop, target, desc, objowner, changeMap) {
+
+        def msgToken = null
+        def msgParams = null
+        def legacyDesc = desc
+
+        registerPendingChange(prop, target, objowner, changeMap, msgToken, msgParams, legacyDesc)
+    }
+
+    //def registerPendingChange(prop, target, desc, objowner, changeMap) << legacy
+    def registerPendingChange(String prop, def target, def objowner, def changeMap, String msgToken, String msgParams, String legacyDesc) {
         log.debug("Register pending change ${prop} ${target.class.name}:${target.id}")
 
-      desc = desc.toString() // freeze string before altering referenced values
+        def desc = legacyDesc?.toString() // freeze string before altering referenced values
 
       // JSON converts in UTC,
       // we now add timezone delta to dates

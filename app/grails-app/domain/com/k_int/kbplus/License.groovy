@@ -385,11 +385,12 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
                 propName = changeDocument.name ?: changeDocument.prop
             }
 
-            def newPendingChange = changeNotificationService.registerPendingChange('license', // prop
+            def newPendingChange = changeNotificationService.registerPendingChange(
+                        PendingChange.PROP_LICENSE,
                         dl, // target
                         //pendingChange.message_LI01
                         "<b>${propName}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Vertragsvorlage geändert. " + description,
-                              dl.getLicensee(), // objowner TODO !!!!???
+                              dl.getLicensee(), // objowner
                               [
                                 changeTarget:"com.k_int.kbplus.License:${dl.id}",
                                 changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,

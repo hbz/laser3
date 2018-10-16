@@ -349,7 +349,8 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
                 propName = changeDocument.name ?: changeDocument.prop
             }
 
-            def newPendingChange = changeNotificationService.registerPendingChange('subscription',
+            def newPendingChange = changeNotificationService.registerPendingChange(
+                    PendingChange.PROP_SUBSCRIPTION,
                     ds,
                     // pendingChange.message_SU01
                     "<b>${propName}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Lizenzvorlage geändert. " + description,

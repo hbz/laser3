@@ -90,10 +90,11 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditTrait {
             def depedingProps = SubscriptionCustomProperty.findAllByInstanceOf( this )
             depedingProps.each{ scp ->
 
-                def newPendingChange = changeNotificationService.registerPendingChange('subscription',
+                def newPendingChange = changeNotificationService.registerPendingChange(
+                        PendingChange.PROP_SUBSCRIPTION,
                         scp.owner,
-                        // pendingChange.message_SU01
-                        "<b>${scp.type.name}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Lizenzvorlage geändert. " + description,
+                        // pendingChange.message_SU02
+                        "Das Merkmal <b>${scp.type.name}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Lizenzvorlage geändert. " + description,
                         scp.owner.getSubscriber(),
                         [
                                 changeTarget:"com.k_int.kbplus.Subscription:${scp.owner.id}",
