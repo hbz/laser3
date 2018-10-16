@@ -79,6 +79,28 @@ class FactService {
       return result
     }
 
+  def getTotalCostPerUse(subscription, type, existingMetrics) {
+    if (!subscription.costItems){
+      log.debug('No Costitems found for for this subscription')
+      return null
+    }
+    def preferedMetrics = preferedCostPerUseMetrics[type.value]
+    def report = costPerUseReportForDatatype[type.value]
+    def costPerUseMetric = preferedMetrics.findAll {
+      existingMetrics.contains(it)
+    }?.first()
+    def query = 'select sum(co.costInLocalCurrency) as lccost, sum(co.costInBillingCurrency) as bccost ' +
+        'from CostItem co where co.sub=:sub'
+    def totalCostRow = CostItem.executeQuery(query, [sub: subscription]).first()
+    def totalUsageForLicense = totalUsageForSub(subscription, report, costPerUseMetric)
+    def totalCostPerUse = []
+    if (totalCostRow[0] && totalUsageForLicense) {
+      totalCostPerUse[0] = costPerUseMetric
+      totalCostPerUse[1] = totalCostRow[0] / Double.valueOf(totalUsageForLicense)
+    }
+    totalCostPerUse
+  }
+
 
   def generateMonthlyUsageGrid(title_id, org_id, supplier_id) {
 

@@ -1697,8 +1697,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                     log.info('Different content type for this license, cannot calculate Cost Per Use.')
                 } else if (! fsLicenseResult.isEmpty()){
                     def existingReportMetrics = fsLicenseResult.y_axis_labels*.split(':')*.last()
-                    //def existingReportMetrics = fsLicenseResult.y_axis_labels*.split(':')
-                    def costPerUseMetricValuePair = getTotalCostPerUse(result.subscriptionInstance, holdingTypes.first(), existingReportMetrics)
+                    def costPerUseMetricValuePair = factService.getTotalCostPerUse(result.subscriptionInstance, holdingTypes.first(), existingReportMetrics)
                     result.costPerUseMetric = costPerUseMetricValuePair[0]
                     result.totalCostPerUse = costPerUseMetricValuePair[1]
                     result.currencyCode = NumberFormat.getCurrencyInstance().getCurrency().currencyCode
@@ -1718,28 +1717,6 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
         }
 
         result
-    }
-
-    def getTotalCostPerUse(subscription, type, existingMetrics) {
-        if (!subscription.costItems){
-            log.debug('No Costitems found for for this subscription')
-            return null
-        }
-        def preferedMetrics = factService.preferedCostPerUseMetrics[type.value]
-        def report = factService.costPerUseReportForDatatype[type.value]
-        def costPerUseMetric = preferedMetrics.findAll {
-            existingMetrics.contains(it)
-        }?.first()
-        def query = 'select sum(co.costInLocalCurrency) as lccost, sum(co.costInBillingCurrency) as bccost ' +
-            'from CostItem co where co.sub=:sub'
-        def totalCostRow = CostItem.executeQuery(query, [sub: subscription]).first()
-        def totalUsageForLicense = factService.totalUsageForSub(subscription, report, costPerUseMetric)
-        def totalCostPerUse = []
-        if (totalCostRow[0] && totalUsageForLicense) {
-            totalCostPerUse[0] = costPerUseMetric
-            totalCostPerUse[1] = totalCostRow[0] / Double.valueOf(totalUsageForLicense)
-        }
-        totalCostPerUse
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
