@@ -8,10 +8,22 @@ class FactService {
   def sessionFactory
   def contextService
 
+
+    // TODO make this configurable
+    static final Map preferedCostPerUseMetrics = [
+        'Database' : ['result_click', 'record_view', 'search_reg'],
+        'Journal' : ['ft_total']
+    ]
+
+    static final Map costPerUseReportForDatatype = [
+        'Database' : 'DB1R4',
+        'Journal' : 'JR1R4'
+    ]
+
   private static String TOTAL_USAGE_FOR_SUB_IN_PERIOD =
       'select sum(factValue) ' +
           'from Fact as f ' +
-          'where f.factFrom >= :start and f.factTo <= :end and f.factType.value=:factType and exists ' +
+          'where f.factFrom >= :start and f.factTo <= :end and f.factType.value=:factType and f.factMetric.value=:metric and exists ' +
           '(select 1 from IssueEntitlement as ie INNER JOIN ie.tipp as tipp ' +
           'where ie.subscription= :sub  and tipp.title = f.relatedTitle and ie.status.value!=:status) and f.inst = :inst'
 
@@ -39,6 +51,7 @@ class FactService {
                                       factTo:fact.to,
                                       factValue:fact.value,
                                       factUid:fact.uid,
+                                      factMetric:fact.metric,
                                       relatedTitle:fact.title,
                                       supplier:fact.supplier,
                                       inst:fact.inst,
@@ -206,9 +219,9 @@ class FactService {
         return result
       }
       def y_axis_labels = []
-      factList.factUid.each { li->
-        def metric = getReportMetricLabel(li)
-        y_axis_labels += metric
+
+      factList.each { li ->
+        y_axis_labels.add(li.factType.value + ':' + li.factMetric.value)
       }
       y_axis_labels = y_axis_labels.unique().sort()
 
@@ -234,15 +247,11 @@ class FactService {
     result
   }
 
-  private String getReportMetricLabel(uid) {
-    return uid.split(':')[5] + ':' + uid.split(':')[4]
-  }
-
   private def generateUsageMDList(factList, firstAxis, secondAxis) {
     def usage = new long[firstAxis.size()][secondAxis.size()]
     factList.each { f ->
       def x_label = f.get('reportingYear').intValue()
-      def y_label = f.get('factUid').split(':')[5].toString()+':'+f.get('factUid').split(':')[4].toString()
+      def y_label = f.get('factType').value + ':' + f.get('factMetric').value
       usage[firstAxis.indexOf(y_label)][secondAxis.indexOf(x_label)] += Long.parseLong(f.get('factValue'))
     }
     usage
@@ -250,7 +259,7 @@ class FactService {
 
   private def getTotalUsageFactsForSub(org_id, supplier_id, sub, title_id=null, restrictToSubscriptionPeriod=false)  {
     def params = [:]
-    def hql = 'select sum(f.factValue), f.reportingYear, f.reportingMonth, f.factType, f.factUid' +
+    def hql = 'select sum(f.factValue), f.reportingYear, f.reportingMonth, f.factType, f.factMetric' +
         ' from Fact as f' +
         ' where f.supplier.id=:supplierid and f.inst.id=:orgid'
         if (restrictToSubscriptionPeriod) {
@@ -266,7 +275,7 @@ class FactService {
               'where ie.subscription= :sub  and tipp.title = f.relatedTitle and ie.status.value!=:status)'
           params['sub'] = sub
         }
-    hql += ' group by f.factType, f.reportingYear, f.reportingMonth, f.factUid'
+    hql += ' group by f.factType, f.reportingYear, f.reportingMonth, f.factMetric'
     hql += ' order by f.reportingYear desc,f.reportingMonth desc'
     params['supplierid'] = supplier_id
     params['orgid'] = org_id
@@ -285,7 +294,7 @@ class FactService {
       map['reportingYear'] = li[1]
       map['reportingMonth'] = li[2]
       map['factType'] = li[3]
-      map['factUid'] = li[4]
+      map['factMetric'] = li[4]
       list.add(map)
     }
     list
@@ -348,9 +357,8 @@ class FactService {
       def factList = getTotalUsageFactsForSub(org_id, supplier_id, subscription, title_id)
       // todo add column metric to table fact + data migration
       def y_axis_labels = []
-      factList.factUid.each { li->
-        def metric = getReportMetricLabel(li)
-        y_axis_labels += metric
+      factList.each {
+        y_axis_labels.add(it.factType.value + ':' + it.factMetric.value)
       }
       y_axis_labels = y_axis_labels.unique().sort()
       def x_axis_labels = factList.reportingYear.unique(false).sort()*.intValue()
@@ -362,13 +370,14 @@ class FactService {
     result
   }
 
-  def totalUsageForSub(sub, factType) {
+  def totalUsageForSub(sub, factType, metric) {
     Fact.executeQuery(TOTAL_USAGE_FOR_SUB_IN_PERIOD, [
         start: sub.startDate,
         end  : sub.endDate,
         sub  : sub,
         factType : factType,
         status : 'Deleted',
+        metric : metric,
         inst : sub.subscriber]
     )[0]
   }

@@ -415,7 +415,9 @@
                                     <dt class="control-label">${message(code: 'subscription.details.costPerUse.header')}</dt>
                                     <dd><g:formatNumber number="${totalCostPerUse}" type="currency"
                                                         currencyCode="${currencyCode}" maxFractionDigits="2"
-                                                        minFractionDigits="2" roundingMode="HALF_UP"/></dd>
+                                                        minFractionDigits="2" roundingMode="HALF_UP"/>
+                                        (verwendete Metrik: ${costPerUseMetric})
+                                    </dd>
                                 </dl>
                                 <div class="ui divider"></div>
                             </g:if>

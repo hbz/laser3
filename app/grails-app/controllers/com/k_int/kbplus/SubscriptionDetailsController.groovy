@@ -1687,19 +1687,23 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                 OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
             if (result.institutional_usage_identifier) {
 
-                // TODO can there be different currency codes? We would have to handle that somehow.
-                def query = 'select sum(co.costInLocalCurrency) as lccost, sum(co.costInBillingCurrency) as bccost from CostItem co ' +
-                    'where co.sub=:sub'
-                def totalCostRow = CostItem.executeQuery(query, [sub: result.subscriptionInstance]).first()
-
-                    def totalUsageForLicense = factService.totalUsageForSub(result.subscriptionInstance, 'STATS:JR1')
-                if (totalCostRow[0] && totalUsageForLicense) {
-                    def totalCostPerUse = totalCostRow[0] / Double.valueOf(totalUsageForLicense)
-                    result.totalCostPerUse = totalCostPerUse
-                    result.currencyCode = NumberFormat.getCurrencyInstance().getCurrency().currencyCode
-                }
                 def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscriptionInstance)
                 def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscriptionInstance)
+
+                def holdingTypes = result.subscriptionInstance.getHoldingTypes() ?: null
+                if (!holdingTypes) {
+                    log.debug('No types found, maybe there are no issue entitlements linked to subscription')
+                } else if (holdingTypes.size()>1){
+                    log.info('Different content type for this license, cannot calculate Cost Per Use.')
+                } else if (! fsLicenseResult.isEmpty()){
+                    def existingReportMetrics = fsLicenseResult.y_axis_labels*.split(':')*.last()
+                    //def existingReportMetrics = fsLicenseResult.y_axis_labels*.split(':')
+                    def costPerUseMetricValuePair = getTotalCostPerUse(result.subscriptionInstance, holdingTypes.first(), existingReportMetrics)
+                    result.costPerUseMetric = costPerUseMetricValuePair[0]
+                    result.totalCostPerUse = costPerUseMetricValuePair[1]
+                    result.currencyCode = NumberFormat.getCurrencyInstance().getCurrency().currencyCode
+                }
+
                 result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
                 result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution?.getallOrgRoleType())) ? 'package' : 'institution'
                 result.usage = fsresult?.usage
@@ -1713,8 +1717,29 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
           }
         }
 
-
         result
+    }
+
+    def getTotalCostPerUse(subscription, type, existingMetrics) {
+        if (!subscription.costItems){
+            log.debug('No Costitems found for for this subscription')
+            return null
+        }
+        def preferedMetrics = factService.preferedCostPerUseMetrics[type.value]
+        def report = factService.costPerUseReportForDatatype[type.value]
+        def costPerUseMetric = preferedMetrics.findAll {
+            existingMetrics.contains(it)
+        }?.first()
+        def query = 'select sum(co.costInLocalCurrency) as lccost, sum(co.costInBillingCurrency) as bccost ' +
+            'from CostItem co where co.sub=:sub'
+        def totalCostRow = CostItem.executeQuery(query, [sub: subscription]).first()
+        def totalUsageForLicense = factService.totalUsageForSub(subscription, report, costPerUseMetric)
+        def totalCostPerUse = []
+        if (totalCostRow[0] && totalUsageForLicense) {
+            totalCostPerUse[0] = costPerUseMetric
+            totalCostPerUse[1] = totalCostRow[0] / Double.valueOf(totalUsageForLicense)
+        }
+        totalCostPerUse
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')

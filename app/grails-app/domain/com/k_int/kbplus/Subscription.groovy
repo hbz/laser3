@@ -518,4 +518,9 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
       return hasUsageSupplier
   }
 
+  def getHoldingTypes() {
+      def types = issueEntitlements?.tipp.title.type.unique()
+      types
+  }
+
 }
