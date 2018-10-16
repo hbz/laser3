@@ -6,54 +6,44 @@
 
     <g:set var="rdvEmail" value="${RefdataValue.getByValueAndCategory('E-Mail','ContactContentType')}"/>
     <g:set var="rdvGeneralContactPrs" value="${RefdataValue.getByValueAndCategory('General contact person', 'Person Function')}"/>
+    <g:set var="rdvAllPersonFunctions" value="${PersonRole.getAllRefdataValues('Person Function').sort {it.getI10n("value")}}"/>
+    <g:set var="emailAddressLists" value="new ArrayList()"/>
 
     <div class="field">
         <label>Funktion</label>
         <laser:select class="ui dropdown search"
                       name="newPrsRoleType"
-                      from="${PersonRole.getAllRefdataValues('Person Function')}"
+                      from="${rdvAllPersonFunctions}"
                       optionKey="id"
                       optionValue="value"
-                      value="${rdvGeneralContactPrs.getI10n("value")}"/>
+                      value="${rdvGeneralContactPrs.id}"/>
     </div>
-    <hr>
-    TODO: Voreingestellter Wert: Hauptkontakt und das reagieren auf die Änderung dieser Auswahl fehlen noch
     <br><br>
-    Orgs: ${orgList}<br>
-
-    <hr>
-    %{--<g:textArea name="emailadressen" readonly="false" rows="1" cols="1" style="width:95%">--}%
+    <g:each in="${rdvAllPersonFunctions}" var="prsFunction" status="counter">
+        <% allEmailAddresses = null; %>
         <g:each in="${orgList}" var="org">
-            <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(rdvGeneralContactPrs, org)}" var="person">
+            <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(prsFunction, org)}" var="person">
                 <g:each in ="${Contact.findAllByPrsAndContentType(person.getPrs(), rdvEmail)}" var="email">
-                    %{--${email?.content};--}%
-                    <% allEmailAddresses = (allEmailAddresses == null)? email?.content + "; " : allEmailAddresses + email?.content + "; "; %>
+                    <% allEmailAddresses = (allEmailAddresses == null)? email?.content.trim() + "; " : allEmailAddresses + email?.content.trim() + "; "; %>
                 </g:each>
             </g:each>
         </g:each>
-    %{--</g:textArea>--}%
-    <g:textArea name="emailadressen1" readonly="false" rows="5" cols="1" style="width: 100%;%">
-        ${allEmailAddresses}
-    </g:textArea>
-    %{--<button class="ui button">--}%
-        %{--Kopieren--}%
-    %{--</button>--}%
-    %{--<button class="ui button">--}%
-        %{--E-Mailen--}%
-    %{--</button>--}%
-    %{--<%--}%
-        %{--Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();--}%
-        %{--clipboard.setContents(allEmailAddresses, null);--}%
-    %{--%>--}%
-    %{--<span data-position="right center" data-tooltip="Mail senden an ${allEmailAddresses}">--}%
-        %{--<a href="mailto:${allEmailAddresses}" >--}%
-            %{--<i class="ui icon envelope outline"></i>--}%
-        %{--</a>--}%
-    %{--</span>--}%
+        <g:if test="${prsFunction.id == rdvGeneralContactPrs.id}">
+
+            <g:textArea name="emailaddressfield${counter}" readonly="false" rows="5" cols="1" class="myTargets" style="width: 100%;">${allEmailAddresses}</g:textArea>
+        </g:if>
+        <g:else>
+            <g:textArea name="emailaddressfield${counter}" readonly="false" rows="5" cols="1" class="myTargets hidden" style="width: 100%;">${allEmailAddresses}</g:textArea>
+        </g:else>
+    </g:each>
 
     <g:javascript>
         $('#newPrsRoleType').change(function() {
-            alert("Du hat einen anderen Wert gewählt!");
+            $('.myTargets').addClass('hidden');
+
+            var ndx = $("#newPrsRoleType").prop('selectedIndex');
+            console.log( $('#emailaddressfield' + ndx) )
+            $('#emailaddressfield' + ndx).removeClass('hidden');
         });
     </g:javascript>
 

@@ -160,6 +160,8 @@
                 </g:each>
             </tbody>
         </table>
+
+    <g:render template="../templates/copyEmailaddresses" model="[orgList: outerLoop.collect {it.getAllSubscribers()}]"/>
     </g:each>
 
     </g:if>
