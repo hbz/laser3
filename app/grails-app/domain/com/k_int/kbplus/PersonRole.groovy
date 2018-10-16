@@ -72,7 +72,7 @@ class PersonRole implements Comparable<PersonRole>{
     }
 
     static getAllRefdataValues(String category) {
-        RefdataCategory.getAllRefdataValues(category).sort{ it.value }
+        RefdataCategory.getAllRefdataValues(category).sort {it.getI10n("value")}
     }
 
     static def lookup(prs, lic, org, cluster, pkg, sub, title, start_date, end_date, functionType) {
@@ -113,7 +113,7 @@ class PersonRole implements Comparable<PersonRole>{
     int compareTo(PersonRole that) {
         String this_FunctionType = this?.functionType?.value
         String that_FunctionType = that?.functionType?.value
-        int result;
+        int result
 
         if  (REFDATA_GENERAL_CONTACT_PRS == this_FunctionType){
             if (REFDATA_GENERAL_CONTACT_PRS == that_FunctionType) {
