@@ -449,8 +449,9 @@
                                                             target="_blank"
                                                             params="[mode        : usageMode,
                                                                      packages    : subscription.getCommaSeperatedPackagesIsilList(),
+                                                                     vendors     : natStatSupplierId,
                                                                      institutions: statsWibid,
-                                                                     reports     : reportMetric.split(':')[0]+'R4',
+                                                                     reports     : reportMetric.split(':')[0],
                                                                      years       : x_axis_labels[i]
                                                             ]"
                                                             title="Springe zu Statistik im Nationalen Statistikserver">

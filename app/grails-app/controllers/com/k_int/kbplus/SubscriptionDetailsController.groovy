@@ -1683,6 +1683,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
             log.debug('Found different content providers, cannot show usage')
           } else  {
             def supplier_id = suppliers[0]
+            result.natStatSupplierId = Org.get(supplier_id).getIdentifierByType('statssid').value
             result.institutional_usage_identifier =
                 OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
             if (result.institutional_usage_identifier) {
