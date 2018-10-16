@@ -71,7 +71,7 @@ class OrganisationsController {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
         params.max  = params.max ?: result.user?.getDefaultPageSizeTMP()
-        params.sort = " LOWER(o.sortname), LOWER(o.name)"
+        params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
         def fsq = filterService.getOrgQuery(params)
 
@@ -84,58 +84,34 @@ class OrganisationsController {
     @Secured(['ROLE_USER'])
     def listProvider() {
         def result = [:]
-        result.propList =
-                PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
-                        defList: [PropertyDefinition.ORG_PROP],
-                ] // public properties
-                ) +
-                        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant = :tenant", [
-                                defList: [PropertyDefinition.ORG_PROP],
-                                tenant: contextService.getOrg()
-                        ]// private properties
-                        )
+        result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
+        result.user        = User.get(springSecurityService.principal.id)
 
-        result.user       = User.get(springSecurityService.principal.id)
-        params.orgSector  = RefdataValue.getByValueAndCategory('Publisher','OrgSector')?.id?.toString()
-        params.orgRoleType    = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')?.id?.toString()
-        params.max        = params.max ?: result.user?.getDefaultPageSizeTMP()
-        params.sort       = " LOWER(o.shortname), LOWER(o.name)"
+        params.orgSector   = RefdataValue.getByValueAndCategory('Publisher','OrgSector')?.id?.toString()
+        params.orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')?.id?.toString()
+        params.sort        = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
-        def paramsTotal   = params.clone()
-        if (paramsTotal.max) {
-            paramsTotal.remove("max")
-        }
+        def fsq            = filterService.getOrgQuery(params)
+        def orgListTotal   = Org.findAll(fsq.query, fsq.queryParams)
+        params.max         = params.max ?: result.user?.getDefaultPageSizeTMP()
+        def fsq2           = null
 
-        def fsq           = filterService.getOrgQuery(params)
-        def fsqTotal      = filterService.getOrgQuery(paramsTotal)
-
-        def orgList       = Org.findAll(fsq.query, fsq.queryParams, params)
-        def orgListTotal  = Org.findAll(fsqTotal.query, fsqTotal.queryParams)
-
-        if (isPropertyFilterUsed() && orgList.size() > 0) {
-            def tmpQuery             = ["SELECT o FROM Org o WHERE o.id IN (:oids)"]
-            def tmpQueryParams       = [oids: orgList.collect{ it1 -> it1.id }]
-            def tmpQueryParamsTotal  = [oids: orgListTotal.collect{ it2 -> it2.id }]
-
-            (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, tmpQuery, 'o', tmpQueryParamsTotal)
-            def orgListTotalMitParams  = Org.executeQuery( tmpQuery.join(' '), tmpQueryParams )
-
-            int startIndex      = Integer.parseInt(params?.offset? params.offset+"" : "0").intValue()
-            int tmpMax          = Integer.parseInt(params?.max? params.max+"": "10").intValue()
-            int endIndex        = (startIndex + tmpMax) > orgListTotalMitParams.size() ? orgListTotalMitParams.size() : startIndex + tmpMax
-
-            result.orgList      = orgListTotalMitParams.subList(startIndex, endIndex)
-            result.orgListTotal = orgListTotalMitParams.size()
+        if (params.filterPropDef) {
+            def tmpQuery
+            def tmpQueryParams
+            fsq2 = filterService.getOrgQuery([constraint_orgIds: orgListTotal.collect{ it2 -> it2.id }] << params)
+            (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, fsq2.query, 'o', [:])
+            def tmpQueryParams2 = fsq2.queryParams << tmpQueryParams
+            result.orgList      = Org.findAll(tmpQuery, tmpQueryParams2, params)
+            result.orgListTotal = Org.executeQuery("select count (o) ${tmpQuery}", tmpQueryParams2)[0]
 
         } else {
-            result.orgList      = orgList
-            result.orgListTotal = Org.executeQuery("select count (o) ${fsq.query}", fsq.queryParams)[0]
+            fsq2 = filterService.getOrgQuery(params)
+            result.orgList      = Org.findAll(fsq2.query, fsq2.queryParams, params)
+            result.orgListTotal = Org.executeQuery("select count (o) ${fsq2.query}", fsq2.queryParams)[0]
         }
-        result
-    }
 
-    def isPropertyFilterUsed() {
-        params.filterPropDef
+        result
     }
 
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])

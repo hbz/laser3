@@ -7,10 +7,10 @@ import java.sql.Timestamp
 
 class ChangeNotificationService {
 
-  def executorService
-  def genericOIDService
-  def sessionFactory
-  def grailsApplication
+    def executorService
+    def genericOIDService
+    def sessionFactory
+    def grailsApplication
 
   // N,B, This is critical for this service as it's called from domain object OnChange handlers
   static transactional = false;
@@ -199,9 +199,8 @@ class ChangeNotificationService {
     }
 
 
-  def registerPendingChange(prop, target, desc, objowner, changeMap ) {
-
-      log.debug("Register pending change ${prop} ${target.class.name}:${target.id}");
+    def registerPendingChange(prop, target, desc, objowner, changeMap ) {
+        log.debug("Register pending change ${prop} ${target.class.name}:${target.id}")
 
       desc = desc.toString() // freeze string before altering referenced values
 
@@ -231,11 +230,13 @@ class ChangeNotificationService {
     new_pending_change.oid = "${target.class.name}:${target.id}"
     new_pending_change.ts = new Date();
 
-    if ( new_pending_change.save(flush:true) ) {
+    if (new_pending_change.save(flush:true)) {
+        return new_pending_change
     }
     else {
-      log.error("Problem saving pending change: ${new_pending_change.errors}");
+        log.error("Problem saving pending change: ${new_pending_change.errors}")
     }
-  }
+        return null
+    }
 
 }

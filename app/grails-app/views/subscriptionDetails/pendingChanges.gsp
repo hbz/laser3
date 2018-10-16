@@ -32,7 +32,7 @@
             <g:else>
                 <i class="chevron right icon disabled"></i>
             </g:else>
-        </span
+        </span>
     </h1>
 
     <g:render template="nav" />

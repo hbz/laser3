@@ -15,12 +15,15 @@
     <g:if test="${tmplConfigShow?.contains('type')}">
         <div class="field">
             <label>${message(code: 'org.orgRoleType.label')}</label>
+            <g:if test="${orgRoleTypes == null || orgRoleTypes.isEmpty()}">
+                <g:set var="orgRoleTypes" value="${RefdataCategory.getAllRefdataValues('OrgRoleType')}"/>
+            </g:if>
             <laser:select class="ui dropdown" name="orgRoleType"
-                          from="${RefdataCategory.getAllRefdataValues('OrgRoleType')}"
-                          optionKey="id"
-                          optionValue="value"
-                          value="${params.orgRoleType}"
-                          noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"/>
+                      from="${orgRoleTypes}"
+                      optionKey="id"
+                      optionValue="value"
+                      value="${params.orgRoleType}"
+                      noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"/>
         </div>
     </g:if>
     <g:else>
