@@ -80,11 +80,6 @@ class IssueEntitlementController {
           def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(org.id, supplier_id, result.issueEntitlementInstance.subscription, title_id)
           result.institutional_usage_identifier =
                   OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), org)
-          //def jusp_login = result.issueEntitlementInstance.subscription.subscriber?.getIdentifierByType('jusplogin')?.value
-          //def jusp_iid = result.issueEntitlementInstance.subscription.subscriber?.getIdentifierByType('juspiid')?.value
-          //def jusp_sid = result.issueEntitlementInstance.tipp.pkg.contentProvider?.getIdentifierByType('juspsid')?.value
-          //def jusp_title_id = result.issueEntitlementInstance.tipp.title.getIdentifierValue('jusp')
-
           if (result.institutional_usage_identifier && fsresult.usage) {
               result.statsWibid = org.getIdentifierByType('wibid')?.value
               result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in org.getallOrgRoleType())) ? 'package' : 'institution'
