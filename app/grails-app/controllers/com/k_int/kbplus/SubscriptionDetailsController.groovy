@@ -886,21 +886,21 @@ class SubscriptionDetailsController {
             response.sendError(401); return
         }
 
-        def delSubscription = Subscription.get(params.target)
-        def delInstitution = delSubscription.getSubscriber()
+        def delSubscription = genericOIDService.resolveOID(params.target)
+        def delInstitution = delSubscription?.getSubscriber()
 
         def deletedStatus = RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted')
 
-        if (delSubscription.hasPerm("edit", result.user)) {
+        if (delSubscription?.hasPerm("edit", result.user)) {
             def derived_subs = Subscription.findByInstanceOfAndStatusNot(delSubscription, deletedStatus)
 
             if (!derived_subs) {
                 if (delSubscription.getConsortia() && delSubscription.getConsortia() != delInstitution) {
                     OrgRole.executeUpdate("delete from OrgRole where sub = ? and org = ?", [delSubscription, delInstitution])
-
-                    delSubscription.status = deletedStatus
-                    delSubscription.save(flush: true)
                 }
+                delSubscription.status = deletedStatus
+                delSubscription.save(flush: true)
+
             } else {
                 flash.error = message(code: 'myinst.actionCurrentSubscriptions.error', default: 'Unable to delete - The selected license has attached subscriptions')
             }

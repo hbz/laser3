@@ -70,7 +70,7 @@
                 <td class="x">
                     <g:if test="${editable}">
                         <g:link controller="licenseDetails" action="deleteMember" class="ui icon negative button"
-                                params="${[id:license.id, target: lic.id]}"
+                                params="${[id:license.id, target: lic.class.name + ':' + lic.id]}"
                                 onclick="return confirm('${message(code:'license.details.delete.confirm', args:[(lic.reference?:'this license')])}')">
                             <i class="trash alternate icon"></i>
                         </g:link>
