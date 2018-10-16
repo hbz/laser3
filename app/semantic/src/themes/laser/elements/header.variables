@@ -4,6 +4,6 @@
  //@iconHeaderSize            : 1.5em;
 
 
- @iconHeaderSize            : 22px;
+ @iconHeaderSize            : 1.5em;
 
  @circularHeaderIconSize    : 22px;

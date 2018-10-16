@@ -1,4 +1,5 @@
-<%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org" %>
+<%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.UserSettings; com.k_int.kbplus.RefdataValue" %>
+
 <!doctype html>
 
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
@@ -489,26 +490,78 @@
     <div class="ui fixed menu la-contextBar"  >
         <div class="ui container">
             <div class="ui sub header item la-context-org">${contextOrg?.name}</div>
-
-                <div class="ui buttons">
-
-                </div>
+            <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
+                YESS!!!
+            </g:if>
+            <g:else>
+                NO!!!
+            </g:else>
 
             <div class="right menu la-advanced-view">
-                <div class="item">
-                    <div class="ui buttons">
-                        <div class="ui label button" data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right" data-variation="tiny">
-                            <i class="icon hand pointer outline slash"></i>
+
+
+                        <%--<g:if test="${controllerName=='subscriptionDetails' && actionName=='show'}"> --%>
+                        <div class="item">
+                            <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
+                                <button class="ui icon toggle button la-toggle-controls" data-tooltip="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                    <i class="hand pointer outline icon"></i>
+                                </button>
+                            </g:if>
+                            <g:else>
+                                <button class="ui icon toggle button active la-toggle-controls"  data-tooltip="${message(code:'statusbar.hideButtons.tooltip')}"  data-position="bottom right" data-variation="tiny">
+                                    <i class="hand pointer outline icon slash"></i>
+                                </button>
+                            </g:else>
+
+
+
+                        <r:script>
+                            $(function(){
+                                $(".ui.toggle.button").click(function(){
+                                    $(this).toggleClass('active');
+                                    $( ".icon", this ).toggleClass( "slash" );
+                                    // hide all the buttons
+                                    $('#collapseableSubDetails').find('.button').toggleClass('hidden');
+                                    if ( $(this).hasClass('active') ) {
+                                        $(this).removeAttr(
+                                        );
+                                        $(this).attr(
+                                                "data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}"
+                                        );
+
+
+                                    }
+
+                                    else {
+                                        $(this).removeAttr(
+                                                "data-tooltip",
+                                                "${message(code:'statusbar.hideButtons.tooltip')}"
+                                        );
+                                        $(this).attr(
+                                                "data-tooltip","${message(code:'statusbar.showButtons.tooltip')}"
+                                        );
+                                    }
+
+
+
+                                });
+
+                            });
+
+                        </r:script>
                         </div>
-                        <g:if test="${(params.mode)}">
+                        <%--</g:if> --%>
+            <g:if test="${(params.mode)}">
+            <div class="item">
+
 
                                 <g:if test="${params.mode=='advanced'}">
-                                    <div class="ui label toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right" data-variation="tiny">
-                                        <i class="icon green eye"></i>
+                                    <div class="ui toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                        <i class="icon eye"></i>
                                 </g:if>
                                 <g:else>
-                                    <div class="ui label toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right" data-variation="tiny">
-                                        <i class="icon eye slash"></i>
+                                    <div class="ui toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                        <i class="icon eye green  slash"></i>
                                 </g:else>
                             </div>
 
@@ -524,7 +577,7 @@
 
                                 // selector cache
                                 var
-                                    $button = $('.ui.buttons .button.la-toggle-advanced'),
+                                    $button = $('.button.la-toggle-advanced'),
 
                                     // alias
                                     handler = {
@@ -551,11 +604,13 @@
                                 .ready(LaToggle.advanced.button.ready)
                             ;
                         </script>
-                        </g:if>
-                    </div>
+
                 </div>
+
+                </div>
+                        </g:if>
                 <%--semui:editableLabel editable="${editable}" /--%>
-            </div>
+        </div>
         </div>
     </div><!-- Context Bar -->
 
