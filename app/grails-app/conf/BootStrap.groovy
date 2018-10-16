@@ -3,6 +3,7 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
 import de.laser.domain.I10nTranslation
+import grails.converters.JSON
 import grails.plugin.springsecurity.SecurityFilterPosition // 2.0
 import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
 
@@ -220,6 +221,12 @@ class BootStrap {
 
         log.debug("setESGOKB ..")
         setESGOKB()
+
+        log.debug("setJSONFormatDate ..")
+        JSON.registerObjectMarshaller(Date) {
+            return it?.format("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        }
+
 
         log.debug("Init completed ..")
     }
@@ -943,6 +950,7 @@ class BootStrap {
         RefdataValue.loc('OrgRoleType',      [en: 'Institution', de: 'Einrichtung'])
         RefdataValue.loc('OrgRoleType',      [en: 'Publisher', de: 'Verlag'])
         RefdataValue.loc('OrgRoleType',      [en: 'Provider', de: 'Anbieter'])
+        RefdataValue.loc('OrgRoleType',      [en: 'Agency', de: 'Lieferant'])
         RefdataValue.loc('OrgRoleType',      [en: 'Other', de: 'Andere'])
         RefdataValue.loc('OrgRoleType',      [en: 'Licensor', de: 'Lizenzgeber']).save()
         RefdataValue.loc('OrgRoleType',      [en: 'Licensee', de: 'Lizenznehmer']).save()

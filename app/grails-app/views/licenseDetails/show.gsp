@@ -157,28 +157,22 @@
                                 <dl>
                                     <dt class="control-label">${message(code:'license.linktoLicense', default:'License Template')}</dt>
 
-                                    %{-- refactoring: replace link table with instanceOf
-                                    <dd>
-                                            <g:each in="${license?.incomingLinks}" var="il">
-                                                <g:link controller="licenseDetails" action="show" id="${il.fromLic.id}">${il.fromLic.reference} ${il.type?.value ?"("+il.type?.value+")":""}</g:link>
-                                                <br />
-                                                ${message(code:'license.details.linktoLicense.pendingChange', default:'Automatically Accept Changes?')}
-                                                <br />
-                                                <semui:xEditableRefData owner="${il}" field="isSlaved" config='YN'/>
-
-                                            </g:each>
-                                    </dd>
-                                    --}%
-                                        <g:if test="${license.instanceOf}">
-                                            <g:link controller="licenseDetails" action="show" id="${license.instanceOf.id}">${license.instanceOf}</g:link>
-                                            <br />
-                                            ${message(code:'license.details.linktoLicense.pendingChange', default:'Automatically Accept Changes?')}
-                                            <br />
-                                            <semui:xEditableRefData owner="${license}" field="isSlaved" config='YN'/>
-
-                                        </g:if>
-                                    </dd>
+                                    <g:if test="${license.instanceOf}">
+                                        <g:link controller="licenseDetails" action="show" id="${license.instanceOf.id}">${license.instanceOf}</g:link>
+                                    </g:if>
                                 </dl>
+
+                                <g:if test="${license.instanceOf}">
+                                    <dl>
+                                        <dt class="control-label">
+                                            ${message(code:'license.details.linktoLicense.pendingChange', default:'Automatically Accept Changes?')}
+                                        </dt>
+                                        <dd>
+                                            <semui:xEditableRefData owner="${license}" field="isSlaved" config='YN'/>
+                                        </dd>
+                                    </dl>
+                                </g:if>
+
                             </div>
                         </div>
                     </div>
@@ -474,7 +468,6 @@
                 });
             });
         </g:else>
-
 
     </r:script>
 

@@ -8,6 +8,7 @@ class ExecutorWrapperService {
 	ConcurrentHashMap<Object,java.util.concurrent.FutureTask> activeFuture = [:]
 
 	def processClosure(clos,owner){
+		log.debug('processClosure: ' + owner)
 		owner = "${owner.class.name}:${owner.id}"
 		//see if we got a process running for owner already
 		def existingFuture = activeFuture.get(owner)
