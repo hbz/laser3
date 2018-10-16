@@ -6,7 +6,7 @@
 
     <g:set var="rdvEmail" value="${RefdataValue.getByValueAndCategory('E-Mail','ContactContentType')}"/>
     <g:set var="rdvGeneralContactPrs" value="${RefdataValue.getByValueAndCategory('General contact person', 'Person Function')}"/>
-    <g:set var="rdvAllPersonFunctions" value="${PersonRole.getAllRefdataValues('Person Function').sort {it.getI10n("value")}}"/>
+    <g:set var="rdvAllPersonFunctions" value="${PersonRole.getAllRefdataValues('Person Function')}"/>
     <g:set var="emailAddressLists" value="new ArrayList()"/>
 
     <div class="field">
@@ -29,7 +29,6 @@
             </g:each>
         </g:each>
         <g:if test="${prsFunction.id == rdvGeneralContactPrs.id}">
-
             <g:textArea name="emailaddressfield${counter}" readonly="false" rows="5" cols="1" class="myTargets" style="width: 100%;">${allEmailAddresses}</g:textArea>
         </g:if>
         <g:else>
@@ -40,9 +39,7 @@
     <g:javascript>
         $('#newPrsRoleType').change(function() {
             $('.myTargets').addClass('hidden');
-
             var ndx = $("#newPrsRoleType").prop('selectedIndex');
-            console.log( $('#emailaddressfield' + ndx) )
             $('#emailaddressfield' + ndx).removeClass('hidden');
         });
     </g:javascript>
