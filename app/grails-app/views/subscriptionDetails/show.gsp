@@ -415,7 +415,9 @@
                                     <dt class="control-label">${message(code: 'subscription.details.costPerUse.header')}</dt>
                                     <dd><g:formatNumber number="${totalCostPerUse}" type="currency"
                                                         currencyCode="${currencyCode}" maxFractionDigits="2"
-                                                        minFractionDigits="2" roundingMode="HALF_UP"/></dd>
+                                                        minFractionDigits="2" roundingMode="HALF_UP"/>
+                                        (${message(code: 'subscription.details.costPerUse.usedMetric')}: ${costPerUseMetric})
+                                    </dd>
                                 </dl>
                                 <div class="ui divider"></div>
                             </g:if>
@@ -447,8 +449,9 @@
                                                             target="_blank"
                                                             params="[mode        : usageMode,
                                                                      packages    : subscription.getCommaSeperatedPackagesIsilList(),
+                                                                     vendors     : natStatSupplierId,
                                                                      institutions: statsWibid,
-                                                                     reports     : reportMetric.split(':')[0]+'R4',
+                                                                     reports     : reportMetric.split(':')[0],
                                                                      years       : x_axis_labels[i]
                                                             ]"
                                                             title="Springe zu Statistik im Nationalen Statistikserver">
