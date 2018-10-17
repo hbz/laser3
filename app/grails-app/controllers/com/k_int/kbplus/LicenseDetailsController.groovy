@@ -968,7 +968,8 @@ from Subscription as s where
                         for (prop in baseLicense.customProperties) {
                             def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
                             copiedProp = prop.copyInto(copiedProp)
-                            licenseInstance.addToCustomProperties(copiedProp)
+                            copiedProp.save(flush: true)
+                            //licenseInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                         }
                     }
                     if(params.license.copyPrivateProperties){
@@ -980,11 +981,11 @@ from Subscription as s where
                             {
                                 def copiedProp = new LicensePrivateProperty(type: prop.type, owner: licenseInstance)
                                 copiedProp = prop.copyInto(copiedProp)
-                                licenseInstance.addToPrivateProperties(copiedProp)
+                                copiedProp.save(flush: true)
+                                //licenseInstance.addToPrivateProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                             }
                         }
                     }
-
                 redirect controller: 'licenseDetails', action: 'show', params: [id: licenseInstance.id]
                 }
 
