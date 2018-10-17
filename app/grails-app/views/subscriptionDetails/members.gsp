@@ -149,7 +149,7 @@
 
                             <g:if test="${editable && i<1}">
                                 <g:link controller="subscriptionDetails" action="deleteMember" class="ui icon negative button"
-                                        params="${[id:subscriptionInstance.id, target: sub.id]}"
+                                        params="${[id:subscriptionInstance.id, target: sub.class.name + ':' + sub.id]}"
                                         onclick="return confirm('${message(code:'license.details.delete.confirm', args:[(sub.name?:'this subscription')])}')">
                                     <i class="trash alternate icon"></i>
                                 </g:link>
@@ -160,6 +160,8 @@
                 </g:each>
             </tbody>
         </table>
+
+    <g:render template="../templates/copyEmailaddresses" model="[orgList: outerLoop.collect {it.getAllSubscribers()}]"/>
     </g:each>
 
     </g:if>

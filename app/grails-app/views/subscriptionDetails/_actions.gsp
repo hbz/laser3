@@ -42,12 +42,21 @@
             <semui:actionsDropdownItem controller="subscriptionDetails" action="renewSubscriptionConsortia"
                                        params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>
         </g:if>
+        <div class="divider"></div>
 
+        <g:if test="${actionName == 'members'}">
+            <semui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses"/>
+        </g:if>
 
+        <g:if test="${showConsortiaFunctions}">
+            <semui:actionsDropdownItem id="audit_config_opener" message="property.audit.menu"/>
+        </g:if>
 
     </semui:actionsDropdown>
 
     <g:render template="/templates/tasks/modal_create" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
     <g:render template="/templates/documents/modal" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
     <g:render template="/templates/notes/modal_create" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
+
+    <g:render template="/templates/audit/modal_script" model="${[ownobj: subscriptionInstance]}" />
 </g:if>

@@ -7,10 +7,10 @@ import java.sql.Timestamp
 
 class ChangeNotificationService {
 
-  def executorService
-  def genericOIDService
-  def sessionFactory
-  def grailsApplication
+    def executorService
+    def genericOIDService
+    def sessionFactory
+    def grailsApplication
 
   // N,B, This is critical for this service as it's called from domain object OnChange handlers
   static transactional = false;
@@ -199,11 +199,21 @@ class ChangeNotificationService {
     }
 
 
-  def registerPendingChange(prop, target, desc, objowner, changeMap ) {
+    @Deprecated
+    def registerPendingChange(prop, target, desc, objowner, changeMap) {
 
-      log.debug("Register pending change ${prop} ${target.class.name}:${target.id}");
+        def msgToken = null
+        def msgParams = null
+        def legacyDesc = desc
 
-      desc = desc.toString() // freeze string before altering referenced values
+        registerPendingChange(prop, target, objowner, changeMap, msgToken, msgParams, legacyDesc)
+    }
+
+    //def registerPendingChange(prop, target, desc, objowner, changeMap) << legacy
+    def registerPendingChange(String prop, def target, def objowner, def changeMap, String msgToken, String msgParams, String legacyDesc) {
+        log.debug("Register pending change ${prop} ${target.class.name}:${target.id}")
+
+        def desc = legacyDesc?.toString() // freeze string before altering referenced values
 
       // JSON converts in UTC,
       // we now add timezone delta to dates
@@ -231,11 +241,13 @@ class ChangeNotificationService {
     new_pending_change.oid = "${target.class.name}:${target.id}"
     new_pending_change.ts = new Date();
 
-    if ( new_pending_change.save(flush:true) ) {
+    if (new_pending_change.save(flush:true)) {
+        return new_pending_change
     }
     else {
-      log.error("Problem saving pending change: ${new_pending_change.errors}");
+        log.error("Problem saving pending change: ${new_pending_change.errors}")
     }
-  }
+        return null
+    }
 
 }

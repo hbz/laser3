@@ -72,7 +72,9 @@ class FilterService {
         def queryParams = []
 
         if (params.orgNameContains?.length() > 0) {
-            query << "lower(o.name) like ?"
+            query << "(lower(o.name) like ? or lower(o.shortname) like ? or lower(o.sortname) like ?)"
+            queryParams << "%${params.orgNameContains.toLowerCase()}%"
+            queryParams << "%${params.orgNameContains.toLowerCase()}%"
             queryParams << "%${params.orgNameContains.toLowerCase()}%"
         }
        /* if (params.orgType?.length() > 0) {

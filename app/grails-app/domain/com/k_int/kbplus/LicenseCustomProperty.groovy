@@ -19,6 +19,8 @@ class LicenseCustomProperty extends CustomProperty implements AuditTrait  {
     def grailsApplication
     @Transient
     def messageSource
+    @Transient
+    def pendingChangeService
 
     // AuditTrait
     static auditable = true
@@ -98,19 +100,31 @@ class LicenseCustomProperty extends CustomProperty implements AuditTrait  {
 
             // legacy ++
 
-            def all = SubscriptionCustomProperty.findAllByInstanceOf( this )
-            all.each{ depends ->
+            def slavedPendingChanges = []
 
-                changeNotificationService.registerPendingChange('license',
+            def depedingProps = LicenseCustomProperty.findAllByInstanceOf( this )
+            depedingProps.each{ lcp ->
+
+                def newPendingChange =  changeNotificationService.registerPendingChange(
+                        PendingChange.PROP_LICENSE,
                         propName,
-                        // pendingChange.message_SU01
-                        "<b>${depends.type.name}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Vertragsvorlage geändert. " + description,
-                        depends.owner.getSubscriber(),
+                        // pendingChange.message_LI02
+                        "Das Merkmal <b>${lcp.type.name}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Vertragsvorlage geändert. " + description,
+                        lcp.owner.getSubscriber(),
                         [
-                                changeTarget:"com.k_int.kbplus.License:${depends.owner.id}",
+                                changeTarget:"com.k_int.kbplus.License:${lcp.owner.id}",
                                 changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
                                 changeDoc:changeDocument
                         ])
+                if (newPendingChange && lcp.owner.isSlaved?.value == "Yes") {
+                    slavedPendingChanges << newPendingChange
+                }
+            }
+
+            slavedPendingChanges.each { spc ->
+                log.debug('autoAccept! performing: ' + spc)
+                def user = null
+                pendingChangeService.performAccept(spc.getId(), user)
             }
         }
         else if (changeDocument.event.equalsIgnoreCase('LicenseCustomProperty.deleted')) {

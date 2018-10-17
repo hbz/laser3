@@ -61,8 +61,6 @@ class FinanceController {
             response.sendError(401)
         }
 
-        //Accessed from Subscription page, 'hardcoded' set subscription 'hardcode' values
-        //todo Once we know we are in sub only mode, make nessesary adjustments in setupQueryData()
         result.inSubMode   = params.sub ? true : false
 
           result.queryMode = MODE_OWNER
@@ -102,7 +100,12 @@ class FinanceController {
                     tmp = financialData(result, params, user, MODE_CONS)
 
                     result.foundMatches_CS = tmp.foundMatches
-                    result.cost_items_CS = tmp.cost_items
+
+                    result.cost_items_CS = tmp.cost_items.sort{ x, y ->
+                        def xx = OrgRole.findBySubAndRoleType(x.sub, RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'))
+                        def yy = OrgRole.findBySubAndRoleType(y.sub, RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'))
+                        xx.org.sortname <=> yy.org.sortname
+                    }
                     result.cost_item_count_CS = tmp.cost_item_count
                 }
                 // show member subscription as consortia
@@ -201,7 +204,7 @@ class FinanceController {
         result.max = 5000
         result.offset = 0
 
-        result.sort        =  ["desc","asc"].contains(params.sort)? params.sort : "desc" //defaults to sort & order of desc id
+
 
         // TODO fix:shortcode
         if (params.csvMode && request.getHeader('referer')?.endsWith("${params?.shortcode}/finance")) {
@@ -209,24 +212,28 @@ class FinanceController {
             log.debug("Making changes to query setup data for an export...")
         }
         //Query setup options, ordering, joins, param query data....
-        def (order, join, gspOrder) = CostItem.orderingByCheck(params.order) //order = field, join = left join required or null, gsporder = to see which field is ordering by
-        result.order = gspOrder
+        def order = "id"
+        def gspOrder = "Cost Item#"
 
-        //todo Add to query params and HQL query if we are in sub mode e.g. result.inSubMode, result.fixedSubscription
+        result.order = gspOrder
+        result.sort =  ["desc","asc"].contains(params.sort)? params.sort : "desc" //defaults to sort & order of desc id
+
         def cost_item_qry_params =  [owner: result.institution]
-        def cost_item_qry        = (join)? "LEFT OUTER JOIN ${join} AS j WHERE ci.owner = :owner " :"  where ci.owner = :owner "
-        def orderAndSortBy       = (join)? "ORDER BY COALESCE(j.${order}, ${Integer.MAX_VALUE}) ${result.sort}, ci.id ASC" : " ORDER BY ci.${order} ${result.sort}"
+        def cost_item_qry        =  " where ci.owner = :owner "
+        def orderAndSortBy = " ORDER BY ci.${order} ${result.sort}"
 
         if (MODE_CONS == queryMode) {
             def memberSubs = Subscription.findAllByInstanceOf(result.fixedSubscription)
 
             cost_item_qry_params = [subs: memberSubs, owner: result.institution]
             cost_item_qry        = ' WHERE ci.sub IN ( :subs ) AND ci.owner = :owner '
+            //orderAndSortBy       = orderAndSortBy
         }
 
         if (MODE_OWNER == queryMode) {
             cost_item_qry_params = [sub: result.fixedSubscription, owner: result.institution]
             cost_item_qry        = ' WHERE ci.sub = :sub AND ci.owner = :owner '
+            //orderAndSortBy       = orderAndSortBy
         }
 
         // OVERWRITE
@@ -235,6 +242,7 @@ class FinanceController {
             // TODO FLAG isVisibleForSubscriber
             cost_item_qry_params =  [sub: result.fixedSubscription, owner: result.institution]
             cost_item_qry        = ' , OrgRole as ogr WHERE ci.sub = :sub AND ogr.org = :owner AND ci.isVisibleForSubscriber is true ' // (join)? "LEFT OUTER JOIN ${join} AS j WHERE ci.owner = :owner " :"  where ci.owner = :owner "
+            //orderAndSortBy       = orderAndSortBy
        }
 
         //Filter processing...
@@ -244,8 +252,8 @@ class FinanceController {
 
         cost_item_qry_params   << qryOutput.fqParams
 
-        println ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy
-        println cost_item_qry_params
+        //println ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy
+        //println cost_item_qry_params
 
         tmp.foundMatches    =  cost_item_qry_params.size() > 1 // [owner:default] ; used for flash
         tmp.cost_items      =  CostItem.executeQuery(ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy, cost_item_qry_params, params);

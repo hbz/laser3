@@ -171,10 +171,13 @@
                                 </dl>
 
                                 <dl>
-                                    <dt></dt>
-                                    ${message(code:'license.details.linktoLicense.pendingChange', default:'Automatically Accept Changes?')}
-                                    <br />
-                                    <semui:xEditableRefData owner="${subscriptionInstance}" field="isSlaved" config='YN'/>
+                                    <dt class="control-label">
+                                        ${message(code:'license.details.linktoLicense.pendingChange', default:'Automatically Accept Changes?')}
+                                    </dt>
+                                    <dd>
+                                        <semui:xEditableRefData owner="${subscriptionInstance}" field="isSlaved" config='YN'/>
+                                    </dd>
+
                                 </dl>
                             </g:if>
                         </div>
@@ -555,11 +558,6 @@
             <g:render template="/templates/tasks/card" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
             <g:render template="/templates/documents/card" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
             <g:render template="/templates/notes/card" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
-
-            <g:render template="/templates/audit/config" model="${[
-                    ownobj:     subscriptionInstance,
-                    showOpener: showConsortiaFunctions
-            ]}" />
         </aside><!-- .four -->
     </div><!-- .grid -->
 

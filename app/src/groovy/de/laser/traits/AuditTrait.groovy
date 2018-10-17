@@ -123,14 +123,13 @@ trait AuditTrait {
     def getWatchedProperties() {
         def result = []
 
-        if (this instanceof CustomProperty) {
-            def cfg = getAuditConfig()
-            result = cfg ? cfg.referenceField : result
+        if (getAuditConfig(AuditConfig.COMPLETE_OBJECT)) {
+            this.controlledProperties.each { cp ->
+                result << cp
+            }
         }
         else {
             this.controlledProperties.each { cp ->
-                def cfg = getAuditConfig(cp)
-
                 if (getAuditConfig(cp)) {
                     result << cp
                 }
