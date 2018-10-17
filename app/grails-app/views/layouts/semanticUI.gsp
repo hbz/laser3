@@ -498,54 +498,53 @@
             </g:else>
 
             <div class="right menu la-advanced-view">
-
-
                         <%--<g:if test="${controllerName=='subscriptionDetails' && actionName=='show'}"> --%>
                         <div class="item">
                             <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
                                 <button class="ui icon toggle button la-toggle-controls" data-tooltip="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right" data-variation="tiny">
-                                    <i class="hand pointer outline icon"></i>
+                                    <i class="pencil alternate icon"></i>
                                 </button>
                             </g:if>
                             <g:else>
                                 <button class="ui icon toggle button active la-toggle-controls"  data-tooltip="${message(code:'statusbar.hideButtons.tooltip')}"  data-position="bottom right" data-variation="tiny">
-                                    <i class="hand pointer outline icon slash"></i>
+                                    <i class="pencil alternate icon slash"></i>
                                 </button>
                             </g:else>
-
-
 
                         <r:script>
                             $(function(){
                                 $(".ui.toggle.button").click(function(){
+                                    $.ajax({
+                                            url: '<g:createLink controller="ajax" action="toggleEditMode"/>',
+                                            data: {
+                                                showEditMode: 'true'
+                                            }
+                                    })
+
                                     $(this).toggleClass('active');
                                     $( ".icon", this ).toggleClass( "slash" );
                                     // hide all the buttons
-                                    $('#collapseableSubDetails').find('.button').toggleClass('hidden');
-                                    if ( $(this).hasClass('active') ) {
-                                        $(this).removeAttr(
-                                        );
-                                        $(this).attr(
-                                                "data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}"
-                                        );
-
-
-                                    }
-
-                                    else {
-                                        $(this).removeAttr(
-                                                "data-tooltip",
-                                                "${message(code:'statusbar.hideButtons.tooltip')}"
-                                        );
-                                        $(this).attr(
-                                                "data-tooltip","${message(code:'statusbar.showButtons.tooltip')}"
-                                        );
-                                    }
-
-
-
+                                    toggleEditableElements($(this));
                                 });
-
+                                function toggleEditableElements(that) {
+                                    $('#collapseableSubDetails').find('.button').toggleClass('hidden');
+                                    // hide all the x-editable
+                                    $('.xEditableValue').editable('toggleDisabled');
+                                    $('.xEditable').editable('toggleDisabled');
+                                    $('.xEditableDatepicker').editable('toggleDisabled');
+                                    $('.xEditableManyToOne').editable('toggleDisabled');
+                                    if ( $(that).hasClass('active') ) {
+                                        $(that).removeAttr();
+                                        $(that).attr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
+                                    }
+                                    else {
+                                        $(that).removeAttr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
+                                        $(that).attr("data-tooltip","${message(code:'statusbar.showButtons.tooltip')}");
+                                    }
+                                }
+                                if ( $('.la-toggle-controls').hasClass('active') ) {
+                                    toggleEditableElements();
+                                }
                             });
 
                         </r:script>
@@ -557,11 +556,11 @@
 
                                 <g:if test="${params.mode=='advanced'}">
                                     <div class="ui toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right" data-variation="tiny">
-                                        <i class="icon eye"></i>
+                                        <i class="icon plus square"></i>
                                 </g:if>
                                 <g:else>
                                     <div class="ui toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right" data-variation="tiny">
-                                        <i class="icon eye green  slash"></i>
+                                        <i class="icon plus square green slash"></i>
                                 </g:else>
                             </div>
 
