@@ -1007,7 +1007,7 @@ class BootStrap {
         RefdataValue.loc('Subscription Status',      [en: 'Under Consideration', de: 'Entscheidung steht aus'])
         RefdataValue.loc('Subscription Status',      [en: 'Under Consortial Examination',   de: 'Wird konsortial geprüft'])
         RefdataValue.loc('Subscription Status',      [en: 'Under Institutional Examination',   de: 'Wird institutionell geprüft'])
-        RefdataValue.loc('Subscription Status',      [en: 'Test Access',   de: 'Testzugriff'])
+        RefdataValue.loc('Subscription Status',      [en: 'Test',   de: 'Test'])
         RefdataValue.loc('Subscription Status',      [en: 'Intended', de: 'Geplant'])
 
 		RefdataValue.loc('Subscription Type',      [en: 'Alliance Licence', de: 'Allianzlizenz'])

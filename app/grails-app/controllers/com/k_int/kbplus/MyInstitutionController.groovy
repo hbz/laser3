@@ -296,7 +296,7 @@ from License as l where (
         if ((params.sort != null) && (params.sort.length() > 0)) {
             base_qry += " order by l.${params.sort} ${params.order}"
         } else {
-            base_qry += " order by l.reference asc"
+            base_qry += " order by lower(trim(l.reference)) asc"
         }
 
         //log.debug("query = ${base_qry}");
@@ -662,7 +662,7 @@ from Subscription as s where (
         if ((params.sort != null) && (params.sort.length() > 0)) {
             base_qry += (params.sort=="s.name") ? " order by LOWER(${params.sort}) ${params.order}":" order by ${params.sort} ${params.order}"
         } else {
-            base_qry += " order by LOWER(s.name) asc"
+            base_qry += " order by lower(trim(s.name)) asc"
         }
 
         //log.debug("query: ${base_qry} && params: ${qry_params}")
