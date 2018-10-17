@@ -1699,9 +1699,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                 } else if (! fsLicenseResult.isEmpty()){
                     def existingReportMetrics = fsLicenseResult.y_axis_labels*.split(':')*.last()
                     def costPerUseMetricValuePair = factService.getTotalCostPerUse(result.subscriptionInstance, holdingTypes.first(), existingReportMetrics)
-                    result.costPerUseMetric = costPerUseMetricValuePair[0]
-                    result.totalCostPerUse = costPerUseMetricValuePair[1]
-                    result.currencyCode = NumberFormat.getCurrencyInstance().getCurrency().currencyCode
+                    if (costPerUseMetricValuePair) {
+                        result.costPerUseMetric = costPerUseMetricValuePair[0]
+                        result.totalCostPerUse = costPerUseMetricValuePair[1]
+                        result.currencyCode = NumberFormat.getCurrencyInstance().getCurrency().currencyCode
+                    }
                 }
 
                 result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
