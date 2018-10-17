@@ -1263,6 +1263,7 @@ class AjaxController {
                 setting.setValue(RefdataValue.getByValueAndCategory('No', 'YN'))
             }
         }
+        render show
     }
 
     @Secured(['ROLE_USER'])

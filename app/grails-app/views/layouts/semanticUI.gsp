@@ -490,15 +490,8 @@
     <div class="ui fixed menu la-contextBar"  >
         <div class="ui container">
             <div class="ui sub header item la-context-org">${contextOrg?.name}</div>
-            <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
-                YESS!!!
-            </g:if>
-            <g:else>
-                NO!!!
-            </g:else>
-
             <div class="right menu la-advanced-view">
-                        <%--<g:if test="${controllerName=='subscriptionDetails' && actionName=='show'}"> --%>
+                        <g:if test="${controllerName=='subscriptionDetails' && actionName=='show'}">
                         <div class="item">
                             <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
                                 <button class="ui icon toggle button la-toggle-controls" data-tooltip="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right" data-variation="tiny">
@@ -513,43 +506,60 @@
 
                         <r:script>
                             $(function(){
+                                 <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
+                                    var editMode = true;
+                                </g:if>
+                                <g:else>
+                                    var editMode = false;
+                                </g:else>
                                 $(".ui.toggle.button").click(function(){
+                                    editMode = !editMode;
                                     $.ajax({
-                                            url: '<g:createLink controller="ajax" action="toggleEditMode"/>',
-                                            data: {
-                                                showEditMode: 'true'
-                                            }
+                                        url: '<g:createLink controller="ajax" action="toggleEditMode"/>',
+                                        data: {
+                                            showEditMode: editMode
+                                        },
+                                        success: function(){
+                                            toggleEditableElements()
+                                        }
                                     })
-
-                                    $(this).toggleClass('active');
-                                    $( ".icon", this ).toggleClass( "slash" );
-                                    // hide all the buttons
-                                    toggleEditableElements($(this));
                                 });
-                                function toggleEditableElements(that) {
-                                    $('#collapseableSubDetails').find('.button').toggleClass('hidden');
-                                    // hide all the x-editable
-                                    $('.xEditableValue').editable('toggleDisabled');
-                                    $('.xEditable').editable('toggleDisabled');
-                                    $('.xEditableDatepicker').editable('toggleDisabled');
-                                    $('.xEditableManyToOne').editable('toggleDisabled');
-                                    if ( $(that).hasClass('active') ) {
-                                        $(that).removeAttr();
-                                        $(that).attr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
+                                function toggleEditableElements(){
+                                    var toggleButton = $(".ui.toggle.button");
+                                    var toggleIcon = $(".ui.toggle.button .icon");
+
+                                    if (  editMode) {
+                                        $('#collapseableSubDetails').find('.button').removeClass('hidden');
+                                        $(toggleButton).removeAttr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
+                                        $(toggleButton).attr("data-tooltip","${message(code:'statusbar.showButtons.tooltip')}");
+                                        $(toggleIcon ).removeClass( "slash" );
+                                        $(toggleButton).removeClass('active');
+
+                                        $('.xEditableValue').editable('option', 'disabled', false);
+                                        $('.xEditable').editable('option', 'disabled', false);
+                                        $('.xEditableDatepicker').editable('option', 'disabled', false);
+                                        $('.xEditableManyToOne').editable('option', 'disabled', false);
                                     }
                                     else {
-                                        $(that).removeAttr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
-                                        $(that).attr("data-tooltip","${message(code:'statusbar.showButtons.tooltip')}");
+                                        $('#collapseableSubDetails').find('.button').addClass('hidden');
+                                        // hide all the x-editable
+                                        $(toggleButton).removeAttr();
+                                        $(toggleButton).attr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
+                                        $( toggleIcon ).addClass( "slash" );
+                                        $(toggleButton).addClass('active');
+
+                                        $('.xEditableValue').editable('option', 'disabled', true);
+                                        $('.xEditable').editable('option', 'disabled', true);
+                                        $('.xEditableDatepicker').editable('option', 'disabled', true);
+                                        $('.xEditableManyToOne').editable('option', 'disabled', true);
                                     }
                                 }
-                                if ( $('.la-toggle-controls').hasClass('active') ) {
-                                    toggleEditableElements();
-                                }
+                                toggleEditableElements();
                             });
 
                         </r:script>
                         </div>
-                        <%--</g:if> --%>
+                        </g:if>
             <g:if test="${(params.mode)}">
             <div class="item">
 
