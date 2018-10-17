@@ -47,7 +47,7 @@
   color: #4183C4;
 }
 .ui.breadcrumb a:hover {
-  color: #39a1f2;
+  color: #2185d0;
 }
 
 /* Icon Divider */
@@ -116,3 +116,14 @@
          Theme Overrides
 *******************************/
 
+.ui.breadcrumb {
+  color: #454545;
+}
+
+/* Link */
+.ui.breadcrumb a {
+  color: #767676;
+}
+.ui.breadcrumb a:hover {
+  color: #2185d0;
+}

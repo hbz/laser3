@@ -302,7 +302,7 @@ i.blue.icon {
   color: #004678 !important;
 }
 i.inverted.blue.icon {
-  color: #39a1f2 !important;
+  color: #2185d0 !important;
 }
 i.inverted.bordered.blue.icon,
 i.inverted.circular.blue.icon {
@@ -4779,3 +4779,45 @@ i.icon.youtube.square {
 }
 
 /* Brand Icons Ideally Would Be Defined Here */
+i.icon.hand.pointer.outline.slash {
+  font-family: 'icomoon';
+}
+i.icon.pencil.alternate.slash {
+  font-family: 'icomoon';
+}
+i.icon.thumbtack.slash {
+  font-family: 'icomoon';
+}
+i.icon.plus.square.slash {
+  font-family: 'icomoon';
+}
+i.icon.hand.pointer.outline.slash:before {
+  content: "\e900";
+}
+i.icon.pencil.alternate.slash:before {
+  content: "\e901";
+}
+i.icon.thumbtack.slash:before {
+  content: "\e902";
+}
+i.icon.plus.square.slash:before {
+  content: "\e903";
+}
+
+
+/*******************************
+           Laser Icons
+*******************************/
+
+
+/* Load & Define Laser Font */
+@font-face {
+  font-family: 'icomoon';
+  src: url("themes/laser/assets/fonts/icomoon.eot");
+  src: url("themes/laser/assets/fonts/icomoon.eot?#iefix") format('embedded-opentype'), url("themes/laser/assets/fonts/icomoon.woff") format('woff'), url("themes/laser/assets/fonts/icomoon.ttf") format('truetype'), url("themes/laser/assets/fonts/icomoon.svg#icons") format('svg');
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-decoration: inherit;
+  text-transform: none;
+}

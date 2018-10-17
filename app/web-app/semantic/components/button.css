@@ -1810,9 +1810,9 @@
 .ui.inverted.blue.buttons .button,
 .ui.inverted.blue.button {
   background-color: transparent;
-  -webkit-box-shadow: 0px 0px 0px 2px #39a1f2 inset !important;
-          box-shadow: 0px 0px 0px 2px #39a1f2 inset !important;
-  color: #39a1f2;
+  -webkit-box-shadow: 0px 0px 0px 2px #2185d0 inset !important;
+          box-shadow: 0px 0px 0px 2px #2185d0 inset !important;
+  color: #2185d0;
 }
 .ui.inverted.blue.buttons .button:hover,
 .ui.inverted.blue.button:hover,
@@ -1828,19 +1828,19 @@
 }
 .ui.inverted.blue.buttons .button:hover,
 .ui.inverted.blue.button:hover {
-  background-color: #1797fb;
+  background-color: #1678c2;
 }
 .ui.inverted.blue.buttons .button:focus,
 .ui.inverted.blue.button:focus {
-  background-color: #0391ff;
+  background-color: #0d71bb;
 }
 .ui.inverted.blue.buttons .active.button,
 .ui.inverted.blue.active.button {
-  background-color: #1397ff;
+  background-color: #1279c6;
 }
 .ui.inverted.blue.buttons .button:active,
 .ui.inverted.blue.button:active {
-  background-color: #0f8ae9;
+  background-color: #1a69a4;
 }
 
 /* Inverted Basic */
@@ -1855,30 +1855,30 @@
 .ui.inverted.blue.basic.buttons .button:hover,
 .ui.inverted.blue.buttons .basic.button:hover,
 .ui.inverted.blue.basic.button:hover {
-  -webkit-box-shadow: 0px 0px 0px 2px #1797fb inset !important;
-          box-shadow: 0px 0px 0px 2px #1797fb inset !important;
-  color: #39a1f2 !important;
+  -webkit-box-shadow: 0px 0px 0px 2px #1678c2 inset !important;
+          box-shadow: 0px 0px 0px 2px #1678c2 inset !important;
+  color: #2185d0 !important;
 }
 .ui.inverted.blue.basic.buttons .button:focus,
 .ui.inverted.blue.basic.buttons .button:focus,
 .ui.inverted.blue.basic.button:focus {
-  -webkit-box-shadow: 0px 0px 0px 2px #0391ff inset !important;
-          box-shadow: 0px 0px 0px 2px #0391ff inset !important;
-  color: #39a1f2 !important;
+  -webkit-box-shadow: 0px 0px 0px 2px #0d71bb inset !important;
+          box-shadow: 0px 0px 0px 2px #0d71bb inset !important;
+  color: #2185d0 !important;
 }
 .ui.inverted.blue.basic.buttons .active.button,
 .ui.inverted.blue.buttons .basic.active.button,
 .ui.inverted.blue.basic.active.button {
-  -webkit-box-shadow: 0px 0px 0px 2px #1397ff inset !important;
-          box-shadow: 0px 0px 0px 2px #1397ff inset !important;
-  color: #39a1f2 !important;
+  -webkit-box-shadow: 0px 0px 0px 2px #1279c6 inset !important;
+          box-shadow: 0px 0px 0px 2px #1279c6 inset !important;
+  color: #2185d0 !important;
 }
 .ui.inverted.blue.basic.buttons .button:active,
 .ui.inverted.blue.buttons .basic.button:active,
 .ui.inverted.blue.basic.button:active {
-  -webkit-box-shadow: 0px 0px 0px 2px #0f8ae9 inset !important;
-          box-shadow: 0px 0px 0px 2px #0f8ae9 inset !important;
-  color: #39a1f2 !important;
+  -webkit-box-shadow: 0px 0px 0px 2px #1a69a4 inset !important;
+          box-shadow: 0px 0px 0px 2px #1a69a4 inset !important;
+  color: #2185d0 !important;
 }
 
 /*--- Green ---*/
@@ -3695,4 +3695,29 @@
 .ui.button.la-new-item {
   margin-left: 1rem;
   margin-top: 1rem;
+}
+
+/*--------------
+     Toggle for Context Bar
+---------------*/
+
+
+/* Toggle (Modifies active state to give affordances) */
+.la-contextBar .ui.toggle.buttons .active.button,
+.la-contextBar .ui.buttons .button.toggle.active,
+.la-contextBar .ui.button.toggle.active {
+  background-color: transparent !important;
+  -webkit-box-shadow: none !important;
+          box-shadow: none !important;
+  text-shadow: none;
+  color: #98B500 !important;
+}
+.ui.button.toggle.active:hover {
+  background-color: transparent !important;
+  text-shadow: none;
+  color: #839c00 !important;
+}
+.la-contextBar .ui.button:hover,
+.la-contextBar .ui.button:focus {
+  background-color: transparent !important;
 }
