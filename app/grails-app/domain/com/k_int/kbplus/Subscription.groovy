@@ -349,17 +349,27 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
                 propName = changeDocument.name ?: changeDocument.prop
             }
 
+            def msgParams = [
+                    (this."${changeDocument.prop}" instanceof RefdataValue ? 'rdv' : 'text'),
+                    "${changeDocument.prop}",
+                    "${changeDocument.old}",
+                    "${changeDocument.new}",
+                    "${description}"
+            ]
+
             def newPendingChange = changeNotificationService.registerPendingChange(
                     PendingChange.PROP_SUBSCRIPTION,
                     ds,
-                    // pendingChange.message_SU01
-                    "<b>${propName}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Lizenzvorlage geändert. " + description,
                     ds.getSubscriber(),
                     [
                             changeTarget:"com.k_int.kbplus.Subscription:${ds.id}",
                             changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
                             changeDoc:changeDocument
-                    ])
+                    ],
+                    PendingChange.MSG_SU01,
+                    msgParams,
+                    "<b>${propName}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Lizenzvorlage geändert. " + description
+            )
 
             if (newPendingChange && ds.isSlaved?.value == "Yes") {
                 slavedPendingChanges << newPendingChange

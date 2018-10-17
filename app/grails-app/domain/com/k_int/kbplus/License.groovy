@@ -378,24 +378,34 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
 
             def propName
             try {
-                // UGLY
                 propName = changeDocument.name ? ((messageSource.getMessage("license.${changeDocument.name}", null, locale)) ?: (changeDocument.name)) : (messageSource.getMessage("license.${changeDocument.prop}", null, locale) ?: (changeDocument.prop))
 
             } catch(Exception e) {
                 propName = changeDocument.name ?: changeDocument.prop
             }
 
+
+            def msgParams = [
+                    (this."${changeDocument.prop}" instanceof RefdataValue ? 'rdv' : 'text'),
+                    "${changeDocument.prop}",
+                    "${changeDocument.old}",
+                    "${changeDocument.new}",
+                    "${description}"
+            ]
+
             def newPendingChange = changeNotificationService.registerPendingChange(
                         PendingChange.PROP_LICENSE,
-                        dl, // target
-                        //pendingChange.message_LI01
-                        "<b>${propName}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Vertragsvorlage geändert. " + description,
-                              dl.getLicensee(), // objowner
+                        dl,
+                        dl.getLicensee(),
                               [
                                 changeTarget:"com.k_int.kbplus.License:${dl.id}",
                                 changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
                                 changeDoc:changeDocument
-                              ])
+                              ],
+                        PendingChange.MSG_LI01,
+                        msgParams,
+                    "<b>${propName}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Vertragsvorlage geändert. " + description
+            )
 
             if (newPendingChange && dl.isSlaved?.value == "Yes") {
                 slavedPendingChanges << newPendingChange

@@ -52,6 +52,12 @@ trait AuditTrait {
 
                     if (AuditConfig.getConfig(this)) {
 
+                        def old_oid, new_oid
+                        if (oldMap[cp] instanceof RefdataValue ) {
+                            old_oid = oldMap[cp] ? "${oldMap[cp].class.name}:${oldMap[cp].id}" : null
+                            new_oid = newMap[cp] ? "${newMap[cp].class.name}:${newMap[cp].id}" : null
+                        }
+
                         event = [
                                 OID        : "${this.class.name}:${this.id}",
                                 //OID        : "${this.owner.class.name}:${this.owner.id}",
@@ -59,8 +65,10 @@ trait AuditTrait {
                                 prop       : cp,
                                 name       : type.name,
                                 type       : this."${cp}".getClass().toString(),
-                                old        : oldMap[cp] instanceof RefdataValue ? oldMap[cp].toString() : oldMap[cp],
-                                new        : newMap[cp] instanceof RefdataValue ? newMap[cp].toString() : newMap[cp],
+                                old        : old_oid,
+                                oldLabel   : oldMap[cp] instanceof RefdataValue ? oldMap[cp].toString() : oldMap[cp],
+                                new        : new_oid,
+                                newLabel   : newMap[cp] instanceof RefdataValue ? newMap[cp].toString() : newMap[cp],
                                 //propertyOID: "${this.class.name}:${this.id}"
                         ]
                     }

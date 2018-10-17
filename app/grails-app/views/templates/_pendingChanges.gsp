@@ -43,7 +43,16 @@
                 <g:each in="${pendingChanges}" var="pc">
                   <tr>
                     <td>
-                        <% print pc.desc; /* avoid auto encodeAsHTML() */ %>
+                        <g:if test="${pc.msgToken}">
+                            <g:message code="${pc.msgToken}" args="${pc.getParsedParams()}" default="${pc.desc}" />
+                            <%
+                                //print pc.msgToken; /* avoid auto encodeAsHTML() */
+                                //print pc.msgParams; /* avoid auto encodeAsHTML() */
+                            %>
+                        </g:if>
+                        <g:else>
+                            <% print pc.desc; /* avoid auto encodeAsHTML() */ %>
+                        </g:else>
                     </td>
                     <td><g:formatDate format="${message(code: 'default.date.format')}" date="${pc.ts}"/></td>
                     <td class="x">
