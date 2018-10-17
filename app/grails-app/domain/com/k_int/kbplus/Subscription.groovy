@@ -329,28 +329,18 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
             log.debug("Send pending change to ${ds.id}")
 
             def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-            ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.subscription."+changeDocument.prop, locale.toString())
             def description = messageSource.getMessage('default.accept.placeholder',null, locale)
-            if (contentItemDesc) {
-                description = contentItemDesc.content
-            }
-            else {
-                def defaultMsg = ContentItem.findByKeyAndLocale("kbplus.change.subscription.default", locale.toString())
-                if( defaultMsg)
-                    description = defaultMsg.content
-            }
 
-            def propName
-            try {
-                // UGLY
-                propName = changeDocument.name ? ((messageSource.getMessage("subscription.${changeDocument.name}", null, locale)) ?: (changeDocument.name)) : (messageSource.getMessage("subscription.${changeDocument.prop}", null, locale) ?: (changeDocument.prop))
-
-            } catch(Exception e) {
-                propName = changeDocument.name ?: changeDocument.prop
+            def definedType = 'text'
+            if (this."${changeDocument.prop}" instanceof RefdataValue) {
+                definedType = 'rdv'
+            }
+            else if (this."${changeDocument.prop}" instanceof Date) {
+                definedType = 'date'
             }
 
             def msgParams = [
-                    (this."${changeDocument.prop}" instanceof RefdataValue ? 'rdv' : 'text'),
+                    definedType,
                     "${changeDocument.prop}",
                     "${changeDocument.old}",
                     "${changeDocument.new}",
@@ -368,7 +358,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
                     ],
                     PendingChange.MSG_SU01,
                     msgParams,
-                    "<b>${propName}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Lizenzvorlage geändert. " + description
+                    "<b>${changeDocument.prop}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Lizenzvorlage geändert. " + description
             )
 
             if (newPendingChange && ds.isSlaved?.value == "Yes") {

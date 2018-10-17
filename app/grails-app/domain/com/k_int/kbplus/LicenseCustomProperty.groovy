@@ -105,12 +105,20 @@ class LicenseCustomProperty extends CustomProperty implements AuditTrait  {
             def depedingProps = LicenseCustomProperty.findAllByInstanceOf( this )
             depedingProps.each{ lcp ->
 
-                def definedType = (lcp.type.type == RefdataValue.class.toString() ? 'rdv' : 'text')
+                def definedType = 'text'
+                if (lcp.type.type == RefdataValue.class.toString()) {
+                    definedType = 'rdv'
+                }
+                else if (lcp.type.type == Date.class.toString()) {
+                    definedType = 'date'
+                }
+
+                // overwrite specials ..
                 if (changeDocument.prop == 'note') {
                     definedType = 'text'
                     description = '(NOTE)'
                 }
-                if (changeDocument.prop == 'paragraph') {
+                else if (changeDocument.prop == 'paragraph') {
                     definedType = 'text'
                     description = '(PARAGRAPH)'
                 }

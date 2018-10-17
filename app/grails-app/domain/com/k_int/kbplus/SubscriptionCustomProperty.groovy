@@ -90,7 +90,15 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditTrait {
             def depedingProps = SubscriptionCustomProperty.findAllByInstanceOf( this )
             depedingProps.each{ scp ->
 
-                def definedType = (scp.type.type == RefdataValue.class.toString() ? 'rdv' : 'text')
+                def definedType = 'text'
+                if (scp.type.type == RefdataValue.class.toString()) {
+                    definedType = 'rdv'
+                }
+                else if (scp.type.type == Date.class.toString()) {
+                    definedType = 'date'
+                }
+
+                // overwrite specials ..
                 if (changeDocument.prop == 'note') {
                     definedType = 'text'
                     description = '(NOTE)'
