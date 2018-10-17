@@ -162,7 +162,7 @@
                                     </g:else>
                                 </dd>
                             </dl>
-                            <g:if test="${subscriptionInstance.instanceOf && (contextOrg == subscriptionInstance.getConsortia())}">
+                            <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id == subscriptionInstance.getConsortia()?.id)}">
                                 <dl>
                                     <dt class="control-label">${message(code:'subscription.isInstanceOfSub.label')}</dt>
                                     <dd>
@@ -171,10 +171,13 @@
                                 </dl>
 
                                 <dl>
-                                    <dt></dt>
-                                    ${message(code:'license.details.linktoLicense.pendingChange', default:'Automatically Accept Changes?')}
-                                    <br />
-                                    <semui:xEditableRefData owner="${subscriptionInstance}" field="isSlaved" config='YN'/>
+                                    <dt class="control-label">
+                                        ${message(code:'license.details.linktoLicense.pendingChange', default:'Automatically Accept Changes?')}
+                                    </dt>
+                                    <dd>
+                                        <semui:xEditableRefData owner="${subscriptionInstance}" field="isSlaved" config='YN'/>
+                                    </dd>
+
                                 </dl>
                             </g:if>
                         </div>

@@ -1,4 +1,26 @@
 
+0.10
+
+- reworked license and subscription inheritance functionality
+- added modal dialog for object depending inheritance configuration
+- added inheritance for license and subscription custom properties
+- improved auto acception for pending changes
+        
+        ? added translations for pending changes
+        
+- reworked user depending settings
+- added cost items access for consortial subscribers
+- fixed: meaningless subscription names  
+- various markup and style changes
+- minor bugfixes
+- removed legacy code
+
+0.9.2
+
+- added JSON date marshaller
+- added date format fallback for datepicker
+- fixed: private property date type
+
 0.9.1
 
 - fixed: datepicker format

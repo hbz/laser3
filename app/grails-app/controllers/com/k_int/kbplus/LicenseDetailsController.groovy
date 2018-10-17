@@ -507,21 +507,21 @@ from Subscription as s where
 
         // adopted from SubscriptionDetailsController.deleteMember()
 
-        def delLicense      = License.get(params.target)
-        def delInstitutions = delLicense.getAllLicensee()
+        def delLicense      = genericOIDService.resolveOID(params.target)
+        def delInstitutions = delLicense?.getAllLicensee()
 
         def deletedStatus = RefdataCategory.lookupOrCreate('License Status', 'Deleted')
 
-        if (delLicense.hasPerm("edit", result.user)) {
+        if (delLicense?.hasPerm("edit", result.user)) {
             def derived_lics = License.findByInstanceOfAndStatusNot(delLicense, deletedStatus)
 
             if (! derived_lics) {
                 if (delLicense.getLicensingConsortium() && ! ( delInstitutions.contains(delLicense.getLicensingConsortium() ) ) ) {
                     OrgRole.executeUpdate("delete from OrgRole where lic = :l and org IN (:orgs)", [l: delLicense, orgs: delInstitutions])
-
-                    delLicense.status = deletedStatus
-                    delLicense.save(flush: true)
                 }
+
+                delLicense.status = deletedStatus
+                delLicense.save(flush: true)
             } else {
                 flash.error = message(code: 'myinst.actionCurrentLicense.error', default: 'Unable to delete - The selected license has attached licenses')
             }
@@ -551,27 +551,16 @@ from Subscription as s where
 
         validMemberLicenses.each{ member ->
 
-            def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
-            def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
-
-/*
-            if (member.isSlaved?.value == "Yes" && pendingChanges) {
-
-                def changesDesc = []
-                pendingChanges.each { change ->
-                    if (!pendingChangeService.performAccept(change, request)) {
-                        log.debug("Auto-accepting pending change has failed.")
-                    } else {
-                        changesDesc.add(PendingChange.get(change).desc)
-                    }
-                }
-                flash.message = changesDesc
-            } else {
-                result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
+            if (executorWrapperService.hasRunningProcess(member)) {
+                log.debug("PendingChange processing in progress")
+                result.processingpc = true
             }
-*/
-            result.pendingChanges << [ "${member.id}" : pendingChanges.collect { PendingChange.get(it) }]
+            else {
+                def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+                def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
 
+                result.pendingChanges << ["${member.id}": pendingChanges.collect { PendingChange.get(it) }]
+            }
         }
 
 
@@ -831,30 +820,6 @@ from Subscription as s where
       redirect(action: 'show', id: license.id);
   }
 
-    private LinkedHashMap setResultGenericsAndCheckAccess(checkOption) {
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.license = License.get(params.id)
-        result.licenseInstance = License.get(params.id)
-
-        if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
-            if (! result.licenseInstance.isVisibleBy(result.user)) {
-                log.debug( "--- NOT VISIBLE ---")
-                return null
-            }
-        }
-        result.editable = result.license.isEditableBy(result.user)
-
-        if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
-            if (! result.editable) {
-                log.debug( "--- NOT EDITABLE ---")
-                return null
-            }
-        }
-
-        result
-    }
-
     def copyLicense()
     {
         log.debug("licenseDetails: ${params}");
@@ -911,7 +876,8 @@ from Subscription as s where
             if (!licenseInstance.save(flush: true)) {
                 log.error("Problem saving license ${licenseInstance.errors}");
                 return licenseInstance
-            } else {
+            }
+            else {
                    log.debug("Save ok");
 
                     baseLicense.documents?.each { dctx ->
@@ -1023,5 +989,41 @@ from Subscription as s where
                 }
 
             }
+    }
+
+    private LinkedHashMap setResultGenericsAndCheckAccess(checkOption) {
+        def result             = [:]
+        result.user            = User.get(springSecurityService.principal.id)
+        result.license         = License.get(params.id)
+        result.licenseInstance = License.get(params.id)
+
+        result.showConsortiaFunctions = showConsortiaFunctions(result.license)
+
+        if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
+            if (! result.licenseInstance.isVisibleBy(result.user)) {
+                log.debug( "--- NOT VISIBLE ---")
+                return null
+            }
         }
+        result.editable = result.license.isEditableBy(result.user)
+
+        if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
+            if (! result.editable) {
+                log.debug( "--- NOT EDITABLE ---")
+                return null
+            }
+        }
+
+        result
+    }
+
+    def showConsortiaFunctions(def license) {
+
+        def a = (license.getLicensingConsortium()?.id == contextService.getOrg()?.id && ! license.isTemplate())
+        def b = ! (license.instanceOf && ! license.hasTemplate())
+
+        return a && b
+
+    }
+
 }

@@ -17,6 +17,8 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditTrait {
     def changeNotificationService
     @Transient
     def messageSource
+    @Transient
+    def pendingChangeService
 
     // AuditTrait
     static auditable = true
@@ -83,19 +85,47 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditTrait {
 
             // legacy ++
 
-            def all = SubscriptionCustomProperty.findAllByInstanceOf( this )
-            all.each{ depends ->
+            def slavedPendingChanges = []
 
-                changeNotificationService.registerPendingChange('subscription',
-                        depends.owner,
-                        // pendingChange.message_SU01
-                        "<b>${depends.type.name}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Lizenzvorlage geändert. " + description,
-                        depends.owner.getSubscriber(),
+            def depedingProps = SubscriptionCustomProperty.findAllByInstanceOf( this )
+            depedingProps.each{ scp ->
+
+                def definedType = (scp.type.type == RefdataValue.class.toString() ? 'rdv' : 'text')
+                if (changeDocument.prop == 'note') {
+                    definedType = 'text'
+                    description = '(NOTE)'
+                }
+
+                def msgParams = [
+                        definedType,
+                        "${scp.type.class.name}:${scp.type.id}",
+                        (changeDocument.prop in ['note'] ? "${changeDocument.oldLabel}" : "${changeDocument.old}"),
+                        (changeDocument.prop in ['note'] ? "${changeDocument.newLabel}" : "${changeDocument.new}"),
+                        "${description}"
+                ]
+
+                def newPendingChange = changeNotificationService.registerPendingChange(
+                        PendingChange.PROP_SUBSCRIPTION,
+                        scp.owner,
+                        scp.owner.getSubscriber(),
                         [
-                                changeTarget:"com.k_int.kbplus.Subscription:${depends.owner.id}",
+                                changeTarget:"com.k_int.kbplus.Subscription:${scp.owner.id}",
                                 changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
                                 changeDoc:changeDocument
-                        ])
+                        ],
+                        PendingChange.MSG_SU02,
+                        msgParams,
+                        "Das Merkmal <b>${scp.type.name}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Lizenzvorlage geändert. " + description
+                )
+                if (newPendingChange && scp.owner.isSlaved?.value == "Yes") {
+                    slavedPendingChanges << newPendingChange
+                }
+            }
+
+            slavedPendingChanges.each { spc ->
+                log.debug('autoAccept! performing: ' + spc)
+                def user = null
+                pendingChangeService.performAccept(spc.getId(), user)
             }
         }
         else if (changeDocument.event.equalsIgnoreCase('SubscriptionCustomProperty.deleted')) {

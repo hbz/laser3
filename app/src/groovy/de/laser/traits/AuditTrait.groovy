@@ -1,6 +1,8 @@
 package de.laser.traits
 
+import com.k_int.kbplus.License
 import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import de.laser.AuditConfig
@@ -37,7 +39,7 @@ trait AuditTrait {
     @Transient
     def onChange = { oldMap, newMap ->
 
-        log?.debug("onChange(): ${oldMap} => ${newMap}")
+        log?.debug("onChange(${this.id}): ${oldMap} => ${newMap}")
 
         getWatchedProperties()?.each { cp ->
             if (oldMap[cp] != newMap[cp]) {
@@ -46,9 +48,15 @@ trait AuditTrait {
 
                 log?.debug("notifyChangeEvent() " + this + " : " + clazz)
 
-                if (this instanceof CustomProperty || this instanceof PrivateProperty) {
+                if (this instanceof CustomProperty) {
 
                     if (AuditConfig.getConfig(this)) {
+
+                        def old_oid, new_oid
+                        if (oldMap[cp] instanceof RefdataValue ) {
+                            old_oid = oldMap[cp] ? "${oldMap[cp].class.name}:${oldMap[cp].id}" : null
+                            new_oid = newMap[cp] ? "${newMap[cp].class.name}:${newMap[cp].id}" : null
+                        }
 
                         event = [
                                 OID        : "${this.class.name}:${this.id}",
@@ -57,39 +65,50 @@ trait AuditTrait {
                                 prop       : cp,
                                 name       : type.name,
                                 type       : this."${cp}".getClass().toString(),
-                                old        : oldMap[cp] instanceof RefdataValue ? oldMap[cp].toString() : oldMap[cp],
-                                new        : newMap[cp] instanceof RefdataValue ? newMap[cp].toString() : newMap[cp],
+                                old        : old_oid,
+                                oldLabel   : oldMap[cp] instanceof RefdataValue ? oldMap[cp].toString() : oldMap[cp],
+                                new        : new_oid,
+                                newLabel   : newMap[cp] instanceof RefdataValue ? newMap[cp].toString() : newMap[cp],
                                 //propertyOID: "${this.class.name}:${this.id}"
                         ]
                     }
                     else {
                         log?.debug("ignored because no audit config")
                     }
-                } else {
+                } // CustomProperty
+                else {
 
-                    if (clazz.equals("com.k_int.kbplus.RefdataValue")) {
+                    def isSubOrLic = (this instanceof Subscription || this instanceof License)
 
-                        def old_oid = oldMap[cp] ? "${oldMap[cp].class.name}:${oldMap[cp].id}" : null
-                        def new_oid = newMap[cp] ? "${newMap[cp].class.name}:${newMap[cp].id}" : null
+                    if ( ! isSubOrLic || (isSubOrLic && AuditConfig.getConfig(this, cp)) ) {
 
-                        event = [
-                                OID     : "${this.class.name}:${this.id}",
-                                event   : "${this.class.simpleName}.updated",
-                                prop    : cp,
-                                old     : old_oid,
-                                oldLabel: oldMap[cp]?.toString(),
-                                new     : new_oid,
-                                newLabel: newMap[cp]?.toString()
-                        ]
-                    } else {
+                        if (clazz.equals("com.k_int.kbplus.RefdataValue")) {
 
-                        event = [
-                                OID  : "${this.class.name}:${this.id}",
-                                event: "${this.class.simpleName}.updated",
-                                prop : cp,
-                                old  : oldMap[cp],
-                                new  : newMap[cp]
-                        ]
+                            def old_oid = oldMap[cp] ? "${oldMap[cp].class.name}:${oldMap[cp].id}" : null
+                            def new_oid = newMap[cp] ? "${newMap[cp].class.name}:${newMap[cp].id}" : null
+
+                            event = [
+                                    OID     : "${this.class.name}:${this.id}",
+                                    event   : "${this.class.simpleName}.updated",
+                                    prop    : cp,
+                                    old     : old_oid,
+                                    oldLabel: oldMap[cp]?.toString(),
+                                    new     : new_oid,
+                                    newLabel: newMap[cp]?.toString()
+                            ]
+                        } else {
+
+                            event = [
+                                    OID  : "${this.class.name}:${this.id}",
+                                    event: "${this.class.simpleName}.updated",
+                                    prop : cp,
+                                    old  : oldMap[cp],
+                                    new  : newMap[cp]
+                            ]
+                        }
+                    } // Subscription or License
+                    else {
+                        log?.debug("ignored because no audit config")
                     }
                 }
 
@@ -110,21 +129,22 @@ trait AuditTrait {
     }
 
     def getWatchedProperties() {
-        def cp = getAuditConfig().collect{ it ->
-            it.referenceField
+        def result = []
+
+        if (getAuditConfig(AuditConfig.COMPLETE_OBJECT)) {
+            this.controlledProperties.each { cp ->
+                result << cp
+            }
+        }
+        else {
+            this.controlledProperties.each { cp ->
+                if (getAuditConfig(cp)) {
+                    result << cp
+                }
+            }
         }
 
-        if (controlledProperties) {
-            cp.addAll(controlledProperties)
-            cp.unique()
-        }
-
-        /*
-        if (defaultControlledProperties) {
-            cp.addAll(defaultControlledProperties).unique()
-        }
-        */
-        cp
+        result
     }
 
     @Transient

@@ -886,21 +886,21 @@ class SubscriptionDetailsController {
             response.sendError(401); return
         }
 
-        def delSubscription = Subscription.get(params.target)
-        def delInstitution = delSubscription.getSubscriber()
+        def delSubscription = genericOIDService.resolveOID(params.target)
+        def delInstitution = delSubscription?.getSubscriber()
 
         def deletedStatus = RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted')
 
-        if (delSubscription.hasPerm("edit", result.user)) {
+        if (delSubscription?.hasPerm("edit", result.user)) {
             def derived_subs = Subscription.findByInstanceOfAndStatusNot(delSubscription, deletedStatus)
 
             if (!derived_subs) {
                 if (delSubscription.getConsortia() && delSubscription.getConsortia() != delInstitution) {
                     OrgRole.executeUpdate("delete from OrgRole where sub = ? and org = ?", [delSubscription, delInstitution])
-
-                    delSubscription.status = deletedStatus
-                    delSubscription.save(flush: true)
                 }
+                delSubscription.status = deletedStatus
+                delSubscription.save(flush: true)
+
             } else {
                 flash.error = message(code: 'myinst.actionCurrentSubscriptions.error', default: 'Unable to delete - The selected license has attached subscriptions')
             }
@@ -937,28 +937,17 @@ class SubscriptionDetailsController {
 
         validSubChilds.each{ member ->
 
-            def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
-            def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
-
-/*
-            if (member.isSlaved?.value == "Yes" && pendingChanges) {
-
-                def changesDesc = []
-                pendingChanges.each { change ->
-                    if (!pendingChangeService.performAccept(change, request)) {
-                        log.debug("Auto-accepting pending change has failed.")
-                    } else {
-                        changesDesc.add(PendingChange.get(change).desc)
-                    }
-                }
-                flash.message = changesDesc
-            } else {
-                result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
+            if (executorWrapperService.hasRunningProcess(member)) {
+                log.debug("PendingChange processing in progress")
+                result.processingpc = true
             }
-*/
-            result.pendingChanges << [ "${member.id}" : pendingChanges.collect { PendingChange.get(it) }]
-        }
+            else {
+                def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+                def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
 
+                result.pendingChanges << [ "${member.id}" : pendingChanges.collect { PendingChange.get(it) }]
+            }
+        }
 
         result
     }
@@ -1593,7 +1582,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
 
         // ---- pendingChanges : start
 
-        if (executorWrapperService.hasRunningProcess(result.institution)) {
+        if (executorWrapperService.hasRunningProcess(result.subscriptionInstance)) {
             log.debug("PendingChange processing in progress")
             result.processingpc = true
         } else {
@@ -2354,6 +2343,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
         result.subscription         = Subscription.get(params.id)
         result.institution          = result.subscription?.subscriber
 
+        result.showConsortiaFunctions = showConsortiaFunctions(result.subscription)
+
         if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
             if (! result.subscriptionInstance?.isVisibleBy(result.user)) {
                 log.debug( "--- NOT VISIBLE ---")
@@ -2370,5 +2361,10 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
         }
 
         result
+    }
+
+    def showConsortiaFunctions (def subscription) {
+
+        return ((subscription?.getConsortia()?.id == contextService.getOrg()?.id) && ! subscription.instanceOf)
     }
 }

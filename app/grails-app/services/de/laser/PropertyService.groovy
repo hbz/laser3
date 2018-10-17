@@ -10,6 +10,12 @@ class PropertyService {
     def genericOIDService
 
     def evalFilterQuery(params, base_qry, hqlVar, base_qry_params) {
+        def order_by
+        def pos = base_qry.toLowerCase().indexOf("order by")
+        if (pos >= 0) {
+            order_by = base_qry.substring(pos-1)
+            base_qry = base_qry.substring(0, pos-1)
+        }
 
         if (params.filterPropDef) {
             def pd = genericOIDService.resolveOID(params.filterPropDef)
@@ -51,7 +57,9 @@ class PropertyService {
 
             base_qry += " ) "
         }
-
+        if (order_by) {
+            base_qry += order_by
+        }
         return [base_qry, base_qry_params]
     }
 

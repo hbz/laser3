@@ -5,13 +5,11 @@
 <semui:subNav actionName="${actionName}">
     <semui:subNavItem controller="licenseDetails" action="show" params="${[id:params.id]}" message="license.nav.details" />
 
-    <g:if test="${license.getLicensingConsortium()?.id == contextService.getOrg()?.id && ! license.isTemplate()}">
-        <g:if test="${!( license.instanceOf && ! license.hasTemplate())}">
-            <semui:subNavItem controller="licenseDetails" action="members" params="${[id:params.id]}" message="license.details.incoming.childs" />
-            <sec:ifAnyGranted roles="ROLE_ADMIN">
-                <semui:subNavItem controller="licenseDetails" action="pendingChanges" params="${[id:params.id]}" text="!!!" />
-            </sec:ifAnyGranted>
-        </g:if>
+    <g:if test="${showConsortiaFunctions}">
+        <semui:subNavItem controller="licenseDetails" action="members" params="${[id:params.id]}" message="license.details.incoming.childs" />
+        <sec:ifAnyGranted roles="ROLE_ADMIN">
+            <semui:subNavItem controller="licenseDetails" action="pendingChanges" params="${[id:params.id]}" text="!!!" />
+        </sec:ifAnyGranted>
     </g:if>
 
     <semui:subNavItem controller="licenseDetails" action="tasks" params="${[id:params.id]}" message="task.plural" />
