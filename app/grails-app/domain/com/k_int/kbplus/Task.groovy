@@ -45,7 +45,7 @@ class Task {
         subscription    column:'tsk_sub_fk'
 
         title           column:'tsk_title'
-        description     column:'tsk_description'
+        description     column:'tsk_description', type: 'text'
         status          column:'tsk_status_rdv_fk'
 
         creator         column:'tsk_creator_fk'

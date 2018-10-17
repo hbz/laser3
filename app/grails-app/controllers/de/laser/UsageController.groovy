@@ -64,6 +64,9 @@ class UsageController {
         def result = initResult()
         statsSyncService.addFilters(params)
         statsSyncService.doSync()
+        if (statsSyncService.getErrors()) {
+            flash.error = statsSyncService.errors.join('\n')
+        }
         redirect(view: "index", model: result)
     }
 

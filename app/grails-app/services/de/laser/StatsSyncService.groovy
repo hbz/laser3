@@ -11,7 +11,6 @@ import groovyx.gpars.GParsPool
 class StatsSyncService {
 
     static final THREAD_POOL_SIZE = 4
-    static final COUNTER_REPORT_VERSION = 4
     static final SYNC_STATS_FROM = '2012-01'
 
     def grailsApplication
@@ -20,6 +19,7 @@ class StatsSyncService {
     def factService
     def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def queryParams = [:]
+    def errors = []
 
 
     static int submitCount=0
@@ -113,10 +113,10 @@ class StatsSyncService {
     def internalDoSync() {
         try {
             log.debug("create thread pool")
-
-            def statsApi = grailsApplication.config.statsApiUrl
-            if ((statsApi == null) || (statsApi == '')) {
+            def statsApi = grailsApplication.config.statsApiUrl ?: ''
+            if (statsApi == '') {
                 log.error("Stats API URL not set in config")
+                errors.add("Stats API URL not set in config")
                 return
             }
             def mostRecentClosedPeriod = getMostRecentClosedPeriod()
@@ -145,8 +145,11 @@ class StatsSyncService {
     }
 
     def processListItem(listItem, mostRecentClosedPeriod) {
-
-        def stats_api_endpoint = new RESTClient(grailsApplication.config.statsApiUrl)
+        def uri = new URIBuilder(grailsApplication.config.statsApiUrl)
+        def baseUrl = uri.getScheme()+"://"+uri.getHost()
+        def basePath = uri.getPath().endsWith('/') ? uri.getPath() : uri.getPath() + '/'
+        def path = basePath + 'Sushiservice/GetReport'
+        def stats_api_endpoint = new RESTClient(baseUrl)
         def timeStampFormat = new SimpleDateFormat('yyyy-MM-dd')
         def start_time = System.currentTimeMillis()
 
@@ -163,17 +166,25 @@ class StatsSyncService {
             def apiKey = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("API Key"), org_inst)
             def requestor = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), org_inst)
 
-            def reports = RefdataValue.findAllByValueLikeAndOwner('STATS%', RefdataCategory.findByDesc('FactType'))
+            def reports = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('FactType'))
+            reports.removeAll {
+                if (it.value.startsWith('STATS')){
+                    log.warn('STATS prefix deprecated please remove Refdatavalues')
+                }
+                it.value.startsWith('STATS')
+            }
 
             def csr = StatsTripleCursor.findByTitleIdAndSupplierIdAndCustomerId(statsTitleIdentifier, platform, customer)
+
             if (csr == null) {
                 csr = new StatsTripleCursor(titleId: statsTitleIdentifier, supplierId: platform, customerId: customer, haveUpTo: null)
             }
             if ((csr.haveUpTo == null) || (csr.haveUpTo < mostRecentClosedPeriod)) {
 
                 reports.each { statsReport ->
-                    def reportValues = statsReport.toString().split(':')
-                    def report = reportValues[1]
+                    def matcher = statsReport.value =~ /^(.*).(\d)$/
+                    def report = matcher[0][1]
+                    def version = matcher[0][2]
                     def reportType = getReportType(report)
                     def titleId = title_io_inst.identifier.value
 
@@ -184,21 +195,20 @@ class StatsSyncService {
                         log.debug("Calling STATS API:  ${report}, Title with ID ${titleId}")
                         log.debug("Period Begin: ${beginDate}, Period End: ${endDate}")
                         stats_api_endpoint.get(
-                                path: 'Sushiservice/GetReport',
+                                path: path,
                                 contentType: ANY, // We get no XmlSlurper Objects for value XML
                                 query: [
                                         APIKey        : apiKey,
                                         RequestorID   : requestor,
                                         CustomerID    : customer,
                                         Report        : report,
-                                        Release       : COUNTER_REPORT_VERSION,
+                                        Release       : version,
                                         BeginDate     : beginDate,
                                         EndDate       : endDate,
                                         Platform      : platform,
                                         ItemIdentifier: "${reportType}:zdbid:" + titleId
                                 ]) { response, xml ->
                             if (xml) {
-
                                 if (responseHasUsageData(xml, titleId)) {
                                     def statsTitles = xml.depthFirst().findAll {
                                         it.name() == 'ItemName'
@@ -223,7 +233,8 @@ class StatsSyncService {
                                             fact.reportingMonth=cal.get(Calendar.MONTH)+1
                                             fact.type = statsReport.toString()
                                             fact.value = count
-                                            fact.uid = "${titleId}:${platform}:${customer}:${key}:${metric}:${report}"
+                                            fact.uid = "${titleId}:${platform}:${customer}:${key}:${metric}:${statsReport.value}"
+                                            fact.metric = RefdataValue.getByValueAndCategory(metric,'FactMetric')
                                             fact.title = title_inst
                                             fact.supplier = supplier_inst
                                             fact.inst = org_inst
