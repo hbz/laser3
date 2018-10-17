@@ -3276,6 +3276,17 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         ).each { cmb ->
             result.consortiaMemberIds << cmb.fromOrg.id
         }
+
+        if ( params.exportXLS=='yes' ) {
+
+            def orgs = result.availableOrgs
+
+            def message = g.message(code: 'menu.institutions.all_orgs')
+
+            exportOrg(orgs, message, true)
+            return
+        }
+
         result
     }
 
@@ -3323,6 +3334,16 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             result.consortiaMembers = Org.executeQuery( tmpQuery.join(' '), tmpQueryParams )
         } else {
             result.consortiaMembers = consortiaMembers
+        }
+
+        if ( params.exportXLS=='yes' ) {
+
+            def orgs = result.consortiaMembers
+
+            def message = g.message(code: 'menu.institutions.myConsortia')
+
+            exportOrg(orgs, message, true)
+            return
         }
 
         result
@@ -3539,5 +3560,178 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
         }
 
+    }
+
+    private def exportOrg(orgs, message, addHigherEducationTitles) {
+        try {
+            def titles = [
+                    'Name', 'Kurzname', 'Sortiername']
+
+            def orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
+            def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
+
+
+            if(addHigherEducationTitles)
+            {
+                titles.add('Bibliothekstyp')
+                titles.add('Verbundszugehörigkeit')
+                titles.add('Trägerschaft')
+                titles.add('Bundesland')
+                titles.add('Land')
+            }
+
+            def propList =
+                    PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
+                            defList: [PropertyDefinition.ORG_PROP],
+                    ] // public properties
+                    ) +
+                            PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant = :tenant", [
+                                    defList: [PropertyDefinition.ORG_PROP],
+                                    tenant: contextService.getOrg()
+                            ]// private properties
+                            )
+
+            propList.sort { a, b -> a.name.compareToIgnoreCase b.name}
+
+            propList.each {
+                titles.add(it.name)
+            }
+
+            def sdf = new java.text.SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+            def datetoday = sdf.format(new Date(System.currentTimeMillis()))
+
+            HSSFWorkbook wb = new HSSFWorkbook();
+
+            HSSFSheet sheet = wb.createSheet(message);
+
+            //the following three statements are required only for HSSF
+            sheet.setAutobreaks(true);
+
+            //the header row: centered text in 48pt font
+            Row headerRow = sheet.createRow(0);
+            headerRow.setHeightInPoints(16.75f);
+            titles.eachWithIndex { titlesName, index ->
+                Cell cell = headerRow.createCell(index);
+                cell.setCellValue(titlesName);
+            }
+
+            //freeze the first row
+            sheet.createFreezePane(0, 1);
+
+            Row row;
+            Cell cell;
+            int rownum = 1;
+
+            orgs.sort{it.name}
+            orgs.each{  org ->
+                int cellnum = 0;
+                row = sheet.createRow(rownum);
+
+                //Name
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(new HSSFRichTextString(org.name));
+
+                //Shortname
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(new HSSFRichTextString(org.shortname));
+
+                //Sortname
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(new HSSFRichTextString(org.sortname));
+
+
+                if(addHigherEducationTitles) {
+
+                    //libraryType
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(new HSSFRichTextString(org.libraryType?.getI10n('value') ?: ' '));
+
+                    //libraryNetwork
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(new HSSFRichTextString(org.libraryNetwork?.getI10n('value') ?: ' '));
+
+                    //funderType
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(new HSSFRichTextString(org.funderType?.getI10n('value') ?: ' '));
+
+                    //federalState
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(new HSSFRichTextString(org.federalState?.getI10n('value') ?: ' '));
+
+                    //country
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(new HSSFRichTextString(org.country?.getI10n('value') ?: ' '));
+                }
+
+                propList.each { pd ->
+                    def value = ''
+                    org.customProperties.each{ prop ->
+                        if(prop.type.descr == pd.descr && prop.type == pd)
+                        {
+                            if(prop.type.type == Integer.toString()){
+                                value = prop.intValue.toString()
+                            }
+                            else if (prop.type.type == String.toString()){
+                                value = prop.stringValue
+                            }
+                            else if (prop.type.type == BigDecimal.toString()){
+                                value = prop.decValue.toString()
+                            }
+                            else if (prop.type.type == Date.toString()){
+                                value = prop.dateValue.toString()
+                            }
+                            else if (prop.type.type == RefdataValue.toString()) {
+                                value = prop.refValue?.getI10n('value') ?: ''
+                            }
+
+                        }
+                    }
+
+                    org.privateProperties.each{ prop ->
+                        if(prop.type.descr == pd.descr && prop.type == pd)
+                        {
+                            if(prop.type.type == Integer.toString()){
+                                value = prop.intValue.toString()
+                            }
+                            else if (prop.type.type == String.toString()){
+                                value = prop.stringValue
+                            }
+                            else if (prop.type.type == BigDecimal.toString()){
+                                value = prop.decValue.toString()
+                            }
+                            else if (prop.type.type == Date.toString()){
+                                value = prop.dateValue.toString()
+                            }
+                            else if (prop.type.type == RefdataValue.toString()) {
+                                value = prop.refValue?.getI10n('value') ?: ''
+                            }
+
+                        }
+                    }
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(new HSSFRichTextString(value));
+                }
+
+                rownum++
+            }
+
+            for (int i = 0; i < 22; i++) {
+                sheet.autoSizeColumn(i);
+            }
+            // Write the output to a file
+            String file = message+"_${datetoday}.xls";
+            //if(wb instanceof XSSFWorkbook) file += "x";
+
+            response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
+            // response.contentType = 'application/xls'
+            response.contentType = 'application/vnd.ms-excel'
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+
+        }
+        catch ( Exception e ) {
+            log.error("Problem",e);
+            response.sendError(500)
+        }
     }
 }

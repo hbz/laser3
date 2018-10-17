@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.abstract_domain.PrivateProperty
 import de.laser.helper.DebugAnnotation
 import grails.converters.JSON
 import org.apache.poi.hssf.usermodel.HSSFRichTextString
@@ -91,7 +92,7 @@ class OrganisationsController {
 
             def message = g.message(code: 'menu.institutions.all_orgs')
 
-            exportOrg(orgs, message)
+            exportOrg(orgs, message, true)
             return
         }
 
@@ -122,11 +123,25 @@ class OrganisationsController {
             def tmpQueryParams2 = fsq2.queryParams << tmpQueryParams
             result.orgList      = Org.findAll(tmpQuery, tmpQueryParams2, params)
             result.orgListTotal = Org.executeQuery("select count (o) ${tmpQuery}", tmpQueryParams2)[0]
+            fsq.query = tmpQuery
+            fsq.queryParams  = tmpQueryParams2
 
         } else {
-            fsq2 = filterService.getOrgQuery(params)
-            result.orgList      = Org.findAll(fsq2.query, fsq2.queryParams, params)
-            result.orgListTotal = Org.executeQuery("select count (o) ${fsq2.query}", fsq2.queryParams)[0]
+
+            result.orgList      = Org.findAll(fsq.query, fsq.queryParams, params)
+            result.orgListTotal = Org.executeQuery("select count (o) ${fsq.query}", fsq.queryParams)[0]
+        }
+
+        if ( params.exportXLS=='yes' ) {
+
+            params.remove('max')
+
+            def orgs = Org.findAll(fsq.query, fsq.queryParams, params)
+
+            def message = g.message(code: 'menu.institutions.all_provider')
+
+            exportOrg(orgs, message, false)
+            return
         }
 
         result
@@ -546,7 +561,7 @@ class OrganisationsController {
         }
     }
 
-    private def exportOrg(orgs, message) {
+    private def exportOrg(orgs, message, addHigherEducationTitles) {
         try {
             def titles = [
                     'Name', 'Kurzname', 'Sortiername']
@@ -554,13 +569,6 @@ class OrganisationsController {
             def orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
             def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
 
-            def addHigherEducationTitles = false
-
-            orgs.each{  org ->
-                if(org.sector == orgSector) {
-                    addHigherEducationTitles = true
-                }
-            }
 
             if(addHigherEducationTitles)
             {
@@ -631,28 +639,78 @@ class OrganisationsController {
                 cell.setCellValue(new HSSFRichTextString(org.sortname));
 
 
-                if(org.sector == orgSector) {
+                if(addHigherEducationTitles) {
 
                     //libraryType
                     cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.libraryType?.getI10n('value')));
+                    cell.setCellValue(new HSSFRichTextString(org.libraryType?.getI10n('value') ?: ' '));
 
                     //libraryNetwork
                     cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.libraryNetwork?.getI10n('value')));
+                    cell.setCellValue(new HSSFRichTextString(org.libraryNetwork?.getI10n('value') ?: ' '));
 
                     //funderType
                     cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.funderType?.getI10n('value')));
+                    cell.setCellValue(new HSSFRichTextString(org.funderType?.getI10n('value') ?: ' '));
 
                     //federalState
                     cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.federalState?.getI10n('value')));
+                    cell.setCellValue(new HSSFRichTextString(org.federalState?.getI10n('value') ?: ' '));
 
                     //country
                     cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.country?.getI10n('value')));
+                    cell.setCellValue(new HSSFRichTextString(org.country?.getI10n('value') ?: ' '));
                 }
+
+                propList.each { pd ->
+                    def value = ''
+                    org.customProperties.each{ prop ->
+                        if(prop.type.descr == pd.descr && prop.type == pd)
+                        {
+                            if(prop.type.type == Integer.toString()){
+                                value = prop.intValue.toString()
+                            }
+                            else if (prop.type.type == String.toString()){
+                                value = prop.stringValue
+                            }
+                            else if (prop.type.type == BigDecimal.toString()){
+                                value = prop.decValue.toString()
+                            }
+                            else if (prop.type.type == Date.toString()){
+                                value = prop.dateValue.toString()
+                            }
+                            else if (prop.type.type == RefdataValue.toString()) {
+                                value = prop.refValue?.getI10n('value') ?: ''
+                            }
+
+                        }
+                    }
+
+                    org.privateProperties.each{ prop ->
+                           if(prop.type.descr == pd.descr && prop.type == pd)
+                           {
+                               if(prop.type.type == Integer.toString()){
+                                   value = prop.intValue.toString()
+                               }
+                               else if (prop.type.type == String.toString()){
+                                   value = prop.stringValue
+                               }
+                               else if (prop.type.type == BigDecimal.toString()){
+                                   value = prop.decValue.toString()
+                               }
+                               else if (prop.type.type == Date.toString()){
+                                       value = prop.dateValue.toString()
+                                   }
+                               else if (prop.type.type == RefdataValue.toString()) {
+                                   value = prop.refValue?.getI10n('value') ?: ''
+                               }
+
+                           }
+                   }
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(new HSSFRichTextString(value));
+                }
+
                 rownum++
             }
 
