@@ -424,7 +424,7 @@ from License as l where (
 
         def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template');
         def qparams = [template_license_type]
-        def public_flag = RefdataCategory.lookupOrCreate('YN', 'No');
+        def public_flag = RefdataValue.getByValueAndCategory('No','YN')
 
        // This query used to allow institutions to copy their own licenses - now users only want to copy template licenses
         // (OS License specs)
@@ -837,7 +837,7 @@ from Subscription as s where (
 
         result.is_inst_admin = result.user?.hasAffiliation('INST_ADM')
 
-        def public_flag = RefdataCategory.lookupOrCreate('YN', 'Yes');
+        def public_flag = RefdataValue.getByValueAndCategory('Yes','YN')
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
@@ -947,7 +947,7 @@ from Subscription as s where (
                     startDate: startDate,
                     endDate: endDate,
                     identifier: params.newEmptySubId,
-                    isPublic: RefdataCategory.lookupOrCreate('YN', 'No'),
+                    isPublic: RefdataValue.getByValueAndCategory('No','YN'),
                     impId: java.util.UUID.randomUUID().toString())
 
             if (new_sub.save()) {
@@ -986,8 +986,8 @@ from Subscription as s where (
                                           endDate: endDate,
                                           identifier: java.util.UUID.randomUUID().toString(),
                                           instanceOf: new_sub,
-                                          isSlaved: RefdataCategory.lookupOrCreate('YN', 'Yes'),
-                                          isPublic: RefdataCategory.lookupOrCreate('YN', 'No'),
+                                          isSlaved: RefdataValue.getByValueAndCategory('Yes','YN'),
+                                          isPublic: RefdataValue.getByValueAndCategory('No','YN'),
                                           impId: java.util.UUID.randomUUID().toString()).save()
                                           
                         new OrgRole(org: cm,
@@ -2723,7 +2723,7 @@ AND EXISTS (
                 endDate: sub_endDate,
                 previousSubscription: old_subOID ?: null,
                 type: Subscription.get(old_subOID)?.type ?: null,
-                isPublic: RefdataCategory.lookupOrCreate('YN', 'No'),
+                isPublic: RefdataValue.getByValueAndCategory('No','YN'),
                 owner: params.subscription.copyLicense ? (Subscription.get(old_subOID)?.owner) : null)
         log.debug("New Sub: ${new_subscription.startDate}  - ${new_subscription.endDate}")
         def packages_referenced = []
@@ -2897,7 +2897,7 @@ AND EXISTS (
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+        def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending','PendingChangeStatus')
         getTodoForInst(result)
 
         //.findAllByOwner(result.user,sort:'ts',order:'asc')

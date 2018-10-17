@@ -420,9 +420,9 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
     def hqlString = "select sub from Subscription sub where lower(sub.name) like :name "
     def hqlParams = [name: ((params.q ? params.q.toLowerCase() : '' ) + "%")]
     def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd")
-    def cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
-    def subscr_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
-    def subscr_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial');
+    def cons_role = RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')
+    def subscr_role = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
+    def subscr_cons_role = RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role')
     def viableRoles = [cons_role, subscr_role, subscr_cons_role]
     
     hqlParams.put('viableRoles', viableRoles)
@@ -475,7 +475,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
 
   def setInstitution(inst) {
     println("Set institution ${inst}");
-    def subrole = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
+    def subrole = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
     def or = new OrgRole(org:inst, roleType:subrole, sub:this)
     if ( this.orgRelations == null)
       this.orgRelations = []

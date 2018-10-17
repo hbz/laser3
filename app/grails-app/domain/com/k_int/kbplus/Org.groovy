@@ -286,7 +286,7 @@ class Org extends AbstractBaseDomain {
         if ( result == null ) {
           // log.debug("Create new entry for ${name}");
           if (sector instanceof String){
-            sector = RefdataCategory.lookupOrCreate('OrgSector', sector)
+            sector = RefdataValue.getByValueAndCategory(sector,'OrgSector')
           }
 
           if (orgRoleTyp instanceof String) {
@@ -323,7 +323,8 @@ class Org extends AbstractBaseDomain {
             def consLink = new Combo(fromOrg:result,
                                      toOrg:db_consortium,
                                      status:null,
-                                     type: RefdataCategory.lookupOrCreate('Combo Type', 'Consortium')).save()
+                                     type: RefdataValue.getByValueAndCategory('Consortium','Combo Type')
+            ).save()
           }
         }
  

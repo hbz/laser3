@@ -45,13 +45,13 @@ class InstitutionsService {
         } else {
             log.debug("Save ok");
 
-            def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee')
-            def lic_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensing Consortium')
+            def licensee_role = RefdataValue.getByValueAndCategory('Licensee','Organisational Role')
+            def lic_cons_role = RefdataValue.getByValueAndCategory('Licensing Consortium','Organisational Role')
 
             log.debug("adding org link to new license");
 
             if (params.asOrgRoleType) {
-                if (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType').id in params.asOrgRoleType) {
+                if (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType').id in params.asOrgRoleType) {
                     org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role))
                 } else {
                     org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role))
@@ -59,7 +59,7 @@ class InstitutionsService {
             }
             else if (base.licensor) {
                 // legacy
-                def licensor_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensor')
+                def licensor_role = RefdataValue.getByValueAndCategory('Licensor','Organisational Role')
                 org.links.add(new OrgRole(lic: licenseInstance, org: base.licensor, roleType: licensor_role));
             }
 
@@ -136,12 +136,12 @@ class InstitutionsService {
         } else {
             log.debug("Save ok");
 
-            def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee')
-            def lic_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensing Consortium')
+            def licensee_role = RefdataValue.getByValueAndCategory('Licensee', 'Organisational Role')
+            def lic_cons_role = RefdataValue.getByValueAndCategory('Licensing Consortium','Organisational Role')
 
             log.debug("adding org link to new license");
 
-            if (params.asOrgRoleType && com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType').id in params.asOrgRoleType) {
+            if (params.asOrgRoleType && RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType').id in params.asOrgRoleType) {
                 org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role))
             } else {
                 org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role))

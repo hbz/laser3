@@ -5,6 +5,7 @@ import com.k_int.kbplus.MyInstitutionController
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.RefdataCategory
+import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.Task
 import com.k_int.kbplus.auth.User
@@ -141,16 +142,16 @@ class TaskService {
         def qry_params1 = [
             lic_org:    contextOrg,
             org_roles:  [
-                    RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee'),
-                    RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial')
+                    RefdataValue.getByValueAndCategory('Licensee','Organisational Role'),
+                    RefdataValue.getByValueAndCategory('Licensee_Consortial','Organisational Role')
             ],
             lic_status: RefdataCategory.lookupOrCreate('License Status', 'Deleted')
         ]
         def qry_params2 = [
             'roleTypes' : [
-                RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber'),
-                RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial'),
-                RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
+                    RefdataValue.getByValueAndCategory('Subscriber','Organisational Role'),
+                    RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role'),
+                    RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')
             ],
             'activeInst': contextOrg
         ]

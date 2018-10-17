@@ -83,7 +83,7 @@ class SubscriptionDetailsController {
 
         log.debug("max = ${result.max}");
 
-        def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+        def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending','PendingChangeStatus')
         def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status]);
 
         if (result.subscriptionInstance?.isSlaved?.value == "Yes" && pendingChanges) {
@@ -814,7 +814,7 @@ class SubscriptionDetailsController {
                                 /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
                                 identifier: java.util.UUID.randomUUID().toString(),
                                 instanceOf: result.subscriptionInstance,
-                                isSlaved: RefdataCategory.lookupOrCreate('YN', 'Yes'),
+                                isSlaved: RefdataValue.getByValueAndCategory('Yes', 'YN'),
                                 isPublic: result.subscriptionInstance.isPublic,
                                 impId: java.util.UUID.randomUUID().toString(),
                                 owner: licenseCopy
@@ -942,7 +942,7 @@ class SubscriptionDetailsController {
                 result.processingpc = true
             }
             else {
-                def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+                def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending','PendingChangeStatus')
                 def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
 
                 result.pendingChanges << [ "${member.id}" : pendingChanges.collect { PendingChange.get(it) }]
@@ -1587,7 +1587,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
             result.processingpc = true
         } else {
 
-            def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+            def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending','PendingChangeStatus')
             def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.subscription, pending_change_pending_status])
 
             log.debug("pc result is ${result.pendingChanges}")

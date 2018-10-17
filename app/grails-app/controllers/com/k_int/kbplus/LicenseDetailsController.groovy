@@ -55,7 +55,7 @@ class LicenseDetailsController {
           result.processingpc = true
       } else {
 
-          def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+          def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending','PendingChangeStatus')
           def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, pending_change_pending_status]);
 
           //Filter any deleted subscriptions out of displayed links
@@ -434,7 +434,7 @@ from Subscription as s where
     if(consortia){
       result.consortia = consortia
       result.consortiaInstsWithStatus = []
-    def type = RefdataCategory.lookupOrCreate('Combo Type', 'Consortium')
+    def type = RefdataValue.getByValueAndCategory('Consortium', 'Combo Type')
     def institutions_in_consortia_hql = "select c.fromOrg from Combo as c where c.type = ? and c.toOrg = ? order by c.fromOrg.name"
     def consortiaInstitutions = Combo.executeQuery(institutions_in_consortia_hql, [type, consortia])
 
@@ -444,9 +444,9 @@ from Subscription as s where
         def queryParams = [ it, result.license]
         def hasLicense = License.executeQuery(findOrgLicenses, queryParams)
         if (hasLicense){
-          result.consortiaInstsWithStatus.put(it, RefdataCategory.lookupOrCreate("YNO","Yes") )    
+          result.consortiaInstsWithStatus.put(it, RefdataValue.getByValueAndCategory("Yes", "YNO") )
         }else{
-          result.consortiaInstsWithStatus.put(it, RefdataCategory.lookupOrCreate("YNO","No") )    
+          result.consortiaInstsWithStatus.put(it, RefdataValue.getByValueAndCategory("No", "YNO") )
         }
       }
     }else{
@@ -463,7 +463,7 @@ from Subscription as s where
         redirect controller: 'licenseDetails', action: 'show', params: params
         return
 
-    def slaved = RefdataCategory.lookupOrCreate('YN','Yes')
+    def slaved = RefdataValue.getByValueAndCategory('Yes', 'YN')
     params.each { p ->
         if(p.key.startsWith("_create.")){
          def orgID = p.key.substring(8)
@@ -556,7 +556,7 @@ from Subscription as s where
                 result.processingpc = true
             }
             else {
-                def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+                def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending','PendingChangeStatus')
                 def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
 
                 result.pendingChanges << ["${member.id}": pendingChanges.collect { PendingChange.get(it) }]
