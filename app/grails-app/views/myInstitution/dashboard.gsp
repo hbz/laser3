@@ -74,9 +74,13 @@
                 <i class="warning circle icon large"></i>
                 ${message(code:'announcement.plural', default:'Announcements')}
             </a>
-            <a class="active item" data-tab="third">
+            <a class="item" data-tab="third">
                 <i class="checked calendar icon large"></i>
                 ${message(code:'myinst.dash.task.label')}
+            </a>
+            <a class="active item" data-tab="forth">
+                <i class="checked calendar icon large"></i>
+                ${message(code:'myinst.dash.due_dates.label')}
             </a>
         </div>
 
@@ -155,7 +159,7 @@
             </div>
         </div>
 
-        <div class="ui bottom attached active tab " data-tab="third">
+        <div class="ui bottom attached tab " data-tab="third">
 
             <g:if test="${editable}">
                 <div class="ui right aligned grid">
@@ -225,8 +229,53 @@
                 </g:each>
             </div>
         </div>
+%{--****************************************************************************--}%
+    <div class="ui bottom attached active tab segment" data-tab="forth" style="border-top: 1px solid #d4d4d5; ">
+        %{--*******--}%
+        <%  var twoWeeksInMillis = 1210000000;
+            var dueDate = new java.sql.Date(System.currentTimeMillis() - twoWeeksInMillis);
+            var dueSubs = Subscription.executeQuery("SELECT * FROM Subscription as s " +
+                "WHERE status != :status and endDate <= :date " +
+//                "and EXISTS (SELECT o FROM OrgRole as o WHERE s = o.sub AND o.roleType = :provider AND o.org = :org) " +
+//                "AND EXISTS (SELECT o2 FROM OrgRole as o2 WHERE s = o2.sub AND (o2.roleType = :subscriber or o2.roleType = :subscriber_consortial) " +
+                "AND o2.org = :ctxOrg)",
+                [status:RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'),
+                 date:dueDate,
+//                 provider:RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'),
+//                 org:org,
+//                 subscriber:RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role'),
+//                 subscriber_consortial:RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'),
+                 ctxOrg:contextService.getOrg()])[0] %>
+        ${dueSubs}
+        <table class="ui celled table">
+            <thead>
+            <tr><th>Fällig am</th>
+                <th>Typ</th>
+                <th>Beschreibung/Link</th>
+            </tr></thead>
+            <tbody>
+            <tr>
+                <td data-label="Name">überfällig<br>${new Date()}</td>
+                <td data-label="Age">Custom Property</td>
+                <td data-label="Job">...........</td>
+            </tr>
+            <tr>
+                <td data-label="Name">fällig<br>${new Date()}</td>
+                <td data-label="Age">Lizenz</td>
+                <td data-label="Job">...</td>
+            </tr>
+            <tr>
+                <td data-label="Name">bald fällig<br>${new Date()}</td>
+                <td data-label="Age">Aufgabe</td>
+                <td data-label="Job">....</td>
+            </tr>
+            </tbody>
+        </table>        %{--*******--}%
 
-        <g:render template="/templates/tasks/modal_create" />
+    </div>
+
+
+    <g:render template="/templates/tasks/modal_create" />
 
     <g:javascript>
         function taskedit(id) {
