@@ -35,7 +35,7 @@ ${message(code: 'myinst.copySubscription')}: ${subscriptionInstance.name}
 
         <div class="field required">
             <label>${message(code: 'myinst.emptySubscription.name', default: 'New Subscription Name')}</label>
-            <input required type="text" name="sub_name" value="Kopie ${subscription.name}" placeholder=""/>
+            <input required type="text" name="sub_name" value="" placeholder=""/>
         </div>
 
 

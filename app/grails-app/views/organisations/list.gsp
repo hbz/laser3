@@ -12,11 +12,18 @@
             <semui:crumb message="menu.institutions.all_orgs" class="active" />
         </semui:breadcrumbs>
 
-        <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
+
             <semui:controlButtons>
-                <g:render template="actions" />
+                <semui:exportDropdown>
+                    <semui:exportDropdownItem>
+                        <g:link class="item" action="list" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
+                    </semui:exportDropdownItem>
+                </semui:exportDropdown>
+                <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
+                    <g:render template="actions" />
+                </sec:ifAnyGranted>
             </semui:controlButtons>
-        </sec:ifAnyGranted>
+
 
         <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.institutions.all_orgs" /> - ${orgListTotal} Treffer</h1>
 

@@ -30,7 +30,7 @@ ${message(code: 'myinst.copyLicense')}: ${license.reference}
 
         <div class="field required">
             <label>${message(code: 'myinst.emptyLicense.name', default: 'New License Name')}</label>
-            <input required type="text" name="lic_name" value="Kopie ${license.reference}" placeholder=""/>
+            <input required type="text" name="lic_name" value="" placeholder=""/>
         </div>
 
 
