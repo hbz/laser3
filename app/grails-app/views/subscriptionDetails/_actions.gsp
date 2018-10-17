@@ -44,9 +44,9 @@
         </g:if>
         <div class="divider"></div>
 
-        %{--<g:if test="${actionName in ['manageConsortia']}">--}%
+        <g:if test="${actionName == 'members'}">
             <semui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses"/>
-        %{--</g:if>--}%
+        </g:if>
 
         <g:if test="${showConsortiaFunctions}">
             <semui:actionsDropdownItem id="audit_config_opener" message="property.audit.menu"/>
