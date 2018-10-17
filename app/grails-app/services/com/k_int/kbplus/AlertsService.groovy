@@ -100,8 +100,8 @@ class AlertsService {
       def org = ua.org;
 
       // For each institution, iterate through all licenses attached to that institution
-      def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role','Licensee');
-      def licensee_cons_role = RefdataCategory.lookupOrCreate('Organisational Role','Licensee_Consortial');
+      def licensee_role = RefdataValue.getByValueAndCategory('Licensee','Organisational Role')
+      def licensee_cons_role = RefdataValue.getByValueAndCategory('Licensee_Consortial','Organisational Role')
 
       OrgRole.findAllByOrg(ua.org).each { or ->
 

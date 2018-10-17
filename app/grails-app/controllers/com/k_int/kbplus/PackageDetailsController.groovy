@@ -202,9 +202,9 @@ class PackageDetailsController {
         def queryParams = [org,packageInstance]
         def hasPackage = OrgRole.executeQuery(hql,  queryParams)
         if(hasPackage){
-          consortiaInstsWithStatus.put(org,RefdataCategory.lookupOrCreate("YNO","Yes"))
+          consortiaInstsWithStatus.put(org, RefdataValue.getByValueAndCategory("Yes", "YNO"))
         }else{
-          consortiaInstsWithStatus.put(org,RefdataCategory.lookupOrCreate("YNO","No"))
+          consortiaInstsWithStatus.put(org, RefdataValue.getByValueAndCategory("No", "YNO"))
         }
       }
       result.consortia = consortia
@@ -458,7 +458,7 @@ class PackageDetailsController {
         return
       }
 
-      def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+      def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending','PendingChangeStatus')
 
         result.pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where pc.pkg=? and ( pc.status is null or pc.status = ? ) order by ts, changeDoc", [packageInstance, pending_change_pending_status]);
 

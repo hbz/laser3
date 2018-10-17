@@ -31,10 +31,10 @@ class LicenseCompareController {
         // ajax/lookup
         // License.refdataFind()
 
-        result.isPublic = RefdataCategory.lookupOrCreate('YN', 'Yes');
+        result.isPublic = RefdataValue.getByValueAndCategory('Yes','YN')
 
-        result.licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
-        result.licensee_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial')
+        result.licensee_role = RefdataValue.getByValueAndCategory('Licensee','Organisational Role')
+        result.licensee_cons_role = RefdataValue.getByValueAndCategory('Licensee_Consortial','Organisational Role')
         result
   }
 

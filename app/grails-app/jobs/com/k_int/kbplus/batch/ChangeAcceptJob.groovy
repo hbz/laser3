@@ -1,4 +1,6 @@
 package com.k_int.kbplus.batch
+
+import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.PendingChange
@@ -27,7 +29,8 @@ class ChangeAcceptJob {
  def execute(){
   log.debug("****Running Change Accept Job****")
 
-  def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+  def pending_change_pending_status = RefdataValue.getByValueAndCategory("Pending", "PendingChangeStatus")
+  //def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
   def user = User.findByDisplay("Admin")
   def httpRequestMock = [:]
   httpRequestMock.user = user

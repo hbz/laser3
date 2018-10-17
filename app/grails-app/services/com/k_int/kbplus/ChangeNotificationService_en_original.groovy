@@ -140,7 +140,7 @@ class ChangeNotificationService_en_original {
                   }
                   break;*/
                 case 'announcements':
-                  def announcement_type = RefdataCategory.lookupOrCreate('Document Type','Announcement')
+                  def announcement_type = RefdataValue.getByValueAndCategory('Announcement','Document Type')
                   // result.recentAnnouncements = Doc.findAllByType(announcement_type,[max:10,sort:'dateCreated',order:'desc'])
                   def newAnnouncement = new Doc(title:'Automated Announcement',
                                                 type:announcement_type,

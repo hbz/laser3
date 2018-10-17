@@ -18,7 +18,7 @@ class FinanceController {
     private final def ci_count        = 'select distinct count(ci.id) from CostItem as ci '
     private final def ci_select       = 'select distinct ci from CostItem as ci '
     private final def user_role        = Role.findByAuthority('INST_USER')
-    private final def defaultCurrency = RefdataCategory.lookupOrCreate('Currency','EUR')
+    private final def defaultCurrency = RefdataValue.getByValueAndCategory('EUR', 'Currency')
 
     final static MODE_OWNER          = 'MODE_OWNER'
     final static MODE_CONS           = 'MODE_CONS'
