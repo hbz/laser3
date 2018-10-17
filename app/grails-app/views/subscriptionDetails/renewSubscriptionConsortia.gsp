@@ -114,7 +114,7 @@ ${message(code: 'subscription.details.renewalsConsortium.label')}: ${subscriptio
                     <th><g:checkBox name="subscription.takeEntitlements" value="${true}"/></th>
                     <th>${message(code: 'subscription.takeEntitlements', default: 'Take Current Entitlements from Subscription')}</th>
                     <td><b>${message(code: 'issueEntitlement.countSubscription')} </b> ${subscription.issueEntitlements.findAll {
-                        it.status != com.k_int.kbplus.RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted')
+                        it.status != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
                     }.size()}
 
                         %{--                        <g:each in="${subscription.issueEntitlements.sort{it.tipp.title}}" var="ie">

@@ -1266,6 +1266,7 @@ class BootStrap {
                 [en: 'Entitlement Issue Status', de: 'Entitlement Issue Status'])
 
         RefdataValue.loc('Entitlement Issue Status', [en: 'Live', de: 'Live'])
+        RefdataValue.loc('Entitlement Issue Status', [en: 'Current', de: 'Current'])
         RefdataValue.loc('Entitlement Issue Status', [en: 'Deleted', de: 'Deleted'])
 
         RefdataCategory.loc('IE Access Status',

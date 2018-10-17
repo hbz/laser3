@@ -482,7 +482,7 @@ class PackageDetailsController {
       result.subscriptionList=[]
       // We need to cycle through all the users institutions, and their respective subscripions, and add to this list
       // and subscription that does not already link this package
-      def sub_status = RefdataCategory.lookupOrCreate('Subscription Status','Deleted')
+      def sub_status = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
       result.user?.getAuthorizedAffiliations().each { ua ->
         if ( ua.formalRole.authority == 'INST_ADM' ) {
           def qry_params = [ua.org, sub_status, packageInstance, new Date()]

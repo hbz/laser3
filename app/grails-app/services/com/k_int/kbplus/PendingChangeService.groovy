@@ -37,7 +37,7 @@ def performAccept(change,httpRequest) {
             def tipp = genericOIDService.resolveOID(event.tippId)
             def ie_to_update = IssueEntitlement.findBySubscriptionAndTipp(sub_to_change,tipp)
             if ( ie_to_update != null ) {
-              ie_to_update.status = RefdataCategory.lookupOrCreate('Entitlement Issue Status','Deleted');
+              ie_to_update.status = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
               ie_to_update.save();
             }
             break;
@@ -120,7 +120,7 @@ def performAccept(change,httpRequest) {
         change.license?.save();
         change.subscription?.pendingChanges?.remove(change)
         change.subscription?.save();
-        change.status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Accepted")
+        change.status = RefdataValue.getByValueAndCategory("Accepted","PendingChangeStatus")
         change.actionDate = new Date()
         change.user = httpRequest?.user
         change.save();
@@ -144,7 +144,7 @@ def performAccept(change,httpRequest) {
       change.subscription?.save();
       change.actionDate = new Date()
       change.user = httpRequest.user
-      change.status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Rejected")
+      change.status = RefdataValue.getByValueAndCategory("Rejected","PendingChangeStatus")
 
       def change_audit_object = null
       if ( change.license ) change_audit_object = change.license;

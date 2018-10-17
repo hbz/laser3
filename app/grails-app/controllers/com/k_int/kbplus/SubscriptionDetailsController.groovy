@@ -121,7 +121,7 @@ class SubscriptionDetailsController {
 
         def base_qry = null;
 
-        def deleted_ie = RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted');
+        def deleted_ie = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
         def qry_params = [result.subscriptionInstance]
 
         def date_filter
@@ -578,7 +578,7 @@ class SubscriptionDetailsController {
                     }
                 } else if (params.bulkOperation == "remove") {
                     log.debug("Updating ie ${ie.id} status to deleted");
-                    def deleted_ie = RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted');
+                    def deleted_ie = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
                     ie.status = deleted_ie;
                     if (ie.save(flush: true)) {
                     } else {
@@ -605,7 +605,7 @@ class SubscriptionDetailsController {
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         def tipp_deleted = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS, 'Deleted');
-        def ie_deleted = RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted');
+        def ie_deleted = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
 
         log.debug("filter: \"${params.filter}\"");
 
@@ -750,11 +750,10 @@ class SubscriptionDetailsController {
 
         def subStatus     = RefdataValue.get(params.subStatus) ?: RefdataCategory.lookupOrCreate('Subscription Status', 'Current')
 
-        def role_sub      = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial')
-        def role_sub_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
-
-        def role_lic      = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial')
-        def role_lic_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensing Consortium')
+        def role_sub      = RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role')
+        def role_sub_cons = RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role')
+        def role_lic      = RefdataValue.getByValueAndCategory('Licensee_Consortial', 'Organisational Role')
+        def role_lic_cons = RefdataValue.getByValueAndCategory('Licensing Consortium', 'Organisational Role')
 
         def role_provider = RefdataCategory.lookupOrCreate('Organisational Role', 'Provider')
         def role_agency   = RefdataCategory.lookupOrCreate('Organisational Role', 'Agency')
@@ -889,7 +888,7 @@ class SubscriptionDetailsController {
         def delSubscription = genericOIDService.resolveOID(params.target)
         def delInstitution = delSubscription?.getSubscriber()
 
-        def deletedStatus = RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted')
+        def deletedStatus = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
 
         if (delSubscription?.hasPerm("edit", result.user)) {
             def derived_subs = Subscription.findByInstanceOfAndStatusNot(delSubscription, deletedStatus)
@@ -1028,7 +1027,7 @@ class SubscriptionDetailsController {
                         log.error("Unable to tipp ${tipp_id}");
                         flash.error("Unable to tipp ${tipp_id}");
                     } else {
-                        def ie_current = RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Current');
+                        def ie_current = RefdataValue.getByValueAndCategory('Current', 'Entitlement Issue Status')
 
                         def new_ie = new IssueEntitlement(status: ie_current,
                                 subscription: result.subscriptionInstance,
@@ -1068,7 +1067,7 @@ class SubscriptionDetailsController {
     def removeEntitlement() {
         log.debug("removeEntitlement....");
         def ie = IssueEntitlement.get(params.ieid)
-        def deleted_ie = RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted');
+        def deleted_ie = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
         ie.status = deleted_ie;
 
         redirect action: 'index', id: params.sub
@@ -1233,8 +1232,8 @@ class SubscriptionDetailsController {
 
         if (subscriber || consortia) {
 
-            def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
-            def licensee_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensing Consortium');
+            def licensee_role =  RefdataValue.getByValueAndCategory('Licensee', 'Organisational Role')
+            def licensee_cons_role = RefdataValue.getByValueAndCategory('Licensing Consortium', 'Organisational Role')
 
             def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template');
 
@@ -1811,7 +1810,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
 
                             subMember.issueEntitlements?.each { ie ->
 
-                                if (ie.status != RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted')) {
+                                if (ie.status != RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')) {
                                     def ieProperties = ie.properties
                                     ieProperties.globalUID = null
 
@@ -1991,7 +1990,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
 
                                 baseSub.issueEntitlements.each { ie ->
 
-                                    if (ie.status != RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted')) {
+                                    if (ie.status != RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')) {
                                         def properties = ie.properties
                                         properties.globalUID = null
 
@@ -2295,7 +2294,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
 
                     baseSubscription.issueEntitlements.each { ie ->
 
-                        if (ie.status != RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted')) {
+                        if (ie.status != RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')) {
                             def properties = ie.properties
                             properties.globalUID = null
 

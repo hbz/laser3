@@ -106,7 +106,7 @@ class InstitutionsService {
         def org = contextService.getOrg()
 
         def license_type = RefdataCategory.lookupOrCreate('License Type', 'Actual')
-        def license_status = RefdataCategory.lookupOrCreate('License Status', 'Current')
+        def license_status = RefdataValue.getByValueAndCategory('Current', 'License Status')
         def lic_name = params.lic_name ?: "Kopie von ${baseLicense?.reference}"
         def licenseInstance = new License(reference: lic_name,
                 status: license_status,
@@ -148,7 +148,7 @@ class InstitutionsService {
             }
 
             if (baseLicense?.licensor) {
-                def licensor_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensor')
+                def licensor_role = RefdataValue.getByValueAndCategory('Licensor', 'Organisational Role')
                 org.links.add(new OrgRole(lic: licenseInstance, org: baseLicense.licensor, roleType: licensor_role));
             }
 

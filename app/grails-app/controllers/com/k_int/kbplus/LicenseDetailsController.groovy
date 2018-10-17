@@ -62,7 +62,7 @@ class LicenseDetailsController {
           Iterator<Subscription> it = result.license.subscriptions.iterator()
           while (it.hasNext()) {
               def sub = it.next();
-              if (sub.status == RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted')) {
+              if (sub.status == RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')) {
                   it.remove();
               }
           }
@@ -296,8 +296,8 @@ select s from Subscription as s where (
         if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution.getallOrgRoleType())) {
             orgRoleType = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType').id]
         }
-        def role_lic      = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial')
-        def role_lic_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensing Consortium')
+        def role_lic      = RefdataValue.getByValueAndCategory('Licensee_Consortial', 'Organisational Role')
+        def role_lic_cons = RefdataValue.getByValueAndCategory('Licensing Consortium', 'Organisational Role')
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
@@ -510,7 +510,7 @@ from Subscription as s where
         def delLicense      = genericOIDService.resolveOID(params.target)
         def delInstitutions = delLicense?.getAllLicensee()
 
-        def deletedStatus = RefdataCategory.lookupOrCreate('License Status', 'Deleted')
+        def deletedStatus = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
 
         if (delLicense?.hasPerm("edit", result.user)) {
             def derived_lics = License.findByInstanceOfAndStatusNot(delLicense, deletedStatus)

@@ -222,12 +222,12 @@ class MyInstitutionController {
         result.max = params.format ? 10000 : result.max
         result.offset = params.format? 0 : result.offset
 
-        def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
-        def licensee_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial');
-        def lic_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensing Consortium');
+        def licensee_role = RefdataValue.getByValueAndCategory('Licensee', 'Organisational Role')
+        def licensee_cons_role = RefdataValue.getByValueAndCategory('Licensee_Consortial', 'Organisational Role')
+        def lic_cons_role = RefdataValue.getByValueAndCategory('Licensing Consortium', 'Organisational Role')
 
         def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template');
-        def license_status = RefdataCategory.lookupOrCreate('License Status', 'Deleted')
+        def license_status = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
 
         def base_qry
         def qry_params
@@ -915,9 +915,9 @@ from Subscription as s where (
         def result = setResultGenerics()
         result.orgRoleType = result.institution.getallOrgRoleType()
 
-        def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber')
-        def role_sub_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial')
-        def role_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
+        def role_sub = RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role')
+        def role_sub_cons = RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role')
+        def role_cons = RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role')
         
         def orgRole = null
         def subType = null
@@ -942,7 +942,7 @@ from Subscription as s where (
 
             def new_sub = new Subscription(
                     type: subType,
-                    status: RefdataCategory.lookupOrCreate('Subscription Status', 'Current'),
+                    status: RefdataValue.getByValueAndCategory('Current', 'Subscription Status'),
                     name: params.newEmptySubName,
                     startDate: startDate,
                     endDate: endDate,
@@ -979,7 +979,7 @@ from Subscription as s where (
                         def cons_sub = new Subscription(
                                             // type: RefdataValue.findByValue("Subscription Taken"),
                                           type: subType,
-                                          status: RefdataCategory.lookupOrCreate('Subscription Status', 'Current'),
+                                          status: RefdataValue.getByValueAndCategory('Current', 'Subscription Status'),
                                           name: params.newEmptySubName,
                                           // name: params.newEmptySubName + " (${postfix})",
                                           startDate: startDate,
@@ -1124,7 +1124,7 @@ from Subscription as s where (
         }
 
         def license_type = RefdataCategory.lookupOrCreate('License Type', 'Actual')
-        def license_status = RefdataCategory.lookupOrCreate('License Status', 'Current')
+        def license_status = RefdataValue.getByValueAndCategory('Current', 'License Status')
 
         def licenseInstance = new License(type: license_type, status: license_status, reference: params.licenseName ?:null,
                 startDate:params.licenseStartDate ? parseDate(params.licenseStartDate,possible_date_formats) : null,
@@ -1134,8 +1134,8 @@ from Subscription as s where (
         }
         else {
             log.debug("Save ok");
-            def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee')
-            def lic_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensing Consortium')
+            def licensee_role = RefdataValue.getByValueAndCategory('Licensee', 'Organisational Role')
+            def lic_cons_role = RefdataValue.getByValueAndCategory('Licensing Consortium', 'Organisational Role')
 
             log.debug("adding org link to new license");
 
@@ -1212,12 +1212,12 @@ from Subscription as s where (
 
 
         if (license?.hasPerm("edit", result.user)) {
-            def current_subscription_status = RefdataCategory.lookupOrCreate('Subscription Status', 'Current');
+            def current_subscription_status = RefdataValue.getByValueAndCategory('Current', 'Subscription Status')
 
             def subs_using_this_license = Subscription.findAllByOwnerAndStatus(license, current_subscription_status)
 
             if (subs_using_this_license.size() == 0) {
-                def deletedStatus = RefdataCategory.lookupOrCreate('License Status', 'Deleted');
+                def deletedStatus = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
                 license.status = deletedStatus
                 license.save(flush: true);
             } else {
@@ -1278,7 +1278,11 @@ from Subscription as s where (
                     basePackage.getConsortia(),
                     add_entitlements)
 
-            def new_sub_link = new OrgRole(org: institution, sub: new_sub, roleType: RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber')).save();
+            def new_sub_link = new OrgRole(
+                    org: institution,
+                    sub: new_sub,
+                    roleType: RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role')
+            ).save();
 
             // This is done by basePackage.createSubscription
             // def new_sub_package = new SubscriptionPackage(subscription: new_sub, pkg: basePackage).save();
@@ -1347,13 +1351,13 @@ from Subscription as s where (
         if (filterOtherPlat.contains("all")) filterOtherPlat = null
 
         def limits = (isHtmlOutput) ? [readOnly:true,max: result.max, offset: result.offset] : [offset: 0]
-        def del_sub = RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted')
-        def del_ie =  RefdataCategory.lookupOrCreate('Entitlement Issue Status','Deleted');
+        def del_sub = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+        def del_ie =  RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
 
-        def role_sub        = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
+        def role_sub        = RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role')
         def role_sub_cons   = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial');
 
-        def role_sub_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
+        def role_sub_consortia = RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role')
         def role_pkg_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia');
         def roles = [role_sub.id,role_sub_consortia.id,role_pkg_consortia.id]
         
@@ -1495,12 +1499,12 @@ from Subscription as s where (
      */
     private setFiltersLists(result, date_restriction) {
         // Query the list of Subscriptions
-        def del_sub = RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted')
-        def del_ie =  RefdataCategory.lookupOrCreate('Entitlement Issue Status','Deleted');
+        def del_sub = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+        def del_ie =  RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
 
-        def role_sub            = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
-        def role_sub_cons       = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial');
-        def role_sub_consortia  = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
+        def role_sub            = RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role')
+        def role_sub_cons       = RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role')
+        def role_sub_consortia  = RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role')
 
         def cp = RefdataCategory.lookupOrCreate('Organisational Role','Content Provider')
         def role_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia');
@@ -1675,8 +1679,8 @@ AND EXISTS (
             return;
         }
 
-        def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
-        def licensee_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial');
+        def licensee_role =  RefdataValue.getByValueAndCategory('Licensee', 'Organisational Role')
+        def licensee_cons_role = RefdataValue.getByValueAndCategory('Licensee_Consortial', 'Organisational Role')
 
         // Find all licenses for this institution...
         def result = [:]
@@ -1708,7 +1712,7 @@ AND EXISTS (
         result.user = User.get(springSecurityService.principal.id)
         def subscription = Subscription.get(params.basesubscription)
         def inst = Org.get(params.curInst)
-        def deletedStatus = RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted');
+        def deletedStatus = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
 
         if (subscription.hasPerm("edit", result.user)) {
             def derived_subs = Subscription.findByInstanceOfAndStatusNot(subscription, deletedStatus)
@@ -2734,7 +2738,8 @@ AND EXISTS (
             // assert an org-role
             def org_link = new OrgRole(org: result.institution,
                     sub: new_subscription,
-                    roleType: RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber')).save();
+                    roleType: RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role')
+            ).save();
 
             // Copy any links from SO
             // db_sub.orgRelations.each { or ->
@@ -2773,7 +2778,7 @@ AND EXISTS (
             }
 
             if (dbtipp) {
-                def live_issue_entitlement = RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Live');
+                def live_issue_entitlement = RefdataValue.getByValueAndCategory('Live', 'Entitlement Issue Status')
                 def is_core = false
 
                 def new_core_status = null;
@@ -2922,8 +2927,8 @@ AND EXISTS (
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def getTodoForInst(result){
-        def lic_del = RefdataCategory.lookupOrCreate('License Status', 'Deleted');
-        def sub_del = RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted');
+        def lic_del = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
+        def sub_del = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
         def pkg_del = RefdataCategory.lookupOrCreate( 'Package Status', 'Deleted' );
         def pc_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
         result.num_todos = PendingChange.executeQuery("select count(distinct pc.oid) from PendingChange as pc left outer join pc.license as lic left outer join lic.status as lic_status left outer join pc.subscription as sub left outer join sub.status as sub_status left outer join pc.pkg as pkg left outer join pkg.packageStatus as pkg_status where pc.owner = ? and (pc.status = ? or pc.status is null) and ((lic_status is null or lic_status!=?) and (sub_status is null or sub_status!=?) and (pkg_status is null or pkg_status!=?))", [result.institution,pc_status, lic_del,sub_del,pkg_del])[0]

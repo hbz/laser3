@@ -145,7 +145,7 @@ class TaskService {
                     RefdataValue.getByValueAndCategory('Licensee','Organisational Role'),
                     RefdataValue.getByValueAndCategory('Licensee_Consortial','Organisational Role')
             ],
-            lic_status: RefdataCategory.lookupOrCreate('License Status', 'Deleted')
+            lic_status: RefdataValue.getByValueAndCategory('Deleted', 'License Status')
         ]
         def qry_params2 = [
             'roleTypes' : [

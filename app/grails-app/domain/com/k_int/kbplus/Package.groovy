@@ -235,7 +235,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       // Step 3 - If createEntitlements ...
 
       if ( createEntitlements ) {
-        def live_issue_entitlement = RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Live');
+        def live_issue_entitlement = RefdataValue.getByValueAndCategory('Live', 'Entitlement Issue Status')
         tipps.each { tipp ->
           if(tipp.status?.value != "Deleted"){
             def new_ie = new IssueEntitlement(status: live_issue_entitlement,
