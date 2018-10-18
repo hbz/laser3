@@ -27,6 +27,9 @@
   top: 50px;
   z-index:90;
   background-color: #d3dae3;
+  .item {
+    padding:0;
+  }
   .la-context-org {
     font-size: 0.87em;
     color: @grey;
@@ -36,9 +39,6 @@
     border-right: none;
     &:before {
       width: 0!important;
-    }
-    &:first-child{
-      padding-left:0;
     }
   }
   .ui.checkbox label {

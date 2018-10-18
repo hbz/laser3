@@ -21,6 +21,26 @@
   margin-left: 1rem;
   margin-top: 1rem
 }
-.ui.la-selectable-button {
 
+/*--------------
+     Toggle for Context Bar
+---------------*/
+
+/* Toggle (Modifies active state to give affordances) */
+.la-contextBar .ui.toggle.buttons .active.button,
+.la-contextBar .ui.buttons .button.toggle.active,
+.la-contextBar .ui.button.toggle.active {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  text-shadow: @invertedTextShadow;
+  color: @positiveColor !important;
+}
+.ui.button.toggle.active:hover {
+  background-color: transparent !important;
+  text-shadow: @invertedTextShadow;
+  color:@positiveColorHover !important;
+}
+.la-contextBar .ui.button:hover,
+.la-contextBar .ui.button:focus{
+  background-color: transparent !important;
 }

@@ -2058,6 +2058,9 @@ Floated Menu / Item
   z-index: 90;
   background-color: #d3dae3;
 }
+.ui.menu.la-contextBar .item {
+  padding: 0;
+}
 .ui.menu.la-contextBar .la-context-org {
   font-size: 0.87em;
   color: #767676;
@@ -2068,9 +2071,6 @@ Floated Menu / Item
 }
 .ui.menu.la-contextBar .ui.sub.header.item:before {
   width: 0!important;
-}
-.ui.menu.la-contextBar .ui.sub.header.item:first-child {
-  padding-left: 0;
 }
 .ui.menu.la-contextBar .ui.checkbox label {
   font-size: 0.87em;
