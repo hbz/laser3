@@ -755,8 +755,8 @@ class SubscriptionDetailsController {
         def role_lic      = RefdataValue.getByValueAndCategory('Licensee_Consortial', 'Organisational Role')
         def role_lic_cons = RefdataValue.getByValueAndCategory('Licensing Consortium', 'Organisational Role')
 
-        def role_provider = RefdataCategory.lookupOrCreate('Organisational Role', 'Provider')
-        def role_agency   = RefdataCategory.lookupOrCreate('Organisational Role', 'Agency')
+        def role_provider = RefdataValue.getByValueAndCategory('Provider', 'Organisational Role')
+        def role_agency   = RefdataValue.getByValueAndCategory('Agency', 'Organisational Role')
 
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {

@@ -26,7 +26,7 @@ class LicenseSpec extends GebReportingSpec {
                 user:userAdm,
                 formalRole:formal_role).save()
 
-        def licensee_role_ref = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
+        def licensee_role_ref = RefdataValue.getByValueAndCategory('Licensee', 'Organisational Role')
         def license  = new com.k_int.kbplus.License(reference:"Test License").save()
         def licensee_role  = new com.k_int.kbplus.OrgRole(roleType:licensee_role_ref,lic:license,org:org).save()
 
@@ -74,10 +74,10 @@ class LicenseSpec extends GebReportingSpec {
     def "add items to list and submit to compare a license (license properties)"() {
         setup: "Going to license comparison page..."
           def org = Org.findByNameAndImpId(Data.Org_name,Data.Org_impId)
-          def licensee_role_ref = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
+          def licensee_role_ref = RefdataValue.getByValueAndCategory('Licensee','Organisational Role')
           def ed       = new LocalDate().now().plusMonths(6).toDate()
           def sd       = new LocalDate().now().minusMonths(6).toDate()
-          def l_status = RefdataCategory.lookupOrCreate('License Status', 'Current')
+          def l_status = RefdataValue.getByValueAndCategory('Current', 'License Status')
           def license2 = new com.k_int.kbplus.License(reference:"Test License 2", startDate: sd, endDate: ed, status: l_status).save()
           def license3 = new com.k_int.kbplus.License(reference:"Test License 3", startDate: sd, endDate: ed, status: l_status).save()
           def licensee_role2 = new com.k_int.kbplus.OrgRole(roleType:licensee_role_ref,lic:license2,org:org).save()
@@ -111,12 +111,12 @@ class LicenseSpec extends GebReportingSpec {
           def licenseSub = new com.k_int.kbplus.License(reference:"test subscription license").save()
           def sub = new com.k_int.kbplus.Subscription(name: "test subscription name", owner: licenseSub,
                   identifier: java.util.UUID.randomUUID().toString()).save(flush: true)
-          def subrefRole = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber').save()
+          def subrefRole = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
           def subRelation= new com.k_int.kbplus.OrgRole(roleType: subrefRole, org: org).save()
           def subRole    = new com.k_int.kbplus.OrgRole(roleType: subrefRole, sub: sub, org: org).save()
           sub.addToOrgRelations(subRelation) 
           sub.save()//OrgRole needed for
-          def ie_current = RefdataCategory.lookupOrCreate('Entitlement Issue Status','Current');
+          def ie_current = RefdataValue.getByValueAndCategory('Current','Entitlement Issue Status')
           def ti = new com.k_int.kbplus.TitleInstance(title: Data.Title_titlename, impId:Data.Title_uniqID).save()
           def tipp = new com.k_int.kbplus.TitleInstancePackagePlatform(impId:Data.Tipp_uniqID, title: ti).save()
           def ie = new com.k_int.kbplus.IssueEntitlement(status: ie_current, tipp: tipp, subscription: sub).save()

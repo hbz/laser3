@@ -89,7 +89,7 @@ public class PackageIngestService {
         log.debug("Package [${new_pkg.id}] with identifier ${new_pkg.identifier} created......");
 
         if ( upload.consortiumOrg ) {                              
-          def sc_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia');
+          def sc_role = RefdataValue.getByValueAndCategory('Package Consortia', 'Organisational Role')
           def or = new OrgRole(org: consortium, pkg:new_pkg, roleType:sc_role).save();
         }
 
@@ -216,7 +216,7 @@ public class PackageIngestService {
     //TODO: Wegen Überarbeitung von Titel Konzept muss dies hier nochmal überarbeitet werden by Moe
     def result = TitleInstance.lookupOrCreateViaIdMap(identifiers, title);
     if ( !result.getPublisher() ) {
-      def pub_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Publisher');
+      def pub_role = RefdataValue.getByValueAndCategory('Publisher', 'Organisational Role')
       OrgRole.assertOrgTitleLink(publisher, result, pub_role, null, null);
       result.save();
     }

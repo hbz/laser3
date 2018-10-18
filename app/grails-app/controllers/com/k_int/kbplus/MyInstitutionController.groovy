@@ -1355,10 +1355,10 @@ from Subscription as s where (
         def del_ie =  RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
 
         def role_sub        = RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role')
-        def role_sub_cons   = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial');
+        def role_sub_cons   = RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role')
 
         def role_sub_consortia = RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role')
-        def role_pkg_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia');
+        def role_pkg_consortia = RefdataValue.getByValueAndCategory('Package Consortia', 'Organisational Role')
         def roles = [role_sub.id,role_sub_consortia.id,role_pkg_consortia.id]
         
         log.debug("viable roles are: ${roles}")

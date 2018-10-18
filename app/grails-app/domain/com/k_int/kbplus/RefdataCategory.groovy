@@ -100,6 +100,7 @@ class RefdataCategory extends AbstractI10nTranslatable {
         rdc
     }
 
+    @Deprecated
     static def lookupOrCreate(String category_name, String icon, String value) {
         def result = lookupOrCreate(category_name, value)
         result.icon = icon

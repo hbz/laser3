@@ -193,7 +193,7 @@ class PublicExportController {
 
     def base_qry = null;
     def tipp_status_del = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS, "Deleted")
-    def publisher_org = RefdataCategory.lookupOrCreate("Organisational Role","Publisher")
+    def publisher_org = RefdataValue.getByValueAndCategory('Publisher', 'Organisational Role')
     def qry_params = [ packageInstance]
 
     def filename = "publicExport_${packageInstance.name}_asAt_${sdf.format(dateFilter)}"
