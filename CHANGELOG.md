@@ -8,8 +8,11 @@
 - added export function for organisations, provider and consortia
 - added optinal cost items access for consortial subscribers
 - added export for mail addresses
+- added edit mode switch
 - reworked various table sortings
 - reworked user depending settings
+- reworked page header
+- reworked visible contacts 
 - changed meaningless subscription names  
 - fixed: editable addresses for editors
 - fixed: empty federal state dropdown

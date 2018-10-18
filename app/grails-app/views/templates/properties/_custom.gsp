@@ -88,7 +88,7 @@
                     <td class="x">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
 
                         <g:if test="${editable == true}">
-                            <g:if test="${(! ownobj.hasProperty('instanceOf')) || (! ownobj.instanceOf) || ( ownobj in de.laser.interfaces.TemplateSupport && ownobj.hasTemplate())}">
+                            <g:if test="${ownobj.hasProperty('instanceOf') && showConsortiaFunctions}">
                                 <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />
 
                                 <span data-position="top right" data-tooltip="${message(code:'property.audit.tooltip')}">
