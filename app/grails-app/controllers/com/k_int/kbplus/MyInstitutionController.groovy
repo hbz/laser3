@@ -1108,7 +1108,7 @@ from Subscription as s where (
                     copyLicense.endDate = parseDate(params.licenseEndDate,possible_date_formats)
 
                     if (copyLicense.save(flush: true)) {
-                        flash.message = message(code: 'license.created.message')
+                        flash.message = message(code: 'license.createdfromTemplate.message')
                     }
 
                     if( params.sub) {

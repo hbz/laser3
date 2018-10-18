@@ -819,7 +819,13 @@ class SubscriptionDetailsController {
                                 owner: licenseCopy
                         )
 
-                        cons_sub.save()
+                        if(!cons_sub.save()){
+                            cons_sub?.errors.each { e ->
+                                log.debug("Problem creating new sub: ${e}")
+                            }
+                            flash.error = cons_sub.errors
+                        }
+
 
                         result.subscriptionInstance.packages.each { sub_pkg ->
                                     def takePackage = params."selectedPackage_${cm.get(0).id+sub_pkg.pkg.id}"
@@ -859,10 +865,7 @@ class SubscriptionDetailsController {
                             new OrgRole(org: result.institution, sub: cons_sub, roleType: role_sub_cons).save()
                         }
 
-                        cons_sub?.errors.each { e ->
-                            log.debug("Problem creating new sub: ${e}")
-                        }
-                        flash.error = cons_sub.errors
+
                     }
                 }
                 redirect controller: 'subscriptionDetails', action: 'members', params: [id: result.subscriptionInstance?.id]

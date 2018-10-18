@@ -71,7 +71,7 @@
 <g:if test="${numLicenses > 0 || (params.filter)}">
 
     <semui:filter>
-        <g:form action="processEmptyLicense" params="${params}" method="get" class="ui form">
+        <g:form action="emptyLicense" params="${params}" method="get" class="ui form">
             <div class="fields">
                 <div class="field">
                     <label>${message(code: 'license.name')}</label>
