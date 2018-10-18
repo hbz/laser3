@@ -198,7 +198,7 @@ class SemanticUiTagLib {
             try {
                 def obj = attrs.auditable[0]
                 if (obj.instanceOf && ! obj.instanceOf.isTemplate()) {
-                    if (obj.instanceOf?.getWatchedProperties()?.contains(attrs.auditable[1])) {
+                    if (obj.instanceOf?.getAuditConfig(attrs.auditable[1])) {
                         if (obj.isSlaved?.value?.equalsIgnoreCase('yes')) {
                             out << '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
                         }
