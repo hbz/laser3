@@ -108,7 +108,7 @@
                 <div class="field">
                     <label>${message(code: 'profile.info_icon', default:'Show Info Icon')}</label>
                     <semui:xEditableRefData owner="${user}" field="showInfoIcon" config="YN" />
-                </div>RefdataValue.getByValueAndCategory('Yes','YN')
+                </div>
                 --%>
                 <div class="field">
                     <label>${message(code: 'profile.editMode', default:'Show Edit Mode')}</label>
