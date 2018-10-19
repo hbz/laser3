@@ -5,7 +5,7 @@ import de.laser.domain.I10nTranslation
 import org.springframework.context.i18n.LocaleContextHolder
 import javax.persistence.Transient
 
-class RefdataValue extends AbstractI10nTranslatable {
+class RefdataValue extends AbstractI10nTranslatable implements Comparable<RefdataValue> {
 
     @Transient
     def grailsApplication
@@ -22,6 +22,9 @@ class RefdataValue extends AbstractI10nTranslatable {
     boolean softData
     // indicates this object is created via current bootstrap
     boolean hardData
+
+    // if manual ordering is wanted
+    Long order
 
     static belongsTo = [
         owner:RefdataCategory
@@ -55,6 +58,8 @@ class RefdataValue extends AbstractI10nTranslatable {
                  group column: 'rdv_group'
               softData column: 'rdv_soft_data'
               hardData column: 'rdv_hard_data'
+              order    column: 'rdv_order'
+
     }
 
     static constraints = {
@@ -62,6 +67,7 @@ class RefdataValue extends AbstractI10nTranslatable {
         group    (nullable:true,  blank:false)
         softData (nullable:false, blank:false, default:false)
         hardData (nullable:false, blank:false, default:false)
+        order    (nullable:true,  blank: false)
     }
 
     /**
@@ -148,7 +154,26 @@ class RefdataValue extends AbstractI10nTranslatable {
 
         null
     }
-    
+
+    int compareTo(RefdataValue rdv) {
+
+        def a = rdv.order  ?: 0
+        def b = this.order ?: 0
+
+        if (a && b) {
+            return a <=> b
+        }
+        else if (a && !b) {
+            return 1
+        }
+        else if (!a && b) {
+            return -1
+        }
+        else {
+            return this.getI10n('value')?.compareTo(rdv.getI10n('value'))
+        }
+    }
+
     // still provide OLD mapping for string compares and such stuff
     public String toString() {
         value

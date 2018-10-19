@@ -114,7 +114,7 @@
                     </td>
                 </tr>
 
-                <g:each in="${RefdataValue.findAllByOwner(rdc, [sort: 'value'])}" var="rdv">
+                <g:each in="${RefdataValue.findAllByOwner(rdc).toSorted()}" var="rdv">
                     <tr>
                         <td>
                             ${I10nTranslation.createI10nOnTheFly(rdv, 'value').valueDe}

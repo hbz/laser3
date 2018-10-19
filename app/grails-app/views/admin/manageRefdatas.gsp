@@ -79,7 +79,7 @@ ${usedRdvList.join(", ")}
                                 </td>
                             </tr>
 
-                            <g:each in="${RefdataValue.findAllByOwner(rdc)}" var="rdv">
+                            <g:each in="${RefdataValue.findAllByOwner(rdc).toSorted()}" var="rdv">
                                 <tr>
                                     <td>
                                         <g:if test="${rdv.hardData}">

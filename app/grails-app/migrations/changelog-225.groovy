@@ -16,4 +16,10 @@ databaseChangeLog = {
 		}
 	}
 
+	changeSet(author: "kloberd (generated)", id: "1539939992091-3") {
+		addColumn(tableName: "refdata_value") {
+			column(name: "rdv_order", type: "bigint")
+		}
+	}
+
 }
