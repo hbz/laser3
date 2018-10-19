@@ -20,6 +20,8 @@ class RefdataValue extends AbstractI10nTranslatable {
 
     // indicates this object is created via front-end
     boolean softData
+    // indicates this object is created via current bootstrap
+    boolean hardData
 
     static belongsTo = [
         owner:RefdataCategory
@@ -52,24 +54,28 @@ class RefdataValue extends AbstractI10nTranslatable {
                   icon column: 'rdv_icon'
                  group column: 'rdv_group'
               softData column: 'rdv_soft_data'
+              hardData column: 'rdv_hard_data'
     }
 
     static constraints = {
         icon     (nullable:true)
         group    (nullable:true,  blank:false)
         softData (nullable:false, blank:false, default:false)
+        hardData (nullable:false, blank:false, default:false)
     }
 
     /**
      * Create RefdataValue and matching I10nTranslation.
      * Create RefdataCategory, if needed.
-     * Softdata flag will be removed, if RefdataValue is found.
+     *
+     * Call this from bootstrap
      *
      * @param category_name
      * @param i10n
+     * @param hardData = only true if called from bootstrap
      * @return
      */
-    static def loc(String category_name, Map i10n) {
+    static def loc(String category_name, Map i10n, def hardData) {
 
         def cat = RefdataCategory.loc(category_name, [:])
         def rdvValue = i10n['key'] ?: i10n['en']
@@ -78,12 +84,22 @@ class RefdataValue extends AbstractI10nTranslatable {
         if (! result) {
             result = new RefdataValue(owner: cat, value: rdvValue)
         }
-        result.softData = false
+        result.hardData = hardData
+        if (hardData) {
+            // set to false if value is meanwhile in bootstrap
+            result.softData = false
+        }
         result.save(flush: true)
 
         I10nTranslation.createOrUpdateI10n(result, 'value', i10n)
 
         result
+    }
+
+    // Call this from code
+    static def loc(String category_name, Map i10n) {
+        def hardData = false
+        loc(category_name, i10n, hardData)
     }
 
     static def refdataFind(params) {
