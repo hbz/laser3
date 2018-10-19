@@ -53,7 +53,7 @@
                             <td>
                                 <g:if test="${! usedPdList?.contains(pd.id)}">
                                     <span data-position="top right" data-tooltip="Dieser Wert wird bisher nicht verwendet (ID:${pd.id})">
-                                        <i class="info circle icon grey"></i>
+                                        <i class="info circle icon blue"></i>
                                     </span>
                                 </g:if>
 
@@ -125,7 +125,7 @@
                         <td>
                             <g:if test="${! usedRdvList?.contains(rdv.id)}">
                                 <span data-position="top right" data-tooltip="Dieser Wert wird bisher nicht verwendet (ID:${rdv.id})">
-                                    <i class="info circle icon grey"></i>
+                                    <i class="info circle icon blue"></i>
                                 </span>
                             </g:if>
 

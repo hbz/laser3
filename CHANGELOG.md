@@ -13,9 +13,10 @@
 - reworked user depending settings
 - reworked page header
 - reworked visible contacts 
-- changed meaningless subscription names  
+- improved intern refdata management
 - fixed: editable addresses for editors
 - fixed: empty federal state dropdown
+- changed meaningless subscription names  
 - increased text length for tasks
 - removed legacy code
 - various markup and style changes
