@@ -44,4 +44,5 @@ databaseChangeLog = {
 
 	// release 0.10
 	include file: 'changelog-220.groovy'
+	include file: 'changelog-225.groovy'
 }

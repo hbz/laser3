@@ -28,6 +28,13 @@ class BootStrap {
         def so_filetype   = DataloadFileType.findByName('Subscription Offered File') ?: new DataloadFileType(name: 'Subscription Offered File')
         def plat_filetype = DataloadFileType.findByName('Platforms File') ?: new DataloadFileType(name: 'Platforms File')
 
+        // Reset harddata flag for given refdata
+
+        RefdataValue.executeUpdate('UPDATE RefdataValue rdv SET rdv.hardData =:reset', [reset: false])
+        RefdataCategory.executeUpdate('UPDATE RefdataCategory rdc SET rdc.hardData =:reset', [reset: false])
+
+        // Here we go ..
+
         log.debug("setupRefdata ..")
         setupRefdata()
 
@@ -1137,8 +1144,6 @@ class BootStrap {
 
     def setupOnixPlRefdata = {
 
-        // copied from Config.groovy .. START
-
         // Refdata values that need to be added to the database to allow ONIX-PL licenses to be compared properly. The code will
         // add them to the DB if they don't already exist.
         def refdatavalues = [
@@ -1167,7 +1172,7 @@ class BootStrap {
 
         refdatavalues.each { rdc, rdvList ->
             rdvList.each { rdv ->
-                RefdataCategory.lookupOrCreate(rdc, rdv)
+                RefdataValue.loc(rdc, [en: rdv], BOOTSTRAP)
             }
         }
 
@@ -1469,7 +1474,7 @@ class BootStrap {
     // log.debug("New gokb record source: ${gokb_record_source}")
 
         //Reminders for Cron
-        RefdataCategory.lookupOrCreate("ReminderMethod","email")
+        RefdataCategory.loc("ReminderMethod", [en: "email"], BOOTSTRAP)
 
         RefdataCategory.loc('ReminderUnit',
                 [en: 'ReminderUnit', de: 'ReminderUnit'], BOOTSTRAP)
@@ -1478,7 +1483,7 @@ class BootStrap {
         RefdataValue.loc('ReminderUnit', [en: 'Week', de: 'Woche'], BOOTSTRAP)
         RefdataValue.loc('ReminderUnit', [en: 'Month', de: 'Monat'], BOOTSTRAP)
 
-        RefdataCategory.lookupOrCreate("ReminderTrigger","Subscription Manual Renewal Date")
+        RefdataCategory.loc("ReminderTrigger", [en: "Subscription Manual Renewal Date"], BOOTSTRAP)
     }
 
     def setupContentItems = {
