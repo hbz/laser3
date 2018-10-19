@@ -205,26 +205,27 @@
             </g:if>
             <g:if test="${tmplConfigShow?.contains('licenses')}">
                 <td>
-                    <br>
-                    ${Subscription.executeQuery("SELECT distinct count(*) FROM Subscription as s " +
-                            "WHERE status != :status and startDate <= :heute and endDate >= :heute " +
-                            "and EXISTS (SELECT o FROM OrgRole as o WHERE s = o.sub AND o.roleType = :provider AND o.org = :org) " +
-                            "AND EXISTS (SELECT o2 FROM OrgRole as o2 WHERE s = o2.sub AND (o2.roleType = :subscriber or o2.roleType = :subscriber_consortial) " +
-                            "AND o2.org = :ctxOrg)",
-                            [status:RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'),
-                             heute:sqlDateToday,
-                             provider:RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'),
-                             org:org,
-                             subscriber:RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role'),
-                             subscriber_consortial:RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'),
-                             ctxOrg:contextService.getOrg()])[0]}
-                    &nbsp
-                    <span data-tooltip="${message(code: 'org.licenses.tooltip', args: [org.name])}">
-                        <g:link controller="myInstitution" action="currentSubscriptions" params="${[q:org.name]}" class="ui mini icon blue button">
-                            <i class="share square icon"></i>
+                    <div class="la-flexbox">
+                        <i class="icon university la-list-icon"></i>
+                        <g:link controller="myInstitution" action="currentSubscriptions" params="${[q:org.name]}" title="${message(code: 'org.licenses.tooltip', args: [org.name])}">
+                            ${message(code: 'org.licenses.tooltip', args: [org.name])}:
+                            <div class="ui circular label">
+                                ${Subscription.executeQuery("SELECT distinct count(*) FROM Subscription as s " +
+                                        "WHERE status != :status and startDate <= :heute and endDate >= :heute " +
+                                        "and EXISTS (SELECT o FROM OrgRole as o WHERE s = o.sub AND o.roleType = :provider AND o.org = :org) " +
+                                        "AND EXISTS (SELECT o2 FROM OrgRole as o2 WHERE s = o2.sub AND (o2.roleType = :subscriber or o2.roleType = :subscriber_consortial) " +
+                                        "AND o2.org = :ctxOrg)",
+                                        [status:RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'),
+                                         heute:sqlDateToday,
+                                         provider:RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'),
+                                         org:org,
+                                         subscriber:RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role'),
+                                         subscriber_consortial:RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'),
+                                         ctxOrg:contextService.getOrg()])[0]}
+                            </div>
                         </g:link>
+                    </div>
 
-                    </span>
                 </td>
             </g:if>
             <g:if test="${tmplConfigShow?.contains('numberOfLicenses')}">
@@ -244,9 +245,9 @@
 
             <g:if test="${tmplConfigShow?.contains('identifier')}">
                 <td><g:if test="${org.ids}">
-                    <ul>
-                        <g:each in="${org.ids.sort{it.identifier.ns.ns}}" var="id"><li>${id.identifier.ns.ns}: ${id.identifier.value}</li></g:each>
-                    </ul>
+                    <div class="ui list">
+                        <g:each in="${org.ids.sort{it.identifier.ns.ns}}" var="id"><div class="item">${id.identifier.ns.ns}: ${id.identifier.value}</div></g:each>
+                    </div>
                 </g:if></td>
             </g:if>
             <g:if test="${tmplConfigShow?.contains('wibid')}">
