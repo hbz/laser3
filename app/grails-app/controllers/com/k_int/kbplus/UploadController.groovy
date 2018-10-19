@@ -94,7 +94,7 @@ class UploadController {
     }
     
     def pkg_type = RefdataCategory.lookupOrCreate("${RefdataCategory.PKG_TYPE}",'Unknown');
-    def cp_role = RefdataCategory.lookupOrCreate('Organisational Role','Content Provider');
+    def cp_role = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
     def tipp_current = RefdataCategory.lookupOrCreate("${RefdataCategory.TIPP_STATUS}",'Current');
 
     def consortium = null;

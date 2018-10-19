@@ -226,7 +226,7 @@ class MyInstitutionController {
         def licensee_cons_role = RefdataValue.getByValueAndCategory('Licensee_Consortial', 'Organisational Role')
         def lic_cons_role = RefdataValue.getByValueAndCategory('Licensing Consortium', 'Organisational Role')
 
-        def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template');
+        def template_license_type = RefdataValue.getByValueAndCategory('Template', 'License Type')
         def license_status = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
 
         def base_qry
@@ -422,7 +422,7 @@ from License as l where (
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template');
+        def template_license_type = RefdataValue.getByValueAndCategory('Template', 'License Type')
         def qparams = [template_license_type]
         def public_flag = RefdataValue.getByValueAndCategory('No','YN')
 
@@ -1123,7 +1123,7 @@ from Subscription as s where (
             }
         }
 
-        def license_type = RefdataCategory.lookupOrCreate('License Type', 'Actual')
+        def license_type = RefdataValue.getByValueAndCategory('Actual', 'License Type')
         def license_status = RefdataValue.getByValueAndCategory('Current', 'License Status')
 
         def licenseInstance = new License(type: license_type, status: license_status, reference: params.licenseName ?:null,
@@ -1417,7 +1417,7 @@ from Subscription as s where (
         }
 
         if (filterPvd) {
-            def cp = RefdataCategory.lookupOrCreate('Organisational Role','Content Provider').id
+            def cp = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')?.id
             sub_qry += " AND orgrole.or_roletype_fk = :cprole  AND orgrole.or_org_fk IN (:provider) "
             qry_params.cprole = cp
             qry_params.provider = filterPvd.join(", ")
@@ -1506,7 +1506,7 @@ from Subscription as s where (
         def role_sub_cons       = RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role')
         def role_sub_consortia  = RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role')
 
-        def cp = RefdataCategory.lookupOrCreate('Organisational Role','Content Provider')
+        def cp = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
         def role_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia');
 
         def roles = [role_sub, role_sub_cons, role_sub_consortia]
@@ -2929,7 +2929,7 @@ AND EXISTS (
     def getTodoForInst(result){
         def lic_del = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
         def sub_del = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
-        def pkg_del = RefdataCategory.lookupOrCreate( 'Package Status', 'Deleted' );
+        def pkg_del = RefdataValue.getByValueAndCategory('Deleted', 'Package Status')
         def pc_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
         result.num_todos = PendingChange.executeQuery("select count(distinct pc.oid) from PendingChange as pc left outer join pc.license as lic left outer join lic.status as lic_status left outer join pc.subscription as sub left outer join sub.status as sub_status left outer join pc.pkg as pkg left outer join pkg.packageStatus as pkg_status where pc.owner = ? and (pc.status = ? or pc.status is null) and ((lic_status is null or lic_status!=?) and (sub_status is null or sub_status!=?) and (pkg_status is null or pkg_status!=?))", [result.institution,pc_status, lic_del,sub_del,pkg_del])[0]
 

@@ -767,8 +767,8 @@ from Subscription as s where
   def processNewTemplateLicense() {
     if ( params.reference && ( ! params.reference.trim().equals('') ) ) {
 
-      def template_license_type = RefdataCategory.lookupOrCreate('License Type','Template');
-      def license_status_current = RefdataCategory.lookupOrCreate('License Status','Current');
+      def template_license_type = RefdataValue.getByValueAndCategory('Template', 'License Type')
+      def license_status_current = RefdataValue.getByValueAndCategory('Current', 'License Status')
       
       def new_template_license = new License(reference:params.reference,
                                              type:template_license_type,

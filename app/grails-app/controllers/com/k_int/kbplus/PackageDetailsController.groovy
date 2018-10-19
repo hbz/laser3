@@ -84,7 +84,7 @@ class PackageDetailsController {
       def paginate_after = params.paginate_after ?: ((2 * result.max)-1)
       result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-      def deleted_package_status =  RefdataCategory.lookupOrCreate( 'Package Status', 'Deleted' );
+      def deleted_package_status = RefdataValue.getByValueAndCategory('Deleted', 'Package Status')
       //def qry_params = [deleted_package_status]
       def qry_params = []
 

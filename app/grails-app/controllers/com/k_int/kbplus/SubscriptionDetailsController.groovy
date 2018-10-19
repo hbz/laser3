@@ -1238,7 +1238,7 @@ class SubscriptionDetailsController {
             def licensee_role =  RefdataValue.getByValueAndCategory('Licensee', 'Organisational Role')
             def licensee_cons_role = RefdataValue.getByValueAndCategory('Licensing Consortium', 'Organisational Role')
 
-            def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template');
+            def template_license_type = RefdataValue.getByValueAndCategory('Template', 'License Type')
 
             def qry_params = [(subscription.instanceOf ? consortia : subscriber), licensee_role, licensee_cons_role]
 

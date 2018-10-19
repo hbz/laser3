@@ -105,7 +105,7 @@ class InstitutionsService {
         def baseLicense = params.baselicense ? License.get(params.baselicense) : null;
         def org = contextService.getOrg()
 
-        def license_type = RefdataCategory.lookupOrCreate('License Type', 'Actual')
+        def license_type = RefdataValue.getByValueAndCategory('Actual','License Type')
         def license_status = RefdataValue.getByValueAndCategory('Current', 'License Status')
         def lic_name = params.lic_name ?: "Kopie von ${baseLicense?.reference}"
         def licenseInstance = new License(reference: lic_name,
