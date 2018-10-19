@@ -127,6 +127,13 @@
                     <semui:xEditable owner="${user.getSetting(UserSettings.KEYS.PAGE_SIZE, 10)}" field="strValue" />
                 </div>
 
+                <div class="field">
+                    <label>${message(code: 'profile.reminderPeriod', default:'Reminder period')}</label>
+                    2 Wochen
+                    %{--TODO: änderbar und in DB--}%
+                    %{--<semui:xEditable owner="${user.getSetting(UserSettings.KEYS.PAGE_SIZE, 10)}" field="strValue" />--}%
+                </div>
+
             </div>
         </div><!-- .segment -->
     </div><!-- .column -->

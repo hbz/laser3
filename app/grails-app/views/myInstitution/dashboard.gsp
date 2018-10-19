@@ -1,3 +1,5 @@
+<laser:serviceInjection />
+<%@ page import="com.k_int.kbplus.Subscription; com.k_int.kbplus.RefdataValue" %>
 <!doctype html>
 <html>
     <head>
@@ -231,48 +233,50 @@
         </div>
 %{--****************************************************************************--}%
     <div class="ui bottom attached active tab segment" data-tab="forth" style="border-top: 1px solid #d4d4d5; ">
-        %{--*******--}%
-        <%  var twoWeeksInMillis = 1210000000;
-            var dueDate = new java.sql.Date(System.currentTimeMillis() - twoWeeksInMillis);
-            var dueSubs = Subscription.executeQuery("SELECT * FROM Subscription as s " +
-                "WHERE status != :status and endDate <= :date " +
-//                "and EXISTS (SELECT o FROM OrgRole as o WHERE s = o.sub AND o.roleType = :provider AND o.org = :org) " +
-//                "AND EXISTS (SELECT o2 FROM OrgRole as o2 WHERE s = o2.sub AND (o2.roleType = :subscriber or o2.roleType = :subscriber_consortial) " +
-                "AND o2.org = :ctxOrg)",
-                [status:RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'),
-                 date:dueDate,
-//                 provider:RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'),
-//                 org:org,
-//                 subscriber:RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role'),
-//                 subscriber_consortial:RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'),
-                 ctxOrg:contextService.getOrg()])[0] %>
-        ${dueSubs}
+        <font size="3" color="red">ACHTUNG: Das sind nur exemplarische Testdaten. Die Queries müssen noch erstellt/modifiziert werden.</font>
+
+        <hr>
         <table class="ui celled table">
             <thead>
-            <tr><th>Fällig am</th>
+            <tr><th>Enddatum</th>
+                <th>Kündigungsfrist</th>
                 <th>Typ</th>
-                <th>Beschreibung/Link</th>
+                <th>Name/Link</th>
             </tr></thead>
             <tbody>
-            <tr>
-                <td data-label="Name">überfällig<br>${new Date()}</td>
-                <td data-label="Age">Custom Property</td>
-                <td data-label="Job">...........</td>
-            </tr>
-            <tr>
-                <td data-label="Name">fällig<br>${new Date()}</td>
-                <td data-label="Age">Lizenz</td>
-                <td data-label="Job">...</td>
-            </tr>
-            <tr>
-                <td data-label="Name">bald fällig<br>${new Date()}</td>
-                <td data-label="Age">Aufgabe</td>
-                <td data-label="Job">....</td>
-            </tr>
+            <g:each in="${dueObjects}" var="obj">
+                <tr>
+                    <td>
+                        <g:if test="${obj instanceof SubscriptionCustomProperty || obj instanceof SubscriptionPrivateProperty}">
+                            <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${obj.dateValue}"/>
+                        </g:if>
+                        <g:else>
+                            <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${obj.endDate}"/>
+                        </g:else>
+                    </td>
+                    <td>
+                    <g:if test="${obj instanceof Subscription}">
+                        <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${obj.manualCancellationDate}"/>
+                    </g:if>
+                    </td>
+                    <td data-label="type">${obj.class.simpleName}</td>
+                    <g:if test="${obj instanceof Subscription}">
+                        <td data-label="subscription">${obj.name}</td>
+                    </g:if>
+                    <g:elseif test="${obj instanceof Task}">
+                        <td data-label="task">${obj.title}</td>
+                    </g:elseif>
+                    <g:elseif test="${obj instanceof SubscriptionCustomProperty}">
+                        <td data-label="customProp">${obj.owner?.name}</td>
+                    </g:elseif>
+                    <g:elseif test="${obj instanceof SubscriptionPrivateProperty}">
+                        <td data-label="privateProp">${obj.owner?.name}</td>
+                    </g:elseif>
+                </tr>
+            </g:each>
             </tbody>
-        </table>        %{--*******--}%
-
-    </div>
+        </table>
+   </div>
 
 
     <g:render template="/templates/tasks/modal_create" />
