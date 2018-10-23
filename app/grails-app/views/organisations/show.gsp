@@ -142,12 +142,12 @@
                         <dd>
                             <div class="ui divided middle aligned selection list la-flex-list">
                             <g:render template="OrgRoleTypeasList"
-                                      model="${[OrgRoleTypes:orgInstance.orgRoleType, Org:orgInstance, editable: editable]}" />
+                                      model="${[OrgRoleTypes:orgInstance.orgRoleType, Org:orgInstance, editable: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]}" />
                             </div>
                         </dd>
 
                         <g:render template="OrgRoleTypeModal"
-                                  model="${[Org:orgInstance, editable: editable]}" />
+                                  model="${[Org:orgInstance, editable: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]}" />
                     </div>
                 </div>
 
