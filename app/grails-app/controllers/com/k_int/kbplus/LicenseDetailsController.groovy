@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
 import grails.converters.*
 import com.k_int.kbplus.auth.*;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
@@ -296,8 +297,8 @@ select s from Subscription as s where (
         if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution.getallOrgRoleType())) {
             orgRoleType = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType').id]
         }
-        def role_lic      = RefdataValue.getByValueAndCategory('Licensee_Consortial', 'Organisational Role')
-        def role_lic_cons = RefdataValue.getByValueAndCategory('Licensing Consortium', 'Organisational Role')
+        def role_lic      = RDStore.OR_LICENSEE_CONS
+        def role_lic_cons = RDStore.OR_LICENSING_CONSORTIUM
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 

@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.User
 
@@ -33,8 +34,8 @@ class LicenseCompareController {
 
         result.isPublic = RefdataValue.getByValueAndCategory('Yes','YN')
 
-        result.licensee_role = RefdataValue.getByValueAndCategory('Licensee','Organisational Role')
-        result.licensee_cons_role = RefdataValue.getByValueAndCategory('Licensee_Consortial','Organisational Role')
+        result.licensee_role = RDStore.OR_LICENSEE
+        result.licensee_cons_role = RDStore.OR_LICENSEE_CONS
         result
   }
 

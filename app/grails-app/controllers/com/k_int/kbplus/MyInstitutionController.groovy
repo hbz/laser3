@@ -1508,7 +1508,7 @@ from Subscription as s where (
         def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
 
         def cp = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
-        def role_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia');
+        def role_consortia = RefdataValue.getByValueAndCategory('Package Consortia', 'Organisational Role')
 
         def roles = [role_sub, role_sub_cons, role_sub_consortia]
         
@@ -2919,7 +2919,7 @@ AND EXISTS (
         result.enableMyInstFormFields = true // enable special form fields
         result << preCon
 
-        def announcement_type = RefdataCategory.lookupOrCreate('Document Type', 'Announcement')
+        def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: 10, sort: 'dateCreated', order: 'desc'])
 
         result
@@ -2931,7 +2931,7 @@ AND EXISTS (
         def lic_del = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
         def sub_del = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
         def pkg_del = RefdataValue.getByValueAndCategory('Deleted', 'Package Status')
-        def pc_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+        def pc_status = RefdataValue.getByValueAndCategory('Pending', 'PendingChangeStatus')
         result.num_todos = PendingChange.executeQuery("select count(distinct pc.oid) from PendingChange as pc left outer join pc.license as lic left outer join lic.status as lic_status left outer join pc.subscription as sub left outer join sub.status as sub_status left outer join pc.pkg as pkg left outer join pkg.packageStatus as pkg_status where pc.owner = ? and (pc.status = ? or pc.status is null) and ((lic_status is null or lic_status!=?) and (sub_status is null or sub_status!=?) and (pkg_status is null or pkg_status!=?))", [result.institution,pc_status, lic_del,sub_del,pkg_del])[0]
 
         log.debug("Count3=${result.num_todos}");
@@ -2979,7 +2979,7 @@ AND EXISTS (
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        def announcement_type = RefdataCategory.lookupOrCreate('Document Type', 'Announcement')
+        def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max, sort: 'dateCreated', order: 'desc'])
         result.num_announcements = result.recentAnnouncements.size()
 
