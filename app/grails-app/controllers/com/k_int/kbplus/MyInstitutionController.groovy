@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -11,8 +12,6 @@ import org.apache.poi.hssf.usermodel.*
 import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
 import com.k_int.properties.PropertyDefinition
-
-import java.awt.List
 
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
@@ -222,9 +221,9 @@ class MyInstitutionController {
         result.max = params.format ? 10000 : result.max
         result.offset = params.format? 0 : result.offset
 
-        def licensee_role = RefdataValue.getByValueAndCategory('Licensee', 'Organisational Role')
-        def licensee_cons_role = RefdataValue.getByValueAndCategory('Licensee_Consortial', 'Organisational Role')
-        def lic_cons_role = RefdataValue.getByValueAndCategory('Licensing Consortium', 'Organisational Role')
+        def licensee_role = RDStore.OR_LICENSEE
+        def licensee_cons_role = RDStore.OR_LICENSEE_CONS
+        def lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
 
         def template_license_type = RefdataValue.getByValueAndCategory('Template', 'License Type')
         def license_status = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
@@ -472,11 +471,13 @@ from License as l where (
     def currentProviders() {
         def result = setResultGenerics()
 
-        def role_sub            = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
-        def role_sub_cons       = RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role')
-        def role_sub_consortia  = RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')
+        def role_sub            = RDStore.OR_SUBSCRIBER
+        def role_sub_cons       = RDStore.OR_SUBSCRIBER_CONS
+        def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
+
         def roletype_provider   = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
         def roletype_agency     = RefdataValue.getByValueAndCategory('Agency', 'OrgRoleType')
+
         result.orgRoleTypes     = [roletype_provider, roletype_agency]
         result.propList         = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         params.sort             = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
@@ -574,9 +575,9 @@ from License as l where (
 
 
 
-        def role_sub            = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
-        def role_subCons        = RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role')
-        def role_sub_consortia  = RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')
+        def role_sub            = RDStore.OR_SUBSCRIBER
+        def role_subCons        = RDStore.OR_SUBSCRIBER_CONS
+        def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
         def roleTypes = [role_sub, role_sub_consortia]
         def role_provider        = RefdataValue.getByValueAndCategory('Provider','Organisational Role')
         def role_agency         = RefdataValue.getByValueAndCategory('Agency','Organisational Role')
@@ -915,9 +916,9 @@ from Subscription as s where (
         def result = setResultGenerics()
         result.orgRoleType = result.institution.getallOrgRoleType()
 
-        def role_sub = RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role')
-        def role_sub_cons = RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role')
-        def role_cons = RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role')
+        def role_sub = RDStore.OR_SUBSCRIBER
+        def role_sub_cons = RDStore.OR_SUBSCRIBER_CONS
+        def role_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
         
         def orgRole = null
         def subType = null
@@ -1134,8 +1135,8 @@ from Subscription as s where (
         }
         else {
             log.debug("Save ok");
-            def licensee_role = RefdataValue.getByValueAndCategory('Licensee', 'Organisational Role')
-            def lic_cons_role = RefdataValue.getByValueAndCategory('Licensing Consortium', 'Organisational Role')
+            def licensee_role = RDStore.OR_LICENSEE
+            def lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
 
             log.debug("adding org link to new license");
 
@@ -1281,7 +1282,7 @@ from Subscription as s where (
             def new_sub_link = new OrgRole(
                     org: institution,
                     sub: new_sub,
-                    roleType: RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role')
+                    roleType: RDStore.OR_SUBSCRIBER
             ).save();
 
             // This is done by basePackage.createSubscription
@@ -1354,10 +1355,10 @@ from Subscription as s where (
         def del_sub = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
         def del_ie =  RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
 
-        def role_sub        = RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role')
-        def role_sub_cons   = RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role')
+        def role_sub        = RDStore.OR_SUBSCRIBER
+        def role_sub_cons   = RDStore.OR_SUBSCRIBER_CONS
 
-        def role_sub_consortia = RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role')
+        def role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIA
         def role_pkg_consortia = RefdataValue.getByValueAndCategory('Package Consortia', 'Organisational Role')
         def roles = [role_sub.id,role_sub_consortia.id,role_pkg_consortia.id]
         
@@ -1502,9 +1503,9 @@ from Subscription as s where (
         def del_sub = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
         def del_ie =  RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
 
-        def role_sub            = RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role')
-        def role_sub_cons       = RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role')
-        def role_sub_consortia  = RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role')
+        def role_sub            = RDStore.OR_SUBSCRIBER
+        def role_sub_cons       = RDStore.OR_SUBSCRIBER_CONS
+        def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
 
         def cp = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
         def role_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia');
@@ -1679,8 +1680,8 @@ AND EXISTS (
             return;
         }
 
-        def licensee_role =  RefdataValue.getByValueAndCategory('Licensee', 'Organisational Role')
-        def licensee_cons_role = RefdataValue.getByValueAndCategory('Licensee_Consortial', 'Organisational Role')
+        def licensee_role =  RDStore.OR_LICENSEE
+        def licensee_cons_role = RDStore.OR_LICENSEE_CONS
 
         // Find all licenses for this institution...
         def result = [:]
@@ -2738,7 +2739,7 @@ AND EXISTS (
             // assert an org-role
             def org_link = new OrgRole(org: result.institution,
                     sub: new_subscription,
-                    roleType: RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role')
+                    roleType: RDStore.OR_SUBSCRIBER
             ).save();
 
             // Copy any links from SO

@@ -1,12 +1,9 @@
 package com.k_int.kbplus.filter
 
-import com.k_int.kbplus.auth.Role
-import com.k_int.kbplus.auth.UserRole
-import de.laser.domain.Constants
+import de.laser.helper.Constants
 import grails.converters.JSON
 import grails.transaction.Transactional
 import org.apache.commons.io.IOUtils
-import org.springframework.http.HttpStatus
 import org.springframework.web.filter.GenericFilterBean
 import javax.servlet.FilterChain
 import javax.servlet.ServletException
