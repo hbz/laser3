@@ -362,6 +362,7 @@ class ProfileController {
 
         render view: 'properties', model: [
                 editable    : false,
+                cachedContent : true,
                 propertyDefinitions: propDefs,
                 rdCategories: RefdataCategory.where{}.sort('desc'),
                 usedRdvList : usedRdvList,
