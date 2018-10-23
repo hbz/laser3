@@ -368,6 +368,22 @@ grails.mime.types = [
         multipartForm: 'multipart/form-data'
 ]
 
+grails {
+    cache {
+        enabled = true
+    }
+}
+
+grails.cache.config = {
+    // affects only cache-plugin caches
+    cache {
+        name = 'laser_static_pages'
+    }
+    cache {
+        name 'message'
+    }
+}
+
 // URL Mapping Cache Max Size, defaults to 5000
 //grails.urlmapping.cache.maxsize = 1000
 
@@ -413,15 +429,6 @@ environments {
     production {
         grails.logging.jul.usebridge = false
         grails.serverURL = "http://localhost:8080/laser" // override in local config (laser-config.groovy)
-    }
-}
-
-grails.cache.config = {
-    cache {
-        name = 'laser_experimental'
-    }
-    cache {
-        name 'message'
     }
 }
 

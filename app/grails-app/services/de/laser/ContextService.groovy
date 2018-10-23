@@ -7,6 +7,7 @@ import org.codehaus.groovy.grails.web.util.WebUtils
 class ContextService {
 
     def springSecurityService
+    def cacheService
 
     static final SERVER_LOCAL = 'SERVER_LOCAL'
     static final SERVER_DEV   = 'SERVER_DEV'
@@ -30,5 +31,12 @@ class ContextService {
 
     def getMemberships() {
         getUser()?.authorizedOrgs
+    }
+
+    def getCache() {
+        def cacheManager = cacheService.getCacheManager(cacheService.EHCACHE)
+        def cacheName = "${getUser().username}#${getUser().id}"
+
+        cacheService.getCache(cacheManager, cacheName)
     }
 }

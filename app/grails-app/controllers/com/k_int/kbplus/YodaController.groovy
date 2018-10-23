@@ -16,6 +16,7 @@ class YodaController {
 
     SessionFactory sessionFactory
 
+    def cacheService
     def springSecurityService
     def statsSyncService
     def dataloadService
@@ -76,15 +77,22 @@ class YodaController {
 
         result.grailsApp = grailsApplication
         result.appContext = getApplicationContext()
-        result.cacheManager = result.appContext.grailsCacheManager
+
+        result.hibernateSession = sessionFactory
+
+        result.ehcacheManager = cacheService.getCacheManager(cacheService.EHCACHE)
+        result.plugincacheManager = cacheService.getCacheManager(cacheService.PLUGINCACHE)
 
         if (params.cmd?.equals('clearCache')) {
-            def cache = result.cacheManager.getCache(params.cache)
-            if (cache) {
-                cache.clear()
+            def cache
+            if (params.type?.equals('ehcache')) {
+                cache = cacheService.getCache(result.ehcacheManager, params.cache)
+                cacheService.clear(cache)
+            } else {
+                cache = cacheService.getCache(result.plugincacheManager, params.cache)
+                cacheService.clear(cache)
             }
         }
-        result.hibernateStats = sessionFactory.statistics // org.hibernate.stat.Statistics
 
         result
     }

@@ -10,10 +10,15 @@ import org.elasticsearch.groovy.common.xcontent.*
 import groovy.xml.MarkupBuilder
 import com.k_int.kbplus.auth.*
 import com.k_int.kbplus.Org
+import net.sf.ehcache.Cache
+import net.sf.ehcache.CacheManager
+import net.sf.ehcache.Element
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ProfileController {
 
+    def cacheService
+    def contextService
     def genericOIDService
     def springSecurityService
     def passwordEncoder
@@ -318,17 +323,43 @@ class ProfileController {
 
         render result as JSON
     }
-
+    
     @Secured(['ROLE_USER'])
     def properties() {
+
+        def cache = contextService.getCache()
+        def cacheKeyPrefix = 'ProfileController/properties/'
+
         def propDefs = [:]
-        PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
-            def itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
-            propDefs << ["${it}": itResult]
+
+        if (cache.get(cacheKeyPrefix + 'propDefs')) {
+            propDefs = cache.get('propDefs')?.objectValue
+        }
+        else {
+            PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
+                def itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
+                propDefs << ["${it}": itResult]
+            }
+            cache.put(new Element(cacheKeyPrefix + 'propDefs', propDefs))
         }
 
-        def (usedRdvList, rdvAttrMap) = refdataService.getUsageDetails()
-        def (usedPdList,   pdAttrMap) = propertyService.getUsageDetails()
+        def usedRdvList, rdvAttrMap, usedPdList, pdAttrMap
+
+        if (cache.get(cacheKeyPrefix + 'usedRdvList')) {
+            usedRdvList = cache.get(cacheKeyPrefix + 'usedRdvList')?.objectValue
+        }
+        else {
+            (usedRdvList, rdvAttrMap) = refdataService.getUsageDetails()
+            cache.put(new Element(cacheKeyPrefix + 'usedRdvList', usedRdvList))
+        }
+
+        if (cache.get(cacheKeyPrefix + 'usedPdList')) {
+            usedPdList = cache.get(cacheKeyPrefix + 'usedPdList')?.objectValue
+        }
+        else {
+            (usedPdList,   pdAttrMap) = propertyService.getUsageDetails()
+            cache.put(new Element(cacheKeyPrefix + 'usedPdList', usedPdList))
+        }
 
         render view: 'properties', model: [
                 editable    : false,

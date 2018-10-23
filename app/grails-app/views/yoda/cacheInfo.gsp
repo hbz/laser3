@@ -13,36 +13,71 @@
 
 
 
-<h1 class="ui left aligned icon header"><semui:headerIcon />Cache Info</h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />Cache Info</h1>
 
+    <% /* --------------------------------------------------------------------------------- */ %>
 
+    <h3 class="ui header">Session</h3>
 
-<h2 class="ui header">Hibernate</h2>
+    ${session.id}
 
-    <g:each in="${hibernateStats}" var="hst">
-        ${hibernateStats} <br/>
+    <hr />
+
+    <% /* --------------------------------------------------------------------------------- */ %>
+
+    <h3 class="ui header">Hibernate // ${hibernateSession}</h3>
+
+    <g:each in="${hibernateSession.statistics}" var="hst">
+        ${hst} <br/>
     </g:each>
 
+    <hr />
 
+    <% /* --------------------------------------------------------------------------------- */ %>
 
-<h2 class="ui header">CacheManager</h2>
+    <h3 class="ui header">Ehcache // ${ehcacheManager.class}</h3>
 
-    <g:each in="${cacheManager.getCacheNames()}" var="cacheName">
-        <h4 class="ui header">${cacheName}</h4>
+    <g:each in="${ehcacheManager.getCacheNames()}" var="cacheName">
+        <g:set var="cache" value="${ehcacheManager.getCache(cacheName)}" />
 
-        <g:set var="cache" value="${cacheManager.getCache(cacheName)}" />
-        <pre>${cache} : ${cache.nativeCache.cacheConfiguration}</pre>
+        <h4 class="ui header">${cacheName}: ${cache.class}</h4>
+        <p>${cache}</p>
 
         <ul>
-            <g:each in="${cache.allKeys}" var="key">
-                <g:set var="cacheEntry" value="${cache.getNativeCache().get(key)}" />
-                <li>${key} >> ${cacheEntry} >> TTL: ${cacheEntry.timeToLiveSeconds}</li>
+            <g:each in="${cache.getKeys()}" var="key">
+                <g:set var="cacheEntry" value="${cache.get(key)}" />
+                <g:if test="${cacheEntry}">
+                    <li>${key} >> ${cacheEntry} >> ${cacheEntry?.getObjectValue()}</li>
+                </g:if>
             </g:each>
         </ul>
 
         <g:link class="ui button negative"
-                controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', cache: cacheName]">Cache löschen</g:link>
+                controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', cache: cacheName, type: 'ehcache']">Cache löschen</g:link>
     </g:each>
+
+    <% /* --------------------------------------------------------------------------------- */ %>
+
+    <h3 class="ui header">Plugin-Cache ; not expiring // ${plugincacheManager.class}</h3>
+
+    <g:each in="${plugincacheManager.getCacheNames()}" var="cacheName">
+        <g:set var="cache" value="${plugincacheManager.getCache(cacheName)}" />
+
+        <h4 class="ui header">${cacheName} ${cache.class}</h4>
+        <pre>${cache}</pre>
+
+        <ul>
+            <g:each in="${cache.allKeys}" var="key">
+                <g:set var="cacheEntry" value="${cache.getNativeCache().get(key)}" />
+                <li>${key} >> ${cacheEntry}</li>
+            </g:each>
+        </ul>
+
+        <g:link class="ui button negative"
+                controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', cache: cacheName, type: 'cache']">Cache löschen</g:link>
+    </g:each>
+
+<hr />
 
 </body>
 </html>
