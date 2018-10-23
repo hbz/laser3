@@ -1181,6 +1181,8 @@ class SubscriptionDetailsController {
             response.sendError(401); return
         }
         result.contextOrg = contextService.getOrg()
+        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
+        result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
         result
     }
 
