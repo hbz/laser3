@@ -42,6 +42,10 @@
                 <g:else>
                     <i class="chevron left icon disabled"></i>
                 </g:else>
+
+                <g:formatDate date="${subscriptionInstance.startDate}" format="${message(code: 'default.date.format.notime')}"/>
+                ${subscriptionInstance.endDate ?  "- "+g.formatDate(date: subscriptionInstance.endDate, format: message(code: 'default.date.format.notime')) : ''}
+
                 <g:if test="${navNextSubscription}">
                     <g:link controller="subscriptionDetails" action="show" params="[id:navNextSubscription.id]"><i class="chevron right icon"></i></g:link>
                 </g:if>

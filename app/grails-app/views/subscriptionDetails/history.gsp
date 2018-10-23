@@ -15,6 +15,24 @@
     <h1 class="ui left aligned icon header"><semui:headerIcon />
 
         <semui:xEditable owner="${subscription}" field="name" />
+        <span class="la-forward-back">
+            <g:if test="${navPrevSubscription}">
+                <g:link controller="subscriptionDetails" action="history" params="[id:navPrevSubscription.id]"><i class="chevron left icon"></i></g:link>
+            </g:if>
+            <g:else>
+                <i class="chevron left icon disabled"></i>
+            </g:else>
+
+            <g:formatDate date="${subscription.startDate}" format="${message(code: 'default.date.format.notime')}"/>
+            ${subscription.endDate ?  "- "+g.formatDate(date: subscription.endDate, format: message(code: 'default.date.format.notime')) : ''}
+
+            <g:if test="${navNextSubscription}">
+                <g:link controller="subscriptionDetails" action="history" params="[id:navNextSubscription.id]"><i class="chevron right icon"></i></g:link>
+            </g:if>
+            <g:else>
+                <i class="chevron right icon disabled"></i>
+            </g:else>
+        </span>
     </h1>
 
     <g:render template="nav" contextPath="." />

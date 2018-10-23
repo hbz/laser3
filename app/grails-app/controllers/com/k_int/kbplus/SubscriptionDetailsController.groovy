@@ -951,6 +951,9 @@ class SubscriptionDetailsController {
             }
         }
 
+        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
+        result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
+
         result
     }
 
@@ -1087,6 +1090,8 @@ class SubscriptionDetailsController {
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
         }
+        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
+        result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
         result
     }
 
@@ -1102,6 +1107,9 @@ class SubscriptionDetailsController {
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
         }
+
+        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
+        result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
         result
     }
 
@@ -1131,6 +1139,9 @@ class SubscriptionDetailsController {
             result.subscriber_shortcode = result.institution.shortcode
         }
         result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.subscriptionInstance, params)
+
+        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
+        result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
 
         log.debug(result.taskInstanceList)
         result
@@ -1465,6 +1476,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
         result.historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where className=? and persistedObjectId=? order by id desc", qry_params, [max: result.max, offset: result.offset]);
         result.historyLinesTotal = AuditLogEvent.executeQuery("select count(e.id) from AuditLogEvent as e where className=? and persistedObjectId=?", qry_params)[0];
 
+        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
+        result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
+
         result
     }
 
@@ -1484,6 +1498,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
         result.todoHistoryLines = PendingChange.executeQuery("select pc from PendingChange as pc where subscription=? order by ts desc", [result.subscription], [max: result.max, offset: result.offset]);
 
         result.todoHistoryLinesTotal = PendingChange.executeQuery("select count(pc) from PendingChange as pc where subscription=?", result.subscription)[0];
+
+        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
+        result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
 
         result
     }

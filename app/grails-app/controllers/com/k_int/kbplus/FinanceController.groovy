@@ -71,6 +71,10 @@ class FinanceController {
             params.subscriptionFilter = "${params.sub}"
 
             result.fixedSubscription = params.int('sub')? Subscription.get(params.sub) : null
+
+            result.navPrevSubscription = result.fixedSubscription.previousSubscription ?: null
+            result.navNextSubscription = Subscription.findByPreviousSubscription(result.fixedSubscription) ?: null
+
             if (! result.fixedSubscription) {
                 log.error("Financials in FIXED subscription mode, sent incorrect subscription ID: ${params?.sub}")
                 response.sendError(400, "No relevant subscription, please report this error to an administrator")
