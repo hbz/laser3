@@ -327,38 +327,37 @@ class ProfileController {
     @Secured(['ROLE_USER'])
     def properties() {
 
-        def cache = contextService.getCache()
-        def cacheKeyPrefix = 'ProfileController/properties/'
+        def ctxCache = contextService.getCache('ProfileController/properties/')
 
         def propDefs = [:]
 
-        if (cache.get(cacheKeyPrefix + 'propDefs')) {
-            propDefs = cache.get('propDefs')?.objectValue
+        if (ctxCache.get('propDefs')) {
+            propDefs = ctxCache.get('propDefs')
         }
         else {
             PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
                 def itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
                 propDefs << ["${it}": itResult]
             }
-            cache.put(new Element(cacheKeyPrefix + 'propDefs', propDefs))
+            ctxCache.put('propDefs', propDefs)
         }
 
         def usedRdvList, rdvAttrMap, usedPdList, pdAttrMap
 
-        if (cache.get(cacheKeyPrefix + 'usedRdvList')) {
-            usedRdvList = cache.get(cacheKeyPrefix + 'usedRdvList')?.objectValue
+        if (ctxCache.get('usedRdvList')) {
+            usedRdvList = ctxCache.get('usedRdvList')
         }
         else {
             (usedRdvList, rdvAttrMap) = refdataService.getUsageDetails()
-            cache.put(new Element(cacheKeyPrefix + 'usedRdvList', usedRdvList))
+            ctxCache.put('usedRdvList', usedRdvList)
         }
 
-        if (cache.get(cacheKeyPrefix + 'usedPdList')) {
-            usedPdList = cache.get(cacheKeyPrefix + 'usedPdList')?.objectValue
+        if (ctxCache.get('usedPdList')) {
+            usedPdList = ctxCache.get('usedPdList')
         }
         else {
             (usedPdList,   pdAttrMap) = propertyService.getUsageDetails()
-            cache.put(new Element(cacheKeyPrefix + 'usedPdList', usedPdList))
+            ctxCache.put('usedPdList', usedPdList)
         }
 
         render view: 'properties', model: [

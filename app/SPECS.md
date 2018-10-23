@@ -39,11 +39,10 @@ Mainly used services are available in GSPs due the following custom tag.
     
 #### Using Caches
 
-Access *user depending ehcache* due **de.laser.ContextService**.
+Access *user depending ehcache* with key prefix due **de.laser.ContextService**.
 For more functionality use **de.laser.CacheService** directly.
 
-    def cache = contextService.getCache()
-    def cacheKeyPrefix = 'ProfileController/properties/'
-    cacheService.put(cache, cacheKeyPrefix + 'myObj', myObj)
-    cacheService.get(cache, cacheKeyPrefix + 'myObj')
+    def ctxCache = contextService.getCache('ProfileController/properties/')
+    ctxCache.put('myObj', myObj)
+    ctxCache.get('myObj')
     
