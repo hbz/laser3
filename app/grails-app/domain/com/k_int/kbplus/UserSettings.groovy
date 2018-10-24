@@ -12,11 +12,12 @@ class UserSettings {
     def genericOIDService
 
     static enum KEYS {
-        PAGE_SIZE         (Long),
-        DASHBOARD         (Org),
-        SHOW_SIMPLE_VIEWS (RefdataValue, 'YN'),
-        SHOW_INFO_ICON    (RefdataValue, 'YN'),
-        SHOW_EDIT_MODE    (RefdataValue, 'YN')
+        PAGE_SIZE                    (Long),
+        DASHBOARD                    (Org),
+        DASHBOARD_REMINDER_PERIOD    (Integer),
+        SHOW_SIMPLE_VIEWS            (RefdataValue, 'YN'),
+        SHOW_INFO_ICON               (RefdataValue, 'YN'),
+        SHOW_EDIT_MODE               (RefdataValue, 'YN')
 
         KEYS(type, rdc) {
             this.type = type
@@ -93,6 +94,9 @@ class UserSettings {
         def result = null
 
         switch (key.type) {
+            case Integer:
+                result = Integer.parseInt(strValue)
+                break
             case Long:
                 result = Long.parseLong(strValue)
                 break
