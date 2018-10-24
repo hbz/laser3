@@ -8,7 +8,7 @@
     <g:if test="${showConsortiaFunctions}">
         <semui:subNavItem controller="licenseDetails" action="members" params="${[id:params.id]}" message="license.details.incoming.childs" />
         <sec:ifAnyGranted roles="ROLE_ADMIN">
-            <semui:subNavItem controller="licenseDetails" action="pendingChanges" params="${[id:params.id]}" text="!!!" />
+            <semui:subNavItem controller="licenseDetails" action="pendingChanges" params="${[id:params.id]}" text="TN-Änderungen" />
         </sec:ifAnyGranted>
     </g:if>
 
@@ -16,8 +16,9 @@
     <semui:subNavItem controller="licenseDetails" action="documents" params="${[id:params.id]}" message="license.nav.docs" />
     <semui:subNavItem controller="licenseDetails" action="notes" params="${[id:params.id]}" message="license.nav.notes" />
 
+    <semui:subNavItem controller="licenseDetails" action="changes" params="${[id:params.id]}" message="license.nav.todo_history" />
+
     <sec:ifAnyGranted roles="ROLE_ADMIN">
-        <semui:subNavItem controller="licenseDetails" action="changes" params="${[id:params.id]}" class="la-role-admin" message="license.nav.todo_history" />
         <semui:subNavItem controller="licenseDetails" action="history" params="${[id:params.id]}" class="la-role-admin" message="license.nav.edit_history" />
         <semui:subNavItem controller="licenseDetails" action="permissionInfo" params="${[id:params.id]}" class="la-role-admin" message="license.nav.permissionInfo" />
     </sec:ifAnyGranted>

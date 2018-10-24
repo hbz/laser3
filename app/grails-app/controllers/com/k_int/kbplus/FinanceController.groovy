@@ -49,8 +49,6 @@ class FinanceController {
         def dateTimeFormat  = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
         def result = [:]
 
-        result.tab = params.tab ?: 'owner'
-
       try {
         result.contextOrg = contextService.getOrg()
         result.institution = contextService.getOrg()
@@ -179,6 +177,8 @@ class FinanceController {
         log.debug("finance::index returning");
       }
 
+        result.tab = params.tab ?: ( result.queryMode == MODE_CONS ? 'sc' : 'owner' )
+
       result
     }
 
@@ -195,7 +195,7 @@ class FinanceController {
         def tmp = [:]
 
         result.editable    =  accessService.checkMinUserOrgRole(user, result.institution, user_role)
-        params.shortcode   =  result.institution.shortcode
+        params.orgId       =  result.institution.id
 
         request.setAttribute("editable", result.editable) //editable Taglib doesn't pick up AJAX request, REQUIRED!
         result.info        =  [] as List
@@ -208,13 +208,6 @@ class FinanceController {
         result.max = 5000
         result.offset = 0
 
-
-
-        // TODO fix:shortcode
-        if (params.csvMode && request.getHeader('referer')?.endsWith("${params?.shortcode}/finance")) {
-            params.max = -1 //Adjust so all results are returned, in regards to present user screen query
-            log.debug("Making changes to query setup data for an export...")
-        }
         //Query setup options, ordering, joins, param query data....
         def order = "id"
         def gspOrder = "Cost Item#"
@@ -1068,7 +1061,7 @@ class FinanceController {
 
         def result      = [:]
         result.error    = [] as List
-        def institution = Org.findByShortcode(params.shortcode)
+        def institution = Org.get(params.orgId)
         def owner       = refData(params.owner)
         log.debug("Financials :: financialRef - Owner instance returned: ${owner.obj}")
 

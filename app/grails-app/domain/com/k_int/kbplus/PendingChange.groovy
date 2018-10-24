@@ -76,6 +76,10 @@ class PendingChange {
         user(nullable:true, blank:false);
     }
 
+    def resolveOID() {
+        genericOIDService.resolveOID(oid)
+    }
+
     def getMessage() {
 
     }
