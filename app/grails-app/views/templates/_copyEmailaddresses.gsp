@@ -29,7 +29,11 @@
             </g:each>
         </g:each>
         <g:if test="${prsFunction.id == rdvGeneralContactPrs.id}">
-            <g:textArea name="emailaddressfield${counter}" readonly="false" rows="5" cols="1" class="myTargets" style="width: 100%;">${allEmailAddresses}</g:textArea>
+            <div class="ui form">
+                <div class="field">
+                    <g:textArea name="emailaddressfield${counter}" readonly="false" rows="5" cols="1" class="myTargets">${allEmailAddresses}</g:textArea>
+                </div>
+            </div>
         </g:if>
         <g:else>
             <g:textArea name="emailaddressfield${counter}" readonly="false" rows="5" cols="1" class="myTargets hidden" style="width: 100%;">${allEmailAddresses}</g:textArea>

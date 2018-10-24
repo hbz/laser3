@@ -124,8 +124,10 @@ r2d2 = {
             $($(this).attr('href') + '.ui.modal').modal({
                 onVisible: function() {
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
+
                 },
                 detachable: true,
+                autofocus: false,
                 closable: false,
                 transition: 'scale',
                 onApprove : function() {
@@ -309,7 +311,7 @@ r2d2 = {
         $(ctxSel + ' .ui.dropdown').dropdown({
             duration: 150,
             transition: 'fade',
-            showOnFocus: false
+            //showOnFocus: false
         });
         $(ctxSel + ' .ui.search.dropdown').dropdown({
             fullTextSearch: 'exact'
