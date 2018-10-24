@@ -19,22 +19,39 @@
           <thead>
             <tr>
               <th>${message(code:'license.history.todo.description', default:'ToDo Description')}</th>
-              <th>${message(code:'default.outcome.label', default:'Outcome')}</th>
+              <th>${message(code:'default.status.label', default:'Status')}</th>
               <th>${message(code:'default.date.label', default:'Date')}</th>
             </tr>
           </thead>
         <g:if test="${todoHistoryLines}">
           <g:each in="${todoHistoryLines}" var="hl">
             <tr>
-              <td>${hl.desc}</td>
-              <td>${hl.status?.value?:'Pending'}
+              <td>
+
+                  <g:if test="${hl.msgToken}">
+                      <g:message code="${hl.msgToken}" args="${hl.getParsedParams()}" default="${hl.desc}" />
+                  </g:if>
+                  <g:else>
+                      <% print hl.desc; /* avoid auto encodeAsHTML() */ %>
+                  </g:else>
+
+              </td>
+              <td>
+                <g:if test="${hl.status}">
+                    ${hl.status?.getI10n('value')}
+                </g:if>
+                <g:else>
+                    Ausstehend
+                </g:else>
+
                 <g:if test="${hl.status?.value in ['Accepted', 'Rejected']}">
-                    <br />
-                    ${message(code:'subscription.details.todo_history.by_on', args:[(hl.user?.display ?: hl.user?.username)])}
-                    <g:formatDate formatName="default.date.format.notime" date="${hl.actionDate}"/>
+                    <%--${message(code:'subscription.details.todo_history.by_on', args:[(hl.user?.display ?: hl.user?.username)])}--%>
+                    / <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${hl.actionDate}"/>
                 </g:if>
               </td>
-              <td><g:formatDate formatName="default.date.format.notime" date="${hl.ts}"/></td>
+              <td>
+                  <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${hl.ts}"/>
+              </td>
             </tr>
           </g:each>
         </g:if>

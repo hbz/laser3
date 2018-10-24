@@ -1491,15 +1491,24 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
         if (!result) {
             response.sendError(401); return
         }
+
         result.contextOrg = contextService.getOrg()
         result.max = params.max ?: result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ?: 0;
 
-        def qry_params = [result.subscription.class.name, "${result.subscription.id}"]
+        def baseQuery = "select pc from PendingChange as pc where pc.subscription = :sub and pc.status.value in (:stats)"
+        def baseParams = [sub: result.subscription, stats: ['Accepted', 'Rejected']]
 
-        result.todoHistoryLines = PendingChange.executeQuery("select pc from PendingChange as pc where subscription=? order by ts desc", [result.subscription], [max: result.max, offset: result.offset]);
+        result.todoHistoryLines = PendingChange.executeQuery(
+                baseQuery + " order by pc.ts desc",
+                baseParams,
+                [max: result.max, offset: result.offset]
+        )
 
-        result.todoHistoryLinesTotal = PendingChange.executeQuery("select count(pc) from PendingChange as pc where subscription=?", result.subscription)[0];
+        result.todoHistoryLinesTotal = PendingChange.executeQuery(
+                baseQuery,
+                baseParams
+        )[0]
 
         result.navPrevSubscription = result.subscriptionInstance.previousSubscription
         result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
