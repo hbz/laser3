@@ -92,15 +92,15 @@
                     <div class="item">
                         <div class="icon">
                             <i class="alarm outline icon"></i>
-                            <span class="ui label yellow">${todo.num_changes}</span>
+                            <div class="ui yellow circular label">${todo.num_changes}</div>
                         </div>
                         <div class="message">
                             <p>
                                 <g:if test="${todo.item_with_changes instanceof com.k_int.kbplus.Subscription}">
-                                    <g:link controller="subscriptionDetails" action="index" id="${todo.item_with_changes.id}">${todo.item_with_changes.toString()}</g:link>
+                                    <g:link controller="subscriptionDetails" action="changes" id="${todo.item_with_changes.id}">${todo.item_with_changes.toString()}</g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link controller="licenseDetails" action="show" id="${todo.item_with_changes.id}">${todo.item_with_changes.toString()}</g:link>
+                                    <g:link controller="licenseDetails" action="changes" id="${todo.item_with_changes.id}">${todo.item_with_changes.toString()}</g:link>
                                 </g:else>
                             </p>
                             <p>

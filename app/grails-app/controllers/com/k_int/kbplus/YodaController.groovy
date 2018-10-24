@@ -2,7 +2,6 @@ package com.k_int.kbplus
 
 import de.laser.helper.DebugAnnotation
 import grails.converters.JSON
-import grails.plugin.cache.Cacheable
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import grails.web.Action
@@ -157,6 +156,18 @@ class YodaController {
         result
     }
 
+    @Secured(['ROLE_YODA'])
+    def pendingChanges() {
+
+        // TODO: DEBUG ONLY
+        def result = [:]
+
+        result.pending = PendingChange.executeQuery(
+                "SELECT pc FROM PendingChange pc WHERE pc.status IS NULL ORDER BY pc.id DESC",
+        )
+        result
+    }
+
     @Secured(['ROLE_ADMIN'])
     def appLogfile() {
         return // TODO
@@ -232,6 +243,7 @@ class YodaController {
 
         result
     }
+
     @Secured(['ROLE_YODA'])
     def newESSource() {
         def result=[:]
