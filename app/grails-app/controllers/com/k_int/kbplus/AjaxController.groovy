@@ -1064,6 +1064,7 @@ class AjaxController {
         render(template: "/templates/properties/custom", model:[
                 ownobj:owner,
                 newProp:property,
+                showConsortiaFunctions: params.showConsortiaFunctions,
                 custom_props_div: "${params.custom_props_div}", // JS markup id
                 prop_desc: prop_desc // form data
         ])
