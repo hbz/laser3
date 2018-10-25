@@ -327,42 +327,43 @@ class ProfileController {
     @Secured(['ROLE_USER'])
     def properties() {
 
-        def ctxCache = contextService.getCache('ProfileController/properties/')
+        // def ctxCache = contextService.getCache('ProfileController/properties/')
+        def cache = cacheService.getTTL300Cache('ProfileController/properties/')
 
         def propDefs = [:]
 
-        if (ctxCache.get('propDefs')) {
-            propDefs = ctxCache.get('propDefs')
+        if (cache.get('propDefs')) {
+            propDefs = cache.get('propDefs')
         }
         else {
             PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
                 def itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
                 propDefs << ["${it}": itResult]
             }
-            ctxCache.put('propDefs', propDefs)
+            cache.put('propDefs', propDefs)
         }
 
         def usedRdvList, rdvAttrMap, usedPdList, pdAttrMap
 
-        if (ctxCache.get('usedRdvList')) {
-            usedRdvList = ctxCache.get('usedRdvList')
+        if (cache.get('usedRdvList')) {
+            usedRdvList = cache.get('usedRdvList')
         }
         else {
             (usedRdvList, rdvAttrMap) = refdataService.getUsageDetails()
-            ctxCache.put('usedRdvList', usedRdvList)
+            cache.put('usedRdvList', usedRdvList)
         }
 
-        if (ctxCache.get('usedPdList')) {
-            usedPdList = ctxCache.get('usedPdList')
+        if (cache.get('usedPdList')) {
+            usedPdList = cache.get('usedPdList')
         }
         else {
-            (usedPdList,   pdAttrMap) = propertyService.getUsageDetails()
-            ctxCache.put('usedPdList', usedPdList)
+            (usedPdList, pdAttrMap) = propertyService.getUsageDetails()
+            cache.put('usedPdList', usedPdList)
         }
 
         render view: 'properties', model: [
                 editable    : false,
-                cachedContent : true,
+                cachedContent : cache.getCache().name,
                 propertyDefinitions: propDefs,
                 rdCategories: RefdataCategory.where{}.sort('desc'),
                 usedRdvList : usedRdvList,

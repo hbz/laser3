@@ -43,14 +43,15 @@
         <h4 class="ui header">${cacheName}: ${cache.class}</h4>
         <p>${cache}</p>
 
-        <ul>
+        <dl>
             <g:each in="${cache.getKeys()}" var="key">
-                <g:set var="cacheEntry" value="${cache.get(key)}" />
-                <g:if test="${cacheEntry}">
-                    <li>${key} >> ${cacheEntry} >> ${cacheEntry?.getObjectValue()}</li>
+                <g:if test="${cache.get(key)}">
+                    <dt>${key}</dt>
+                    <dd>${cache.get(key)?.getObjectValue()}</dd>
+                    <br />
                 </g:if>
             </g:each>
-        </ul>
+        </dl>
 
         <g:link class="ui button negative"
                 controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', cache: cacheName, type: 'ehcache']">Cache löschen</g:link>

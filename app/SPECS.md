@@ -45,4 +45,9 @@ For more functionality use **de.laser.CacheService** directly.
     def ctxCache = contextService.getCache('ProfileController/properties/')
     ctxCache.put('myObj', myObj)
     ctxCache.get('myObj')
+
+Or use *global caches* with *cacheKeyPrefix* like this:
+  
+    def globalCache30m = cacheService.getTTL1800Cache('ProfileController/properties/')
+    def globalCache5m = cacheService.getTTL300Cache('ProfileController/properties/')
     
