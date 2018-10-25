@@ -44,7 +44,7 @@
             </g:link>
         </div>
         <div class="content">
-            <g:if test="${editable && tmplShowDeleteButton}">
+            <g:if test="${((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) && tmplShowDeleteButton}">
                 <div class="ui mini icon buttons">
                     <g:set var="oid" value="${address.class.name}:${address.id}" />
                     <g:link class="ui negative button js-open-confirm-modal" data-confirm-term="diese Kontaktdresse" controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: oid]"  >

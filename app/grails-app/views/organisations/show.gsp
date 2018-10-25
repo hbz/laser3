@@ -206,7 +206,7 @@
                                         </g:if>
                                     </g:each>
                                 </div>
-                                <g:if test="${editable}">
+                                <g:if test="${((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                                     <input class="ui button"
                                            value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Adresse')])}"
                                            data-semui="modal"
@@ -231,7 +231,7 @@
                                         </g:if>
                                     </g:each>
                                 </div>
-                                <g:if test="${editable}">
+                                <g:if test="${((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                                     <input class="ui button"
                                            value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"
                                            data-semui="modal"
@@ -257,7 +257,7 @@
                                         </g:if>
                                     </g:each>
                                 <%-- </div> --%>
-                                <g:if test="${editable}">
+                                <g:if test="${((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                                     <g:if test="${ ! SpringSecurityUtils.ifAnyGranted('ROLE_ORG_COM_EDITOR') }">
                                         <input class="ui button"
                                                value="${message(code: 'person.create_new.contactPerson.label')}"
