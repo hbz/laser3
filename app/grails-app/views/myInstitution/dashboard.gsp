@@ -68,14 +68,23 @@
         <div class="ui secondary pointing tabular menu">
             <a class="item" data-tab="first">
                 <i class="alarm outline icon large"></i>
+                <%
+                    def countChanges = 0
+                    changes.collect { c ->
+                        countChanges += c[1]
+                    }
+                %>
+                ${countChanges}
                 ${message(code:'myinst.todo.label', default:'To Do')}
             </a>
             <a class="item" data-tab="second" id="jsFallbackAnnouncements">
                 <i class="warning circle icon large"></i>
+                ${recentAnnouncements.size()}
                 ${message(code:'announcement.plural', default:'Announcements')}
             </a>
             <a class="active item" data-tab="third">
                 <i class="checked calendar icon large"></i>
+                ${tasks.size()}
                 ${message(code:'myinst.dash.task.label')}
             </a>
         </div>
@@ -154,6 +163,11 @@
                 </div>
             </g:if>
 
+            <div>
+                ${message(code: 'profile.dashboardReminderPeriod')}:
+                ${user.getSettingsValue(com.k_int.kbplus.UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}
+            </div>
+
             <div class="ui relaxed list" style="clear:both;padding-top:1rem;">
                 <g:each in="${recentAnnouncements}" var="ra">
                     <div class="item">
@@ -195,8 +209,8 @@
                         <input type="submit" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" href="#modalCreateTask" />
                     </div>
                 </div>
-
             </g:if>
+
             <div class="ui cards">
                 <g:each in="${tasks}" var="tsk">
                     <div class="ui card">

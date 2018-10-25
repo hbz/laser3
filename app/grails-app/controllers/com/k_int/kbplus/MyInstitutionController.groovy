@@ -2905,7 +2905,21 @@ AND EXISTS (
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        getTodoForInst(result, null)
+        // changes
+
+        def periodInDays = contextService.getUser().getSettingsValue(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)
+
+        getTodoForInst(result, periodInDays)
+
+        // announcements
+
+        def dcCheck = (new Date()).minus(periodInDays)
+
+        result.recentAnnouncements = Doc.executeQuery(
+                "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
+                [type: 'Announcement', dcCheck: dcCheck],
+                [max: 10, sort: 'dateCreated', order: 'asc']
+        )
 
         // tasks
 
@@ -2918,8 +2932,7 @@ AND EXISTS (
         result.enableMyInstFormFields = true // enable special form fields
         result << preCon
 
-        def announcement_type = RefdataCategory.lookupOrCreate('Document Type', 'Announcement')
-        result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: 10, sort: 'dateCreated', order: 'desc'])
+
 
         result
     }
@@ -2928,7 +2941,7 @@ AND EXISTS (
 
         result.changes = []
 
-        if (!periodInDays) {
+        if (! periodInDays) {
             periodInDays = contextService.getUser().getSettingsValue(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)
         }
 
