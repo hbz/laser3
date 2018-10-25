@@ -1496,7 +1496,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
         result.max = params.max ?: result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ?: 0;
 
-        def baseQuery = "select pc from PendingChange as pc where pc.subscription = :sub and pc.status.value in (:stats)"
+        def baseQuery = "select pc from PendingChange as pc where pc.subscription = :sub and pc.subscription.status.value != 'Deleted' and pc.status.value in (:stats)"
         def baseParams = [sub: result.subscription, stats: ['Accepted', 'Rejected']]
 
         result.todoHistoryLines = PendingChange.executeQuery(

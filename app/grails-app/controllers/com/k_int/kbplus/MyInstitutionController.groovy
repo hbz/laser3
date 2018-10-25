@@ -2902,10 +2902,10 @@ AND EXISTS (
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending','PendingChangeStatus')
-        getTodoForInst(result)
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        //.findAllByOwner(result.user,sort:'ts',order:'asc')
+        getTodoForInst(result, null)
 
         // tasks
 
@@ -2924,24 +2924,66 @@ AND EXISTS (
         result
     }
 
+    private getTodoForInst(result, Integer periodInDays){
+
+        result.changes = []
+
+        if (!periodInDays) {
+            periodInDays = contextService.getUser().getSettingsValue(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)
+        }
+
+        def tsCheck = (new Date()).minus(periodInDays)
+
+        def baseParams = [owner: result.institution, tsCheck: tsCheck, stats: ['Accepted']]
+
+        def baseQuery1 = "select pc.subscription, count(*) as count from PendingChange as pc where pc.owner = :owner and pc.ts >= :tsCheck " +
+                " and pc.subscription is not NULL and pc.subscription.status.value != 'Deleted' and pc.status.value in (:stats) group by pc.subscription"
+
+        def result1 = PendingChange.executeQuery(
+                baseQuery1,
+                baseParams,
+                [max: result.max, offset: result.offset]
+        )
+        result.changes.addAll(result1)
+
+        def baseQuery2 = "select pc.license, count(*) as count from PendingChange as pc where pc.owner = :owner and pc.ts >= :tsCheck" +
+                " and pc.license is not NULL and pc.license.status.value != 'Deleted' and pc.status.value in (:stats) group by pc.license"
+
+        def result2 = PendingChange.executeQuery(
+                baseQuery2,
+                baseParams,
+                [max: result.max, offset: result.offset]
+        )
+
+        println result.changes
+        result.changes.addAll(result2)
+    }
+
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    def getTodoForInst(result){
+    def getTodoForInst_LEGACY(result){
         def lic_del = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
         def sub_del = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
         def pkg_del = RefdataValue.getByValueAndCategory('Deleted', 'Package Status')
         def pc_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
-        result.num_todos = PendingChange.executeQuery("select count(distinct pc.oid) from PendingChange as pc left outer join pc.license as lic left outer join lic.status as lic_status left outer join pc.subscription as sub left outer join sub.status as sub_status left outer join pc.pkg as pkg left outer join pkg.packageStatus as pkg_status where pc.owner = ? and (pc.status = ? or pc.status is null) and ((lic_status is null or lic_status!=?) and (sub_status is null or sub_status!=?) and (pkg_status is null or pkg_status!=?))", [result.institution,pc_status, lic_del,sub_del,pkg_del])[0]
+        result.num_todos = PendingChange.executeQuery(
+                "select count(distinct pc.oid) from PendingChange as pc left outer join pc.license as lic left outer join lic.status as lic_status left outer join pc.subscription as sub left outer join sub.status as sub_status left outer join pc.pkg as pkg left outer join pkg.packageStatus as pkg_status where pc.owner = ? and (pc.status = ? or pc.status is null) and ((lic_status is null or lic_status!=?) and (sub_status is null or sub_status!=?) and (pkg_status is null or pkg_status!=?))",
+                [result.institution,pc_status, lic_del,sub_del,pkg_del]
+        )[0]
 
         log.debug("Count3=${result.num_todos}");
 
-        def change_summary = PendingChange.executeQuery("select distinct(pc.oid), count(pc), min(pc.ts), max(pc.ts) from PendingChange as pc left outer join pc.license as lic left outer join lic.status as lic_status left outer join pc.subscription as sub left outer join sub.status as sub_status left outer join pc.pkg as pkg left outer join pkg.packageStatus as pkg_status where pc.owner = ? and (pc.status = ? or pc.status is null) and ((lic_status is null or lic_status!=?) and (sub_status is null or sub_status!=?) and (pkg_status is null or pkg_status!=?)) group by pc.oid", [result.institution,pc_status,lic_del,sub_del,pkg_del], [max: result.max?:100, offset: result.offset?:0]);
-        result.todos = []
+        def change_summary = PendingChange.executeQuery(
+                "select distinct(pc.oid), count(pc), min(pc.ts), max(pc.ts) from PendingChange as pc left outer join pc.license as lic left outer join lic.status as lic_status left outer join pc.subscription as sub left outer join sub.status as sub_status left outer join pc.pkg as pkg left outer join pkg.packageStatus as pkg_status where pc.owner = ? and (pc.status = ? or pc.status is null) and ((lic_status is null or lic_status!=?) and (sub_status is null or sub_status!=?) and (pkg_status is null or pkg_status!=?)) group by pc.oid",
+                [result.institution,pc_status,lic_del,sub_del,pkg_del],
+                [max: result.max?:100, offset: result.offset?:0]
+        )
+        result.changes = []
 
         change_summary.each { cs ->
             log.debug("Change summary row : ${cs}");
             def item_with_changes = genericOIDService.resolveOID(cs[0])
-            result.todos.add([
+            result.changes.add([
                     item_with_changes: item_with_changes,
                     oid              : cs[0],
                     num_changes      : cs[1],
@@ -2965,7 +3007,7 @@ AND EXISTS (
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-        getTodoForInst(result)
+        getTodoForInst(result, 365)
 
         result
     }

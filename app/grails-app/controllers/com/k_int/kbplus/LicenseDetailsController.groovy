@@ -614,7 +614,7 @@ from Subscription as s where
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ?: 0;
 
-        def baseQuery = "select pc from PendingChange as pc where pc.license = :lic and pc.status.value in (:stats)"
+        def baseQuery = "select pc from PendingChange as pc where pc.license = :lic and pc.license.status.value != 'Deleted' and pc.status.value in (:stats)"
         def baseParams = [lic: result.license, stats: ['Accepted', 'Rejected']]
 
         result.todoHistoryLines = PendingChange.executeQuery(

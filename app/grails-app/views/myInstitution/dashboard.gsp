@@ -87,30 +87,62 @@
                 </div>
             </g:if>
 
+            <div>
+                ${message(code: 'profile.dashboardReminderPeriod')}:
+                ${user.getSettingsValue(com.k_int.kbplus.UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}
+            </div>
+
             <div class="ui relaxed list" style="clear:both;padding-top:1rem;">
-                <g:each in="${todos}" var="todo">
+                <g:each in="${changes}" var="changeSet">
+                    <g:set var="change" value="${changeSet[0]}" />
+                    <div class="item">
+
+                       <div class="ui internally celled grid">
+                           <div class="row">
+                               <div class="three wide column">
+                                   <a class="ui green circular label">${changeSet[1]}</a>
+                                </div><!-- .column -->
+                                <div class="thirteen wide column">
+
+                                <g:if test="${change instanceof com.k_int.kbplus.Subscription}">
+                                    <strong>${message(code:'subscription')}</strong>
+                                    <br />
+                                    <g:link controller="subscriptionDetails" action="changes" id="${change.id}">${change.toString()}</g:link>
+                                </g:if>
+                                <g:if test="${change instanceof com.k_int.kbplus.License}">
+                                    <strong>${message(code:'license')}</strong>
+                                    <br />
+                                    <g:link controller="licenseDetails" action="changes" id="${change.id}">${change.toString()}</g:link>
+                                </g:if>
+                           </div><!-- .column -->
+                           </div><!-- .row -->
+                       </div><!-- .grid -->
+
+                    </div>
+                    <%--
                     <div class="item">
                         <div class="icon">
                             <i class="alarm outline icon"></i>
-                            <div class="ui yellow circular label">${todo.num_changes}</div>
+                            <div class="ui yellow circular label">${change.num_changes}</div>
                         </div>
                         <div class="message">
                             <p>
-                                <g:if test="${todo.item_with_changes instanceof com.k_int.kbplus.Subscription}">
-                                    <g:link controller="subscriptionDetails" action="changes" id="${todo.item_with_changes.id}">${todo.item_with_changes.toString()}</g:link>
+                                <g:if test="${change.item_with_changes instanceof com.k_int.kbplus.Subscription}">
+                                    <g:link controller="subscriptionDetails" action="changes" id="${change.item_with_changes.id}">${change.item_with_changes.toString()}</g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link controller="licenseDetails" action="changes" id="${todo.item_with_changes.id}">${todo.item_with_changes.toString()}</g:link>
+                                    <g:link controller="licenseDetails" action="changes" id="${change.item_with_changes.id}">${change.item_with_changes.toString()}</g:link>
                                 </g:else>
                             </p>
                             <p>
                                 ${message(code:'myinst.change_from', default:'Changes between')}
-                                <g:formatDate date="${todo.earliest}" formatName="default.date.format"/>
+                                <g:formatDate date="${change.earliest}" formatName="default.date.format"/>
                                 ${message(code:'myinst.change_to', default:'and')}
-                                <g:formatDate date="${todo.latest}" formatName="default.date.format"/>
+                                <g:formatDate date="${change.latest}" formatName="default.date.format"/>
                             </p>
                         </div>
                     </div>
+                    --%>
                 </g:each>
             </div>
         </div>
