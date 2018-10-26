@@ -94,7 +94,7 @@ class UploadController {
     }
     
     def pkg_type = RefdataCategory.lookupOrCreate("${RefdataCategory.PKG_TYPE}",'Unknown');
-    def cp_role = RefdataCategory.lookupOrCreate('Organisational Role','Content Provider');
+    def cp_role = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
     def tipp_current = RefdataCategory.lookupOrCreate("${RefdataCategory.TIPP_STATUS}",'Current');
 
     def consortium = null;
@@ -125,7 +125,7 @@ class UploadController {
         log.debug("Package [${new_pkg.id}] with identifier ${new_pkg.identifier} created......");
 
         if ( upload.consortiumOrg ) {
-          def sc_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia');
+          def sc_role = RefdataValue.getByValueAndCategory('Package Consortia', 'Organisational Role')
           def or = new OrgRole(org: consortium, pkg:new_pkg, roleType:sc_role).save();
         }
 
@@ -267,7 +267,7 @@ class UploadController {
       //TODO: Wegen Überarbeitung von Titel Konzept muss dies hier nochmal überarbeitet werden by Moe
       result = TitleInstance.lookupOrCreateViaIdMap(identifiers, title);
       if ( !result.getPublisher() ) {
-        def pub_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Publisher');
+        def pub_role = RefdataValue.getByValueAndCategory('Publisher', 'Organisational Role')
         OrgRole.assertOrgTitleLink(publisher, result, pub_role, null, null);
         result.save();
       }

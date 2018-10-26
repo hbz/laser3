@@ -62,12 +62,15 @@
                         </g:each>
                     </td>
                     <td class="x">
+                        <%--
+                        disabled open finance view
                         <g:if test="${CostItemGroup.findAllByBudgetCode(bcode)}">
                             <g:link controller="myInstitution" action="finance"  class="ui icon button"
                                     params="[filterCIBudgetCode: bcode.value]">
                                 <i class="share icon"></i>
                             </g:link>
                         </g:if>
+                        --%>
                         <g:if test="${editable && ! CostItemGroup.findAllByBudgetCode(bcode)}">
                             <g:link controller="myInstitution" action="budgetCodes"
                                     params="${[cmd: 'deleteBudgetCode', bc: 'com.k_int.kbplus.BudgetCode:' + bcode.id]}" class="ui icon negative button">

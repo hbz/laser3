@@ -84,7 +84,7 @@ class PackageDetailsController {
       def paginate_after = params.paginate_after ?: ((2 * result.max)-1)
       result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-      def deleted_package_status =  RefdataCategory.lookupOrCreate( 'Package Status', 'Deleted' );
+      def deleted_package_status = RefdataValue.getByValueAndCategory('Deleted', 'Package Status')
       //def qry_params = [deleted_package_status]
       def qry_params = []
 
@@ -202,9 +202,9 @@ class PackageDetailsController {
         def queryParams = [org,packageInstance]
         def hasPackage = OrgRole.executeQuery(hql,  queryParams)
         if(hasPackage){
-          consortiaInstsWithStatus.put(org,RefdataCategory.lookupOrCreate("YNO","Yes"))
+          consortiaInstsWithStatus.put(org, RefdataValue.getByValueAndCategory("Yes", "YNO"))
         }else{
-          consortiaInstsWithStatus.put(org,RefdataCategory.lookupOrCreate("YNO","No"))
+          consortiaInstsWithStatus.put(org, RefdataValue.getByValueAndCategory("No", "YNO"))
         }
       }
       result.consortia = consortia
@@ -458,7 +458,7 @@ class PackageDetailsController {
         return
       }
 
-      def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+      def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending','PendingChangeStatus')
 
         result.pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where pc.pkg=? and ( pc.status is null or pc.status = ? ) order by ts, changeDoc", [packageInstance, pending_change_pending_status]);
 
@@ -482,7 +482,7 @@ class PackageDetailsController {
       result.subscriptionList=[]
       // We need to cycle through all the users institutions, and their respective subscripions, and add to this list
       // and subscription that does not already link this package
-      def sub_status = RefdataCategory.lookupOrCreate('Subscription Status','Deleted')
+      def sub_status = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
       result.user?.getAuthorizedAffiliations().each { ua ->
         if ( ua.formalRole.authority == 'INST_ADM' ) {
           def qry_params = [ua.org, sub_status, packageInstance, new Date()]

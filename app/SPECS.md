@@ -36,3 +36,18 @@ Use **DebugAnnotation** for dynamic documentation.
 Mainly used services are available in GSPs due the following custom tag.
 
     <laser:serviceInjection />
+    
+#### Using Caches
+
+Access *user depending ehcache* with key prefix due **de.laser.ContextService**.
+For more functionality use **de.laser.CacheService** directly.
+
+    def ctxCache = contextService.getCache('ProfileController/properties/')
+    ctxCache.put('myObj', myObj)
+    ctxCache.get('myObj')
+
+Or use *global caches* with *cacheKeyPrefix* like this:
+  
+    def globalCache30m = cacheService.getTTL1800Cache('ProfileController/properties/')
+    def globalCache5m = cacheService.getTTL300Cache('ProfileController/properties/')
+    

@@ -1,4 +1,5 @@
-<%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org" %>
+<%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.UserSettings; com.k_int.kbplus.RefdataValue" %>
+
 <!doctype html>
 
 <!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
@@ -227,7 +228,7 @@
                                 <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
 
                                 <g:if test="${grailsApplication.config.feature_finance}">
-                                    <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />
+                                    <%-- <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" /> --%>
 
                                     <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
 
@@ -489,62 +490,142 @@
     <div class="ui fixed menu la-contextBar"  >
         <div class="ui container">
             <div class="ui sub header item la-context-org">${contextOrg?.name}</div>
-
             <div class="right menu la-advanced-view">
-                <g:if test="${(params.mode)}">
-                    <div class="ui buttons">
-                            <g:if test="${params.mode=='advanced'}">
-                                <div class="ui label toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right" data-variation="tiny">
-                                    <i class="icon green eye"></i>
+                <div class="item">
+                    <g:if test="${cachedContent}">
+                        <button class="ui icon button" data-tooltip="${message(code:'statusbar.cachedContent.tooltip')}" data-position="bottom right" data-variation="tiny">
+                            <i class="hourglass end icon green"></i>
+                        </button>
+                    </g:if>
+                </div>
+
+                    <g:if test="${controllerName=='subscriptionDetails' && actionName=='show'}">
+                        <div class="item">
+                            <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
+                                <button class="ui icon toggle button la-toggle-controls" data-tooltip="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                    <i class="pencil alternate icon"></i>
+                                </button>
                             </g:if>
                             <g:else>
-                                <div class="ui label toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right" data-variation="tiny">
-                                    <i class="icon eye slash"></i>
+                                <button class="ui icon toggle button active la-toggle-controls"  data-tooltip="${message(code:'statusbar.hideButtons.tooltip')}"  data-position="bottom right" data-variation="tiny">
+                                    <i class="pencil alternate icon slash"></i>
+                                </button>
                             </g:else>
-                        </div>
-                    </div>
 
+                        <r:script>
+                            $(function(){
+                                 <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
+                                    var editMode = true;
+                                </g:if>
+                                <g:else>
+                                    var editMode = false;
+                                </g:else>
+                                $(".ui.toggle.button").click(function(){
+                                    editMode = !editMode;
+                                    $.ajax({
+                                        url: '<g:createLink controller="ajax" action="toggleEditMode"/>',
+                                        data: {
+                                            showEditMode: editMode
+                                        },
+                                        success: function(){
+                                            toggleEditableElements()
+                                        }
+                                    })
+                                });
+                                function toggleEditableElements(){
+                                    var toggleButton = $(".ui.toggle.button");
+                                    var toggleIcon = $(".ui.toggle.button .icon");
 
-                <script>
-                    var LaToggle = {};
-                    LaToggle.advanced = {};
-                    LaToggle.advanced.button = {};
+                                    if (  editMode) {
+                                        $('#collapseableSubDetails').find('.button').removeClass('hidden');
+                                        $(toggleButton).removeAttr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
+                                        $(toggleButton).attr("data-tooltip","${message(code:'statusbar.showButtons.tooltip')}");
+                                        $(toggleIcon ).removeClass( "slash" );
+                                        $(toggleButton).removeClass('active');
 
-                    // ready event
-                    LaToggle.advanced.button.ready = function() {
-
-                        // selector cache
-                        var
-                            $button = $('.ui.buttons .button.la-toggle-advanced'),
-
-                            // alias
-                            handler = {
-                                activate: function() {
-                                    $icon = $(this).find('.icon');
-                                    if ($icon.hasClass("slash")) {
-                                        $icon.removeClass("slash");
-                                        window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'advanced']}" />";
+                                        $('.xEditableValue').editable('option', 'disabled', false);
+                                        $('.xEditable').editable('option', 'disabled', false);
+                                        $('.xEditableDatepicker').editable('option', 'disabled', false);
+                                        $('.xEditableManyToOne').editable('option', 'disabled', false);
                                     }
-                                     else {
-                                        $icon.addClass("slash");
-                                        window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'basic']}" />" ;
+                                    else {
+                                        $('#collapseableSubDetails').find('.button').addClass('hidden');
+                                        // hide all the x-editable
+                                        $(toggleButton).removeAttr();
+                                        $(toggleButton).attr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
+                                        $( toggleIcon ).addClass( "slash" );
+                                        $(toggleButton).addClass('active');
+
+                                        $('.xEditableValue').editable('option', 'disabled', true);
+                                        $('.xEditable').editable('option', 'disabled', true);
+                                        $('.xEditableDatepicker').editable('option', 'disabled', true);
+                                        $('.xEditableManyToOne').editable('option', 'disabled', true);
                                     }
                                 }
-                            }
-                        ;
-                        $button
-                            .on('click', handler.activate)
-                        ;
-                    };
+                                toggleEditableElements();
+                            });
 
-                    // attach ready event
-                    $(document)
-                        .ready(LaToggle.advanced.button.ready)
-                    ;
-                </script>
-                </g:if>
+                        </r:script>
+                        </div>
+                        </g:if>
+                        <g:if test="${(params.mode)}">
+                            <div class="item">
+                                <g:if test="${params.mode=='advanced'}">
+                                    <div class="ui toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                        <i class="icon plus square"></i>
+                                </g:if>
+                                <g:else>
+                                    <div class="ui toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                        <i class="icon plus square green slash"></i>
+                                </g:else>
+                            </div>
+
+
+
+                        <script>
+                            var LaToggle = {};
+                            LaToggle.advanced = {};
+                            LaToggle.advanced.button = {};
+
+                            // ready event
+                            LaToggle.advanced.button.ready = function() {
+
+                                // selector cache
+                                var
+                                    $button = $('.button.la-toggle-advanced'),
+
+                                    // alias
+                                    handler = {
+                                        activate: function() {
+                                            $icon = $(this).find('.icon');
+                                            if ($icon.hasClass("slash")) {
+                                                $icon.removeClass("slash");
+                                                window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'advanced']}" />";
+                                            }
+                                             else {
+                                                $icon.addClass("slash");
+                                                window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'basic']}" />" ;
+                                            }
+                                        }
+                                    }
+                                ;
+                                $button
+                                    .on('click', handler.activate)
+                                ;
+                            };
+
+                            // attach ready event
+                            $(document)
+                                .ready(LaToggle.advanced.button.ready)
+                            ;
+                        </script>
+
+                </div>
+
+                </div>
+                        </g:if>
                 <%--semui:editableLabel editable="${editable}" /--%>
-            </div>
+        </div>
         </div>
     </div><!-- Context Bar -->
 

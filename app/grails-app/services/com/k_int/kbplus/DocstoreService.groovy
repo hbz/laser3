@@ -426,7 +426,7 @@ class DocstoreService {
                 log.debug("Looking up docctx ${docctx_to_delete} for delete")
 
                 def docctx = DocContext.get(docctx_to_delete)
-                docctx.status = RefdataCategory.lookupOrCreate('Document Context Status','Deleted')
+                docctx.status = RefdataValue.getByValueAndCategory('Deleted', 'Document Context Status')
                 docctx.save(flush: true)
             }
             if (p.key.startsWith('_deleteflag"@.') ) { // PackageDetailsController
@@ -434,7 +434,7 @@ class DocstoreService {
                 log.debug("Looking up docctx ${docctx_to_delete} for delete")
 
                 def docctx = DocContext.get(docctx_to_delete)
-                docctx.status = RefdataCategory.lookupOrCreate('Document Context Status','Deleted')
+                docctx.status = RefdataValue.getByValueAndCategory('Deleted', 'Document Context Status')
                 docctx.save(flush: true)
             }
         }
@@ -444,7 +444,7 @@ class DocstoreService {
             log.debug("Looking up docctx ${docctx_to_delete} for delete")
 
             def docctx = DocContext.get(docctx_to_delete)
-            docctx.status = RefdataCategory.lookupOrCreate('Document Context Status','Deleted')
+            docctx.status = RefdataValue.getByValueAndCategory('Deleted', 'Document Context Status')
             docctx.save(flush: true)
         }
     }

@@ -10,7 +10,7 @@ class PublicController {
     def springSecurityService
     def genericOIDService
 
-    @Cacheable('laser_experimental')
+    @Cacheable('laser_static_pages')
     @Secured(['permitAll'])
     def index() {
     }
@@ -256,7 +256,7 @@ class PublicController {
   private def retrieveIssueEntitlements(ti, org, result) {
     log.debug("retrieveIssueEntitlements")
     def issueEntitlements = []
-    def deleted_ie = RefdataCategory.lookupOrCreate('Entitlement Issue Status','Deleted');
+    def deleted_ie = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
     def today = new Date()
 
     String ie_query = "select ie from IssueEntitlement as ie join ie.subscription as sub where ie.tipp.title=(:journal) and exists ( select orgs from sub.orgRelations orgs where orgs.org = (:org) AND orgs.roleType.value = 'Subscriber' ) and ie.status != (:deleted_ie) and ie.subscription.owner is not null"

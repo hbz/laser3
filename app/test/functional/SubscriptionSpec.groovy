@@ -45,7 +45,7 @@ class SubscriptionSpec extends GebReportingSpec {
           }
         def org = Org.findByNameAndImpId(Data.Org_name,Data.Org_impId)
         def subA = new com.k_int.kbplus.Subscription(name: Data.Subscription_name_A, identifier: java.util.UUID.randomUUID().toString(),startDate:startDate,endDate:endDate).save(flush: true)
-        def subrefRole = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber')
+        def subrefRole = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
         def subRole    = new com.k_int.kbplus.OrgRole(roleType: subrefRole, sub: subA, org: org).save()
 
         go "subscriptionDetails/details/"+subA.id

@@ -4,12 +4,10 @@ import com.k_int.kbplus.auth.User
 import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured
 
-import com.k_int.kbplus.ajax.AjaxHandler
-
 import org.springframework.dao.DataIntegrityViolationException
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class ClusterController extends AjaxHandler {
+class ClusterController {
 
     def springSecurityService
 
@@ -125,7 +123,7 @@ class ClusterController extends AjaxHandler {
         }
     }
     
-    @Override
+
     def ajax() {
         // TODO: check permissions for operation
         
@@ -144,7 +142,7 @@ class ClusterController extends AjaxHandler {
             break;
         }
     }
-    @Override
+
     def private ajaxList() {
         def clusterInstance = Cluster.get(params.id)
         def orgs  = Org.getAll()
@@ -157,7 +155,7 @@ class ClusterController extends AjaxHandler {
             ]
         return
     }
-    @Override
+
     def private ajaxDelete() {
         
         def orgRole = OrgRole.get(params.orgRole)
@@ -170,7 +168,7 @@ class ClusterController extends AjaxHandler {
         }
         ajaxList()
     }
-    @Override
+
     def private ajaxAdd() {
         
         def x    = Cluster.get(params.id)

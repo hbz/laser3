@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -83,7 +84,7 @@ class SubscriptionDetailsController {
 
         log.debug("max = ${result.max}");
 
-        def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+        def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending','PendingChangeStatus')
         def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by ts desc", [result.subscriptionInstance, pending_change_pending_status]);
 
         if (result.subscriptionInstance?.isSlaved?.value == "Yes" && pendingChanges) {
@@ -121,7 +122,7 @@ class SubscriptionDetailsController {
 
         def base_qry = null;
 
-        def deleted_ie = RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted');
+        def deleted_ie = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
         def qry_params = [result.subscriptionInstance]
 
         def date_filter
@@ -578,7 +579,7 @@ class SubscriptionDetailsController {
                     }
                 } else if (params.bulkOperation == "remove") {
                     log.debug("Updating ie ${ie.id} status to deleted");
-                    def deleted_ie = RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted');
+                    def deleted_ie = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
                     ie.status = deleted_ie;
                     if (ie.save(flush: true)) {
                     } else {
@@ -605,7 +606,7 @@ class SubscriptionDetailsController {
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         def tipp_deleted = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS, 'Deleted');
-        def ie_deleted = RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted');
+        def ie_deleted = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
 
         log.debug("filter: \"${params.filter}\"");
 
@@ -750,14 +751,13 @@ class SubscriptionDetailsController {
 
         def subStatus     = RefdataValue.get(params.subStatus) ?: RefdataCategory.lookupOrCreate('Subscription Status', 'Current')
 
-        def role_sub      = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial')
-        def role_sub_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
+        def role_sub      = RDStore.OR_SUBSCRIBER_CONS
+        def role_sub_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        def role_lic      = RDStore.OR_LICENSEE_CONS
+        def role_lic_cons = RDStore.OR_LICENSING_CONSORTIUM
 
-        def role_lic      = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial')
-        def role_lic_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensing Consortium')
-
-        def role_provider = RefdataCategory.lookupOrCreate('Organisational Role', 'Provider')
-        def role_agency   = RefdataCategory.lookupOrCreate('Organisational Role', 'Agency')
+        def role_provider = RefdataValue.getByValueAndCategory('Provider', 'Organisational Role')
+        def role_agency   = RefdataValue.getByValueAndCategory('Agency', 'Organisational Role')
 
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
@@ -814,13 +814,19 @@ class SubscriptionDetailsController {
                                 /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
                                 identifier: java.util.UUID.randomUUID().toString(),
                                 instanceOf: result.subscriptionInstance,
-                                isSlaved: RefdataCategory.lookupOrCreate('YN', 'Yes'),
+                                isSlaved: RefdataValue.getByValueAndCategory('Yes', 'YN'),
                                 isPublic: result.subscriptionInstance.isPublic,
                                 impId: java.util.UUID.randomUUID().toString(),
                                 owner: licenseCopy
                         )
 
-                        cons_sub.save()
+                        if(!cons_sub.save()){
+                            cons_sub?.errors.each { e ->
+                                log.debug("Problem creating new sub: ${e}")
+                            }
+                            flash.error = cons_sub.errors
+                        }
+
 
                         result.subscriptionInstance.packages.each { sub_pkg ->
                                     def takePackage = params."selectedPackage_${cm.get(0).id+sub_pkg.pkg.id}"
@@ -860,10 +866,7 @@ class SubscriptionDetailsController {
                             new OrgRole(org: result.institution, sub: cons_sub, roleType: role_sub_cons).save()
                         }
 
-                        cons_sub?.errors.each { e ->
-                            log.debug("Problem creating new sub: ${e}")
-                        }
-                        flash.error = cons_sub.errors
+
                     }
                 }
                 redirect controller: 'subscriptionDetails', action: 'members', params: [id: result.subscriptionInstance?.id]
@@ -889,7 +892,7 @@ class SubscriptionDetailsController {
         def delSubscription = genericOIDService.resolveOID(params.target)
         def delInstitution = delSubscription?.getSubscriber()
 
-        def deletedStatus = RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted')
+        def deletedStatus = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
 
         if (delSubscription?.hasPerm("edit", result.user)) {
             def derived_subs = Subscription.findByInstanceOfAndStatusNot(delSubscription, deletedStatus)
@@ -942,7 +945,7 @@ class SubscriptionDetailsController {
                 result.processingpc = true
             }
             else {
-                def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+                def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending','PendingChangeStatus')
                 def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
 
                 result.pendingChanges << [ "${member.id}" : pendingChanges.collect { PendingChange.get(it) }]
@@ -1028,7 +1031,7 @@ class SubscriptionDetailsController {
                         log.error("Unable to tipp ${tipp_id}");
                         flash.error("Unable to tipp ${tipp_id}");
                     } else {
-                        def ie_current = RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Current');
+                        def ie_current = RefdataValue.getByValueAndCategory('Current', 'Entitlement Issue Status')
 
                         def new_ie = new IssueEntitlement(status: ie_current,
                                 subscription: result.subscriptionInstance,
@@ -1068,7 +1071,7 @@ class SubscriptionDetailsController {
     def removeEntitlement() {
         log.debug("removeEntitlement....");
         def ie = IssueEntitlement.get(params.ieid)
-        def deleted_ie = RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted');
+        def deleted_ie = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
         ie.status = deleted_ie;
 
         redirect action: 'index', id: params.sub
@@ -1233,10 +1236,10 @@ class SubscriptionDetailsController {
 
         if (subscriber || consortia) {
 
-            def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
-            def licensee_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensing Consortium');
+            def licensee_role =  RDStore.OR_LICENSEE
+            def licensee_cons_role = RDStore.OR_LICENSING_CONSORTIUM
 
-            def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template');
+            def template_license_type = RefdataValue.getByValueAndCategory('Template', 'License Type')
 
             def qry_params = [(subscription.instanceOf ? consortia : subscriber), licensee_role, licensee_cons_role]
 
@@ -1587,7 +1590,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
             result.processingpc = true
         } else {
 
-            def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+            def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending','PendingChangeStatus')
             def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where subscription=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.subscription, pending_change_pending_status])
 
             log.debug("pc result is ${result.pendingChanges}")
@@ -1683,23 +1686,29 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
             log.debug('Found different content providers, cannot show usage')
           } else  {
             def supplier_id = suppliers[0]
+            result.natStatSupplierId = Org.get(supplier_id).getIdentifierByType('statssid')?.value
             result.institutional_usage_identifier =
                 OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
             if (result.institutional_usage_identifier) {
 
-                // TODO can there be different currency codes? We would have to handle that somehow.
-                def query = 'select sum(co.costInLocalCurrency) as lccost, sum(co.costInBillingCurrency) as bccost from CostItem co ' +
-                    'where co.sub=:sub'
-                def totalCostRow = CostItem.executeQuery(query, [sub: result.subscriptionInstance]).first()
-
-                    def totalUsageForLicense = factService.totalUsageForSub(result.subscriptionInstance, 'STATS:JR1')
-                if (totalCostRow[0] && totalUsageForLicense) {
-                    def totalCostPerUse = totalCostRow[0] / Double.valueOf(totalUsageForLicense)
-                    result.totalCostPerUse = totalCostPerUse
-                    result.currencyCode = NumberFormat.getCurrencyInstance().getCurrency().currencyCode
-                }
                 def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscriptionInstance)
                 def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscriptionInstance)
+
+                def holdingTypes = result.subscriptionInstance.getHoldingTypes() ?: null
+                if (!holdingTypes) {
+                    log.debug('No types found, maybe there are no issue entitlements linked to subscription')
+                } else if (holdingTypes.size()>1){
+                    log.info('Different content type for this license, cannot calculate Cost Per Use.')
+                } else if (! fsLicenseResult.isEmpty()){
+                    def existingReportMetrics = fsLicenseResult.y_axis_labels*.split(':')*.last()
+                    def costPerUseMetricValuePair = factService.getTotalCostPerUse(result.subscriptionInstance, holdingTypes.first(), existingReportMetrics)
+                    if (costPerUseMetricValuePair) {
+                        result.costPerUseMetric = costPerUseMetricValuePair[0]
+                        result.totalCostPerUse = costPerUseMetricValuePair[1]
+                        result.currencyCode = NumberFormat.getCurrencyInstance().getCurrency().currencyCode
+                    }
+                }
+
                 result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
                 result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution?.getallOrgRoleType())) ? 'package' : 'institution'
                 result.usage = fsresult?.usage
@@ -1712,7 +1721,6 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
             }
           }
         }
-
 
         result
     }
@@ -1811,7 +1819,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
 
                             subMember.issueEntitlements?.each { ie ->
 
-                                if (ie.status != RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted')) {
+                                if (ie.status != RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')) {
                                     def ieProperties = ie.properties
                                     ieProperties.globalUID = null
 
@@ -1991,7 +1999,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
 
                                 baseSub.issueEntitlements.each { ie ->
 
-                                    if (ie.status != RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted')) {
+                                    if (ie.status != RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')) {
                                         def properties = ie.properties
                                         properties.globalUID = null
 
@@ -2295,7 +2303,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
 
                     baseSubscription.issueEntitlements.each { ie ->
 
-                        if (ie.status != RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Deleted')) {
+                        if (ie.status != RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')) {
                             def properties = ie.properties
                             properties.globalUID = null
 

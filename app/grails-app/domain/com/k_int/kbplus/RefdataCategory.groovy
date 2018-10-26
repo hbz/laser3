@@ -39,38 +39,54 @@ class RefdataCategory extends AbstractI10nTranslatable {
 
     // indicates this object is created via front-end
     boolean softData
+    // indicates this object is created via current bootstrap
+    boolean hardData
 
     static mapping = {
               id column: 'rdc_id'
          version column: 'rdc_version'
             desc column: 'rdc_description', index:'rdc_description_idx'
         softData column: 'rdv_soft_data'
+        hardData column: 'rdv_hard_data'
     }
 
     static constraints = {
         softData (nullable:false, blank:false, default:false)
+        hardData (nullable:false, blank:false, default:false)
     }
 
     /**
      * Create RefdataCategory and matching I10nTranslation.
-     * Softdata flag will be removed, if RefdataValue is found.
+     *
+     * Call this from bootstrap
      *
      * @param category_name
      * @param i10n
+     * @param hardData = only true if called from bootstrap
      * @return
      */
-    static def loc(String category_name, Map i10n) {
+    static def loc(String category_name, Map i10n, def hardData) {
 
         def result = RefdataCategory.findByDescIlike(category_name)
         if (! result) {
             result = new RefdataCategory(desc:category_name)
         }
-        result.softData = false
+        result.hardData = hardData
+        if (hardData) {
+            // set to false if value is meanwhile in bootstrap
+            result.softData = false
+        }
         result.save(flush: true)
 
         I10nTranslation.createOrUpdateI10n(result, 'desc', i10n)
 
         result
+    }
+
+    // Call this from code
+    static def loc(String category_name, Map i10n) {
+        def hardData = false
+        loc(category_name, i10n, hardData)
     }
 
     @Deprecated
@@ -100,6 +116,7 @@ class RefdataCategory extends AbstractI10nTranslatable {
         rdc
     }
 
+    @Deprecated
     static def lookupOrCreate(String category_name, String icon, String value) {
         def result = lookupOrCreate(category_name, value)
         result.icon = icon

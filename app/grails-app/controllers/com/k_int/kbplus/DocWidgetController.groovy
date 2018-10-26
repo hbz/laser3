@@ -28,7 +28,7 @@ class DocWidgetController {
         def doc_content = new Doc(contentType:Doc.CONTENT_TYPE_STRING,
                                   title:    params.licenseNoteTitle,
                                   content:  params.licenseNote,
-                                  type:     RefdataCategory.lookupOrCreate('Document Type','Note'),
+                                  type:     RefdataValue.getByValueAndCategory('Note', 'Document Type'),
                                   user:     user).save()
 
         def alert = null;

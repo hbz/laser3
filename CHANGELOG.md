@@ -1,19 +1,26 @@
 
 0.10
 
-- reworked license and subscription inheritance functionality
-- added modal dialog for object depending inheritance configuration
 - added inheritance for license and subscription custom properties
+- added modal dialog for object depending inheritance configuration
 - improved auto acception for pending changes
-        
-        ? added translations for pending changes
-        
+- added translations for pending changes    
+- added export function for organisations, provider and consortia
+- added optinal cost items access for consortial subscribers
+- added export for mail addresses
+- added edit mode switch
+- reworked various table sortings
 - reworked user depending settings
-- added cost items access for consortial subscribers
-- fixed: meaningless subscription names  
+- reworked page header
+- reworked visible contacts 
+- improved intern refdata management
+- fixed: editable addresses for editors
+- fixed: empty federal state dropdown
+- changed meaningless subscription names  
+- increased text length for tasks
+- removed legacy code
 - various markup and style changes
 - minor bugfixes
-- removed legacy code
 
 0.9.2
 

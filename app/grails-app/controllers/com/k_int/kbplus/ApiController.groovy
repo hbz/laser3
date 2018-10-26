@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
-import de.laser.domain.Constants
+import de.laser.helper.Constants
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 

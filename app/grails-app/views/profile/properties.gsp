@@ -53,7 +53,7 @@
                             <td>
                                 <g:if test="${! usedPdList?.contains(pd.id)}">
                                     <span data-position="top right" data-tooltip="Dieser Wert wird bisher nicht verwendet (ID:${pd.id})">
-                                        <i class="info circle icon grey"></i>
+                                        <i class="info circle icon blue"></i>
                                     </span>
                                 </g:if>
 
@@ -114,7 +114,7 @@
                     </td>
                 </tr>
 
-                <g:each in="${RefdataValue.findAllByOwner(rdc, [sort: 'value'])}" var="rdv">
+                <g:each in="${RefdataValue.findAllByOwner(rdc).toSorted()}" var="rdv">
                     <tr>
                         <td>
                             ${I10nTranslation.createI10nOnTheFly(rdv, 'value').valueDe}
@@ -125,7 +125,7 @@
                         <td>
                             <g:if test="${! usedRdvList?.contains(rdv.id)}">
                                 <span data-position="top right" data-tooltip="Dieser Wert wird bisher nicht verwendet (ID:${rdv.id})">
-                                    <i class="info circle icon grey"></i>
+                                    <i class="info circle icon blue"></i>
                                 </span>
                             </g:if>
 

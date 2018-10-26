@@ -12,7 +12,7 @@ class PackageService{
    }
 
    private RefdataValue getCPRole(){
-   	RefdataCategory.lookupOrCreate('Organisational Role','Content Provider')
+     RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
    }
   /**
    * Method to update all Master list type packages.
@@ -28,7 +28,7 @@ class PackageService{
   }
 
   def setProvider(org_to_link,pkg_to_link){
-  	def rel = RefdataCategory.lookupOrCreate('Organisational Role','Content Provider');
+  	def rel = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
 
   	def newLink = new OrgRole(org:org_to_link,roleType:rel)
   	newLink.package = pkg_to_link
@@ -230,7 +230,7 @@ class PackageService{
     def c =  Package.createCriteria() 
 
     // Query for a list of packages and return the providers.
-    def del_stat = RefdataCategory.lookupOrCreate( 'Package Status', 'Deleted' )
+    def del_stat = RefdataValue.getByValueAndCategory('Deleted', 'Package Status')
 
     def providers = Package.findAllByPackageStatusIsNull().each {
     

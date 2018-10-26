@@ -162,18 +162,18 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     log.debug("Package: createSubscription called")
     def isSlaved = slaved == "Yes" || slaved == true ? "Yes" : "No"
     def result = new Subscription( name:subname,
-                                   status:RefdataCategory.lookupOrCreate('Subscription Status','Current'),
+                                   status:RefdataValue.getByValueAndCategory('Current','Subscription Status'),
                                    identifier:subidentifier,
                                    impId:java.util.UUID.randomUUID().toString(),
                                    startDate:startdate,
                                    endDate:enddate,
-                                   isPublic: RefdataCategory.lookupOrCreate('YN','No'),
+                                   isPublic: RefdataValue.getByValueAndCategory('No','YN'),
                                    type: RefdataValue.findByValue(subtype),
-                                   isSlaved: RefdataCategory.lookupOrCreate('YN',isSlaved) )
+                                   isSlaved: RefdataValue.getByValueAndCategory(isSlaved,'YN'))
 
     if ( result.save(flush:true) ) {
       if ( consortium_org ) {
-        def sc_role = RefdataCategory.lookupOrCreate('Organisational Role', org_role);
+        def sc_role = RefdataValue.getByValueAndCategory(org_role,'Organisational Role')
         def or = new OrgRole(org: consortium_org, sub:result, roleType:sc_role).save();
         log.debug("Create Org role ${or}")
       }
@@ -235,7 +235,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       // Step 3 - If createEntitlements ...
 
       if ( createEntitlements ) {
-        def live_issue_entitlement = RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Live');
+        def live_issue_entitlement = RefdataValue.getByValueAndCategory('Live', 'Entitlement Issue Status')
         tipps.each { tipp ->
           if(tipp.status?.value != "Deleted"){
             def new_ie = new IssueEntitlement(status: live_issue_entitlement,

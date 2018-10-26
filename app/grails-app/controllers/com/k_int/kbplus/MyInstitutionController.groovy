@@ -5,6 +5,7 @@ import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -13,7 +14,6 @@ import org.apache.poi.hssf.usermodel.*
 import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
 import com.k_int.properties.PropertyDefinition
-import com.k_int.kbplus.RefdataValue
 
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
@@ -68,10 +68,10 @@ class MyInstitutionController {
         result.institution  = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
         def currentOrg = contextService.getOrg()
-        log.debug("index for user with id ${springSecurityService.principal.id} :: ${result.user}")
+        log.debug("index for user with id ${springSecurityService.principal.id} :: ${result.user}");
 
         if ( result.user ) {
-          result.userAlerts = alertsService.getAllVisibleAlerts(result.user)
+          result.userAlerts = alertsService.getAllVisibleAlerts(result.user);
           //result.staticAlerts = alertsService.getStaticAlerts(request);
 
           if ((result.user.affiliations == null) || (result.user.affiliations.size() == 0)) {
@@ -79,7 +79,7 @@ class MyInstitutionController {
           }
         }
         else {
-          log.error("Failed to find user in database")
+          log.error("Failed to find user in database");
         }
 
         result
@@ -92,8 +92,8 @@ class MyInstitutionController {
         def result = [:]
 
         result.user = User.get(springSecurityService.principal.id)
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         def current_inst = contextService.getOrg()
         //if(params.shortcode) current_inst = Org.findByShortcode(params.shortcode);
         //Parameters needed for criteria searching
@@ -101,12 +101,12 @@ class MyInstitutionController {
         def list_order = params.order ?: 'asc'
 
         if (current_inst && ! accessService.checkUserIsMember(result.user, current_inst)) {
-            flash.error = message(code:'myinst.error.noMember', args:[current_inst.name])
+            flash.error = message(code:'myinst.error.noMember', args:[current_inst.name]);
             response.sendError(401)
-            return
+            return;
         }
 
-        def criteria = TitleInstitutionProvider.createCriteria()
+        def criteria = TitleInstitutionProvider.createCriteria();
         def results = criteria.list(max: result.max, offset:result.offset) {
               //if (params.shortcode){
               if (current_inst){
@@ -152,8 +152,8 @@ class MyInstitutionController {
         // Work out what orgs this user has admin level access to
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        result.userAlerts = alertsService.getAllVisibleAlerts(result.user)
-        result.staticAlerts = alertsService.getStaticAlerts(request)
+        result.userAlerts = alertsService.getAllVisibleAlerts(result.user);
+        result.staticAlerts = alertsService.getStaticAlerts(request);
 
         if ((result.user.affiliations == null) || (result.user.affiliations.size() == 0)) {
             redirect controller: 'profile', action: 'index'
@@ -193,8 +193,8 @@ class MyInstitutionController {
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
         result.editable      = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        def date_restriction = null
-        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def date_restriction = null;
+        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -217,17 +217,17 @@ class MyInstitutionController {
                             ]// private properties
                         )
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         result.max = params.format ? 10000 : result.max
         result.offset = params.format? 0 : result.offset
 
-        def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee')
-        def licensee_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial')
-        def lic_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensing Consortium')
+        def licensee_role = RDStore.OR_LICENSEE
+        def licensee_cons_role = RDStore.OR_LICENSEE_CONS
+        def lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
 
-        def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template')
-        def license_status = RefdataCategory.lookupOrCreate('License Status', 'Deleted')
+        def template_license_type = RefdataValue.getByValueAndCategory('Template', 'License Type')
+        def license_status = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
 
         def base_qry
         def qry_params
@@ -296,14 +296,14 @@ from License as l where (
         if ((params.sort != null) && (params.sort.length() > 0)) {
             base_qry += " order by l.${params.sort} ${params.order}"
         } else {
-            base_qry += " order by l.reference asc"
+            base_qry += " order by lower(trim(l.reference)) asc"
         }
 
         //log.debug("query = ${base_qry}");
         //log.debug("params = ${qry_params}");
 
-        result.licenseCount = License.executeQuery("select count(l) ${base_qry}", qry_params)[0]
-        result.licenses = License.executeQuery("select l ${base_qry}", qry_params, [max: result.max, offset: result.offset])
+        result.licenseCount = License.executeQuery("select count(l) ${base_qry}", qry_params)[0];
+        result.licenses = License.executeQuery("select l ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
         def filename = "${result.institution.name}_licenses"
         withFormat {
             html result
@@ -329,12 +329,12 @@ from License as l where (
                     switch(params.transformId) {
                       case "sub_ie":
                         exportService.addLicenseSubPkgTitleXML(doc, doc.getDocumentElement(),result.licenses)
-                      break
+                      break;
                       case "sub_pkg":
                         exportService.addLicenseSubPkgXML(doc, doc.getDocumentElement(),result.licenses)
-                        break
+                        break;
                     }
-                    String xml = exportService.streamOutXML(doc, new StringWriter()).getWriter().toString()
+                    String xml = exportService.streamOutXML(doc, new StringWriter()).getWriter().toString();
                     transformerService.triggerTransform(result.user, filename, result.transforms[params.transformId], xml, response)
                 }else{
                     response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xml\"")
@@ -349,11 +349,11 @@ from License as l where (
         def result = [:]
 
         def query = " and exists ( select cp from l.customProperties as cp where cp.type.name = :prop_filter_name and  "
-        def queryParam = [prop_filter_name:params.propertyFilterType]
+        def queryParam = [prop_filter_name:params.propertyFilterType];
         switch (propDef.type){
             case Integer.toString():
                 query += "cp.intValue = :filter_val "
-                def value
+                def value;
                 try{
                  value =Integer.parseInt(params.propertyFilter)
                 }catch(Exception e){
@@ -361,7 +361,7 @@ from License as l where (
                     value = 0
                 }
                 queryParam += [filter_val:value]
-                break
+                break;
             case BigDecimal.toString():
                 query += "cp.decValue = :filter_val "
                 try{
@@ -371,15 +371,15 @@ from License as l where (
                     value = 0.0
                 }
                 queryParam += [filter_val:value]
-                break
+                break;
             case String.toString():
                 query += "cp.stringValue like :filter_val "
                 queryParam += [filter_val:params.propertyFilter]
-                break
+                break;
             case RefdataValue.toString():
                 query += "cp.refValue.value like :filter_val "
                 queryParam += [filter_val:params.propertyFilter]
-                break
+                break;
             default:
                 log.error("Error executing buildPropertySearchQuery. Definition type ${propDef.type} case not found. ")
         }
@@ -395,13 +395,13 @@ from License as l where (
     def emptyLicense() {
         def result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = message(code:'myinst.error.noMember', args:[result.institution.name])
+            flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
             response.sendError(401)
-            return
+            return;
         }
 
         result.orgRoleType = result.institution.getallOrgRoleType()
@@ -422,9 +422,9 @@ from License as l where (
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        def template_license_type = RefdataCategory.lookupOrCreate('License Type', 'Template')
+        def template_license_type = RefdataValue.getByValueAndCategory('Template', 'License Type')
         def qparams = [template_license_type]
-        def public_flag = RefdataCategory.lookupOrCreate('YN', 'No')
+        def public_flag = RefdataValue.getByValueAndCategory('No','YN')
 
        // This query used to allow institutions to copy their own licenses - now users only want to copy template licenses
         // (OS License specs)
@@ -472,11 +472,13 @@ from License as l where (
     def currentProviders() {
         def result = setResultGenerics()
 
-        def role_sub            = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
-        def role_sub_cons       = RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role')
-        def role_sub_consortia  = RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')
+        def role_sub            = RDStore.OR_SUBSCRIBER
+        def role_sub_cons       = RDStore.OR_SUBSCRIBER_CONS
+        def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
+
         def roletype_provider   = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
         def roletype_agency     = RefdataValue.getByValueAndCategory('Agency', 'OrgRoleType')
+
         result.orgRoleTypes     = [roletype_provider, roletype_agency]
         result.propList         = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         params.sort             = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
@@ -524,23 +526,23 @@ from License as l where (
     def currentSubscriptions() {
         def result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
         result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [result.institution])
 
         def viableOrgs = []
 
         if ( result.availableConsortia ){
-            result.availableConsortia.each {
-                viableOrgs.add(it)
-            }
+          result.availableConsortia.each {
+            viableOrgs.add(it)
+          }
         }
 
         viableOrgs.add(result.institution)
 
-        def date_restriction = null
-        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def date_restriction = null;
+        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -574,9 +576,9 @@ from License as l where (
 
 
 
-        def role_sub            = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
-        def role_subCons        = RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role')
-        def role_sub_consortia  = RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')
+        def role_sub            = RDStore.OR_SUBSCRIBER
+        def role_subCons        = RDStore.OR_SUBSCRIBER_CONS
+        def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
         def roleTypes           = [role_sub, role_sub_consortia]
         def role_provider       = RefdataValue.getByValueAndCategory('Provider','Organisational Role')
         def role_agency         = RefdataValue.getByValueAndCategory('Agency','Organisational Role')
@@ -628,7 +630,7 @@ from Subscription as s where (
                             +  " ) "
             )
 
-            qry_params.put('name_filter', "%${params.q.trim().toLowerCase()}%")
+            qry_params.put('name_filter', "%${params.q.trim().toLowerCase()}%");
         }
 
         // eval property filter
@@ -662,24 +664,24 @@ from Subscription as s where (
         if ((params.sort != null) && (params.sort.length() > 0)) {
             base_qry += (params.sort=="s.name") ? " order by LOWER(${params.sort}) ${params.order}":" order by ${params.sort} ${params.order}"
         } else {
-            base_qry += " order by LOWER(s.name) asc"
+            base_qry += " order by lower(trim(s.name)) asc"
         }
 
         //log.debug("query: ${base_qry} && params: ${qry_params}")
 
         result.num_sub_rows = Subscription.executeQuery("select count(s) " + base_qry, qry_params)[0]
-        result.subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params, [max: result.max, offset: result.offset])
-        result.date_restriction = date_restriction
+        result.subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
+        result.date_restriction = date_restriction;
 
         result.propList =
                 PropertyDefinition.findAllWhere(
-                        descr: PropertyDefinition.SUB_PROP,
-                        tenant: null // public properties
+                    descr: PropertyDefinition.SUB_PROP,
+                    tenant: null // public properties
                 ) +
-                        PropertyDefinition.findAllWhere(
-                                descr: PropertyDefinition.SUB_PROP,
-                                tenant: contextService.getOrg() // private properties
-                        )
+                PropertyDefinition.findAllWhere(
+                    descr: PropertyDefinition.SUB_PROP,
+                    tenant: contextService.getOrg() // private properties
+                )
 
         if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)) {
             result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
@@ -687,7 +689,7 @@ from Subscription as s where (
         }
 
         if ( params.exportXLS=='yes' ) {
-            def subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params)
+            def subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params);
             exportcurrentSubscription(subscriptions)
             return
         }
@@ -751,54 +753,54 @@ from Subscription as s where (
             String[] titles = [
                     'Name', 'Vertrag', 'Verknuepfte Pakete', 'Konsortium', 'Anbieter', 'Agentur', 'Anfangsdatum', 'Enddatum', 'Status', 'Typ' ]
 
-            def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+            def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
-            HSSFWorkbook wb = new HSSFWorkbook()
+            HSSFWorkbook wb = new HSSFWorkbook();
 
-            HSSFSheet sheet = wb.createSheet(g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions"))
+            HSSFSheet sheet = wb.createSheet(g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions"));
 
             //the following three statements are required only for HSSF
-            sheet.setAutobreaks(true)
+            sheet.setAutobreaks(true);
 
             //the header row: centered text in 48pt font
-            Row headerRow = sheet.createRow(0)
-            headerRow.setHeightInPoints(16.75f)
+            Row headerRow = sheet.createRow(0);
+            headerRow.setHeightInPoints(16.75f);
             titles.eachWithIndex { titlesName, index ->
-                Cell cell = headerRow.createCell(index)
-                cell.setCellValue(titlesName)
+                Cell cell = headerRow.createCell(index);
+                cell.setCellValue(titlesName);
             }
 
             //freeze the first row
-            sheet.createFreezePane(0, 1)
+            sheet.createFreezePane(0, 1);
 
-            Row row
-            Cell cell
-            int rownum = 1
+            Row row;
+            Cell cell;
+            int rownum = 1;
 
             subscriptions.sort{it.name}
             subscriptions.each{  sub ->
-                int cellnum = 0
-                row = sheet.createRow(rownum)
+                int cellnum = 0;
+                row = sheet.createRow(rownum);
 
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(new HSSFRichTextString(sub.name))
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(new HSSFRichTextString(sub.name));
 
-                cell = row.createCell(cellnum++)
+                cell = row.createCell(cellnum++);
                 //sub.owner.sort{it.reference}
                 sub.owner.each{
-                    cell.setCellValue(new HSSFRichTextString(it.reference))
+                    cell.setCellValue(new HSSFRichTextString(it.reference));
                 }
-                cell = row.createCell(cellnum++)
+                cell = row.createCell(cellnum++);
                 sub.packages.sort{it.pkg.name}
                 def packages =""
                 sub.packages.each{
-                    packages += (it == sub.packages.last()) ? it.pkg.name : it.pkg.name+', '
+                    packages += (it == sub.packages.last()) ? it.pkg.name : it.pkg.name+', ';
                 }
-                cell.setCellValue(new HSSFRichTextString(packages))
+                cell.setCellValue(new HSSFRichTextString(packages));
 
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(new HSSFRichTextString(sub.getConsortia()?.name))
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(new HSSFRichTextString(sub.getConsortia()?.name));
 
                 cell = row.createCell(cellnum++);
                 def providername = ""
@@ -884,7 +886,7 @@ from Subscription as s where (
 
         result.is_inst_admin = result.user?.hasAffiliation('INST_ADM')
 
-        def public_flag = RefdataCategory.lookupOrCreate('YN', 'Yes');
+        def public_flag = RefdataValue.getByValueAndCategory('Yes','YN')
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
@@ -962,9 +964,9 @@ from Subscription as s where (
         def result = setResultGenerics()
         result.orgRoleType = result.institution.getallOrgRoleType()
 
-        def role_sub = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber')
-        def role_sub_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial')
-        def role_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
+        def role_sub = RDStore.OR_SUBSCRIBER
+        def role_sub_cons = RDStore.OR_SUBSCRIBER_CONS
+        def role_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
         
         def orgRole = null
         def subType = null
@@ -989,12 +991,12 @@ from Subscription as s where (
 
             def new_sub = new Subscription(
                     type: subType,
-                    status: RefdataCategory.lookupOrCreate('Subscription Status', 'Current'),
+                    status: RefdataValue.getByValueAndCategory('Current', 'Subscription Status'),
                     name: params.newEmptySubName,
                     startDate: startDate,
                     endDate: endDate,
                     identifier: params.newEmptySubId,
-                    isPublic: RefdataCategory.lookupOrCreate('YN', 'No'),
+                    isPublic: RefdataValue.getByValueAndCategory('No','YN'),
                     impId: java.util.UUID.randomUUID().toString())
 
             if (new_sub.save()) {
@@ -1026,15 +1028,15 @@ from Subscription as s where (
                         def cons_sub = new Subscription(
                                             // type: RefdataValue.findByValue("Subscription Taken"),
                                           type: subType,
-                                          status: RefdataCategory.lookupOrCreate('Subscription Status', 'Current'),
+                                          status: RefdataValue.getByValueAndCategory('Current', 'Subscription Status'),
                                           name: params.newEmptySubName,
                                           // name: params.newEmptySubName + " (${postfix})",
                                           startDate: startDate,
                                           endDate: endDate,
                                           identifier: java.util.UUID.randomUUID().toString(),
                                           instanceOf: new_sub,
-                                          isSlaved: RefdataCategory.lookupOrCreate('YN', 'Yes'),
-                                          isPublic: RefdataCategory.lookupOrCreate('YN', 'No'),
+                                          isSlaved: RefdataValue.getByValueAndCategory('Yes','YN'),
+                                          isPublic: RefdataValue.getByValueAndCategory('No','YN'),
                                           impId: java.util.UUID.randomUUID().toString()).save()
                                           
                         new OrgRole(org: cm,
@@ -1155,7 +1157,7 @@ from Subscription as s where (
                     copyLicense.endDate = parseDate(params.licenseEndDate,possible_date_formats)
 
                     if (copyLicense.save(flush: true)) {
-                        flash.message = message(code: 'license.created.message')
+                        flash.message = message(code: 'license.createdfromTemplate.message')
                     }
 
                     if( params.sub) {
@@ -1170,8 +1172,8 @@ from Subscription as s where (
             }
         }
 
-        def license_type = RefdataCategory.lookupOrCreate('License Type', 'Actual')
-        def license_status = RefdataCategory.lookupOrCreate('License Status', 'Current')
+        def license_type = RefdataValue.getByValueAndCategory('Actual', 'License Type')
+        def license_status = RefdataValue.getByValueAndCategory('Current', 'License Status')
 
         def licenseInstance = new License(type: license_type, status: license_status, reference: params.licenseName ?:null,
                 startDate:params.licenseStartDate ? parseDate(params.licenseStartDate,possible_date_formats) : null,
@@ -1181,8 +1183,8 @@ from Subscription as s where (
         }
         else {
             log.debug("Save ok");
-            def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee')
-            def lic_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensing Consortium')
+            def licensee_role = RDStore.OR_LICENSEE
+            def lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
 
             log.debug("adding org link to new license");
 
@@ -1259,12 +1261,12 @@ from Subscription as s where (
 
 
         if (license?.hasPerm("edit", result.user)) {
-            def current_subscription_status = RefdataCategory.lookupOrCreate('Subscription Status', 'Current');
+            def current_subscription_status = RefdataValue.getByValueAndCategory('Current', 'Subscription Status')
 
             def subs_using_this_license = Subscription.findAllByOwnerAndStatus(license, current_subscription_status)
 
             if (subs_using_this_license.size() == 0) {
-                def deletedStatus = RefdataCategory.lookupOrCreate('License Status', 'Deleted');
+                def deletedStatus = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
                 license.status = deletedStatus
                 license.save(flush: true);
             } else {
@@ -1325,7 +1327,11 @@ from Subscription as s where (
                     basePackage.getConsortia(),
                     add_entitlements)
 
-            def new_sub_link = new OrgRole(org: institution, sub: new_sub, roleType: RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber')).save();
+            def new_sub_link = new OrgRole(
+                    org: institution,
+                    sub: new_sub,
+                    roleType: RDStore.OR_SUBSCRIBER
+            ).save();
 
             // This is done by basePackage.createSubscription
             // def new_sub_package = new SubscriptionPackage(subscription: new_sub, pkg: basePackage).save();
@@ -1394,14 +1400,14 @@ from Subscription as s where (
         if (filterOtherPlat.contains("all")) filterOtherPlat = null
 
         def limits = (isHtmlOutput) ? [readOnly:true,max: result.max, offset: result.offset] : [offset: 0]
-        def del_sub = RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted')
-        def del_ie =  RefdataCategory.lookupOrCreate('Entitlement Issue Status','Deleted');
+        def del_sub = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+        def del_ie =  RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
 
-        def role_sub        = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
-        def role_sub_cons   = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial');
+        def role_sub        = RDStore.OR_SUBSCRIBER
+        def role_sub_cons   = RDStore.OR_SUBSCRIBER_CONS
 
-        def role_sub_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
-        def role_pkg_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia');
+        def role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        def role_pkg_consortia = RefdataValue.getByValueAndCategory('Package Consortia', 'Organisational Role')
         def roles = [role_sub.id,role_sub_consortia.id,role_pkg_consortia.id]
         
         log.debug("viable roles are: ${roles}")
@@ -1460,7 +1466,7 @@ from Subscription as s where (
         }
 
         if (filterPvd) {
-            def cp = RefdataCategory.lookupOrCreate('Organisational Role','Content Provider').id
+            def cp = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')?.id
             sub_qry += " AND orgrole.or_roletype_fk = :cprole  AND orgrole.or_org_fk IN (:provider) "
             qry_params.cprole = cp
             qry_params.provider = filterPvd.join(", ")
@@ -1542,15 +1548,15 @@ from Subscription as s where (
      */
     private setFiltersLists(result, date_restriction) {
         // Query the list of Subscriptions
-        def del_sub = RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted')
-        def del_ie =  RefdataCategory.lookupOrCreate('Entitlement Issue Status','Deleted');
+        def del_sub = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+        def del_ie =  RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
 
-        def role_sub            = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
-        def role_sub_cons       = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial');
-        def role_sub_consortia  = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
+        def role_sub            = RDStore.OR_SUBSCRIBER
+        def role_sub_cons       = RDStore.OR_SUBSCRIBER_CONS
+        def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
 
-        def cp = RefdataCategory.lookupOrCreate('Organisational Role','Content Provider')
-        def role_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia');
+        def cp = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
+        def role_consortia = RefdataValue.getByValueAndCategory('Package Consortia', 'Organisational Role')
 
         def roles = [role_sub, role_sub_cons, role_sub_consortia]
         
@@ -1722,8 +1728,8 @@ AND EXISTS (
             return;
         }
 
-        def licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
-        def licensee_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial');
+        def licensee_role =  RDStore.OR_LICENSEE
+        def licensee_cons_role = RDStore.OR_LICENSEE_CONS
 
         // Find all licenses for this institution...
         def result = [:]
@@ -1755,7 +1761,7 @@ AND EXISTS (
         result.user = User.get(springSecurityService.principal.id)
         def subscription = Subscription.get(params.basesubscription)
         def inst = Org.get(params.curInst)
-        def deletedStatus = RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted');
+        def deletedStatus = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
 
         if (subscription.hasPerm("edit", result.user)) {
             def derived_subs = Subscription.findByInstanceOfAndStatusNot(subscription, deletedStatus)
@@ -2770,7 +2776,7 @@ AND EXISTS (
                 endDate: sub_endDate,
                 previousSubscription: old_subOID ?: null,
                 type: Subscription.get(old_subOID)?.type ?: null,
-                isPublic: RefdataCategory.lookupOrCreate('YN', 'No'),
+                isPublic: RefdataValue.getByValueAndCategory('No','YN'),
                 owner: params.subscription.copyLicense ? (Subscription.get(old_subOID)?.owner) : null)
         log.debug("New Sub: ${new_subscription.startDate}  - ${new_subscription.endDate}")
         def packages_referenced = []
@@ -2781,7 +2787,8 @@ AND EXISTS (
             // assert an org-role
             def org_link = new OrgRole(org: result.institution,
                     sub: new_subscription,
-                    roleType: RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber')).save();
+                    roleType: RDStore.OR_SUBSCRIBER
+            ).save();
 
             // Copy any links from SO
             // db_sub.orgRelations.each { or ->
@@ -2820,7 +2827,7 @@ AND EXISTS (
             }
 
             if (dbtipp) {
-                def live_issue_entitlement = RefdataCategory.lookupOrCreate('Entitlement Issue Status', 'Live');
+                def live_issue_entitlement = RefdataValue.getByValueAndCategory('Live', 'Entitlement Issue Status')
                 def is_core = false
 
                 def new_core_status = null;
@@ -2944,7 +2951,7 @@ AND EXISTS (
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+        def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending','PendingChangeStatus')
         getTodoForInst(result)
 
         //.findAllByOwner(result.user,sort:'ts',order:'asc')
@@ -2960,7 +2967,7 @@ AND EXISTS (
         result.enableMyInstFormFields = true // enable special form fields
         result << preCon
 
-        def announcement_type = RefdataCategory.lookupOrCreate('Document Type', 'Announcement')
+        def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: 10, sort: 'dateCreated', order: 'desc'])
         result.dashboardReminderPeriod = contextService.getUser().getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14).value
         result.dueObjects = getDueObjects(result.dashboardReminderPeriod)
@@ -3065,10 +3072,10 @@ AND EXISTS (
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def getTodoForInst(result){
-        def lic_del = RefdataCategory.lookupOrCreate('License Status', 'Deleted');
-        def sub_del = RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted');
-        def pkg_del = RefdataCategory.lookupOrCreate( 'Package Status', 'Deleted' );
-        def pc_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+        def lic_del = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
+        def sub_del = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+        def pkg_del = RefdataValue.getByValueAndCategory('Deleted', 'Package Status')
+        def pc_status = RefdataValue.getByValueAndCategory('Pending', 'PendingChangeStatus')
         result.num_todos = PendingChange.executeQuery("select count(distinct pc.oid) from PendingChange as pc left outer join pc.license as lic left outer join lic.status as lic_status left outer join pc.subscription as sub left outer join sub.status as sub_status left outer join pc.pkg as pkg left outer join pkg.packageStatus as pkg_status where pc.owner = ? and (pc.status = ? or pc.status is null) and ((lic_status is null or lic_status!=?) and (sub_status is null or sub_status!=?) and (pkg_status is null or pkg_status!=?))", [result.institution,pc_status, lic_del,sub_del,pkg_del])[0]
 
         log.debug("Count3=${result.num_todos}");
@@ -3116,7 +3123,7 @@ AND EXISTS (
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        def announcement_type = RefdataCategory.lookupOrCreate('Document Type', 'Announcement')
+        def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max, sort: 'dateCreated', order: 'desc'])
         result.num_announcements = result.recentAnnouncements.size()
 
@@ -3419,6 +3426,17 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         ).each { cmb ->
             result.consortiaMemberIds << cmb.fromOrg.id
         }
+
+        if ( params.exportXLS=='yes' ) {
+
+            def orgs = result.availableOrgs
+
+            def message = g.message(code: 'menu.institutions.all_orgs')
+
+            exportOrg(orgs, message, true)
+            return
+        }
+
         result
     }
 
@@ -3466,6 +3484,16 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             result.consortiaMembers = Org.executeQuery( tmpQuery.join(' '), tmpQueryParams )
         } else {
             result.consortiaMembers = consortiaMembers
+        }
+
+        if ( params.exportXLS=='yes' ) {
+
+            def orgs = result.consortiaMembers
+
+            def message = g.message(code: 'menu.institutions.myConsortia')
+
+            exportOrg(orgs, message, true)
+            return
         }
 
         result
@@ -3682,5 +3710,178 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
         }
 
+    }
+
+    private def exportOrg(orgs, message, addHigherEducationTitles) {
+        try {
+            def titles = [
+                    'Name', 'Kurzname', 'Sortiername']
+
+            def orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
+            def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
+
+
+            if(addHigherEducationTitles)
+            {
+                titles.add('Bibliothekstyp')
+                titles.add('Verbundszugehörigkeit')
+                titles.add('Trägerschaft')
+                titles.add('Bundesland')
+                titles.add('Land')
+            }
+
+            def propList =
+                    PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
+                            defList: [PropertyDefinition.ORG_PROP],
+                    ] // public properties
+                    ) +
+                            PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant = :tenant", [
+                                    defList: [PropertyDefinition.ORG_PROP],
+                                    tenant: contextService.getOrg()
+                            ]// private properties
+                            )
+
+            propList.sort { a, b -> a.name.compareToIgnoreCase b.name}
+
+            propList.each {
+                titles.add(it.name)
+            }
+
+            def sdf = new java.text.SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+            def datetoday = sdf.format(new Date(System.currentTimeMillis()))
+
+            HSSFWorkbook wb = new HSSFWorkbook();
+
+            HSSFSheet sheet = wb.createSheet(message);
+
+            //the following three statements are required only for HSSF
+            sheet.setAutobreaks(true);
+
+            //the header row: centered text in 48pt font
+            Row headerRow = sheet.createRow(0);
+            headerRow.setHeightInPoints(16.75f);
+            titles.eachWithIndex { titlesName, index ->
+                Cell cell = headerRow.createCell(index);
+                cell.setCellValue(titlesName);
+            }
+
+            //freeze the first row
+            sheet.createFreezePane(0, 1);
+
+            Row row;
+            Cell cell;
+            int rownum = 1;
+
+            orgs.sort{it.name}
+            orgs.each{  org ->
+                int cellnum = 0;
+                row = sheet.createRow(rownum);
+
+                //Name
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(new HSSFRichTextString(org.name));
+
+                //Shortname
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(new HSSFRichTextString(org.shortname));
+
+                //Sortname
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(new HSSFRichTextString(org.sortname));
+
+
+                if(addHigherEducationTitles) {
+
+                    //libraryType
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(new HSSFRichTextString(org.libraryType?.getI10n('value') ?: ' '));
+
+                    //libraryNetwork
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(new HSSFRichTextString(org.libraryNetwork?.getI10n('value') ?: ' '));
+
+                    //funderType
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(new HSSFRichTextString(org.funderType?.getI10n('value') ?: ' '));
+
+                    //federalState
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(new HSSFRichTextString(org.federalState?.getI10n('value') ?: ' '));
+
+                    //country
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(new HSSFRichTextString(org.country?.getI10n('value') ?: ' '));
+                }
+
+                propList.each { pd ->
+                    def value = ''
+                    org.customProperties.each{ prop ->
+                        if(prop.type.descr == pd.descr && prop.type == pd)
+                        {
+                            if(prop.type.type == Integer.toString()){
+                                value = prop.intValue.toString()
+                            }
+                            else if (prop.type.type == String.toString()){
+                                value = prop.stringValue
+                            }
+                            else if (prop.type.type == BigDecimal.toString()){
+                                value = prop.decValue.toString()
+                            }
+                            else if (prop.type.type == Date.toString()){
+                                value = prop.dateValue.toString()
+                            }
+                            else if (prop.type.type == RefdataValue.toString()) {
+                                value = prop.refValue?.getI10n('value') ?: ''
+                            }
+
+                        }
+                    }
+
+                    org.privateProperties.each{ prop ->
+                        if(prop.type.descr == pd.descr && prop.type == pd)
+                        {
+                            if(prop.type.type == Integer.toString()){
+                                value = prop.intValue.toString()
+                            }
+                            else if (prop.type.type == String.toString()){
+                                value = prop.stringValue
+                            }
+                            else if (prop.type.type == BigDecimal.toString()){
+                                value = prop.decValue.toString()
+                            }
+                            else if (prop.type.type == Date.toString()){
+                                value = prop.dateValue.toString()
+                            }
+                            else if (prop.type.type == RefdataValue.toString()) {
+                                value = prop.refValue?.getI10n('value') ?: ''
+                            }
+
+                        }
+                    }
+                    cell = row.createCell(cellnum++);
+                    cell.setCellValue(new HSSFRichTextString(value));
+                }
+
+                rownum++
+            }
+
+            for (int i = 0; i < 22; i++) {
+                sheet.autoSizeColumn(i);
+            }
+            // Write the output to a file
+            String file = message+"_${datetoday}.xls";
+            //if(wb instanceof XSSFWorkbook) file += "x";
+
+            response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
+            // response.contentType = 'application/xls'
+            response.contentType = 'application/vnd.ms-excel'
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+
+        }
+        catch ( Exception e ) {
+            log.error("Problem",e);
+            response.sendError(500)
+        }
     }
 }

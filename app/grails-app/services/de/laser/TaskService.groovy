@@ -5,9 +5,11 @@ import com.k_int.kbplus.MyInstitutionController
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.RefdataCategory
+import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.Task
 import com.k_int.kbplus.auth.User
+import de.laser.helper.RDStore
 import grails.transaction.Transactional
 
 @Transactional
@@ -141,16 +143,16 @@ class TaskService {
         def qry_params1 = [
             lic_org:    contextOrg,
             org_roles:  [
-                    RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee'),
-                    RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial')
+                    RDStore.OR_LICENSEE,
+                    RDStore.OR_LICENSEE_CONS
             ],
-            lic_status: RefdataCategory.lookupOrCreate('License Status', 'Deleted')
+            lic_status: RefdataValue.getByValueAndCategory('Deleted', 'License Status')
         ]
         def qry_params2 = [
             'roleTypes' : [
-                RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber'),
-                RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial'),
-                RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia')
+                    RDStore.OR_SUBSCRIBER,
+                    RDStore.OR_SUBSCRIBER_CONS,
+                    RDStore.OR_SUBSCRIPTION_CONSORTIA
             ],
             'activeInst': contextOrg
         ]

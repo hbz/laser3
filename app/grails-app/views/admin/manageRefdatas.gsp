@@ -79,17 +79,23 @@ ${usedRdvList.join(", ")}
                                 </td>
                             </tr>
 
-                            <g:each in="${RefdataValue.findAllByOwner(rdc)}" var="rdv">
+                            <g:each in="${RefdataValue.findAllByOwner(rdc).toSorted()}" var="rdv">
                                 <tr>
-                                    <td></td>
                                     <td>
-                                        <g:if test="${usedRdvList?.contains(rdv.id)}">
-                                            ${rdv.value}
+                                        <g:if test="${rdv.hardData}">
+                                            <span data-position="top left" data-tooltip="${message(code:'default.hardData.tooltip')}">
+                                                <i class="check circle icon green"></i>
+                                            </span>
                                         </g:if>
-                                        <g:else>
-                                            <span data-position="top left" data-tooltip="Dieser Wert wird bisher nicht verwendet (ID:${rdv.id})"
-                                                  style="font-style:italic; color:lightsteelblue;">${rdv.value}</span>
-                                        </g:else>
+
+                                        <g:if test="${! usedRdvList?.contains(rdv.id)}">
+                                            <span data-position="top left" data-tooltip="Dieser Wert wird bisher nicht verwendet (ID:${rdv.id})">
+                                                <i class="info circle icon blue"></i>
+                                            </span>
+                                        </g:if>
+                                    </td>
+                                    <td>
+                                        ${rdv.value}
                                     </td>
                                     <td>
                                         <semui:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueDe" />

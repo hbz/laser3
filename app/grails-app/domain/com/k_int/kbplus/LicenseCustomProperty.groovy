@@ -105,17 +105,45 @@ class LicenseCustomProperty extends CustomProperty implements AuditTrait  {
             def depedingProps = LicenseCustomProperty.findAllByInstanceOf( this )
             depedingProps.each{ lcp ->
 
+                def definedType = 'text'
+                if (lcp.type.type == RefdataValue.class.toString()) {
+                    definedType = 'rdv'
+                }
+                else if (lcp.type.type == Date.class.toString()) {
+                    definedType = 'date'
+                }
+
+                // overwrite specials ..
+                if (changeDocument.prop == 'note') {
+                    definedType = 'text'
+                    description = '(NOTE)'
+                }
+                else if (changeDocument.prop == 'paragraph') {
+                    definedType = 'text'
+                    description = '(PARAGRAPH)'
+                }
+
+                def msgParams = [
+                        definedType,
+                        "${lcp.type.class.name}:${lcp.type.id}",
+                        (changeDocument.prop in ['note', 'paragraph'] ? "${changeDocument.oldLabel}" : "${changeDocument.old}"),
+                        (changeDocument.prop in ['note', 'paragraph'] ? "${changeDocument.newLabel}" : "${changeDocument.new}"),
+                        "${description}"
+                ]
+
                 def newPendingChange =  changeNotificationService.registerPendingChange(
                         PendingChange.PROP_LICENSE,
-                        propName,
-                        // pendingChange.message_LI02
-                        "Das Merkmal <b>${lcp.type.name}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Vertragsvorlage geändert. " + description,
-                        lcp.owner.getSubscriber(),
+                        lcp.owner,
+                        lcp.owner.getLicensee(),
                         [
                                 changeTarget:"com.k_int.kbplus.License:${lcp.owner.id}",
                                 changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
                                 changeDoc:changeDocument
-                        ])
+                        ],
+                        PendingChange.MSG_LI02,
+                        msgParams,
+                        "Das Merkmal <b>${lcp.type.name}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Vertragsvorlage geändert. " + description
+                )
                 if (newPendingChange && lcp.owner.isSlaved?.value == "Yes") {
                     slavedPendingChanges << newPendingChange
                 }

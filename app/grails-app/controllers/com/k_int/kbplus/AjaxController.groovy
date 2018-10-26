@@ -1247,6 +1247,25 @@ class AjaxController {
     render result as JSON
   }
 
+    def toggleEditMode() {
+        log.debug ('toggleEditMode()')
+
+        def user = contextService.getUser()
+        def show = params.showEditMode
+
+        if (show) {
+            def setting = user.getSetting(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', 'YN'))
+
+            if (show == 'true') {
+                setting.setValue(RefdataValue.getByValueAndCategory('Yes', 'YN'))
+            }
+            else if (show == 'false') {
+                setting.setValue(RefdataValue.getByValueAndCategory('No', 'YN'))
+            }
+        }
+        render show
+    }
+
     @Secured(['ROLE_USER'])
   def addToCollection() {
     log.debug("AjaxController::addToCollection ${params}");

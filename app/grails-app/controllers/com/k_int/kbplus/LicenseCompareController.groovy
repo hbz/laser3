@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.User
 
@@ -31,10 +32,10 @@ class LicenseCompareController {
         // ajax/lookup
         // License.refdataFind()
 
-        result.isPublic = RefdataCategory.lookupOrCreate('YN', 'Yes');
+        result.isPublic = RefdataValue.getByValueAndCategory('Yes','YN')
 
-        result.licensee_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee');
-        result.licensee_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial')
+        result.licensee_role = RDStore.OR_LICENSEE
+        result.licensee_cons_role = RDStore.OR_LICENSEE_CONS
         result
   }
 

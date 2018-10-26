@@ -502,7 +502,7 @@ class GlobalSourceSyncService {
       if(auto_accept){
         ctx.save(flush:true)
 
-        def announcement_type = RefdataCategory.lookupOrCreate('Document Type','Announcement')
+        def announcement_type = RefdataValue.getByValueAndCategory('Announcement','Document Type')
         def newAnnouncement = new Doc(title:'Automated Announcement',
               type:announcement_type,
               content:announcement_content,

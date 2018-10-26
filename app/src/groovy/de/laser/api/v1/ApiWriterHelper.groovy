@@ -3,7 +3,7 @@ package de.laser.api.v1
 import com.k_int.kbplus.*
 import com.k_int.properties.PropertyDefinition
 import de.laser.api.v1.entities.ApiOrg
-import de.laser.domain.Constants
+import de.laser.helper.Constants
 import groovy.util.logging.Log4j
 
 @Log4j

@@ -47,7 +47,7 @@
                     <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="EUR" />
                 </td>
                 <td>
-                    ${ci.costItemElement.getI10n('value')}
+                    ${ci.costItemElement?.getI10n('value')}
                 </td>
                 <td>
                     <g:link controller="subscriptionDetails" action="show" id="${ci.sub?.id}">${ci.sub}</g:link>

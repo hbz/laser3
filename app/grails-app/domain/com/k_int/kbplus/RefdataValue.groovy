@@ -5,7 +5,7 @@ import de.laser.domain.I10nTranslation
 import org.springframework.context.i18n.LocaleContextHolder
 import javax.persistence.Transient
 
-class RefdataValue extends AbstractI10nTranslatable {
+class RefdataValue extends AbstractI10nTranslatable implements Comparable<RefdataValue> {
 
     @Transient
     def grailsApplication
@@ -20,6 +20,11 @@ class RefdataValue extends AbstractI10nTranslatable {
 
     // indicates this object is created via front-end
     boolean softData
+    // indicates this object is created via current bootstrap
+    boolean hardData
+
+    // if manual ordering is wanted
+    Long order
 
     static belongsTo = [
         owner:RefdataCategory
@@ -52,38 +57,63 @@ class RefdataValue extends AbstractI10nTranslatable {
                   icon column: 'rdv_icon'
                  group column: 'rdv_group'
               softData column: 'rdv_soft_data'
+              hardData column: 'rdv_hard_data'
+              order    column: 'rdv_order'
+
     }
 
     static constraints = {
         icon     (nullable:true)
         group    (nullable:true,  blank:false)
         softData (nullable:false, blank:false, default:false)
+        hardData (nullable:false, blank:false, default:false)
+        order    (nullable:true,  blank: false)
     }
 
     /**
      * Create RefdataValue and matching I10nTranslation.
      * Create RefdataCategory, if needed.
-     * Softdata flag will be removed, if RefdataValue is found.
+     *
+     * Call this from bootstrap
      *
      * @param category_name
      * @param i10n
+     * @param hardData = only true if called from bootstrap
      * @return
      */
-    static def loc(String category_name, Map i10n) {
+    static def loc(String category_name, Map i10n, def hardData) {
 
-        def cat = RefdataCategory.loc(category_name, [:])
+        // avoid harddata reset @ RefdataCategory.loc
+        def cat = RefdataCategory.findByDescIlike(category_name)
+        if (! cat) {
+            cat = new RefdataCategory(desc:category_name)
+            cat.save(flush: true)
+
+            I10nTranslation.createOrUpdateI10n(cat, 'desc', [:])
+        }
+
         def rdvValue = i10n['key'] ?: i10n['en']
 
         def result = findByOwnerAndValueIlike(cat, rdvValue)
         if (! result) {
             result = new RefdataValue(owner: cat, value: rdvValue)
         }
-        result.softData = false
+        result.hardData = hardData
+        if (hardData) {
+            // set to false if value is meanwhile in bootstrap
+            result.softData = false
+        }
         result.save(flush: true)
 
         I10nTranslation.createOrUpdateI10n(result, 'value', i10n)
 
         result
+    }
+
+    // Call this from code
+    static def loc(String category_name, Map i10n) {
+        def hardData = false
+        loc(category_name, i10n, hardData)
     }
 
     static def refdataFind(params) {
@@ -124,7 +154,26 @@ class RefdataValue extends AbstractI10nTranslatable {
 
         null
     }
-    
+
+    int compareTo(RefdataValue rdv) {
+
+        def a = rdv.order  ?: 0
+        def b = this.order ?: 0
+
+        if (a && b) {
+            return a <=> b
+        }
+        else if (a && !b) {
+            return 1
+        }
+        else if (!a && b) {
+            return -1
+        }
+        else {
+            return this.getI10n('value')?.compareTo(rdv.getI10n('value'))
+        }
+    }
+
     // still provide OLD mapping for string compares and such stuff
     public String toString() {
         value

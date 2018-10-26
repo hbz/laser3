@@ -315,14 +315,14 @@
                                 <% /*
                                     if (license.instanceOf && ! license.instanceOf.isTemplate()) {
                                         if (license.isSlaved?.value?.equalsIgnoreCase('yes')) {
-                                            println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                                            println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
                                         }
                                         else {
                                             println '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                         }
                                     }
                                     else {
-                                        println '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                                        println '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
                                     }
                                 */ %>
                             </h5>

@@ -415,7 +415,9 @@
                                     <dt class="control-label">${message(code: 'subscription.details.costPerUse.header')}</dt>
                                     <dd><g:formatNumber number="${totalCostPerUse}" type="currency"
                                                         currencyCode="${currencyCode}" maxFractionDigits="2"
-                                                        minFractionDigits="2" roundingMode="HALF_UP"/></dd>
+                                                        minFractionDigits="2" roundingMode="HALF_UP"/>
+                                        (${message(code: 'subscription.details.costPerUse.usedMetric')}: ${costPerUseMetric})
+                                    </dd>
                                 </dl>
                                 <div class="ui divider"></div>
                             </g:if>
@@ -447,8 +449,9 @@
                                                             target="_blank"
                                                             params="[mode        : usageMode,
                                                                      packages    : subscription.getCommaSeperatedPackagesIsilList(),
+                                                                     vendors     : natStatSupplierId,
                                                                      institutions: statsWibid,
-                                                                     reports     : reportMetric.split(':')[0]+'R4',
+                                                                     reports     : reportMetric.split(':')[0],
                                                                      years       : x_axis_labels[i]
                                                             ]"
                                                             title="Springe zu Statistik im Nationalen Statistikserver">
@@ -499,14 +502,14 @@
                             <% /*
                                 if (subscriptionInstance.instanceOf && ! subscriptionInstance.instanceOf.isTemplate()) {
                                     if (subscriptionInstance.isSlaved?.value?.equalsIgnoreCase('yes')) {
-                                        println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                                        println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
                                     }
                                     else {
                                         println '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
                                     }
                                 }
                                 else {
-                                    println '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                                    println '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
                                 }
                             */ %>
                         </h5>

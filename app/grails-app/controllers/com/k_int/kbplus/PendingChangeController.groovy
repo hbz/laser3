@@ -29,7 +29,7 @@ class PendingChangeController {
         def owner = genericOIDService.resolveOID(params.OID)
 
         def changes_to_accept = []
-        def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+        def pending_change_pending_status = RefdataValue.getByValueAndCategory("Pending", "PendingChangeStatus")
         def pendingChanges = owner?.pendingChanges.findAll {
             (it.status == pending_change_pending_status) || it.status == null
         }
@@ -50,7 +50,7 @@ class PendingChangeController {
         def owner = genericOIDService.resolveOID(params.OID)
 
         def changes_to_reject = []
-        def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+        def pending_change_pending_status = RefdataValue.getByValueAndCategory("Pending", "PendingChangeStatus")
         def pendingChanges = owner?.pendingChanges.findAll {
             (it.status == pending_change_pending_status) || it.status == null
         }

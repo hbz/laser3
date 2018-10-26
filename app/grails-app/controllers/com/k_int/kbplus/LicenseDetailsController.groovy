@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
 import grails.converters.*
 import com.k_int.kbplus.auth.*;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
@@ -55,14 +56,14 @@ class LicenseDetailsController {
           result.processingpc = true
       } else {
 
-          def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+          def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending','PendingChangeStatus')
           def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, pending_change_pending_status]);
 
           //Filter any deleted subscriptions out of displayed links
           Iterator<Subscription> it = result.license.subscriptions.iterator()
           while (it.hasNext()) {
               def sub = it.next();
-              if (sub.status == RefdataCategory.lookupOrCreate('Subscription Status', 'Deleted')) {
+              if (sub.status == RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')) {
                   it.remove();
               }
           }
@@ -296,8 +297,8 @@ select s from Subscription as s where (
         if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution.getallOrgRoleType())) {
             orgRoleType = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType').id]
         }
-        def role_lic      = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensee_Consortial')
-        def role_lic_cons = RefdataCategory.lookupOrCreate('Organisational Role', 'Licensing Consortium')
+        def role_lic      = RDStore.OR_LICENSEE_CONS
+        def role_lic_cons = RDStore.OR_LICENSING_CONSORTIUM
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
@@ -434,7 +435,7 @@ from Subscription as s where
     if(consortia){
       result.consortia = consortia
       result.consortiaInstsWithStatus = []
-    def type = RefdataCategory.lookupOrCreate('Combo Type', 'Consortium')
+    def type = RefdataValue.getByValueAndCategory('Consortium', 'Combo Type')
     def institutions_in_consortia_hql = "select c.fromOrg from Combo as c where c.type = ? and c.toOrg = ? order by c.fromOrg.name"
     def consortiaInstitutions = Combo.executeQuery(institutions_in_consortia_hql, [type, consortia])
 
@@ -444,9 +445,9 @@ from Subscription as s where
         def queryParams = [ it, result.license]
         def hasLicense = License.executeQuery(findOrgLicenses, queryParams)
         if (hasLicense){
-          result.consortiaInstsWithStatus.put(it, RefdataCategory.lookupOrCreate("YNO","Yes") )    
+          result.consortiaInstsWithStatus.put(it, RefdataValue.getByValueAndCategory("Yes", "YNO") )
         }else{
-          result.consortiaInstsWithStatus.put(it, RefdataCategory.lookupOrCreate("YNO","No") )    
+          result.consortiaInstsWithStatus.put(it, RefdataValue.getByValueAndCategory("No", "YNO") )
         }
       }
     }else{
@@ -463,7 +464,7 @@ from Subscription as s where
         redirect controller: 'licenseDetails', action: 'show', params: params
         return
 
-    def slaved = RefdataCategory.lookupOrCreate('YN','Yes')
+    def slaved = RefdataValue.getByValueAndCategory('Yes', 'YN')
     params.each { p ->
         if(p.key.startsWith("_create.")){
          def orgID = p.key.substring(8)
@@ -510,7 +511,7 @@ from Subscription as s where
         def delLicense      = genericOIDService.resolveOID(params.target)
         def delInstitutions = delLicense?.getAllLicensee()
 
-        def deletedStatus = RefdataCategory.lookupOrCreate('License Status', 'Deleted')
+        def deletedStatus = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
 
         if (delLicense?.hasPerm("edit", result.user)) {
             def derived_lics = License.findByInstanceOfAndStatusNot(delLicense, deletedStatus)
@@ -556,7 +557,7 @@ from Subscription as s where
                 result.processingpc = true
             }
             else {
-                def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
+                def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending','PendingChangeStatus')
                 def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license.id=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [member.id, pending_change_pending_status])
 
                 result.pendingChanges << ["${member.id}": pendingChanges.collect { PendingChange.get(it) }]
@@ -767,8 +768,8 @@ from Subscription as s where
   def processNewTemplateLicense() {
     if ( params.reference && ( ! params.reference.trim().equals('') ) ) {
 
-      def template_license_type = RefdataCategory.lookupOrCreate('License Type','Template');
-      def license_status_current = RefdataCategory.lookupOrCreate('License Status','Current');
+      def template_license_type = RefdataValue.getByValueAndCategory('Template', 'License Type')
+      def license_status_current = RefdataValue.getByValueAndCategory('Current', 'License Status')
       
       def new_template_license = new License(reference:params.reference,
                                              type:template_license_type,
@@ -968,7 +969,8 @@ from Subscription as s where
                         for (prop in baseLicense.customProperties) {
                             def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
                             copiedProp = prop.copyInto(copiedProp)
-                            licenseInstance.addToCustomProperties(copiedProp)
+                            copiedProp.save(flush: true)
+                            //licenseInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                         }
                     }
                     if(params.license.copyPrivateProperties){
@@ -980,11 +982,11 @@ from Subscription as s where
                             {
                                 def copiedProp = new LicensePrivateProperty(type: prop.type, owner: licenseInstance)
                                 copiedProp = prop.copyInto(copiedProp)
-                                licenseInstance.addToPrivateProperties(copiedProp)
+                                copiedProp.save(flush: true)
+                                //licenseInstance.addToPrivateProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                             }
                         }
                     }
-
                 redirect controller: 'licenseDetails', action: 'show', params: [id: licenseInstance.id]
                 }
 

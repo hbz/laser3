@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
+import de.laser.helper.RDStore
 import de.laser.traits.AuditTrait
 import de.laser.domain.AbstractBaseDomain
 import de.laser.interfaces.Permissions
@@ -329,37 +330,37 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
             log.debug("Send pending change to ${ds.id}")
 
             def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-            ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.subscription."+changeDocument.prop, locale.toString())
             def description = messageSource.getMessage('default.accept.placeholder',null, locale)
-            if (contentItemDesc) {
-                description = contentItemDesc.content
+
+            def definedType = 'text'
+            if (this."${changeDocument.prop}" instanceof RefdataValue) {
+                definedType = 'rdv'
             }
-            else {
-                def defaultMsg = ContentItem.findByKeyAndLocale("kbplus.change.subscription.default", locale.toString())
-                if( defaultMsg)
-                    description = defaultMsg.content
+            else if (this."${changeDocument.prop}" instanceof Date) {
+                definedType = 'date'
             }
 
-            def propName
-            try {
-                // UGLY
-                propName = changeDocument.name ? ((messageSource.getMessage("subscription.${changeDocument.name}", null, locale)) ?: (changeDocument.name)) : (messageSource.getMessage("subscription.${changeDocument.prop}", null, locale) ?: (changeDocument.prop))
-
-            } catch(Exception e) {
-                propName = changeDocument.name ?: changeDocument.prop
-            }
+            def msgParams = [
+                    definedType,
+                    "${changeDocument.prop}",
+                    "${changeDocument.old}",
+                    "${changeDocument.new}",
+                    "${description}"
+            ]
 
             def newPendingChange = changeNotificationService.registerPendingChange(
                     PendingChange.PROP_SUBSCRIPTION,
                     ds,
-                    // pendingChange.message_SU01
-                    "<b>${propName}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Lizenzvorlage geändert. " + description,
                     ds.getSubscriber(),
                     [
                             changeTarget:"com.k_int.kbplus.Subscription:${ds.id}",
                             changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
                             changeDoc:changeDocument
-                    ])
+                    ],
+                    PendingChange.MSG_SU01,
+                    msgParams,
+                    "<b>${changeDocument.prop}</b> hat sich von <b>\"${changeDocument.oldLabel?:changeDocument.old}\"</b> zu <b>\"${changeDocument.newLabel?:changeDocument.new}\"</b> von der Lizenzvorlage geändert. " + description
+            )
 
             if (newPendingChange && ds.isSlaved?.value == "Yes") {
                 slavedPendingChanges << newPendingChange
@@ -420,9 +421,9 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
     def hqlString = "select sub from Subscription sub where lower(sub.name) like :name "
     def hqlParams = [name: ((params.q ? params.q.toLowerCase() : '' ) + "%")]
     def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd")
-    def cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscription Consortia');
-    def subscr_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
-    def subscr_cons_role = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber_Consortial');
+    def cons_role = RDStore.OR_SUBSCRIPTION_CONSORTIA
+    def subscr_role = RDStore.OR_SUBSCRIBER
+    def subscr_cons_role = RDStore.OR_SUBSCRIBER_CONS
     def viableRoles = [cons_role, subscr_role, subscr_cons_role]
     
     hqlParams.put('viableRoles', viableRoles)
@@ -475,7 +476,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
 
   def setInstitution(inst) {
     println("Set institution ${inst}");
-    def subrole = RefdataCategory.lookupOrCreate('Organisational Role', 'Subscriber');
+    def subrole = RDStore.OR_SUBSCRIBER
     def or = new OrgRole(org:inst, roleType:subrole, sub:this)
     if ( this.orgRelations == null)
       this.orgRelations = []
@@ -516,6 +517,11 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
           }
       }
       return hasUsageSupplier
+  }
+
+  def getHoldingTypes() {
+      def types = issueEntitlements?.tipp.title.type.unique()
+      types
   }
 
 }
