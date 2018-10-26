@@ -129,9 +129,8 @@
 
                 <div class="field">
                     <label>${message(code: 'profile.reminderPeriod', default:'Reminder period')}</label>
-                    2 Wochen
-                    %{--TODO: änderbar und in DB--}%
-                    %{--<semui:xEditable owner="${user.getSetting(UserSettings.KEYS.PAGE_SIZE, 10)}" field="strValue" />--}%
+                    <g:set var="US_DASHBOARD_REMINDER_PERIOD" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}" />
+                    <semui:xEditable owner="${US_DASHBOARD_REMINDER_PERIOD}" field="strValue" />&nbspTage vor dem Termin
                 </div>
 
             </div>

@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.*
+import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import de.laser.helper.DebugAnnotation
@@ -11,6 +13,7 @@ import org.apache.poi.hssf.usermodel.*
 import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
 import com.k_int.properties.PropertyDefinition
+import com.k_int.kbplus.RefdataValue
 
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
@@ -696,7 +699,7 @@ from Subscription as s where (
         }
     }
 
-    private def getDueSubscriptions(java.sql.Date dateFrom, java.sql.Date dateTo) {
+    private def getDueSubscriptions(java.sql.Date endDateFrom, java.sql.Date endDateTo, java.sql.Date manualCancellationDateFrom, java.sql.Date manualCancellationDateTo) {
         Org institution = contextService.getOrg()
         def role_sub            = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
         def role_subCons        = RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role')
@@ -708,17 +711,15 @@ from Subscription as s where (
         boolean isSubscriber = ! isSubscriptionConsortia
 
         if (isSubscriber) {
-            base_qry = """
-                from Subscription as s where (
-                    exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :activeInst ) ) 
-                    AND ( s.status.value != 'Deleted' )
-                    AND (
-                        ( not exists ( select o from s.orgRelations as o where o.roleType = :scRoleType ) )
-                        or
-                        ( ( exists ( select o from s.orgRelations as o where o.roleType = :scRoleType ) ) AND ( s.instanceOf is not null) )
-                    )
-                )
-                """
+            base_qry = "from Subscription as s where ( "+
+                    "exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :activeInst ) ) "+
+                    "AND ( s.status.value != 'Deleted' ) "+
+                    "AND ( "+
+                        "( not exists ( select o from s.orgRelations as o where o.roleType = :scRoleType ) ) "+
+                        "or "+
+                        "( ( exists ( select o from s.orgRelations as o where o.roleType = :scRoleType ) ) AND ( s.instanceOf is not null) ) "+
+                    ") "+
+                ")"
             qry_params = ['roleType1':role_sub, 'roleType2':role_subCons, 'activeInst':institution, 'scRoleType':role_sub_consortia]
         }
 
@@ -727,14 +728,20 @@ from Subscription as s where (
             qry_params = ['roleType':role_sub_consortia, 'activeInst':institution]
         }
 
-        base_qry += " and (endDate >= :infoDate1 and endDate <= :today1) or (manualCancellationDate >= :infoDate2 and manualCancellationDate <= :today2) "
-        qry_params << [infoDate1 : dateFrom]
-        qry_params << [today1 : dateTo]
-        qry_params << [infoDate2 : dateFrom]
-        qry_params << [today2 : dateTo]
+        if (endDateFrom && endDateTo) {
+            base_qry += " and (endDate >= :endFrom and endDate <= :endTo)"
+            qry_params.put("endFrom", endDateFrom)
+            qry_params.put("endTo", endDateTo)
+        }
+
+        if (manualCancellationDateFrom && manualCancellationDateTo){
+            base_qry +=" or (manualCancellationDate >= :cancellFrom and manualCancellationDate <= :cancellTo) "
+            qry_params.put("cancellFrom", manualCancellationDateFrom)
+            qry_params.put("cancellTo", manualCancellationDateTo)
+        }
 
         base_qry += " and status != :status "
-        qry_params << [status : sub_status_deleted]
+        qry_params.put("status", sub_status_deleted)
 
         Subscription.executeQuery("select s ${base_qry}", qry_params)
     }
@@ -997,7 +1004,7 @@ from Subscription as s where (
                         
                 // if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.orgRoleType) && params.linkToAll == "Y"){ // old code
 
-                if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.orgRoleType)) {
+                if((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.orgRoleType)) {
                     
                     def cons_members = []
 
@@ -2955,78 +2962,101 @@ AND EXISTS (
 
         def announcement_type = RefdataCategory.lookupOrCreate('Document Type', 'Announcement')
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: 10, sort: 'dateCreated', order: 'desc'])
-        result.dueObjects = getDueObjects()
+        result.dashboardReminderPeriod = contextService.getUser().getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14).value
+        result.dueObjects = getDueObjects(result.dashboardReminderPeriod)
 
         result
     }
-    private def getDueObjects(){
+    private def getDueObjects(int daysToBeInformedBeforeToday){
 //        TODO TESTEN der Treffer
-        int daysToBeInformedBeforeToday = 14;
-
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_WEEK, -daysToBeInformedBeforeToday);
+        cal.add(Calendar.DAY_OF_WEEK, daysToBeInformedBeforeToday);
         java.sql.Date infoDate = new java.sql.Date(cal.getTime().getTime());
         java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
 
         ArrayList dueObjects = new ArrayList()
-        //FERTIG!
-//        dueObjects.addAll(getDueSubscriptions(infoDate, today))
+//FERTIG!
+       def myDueSubs= getDueSubscriptions(today, infoDate, today, infoDate)
 
-                //FALSCHE QUERY, nur als "Testdaten" zu nutzen
-          dueObjects.addAll(Subscription.executeQuery("SELECT distinct(s) FROM Subscription as s " +
-                        "WHERE status != :status and (endDate >= :infoDate1 or endDate <= :today1) " +
-                        "or (manualCancellationDate >= :infoDate2 or manualCancellationDate <= :today2) " ,
-                        [status:com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'),
-                         infoDate1:infoDate,
-                         today1:today,
-                         infoDate2:infoDate,
-                         today2:today]))
+//FALSCHE QUERY, nur als "Testdaten" zu nutzen
+//        def testAlleSubs = Subscription.executeQuery("SELECT distinct(s) FROM Subscription as s " +
+//                        "WHERE status != :status and (endDate >= :infoDate1 or endDate <= :today1) " +
+//                        "or (manualCancellationDate >= :infoDate2 or manualCancellationDate <= :today2) " ,
+//                        [status:com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'),
+//                         infoDate1:infoDate,
+//                         today1:today,
+//                         infoDate2:infoDate,
+//                         today2:today])
+//        def myDueSubs = testAlleSubs
+        dueObjects.addAll(myDueSubs)
 
         //FERTIG!
         dueObjects.addAll( taskService.getTasksByResponsibles(
                 contextService.getUser(),
                 contextService.getOrg(),
-                [query:"and (endDate >= ? and endDate <= ?)",
-                queryParams:[infoDate, today]]) )
+                [query:" and status != ? and endDate <= ?",
+                queryParams:[RefdataValue.getByValueAndCategory('Done', 'Task Status'),
+                        infoDate]]) )
 
-        //TODO: auf mich einschränken
-        dueObjects.addAll( SubscriptionCustomProperty.executeQuery("SELECT distinct(s) FROM SubscriptionCustomProperty as s " +
-                "WHERE (dateValue >= :infoDate and dateValue <= :today)" ,
-                [infoDate:infoDate,
-                today:today]) )
-        //TODO: auf mich einschränken
-        dueObjects.addAll( SubscriptionPrivateProperty.executeQuery("SELECT distinct(s) FROM SubscriptionPrivateProperty as s " +
-                "WHERE (dateValue >= :infoDate and dateValue <= :today)" ,
-                [infoDate:infoDate,
-                 today:today]) )
+        //todo myLicenses einschränken
+        def licCP = LicenseCustomProperty.executeQuery("SELECT distinct(s) FROM LicenseCustomProperty as s " +
+                "WHERE (dateValue >= :today and dateValue <= :infoDate)" ,
+                [today:today, infoDate:infoDate])
+        dueObjects.addAll(licCP)
+
+        //TODO myLicenses einschränken und join tenant
+//        def licPP = LicensePrivateProperty.findAllByDateValueBetweenAndOwner(infoDate, today, contextService.org)
+        def licPPtmp =  LicensePrivateProperty.executeQuery("SELECT distinct(s) FROM LicensePrivateProperty as s " +
+                "WHERE (dateValue >= :today and dateValue <= :infoDate)" ,
+                [today:today, infoDate:infoDate])
+                //nur meine Lizensen
+        dueObjects.addAll(licPPtmp)
+
+        //TODO Testen
+        dueObjects.addAll( PersonPrivateProperty.executeQuery("SELECT distinct(s) FROM PersonPrivateProperty as s " +
+                "WHERE (dateValue >= :today and dateValue <= :infoDate) " +
+                "AND owner in (SELECT p FROM Person AS p WHERE p.tenant = :tenant AND p.isPublic = :public)" ,
+                [today:today,
+                 infoDate:infoDate,
+                 tenant: contextService.org,
+                 public: RefdataValue.getByValueAndCategory('No', 'YN')] ))
+
+        //FERTIG!
+        dueObjects.addAll(OrgCustomProperty.findAllByDateValueBetween(infoDate, today))
+//        dueObjects.addAll(OrgCustomProperty.findAllByDateValueBetweenAndOwner(infoDate, today, contextService.org))
+        //todo TESTEN!
+//        dueObjects.addAll( OrgPrivateProperty.executeQuery("SELECT opp FROM OrgPrivateProperty as opp " +
+//                "INNER JOIN PropertyDefinition pd " +
+//                "on opp.type.id = pd.id " +
+//                "WHERE (opp.dateValue >= :infoDate and opp.dateValue <= :today) " +
+//                "AND pd.tenant = :myOrg" +
+//                [infoDate:infoDate,
+//                 today:today,
+//                 myOrg:contextService.org]) )
+
+        //Alle jemals existierenden Subscritions von mir
+        def mySubs = getDueSubscriptions(null, null, null, null)
+        def mySubsCustProperties = SubscriptionCustomProperty.executeQuery("SELECT distinct(s) FROM SubscriptionCustomProperty as s " +
+                "WHERE (dateValue >= :today and dateValue <= :infoDate) " +
+                "and owner in :ownerList" ,
+                [today:today,
+                 infoDate:infoDate,
+                 ownerList:mySubs])//TODO: mySubs sollten alle sein, die ich sehen darf, nicht nur die bald fälligen!
+        dueObjects.addAll(mySubsCustProperties)
+        //Todo tenant
+        def mySubsPrivProperties = SubscriptionPrivateProperty.executeQuery("SELECT distinct(s) FROM SubscriptionPrivateProperty as s " +
+                "WHERE (dateValue >= :today and dateValue <= :infoDate)" +
+                "and owner in :ownerList" ,
+                [today:today,
+                 infoDate:infoDate,
+                 ownerList:mySubs])//TODO: mySubs sollten alle sein, die ich sehen darf, nicht nur die bald fälligen!
+        dueObjects.addAll(mySubsPrivProperties)
 
 //        TODO: Die anderen Properties fehlen noch: LicenceProp, OrgProp, PersonProp
-
-//        dueObjects.sort(true, new Comparator() {
-//            def dummy = java.sql.Timestamp.valueOf("0001-1-1 00:00:00")
-//            @Override
-//            int compare(Object o1, Object o2) {
-////                getDate(o1).compareTo(getDate(o2))
-//                def result = getDate(o1).time - getDate(o2).time
-//                print result
-//                result
-//            }
-//            def getDate(obj) {
-//                def result
-//                if (obj instanceof SubscriptionCustomProperty )         result = obj?.dateValue
-//                if (obj instanceof SubscriptionPrivateProperty)         result = obj?.dateValue
-//                if (obj instanceof Subscription || obj instanceof Task) result = obj?.endDate
-//                if (result instanceof java.sql.Date)
-//                    result = new java.sql.Timestamp(result)
-//                if (result == null)
-//                    result = dummy
-//                result
-//            }
-//        })
         dueObjects = dueObjects.sort {
-                (it instanceof com.k_int.kbplus.SubscriptionCustomProperty || it instanceof com.k_int.kbplus.SubscriptionPrivateProperty)?
-                         it?.dateValue : it?.endDate
-                ?: java.sql.Timestamp.valueOf("0001-1-1 00:00:00")
+                (it instanceof AbstractProperty)?
+                        it?.dateValue : it?.endDate
+                        ?: java.sql.Timestamp.valueOf("0001-1-1 00:00:00")
         }
 
         dueObjects
