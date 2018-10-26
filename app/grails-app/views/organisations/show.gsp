@@ -201,7 +201,8 @@
                                                     tmplShowDeleteButton: true,
                                                     controller: 'org',
                                                     action: 'show',
-                                                    id: orgInstance.id
+                                                    id: orgInstance.id,
+                                                    editable: ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
                                             ]}"/>
                                         </g:if>
                                     </g:each>
@@ -226,7 +227,8 @@
                                                     tmplShowDeleteButton: true,
                                                     controller: 'organisations',
                                                     action: 'show',
-                                                    id: orgInstance.id
+                                                    id: orgInstance.id,
+                                                    editable: ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
                                             ]}"/>
                                         </g:if>
                                     </g:each>
@@ -252,7 +254,8 @@
                                                     tmplConfigShow: ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
                                                     controller: 'organisations',
                                                     action: 'show',
-                                                    id: orgInstance.id
+                                                    id: orgInstance.id,
+                                                    editable: ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
                                             ]}"/>
                                         </g:if>
                                     </g:each>

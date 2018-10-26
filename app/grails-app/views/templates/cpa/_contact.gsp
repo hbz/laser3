@@ -15,7 +15,7 @@
                 </span>
             </g:if>
 
-            <g:if test="${((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) && tmplShowDeleteButton}">
+            <g:if test="${editable && tmplShowDeleteButton}">
 
                 <g:if test="${contact.contentType?.getI10n('value') == 'Url'}">
                     <span data-position="top right" data-tooltip="Diese URL aufrufen ..">

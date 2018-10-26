@@ -73,7 +73,7 @@
             </div>
 
             <div class="content">
-                <g:if test="${((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) && tmplShowDeleteButton}">
+                <g:if test="${editable && tmplShowDeleteButton}">
                     <g:set var="oid" value="${personRole?.class.name}:${personRole?.id}" />
 
                     <g:link class="ui mini icon negative button deletePersonRoleLink-${personRole?.id}"
