@@ -960,14 +960,17 @@ class AjaxController {
                 }
             }
 
-            def queue = []
+            def resetQueue = []
+            def keepProperties = params.list('keepProperties')
 
             negativeList.each{ prop ->
                 if (AuditConfig.getConfig(owner, prop)) {
                     AuditConfig.removeConfig(owner, prop)
 
-                    members.each { m ->
-                        queue << [m, prop]
+                    if (! keepProperties.contains(prop)) {
+                        members.each { m ->
+                            resetQueue << [m, prop]
+                        }
                     }
 
                     // delete pending changes
@@ -985,7 +988,8 @@ class AjaxController {
                 }
             }
 
-            queue.each{ q ->
+            // delete inherited values
+            resetQueue.each{ q ->
                 def member = q[0]
                 def prop   = q[1]
 

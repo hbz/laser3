@@ -33,7 +33,19 @@
                             <td class="x">
                                 <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [])}" />
 
+                                <g:if test="${AuditConfig.getConfig(ownobj, prop)}">
+                                    <span data-position="top right" data-tooltip="${message(code:'property.audit.keepOnToggle.tooltip')}">
+                                        <i class="icon lock grey"></i>
+
+                                        <input type="checkbox" name="keepProperties" value="${prop}" />
+                                    </span>
+                                </g:if>
+
+                                &nbsp;
+
                                 <span data-position="top right" data-tooltip="${message(code:'property.audit.tooltip')}">
+                                    <i class="icon thumbtack grey"></i>
+
                                     <g:if test="${AuditConfig.getConfig(ownobj, prop)}">
                                         <input type="checkbox" name="properties" value="${prop}" checked="checked"/>
                                     </g:if>
