@@ -411,6 +411,10 @@
 
                             <div class="divider"></div>
 
+                            <g:link class="item" controller="yoda" action="pendingChanges">Pending Changes</g:link>
+
+                            <div class="divider"></div>
+
                             <g:link class="item" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">Start Global Data Sync</g:link>
                             <g:link class="item" controller="yoda" action="manageGlobalSources">Manage Global Sources</g:link>
 

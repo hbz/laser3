@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI"/>
-        <title>${message(code:'laser', default:'LAS:eR')} Data import explorer</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : Stats</title>
     </head>
 
     <body>
@@ -11,6 +11,7 @@
             <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
             <semui:crumb text="Stats" class="active"/>
 
+            <%--
             <li class="dropdown pull-right">
                 <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<strong class="caret"></strong></a>
                 <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
@@ -19,10 +20,10 @@
                     </li>
                 </ul>
             </li>
+            --%>
         </semui:breadcrumbs>
 
-
-        <h1 class="ui left aligned icon header"><semui:headerIcon />Org Info</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />Stats</h1>
 
         <table class="ui celled la-table table">
             <thead>

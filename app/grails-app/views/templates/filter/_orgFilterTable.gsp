@@ -206,7 +206,7 @@
             <g:if test="${tmplConfigShow?.contains('licenses')}">
                 <td>
                     <div class="la-flexbox">
-                        <i class="icon university la-list-icon"></i>
+                        <i class="icon folder open la-list-icon"></i>
                         <g:link controller="myInstitution" action="currentSubscriptions" params="${[q:org.name]}" title="${message(code: 'org.licenses.tooltip', args: [org.name])}">
                             ${message(code: 'org.licenses.tooltip', args: [org.name])}:
                             <div class="ui circular label">

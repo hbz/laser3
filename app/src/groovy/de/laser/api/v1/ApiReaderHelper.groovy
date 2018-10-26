@@ -307,11 +307,19 @@ class ApiReaderHelper {
             def tmp         = [:]
             tmp.street1     = it.street_1
             tmp.street2     = it.street_2
-            tmp.pob         = it.pob
             tmp.zipcode     = it.zipcode
             tmp.city        = it.city
+
+
+            tmp.pob         = it.pob
+            tmp.pobZipcode  = it.pobZipcode
+            tmp.pobCity     = it.pobCity
+
             tmp.state       = it.state
             tmp.country     = it.country
+
+            tmp.additionFirst     = it.additionFirst
+            tmp.additionSecond     = it.additionSecond
 
             // RefdataValues
             tmp.type        = it.type?.value

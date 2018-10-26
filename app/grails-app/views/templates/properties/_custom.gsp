@@ -94,7 +94,7 @@
                                 <span data-position="top right" data-tooltip="${message(code:'property.audit.tooltip')}">
                                 <g:remoteLink controller="ajax" action="togglePropertyAuditConfig"
                                               before="if(!confirm('${auditMsg}')) return false"
-                                              params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}"]' id="${prop.id}"
+                                              params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]' id="${prop.id}"
                                               onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                               update="${custom_props_div}" class="ui icon button">
                                     <i class="thumbtack icon"></i>

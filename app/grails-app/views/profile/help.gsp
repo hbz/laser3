@@ -21,7 +21,7 @@
     </div>
     <div class="active content">
         <div class="ui relaxed divided list">
-            <p>Vermutlich greift Ihr Browser noch auf veraltete Dateien aus seinem Cache zu. Bitte leeren Sie den Speicher in den Einstellungen Ihres Webbrowsers:</p>
+            <p>Vermutlich greift Ihr Browser noch auf veraltete Dateien aus dem Cache zu. Bitte leeren Sie den Speicher in den Einstellungen Ihres Webbrowsers:</p>
             <div class="item">
                 <i class="large internet explorer middle aligned icon"></i>
                 <div class="content">

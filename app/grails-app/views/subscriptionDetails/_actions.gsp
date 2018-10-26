@@ -42,10 +42,12 @@
             <semui:actionsDropdownItem controller="subscriptionDetails" action="renewSubscriptionConsortia"
                                        params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>
         </g:if>
-        <div class="divider"></div>
 
         <g:if test="${actionName == 'members'}">
-            <semui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses"/>
+            <g:if test="${validSubChilds}">
+                <div class="divider"></div>
+                <semui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses"/>
+            </g:if>
         </g:if>
 
         <g:if test="${showConsortiaFunctions}">
