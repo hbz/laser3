@@ -19,14 +19,14 @@
         <table class="ui celled la-table table">
             <thead>
                 <tr>
-                    <th>User</th>
-                    <th>Display Name</th>
-                    <th>Email</th>
+                    <th>${message(code: "profile.user")}</th>
+                    <th>${message(code: "profile.display")}</th>
+                    <th>${message(code: "profile.email")}</th>
                     <th>Organisation</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Date Requested</th>
-                    <th>Actions</th>
+                    <th>${message(code: "profile.membership.role")}</th>
+                    <th>${message(code: "profile.membership.status")}</th>
+                    <th>${message(code: "profile.membership.date2")}</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
