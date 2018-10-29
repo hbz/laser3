@@ -35,7 +35,8 @@
         </span>
 
     </h1>
-
+    <semui:anualRings object="${subscription}" controller="subscriptionDetails" action="changes" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}">
+    </semui:anualRings>
     <g:render template="nav" contextPath="." />
 
     <g:if test="${subscriptionInstance.instanceOf && (contextOrg == subscriptionInstance.getConsortia())}">

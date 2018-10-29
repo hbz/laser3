@@ -38,7 +38,8 @@
             </g:else>
         </span>
     </h1>
-
+    <semui:anualRings object="${subscriptionInstance}" controller="subscriptionDetails" action="members" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}">
+    </semui:anualRings>
     <g:render template="nav" />
 
     <%--

@@ -35,7 +35,8 @@
       </span>
 
     </h1>
-
+    <semui:anualRings object="${subscriptionInstance}" controller="subscriptionDetails" action="permissionInfo" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}">
+    </semui:anualRings>
     <g:render template="nav" contextPath="." />
 
       <g:if test="${subscriptionInstance.instanceOf && (contextOrg == subscriptionInstance.getConsortia())}">

@@ -266,6 +266,7 @@
 
 @laFilterBackground : lighten(@functionalObjects,6);
 @laFilterChosen     : @showWhatsChosen;
+@la-secondary-color: #d3dae3; /*blue gray for buttons */
 
 
 /*---  Light Colors  ---*/
@@ -502,7 +503,7 @@
 
 @circularRadius                : 500rem;
 
-@borderColor               : #eaeaea;
+@borderColor               : @la-secondary-color;
 @strongBorderColor         : rgba(34, 36, 38, 0.22);
 @internalBorderColor       : rgba(34, 36, 38, 0.1);
 @selectedBorderColor       : rgba(34, 36, 38, 0.35);

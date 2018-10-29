@@ -43,7 +43,8 @@
           </g:else>
       </span>
   </h1>
-
+  <semui:anualRings object="${subscriptionInstance}" controller="subscriptionDetails" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}">
+  </semui:anualRings>
     <g:render template="nav" />
 
     <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':subscriptionInstance]}"/>
