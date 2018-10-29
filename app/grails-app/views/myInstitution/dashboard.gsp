@@ -67,7 +67,7 @@
 
         <div class="ui secondary pointing tabular menu">
             <a class="item" data-tab="first">
-                <i class="alarm outline icon large"></i>
+                <i class="clock outline icon large"></i>
                 <%
                     def countChanges = 0
                     changes.collect { c ->

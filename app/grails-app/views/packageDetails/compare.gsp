@@ -41,20 +41,20 @@
 				<tr>
 					<td>${message(code:'package.show.pkg_name', default:'Package Name')}</td>
 					<td>
-						${message(code:'package.compare.restrict.after', default:'Restrict this list to packages starting after-')}
-						<semui:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
-						${message(code:'package.compare.restrict.before', default:'and/or ending before-')}
+						${message(code:'package.compare.restrict.after', default:'Restrict this list to packages starting after')}
+                        <semui:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
+						${message(code:'package.compare.restrict.before', default:'and/or ending before')}
 						<semui:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/>
 						<br/>
-						${message(code:'package.compare.select.first', default:'Now select first package to compare (Filtered by dates above). Use \'%\' as wildcard.')}
+						${message(code:'package.compare.select.first', default:'Now select first package to compare (filtered by dates above). Use \'%\' as wildcard.')}
 						<br/>
                         <input type="hidden" name="pkgA" id="packageSelectA" value="${pkgA}"/>
 					</td>
 					<td> 
-					    ${message(code:'package.compare.restrict.after', default:'Restrict this list to packages starting after-')}
-						<semui:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
-						${message(code:'package.compare.restrict.before', default:'and/or ending before-')}
-						<semui:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/>
+					    ${message(code:'package.compare.restrict.after', default:'Restrict this list to packages starting after')}
+                        <semui:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
+						${message(code:'package.compare.restrict.before', default:'and/or ending before')}
+                        <semui:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/>
 						<br/>
 						${message(code:'package.compare.select.second', default:'Select second package to compare (Filtered by dates above). Use \'%\' as wildcard.')}
 						<br/>
