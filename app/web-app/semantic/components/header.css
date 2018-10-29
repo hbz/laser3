@@ -233,7 +233,7 @@ h5.ui.header .sub.header {
 .ui.icon.header {
   display: inline-block;
   text-align: center;
-  margin: 1rem 0em 1rem;
+  margin: 0 0em 1rem;
 }
 .ui.icon.header:after {
   content: '';
@@ -617,7 +617,7 @@ a.ui.inverted.grey.header:hover {
 
 .ui.dividing.header {
   padding-bottom: 0.21428571rem;
-  border-bottom: 1px solid #eaeaea;
+  border-bottom: 1px solid #d3dae3;
 }
 .ui.dividing.header .sub.header {
   padding-bottom: 0.21428571rem;

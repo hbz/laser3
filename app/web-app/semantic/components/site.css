@@ -570,7 +570,6 @@ aside.ui.accordion .title:not(.ui) {
   margin-left: -3px;
 }
 .editable-container.editable-inline {
-  position: absolute;
   z-index: 100;
   margin-top: -20px;
   margin-left: -3px;
@@ -581,4 +580,11 @@ aside.ui.accordion .title:not(.ui) {
 .la-break-all {
   word-wrap: break-word;
   word-break: break-all;
+}
+.la-clearfix:after {
+  content: '';
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
 }
