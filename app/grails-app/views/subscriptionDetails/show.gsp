@@ -31,14 +31,11 @@
 
         <g:if test="${params.asAt}">
             <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])}</h1>
-            <semui:anualRings object="${subscriptionInstance}" controller="subscriptionDetails" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}">
-            </semui:anualRings>
         </g:if>
 
         <h1 class="ui left aligned icon header"><semui:headerIcon />
             <semui:xEditable owner="${subscriptionInstance}" field="name" />
-            <semui:anualRings object="${subscriptionInstance}" controller="subscriptionDetails" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}">
-            </semui:anualRings>
+            <semui:anualRings object="${subscriptionInstance}" controller="subscriptionDetails" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
         </h1>
 
     <g:render template="nav" />

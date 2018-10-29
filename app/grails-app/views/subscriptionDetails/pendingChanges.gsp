@@ -18,28 +18,9 @@
 
     <h1 class="ui left aligned icon header"><semui:headerIcon />
         <semui:xEditable owner="${subscriptionInstance}" field="name" />
-
-        <span class="la-forward-back">
-            <g:if test="${navPrevSubscription}">
-                <g:link controller="subscriptionDetails" action="pendingChanges" params="[id:navPrevSubscription.id]"><i class="chevron left icon"></i></g:link>
-            </g:if>
-            <g:else>
-                <i class="chevron left icon disabled"></i>
-            </g:else>
-
-            <g:formatDate date="${subscriptionInstance.startDate}" format="${message(code: 'default.date.format.notime')}"/>
-            ${subscriptionInstance.endDate ?  "- "+g.formatDate(date: subscriptionInstance.endDate, format: message(code: 'default.date.format.notime')) : ''}
-
-            <g:if test="${navNextSubscription}">
-                <g:link controller="subscriptionDetails" action="pendingChanges" params="[id:navNextSubscription.id]"><i class="chevron right icon"></i></g:link>
-            </g:if>
-            <g:else>
-                <i class="chevron right icon disabled"></i>
-            </g:else>
-        </span>
+        <semui:anualRings object="${subscriptionInstance}" controller="subscriptionDetails" action="pendingChanges" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
     </h1>
-    <semui:anualRings object="${subscriptionInstance}" controller="subscriptionDetails" action="pendingChanges" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}">
-    </semui:anualRings>
+
     <g:render template="nav" />
 
     <g:each in="${pendingChanges}" var="memberId, pcList">
