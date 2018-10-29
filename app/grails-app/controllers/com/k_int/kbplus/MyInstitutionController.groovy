@@ -38,6 +38,7 @@ class MyInstitutionController {
     def taskService
     def filterService
     def propertyService
+    def queryService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -194,7 +195,7 @@ class MyInstitutionController {
         result.editable      = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         def date_restriction = null;
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -542,7 +543,7 @@ from License as l where (
         viableOrgs.add(result.institution)
 
         def date_restriction = null;
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -701,59 +702,13 @@ from Subscription as s where (
         }
     }
 
-    private def getDueSubscriptions(java.sql.Date endDateFrom, java.sql.Date endDateTo, java.sql.Date manualCancellationDateFrom, java.sql.Date manualCancellationDateTo) {
-        Org institution = contextService.getOrg()
-        def role_sub            = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
-        def role_subCons        = RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role')
-        def role_sub_consortia  = RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')
-        def sub_status_deleted  = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
-        def base_qry
-        def qry_params
-        boolean isSubscriptionConsortia = ((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in institution.getallOrgRoleType()))
-        boolean isSubscriber = ! isSubscriptionConsortia
-
-        if (isSubscriber) {
-            base_qry = "from Subscription as s where ( "+
-                    "exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :activeInst ) ) "+
-                    "AND ( s.status.value != 'Deleted' ) "+
-                    "AND ( "+
-                        "( not exists ( select o from s.orgRelations as o where o.roleType = :scRoleType ) ) "+
-                        "or "+
-                        "( ( exists ( select o from s.orgRelations as o where o.roleType = :scRoleType ) ) AND ( s.instanceOf is not null) ) "+
-                    ") "+
-                ")"
-            qry_params = ['roleType1':role_sub, 'roleType2':role_subCons, 'activeInst':institution, 'scRoleType':role_sub_consortia]
-        }
-
-        if (isSubscriptionConsortia) {
-            base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is null AND s.status.value != 'Deleted' ) "
-            qry_params = ['roleType':role_sub_consortia, 'activeInst':institution]
-        }
-
-        if (endDateFrom && endDateTo) {
-            base_qry += " and (endDate >= :endFrom and endDate <= :endTo)"
-            qry_params.put("endFrom", endDateFrom)
-            qry_params.put("endTo", endDateTo)
-        }
-
-        if (manualCancellationDateFrom && manualCancellationDateTo){
-            base_qry +=" or (manualCancellationDate >= :cancellFrom and manualCancellationDate <= :cancellTo) "
-            qry_params.put("cancellFrom", manualCancellationDateFrom)
-            qry_params.put("cancellTo", manualCancellationDateTo)
-        }
-
-        base_qry += " and status != :status "
-        qry_params.put("status", sub_status_deleted)
-
-        Subscription.executeQuery("select s ${base_qry}", qry_params)
-    }
 
     private def exportcurrentSubscription(subscriptions) {
         try {
             String[] titles = [
                     'Name', 'Vertrag', 'Verknuepfte Pakete', 'Konsortium', 'Anbieter', 'Agentur', 'Anfangsdatum', 'Enddatum', 'Status', 'Typ' ]
 
-            def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+            def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
             HSSFWorkbook wb = new HSSFWorkbook();
@@ -863,7 +818,7 @@ from Subscription as s where (
         def result = setResultGenerics()
 
         def date_restriction = null;
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -1370,7 +1325,7 @@ from Subscription as s where (
         // Set Date Restriction
         def date_restriction = null;
 
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
             date_restriction = sdf.parse(result.validOn)
@@ -2046,7 +2001,7 @@ AND EXISTS (
 
         boolean first = true;
 
-        def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def formatter = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
         // Add in JR1 and JR1a reports
         def c = new GregorianCalendar()
@@ -2538,7 +2493,7 @@ AND EXISTS (
             return;
         }
 
-        def sdf = new java.text.SimpleDateFormat('dd.MM.yyyy')
+        def sdf = new SimpleDateFormat('dd.MM.yyyy')
 
         def subscription = Subscription.get(params.sub_id)
 
@@ -2566,7 +2521,7 @@ AND EXISTS (
             return;
         }
 
-        def sdf = new java.text.SimpleDateFormat('dd.MM.yyyy')
+        def sdf = new SimpleDateFormat('dd.MM.yyyy')
 
         def subscription = Subscription.get(params.sub_id)
 
@@ -2634,7 +2589,7 @@ AND EXISTS (
             }
             HSSFSheet firstSheet = wb.getSheetAt(0);
 
-            def sdf = new java.text.SimpleDateFormat('dd.MM.yyyy')
+            def sdf = new SimpleDateFormat('dd.MM.yyyy')
 
             // Step 1 - Extract institution id, name and shortcode
             HSSFRow org_details_row = firstSheet.getRow(2)
@@ -2958,7 +2913,7 @@ AND EXISTS (
 
         // tasks
 
-        def sdFormat    = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdFormat    = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
         params.taskStatus = 'not done'
         def query       = filterService.getTaskQuery(params, sdFormat)
         def contextOrg  = contextService.getOrg()
@@ -2983,7 +2938,7 @@ AND EXISTS (
 
         ArrayList dueObjects = new ArrayList()
 //FERTIG!
-       def myDueSubs= getDueSubscriptions(today, infoDate, today, infoDate)
+       def myDueSubs= queryService.getDueSubscriptions(contextService.org, today, infoDate, today, infoDate)
 
 //FALSCHE QUERY, nur als "Testdaten" zu nutzen
 //        def testAlleSubs = Subscription.executeQuery("SELECT distinct(s) FROM Subscription as s " +
@@ -3019,51 +2974,21 @@ AND EXISTS (
                 //nur meine Lizensen
         dueObjects.addAll(licPPtmp)
 
-        //TODO Testen
-        dueObjects.addAll( PersonPrivateProperty.executeQuery("SELECT distinct(s) FROM PersonPrivateProperty as s " +
-                "WHERE (dateValue >= :today and dateValue <= :infoDate) " +
-                "AND owner in (SELECT p FROM Person AS p WHERE p.tenant = :tenant AND p.isPublic = :public)" ,
-                [today:today,
-                 infoDate:infoDate,
-                 tenant: contextService.org,
-                 public: RefdataValue.getByValueAndCategory('No', 'YN')] ))
+        dueObjects.addAll(PersonPrivateProperty.findAllByDateValueBetweenForOrgAndIsNotPulbic(today, infoDate, contextService.org))
 
         //FERTIG!
-        dueObjects.addAll(OrgCustomProperty.findAllByDateValueBetween(infoDate, today))
+        dueObjects.addAll(OrgCustomProperty.findAllByDateValueBetween(today, infoDate))
+//        dueObjects.addAll(OrgCustomProperty.findAllByDateValueBetween(infoDate, today))
 //        dueObjects.addAll(OrgCustomProperty.findAllByDateValueBetweenAndOwner(infoDate, today, contextService.org))
         //todo TESTEN!
-//        dueObjects.addAll( OrgPrivateProperty.executeQuery("SELECT opp FROM OrgPrivateProperty as opp " +
-//                "INNER JOIN PropertyDefinition pd " +
-//                "on opp.type.id = pd.id " +
-//                "WHERE (opp.dateValue >= :infoDate and opp.dateValue <= :today) " +
-//                "AND pd.tenant = :myOrg" +
-//                [infoDate:infoDate,
-//                 today:today,
-//                 myOrg:contextService.org]) )
+        dueObjects.addAll(queryService.getDueOrgPrivateProperties(contextService.org, today, infoDate))
 
-        //Alle jemals existierenden Subscritions von mir
-        def mySubs = getDueSubscriptions(null, null, null, null)
-        def mySubsCustProperties = SubscriptionCustomProperty.executeQuery("SELECT distinct(s) FROM SubscriptionCustomProperty as s " +
-                "WHERE (dateValue >= :today and dateValue <= :infoDate) " +
-                "and owner in :ownerList" ,
-                [today:today,
-                 infoDate:infoDate,
-                 ownerList:mySubs])//TODO: mySubs sollten alle sein, die ich sehen darf, nicht nur die bald fälligen!
-        dueObjects.addAll(mySubsCustProperties)
-        //Todo tenant
-        def mySubsPrivProperties = SubscriptionPrivateProperty.executeQuery("SELECT distinct(s) FROM SubscriptionPrivateProperty as s " +
-                "WHERE (dateValue >= :today and dateValue <= :infoDate)" +
-                "and owner in :ownerList" ,
-                [today:today,
-                 infoDate:infoDate,
-                 ownerList:mySubs])//TODO: mySubs sollten alle sein, die ich sehen darf, nicht nur die bald fälligen!
-        dueObjects.addAll(mySubsPrivProperties)
+        dueObjects.addAll(queryService.getDueSubscriptionCustomProperties(contextService.org, today, infoDate))
+        dueObjects.addAll(queryService.getDueSubscriptionPrivateProperties(contextService.org, today, infoDate))
 
-//        TODO: Die anderen Properties fehlen noch: LicenceProp, OrgProp, PersonProp
         dueObjects = dueObjects.sort {
                 (it instanceof AbstractProperty)?
-                        it?.dateValue : it?.endDate
-                        ?: java.sql.Timestamp.valueOf("0001-1-1 00:00:00")
+                        it.dateValue : (((it instanceof Subscription || it instanceof License) && it.manualCancellationDate)? it.manualCancellationDate : it.endDate)?: java.sql.Timestamp.valueOf("0001-1-1 00:00:00")
         }
 
         dueObjects
@@ -3377,7 +3302,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
         }
 
-        def sdFormat = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdFormat = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
         def query = filterService.getTaskQuery(params, sdFormat)
         result.taskInstanceList   = taskService.getTasksByResponsibles(result.user, result.institution, query)
         result.myTaskInstanceList = taskService.getTasksByCreator(result.user, null)
@@ -3747,7 +3672,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 titles.add(it.name)
             }
 
-            def sdf = new java.text.SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+            def sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
             HSSFWorkbook wb = new HSSFWorkbook();

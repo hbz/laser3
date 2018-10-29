@@ -291,7 +291,7 @@
                             <g:elseif test="${obj instanceof Task}">
                                 <i class="icon tasks la-list-icon"></i>
                                 <a class="header" onclick="taskedit(${obj?.id});">${obj?.title}</a>
-                                Status ((Task)obj).get
+                                &nbsp(Status: ${obj.status?.getI10n("value")})
                             </g:elseif>
                             <g:elseif test="${obj instanceof AbstractProperty}">
                                 <g:if test="${obj.owner instanceof Person}">
