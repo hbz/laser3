@@ -837,6 +837,29 @@ class AdminController {
     @Secured(['ROLE_ADMIN'])
     def managePropertyDefinitions() {
 
+        if (params.cmd == 'replacePropertyDefinition') {
+            if (SpringSecurityUtils.ifAnyGranted('ROLE_YODA')) {
+                def pdFrom = genericOIDService.resolveOID(params.xcgPdFrom)
+                def pdTo = genericOIDService.resolveOID(params.xcgPdTo)
+
+                if (pdFrom && pdTo && (pdFrom.tenant?.id == pdTo.tenant?.id)) {
+
+                    try {
+                        def count = propertyService.replacePropertyDefinitions(pdFrom, pdTo)
+
+                        flash.message = "${count} Vorkommen von ${params.xcgPdFrom} wurden durch ${params.xcgPdTo} ersetzt."
+                    }
+                    catch (Exception e) {
+                        log.error(e)
+                        flash.error = "${params.xcgPdFrom} konnte nicht durch ${params.xcgPdTo} ersetzt werden."
+                    }
+
+                }
+            } else {
+                flash.error = "Keine ausreichenden Rechte!"
+            }
+        }
+
         def propDefs = [:]
         PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
             def itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: 'name']) // NO private properties!
