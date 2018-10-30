@@ -266,7 +266,8 @@
 
 @laFilterBackground : lighten(@functionalObjects,6);
 @laFilterChosen     : @showWhatsChosen;
-@laSecondaryColor: #d3dae3; /*blue gray for buttons */
+@laSecondaryColor   : #d3dae3; /*blue gray for buttons */
+@laSecondaryBackground: #fffaf5; /*light orange for elements are secondary */
 
 
 
