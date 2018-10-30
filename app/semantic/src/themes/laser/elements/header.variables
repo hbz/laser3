@@ -7,5 +7,3 @@
  @iconHeaderSize            : 1.5em;
 
  @circularHeaderIconSize    : 22px;
-
-@iconHeaderTopMargin        :0;

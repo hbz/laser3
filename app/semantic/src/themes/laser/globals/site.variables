@@ -238,7 +238,7 @@
       Laser Shades of Gray
 --------------------*/
 @darkGrey           : #454545;
-@darkBlueGrey       : #2e3948
+@darkBlueGrey       : #2e3948;
 
 /*---  Colors for Objects---*/
 
