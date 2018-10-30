@@ -238,7 +238,7 @@
       Laser Shades of Gray
 --------------------*/
 @darkGrey           : #454545;
-@darkBlueGrey       : #2e3948
+@darkBlueGrey       : #2e3948;
 
 /*---  Colors for Objects---*/
 
@@ -266,7 +266,9 @@
 
 @laFilterBackground : lighten(@functionalObjects,6);
 @laFilterChosen     : @showWhatsChosen;
-@la-secondary-color: #d3dae3; /*blue gray for buttons */
+@laSecondaryColor   : #d3dae3; /*blue gray for buttons */
+@laSecondaryBackground: #fffaf5; /*light orange for elements are secondary */
+
 
 
 /*---  Light Colors  ---*/
@@ -503,7 +505,7 @@
 
 @circularRadius                : 500rem;
 
-@borderColor               : @la-secondary-color;
+@borderColor               : @laSecondaryColor;
 @strongBorderColor         : rgba(34, 36, 38, 0.22);
 @internalBorderColor       : rgba(34, 36, 38, 0.1);
 @selectedBorderColor       : rgba(34, 36, 38, 0.35);

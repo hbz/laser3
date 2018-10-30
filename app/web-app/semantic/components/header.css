@@ -233,7 +233,7 @@ h5.ui.header .sub.header {
 .ui.icon.header {
   display: inline-block;
   text-align: center;
-  margin: 0 0em 1rem;
+  margin: 1rem 0em 1rem;
 }
 .ui.icon.header:after {
   content: '';
@@ -712,6 +712,22 @@ a.ui.inverted.grey.header:hover {
 
 .ui.header:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) {
   font-size: 1.28571429em;
+}
+
+/*--------------
+     Page
+---------------*/
+
+
+
+/*******************************
+            Header
+*******************************/
+
+
+/* Standard */
+.ui.header {
+  color: #2e3948;
 }
 .ui.icon.header .icon {
   display: inline-block;

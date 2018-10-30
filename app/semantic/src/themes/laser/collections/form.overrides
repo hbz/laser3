@@ -17,7 +17,7 @@
   margin: 0em 0em 1em;
 }
 .ui.form .fields .field.la-modal-fieldset-no-margin {
-  background: #fffaf5;
+  background: @laSecondaryBackground;
   padding: 15px;
   margin-top: 0!important;
   margin-bottom: 0!important;
@@ -33,14 +33,14 @@
   margin-right: 15px;
   margin-top: 0!important;
   margin-bottom: 0!important;
-  background: #fffaf5;
+  background: @laSecondaryBackground;
   padding: 15px;
 }
 .ui.form .fields .field.la-modal-fieldset-margin-right {
   margin-right: 15px;
   margin-top: 0!important;
   margin-bottom: 0!important;
-  background: #fffaf5;
+  background: @laSecondaryBackground;
   padding: 15px;
 }
 .ui.form .fields:last-child .field.la-modal-fieldset-margin .field,
