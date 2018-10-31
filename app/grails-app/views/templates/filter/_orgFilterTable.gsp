@@ -213,7 +213,7 @@
                                 ${Subscription.executeQuery("SELECT distinct count(*) FROM Subscription as s " +
                                         "WHERE status != :status and startDate <= :heute and endDate >= :heute " +
                                         "and EXISTS (SELECT o FROM OrgRole as o WHERE s = o.sub AND o.roleType = :provider AND o.org = :org) " +
-                                        "AND EXISTS (SELECT o2 FROM OrgRole as o2 WHERE s = o2.sub AND (o2.roleType = :subscriber or o2.roleType = :subscriber_consortial) " +
+                                        "AND EXISTS (SELECT o2 FROM OrgRole as o2 WHERE s = o2.sub AND (o2.roleType = :subscriber or o2.roleType = :subscriber_consortial or o2.roleType = :consortia) " +
                                         "AND o2.org = :ctxOrg)",
                                         [status:RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'),
                                          heute:sqlDateToday,
@@ -221,6 +221,7 @@
                                          org:org,
                                          subscriber:RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role'),
                                          subscriber_consortial:RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'),
+                                         consortia:RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role'),
                                          ctxOrg:contextService.getOrg()])[0]}
                             </div>
                         </g:link>

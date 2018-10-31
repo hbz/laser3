@@ -218,7 +218,7 @@
 
 
             <g:if test="${params.orgRole == 'Subscription Consortia'}">
-                <th rowspan="2" >${message(code: 'subscription.numberOfLicenses.label', default: 'Number of Licenses')}</th>
+                <th rowspan="2" >${message(code: 'subscription.numberOfLicenses.label', default: 'Number of ChildLicenses')}</th>
             </g:if>
             <% /* <g:sortableColumn params="${params}" property="s.manualCancellationDate"
                               title="${message(code: 'default.cancellationDate.label', default: 'Cancellation Date')}"/> */ %>
