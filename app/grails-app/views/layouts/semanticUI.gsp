@@ -533,11 +533,12 @@
                                     var toggleIcon = $(".ui.toggle.button .icon");
 
                                     if (  editMode) {
+                                        $('.ui .form').removeClass('hidden');
                                         $('#collapseableSubDetails').find('.button').removeClass('hidden');
                                         $(toggleButton).removeAttr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
                                         $(toggleButton).attr("data-tooltip","${message(code:'statusbar.showButtons.tooltip')}");
                                         $(toggleIcon ).removeClass( "slash" );
-                                        $(toggleButton).removeClass('active');
+                                        $(toggleButton).addClass('active');
 
                                         $('.xEditableValue').editable('option', 'disabled', false);
                                         $('.xEditable').editable('option', 'disabled', false);
@@ -545,12 +546,13 @@
                                         $('.xEditableManyToOne').editable('option', 'disabled', false);
                                     }
                                     else {
+                                        $('.ui .form').addClass('hidden');
                                         $('#collapseableSubDetails').find('.button').addClass('hidden');
                                         // hide all the x-editable
                                         $(toggleButton).removeAttr();
                                         $(toggleButton).attr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
                                         $( toggleIcon ).addClass( "slash" );
-                                        $(toggleButton).addClass('active');
+                                        $(toggleButton).removeClass('active');
 
                                         $('.xEditableValue').editable('option', 'disabled', true);
                                         $('.xEditable').editable('option', 'disabled', true);
