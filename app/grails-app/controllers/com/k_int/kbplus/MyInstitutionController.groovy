@@ -2951,7 +2951,6 @@ AND EXISTS (
 
         dueObjects.addAll(PersonPrivateProperty.findAllByDateValueBetweenForOrgAndIsNotPulbic(today, infoDate, contextService.org))
 
-//        dueObjects.addAll(OrgCustomProperty.findAllByDateValueBetween(today, infoDate))
         dueObjects.addAll(OrgCustomProperty.findAllByDateValueBetweenAndOwner(today, infoDate, contextService.org))
         dueObjects.addAll(queryService.getDueOrgPrivateProperties(contextService.org, today, infoDate))
 
