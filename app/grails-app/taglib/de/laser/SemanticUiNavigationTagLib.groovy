@@ -131,7 +131,7 @@ class SemanticUiNavigationTagLib {
             }
             def prevLinkAttrs = linkTagAttrs.clone()
             prevLinkAttrs += [title: (attrs.prev ?: messageSource.getMessage('paginate.prev', null, messageSource.getMessage('default.paginate.prev', null, 'Previous', locale), locale))]
-            out << link(prevLinkAttrs, '<i class="angle double left icon"></i>')
+            out << link(prevLinkAttrs, '<i class="angle left icon"></i>')
         }
 
         // display steps when steps are enabled and laststep is not firststep
@@ -176,7 +176,7 @@ class SemanticUiNavigationTagLib {
             def nextLinkAttrs = linkTagAttrs.clone()
 
             nextLinkAttrs += [title: (attrs.next ? attrs.next : messageSource.getMessage('paginate.next', null, messageSource.getMessage('default.paginate.next', null, 'Next', locale), locale))]
-            out << link(nextLinkAttrs, '<i class="angle double right icon"></i>')
+            out << link(nextLinkAttrs, '<i class="angle right icon"></i>')
         }
 
         out << '</div>'

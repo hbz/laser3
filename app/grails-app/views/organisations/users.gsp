@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org" %>
+<%@ page import="com.k_int.kbplus.Org;com.k_int.kbplus.UserSettings" %>
 <!doctype html>
 <html>
   <head>

@@ -8,6 +8,7 @@
 - added export function for organisations, provider and consortia
 - added optinal cost items access for consortial subscribers
 - added export for mail addresses
+- added functionality for custom property replacement
 - added edit mode switch
 - reworked various table sortings
 - reworked user depending settings
@@ -16,6 +17,7 @@
 - improved intern refdata management
 - fixed: editable addresses for editors
 - fixed: empty federal state dropdown
+- fixed: correct person functions in addressbooks
 - changed meaningless subscription names  
 - increased text length for tasks
 - removed legacy code
