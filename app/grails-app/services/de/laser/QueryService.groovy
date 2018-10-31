@@ -5,51 +5,51 @@ import static de.laser.helper.RDStore.*
 
 class QueryService {
     def contextService
+    private def getQuery(Class propertyClass, Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
+        def result = [:]
+        def query = "SELECT distinct(prop) FROM " + propertyClass.simpleName + " as prop WHERE (dateValue >= :from and dateValue <= :to) "
+        def queryParams = [from:fromDateValue, to:toDateValue]
+        if (propertyClass.simpleName.toLowerCase().contains("private")) {
+            queryParams << [myOrg:contextOrg]
+            query += "and exists (select pd from PropertyDefinition as pd where prop.type = pd AND pd.tenant = :myOrg) "
+        }
+        if (SubscriptionCustomProperty.class.equals(propertyClass) || SubscriptionPrivateProperty.class.equals(propertyClass)) {
+            def tmpQuery = getMySubscriptionsQuery(contextOrg)
+            queryParams << tmpQuery.queryParams
+            query += "and owner in ( " + tmpQuery.query + " )"
+        }else if (LicenseCustomProperty.class.equals(propertyClass) || LicensePrivateProperty.class.equals(propertyClass)){
+            def tmpQuery = getMyLicensesQuery(contextOrg)
+            queryParams << tmpQuery.queryParams
+            query += "and owner in ( " + tmpQuery.query + " )"
+        }
+        result.query = query
+        result.queryParams = queryParams
+        result
+    }
 
     def getDueSubscriptionCustomProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
-        def mySubsQuery = getMySubscriptionsQuery(contextOrg)
-        def query = "SELECT distinct(prop) FROM SubscriptionCustomProperty as prop WHERE (dateValue >= :from and dateValue <= :to) " +
-                "and owner in ( " + mySubsQuery.query + " )"
-        def queryParams = [from:fromDateValue, to:toDateValue] << mySubsQuery.queryParams
-
-        SubscriptionCustomProperty.executeQuery(query, queryParams)
+        def query = getQuery(SubscriptionCustomProperty.class, contextOrg, fromDateValue, toDateValue)
+        SubscriptionCustomProperty.executeQuery(query.query, query.queryParams)
     }
 
     def getDueLicenseCustomProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
-        def myLicensesQuery = getMyLicensesQuery(contextOrg)
-        def query = "SELECT distinct(prop) FROM LicenseCustomProperty as prop WHERE (dateValue >= :from and dateValue <= :to) " +
-                "and owner in ( " + myLicensesQuery.query + " )"
-        def queryParams = [from:fromDateValue, to:toDateValue] << myLicensesQuery.queryParams
-
-        LicenseCustomProperty.executeQuery(query, queryParams)
+        def query = getQuery(LicenseCustomProperty.class, contextOrg, fromDateValue, toDateValue)
+        LicenseCustomProperty.executeQuery(query.query, query.queryParams)
     }
 
     def getDueOrgPrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue) {
-        def query = "SELECT distinct(prop) FROM OrgPrivateProperty as prop WHERE (dateValue >= :from and dateValue <= :to) " +
-                "and exists (select pd from PropertyDefinition as pd where prop.type = pd AND pd.tenant = :myOrg) "
-        def queryParams = [from:fromDateValue, to:toDateValue, myOrg:contextOrg]
-
-        OrgPrivateProperty.executeQuery(query, queryParams)
+        def query = getQuery(OrgPrivateProperty.class, contextOrg, fromDateValue, toDateValue)
+        OrgPrivateProperty.executeQuery(query.query, query.queryParams)
     }
 
     def getDueSubscriptionPrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
-        def mySubsQuery = getMySubscriptionsQuery(contextOrg)
-        def query = "SELECT distinct(prop) FROM SubscriptionPrivateProperty as prop WHERE (dateValue >= :from and dateValue <= :to)" +
-                "and exists (select pd from PropertyDefinition as pd where prop.type = pd AND pd.tenant = :myOrg) " +
-                "and owner in ( " + mySubsQuery.query + " )"
-        def queryParams = [from:fromDateValue, to:toDateValue, myOrg:contextOrg] << mySubsQuery.queryParams
-
-        SubscriptionPrivateProperty.executeQuery(query, queryParams)
+        def query = getQuery(SubscriptionPrivateProperty.class, contextOrg, fromDateValue, toDateValue)
+        SubscriptionPrivateProperty.executeQuery(query.query, query.queryParams)
     }
 
     def getDueLicensePrivateProperties(Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
-        def myLicensesQuery = getMyLicensesQuery(contextOrg)
-        def query = "SELECT distinct(prop) FROM LicensePrivateProperty as prop WHERE (dateValue >= :from and dateValue <= :to)" +
-                "and exists (select pd from PropertyDefinition as pd where prop.type = pd AND pd.tenant = :myOrg) " +
-                "and owner in ( " + myLicensesQuery.query + " )"
-        def queryParams = [from:fromDateValue, to:toDateValue, myOrg:contextOrg] << myLicensesQuery.queryParams
-
-        LicensePrivateProperty.executeQuery(query, queryParams)
+        def query = getQuery(LicensePrivateProperty.class, contextOrg, fromDateValue, toDateValue)
+        LicensePrivateProperty.executeQuery(query.query, query.queryParams)
     }
 
     private def getMySubscriptionsQuery(Org contextOrg){
