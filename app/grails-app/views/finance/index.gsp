@@ -118,7 +118,8 @@
                         $.ajax({
                             url: "<g:createLink controller='finance' action='editCostItem'/>",
                             data: {
-                                sub: "${fixedSubscription?.id}"
+                                sub: "${fixedSubscription?.id}",
+                                tab: "${params.tab}"
                             }
                         }).done(function (data) {
                             $('#dynamicModalContainer').html(data);

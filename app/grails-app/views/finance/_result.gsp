@@ -8,7 +8,7 @@
 %>
 
 
-<div id="financeFilterData" class="ui top attached tabular menu">
+<div id="financeFilterData" class="ui top attached tabular menu" data-current="${queryMode ? queryMode.minus('MODE_') : ''}">
     <g:if test="${queryMode != FinanceController.MODE_CONS_AT_SUBSCR}">
         <div class="item ${tabOwnerActive}" data-tab="OWNER">Eigene Kosten</div>
     </g:if>
@@ -46,7 +46,6 @@
 <g:if test="${queryMode != FinanceController.MODE_CONS_AT_SUBSCR}">
     <!-- OWNER -->
     <div class="ui bottom attached tab ${tabOwnerActive}" data-tab="OWNER">
-
 
         <g:if test="${! costItemsOwner}">
             <br />
@@ -113,7 +112,12 @@
 </g:if>
 
 <r:script>
-    $('#financeFilterData .item').tab()
+    $('#financeFilterData .item').tab({
+        onVisible: function(tabPath) {
+            $('#financeFilterData').attr('data-current', tabPath)
+            console.log(tabPath)
+        }
+    })
 </r:script>
 
 <!-- _result.gsp -->
