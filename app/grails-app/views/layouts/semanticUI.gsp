@@ -531,6 +531,7 @@
                                 function toggleEditableElements(){
                                     var toggleButton = $(".ui.toggle.button");
                                     var toggleIcon = $(".ui.toggle.button .icon");
+                                    $(".table").trigger('reflow');
 
                                     if (  editMode) {
                                         $('.ui .form').removeClass('hidden');
