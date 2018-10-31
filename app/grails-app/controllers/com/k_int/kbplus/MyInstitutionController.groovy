@@ -2930,29 +2930,15 @@ AND EXISTS (
         result
     }
     private def getDueObjects(int daysToBeInformedBeforeToday){
-//        TODO TESTEN der Treffer
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_WEEK, daysToBeInformedBeforeToday);
         java.sql.Date infoDate = new java.sql.Date(cal.getTime().getTime());
         java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
 
         ArrayList dueObjects = new ArrayList()
-//FERTIG!
-       def myDueSubs= queryService.getDueSubscriptions(contextService.org, today, infoDate, today, infoDate)
 
-//FALSCHE QUERY, nur als "Testdaten" zu nutzen
-//        def testAlleSubs = Subscription.executeQuery("SELECT distinct(s) FROM Subscription as s " +
-//                        "WHERE status != :status and (endDate >= :infoDate1 or endDate <= :today1) " +
-//                        "or (manualCancellationDate >= :infoDate2 or manualCancellationDate <= :today2) " ,
-//                        [status:com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'),
-//                         infoDate1:infoDate,
-//                         today1:today,
-//                         infoDate2:infoDate,
-//                         today2:today])
-//        def myDueSubs = testAlleSubs
-        dueObjects.addAll(myDueSubs)
+        dueObjects.addAll(queryService.getDueSubscriptions(contextService.org, today, infoDate, today, infoDate))
 
-        //FERTIG!
         dueObjects.addAll( taskService.getTasksByResponsibles(
                 contextService.getUser(),
                 contextService.getOrg(),
@@ -2960,27 +2946,13 @@ AND EXISTS (
                 queryParams:[RefdataValue.getByValueAndCategory('Done', 'Task Status'),
                         infoDate]]) )
 
-        //todo myLicenses einschränken
-        def licCP = LicenseCustomProperty.executeQuery("SELECT distinct(s) FROM LicenseCustomProperty as s " +
-                "WHERE (dateValue >= :today and dateValue <= :infoDate)" ,
-                [today:today, infoDate:infoDate])
-        dueObjects.addAll(licCP)
-
-        //TODO myLicenses einschränken und join tenant
-//        def licPP = LicensePrivateProperty.findAllByDateValueBetweenAndOwner(infoDate, today, contextService.org)
-        def licPPtmp =  LicensePrivateProperty.executeQuery("SELECT distinct(s) FROM LicensePrivateProperty as s " +
-                "WHERE (dateValue >= :today and dateValue <= :infoDate)" ,
-                [today:today, infoDate:infoDate])
-                //nur meine Lizensen
-        dueObjects.addAll(licPPtmp)
+        dueObjects.addAll(queryService.getDueLicenseCustomProperties(contextService.org, today, infoDate))
+        dueObjects.addAll(queryService.getDueLicensePrivateProperties(contextService.org, today, infoDate))
 
         dueObjects.addAll(PersonPrivateProperty.findAllByDateValueBetweenForOrgAndIsNotPulbic(today, infoDate, contextService.org))
 
-        //FERTIG!
-        dueObjects.addAll(OrgCustomProperty.findAllByDateValueBetween(today, infoDate))
-//        dueObjects.addAll(OrgCustomProperty.findAllByDateValueBetween(infoDate, today))
-//        dueObjects.addAll(OrgCustomProperty.findAllByDateValueBetweenAndOwner(infoDate, today, contextService.org))
-        //todo TESTEN!
+//        dueObjects.addAll(OrgCustomProperty.findAllByDateValueBetween(today, infoDate))
+        dueObjects.addAll(OrgCustomProperty.findAllByDateValueBetweenAndOwner(today, infoDate, contextService.org))
         dueObjects.addAll(queryService.getDueOrgPrivateProperties(contextService.org, today, infoDate))
 
         dueObjects.addAll(queryService.getDueSubscriptionCustomProperties(contextService.org, today, infoDate))

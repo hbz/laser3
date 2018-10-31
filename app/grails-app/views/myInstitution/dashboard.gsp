@@ -101,7 +101,7 @@
                         </div>
                         <div class="message">
                             <p>
-                                <g:if test="${todo.item_with_changes instanceof com.k_int.kbplus.Subscription}">
+                                <g:if test="${todo.item_with_changes instanceof Subscription}">
                                     <g:link controller="subscriptionDetails" action="index" id="${todo.item_with_changes.id}">${todo.item_with_changes.toString()}</g:link>
                                 </g:if>
                                 <g:else>
@@ -196,40 +196,37 @@
                             </div>
                         </div>
                         <div class="extra content">
-                                <g:if test="${tsk.getObjects()}">
-                                    <g:each in="${tsk.getObjects()}" var="tskObj">
-                                        <div class="item">
-                                            <span data-tooltip="${message(code: 'task.' + tskObj.controller)}" data-position="left center" data-variation="tiny">
-                                                <g:if test="${tskObj.controller == 'organisations'}">
-                                                    <i class="university icon"></i>
-                                                </g:if>
-                                                <g:if test="${tskObj.controller.contains('subscription')}">
-                                                    <i class="folder open icon"></i>
-                                                </g:if>
-                                                <g:if test="${tskObj.controller.contains('package')}">
-                                                    <i class="gift icon"></i>
-                                                </g:if>
-                                                <g:if test="${tskObj.controller.contains('license')}">
-                                                    <i class="book icon"></i>
-                                                </g:if>
-                                            </span>
-                                            <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
-                                        </div>
-                                    </g:each>
-                                </g:if>
-                                <g:else>
-                                    <i class="checked calendar icon"></i>
-                                    ${message(code: 'task.general')}
-                                </g:else>
-                            </a>
+                            <g:if test="${tsk.getObjects()}">
+                                <g:each in="${tsk.getObjects()}" var="tskObj">
+                                    <div class="item">
+                                        <span data-tooltip="${message(code: 'task.' + tskObj.controller)}" data-position="left center" data-variation="tiny">
+                                            <g:if test="${tskObj.controller == 'organisations'}">
+                                                <i class="university icon"></i>
+                                            </g:if>
+                                            <g:if test="${tskObj.controller.contains('subscription')}">
+                                                <i class="folder open icon"></i>
+                                            </g:if>
+                                            <g:if test="${tskObj.controller.contains('package')}">
+                                                <i class="gift icon"></i>
+                                            </g:if>
+                                            <g:if test="${tskObj.controller.contains('license')}">
+                                                <i class="book icon"></i>
+                                            </g:if>
+                                        </span>
+                                        <g:link controller="${tskObj.controller}" action="show" params="${[id:tskObj.object?.id]}">${tskObj.object}</g:link>
+                                    </div>
+                                </g:each>
+                            </g:if>
+                            <g:else>
+                                <i class="checked calendar icon"></i>
+                                ${message(code: 'task.general')}
+                            </g:else>
                         </div>
                     </div>
                 </g:each>
             </div>
         </div>
     <div class="ui bottom attached active tab segment" data-tab="forth" style="border-top: 1px solid #d4d4d5; ">
-        <font size="3" color="red">ACHTUNG: Das sind nur exemplarische Testdaten. Die Queries müssen noch erstellt/modifiziert werden.</font>
-        <br>
         Sie werden <b>${dashboardReminderPeriod} Tage</b> vor Fälligkeit an anstehende Termine erinnert.
 
         <hr>
@@ -245,10 +242,11 @@
                 <tr>
                     <td>
                         <g:if test="${obj instanceof Subscription || obj instanceof License}">
-                            ${message(code:'myinst.dash.due_date.enddate.label')}<br>
                             <g:if test="${obj.manualCancellationDate}">
                                 ${message(code:'myinst.dash.due_date.noticePeriod.label')}
+                                <br>
                             </g:if>
+                            ${message(code:'myinst.dash.due_date.enddate.label')}
                         </g:if>
                         <g:elseif test="${obj instanceof Task}">
                             ${message(code:'myinst.dash.due_date.task.label')}
@@ -262,21 +260,20 @@
                         </g:else>
                     </td>
                     <td>
+                        <g:if test="${obj instanceof Subscription || obj instanceof License}">
+                            <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${obj.manualCancellationDate}"/>
+                            <br>
+                        </g:if>
                         <g:if test="${obj instanceof AbstractProperty}">
                             <g:if test="${obj.dateValue}">
                                 <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${obj.dateValue}"/>
                             </g:if>
-                            <g:else>-</g:else>
                         </g:if>
                         <g:else>
                             <g:if test="${obj.endDate}">
                                 <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${obj.endDate}"/>
                             </g:if>
-                            <g:else>-</g:else>
                         </g:else>
-                        <g:if test="${obj instanceof Subscription || obj instanceof License}">
-                            <br><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${obj.manualCancellationDate}"/>
-                        </g:if>
                     </td>
                     <td>
                         <div class="la-flexbox">
@@ -289,7 +286,9 @@
                                 <g:link controller="licenseDetails" action="show" id="${obj.id}">${obj.name}</g:link>
                             </g:elseif>
                             <g:elseif test="${obj instanceof Task}">
-                                <i class="icon tasks la-list-icon"></i>
+                                <span data-position="top right" data-tooltip="Aufgabe">
+                                    <i class="icon tasks la-list-icon"></i>
+                                </span>
                                 <a class="header" onclick="taskedit(${obj?.id});">${obj?.title}</a>
                                 &nbsp(Status: ${obj.status?.getI10n("value")})
                             </g:elseif>
