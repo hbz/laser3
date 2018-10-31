@@ -490,12 +490,14 @@ from License as l where (
 
         def orgListTotal = []
         mySubs.each { sub ->
-            def provider = OrgRole.findWhere(
-                    sub: sub,
-                    roleType: RefdataValue.getByValueAndCategory('Provider','Organisational Role')
-            )
-            if (provider && ! orgListTotal.contains(provider.org)) {
-                orgListTotal << provider.org
+            def providers = OrgRole.findAll("""from OrgRole where sub = :subscription and (roleType = :provider or roleType = :agency)""",
+                    [subscription: sub,
+                     provider: RefdataValue.getByValueAndCategory('Provider','Organisational Role'),
+                     agency:  RefdataValue.getByValueAndCategory('Agency','Organisational Role')])
+            providers.each { provider ->
+                if (provider && !orgListTotal.contains(provider.org)) {
+                    orgListTotal << provider.org
+                }
             }
         }
 //        result.user = User.get(springSecurityService.principal.id)
