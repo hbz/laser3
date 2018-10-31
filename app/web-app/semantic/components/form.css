@@ -108,7 +108,7 @@
   padding: 0.67857143em 1em;
   font-size: 1em;
   background: #FFFFFF;
-  border: 1px solid #eaeaea;
+  border: 1px solid #d3dae3;
   color: rgba(0, 0, 0, 0.87);
   border-radius: 0;
   -webkit-box-shadow: 0em 0em 0em 0em transparent inset;
@@ -124,7 +124,7 @@
   tap-highlight-color: rgba(255, 255, 255, 0);
   padding: 0.78571429em 1em;
   background: #FFFFFF;
-  border: 1px solid #eaeaea;
+  border: 1px solid #d3dae3;
   outline: none;
   color: rgba(0, 0, 0, 0.87);
   border-radius: 0;
@@ -163,7 +163,7 @@
   height: auto;
   width: 100%;
   background: #FFFFFF;
-  border: 1px solid #eaeaea;
+  border: 1px solid #d3dae3;
   border-radius: 0;
   -webkit-box-shadow: 0em 0em 0em 0em transparent inset;
           box-shadow: 0em 0em 0em 0em transparent inset;

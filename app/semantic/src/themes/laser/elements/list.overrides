@@ -30,7 +30,7 @@
 }
 
 .la-list-border-around {
-  border: 1px solid #eaeaea;
+  border: 1px solid @laSecondaryColor;
 }
 .ui.item.person-details:hover {
   background: white!important;

@@ -86,7 +86,7 @@
 }
 .ui.table tfoot th {
   cursor: auto;
-  border-top: 1px solid #eaeaea;
+  border-top: 1px solid #d3dae3;
   background: #f4f8f9;
   text-align: inherit;
   color: rgba(0, 0, 0, 0.87);
@@ -226,8 +226,8 @@
   border-right: none;
 }
 .ui.structured.sortable.table thead th {
-  border-left: 1px solid #eaeaea;
-  border-right: 1px solid #eaeaea;
+  border-left: 1px solid #d3dae3;
+  border-right: 1px solid #d3dae3;
 }
 .ui.structured.basic.table th {
   border-left: none;
@@ -287,13 +287,13 @@
 
 /* Fix 2nd Column */
 .ui.definition.table thead:not(.full-width) th:nth-child(2) {
-  border-left: 1px solid #eaeaea;
+  border-left: 1px solid #d3dae3;
 }
 .ui.definition.table tfoot:not(.full-width) th:nth-child(2) {
-  border-left: 1px solid #eaeaea;
+  border-left: 1px solid #d3dae3;
 }
 .ui.definition.table td:nth-child(2) {
-  border-left: 1px solid #eaeaea;
+  border-left: 1px solid #d3dae3;
 }
 
 
@@ -886,7 +886,7 @@
 .ui.sortable.table thead th {
   cursor: pointer;
   white-space: nowrap;
-  border-left: 1px solid #eaeaea;
+  border-left: 1px solid #d3dae3;
   color: rgba(0, 0, 0, 0.87);
 }
 .ui.sortable.table thead th:first-child {
@@ -1012,7 +1012,7 @@
 
 .ui.basic.table {
   background: transparent;
-  border: 1px solid #eaeaea;
+  border: 1px solid #d3dae3;
   -webkit-box-shadow: none;
           box-shadow: none;
 }

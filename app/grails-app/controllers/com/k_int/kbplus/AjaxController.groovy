@@ -456,6 +456,37 @@ class AjaxController {
     }
   }
 
+    def propertyAlternativesSearchByOID() {
+        def result = []
+        def pd = genericOIDService.resolveOID(params.oid)
+
+        def queryResult = PropertyDefinition.findAllWhere(
+                descr: pd.descr,
+                refdataCategory: pd.refdataCategory,
+                type: pd.type,
+                multipleOccurrence: pd.multipleOccurrence,
+                tenant: pd.tenant
+        ).minus(pd)
+
+        queryResult.each { it ->
+            def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
+            result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n('name')}"])
+        }
+
+        if (result) {
+           result.sort{ x,y -> x.text.compareToIgnoreCase y.text }
+        }
+
+        withFormat {
+            html {
+                result
+            }
+            json {
+                render result as JSON
+            }
+        }
+    }
+
     /**
      * Copied legacy sel2RefdataSearch(), but uses OID.
      *

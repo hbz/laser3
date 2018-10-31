@@ -146,7 +146,7 @@ ${usedRdvList.join(", ")}
                 </p>
 
                 <p>
-                    Alle Vorkommnisse von <strong class="xcgInfo"></strong> in der Datenbank durch folgenden Wert ersetzen:
+                    Alle Vorkommen von <strong class="xcgInfo"></strong> in der Datenbank durch folgenden Wert ersetzen:
                 </p>
 
                 <div class="field">
