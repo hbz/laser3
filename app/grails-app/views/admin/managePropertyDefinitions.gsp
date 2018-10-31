@@ -90,17 +90,18 @@
                                             </span>
                                         </g:if>
 
-
-                                        <g:if test="${usedPdList?.contains(pd.id)}">
-                                            <span data-position="top right" data-tooltip="${message(code:'propertyDefinition.exchange.label')}">
-                                                <button class="ui icon button" href="#replacePropertyDefinitionModal" data-semui="modal"
-                                                        data-xcg-pd="${pd.class.name}:${pd.id}"
-                                                        data-xcg-type="${pd.type}"
-                                                        data-xcg-rdc="${pd.refdataCategory}"
-                                                        data-xcg-debug="${pd.getI10n('name')} (${pd.name})"
-                                                ><i class="exchange icon"></i></button>
-                                            </span>
-                                        </g:if>
+                                        <sec:ifAnyGranted roles="ROLE_YODA">
+                                            <g:if test="${usedPdList?.contains(pd.id)}">
+                                                <span data-position="top right" data-tooltip="${message(code:'propertyDefinition.exchange.label')}">
+                                                    <button class="ui icon button" href="#replacePropertyDefinitionModal" data-semui="modal"
+                                                            data-xcg-pd="${pd.class.name}:${pd.id}"
+                                                            data-xcg-type="${pd.type}"
+                                                            data-xcg-rdc="${pd.refdataCategory}"
+                                                            data-xcg-debug="${pd.getI10n('name')} (${pd.name})"
+                                                    ><i class="exchange icon"></i></button>
+                                                </span>
+                                            </g:if>
+                                        </sec:ifAnyGranted>
 
                                     </td>
                                     <%--
