@@ -13,6 +13,8 @@
 
 		<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.admin.managePropertyDefinitions"/></h1>
 
+        <h3 class="ui header">Custom Properties</h3>
+
 		<semui:messages data="${flash}" />
 
 
@@ -34,6 +36,7 @@
                     <table class="ui celled la-table la-table-small table">
                         <thead>
                         <tr>
+                            <th></th>
                             <th>${message(code:'propertyDefinition.name.label', default:'Name')}</th>
                             <th>Name (DE)</th>
                             <th>Name (EN)</th>
@@ -49,13 +52,14 @@
                                 <%--<g:set var="pdI10nDescr" value="${I10nTranslation.createI10nOnTheFly(pd, 'descr')}" />--%>
                                 <tr>
                                     <td>
-                                        <g:if test="${usedPdList?.contains(pd.id)}">
-                                            ${fieldValue(bean: pd, field: "name")}
+                                        <g:if test="${! usedPdList?.contains(pd.id)}">
+                                            <span data-position="top left" data-tooltip="Dieser Wert wird bisher nicht verwendet (ID:${pd.id})">
+                                                <i class="info circle icon blue"></i>
+                                            </span>
                                         </g:if>
-                                        <g:else>
-                                            <span data-position="top left" data-tooltip="Dieser Wert wird bisher nicht verwendet (ID:${pd.id})"
-                                                  style="font-style:italic; color:lightsteelblue;">${fieldValue(bean: pd, field: "name")}</span>
-                                        </g:else>
+                                    </td>
+                                    <td>
+                                        ${fieldValue(bean: pd, field: "name")}
                                     </td>
                                     <td>
                                         <semui:xEditable owner="${pdI10nName}" field="valueDe" />
@@ -86,18 +90,19 @@
                                             </span>
                                         </g:if>
 
-                                        <%--
-                                        <g:if test="${usedPdList?.contains(pd.id)}">
-                                            <span data-position="top right" data-tooltip="${message(code:'propertyDefinition.exchange.label')}">
-                                                <button class="ui icon button" href="#replacePropertyDefinitionModal" data-semui="modal"
-                                                        data-xcg-pd="${pd.class.name}:${pd.id}"
-                                                        data-xcg-type="${pd.type}"
-                                                        data-xcg-rdc="${pd.refdataCategory}"
-                                                        data-xcg-debug="${pd.getI10n('name')} (${pd.name})"
-                                                ><i class="exchange icon"></i></button>
-                                            </span>
-                                        </g:if>
-                                        --%>
+                                        <sec:ifAnyGranted roles="ROLE_YODA">
+                                            <g:if test="${usedPdList?.contains(pd.id)}">
+                                                <span data-position="top right" data-tooltip="${message(code:'propertyDefinition.exchange.label')}">
+                                                    <button class="ui icon button" href="#replacePropertyDefinitionModal" data-semui="modal"
+                                                            data-xcg-pd="${pd.class.name}:${pd.id}"
+                                                            data-xcg-type="${pd.type}"
+                                                            data-xcg-rdc="${pd.refdataCategory}"
+                                                            data-xcg-debug="${pd.getI10n('name')} (${pd.name})"
+                                                    ><i class="exchange icon"></i></button>
+                                                </span>
+                                            </g:if>
+                                        </sec:ifAnyGranted>
+
                                     </td>
                                     <%--
                                     <td><semui:xEditable owner="${pdI10nDescr}" field="valueDe" /></td>
@@ -112,9 +117,9 @@
 			</g:each>
         </div>
 
-<%--
+
         <semui:modal id="replacePropertyDefinitionModal" message="propertyDefinition.exchange.label" editmodal="editmodal">
-            <g:form class="ui form" url="[controller: 'admin', action: 'managePropertyDefinition']">
+            <g:form class="ui form" url="[controller: 'admin', action: 'managePropertyDefinitions']">
                 <input type="hidden" name="cmd" value="replacePropertyDefinition"/>
                 <input type="hidden" name="xcgPdFrom" value=""/>
 
@@ -123,7 +128,7 @@
                 </p>
 
                 <p>
-                    Alle Vorkommnisse von <strong class="xcgInfo"></strong> in der Datenbank durch folgenden Wert ersetzen:
+                    Alle Vorkommen von <strong class="xcgInfo"></strong> in der Datenbank durch folgende Eigenschaft ersetzen:
                 </p>
 
                 <div class="field">
@@ -131,24 +136,48 @@
                     <select id="xcgPdTo"></select>
                 </div>
 
+                <p>
+                    Die gesetzten Werte bleiben erhalten!
+                </p>
+
             </g:form>
 
             <r:script>
                         $('button[data-xcg-pd]').on('click', function(){
 
                             var pd = $(this).attr('data-xcg-pd');
-                            var type = $(this).attr('data-xcg-type');
-                            var rdc = $(this).attr('data-xcg-rdc');
+                            //var type = $(this).attr('data-xcg-type');
+                            //var rdc = $(this).attr('data-xcg-rdc');
 
                             $('#replacePropertyDefinitionModal .xcgInfo').text($(this).attr('data-xcg-debug'));
                             $('#replacePropertyDefinitionModal input[name=xcgPdFrom]').attr('value', pd);
 
-                            // TODO
+                            $.ajax({
+                                url: '<g:createLink controller="ajax" action="propertyAlternativesSearchByOID"/>' + '?oid=' + pd + '&format=json',
+                                success: function (data) {
+                                    var select = '<option></option>';
+                                    for (var index = 0; index < data.length; index++) {
+                                        var option = data[index];
+                                        if (option.value != pd) {
+                                            select += '<option value="' + option.value + '">' + option.text + '</option>';
+                                        }
+                                    }
+                                    select = '<select id="xcgPdTo" name="xcgPdTo" class="ui search selection dropdown">' + select + '</select>';
+
+                                    $('label[for=xcgPdTo]').next().replaceWith(select);
+
+                                    $('#xcgPdTo').dropdown({
+                                        duration: 150,
+                                        transition: 'fade'
+                                    });
+
+                                }, async: false
+                            });
                         })
             </r:script>
 
         </semui:modal>
---%>
+
 
         <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 

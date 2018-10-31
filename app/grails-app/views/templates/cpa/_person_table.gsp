@@ -1,3 +1,4 @@
+<%--  model: [persons, restrictToOrg] --%>
 
 <table class="ui table la-table">
     <colgroup>
@@ -39,7 +40,8 @@
 				</td>
 
 				<td>
-					<g:each in="${person?.roleLinks?.unique{ it?.org }}" var="role">
+                    <%-- filter by model.restrictToOrg --%>
+					<g:each in="${person?.roleLinks?.findAll{ restrictToOrg ? (it.org == restrictToOrg) : it }}" var="role">
                         <g:if test="${controllerName == 'myInstitution'}">
                             <div class="la-flexbox">
                                 <i class="icon university la-list-icon"></i>
