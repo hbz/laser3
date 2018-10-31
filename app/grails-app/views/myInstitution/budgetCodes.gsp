@@ -46,20 +46,27 @@
                         <semui:xEditable owner="${bcode}" field="descr" />
                     </td>
                     <td>
-                        <g:each in="${CostItemGroup.findAllByBudgetCode(bcode)}" var="cig">
+                        <div class="ui list">
+                            <g:each in="${CostItemGroup.findAllByBudgetCode(bcode)}" var="cig">
 
-                                <g:if test="${cig.costItem.costTitle}">
-                                    ${cig.costItem.costTitle}
-                                </g:if>
-                                <g:else>
-                                    ${cig.costItem.globalUID}
-                                </g:else>
-                                <g:if test="${cig.costItem.costDescription}">
-                                    /
-                                    ${cig.costItem.costDescription}
-                                </g:if>
-                                <br />
-                        </g:each>
+                                <div class="item">
+                                    <g:if test="${cig.costItem.sub}">
+                                        <g:link mapping="subfinance" params="[sub:cig.costItem.sub.id]">${cig.costItem.sub.name}</g:link>
+                                    </g:if>
+
+                                    <g:if test="${cig.costItem.costTitle}">
+                                        - ${cig.costItem.costTitle}
+                                    </g:if>
+                                    <g:elseif test="${cig.costItem.costTitle}">
+                                        - ${cig.costItem.globalUID}
+                                    </g:elseif>
+
+                                    <g:if test="${cig.costItem.costDescription}">
+                                        (${cig.costItem.costDescription})
+                                    </g:if>
+                                </div>
+                            </g:each>
+                        </div>
                     </td>
                     <td class="x">
                         <%--

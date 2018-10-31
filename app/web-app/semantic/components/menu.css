@@ -937,7 +937,7 @@ Floated Menu / Item
 .ui.secondary.pointing.menu {
   margin-left: 0em;
   margin-right: 0em;
-  border-bottom: 2px solid #eaeaea;
+  border-bottom: 2px solid #d3dae3;
 }
 .ui.secondary.pointing.menu .item {
   border-bottom-color: transparent;
@@ -977,7 +977,7 @@ Floated Menu / Item
 .ui.secondary.pointing.menu .link.item:active,
 .ui.secondary.pointing.menu a.item:active {
   background-color: transparent;
-  border-color: #eaeaea;
+  border-color: #d3dae3;
 }
 
 /* Active */
@@ -1006,7 +1006,7 @@ Floated Menu / Item
   border-bottom-width: 0px;
   border-right-width: 2px;
   border-right-style: solid;
-  border-right-color: #eaeaea;
+  border-right-color: #d3dae3;
 }
 .ui.secondary.vertical.pointing.menu .item {
   border-bottom: none;
@@ -1028,7 +1028,7 @@ Floated Menu / Item
 }
 .ui.secondary.inverted.pointing.menu {
   border-width: 2px;
-  border-color: #eaeaea;
+  border-color: #d3dae3;
 }
 .ui.secondary.inverted.pointing.menu .item {
   color: rgba(255, 255, 255, 0.9);

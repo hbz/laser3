@@ -305,6 +305,7 @@ class ApiReaderHelper {
 
         list.each { it ->   // com.k_int.kbplus.Address
             def tmp         = [:]
+            tmp.name        = it.name
             tmp.street1     = it.street_1
             tmp.street2     = it.street_2
             tmp.zipcode     = it.zipcode

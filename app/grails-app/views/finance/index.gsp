@@ -51,26 +51,9 @@
 
 <g:if test="${fixedSubscription}">
     <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'subscription.details.financials.label')} für ${fixedSubscription}
-
-        <span class="la-forward-back">
-            <g:if test="${navPrevSubscription}">
-                <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:navPrevSubscription.id]}"><i class="chevron left icon"></i></g:link>
-            </g:if>
-            <g:else>
-                <i class="chevron left icon disabled"></i>
-            </g:else>
-
-            <g:formatDate date="${fixedSubscription.startDate}" format="${message(code: 'default.date.format.notime')}"/>
-            ${fixedSubscription.endDate ?  "- "+g.formatDate(date: fixedSubscription.endDate, format: message(code: 'default.date.format.notime')) : ''}
-
-            <g:if test="${navNextSubscription}">
-                <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:navNextSubscription.id]}"><i class="chevron right icon"></i></g:link>
-            </g:if>
-            <g:else>
-                <i class="chevron right icon disabled"></i>
-            </g:else>
-        </span>
+        <semui:anualRings mapping="subfinance" object="${fixedSubscription}" controller="finance" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
     </h1>
+
     <g:render template="../subscriptionDetails/nav" model="${[subscriptionInstance:fixedSubscription, params:(params << [id:fixedSubscription.id])]}"/> <%-- mapping="subfinance" params="${[sub:params.id]} --%>
 </g:if>
 <g:else>
@@ -135,7 +118,8 @@
                         $.ajax({
                             url: "<g:createLink controller='finance' action='editCostItem'/>",
                             data: {
-                                sub: "${fixedSubscription?.id}"
+                                sub: "${fixedSubscription?.id}",
+                                tab: "${params.tab}"
                             }
                         }).done(function (data) {
                             $('#dynamicModalContainer').html(data);

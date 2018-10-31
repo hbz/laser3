@@ -110,15 +110,17 @@ ${usedRdvList.join(", ")}
                                             </span>
                                         </g:if>
 
-                                        <g:if test="${usedRdvList?.contains(rdv.id)}">
-                                            <span data-position="top right" data-tooltip="${message(code:'refdataValue.exchange.label')}">
-                                                <button class="ui icon button" href="#replaceRefdataValueModal" data-semui="modal"
-                                                        data-xcg-rdv="${rdv.class.name}:${rdv.id}"
-                                                        data-xcg-rdc="${rdc.class.name}:${rdc.id}"
-                                                        data-xcg-debug="${rdv.getI10n('value')} (${rdv.value})"
-                                                ><i class="exchange icon"></i></button>
-                                            </span>
-                                        </g:if>
+                                        <sec:ifAnyGranted roles="ROLE_YODA">
+                                            <g:if test="${usedRdvList?.contains(rdv.id)}">
+                                                <span data-position="top right" data-tooltip="${message(code:'refdataValue.exchange.label')}">
+                                                    <button class="ui icon button" href="#replaceRefdataValueModal" data-semui="modal"
+                                                            data-xcg-rdv="${rdv.class.name}:${rdv.id}"
+                                                            data-xcg-rdc="${rdc.class.name}:${rdc.id}"
+                                                            data-xcg-debug="${rdv.getI10n('value')} (${rdv.value})"
+                                                    ><i class="exchange icon"></i></button>
+                                                </span>
+                                            </g:if>
+                                        </sec:ifAnyGranted>
 
                                         <g:if test="${rdv.softData && ! usedRdvList?.contains(rdv.id)}">
                                             <g:link controller="admin" action="manageRefdatas"
@@ -146,7 +148,7 @@ ${usedRdvList.join(", ")}
                 </p>
 
                 <p>
-                    Alle Vorkommnisse von <strong class="xcgInfo"></strong> in der Datenbank durch folgenden Wert ersetzen:
+                    Alle Vorkommen von <strong class="xcgInfo"></strong> in der Datenbank durch folgenden Wert ersetzen:
                 </p>
 
                 <div class="field">

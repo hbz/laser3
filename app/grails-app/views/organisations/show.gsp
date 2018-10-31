@@ -138,15 +138,17 @@
 
                 <div class="ui card">
                     <div class="content">
-                        <dt><g:message code="org.orgRoleType.label" default="Organisation Type" /></dt>
-                        <dd>
-                            <div class="ui divided middle aligned selection list la-flex-list">
-                            <g:render template="OrgRoleTypeasList"
-                                      model="${[OrgRoleTypes:orgInstance.orgRoleType, Org:orgInstance, editable: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]}" />
-                            </div>
-                        </dd>
+                        <dl>
+                            <dt><g:message code="org.orgRoleType.label" default="Organisation Type" /></dt>
+                            <dd>
 
-                        <g:render template="OrgRoleTypeModal"
+                                <g:render template="orgRoleTypeAsList"
+                                          model="${[OrgRoleTypes:orgInstance.orgRoleType, Org:orgInstance, editable: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]}" />
+
+                            </dd>
+                        </dl>
+
+                        <g:render template="orgRoleTypeModal"
                                   model="${[Org:orgInstance, editable: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]}" />
                     </div>
                 </div>

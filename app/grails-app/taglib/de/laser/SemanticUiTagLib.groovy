@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
@@ -487,6 +488,47 @@ class SemanticUiTagLib {
         out <<   '</div>'
         out << '</div>'
 
+    }
+    def anualRings = { attrs, body ->
+        def object = attrs.object
+
+        def prev = attrs.navPrev
+        def next = attrs.navNext
+        def statusType = object.status.owner.desc
+        def color = (object.status.id == RefdataValue.getByValueAndCategory('Current', statusType)?.id)? 'la-status-active':((object.status?.id == RefdataValue.getByValueAndCategory('Expired', statusType)?.id)? "la-status-inactive" : "la-status-else")
+        def tooltip = object.status.getI10n('value')
+        out <<   "<div class='ui large label la-annual-rings'>"
+        if (prev) {
+            if (attrs.mapping) {
+                out <<   g.link ('<i class="arrow left icon"></i>', contoller: attrs.controller, action: attrs.action, params:[sub:prev?.id], mapping: attrs.mapping)
+            }
+            else {
+                out <<   g.link ('<i class="arrow left icon"></i>', contoller: attrs.controller, action: attrs.action, id:prev?.id)
+            }
+        }
+        else {
+            out << '<i class="arrow left icon disabled"></i>'
+        }
+        out <<   g.formatDate(date:object.startDate,format:message(code: 'default.date.format.notime'))
+        if (object.endDate) {
+            out << '–'
+            out << g.formatDate(date: object.endDate, format: message(code: 'default.date.format.notime'))
+        }
+        out << "<a class='ui ${color} circular tiny label'  data-position='right center' data-variation='tiny' data-tooltip='Status: ${tooltip}'>"
+        out << '       ?'
+        out << '</a>'
+        if (next) {
+            if (attrs.mapping) {
+                out <<   g.link ('<i class="arrow right icon"></i>', contoller: attrs.controller, action: attrs.action, params:[sub:next?.id], mapping: attrs.mapping)
+            }
+            else {
+                out <<   g.link ('<i class="arrow right icon"></i>', contoller: attrs.controller, action: attrs.action, id:next?.id)
+            }
+        }
+        else {
+            out << '<i class="arrow right icon disabled"></i>'
+        }
+        out <<   '</div>'
     }
 
     public SemanticUiTagLib ( ) { }

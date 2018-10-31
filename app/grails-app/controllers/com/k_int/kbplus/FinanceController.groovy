@@ -612,7 +612,7 @@ class FinanceController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def editCostItem() {
         def result = [:]
-        result.tab = params.tab ?: 'owner'
+        result.tab = params.tab
 
         result.inSubMode = params.sub ? true : false
         if (result.inSubMode) {
@@ -633,7 +633,7 @@ class FinanceController {
         result.id = params.id
         result.sub = params.sub
         result.inSubMode = params.sub ? true : false
-        result.tab = params.tab ?: 'owner'
+        result.tab = params.tab
 
         if (result.inSubMode) {
             result.fixedSubscription = params.int('sub') ? Subscription.get(params.sub) : null
@@ -703,7 +703,7 @@ class FinanceController {
         }
         //redirect(controller: 'myInstitution', action: 'finance')
 
-        result.tab = params.tab ?: 'owner'
+        result.tab = params.tab
 
         redirect(uri: (request.getHeader('referer')).minus('?tab=owner').minus('?tab=sc'), params: [tab: result.tab])
     }
@@ -919,7 +919,7 @@ class FinanceController {
       params.remove("Add")
       // render ([newCostItem:newCostItem.id, error:result.error]) as JSON
 
-        result.tab = params.tab ?: 'owner'
+        result.tab = params.tab
 
         redirect(uri: (request.getHeader('referer')).minus('?tab=owner').minus('?tab=sc'), params: [tab: result.tab])
     }
