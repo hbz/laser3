@@ -11,7 +11,7 @@ import org.apache.poi.hslf.model.*
 import org.apache.poi.hssf.usermodel.*
 import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
-import com.k_int.properties.PropertyDefinition
+import com.k_int.properties.*
 
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
@@ -3402,6 +3402,41 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             return
         }
 
+        result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADMIN")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def managePropertyGroups() {
+        def result = setResultGenerics()
+        result.editable = true // true, because action is protected
+
+        if (params.cmd == 'newPropertyGroup') {
+            def ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
+
+            println ownerType
+
+            if (params.name && ownerType) {
+                def propDefGroup = new PropertyDefinitionGroup(
+                        name: params.name,
+                        description: params.description,
+                        tenant: result.institution,
+                        ownerType: ownerType
+                )
+
+                if (propDefGroup.save(flush:true)) {
+                    params.list('propertyDefinition')?.each { pd ->
+
+                        new PropertyDefinitionGroupItem(
+                                propDef: pd,
+                                propDefGroup: propDefGroup
+                        ).save(flush: true)
+                    }
+                }
+            }
+        }
+
+        result.propDefGroups = PropertyDefinitionGroup.findAllByTenant(result.institution, [sort: 'name'])
         result
     }
 

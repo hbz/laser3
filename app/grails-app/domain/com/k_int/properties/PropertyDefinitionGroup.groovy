@@ -7,19 +7,22 @@ import groovy.util.logging.Log4j
 class PropertyDefinitionGroup {
 
     String name
-    Org tenant
+    String description
+    Org    tenant
     String ownerType // PropertyDefinition.[LIC_PROP, SUB_PROP, ORG_PROP]
 
     static mapping = {
         id          column: 'pdg_id'
         version     column: 'pdg_version'
         name        column: 'pdg_name'
+        description column: 'pdg_description', type: 'text'
         tenant      column: 'pdg_tenant_fk'
         ownerType   column: 'pdg_owner_type'
     }
 
     static constraints = {
         name        (nullable: false, blank: false)
+        description (nullable: true,  blank: true)
         tenant      (nullable: false, blank: false)
         ownerType   (nullable: false, blank: false)
     }

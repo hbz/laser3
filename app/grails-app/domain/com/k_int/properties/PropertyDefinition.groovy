@@ -61,6 +61,13 @@ class PropertyDefinition extends AbstractI10nTranslatable {
             PRS_PROP
     ]
 
+    @Transient
+    final static String[] AVAILABLE_GROUPS_DESCR = [
+            LIC_PROP,
+            SUB_PROP,
+            ORG_PROP
+    ]
+
     String name
     String descr
     String type
@@ -228,8 +235,31 @@ class PropertyDefinition extends AbstractI10nTranslatable {
         result
     }
 
+    def getDescrClass() {
+        getDescrClass(this.descr)
+    }
+
+    static getDescrClass(String descr) {
+        def result
+        def parts = descr.split(" ")
+
+        if (parts.size() >= 2) {
+            if (parts[0] == "Organisation") {
+                parts[0] = "Org"
+            }
+
+            result = Class.forName('com.k_int.kbplus.' + parts[0])?.name
+        }
+        result
+    }
+
     def getImplClass(String customOrPrivate) {
-        def parts = this.descr.split(" ")
+        getImplClass(this.descr, customOrPrivate)
+    }
+
+    static getImplClass(String descr, String customOrPrivate) {
+        def result
+        def parts = descr.split(" ")
 
         if (parts.size() >= 2) {
             if (parts[0] == "Organisation") {
@@ -240,16 +270,16 @@ class PropertyDefinition extends AbstractI10nTranslatable {
 
             try {
                 if (customOrPrivate.equalsIgnoreCase('custom') && Class.forName(cp)) {
-                    return cp
+                    result = cp
                 }
                 if (customOrPrivate.equalsIgnoreCase('private') && Class.forName(pp)) {
-                    return pp
+                    result = pp
                 }
             } catch (Exception e) {
 
             }
         }
-        null
+        result
     }
 
     def countUsages() {

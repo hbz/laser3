@@ -225,7 +225,8 @@
                                     %{--<semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.manage_consortia" />--}%
                                 %{--</g:if>--}%
 
-                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_props" />
+                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_private_props" />
+                                <semui:securedMainNavItem affiliation="INST_ADMIN"  controller="myInstitution" action="managePropertyGroups" message="menu.institutions.manage_prop_groups" />
 
                                 <g:if test="${grailsApplication.config.feature_finance}">
                                     <%-- <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" /> --%>
