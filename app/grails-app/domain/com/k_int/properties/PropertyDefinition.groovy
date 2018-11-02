@@ -73,8 +73,10 @@ class PropertyDefinition extends AbstractI10nTranslatable {
     boolean multipleOccurrence
     // mandatory
     boolean mandatory
-    // indicates this object is created via front-end and still not hard coded in bootstrap.groovy
+    // indicates this object is created via front-end
     boolean softData
+    // indicates this object is created via current bootstrap
+    boolean hardData
 
     //Map keys can change and they wont affect any of the functionality
     @Deprecated
@@ -104,6 +106,7 @@ class PropertyDefinition extends AbstractI10nTranslatable {
       multipleOccurrence column: 'pd_multiple_occurrence'
                mandatory column: 'pd_mandatory'
                 softData column: 'pd_soft_data'
+                hardData column: 'pd_hard_data'
                       sort name: 'desc'
     }
 
@@ -116,6 +119,7 @@ class PropertyDefinition extends AbstractI10nTranslatable {
         multipleOccurrence  (nullable: true,  blank: true,  default: false)
         mandatory           (nullable: false, blank: false, default: false)
         softData            (nullable: false, blank: false, default: false)
+        hardData            (nullable: false, blank:false,  default: false)
     }
 
     private static def typeIsValid(key) {
