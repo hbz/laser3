@@ -415,7 +415,7 @@
                             </r:script>
                         </g:if>
                     </g:each>
-<%--
+--%>
                     <g:each in="${authorizedOrgs}" var="authOrg">
                         <g:if test="${authOrg.name == contextOrg?.name}">
                             <div class="ui card la-dl-no-table">
