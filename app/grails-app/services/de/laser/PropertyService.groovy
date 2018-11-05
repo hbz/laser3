@@ -3,6 +3,7 @@ package de.laser
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.SystemAdmin
 import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.properties.PropertyDefinition
 
 class PropertyService {
 
@@ -71,9 +72,9 @@ class PropertyService {
 
             if (dc.shortName.endsWith('CustomProperty') || dc.shortName.endsWith('PrivateProperty')) {
 
-                log.debug( dc.shortName )
+                //log.debug( dc.shortName )
                 def query = "SELECT DISTINCT type FROM ${dc.name}"
-                log.debug(query)
+                //log.debug(query)
 
                 def pds = SystemAdmin.executeQuery(query)
                 println pds
@@ -87,6 +88,25 @@ class PropertyService {
         }
 
         [usedPdList.unique().sort(), detailsMap.sort()]
+    }
+
+    def replacePropertyDefinitions(PropertyDefinition pdFrom, PropertyDefinition pdTo) {
+
+        log.debug("replacing: ${pdFrom} with: ${pdTo}")
+        def count = 0
+
+        def implClass = pdFrom.getImplClass('custom')
+        def customProps = Class.forName(implClass)?.findAllWhere(
+                type: pdFrom
+        )
+        customProps.each{ cp ->
+            log.debug("exchange type at: ${implClass}(${cp.id}) from: ${pdFrom.id} to: ${pdTo.id}")
+            cp.type = pdTo
+            cp.save(flush:true)
+            count++
+        }
+
+        count
     }
 }
 

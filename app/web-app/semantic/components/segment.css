@@ -21,7 +21,7 @@
   margin: 1rem 0em;
   padding: 1em 1em;
   border-radius: 0;
-  border: 1px solid #eaeaea;
+  border: 1px solid #d3dae3;
 }
 .ui.segment:first-child {
   margin-top: 0em;
@@ -40,7 +40,7 @@
   -webkit-box-shadow: none;
           box-shadow: none;
   border: none;
-  border-bottom: 1px solid #eaeaea;
+  border-bottom: 1px solid #d3dae3;
 }
 .ui.vertical.segment:last-child {
   border-bottom: none;
@@ -89,7 +89,7 @@
 /* Table */
 .ui.basic.table.segment {
   background: #FFFFFF;
-  border: 1px solid #eaeaea;
+  border: 1px solid #d3dae3;
   -webkit-box-shadow: 0;
           box-shadow: 0;
 }
@@ -132,7 +132,7 @@
   left: 0px;
   position: absolute;
   width: 100%;
-  border: 1px solid #eaeaea;
+  border: 1px solid #d3dae3;
   -webkit-box-shadow: '';
           box-shadow: '';
 }
@@ -182,7 +182,7 @@
   position: absolute;
   bottom: -3px;
   left: 0%;
-  border-top: 1px solid #eaeaea;
+  border-top: 1px solid #d3dae3;
   background: rgba(0, 0, 0, 0.03);
   width: 100%;
   height: 6px;
@@ -285,7 +285,7 @@
           flex-direction: column;
   position: relative;
   margin: 1rem 0em;
-  border: 1px solid #eaeaea;
+  border: 1px solid #d3dae3;
   -webkit-box-shadow: 0;
           box-shadow: 0;
   border-radius: 0;
@@ -307,7 +307,7 @@
   -webkit-box-shadow: none;
           box-shadow: none;
   border: none;
-  border-top: 1px solid #eaeaea;
+  border-top: 1px solid #d3dae3;
 }
 .ui.segments:not(.horizontal) > .segment:first-child {
   border-top: none;
@@ -336,7 +336,7 @@
 
 /* Nested Group */
 .ui.segments > .ui.segments {
-  border-top: 1px solid #eaeaea;
+  border-top: 1px solid #d3dae3;
   margin: 1rem 1rem;
 }
 .ui.segments > .segments:first-child {
@@ -363,7 +363,7 @@
           box-shadow: 0;
   margin: 1rem 0em;
   border-radius: 0;
-  border: 1px solid #eaeaea;
+  border: 1px solid #d3dae3;
 }
 
 /* Nested Horizontal Group */
@@ -374,7 +374,7 @@
   border: none;
   -webkit-box-shadow: none;
           box-shadow: none;
-  border-top: 1px solid #eaeaea;
+  border-top: 1px solid #d3dae3;
 }
 
 /* Horizontal Segment */
@@ -391,7 +391,7 @@
   border: none;
   -webkit-box-shadow: none;
           box-shadow: none;
-  border-left: 1px solid #eaeaea;
+  border-left: 1px solid #d3dae3;
 }
 
 /* Border Fixes */

@@ -411,6 +411,10 @@
 
                             <div class="divider"></div>
 
+                            <g:link class="item" controller="yoda" action="pendingChanges">Pending Changes</g:link>
+
+                            <div class="divider"></div>
+
                             <g:link class="item" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">Start Global Data Sync</g:link>
                             <g:link class="item" controller="yoda" action="manageGlobalSources">Manage Global Sources</g:link>
 
@@ -535,13 +539,15 @@
                                 function toggleEditableElements(){
                                     var toggleButton = $(".ui.toggle.button");
                                     var toggleIcon = $(".ui.toggle.button .icon");
+                                    $(".table").trigger('reflow');
 
                                     if (  editMode) {
+                                        $('.ui .form').removeClass('hidden');
                                         $('#collapseableSubDetails').find('.button').removeClass('hidden');
                                         $(toggleButton).removeAttr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
                                         $(toggleButton).attr("data-tooltip","${message(code:'statusbar.showButtons.tooltip')}");
                                         $(toggleIcon ).removeClass( "slash" );
-                                        $(toggleButton).removeClass('active');
+                                        $(toggleButton).addClass('active');
 
                                         $('.xEditableValue').editable('option', 'disabled', false);
                                         $('.xEditable').editable('option', 'disabled', false);
@@ -549,12 +555,13 @@
                                         $('.xEditableManyToOne').editable('option', 'disabled', false);
                                     }
                                     else {
+                                        $('.ui .form').addClass('hidden');
                                         $('#collapseableSubDetails').find('.button').addClass('hidden');
                                         // hide all the x-editable
                                         $(toggleButton).removeAttr();
                                         $(toggleButton).attr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
                                         $( toggleIcon ).addClass( "slash" );
-                                        $(toggleButton).addClass('active');
+                                        $(toggleButton).removeClass('active');
 
                                         $('.xEditableValue').editable('option', 'disabled', true);
                                         $('.xEditable').editable('option', 'disabled', true);

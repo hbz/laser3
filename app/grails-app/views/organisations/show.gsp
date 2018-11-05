@@ -138,16 +138,18 @@
 
                 <div class="ui card">
                     <div class="content">
-                        <dt><g:message code="org.orgRoleType.label" default="Organisation Type" /></dt>
-                        <dd>
-                            <div class="ui divided middle aligned selection list la-flex-list">
-                            <g:render template="OrgRoleTypeasList"
-                                      model="${[OrgRoleTypes:orgInstance.orgRoleType, Org:orgInstance, editable: editable]}" />
-                            </div>
-                        </dd>
+                        <dl>
+                            <dt><g:message code="org.orgRoleType.label" default="Organisation Type" /></dt>
+                            <dd>
 
-                        <g:render template="OrgRoleTypeModal"
-                                  model="${[Org:orgInstance, editable: editable]}" />
+                                <g:render template="orgRoleTypeAsList"
+                                          model="${[OrgRoleTypes:orgInstance.orgRoleType, Org:orgInstance, editable: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]}" />
+
+                            </dd>
+                        </dl>
+
+                        <g:render template="orgRoleTypeModal"
+                                  model="${[Org:orgInstance, editable: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]}" />
                     </div>
                 </div>
 
@@ -201,12 +203,13 @@
                                                     tmplShowDeleteButton: true,
                                                     controller: 'org',
                                                     action: 'show',
-                                                    id: orgInstance.id
+                                                    id: orgInstance.id,
+                                                    editable: ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
                                             ]}"/>
                                         </g:if>
                                     </g:each>
                                 </div>
-                                <g:if test="${editable}">
+                                <g:if test="${((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                                     <input class="ui button"
                                            value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Adresse')])}"
                                            data-semui="modal"
@@ -226,12 +229,13 @@
                                                     tmplShowDeleteButton: true,
                                                     controller: 'organisations',
                                                     action: 'show',
-                                                    id: orgInstance.id
+                                                    id: orgInstance.id,
+                                                    editable: ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
                                             ]}"/>
                                         </g:if>
                                     </g:each>
                                 </div>
-                                <g:if test="${editable}">
+                                <g:if test="${((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                                     <input class="ui button"
                                            value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"
                                            data-semui="modal"
@@ -252,12 +256,13 @@
                                                     tmplConfigShow: ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
                                                     controller: 'organisations',
                                                     action: 'show',
-                                                    id: orgInstance.id
+                                                    id: orgInstance.id,
+                                                    editable: ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
                                             ]}"/>
                                         </g:if>
                                     </g:each>
                                 <%-- </div> --%>
-                                <g:if test="${editable}">
+                                <g:if test="${((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                                     <g:if test="${ ! SpringSecurityUtils.ifAnyGranted('ROLE_ORG_COM_EDITOR') }">
                                         <input class="ui button"
                                                value="${message(code: 'person.create_new.contactPerson.label')}"

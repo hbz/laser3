@@ -346,81 +346,8 @@
                 </div>
             </div>
 
-            <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/> %{-- TODO: REMOVE --}%
+            <g:hiddenField name="orgId" value="${contextService.getOrg()?.id}"></g:hiddenField>
         </g:form>
     </semui:filter>
-
-<%--
-        <table id="costTable" class="ui striped celled la-rowspan table table-tworow">
-
-            <thead>
-                <tr>
-                    <th rowspan="2" style="vertical-align: top; cursor: pointer;">
-                        <a data-order="id"  class="sortable ${order=="Cost Item#"? "sorted ${sort}":''}">Cost Item#</a>*
-                    </th>
-                    <th>
-                        <a style="cursor: pointer;" class="sortable ${order=="invoice#"? "sorted ${sort}":''}"  data-order="invoice#">${message(code:'financials.invoice_number')}</a>*
-                    </th>
-                    <th>
-                       <a style="cursor: pointer;" class="sortable ${order=="order#"? "sorted ${sort}":''}"  data-order="order#">${message(code:'financials.order_number')}</a>*<br/>
-                    </th>
-                    <th>
-                        <a data-order="Subscription" style="cursor: pointer;" class="sortable ${order=="Subscription"? "sorted ${sort}":''}">${message(code:'subscription.label')}</a>*
-                    </th>
-                    <th>
-                        <a data-order="Package" style="cursor: pointer;" class="sortable ${order=="Package"? "sorted ${sort}":''}">${message(code:'package.label')}</a>*
-                    </th>
-                    <th style="vertical-align: top">${message(code:'issueEntitlement.label')}</th>
-
-
-                %-- {--If has editable rights, allow delete column to be shown--}%
-                    <g:if test="${editable}">
-                        <th rowspan="2" colspan="1" style="vertical-align: top;">Delete
-                            <br/><br/> <input title="${g.message(code: 'financials.deleteall.title')}" id="selectAll" type="checkbox" value=""/>
-                        </th>
-                    </g:if> --%
-                </tr>
-                %{--End of table row one of headers--}%
-
-
-                <tr style="width: 100%;">
-                    <th></th>
-                    <th>
-                        <a style="color: #990100; vertical-align: top; cursor: pointer;" data-order="datePaid" class="sortable ${order=="datePaid"? "sorted ${sort}":''}">Date Paid</a>*<br/><br/>
-
-                        <ul style="list-style-type:none; margin: 0">
-                            <li>Status</li>
-                            <li>Category</li>
-                            <li>Element</li>
-                            <li>Tax Type</li>
-                        </ul>
-                    </th>
-                    <th>Billing Amount<br/>Billing Currency<br/>Local Amount</th>
-                    <th>
-                        Cost Reference </br></br> Codes </br></br>
-                        <a style="color: #990100; cursor: pointer;" data-order="startDate" class="sortable ${order=="startDate"? "sorted ${sort}":''}">Start Period</a>* &nbsp;<i>to</i>&nbsp;
-                        <a style="color: #990100; cursor: pointer;" data-order="endDate" class="sortable ${order=="endDate"? "sorted ${sort}":''}">End Period</a>*
-                    </th>
-                    <th colspan="2">Cost Description</th>
-                </tr>
-            %{--End of table row two of headers--}%
-            </thead>
-            <tbody>
-            --%>
-
-            <%--
-
-            %{--Empty result set--}%
-            <g:if test="${cost_item_count==0}">
-                <tr><td colspan="8" style="text-align:center">&nbsp;<br/><g:if test="${msg}">${msg}</g:if><g:else>No Cost Items Found</g:else><br/>&nbsp;</td></tr>
-            </g:if>
-            <g:else>
-            %{--Two rows of data per CostItem, separated for readability--}%
-                <g:render template="filter_data" model="[editable: editable, cost_items: cost_items]"></g:render>
-            </g:else>
-            </tbody>
-
-        </table>
- --%>
 
 <!-- _filter.gsp -->

@@ -19,11 +19,11 @@
         <tr>
             <th>${message(code: "profile.user")}</th>
             <th>${message(code: "profile.display")}</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Status</th>
+            <th>${message(code: "profile.email")}</th>
+            <th>${message(code: "profile.membership.role")}</th>
+            <th>${message(code: "profile.membership.status")}</th>
             <th>${message(code: "profile.membership.date2")}</th>
-            <th>${message(code: "default.actions")}</th>
+            <th></th>
         </tr>
         </thead>
         <tbody>

@@ -1,3 +1,15 @@
+/*--------------
+     Page
+---------------*/
+
+/*******************************
+            Header
+*******************************/
+
+/* Standard */
+.ui.header {
+  color: @darkBlueGrey;
+}
 .ui.icon.header .icon {
   display: inline-block;
 }

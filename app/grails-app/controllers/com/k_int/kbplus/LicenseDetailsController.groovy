@@ -605,20 +605,31 @@ from Subscription as s where
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def changes() {
-        log.debug("licenseDetails::changes : ${params}");
+        log.debug("licenseDetails::changes : ${params}")
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
 
-    result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-    result.offset = params.offset ?: 0;
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.offset = params.offset ?: 0;
 
-    result.todoHistoryLines = PendingChange.executeQuery("select pc from PendingChange as pc where pc.license=? order by pc.ts desc", [result.license],[max:result.max,offset:result.offset]);
+        def baseQuery = "select pc from PendingChange as pc where pc.license = :lic and pc.license.status.value != 'Deleted' and pc.status.value in (:stats)"
+        def baseParams = [lic: result.license, stats: ['Accepted', 'Rejected']]
 
-    result.todoHistoryLinesTotal = PendingChange.executeQuery("select count(pc) from PendingChange as pc where pc.license=? order by pc.ts desc", [result.license])[0];
-    result
+        result.todoHistoryLines = PendingChange.executeQuery(
+                baseQuery + " order by pc.ts desc",
+                baseParams,
+                [max: result.max, offset: result.offset]
+        )
+
+        result.todoHistoryLinesTotal = PendingChange.executeQuery(
+                baseQuery,
+                baseParams
+        )[0]
+
+        result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')

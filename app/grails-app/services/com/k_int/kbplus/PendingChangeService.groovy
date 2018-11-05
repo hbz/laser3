@@ -209,7 +209,12 @@ def performAccept(change,httpRequest) {
                         if (changeDoc.type == RefdataValue.toString()){
                             def propDef = targetProperty.type
                             //def propertyDefinition = PropertyDefinition.findByName(changeDoc.name)
-                            def newProp =  RefdataCategory.lookupOrCreate(propDef.refdataCategory, changeDoc.new)
+
+                            def newProp =  genericOIDService.resolveOID(changeDoc.new)
+                            if (! newProp) {
+                                // Backward compatible
+                                newProp =  RefdataCategory.lookupOrCreate(propDef.refdataCategory, changeDoc.new)
+                            }
                             targetProperty."${changeDoc.prop}" = newProp
                         }
                         else {

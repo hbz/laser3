@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition" %>
+<%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription" %>
 <!doctype html>
 
 <r:require module="annotations" />
@@ -217,10 +217,13 @@
             <g:sortableColumn class="la-smaller-table-head" params="${params}" property="s.startDate" title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
 
 
-
+            <g:if test="${params.orgRole == 'Subscription Consortia'}">
+                <th rowspan="2" >${message(code: 'subscription.numberOfLicenses.label', default: 'Number of ChildLicenses')}</th>
+            </g:if>
             <% /* <g:sortableColumn params="${params}" property="s.manualCancellationDate"
                               title="${message(code: 'default.cancellationDate.label', default: 'Cancellation Date')}"/> */ %>
             <th rowspan="2"  class="two wide"></th>
+
         </tr>
 
         <tr>
@@ -311,6 +314,14 @@
                         <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br>
                         <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
                     </td>
+                    <g:if test="${params.orgRole == 'Subscription Consortia'}">
+                        <td>
+                            ${Subscription.findAllByInstanceOfAndStatusNotEqual(
+                                    s,
+                                    RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+                            )?.size()}
+                        </td>
+                    </g:if>
 
 
                     <td class="x">

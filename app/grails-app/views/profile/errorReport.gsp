@@ -33,7 +33,7 @@
 
     <p>
         <br />
-        Formulieren Sie bitte kurz ..
+        Formulieren Sie bitte kurz ...
     </p>
     <ul class="ui list">
         <li>das beobachtete Verhalten</li>
@@ -61,7 +61,7 @@
                 <textarea name="expected">${expected}</textarea>
             </div>
             <div class="field">
-                <label>Kontext, z.B. die betroffene URL in der Adressleiste des Browses</label>
+                <label>Kontext, z. B. die betroffene URL in der Adressleiste des Browses</label>
                 <textarea name="info">${info}</textarea>
             </div>
 

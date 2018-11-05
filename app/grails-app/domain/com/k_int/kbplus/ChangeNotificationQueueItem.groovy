@@ -1,7 +1,5 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.auth.User;
-
 class ChangeNotificationQueueItem {
 
   String oid

@@ -2,8 +2,6 @@ package com.k_int.kbplus
 
 import groovy.util.logging.Log4j
 import org.apache.commons.logging.LogFactory
-import org.hibernate.Query
-import groovy.util.logging.*
 
 @Log4j
 class Contact implements Comparable<Contact>{

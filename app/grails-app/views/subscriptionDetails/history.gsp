@@ -13,8 +13,8 @@
     </semui:controlButtons>
 
     <h1 class="ui left aligned icon header"><semui:headerIcon />
-
         <semui:xEditable owner="${subscription}" field="name" />
+        <semui:anualRings object="${subscription}" controller="subscriptionDetails" action="history" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
     </h1>
 
     <g:render template="nav" contextPath="." />

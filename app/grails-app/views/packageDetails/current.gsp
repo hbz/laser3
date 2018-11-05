@@ -189,7 +189,7 @@
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
                    <g:if test="${t.hostPlatformURL}">
-                     <a href="${t.hostPlatformURL.contains('http') ?:'http://'+t.hostPlatformURL}" target="_blank">${t.platform?.name}</a>
+                     <a href="${t.hostPlatformURL.contains('http') ? t.hostPlatformURL :'http://'+t.hostPlatformURL}" target="_blank">${t.platform?.name}</a>
                    </g:if>
                    <g:else>
                      ${t.platform?.name}

@@ -73,7 +73,7 @@ import="com.k_int.kbplus.RefdataCategory"
                 </g:form>
             </semui:filter>
 
-            <g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons]}" />
+            <g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons, restrictToOrg: null]}" />
 
             <semui:paginate action="addressbook" controller="myInstitution" params="${params}"
                             next="${message(code: 'default.paginate.next', default: 'Next')}"

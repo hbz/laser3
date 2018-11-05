@@ -456,6 +456,37 @@ class AjaxController {
     }
   }
 
+    def propertyAlternativesSearchByOID() {
+        def result = []
+        def pd = genericOIDService.resolveOID(params.oid)
+
+        def queryResult = PropertyDefinition.findAllWhere(
+                descr: pd.descr,
+                refdataCategory: pd.refdataCategory,
+                type: pd.type,
+                multipleOccurrence: pd.multipleOccurrence,
+                tenant: pd.tenant
+        ).minus(pd)
+
+        queryResult.each { it ->
+            def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
+            result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n('name')}"])
+        }
+
+        if (result) {
+           result.sort{ x,y -> x.text.compareToIgnoreCase y.text }
+        }
+
+        withFormat {
+            html {
+                result
+            }
+            json {
+                render result as JSON
+            }
+        }
+    }
+
     /**
      * Copied legacy sel2RefdataSearch(), but uses OID.
      *
@@ -960,14 +991,17 @@ class AjaxController {
                 }
             }
 
-            def queue = []
+            def resetQueue = []
+            def keepProperties = params.list('keepProperties')
 
             negativeList.each{ prop ->
                 if (AuditConfig.getConfig(owner, prop)) {
                     AuditConfig.removeConfig(owner, prop)
 
-                    members.each { m ->
-                        queue << [m, prop]
+                    if (! keepProperties.contains(prop)) {
+                        members.each { m ->
+                            resetQueue << [m, prop]
+                        }
                     }
 
                     // delete pending changes
@@ -985,7 +1019,8 @@ class AjaxController {
                 }
             }
 
-            queue.each{ q ->
+            // delete inherited values
+            resetQueue.each{ q ->
                 def member = q[0]
                 def prop   = q[1]
 
@@ -1064,6 +1099,7 @@ class AjaxController {
         render(template: "/templates/properties/custom", model:[
                 ownobj:owner,
                 newProp:property,
+                showConsortiaFunctions: params.showConsortiaFunctions,
                 custom_props_div: "${params.custom_props_div}", // JS markup id
                 prop_desc: prop_desc // form data
         ])
