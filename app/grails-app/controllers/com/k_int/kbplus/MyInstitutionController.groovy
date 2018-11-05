@@ -1,8 +1,11 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.*
+import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -11,8 +14,6 @@ import org.apache.poi.hssf.usermodel.*
 import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
 import com.k_int.properties.PropertyDefinition
-
-import java.awt.List
 
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
@@ -37,6 +38,7 @@ class MyInstitutionController {
     def taskService
     def filterService
     def propertyService
+    def queryService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -57,7 +59,7 @@ class MyInstitutionController {
             new SimpleDateFormat('dd/MM/yy'),
             new SimpleDateFormat('yyyy/MM'),
             new SimpleDateFormat('yyyy')
-    ];
+    ]
 
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
@@ -156,7 +158,6 @@ class MyInstitutionController {
 
         if ((result.user.affiliations == null) || (result.user.affiliations.size() == 0)) {
             redirect controller: 'profile', action: 'index'
-        } else {
         }
         result
     }
@@ -194,7 +195,7 @@ class MyInstitutionController {
         result.editable      = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         def date_restriction = null;
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -222,9 +223,9 @@ class MyInstitutionController {
         result.max = params.format ? 10000 : result.max
         result.offset = params.format? 0 : result.offset
 
-        def licensee_role = RefdataValue.getByValueAndCategory('Licensee', 'Organisational Role')
-        def licensee_cons_role = RefdataValue.getByValueAndCategory('Licensee_Consortial', 'Organisational Role')
-        def lic_cons_role = RefdataValue.getByValueAndCategory('Licensing Consortium', 'Organisational Role')
+        def licensee_role = RDStore.OR_LICENSEE
+        def licensee_cons_role = RDStore.OR_LICENSEE_CONS
+        def lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
 
         def template_license_type = RefdataValue.getByValueAndCategory('Template', 'License Type')
         def license_status = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
@@ -236,7 +237,7 @@ class MyInstitutionController {
         def qry = INSTITUTIONAL_LICENSES_QUERY
 
         if (! params.orgRole) {
-            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution.getallOrgRoleType())) {
+            if ((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution.getallOrgRoleType())) {
                 params.orgRole = 'Licensing Consortium'
             }
             else {
@@ -472,11 +473,13 @@ from License as l where (
     def currentProviders() {
         def result = setResultGenerics()
 
-        def role_sub            = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
-        def role_sub_cons       = RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role')
-        def role_sub_consortia  = RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')
+        def role_sub            = RDStore.OR_SUBSCRIBER
+        def role_sub_cons       = RDStore.OR_SUBSCRIBER_CONS
+        def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
+
         def roletype_provider   = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
         def roletype_agency     = RefdataValue.getByValueAndCategory('Agency', 'OrgRoleType')
+
         result.orgRoleTypes     = [roletype_provider, roletype_agency]
         result.propList         = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         params.sort             = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
@@ -542,7 +545,7 @@ from License as l where (
         viableOrgs.add(result.institution)
 
         def date_restriction = null;
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -576,11 +579,11 @@ from License as l where (
 
 
 
-        def role_sub            = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
-        def role_subCons        = RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role')
-        def role_sub_consortia  = RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')
-        def roleTypes = [role_sub, role_sub_consortia]
-        def role_provider        = RefdataValue.getByValueAndCategory('Provider','Organisational Role')
+        def role_sub            = RDStore.OR_SUBSCRIBER
+        def role_subCons        = RDStore.OR_SUBSCRIBER_CONS
+        def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        def roleTypes           = [role_sub, role_sub_consortia]
+        def role_provider       = RefdataValue.getByValueAndCategory('Provider','Organisational Role')
         def role_agency         = RefdataValue.getByValueAndCategory('Agency','Organisational Role')
 
         // ORG: def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
@@ -590,7 +593,7 @@ from License as l where (
         def qry_params
 
         if (! params.orgRole) {
-            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution.getallOrgRoleType())) {
+            if ((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution.getallOrgRoleType())) {
                 params.orgRole = 'Subscription Consortia'
             }
             else {
@@ -623,11 +626,11 @@ from Subscription as s where (
         if (params.q?.length() > 0) {
             base_qry += (
                     " and ( lower(s.name) like :name_filter " // filter by subscription
-                + " or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and ( lower(sp.pkg.name) like :name_filter ) ) " // filter by pkg
-                + " or exists ( select lic from License as lic where s.owner = lic and ( lower(lic.reference) like :name_filter ) ) " // filter by license
-                + " or exists ( select orgR from OrgRole as orgR where orgR.sub = s and ( lower(orgR.org.name) like :name_filter"
+                            + " or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and ( lower(sp.pkg.name) like :name_filter ) ) " // filter by pkg
+                            + " or exists ( select lic from License as lic where s.owner = lic and ( lower(lic.reference) like :name_filter ) ) " // filter by license
+                            + " or exists ( select orgR from OrgRole as orgR where orgR.sub = s and ( lower(orgR.org.name) like :name_filter"
                             + " or lower(orgR.org.shortname) like :name_filter or lower(orgR.org.sortname) like :name_filter) ) " // filter by Anbieter, Konsortium, Agency
-                +  " ) "
+                            +  " ) "
             )
 
             qry_params.put('name_filter', "%${params.q.trim().toLowerCase()}%");
@@ -701,12 +704,13 @@ from Subscription as s where (
         }
     }
 
+
     private def exportcurrentSubscription(subscriptions) {
         try {
             String[] titles = [
                     'Name', 'Vertrag', 'Verknuepfte Pakete', 'Konsortium', 'Anbieter', 'Agentur', 'Anfangsdatum', 'Enddatum', 'Status', 'Typ' ]
 
-            def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+            def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
             HSSFWorkbook wb = new HSSFWorkbook();
@@ -816,7 +820,7 @@ from Subscription as s where (
         def result = setResultGenerics()
 
         def date_restriction = null;
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -917,9 +921,9 @@ from Subscription as s where (
         def result = setResultGenerics()
         result.orgRoleType = result.institution.getallOrgRoleType()
 
-        def role_sub = RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role')
-        def role_sub_cons = RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role')
-        def role_cons = RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role')
+        def role_sub = RDStore.OR_SUBSCRIBER
+        def role_sub_cons = RDStore.OR_SUBSCRIBER_CONS
+        def role_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
         
         def orgRole = null
         def subType = null
@@ -959,7 +963,7 @@ from Subscription as s where (
                         
                 // if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.orgRoleType) && params.linkToAll == "Y"){ // old code
 
-                if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.orgRoleType)) {
+                if((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.orgRoleType)) {
                     
                     def cons_members = []
 
@@ -1136,8 +1140,8 @@ from Subscription as s where (
         }
         else {
             log.debug("Save ok");
-            def licensee_role = RefdataValue.getByValueAndCategory('Licensee', 'Organisational Role')
-            def lic_cons_role = RefdataValue.getByValueAndCategory('Licensing Consortium', 'Organisational Role')
+            def licensee_role = RDStore.OR_LICENSEE
+            def lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
 
             log.debug("adding org link to new license");
 
@@ -1283,7 +1287,7 @@ from Subscription as s where (
             def new_sub_link = new OrgRole(
                     org: institution,
                     sub: new_sub,
-                    roleType: RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role')
+                    roleType: RDStore.OR_SUBSCRIBER
             ).save();
 
             // This is done by basePackage.createSubscription
@@ -1323,7 +1327,7 @@ from Subscription as s where (
         // Set Date Restriction
         def date_restriction = null;
 
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
             date_restriction = sdf.parse(result.validOn)
@@ -1356,10 +1360,10 @@ from Subscription as s where (
         def del_sub = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
         def del_ie =  RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
 
-        def role_sub        = RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role')
-        def role_sub_cons   = RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role')
+        def role_sub        = RDStore.OR_SUBSCRIBER
+        def role_sub_cons   = RDStore.OR_SUBSCRIBER_CONS
 
-        def role_sub_consortia = RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role')
+        def role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIA
         def role_pkg_consortia = RefdataValue.getByValueAndCategory('Package Consortia', 'Organisational Role')
         def roles = [role_sub.id,role_sub_consortia.id,role_pkg_consortia.id]
         
@@ -1504,12 +1508,12 @@ from Subscription as s where (
         def del_sub = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
         def del_ie =  RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
 
-        def role_sub            = RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role')
-        def role_sub_cons       = RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role')
-        def role_sub_consortia  = RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role')
+        def role_sub            = RDStore.OR_SUBSCRIBER
+        def role_sub_cons       = RDStore.OR_SUBSCRIBER_CONS
+        def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
 
         def cp = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')
-        def role_consortia = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia');
+        def role_consortia = RefdataValue.getByValueAndCategory('Package Consortia', 'Organisational Role')
 
         def roles = [role_sub, role_sub_cons, role_sub_consortia]
         
@@ -1681,8 +1685,8 @@ AND EXISTS (
             return;
         }
 
-        def licensee_role =  RefdataValue.getByValueAndCategory('Licensee', 'Organisational Role')
-        def licensee_cons_role = RefdataValue.getByValueAndCategory('Licensee_Consortial', 'Organisational Role')
+        def licensee_role =  RDStore.OR_LICENSEE
+        def licensee_cons_role = RDStore.OR_LICENSEE_CONS
 
         // Find all licenses for this institution...
         def result = [:]
@@ -1999,7 +2003,7 @@ AND EXISTS (
 
         boolean first = true;
 
-        def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def formatter = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
         // Add in JR1 and JR1a reports
         def c = new GregorianCalendar()
@@ -2491,7 +2495,7 @@ AND EXISTS (
             return;
         }
 
-        def sdf = new java.text.SimpleDateFormat('dd.MM.yyyy')
+        def sdf = new SimpleDateFormat('dd.MM.yyyy')
 
         def subscription = Subscription.get(params.sub_id)
 
@@ -2519,7 +2523,7 @@ AND EXISTS (
             return;
         }
 
-        def sdf = new java.text.SimpleDateFormat('dd.MM.yyyy')
+        def sdf = new SimpleDateFormat('dd.MM.yyyy')
 
         def subscription = Subscription.get(params.sub_id)
 
@@ -2587,7 +2591,7 @@ AND EXISTS (
             }
             HSSFSheet firstSheet = wb.getSheetAt(0);
 
-            def sdf = new java.text.SimpleDateFormat('dd.MM.yyyy')
+            def sdf = new SimpleDateFormat('dd.MM.yyyy')
 
             // Step 1 - Extract institution id, name and shortcode
             HSSFRow org_details_row = firstSheet.getRow(2)
@@ -2740,7 +2744,7 @@ AND EXISTS (
             // assert an org-role
             def org_link = new OrgRole(org: result.institution,
                     sub: new_subscription,
-                    roleType: RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role')
+                    roleType: RDStore.OR_SUBSCRIBER
             ).save();
 
             // Copy any links from SO
@@ -2925,7 +2929,7 @@ AND EXISTS (
 
         // tasks
 
-        def sdFormat    = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdFormat    = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
         params.taskStatus = 'not done'
         def query       = filterService.getTaskQuery(params, sdFormat)
         def contextOrg  = contextService.getOrg()
@@ -2934,9 +2938,47 @@ AND EXISTS (
         result.enableMyInstFormFields = true // enable special form fields
         result << preCon
 
-
+        def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
+        result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: 10, sort: 'dateCreated', order: 'desc'])
+        result.dashboardReminderPeriod = contextService.getUser().getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14).value
+        result.dueObjects = getDueObjects(result.dashboardReminderPeriod)
 
         result
+    }
+    private def getDueObjects(int daysToBeInformedBeforeToday){
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_WEEK, daysToBeInformedBeforeToday);
+        java.sql.Date infoDate = new java.sql.Date(cal.getTime().getTime());
+        java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
+
+        ArrayList dueObjects = new ArrayList()
+
+        dueObjects.addAll(queryService.getDueSubscriptions(contextService.org, today, infoDate, today, infoDate))
+
+        dueObjects.addAll( taskService.getTasksByResponsibles(
+                contextService.getUser(),
+                contextService.getOrg(),
+                [query:" and status != ? and endDate <= ?",
+                queryParams:[RefdataValue.getByValueAndCategory('Done', 'Task Status'),
+                        infoDate]]) )
+
+        dueObjects.addAll(queryService.getDueLicenseCustomProperties(contextService.org, today, infoDate))
+        dueObjects.addAll(queryService.getDueLicensePrivateProperties(contextService.org, today, infoDate))
+
+        dueObjects.addAll(PersonPrivateProperty.findAllByDateValueBetweenForOrgAndIsNotPulbic(today, infoDate, contextService.org))
+
+        dueObjects.addAll(OrgCustomProperty.findAllByDateValueBetween(today, infoDate))
+        dueObjects.addAll(queryService.getDueOrgPrivateProperties(contextService.org, today, infoDate))
+
+        dueObjects.addAll(queryService.getDueSubscriptionCustomProperties(contextService.org, today, infoDate))
+        dueObjects.addAll(queryService.getDueSubscriptionPrivateProperties(contextService.org, today, infoDate))
+
+        dueObjects = dueObjects.sort {
+                (it instanceof AbstractProperty)?
+                        it.dateValue : (((it instanceof Subscription || it instanceof License) && it.manualCancellationDate)? it.manualCancellationDate : it.endDate)?: java.sql.Timestamp.valueOf("0001-1-1 00:00:00")
+        }
+
+        dueObjects
     }
 
     private getTodoForInst(result, Integer periodInDays){
@@ -2980,11 +3022,8 @@ AND EXISTS (
         def lic_del = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
         def sub_del = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
         def pkg_del = RefdataValue.getByValueAndCategory('Deleted', 'Package Status')
-        def pc_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
-        result.num_todos = PendingChange.executeQuery(
-                "select count(distinct pc.oid) from PendingChange as pc left outer join pc.license as lic left outer join lic.status as lic_status left outer join pc.subscription as sub left outer join sub.status as sub_status left outer join pc.pkg as pkg left outer join pkg.packageStatus as pkg_status where pc.owner = ? and (pc.status = ? or pc.status is null) and ((lic_status is null or lic_status!=?) and (sub_status is null or sub_status!=?) and (pkg_status is null or pkg_status!=?))",
-                [result.institution,pc_status, lic_del,sub_del,pkg_del]
-        )[0]
+        def pc_status = RefdataValue.getByValueAndCategory('Pending', 'PendingChangeStatus')
+        result.num_todos = PendingChange.executeQuery("select count(distinct pc.oid) from PendingChange as pc left outer join pc.license as lic left outer join lic.status as lic_status left outer join pc.subscription as sub left outer join sub.status as sub_status left outer join pc.pkg as pkg left outer join pkg.packageStatus as pkg_status where pc.owner = ? and (pc.status = ? or pc.status is null) and ((lic_status is null or lic_status!=?) and (sub_status is null or sub_status!=?) and (pkg_status is null or pkg_status!=?))", [result.institution,pc_status, lic_del,sub_del,pkg_del])[0]
 
         log.debug("Count3=${result.num_todos}");
 
@@ -3035,7 +3074,7 @@ AND EXISTS (
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
 
-        def announcement_type = RefdataCategory.lookupOrCreate('Document Type', 'Announcement')
+        def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max, sort: 'dateCreated', order: 'desc'])
         result.num_announcements = result.recentAnnouncements.size()
 
@@ -3289,7 +3328,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
         }
 
-        def sdFormat = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdFormat = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
         def query = filterService.getTaskQuery(params, sdFormat)
         result.taskInstanceList   = taskService.getTasksByResponsibles(result.user, result.institution, query)
         result.myTaskInstanceList = taskService.getTasksByCreator(result.user, null)
@@ -3309,8 +3348,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         def result = setResultGenerics()
 
         // new: filter preset
-        params.orgRoleType   = RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')?.id.toString()
-        params.orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')?.id.toString()
+        params.orgRoleType   = RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')?.id?.toString()
+        params.orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')?.id?.toString()
 
         if (params.selectedOrgs) {
             log.debug('adding orgs to consortia')
@@ -3659,7 +3698,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 titles.add(it.name)
             }
 
-            def sdf = new java.text.SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+            def sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
             HSSFWorkbook wb = new HSSFWorkbook();

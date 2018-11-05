@@ -2,11 +2,13 @@ package de.laser
 
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.UserSettings
+import de.laser.helper.EhcacheWrapper
 import org.codehaus.groovy.grails.web.util.WebUtils
 
 class ContextService {
 
     def springSecurityService
+    def cacheService
 
     static final SERVER_LOCAL = 'SERVER_LOCAL'
     static final SERVER_DEV   = 'SERVER_DEV'
@@ -30,5 +32,13 @@ class ContextService {
 
     def getMemberships() {
         getUser()?.authorizedOrgs
+    }
+
+    def getCache(def cacheKeyPrefix) {
+        def cacheName    = "${getUser().username}#${getUser().id}"
+        def cacheManager = cacheService.getCacheManager(cacheService.EHCACHE)
+        def cache        = cacheService.getCache(cacheManager, cacheName)
+
+        return new EhcacheWrapper(cache, cacheKeyPrefix)
     }
 }

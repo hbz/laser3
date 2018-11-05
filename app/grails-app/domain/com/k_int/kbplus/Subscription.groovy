@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
+import de.laser.helper.RDStore
 import de.laser.traits.AuditTrait
 import de.laser.domain.AbstractBaseDomain
 import de.laser.interfaces.Permissions
@@ -420,9 +421,9 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
     def hqlString = "select sub from Subscription sub where lower(sub.name) like :name "
     def hqlParams = [name: ((params.q ? params.q.toLowerCase() : '' ) + "%")]
     def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd")
-    def cons_role = RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')
-    def subscr_role = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
-    def subscr_cons_role = RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role')
+    def cons_role = RDStore.OR_SUBSCRIPTION_CONSORTIA
+    def subscr_role = RDStore.OR_SUBSCRIBER
+    def subscr_cons_role = RDStore.OR_SUBSCRIBER_CONS
     def viableRoles = [cons_role, subscr_role, subscr_cons_role]
     
     hqlParams.put('viableRoles', viableRoles)
@@ -475,7 +476,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
 
   def setInstitution(inst) {
     println("Set institution ${inst}");
-    def subrole = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
+    def subrole = RDStore.OR_SUBSCRIBER
     def or = new OrgRole(org:inst, roleType:subrole, sub:this)
     if ( this.orgRelations == null)
       this.orgRelations = []

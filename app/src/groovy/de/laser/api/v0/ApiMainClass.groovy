@@ -3,7 +3,7 @@ package de.laser.api.v0
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
 import de.laser.api.v0.entities.*
-import de.laser.domain.Constants
+import de.laser.helper.Constants
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.web.json.JSONObject

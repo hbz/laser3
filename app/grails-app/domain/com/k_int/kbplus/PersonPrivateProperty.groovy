@@ -30,4 +30,13 @@ class PersonPrivateProperty extends PrivateProperty {
         type:   PropertyDefinition,
         owner:  Person
     ]
+    static findAllByDateValueBetweenForOrgAndIsNotPulbic(java.sql.Date dateValueFrom, java.sql.Date dateValueTo, Org org){
+        executeQuery("SELECT distinct(s) FROM PersonPrivateProperty as s " +
+            "WHERE (dateValue >= :fromDate and dateValue <= :toDate) " +
+            "AND owner in (SELECT p FROM Person AS p WHERE p.tenant = :tenant AND p.isPublic = :public)" ,
+            [fromDate:dateValueFrom,
+            toDate:dateValueTo,
+            tenant: org,
+            public: RefdataValue.getByValueAndCategory('No', 'YN')])
+    }
 }

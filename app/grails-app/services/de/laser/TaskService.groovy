@@ -9,6 +9,7 @@ import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.Task
 import com.k_int.kbplus.auth.User
+import de.laser.helper.RDStore
 import grails.transaction.Transactional
 
 @Transactional
@@ -142,16 +143,16 @@ class TaskService {
         def qry_params1 = [
             lic_org:    contextOrg,
             org_roles:  [
-                    RefdataValue.getByValueAndCategory('Licensee','Organisational Role'),
-                    RefdataValue.getByValueAndCategory('Licensee_Consortial','Organisational Role')
+                    RDStore.OR_LICENSEE,
+                    RDStore.OR_LICENSEE_CONS
             ],
             lic_status: RefdataValue.getByValueAndCategory('Deleted', 'License Status')
         ]
         def qry_params2 = [
             'roleTypes' : [
-                    RefdataValue.getByValueAndCategory('Subscriber','Organisational Role'),
-                    RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role'),
-                    RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')
+                    RDStore.OR_SUBSCRIBER,
+                    RDStore.OR_SUBSCRIBER_CONS,
+                    RDStore.OR_SUBSCRIPTION_CONSORTIA
             ],
             'activeInst': contextOrg
         ]

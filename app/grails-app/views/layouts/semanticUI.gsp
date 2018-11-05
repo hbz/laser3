@@ -495,7 +495,15 @@
         <div class="ui container">
             <div class="ui sub header item la-context-org">${contextOrg?.name}</div>
             <div class="right menu la-advanced-view">
-                        <g:if test="${controllerName=='subscriptionDetails' && actionName=='show'}">
+                <div class="item">
+                    <g:if test="${cachedContent}">
+                        <button class="ui icon button" data-tooltip="${message(code:'statusbar.cachedContent.tooltip')}" data-position="bottom right" data-variation="tiny">
+                            <i class="hourglass end icon green"></i>
+                        </button>
+                    </g:if>
+                </div>
+
+                    <g:if test="${controllerName=='subscriptionDetails' && actionName=='show'}">
                         <div class="item">
                             <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
                                 <button class="ui icon toggle button la-toggle-controls" data-tooltip="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right" data-variation="tiny">
@@ -567,10 +575,8 @@
                         </r:script>
                         </div>
                         </g:if>
-            <g:if test="${(params.mode)}">
-            <div class="item">
-
-
+                        <g:if test="${(params.mode)}">
+                            <div class="item">
                                 <g:if test="${params.mode=='advanced'}">
                                     <div class="ui toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right" data-variation="tiny">
                                         <i class="icon plus square"></i>

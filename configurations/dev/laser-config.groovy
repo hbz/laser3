@@ -24,7 +24,7 @@ aggr_es_hostname    = 'localhost'
 //feature.eBooks
 //feature.issnl
 feature_finance = false
-//feature.notifications
+feature.notifications = true
 
 // --- others ---
 //globalDataSyncJobActiv

@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RDStore
+
 class InstitutionsService {
 
     def contextService
@@ -45,8 +47,8 @@ class InstitutionsService {
         } else {
             log.debug("Save ok");
 
-            def licensee_role = RefdataValue.getByValueAndCategory('Licensee','Organisational Role')
-            def lic_cons_role = RefdataValue.getByValueAndCategory('Licensing Consortium','Organisational Role')
+            def licensee_role = RDStore.OR_LICENSEE
+            def lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
 
             log.debug("adding org link to new license");
 
@@ -136,8 +138,8 @@ class InstitutionsService {
         } else {
             log.debug("Save ok");
 
-            def licensee_role = RefdataValue.getByValueAndCategory('Licensee', 'Organisational Role')
-            def lic_cons_role = RefdataValue.getByValueAndCategory('Licensing Consortium','Organisational Role')
+            def licensee_role = RDStore.OR_LICENSEE
+            def lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
 
             log.debug("adding org link to new license");
 

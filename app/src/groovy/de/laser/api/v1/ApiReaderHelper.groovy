@@ -1,7 +1,8 @@
 package de.laser.api.v1
 
 import com.k_int.kbplus.*
-import de.laser.domain.Constants
+import de.laser.helper.Constants
+import de.laser.helper.RDStore
 import groovy.util.logging.Log4j
 
 @Log4j
@@ -233,10 +234,10 @@ class ApiReaderHelper {
             if (orgRole.getOrg().id == context?.id) {
                 hasAccess = true
             }
-            if (orgRole.getRoleType() == RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role')) {
+            if (orgRole.getRoleType() == RDStore.OR_SUBSCRIBER_CONS) {
                 result.subscriber = ApiReaderHelper.resolveOrganisationStub(orgRole.org, context)
             }
-            if (orgRole.getRoleType() == RefdataValue.getByValueAndCategory('Subscription Consortia','Organisational Role')) {
+            if (orgRole.getRoleType() == RDStore.OR_SUBSCRIPTION_CONSORTIA) {
                 result.owner = ApiReaderHelper.resolveOrganisationStub(orgRole.org, context)
             }
             if (orgRole.getRoleType() == RefdataValue.getByValueAndCategory('Provider','Organisational Role')) {

@@ -6,7 +6,7 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.auth.User
 import de.laser.api.v1.ApiReader
 import de.laser.api.v1.ApiReaderHelper
-import de.laser.domain.Constants
+import de.laser.helper.Constants
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 

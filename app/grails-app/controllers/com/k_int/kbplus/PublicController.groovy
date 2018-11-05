@@ -10,7 +10,7 @@ class PublicController {
     def springSecurityService
     def genericOIDService
 
-    @Cacheable('laser_experimental')
+    @Cacheable('laser_static_pages')
     @Secured(['permitAll'])
     def index() {
     }
