@@ -20,6 +20,7 @@
 - fixed: correct person functions in addressbooks
 - changed meaningless subscription names  
 - increased text length for tasks
+- added internal cache configuration and wrapper
 - removed legacy code
 - various markup and style changes
 - minor bugfixes
