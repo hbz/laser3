@@ -13,7 +13,7 @@ import javax.persistence.Transient
 import javax.validation.UnexpectedTypeException
 
 @Log4j
-class PropertyDefinition extends AbstractI10nTranslatable {
+class PropertyDefinition extends AbstractI10nTranslatable implements Serializable {
 
     @Transient
     final static TRUE  = true
