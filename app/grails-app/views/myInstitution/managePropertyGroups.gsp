@@ -33,6 +33,8 @@
                 <th>Name</th>
                 <th>Beschreibung</th>
                 <th>Merkmale</th>
+                <th>Typ</th>
+                <th>Sichtbar</th>
                 <th></th>
             </tr>
         </thead>
@@ -48,7 +50,15 @@
                     <td>
                         ${pdGroup.getPropertyDefinitions().size()}
                     </td>
+                    <td>
+                        ${pdGroup.ownerType}
+                    </td>
+                    <td>
+                        <semui:xEditableRefData owner="${pdGroup}" field="visible" config="YN"/>
+                    </td>
                     <td class="x">
+                        [edit]
+                        [delete]
                     </td>
                 </tr>
             </g:each>
