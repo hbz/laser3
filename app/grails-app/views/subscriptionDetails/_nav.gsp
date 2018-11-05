@@ -14,7 +14,7 @@
     <g:if test="${showConsortiaFunctions}">
         <semui:subNavItem controller="subscriptionDetails" action="members" params="${[id:params.id]}" message="subscription.details.members.label" />
         <sec:ifAnyGranted roles="ROLE_ADMIN">
-            <semui:subNavItem controller="subscriptionDetails" action="pendingChanges" params="${[id:params.id]}" text="!!!" />
+            <semui:subNavItem controller="subscriptionDetails" action="pendingChanges" params="${[id:params.id]}" text="TN-Änderungen" />
         </sec:ifAnyGranted>
     </g:if>
 
@@ -43,8 +43,9 @@
 
     </g:if>
 
+    <semui:subNavItem controller="subscriptionDetails" action="changes" params="${[id:params.id]}" message="license.nav.todo_history" />
+
     <sec:ifAnyGranted roles="ROLE_ADMIN">
-        <semui:subNavItem controller="subscriptionDetails" action="changes" params="${[id:params.id]}" class="la-role-admin" message="license.nav.todo_history" />
         <semui:subNavItem controller="subscriptionDetails" action="history" params="${[id:params.id]}" class="la-role-admin" message="license.nav.edit_history" />
         <semui:subNavItem controller="subscriptionDetails" action="permissionInfo" params="${[id:params.id]}" class="la-role-admin" message="default.permissionInfo.label" />
     </sec:ifAnyGranted>

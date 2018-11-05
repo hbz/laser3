@@ -28,30 +28,17 @@
             <g:render template="actions" />
         </semui:controlButtons>
 
+
         <g:if test="${params.asAt}">
             <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])}</h1>
         </g:if>
 
         <h1 class="ui left aligned icon header"><semui:headerIcon />
             <semui:xEditable owner="${subscriptionInstance}" field="name" />
-
-            <span class="la-forward-back">
-                <g:if test="${navPrevSubscription}">
-                    <g:link controller="subscriptionDetails" action="show" params="[id:navPrevSubscription.id]"><i class="chevron left icon"></i></g:link>
-                </g:if>
-                <g:else>
-                    <i class="chevron left icon disabled"></i>
-                </g:else>
-                <g:if test="${navNextSubscription}">
-                    <g:link controller="subscriptionDetails" action="show" params="[id:navNextSubscription.id]"><i class="chevron right icon"></i></g:link>
-                </g:if>
-                <g:else>
-                    <i class="chevron right icon disabled"></i>
-                </g:else>
-           </span>
+            <semui:anualRings object="${subscriptionInstance}" controller="subscriptionDetails" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
         </h1>
 
-        <g:render template="nav" />
+    <g:render template="nav" />
 
         <semui:objectStatus object="${subscriptionInstance}" status="${subscriptionInstance.status}" />
 

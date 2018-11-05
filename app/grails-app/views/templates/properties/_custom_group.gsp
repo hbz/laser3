@@ -11,12 +11,18 @@
 <g:if test="${error}">
     <bootstrap:alert class="alert-danger">${error}</bootstrap:alert>
 </g:if>
+
+<%--
+${propDefGroup.getPropertyDefinitions()}
+<br />
+--%>
+
 <table class="ui la-table-small la-table-inCard table">
-    <g:if test="${ownobj.customProperties}">
+    <g:if test="${propDefGroup}">
         <colgroup>
             <col style="width: 129px;">
             <col style="width: 96px;">
-            <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+            <g:if test="${propDefGroup.ownerType == License.class.name}">
                 <col style="width: 359px;">
             </g:if>
             <col style="width: 148px;">
@@ -26,7 +32,7 @@
             <tr>
                 <th class="la-column-nowrap" >${message(code:'property.table.property')}</th>
                 <th>${message(code:'property.table.value')}</th>
-                <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                <g:if test="${propDefGroup.ownerType == License.class.name}">
                     <th>${message(code:'property.table.paragraph')}</th>
                 </g:if>
                 <th>${message(code:'property.table.notes')}</th>
@@ -35,8 +41,8 @@
         </thead>
     </g:if>
     <tbody>
-        <g:each in="${ownobj.customProperties.sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
-            <g:if test="${prop.type.descr == prop_desc}">
+        <g:each in="${propDefGroup.getCurrentProperties(ownobj)}" var="prop">
+
                 <tr>
                     <td class="la-column-nowrap">
                         ${prop.type.getI10n('name')}
@@ -77,7 +83,7 @@
                             <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}"/>
                         </g:elseif>
                     </td>
-                    <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                    <g:if test="${propDefGroup.ownerType == License.class.name}">
                         <td>
                             <semui:xEditable owner="${prop}" type="textarea" field="paragraph"/>
                         </td>
@@ -116,25 +122,26 @@
                         </g:if>
                     </td>
                 </tr>
-            </g:if>
+
         </g:each>
     </tbody>
 
     <g:if test="${editable}">
         <tfoot>
             <tr>
-                <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                <g:if test="${propDefGroup.ownerType == License.class.name}">
                     <td colspan="5">
                 </g:if>
                 <g:else>
                     <td colspan="4">
                 </g:else>
+                    <%-- TODO
                     <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']" method="post"
                                   name="cust_prop_add_value"
                                   class="ui form"
                                   update="${custom_props_div}"
                                   onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
-
+yyyyy
                         <input type="hidden" name="propIdent" desc="${prop_desc}" class="customPropSelect"/>
                         <input type="hidden" name="ownerId" value="${ownobj.id}"/>
                         <input type="hidden" name="editable" value="${editable}"/>
@@ -144,6 +151,7 @@
 
                         <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button"/>
                     </g:formRemote>
+                    --%>
                 </td>
             </tr>
         </tfoot>

@@ -111,6 +111,12 @@
                 </div>
                 --%>
                 <div class="field">
+                    <label>${message(code: 'profile.dashboardReminderPeriod', default:'DASHBOARD_REMINDER_PERIOD')}</label>
+                    <g:set var="US_DASHBOARD_REMINDER_PERIOD" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}" />
+                    <semui:xEditable owner="${US_DASHBOARD_REMINDER_PERIOD}" field="strValue" />
+                </div>
+
+                <div class="field">
                     <label>${message(code: 'profile.editMode', default:'Show Edit Mode')}</label>
                     <g:set var="US_SHOW_EDIT_MODE" value="${user.getSetting(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))}" />
                     <semui:xEditableRefData owner="${US_SHOW_EDIT_MODE}" field="rdValue" config="${US_SHOW_EDIT_MODE.key.rdc}" />
@@ -125,6 +131,12 @@
                 <div class="field">
                     <label>${message(code: 'profile.pagesize', default:'Default Page Size')}</label>
                     <semui:xEditable owner="${user.getSetting(UserSettings.KEYS.PAGE_SIZE, 10)}" field="strValue" />
+                </div>
+
+                <div class="field">
+                    <label>${message(code: 'profile.reminderPeriod', default:'Reminder period')}</label>
+                    <g:set var="US_DASHBOARD_REMINDER_PERIOD" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}" />
+                    <semui:xEditable owner="${US_DASHBOARD_REMINDER_PERIOD}" field="strValue" />&nbspTage vor dem Termin
                 </div>
 
             </div>

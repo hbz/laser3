@@ -50,7 +50,10 @@
 </semui:controlButtons>
 
 <g:if test="${fixedSubscription}">
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'subscription.details.financials.label')} für ${fixedSubscription}</h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'subscription.details.financials.label')} für ${fixedSubscription}
+        <semui:anualRings mapping="subfinance" object="${fixedSubscription}" controller="finance" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+    </h1>
+
     <g:render template="../subscriptionDetails/nav" model="${[subscriptionInstance:fixedSubscription, params:(params << [id:fixedSubscription.id])]}"/> <%-- mapping="subfinance" params="${[sub:params.id]} --%>
 </g:if>
 <g:else>
@@ -115,7 +118,8 @@
                         $.ajax({
                             url: "<g:createLink controller='finance' action='editCostItem'/>",
                             data: {
-                                sub: "${fixedSubscription?.id}"
+                                sub: "${fixedSubscription?.id}",
+                                tab: "${params.tab}"
                             }
                         }).done(function (data) {
                             $('#dynamicModalContainer').html(data);

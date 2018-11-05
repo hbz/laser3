@@ -33,7 +33,7 @@
   min-height: 0px;
   background: #FFFFFF;
   padding: 0em;
-  border: 1px solid #eaeaea;
+  border: 1px solid #d3dae3;
   border-radius: 0;
   -webkit-box-shadow: 0px 1px 3px 0px #D4D4D5, 0px 0px 0px 1px #D4D4D5;
           box-shadow: 0px 1px 3px 0px #D4D4D5, 0px 0px 0px 1px #D4D4D5;
@@ -492,7 +492,7 @@ a.ui.card:hover,
   cursor: pointer;
   z-index: 5;
   background: #FFFFFF;
-  border: 1px solid #eaeaea;
+  border: 1px solid #d3dae3;
   -webkit-box-shadow: 0px 1px 3px 0px #BCBDBD, 0px 0px 0px 1px #D4D4D5;
           box-shadow: 0px 1px 3px 0px #BCBDBD, 0px 0px 0px 1px #D4D4D5;
   -webkit-transform: translateY(-3px);
@@ -1003,7 +1003,7 @@ a.ui.card:hover,
   min-height: 0px;
   background: #FFFFFF;
   padding: 0em;
-  border: 1px solid #eaeaea;
+  border: 1px solid #d3dae3;
   border-radius: 0;
   -webkit-box-shadow: none;
           box-shadow: none;

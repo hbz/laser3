@@ -65,9 +65,9 @@ trait AuditTrait {
                                 prop       : cp,
                                 name       : type.name,
                                 type       : this."${cp}".getClass().toString(),
-                                old        : old_oid,
+                                old        : old_oid ?: oldMap[cp], // Backward Compatibility
                                 oldLabel   : oldMap[cp] instanceof RefdataValue ? oldMap[cp].toString() : oldMap[cp],
-                                new        : new_oid,
+                                new        : new_oid ?: newMap[cp], // Backward Compatibility
                                 newLabel   : newMap[cp] instanceof RefdataValue ? newMap[cp].toString() : newMap[cp],
                                 //propertyOID: "${this.class.name}:${this.id}"
                         ]

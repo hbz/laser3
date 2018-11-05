@@ -106,7 +106,7 @@
                                 <br />
                                 <g:select from="${subscriptionInstance.owner?.derivedLicenses}" class="ui search dropdown hide"
                                           optionKey="${{ 'com.k_int.kbplus.License:' + it.id }}"
-                                          optionValue="${{ it.getGenericLabel() }}"
+                                          optionValue="${{ it.getReferenceConcatenated() }}"
                                           name="generateSlavedLicsReference"
                                     />
                             </div>

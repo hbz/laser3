@@ -58,6 +58,7 @@ class RefdataService {
 
     def replaceRefdataValues(RefdataValue rdvFrom, RefdataValue rdvTo) {
 
+        log.debug("replacing: ${rdvFrom} with: ${rdvTo}")
         def count = 0
         def fortytwo = [:]
 

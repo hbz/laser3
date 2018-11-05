@@ -40,7 +40,7 @@ import="com.k_int.kbplus.RefdataCategory"
                                                        'presetFunctionType': RefdataValue.getByValueAndCategory('General contact person', 'Person Function')]"/>
 
 		<g:if test="${visiblePersons}">
-			<g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons]}" />
+			<g:render template="/templates/cpa/person_table" model="${[persons: visiblePersons, restrictToOrg: orgInstance]}" />
 		</g:if>
 
   </body>

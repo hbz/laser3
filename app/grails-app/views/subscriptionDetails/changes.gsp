@@ -12,8 +12,8 @@
         <g:render template="actions" />
     </semui:controlButtons>
     <h1 class="ui left aligned icon header"><semui:headerIcon />
-
         <semui:xEditable owner="${subscription}" field="name" />
+        <semui:anualRings object="${subscription}" controller="subscriptionDetails" action="changes" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
     </h1>
 
     <g:render template="nav" contextPath="." />
@@ -34,20 +34,39 @@
           <thead>
             <tr>
               <th>${message(code:'subscription.details.todo_history.descr', default:'ToDo Description')}</th>
-              <th>${message(code:'subscription.details.todo_history.outcome', default:'Outcome')}</th>
+              <th>${message(code:'default.status.label', default:'Status')}</th>
               <th>${message(code:'default.date.label', default:'Date')}</th>
             </tr>
           </thead>
         <g:if test="${todoHistoryLines}">
           <g:each in="${todoHistoryLines}" var="hl">
             <tr>
-              <td>${hl.desc}</td>
-              <td>${hl.status?.value?:'Pending'}
-                <g:if test="${((hl.status?.value=='Accepted')||(hl.status?.value=='Rejected'))}">
-                  ${message(code:'subscription.details.todo_history.by_on', args:[hl.user?.display?:hl.user?.username])} <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${hl.actionDate}"/>
+              <td>
+
+                  <g:if test="${hl.msgToken}">
+                      <g:message code="${hl.msgToken}" args="${hl.getParsedParams()}" default="${hl.desc}" />
+                  </g:if>
+                  <g:else>
+                      <% print hl.desc; /* avoid auto encodeAsHTML() */ %>
+                  </g:else>
+
+              </td>
+              <td>
+                  <g:if test="${hl.status}">
+                      ${hl.status?.getI10n('value')}
+                  </g:if>
+                  <g:else>
+                      Ausstehend
+                  </g:else>
+
+                <g:if test="${hl.status?.value in ['Accepted', 'Rejected']}">
+                    <%--${message(code:'subscription.details.todo_history.by_on', args:[hl.user?.display?:hl.user?.username])}--%>
+                    / <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${hl.actionDate}"/>
                 </g:if>
               </td>
-              <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${hl.ts}"/></td>
+              <td>
+                  <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${hl.ts}"/>
+              </td>
             </tr>
           </g:each>
         </g:if>

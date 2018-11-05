@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection />
 
@@ -139,16 +139,18 @@
 
                 <div class="ui card">
                     <div class="content">
-                        <dt><g:message code="org.orgRoleType.label" default="Organisation Type" /></dt>
-                        <dd>
-                            <div class="ui divided middle aligned selection list la-flex-list">
-                            <g:render template="OrgRoleTypeasList"
-                                      model="${[OrgRoleTypes:orgInstance.orgRoleType, Org:orgInstance, editable: editable]}" />
-                            </div>
-                        </dd>
+                        <dl>
+                            <dt><g:message code="org.orgRoleType.label" default="Organisation Type" /></dt>
+                            <dd>
 
-                        <g:render template="OrgRoleTypeModal"
-                                  model="${[Org:orgInstance, editable: editable]}" />
+                                <g:render template="orgRoleTypeAsList"
+                                          model="${[OrgRoleTypes:orgInstance.orgRoleType, Org:orgInstance, editable: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]}" />
+
+                            </dd>
+                        </dl>
+
+                        <g:render template="orgRoleTypeModal"
+                                  model="${[Org:orgInstance, editable: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]}" />
                     </div>
                 </div>
 
@@ -202,12 +204,13 @@
                                                     tmplShowDeleteButton: true,
                                                     controller: 'org',
                                                     action: 'show',
-                                                    id: orgInstance.id
+                                                    id: orgInstance.id,
+                                                    editable: ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
                                             ]}"/>
                                         </g:if>
                                     </g:each>
                                 </div>
-                                <g:if test="${editable}">
+                                <g:if test="${((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                                     <input class="ui button"
                                            value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Adresse')])}"
                                            data-semui="modal"
@@ -227,12 +230,13 @@
                                                     tmplShowDeleteButton: true,
                                                     controller: 'organisations',
                                                     action: 'show',
-                                                    id: orgInstance.id
+                                                    id: orgInstance.id,
+                                                    editable: ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
                                             ]}"/>
                                         </g:if>
                                     </g:each>
                                 </div>
-                                <g:if test="${editable}">
+                                <g:if test="${((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                                     <input class="ui button"
                                            value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"
                                            data-semui="modal"
@@ -253,12 +257,13 @@
                                                     tmplConfigShow: ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
                                                     controller: 'organisations',
                                                     action: 'show',
-                                                    id: orgInstance.id
+                                                    id: orgInstance.id,
+                                                    editable: ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
                                             ]}"/>
                                         </g:if>
                                     </g:each>
                                 <%-- </div> --%>
-                                <g:if test="${editable}">
+                                <g:if test="${((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                                     <g:if test="${ ! SpringSecurityUtils.ifAnyGranted('ROLE_ORG_COM_EDITOR') }">
                                         <input class="ui button"
                                                value="${message(code: 'person.create_new.contactPerson.label')}"
@@ -368,48 +373,74 @@
                     </g:if>
 
 
-                <div class="ui card la-dl-no-table">
-                    <div class="content">
-                        <h5 class="ui header">${message(code:'org.properties')}</h5>
-
-                        <div id="custom_props_div_props">
-                            <g:render template="/templates/properties/custom" model="${[
-                                    prop_desc: PropertyDefinition.ORG_PROP,
-                                    ownobj: orgInstance,
-                                    custom_props_div: "custom_props_div_props" ]}"/>
-                        </div>
-                    </div>
-                </div><!--.card-->
-
-            <r:script language="JavaScript">
-                $(document).ready(function(){
-                    c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
-                });
-            </r:script>
-
-            <g:each in="${authorizedOrgs}" var="authOrg">
-                <g:if test="${authOrg.name == contextOrg?.name}">
                     <div class="ui card la-dl-no-table">
                         <div class="content">
-                            <h5 class="ui header">${message(code:'org.properties.private')} ${authOrg.name}</h5>
+                            <h5 class="ui header">${message(code:'org.properties')}</h5>
 
-                            <div id="custom_props_div_${authOrg.id}">
-                                <g:render template="/templates/properties/private" model="${[
+                            <div id="custom_props_div_props">
+                                <g:render template="/templates/properties/custom" model="${[
                                         prop_desc: PropertyDefinition.ORG_PROP,
                                         ownobj: orgInstance,
-                                        custom_props_div: "custom_props_div_${authOrg.id}",
-                                        tenant: authOrg]}"/>
-
-                                <r:script language="JavaScript">
-                                    $(document).ready(function(){
-                                        c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
-                                    });
-                                </r:script>
+                                        custom_props_div: "custom_props_div_props"
+                                        ]}"/>
                             </div>
                         </div>
                     </div><!--.card-->
-                </g:if>
-            </g:each>
+
+                    <r:script language="JavaScript">
+                        $(document).ready(function(){
+                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
+                        });
+                    </r:script>
+
+<%--
+                    <g:each in="${PropertyDefinitionGroup.findAllByTenantAndOwnerType(contextService.getOrg(), Org.class.name)}" var="propDefGroup">
+                        <g:if test="${propDefGroup.visible?.value?.equalsIgnoreCase('Yes')}">
+                            <div class="ui card la-dl-no-table">
+                                <div class="content">
+                                    <h5 class="ui header"><i class="paste icon"></i>${propDefGroup.name} (${propDefGroup.tenant})</h5>
+                                    <div id="custom_group_props_div_${propDefGroup.id}">
+                                        <g:render template="/templates/properties/custom_group" model="${[
+                                                propDefGroup: propDefGroup,
+                                                ownobj: orgInstance,
+                                                custom_props_div: "custom_group_props_div_${propDefGroup.id}"
+                                                ]}"/>
+                                    </div>
+                                </div>
+                            </div><!--.card-->
+
+                            <r:script language="JavaScript">
+                                $(document).ready(function(){
+                                    c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "custom_group_props_div_${propDefGroup.id}");
+                                });
+                            </r:script>
+                        </g:if>
+                    </g:each>
+--%>
+                    <g:each in="${authorizedOrgs}" var="authOrg">
+                        <g:if test="${authOrg.name == contextOrg?.name}">
+                            <div class="ui card la-dl-no-table">
+                                <div class="content">
+                                    <h5 class="ui header">${message(code:'org.properties.private')} ${authOrg.name}</h5>
+
+                                    <div id="custom_props_div_${authOrg.id}">
+                                        <g:render template="/templates/properties/private" model="${[
+                                                prop_desc: PropertyDefinition.ORG_PROP,
+                                                ownobj: orgInstance,
+                                                custom_props_div: "custom_props_div_${authOrg.id}",
+                                                tenant: authOrg
+                                                ]}"/>
+
+                                        <r:script language="JavaScript">
+                                            $(document).ready(function(){
+                                                c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
+                                            });
+                                        </r:script>
+                                    </div>
+                                </div>
+                            </div><!--.card-->
+                        </g:if>
+                    </g:each>
 
 
 

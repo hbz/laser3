@@ -206,24 +206,21 @@
             <g:if test="${tmplConfigShow?.contains('licenses')}">
                 <td>
                     <div class="la-flexbox">
-                        <i class="icon university la-list-icon"></i>
-                        <g:link controller="myInstitution" action="currentSubscriptions" params="${[q:org.name]}" title="${message(code: 'org.licenses.tooltip', args: [org.name])}">
-                            ${message(code: 'org.licenses.tooltip', args: [org.name])}:
-                            <div class="ui circular label">
-                                ${Subscription.executeQuery("SELECT distinct count(*) FROM Subscription as s " +
-                                        "WHERE status != :status and startDate <= :heute and endDate >= :heute " +
-                                        "and EXISTS (SELECT o FROM OrgRole as o WHERE s = o.sub AND o.roleType = :provider AND o.org = :org) " +
-                                        "AND EXISTS (SELECT o2 FROM OrgRole as o2 WHERE s = o2.sub AND (o2.roleType = :subscriber or o2.roleType = :subscriber_consortial) " +
-                                        "AND o2.org = :ctxOrg)",
-                                        [status:RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'),
-                                         heute:sqlDateToday,
-                                         provider:RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'),
-                                         org:org,
-                                         subscriber:RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role'),
-                                         subscriber_consortial:RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'),
-                                         ctxOrg:contextService.getOrg()])[0]}
-                            </div>
-                        </g:link>
+                        <div class="ui circular label">
+                            ${Subscription.executeQuery("SELECT distinct count(*) FROM Subscription as s " +
+                                    "WHERE status != :status and startDate <= :heute and endDate >= :heute " +
+                                    "and EXISTS (SELECT o FROM OrgRole as o WHERE s = o.sub AND o.roleType = :provider AND o.org = :org) " +
+                                    "AND EXISTS (SELECT o2 FROM OrgRole as o2 WHERE s = o2.sub AND (o2.roleType = :subscriber or o2.roleType = :subscriber_consortial or o2.roleType = :consortia) " +
+                                    "AND o2.org = :ctxOrg)",
+                                    [status:RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'),
+                                     heute:sqlDateToday,
+                                     provider:RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'),
+                                     org:org,
+                                     subscriber:RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role'),
+                                     subscriber_consortial:RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'),
+                                     consortia:RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role'),
+                                     ctxOrg:contextService.getOrg()])[0]}
+                        </div>
                     </div>
 
                 </td>
@@ -259,7 +256,7 @@
             <g:if test="${tmplConfigShow?.contains('type')}">
                 <td>
                     <g:each in="${org.orgRoleType?.sort{it?.getI10n("value")}}" var="type">
-                        <li>${type.getI10n("value")}</li>
+                        ${type.getI10n("value")}
                     </g:each>
                 </td>
             </g:if>
