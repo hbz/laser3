@@ -91,7 +91,8 @@
                             </dd>
                         </dl>
                         <dl>
-                            <dt><g:message code="org.sortname.label" default="Sortname" /></dt>
+                            <dt><g:message code="org.sortname.label" default="Sortname" /><br>
+                                <g:message code="org.sortname.onlyForLibraries.label" default="(Nur für Bibliotheken)" /></dt>
                             <dd>
                                 <semui:xEditable owner="${orgInstance}" field="sortname"/>
                             </dd>
