@@ -44,7 +44,7 @@ class LicensePrivateProperty extends PrivateProperty {
         owner:  License
     ]
 
-    @Override // ? Jenkins Compilation Error: does not override method from its superclass
+    @Override
     def copyInto(AbstractProperty newProp){
         newProp = super.copyInto(newProp)
 

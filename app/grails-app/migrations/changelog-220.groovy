@@ -214,9 +214,10 @@ databaseChangeLog = {
 		dropIndex(indexName: "fact_uid_idx", tableName: "kbplus_fact")
 	}
 
-	changeSet(author: "kloberd (generated)", id: "1539850878639-44") {
-		dropIndex(indexName: "fact_uid_uniq_1508320874102", tableName: "kbplus_fact")
-	}
+	//only qa, not master
+	//changeSet(author: "kloberd (generated)", id: "1539850878639-44") {
+	//	dropIndex(indexName: "fact_uid_uniq_1508320874102", tableName: "kbplus_fact")
+	//}
 
 	changeSet(author: "kloberd (generated)", id: "1539850878639-45") {
 		createIndex(indexName: "FK2FD66C40C7D5B5", tableName: "fact") {
