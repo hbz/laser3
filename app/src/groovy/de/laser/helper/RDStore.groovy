@@ -16,4 +16,10 @@ class RDStore {
     static final OR_SUBSCRIBER = RefdataValue.getByValueAndCategory('Subscriber','Organisational Role')
 
     static final OR_SUBSCRIBER_CONS = RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role')
+
+    static final SUBSCRIPTION_DELETED = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+
+    static final LICENSE_DELETED = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
+
+    static final OR_TYPE_CONSORTIUM = RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')
 }

@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.*
+import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import de.laser.helper.DebugAnnotation
@@ -36,6 +38,7 @@ class MyInstitutionController {
     def taskService
     def filterService
     def propertyService
+    def queryService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -56,7 +59,7 @@ class MyInstitutionController {
             new SimpleDateFormat('dd/MM/yy'),
             new SimpleDateFormat('yyyy/MM'),
             new SimpleDateFormat('yyyy')
-    ];
+    ]
 
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
@@ -155,7 +158,6 @@ class MyInstitutionController {
 
         if ((result.user.affiliations == null) || (result.user.affiliations.size() == 0)) {
             redirect controller: 'profile', action: 'index'
-        } else {
         }
         result
     }
@@ -193,7 +195,7 @@ class MyInstitutionController {
         result.editable      = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         def date_restriction = null;
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -235,7 +237,7 @@ class MyInstitutionController {
         def qry = INSTITUTIONAL_LICENSES_QUERY
 
         if (! params.orgRole) {
-            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution.getallOrgRoleType())) {
+            if ((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution.getallOrgRoleType())) {
                 params.orgRole = 'Licensing Consortium'
             }
             else {
@@ -543,7 +545,7 @@ from License as l where (
         viableOrgs.add(result.institution)
 
         def date_restriction = null;
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -580,8 +582,8 @@ from License as l where (
         def role_sub            = RDStore.OR_SUBSCRIBER
         def role_subCons        = RDStore.OR_SUBSCRIBER_CONS
         def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
-        def roleTypes = [role_sub, role_sub_consortia]
-        def role_provider        = RefdataValue.getByValueAndCategory('Provider','Organisational Role')
+        def roleTypes           = [role_sub, role_sub_consortia]
+        def role_provider       = RefdataValue.getByValueAndCategory('Provider','Organisational Role')
         def role_agency         = RefdataValue.getByValueAndCategory('Agency','Organisational Role')
 
         // ORG: def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
@@ -591,7 +593,7 @@ from License as l where (
         def qry_params
 
         if (! params.orgRole) {
-            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution.getallOrgRoleType())) {
+            if ((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution.getallOrgRoleType())) {
                 params.orgRole = 'Subscription Consortia'
             }
             else {
@@ -624,11 +626,11 @@ from Subscription as s where (
         if (params.q?.length() > 0) {
             base_qry += (
                     " and ( lower(s.name) like :name_filter " // filter by subscription
-                + " or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and ( lower(sp.pkg.name) like :name_filter ) ) " // filter by pkg
-                + " or exists ( select lic from License as lic where s.owner = lic and ( lower(lic.reference) like :name_filter ) ) " // filter by license
-                + " or exists ( select orgR from OrgRole as orgR where orgR.sub = s and ( lower(orgR.org.name) like :name_filter"
+                            + " or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and ( lower(sp.pkg.name) like :name_filter ) ) " // filter by pkg
+                            + " or exists ( select lic from License as lic where s.owner = lic and ( lower(lic.reference) like :name_filter ) ) " // filter by license
+                            + " or exists ( select orgR from OrgRole as orgR where orgR.sub = s and ( lower(orgR.org.name) like :name_filter"
                             + " or lower(orgR.org.shortname) like :name_filter or lower(orgR.org.sortname) like :name_filter) ) " // filter by Anbieter, Konsortium, Agency
-                +  " ) "
+                            +  " ) "
             )
 
             qry_params.put('name_filter', "%${params.q.trim().toLowerCase()}%");
@@ -702,12 +704,13 @@ from Subscription as s where (
         }
     }
 
+
     private def exportcurrentSubscription(subscriptions) {
         try {
             String[] titles = [
                     'Name', 'Vertrag', 'Verknuepfte Pakete', 'Konsortium', 'Anbieter', 'Agentur', 'Anfangsdatum', 'Enddatum', 'Status', 'Typ' ]
 
-            def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+            def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
             HSSFWorkbook wb = new HSSFWorkbook();
@@ -817,7 +820,7 @@ from Subscription as s where (
         def result = setResultGenerics()
 
         def date_restriction = null;
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -960,7 +963,7 @@ from Subscription as s where (
                         
                 // if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.orgRoleType) && params.linkToAll == "Y"){ // old code
 
-                if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.orgRoleType)) {
+                if((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.orgRoleType)) {
                     
                     def cons_members = []
 
@@ -1324,7 +1327,7 @@ from Subscription as s where (
         // Set Date Restriction
         def date_restriction = null;
 
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
             date_restriction = sdf.parse(result.validOn)
@@ -2000,7 +2003,7 @@ AND EXISTS (
 
         boolean first = true;
 
-        def formatter = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def formatter = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
 
         // Add in JR1 and JR1a reports
         def c = new GregorianCalendar()
@@ -2492,7 +2495,7 @@ AND EXISTS (
             return;
         }
 
-        def sdf = new java.text.SimpleDateFormat('dd.MM.yyyy')
+        def sdf = new SimpleDateFormat('dd.MM.yyyy')
 
         def subscription = Subscription.get(params.sub_id)
 
@@ -2520,7 +2523,7 @@ AND EXISTS (
             return;
         }
 
-        def sdf = new java.text.SimpleDateFormat('dd.MM.yyyy')
+        def sdf = new SimpleDateFormat('dd.MM.yyyy')
 
         def subscription = Subscription.get(params.sub_id)
 
@@ -2588,7 +2591,7 @@ AND EXISTS (
             }
             HSSFSheet firstSheet = wb.getSheetAt(0);
 
-            def sdf = new java.text.SimpleDateFormat('dd.MM.yyyy')
+            def sdf = new SimpleDateFormat('dd.MM.yyyy')
 
             // Step 1 - Extract institution id, name and shortcode
             HSSFRow org_details_row = firstSheet.getRow(2)
@@ -2926,7 +2929,7 @@ AND EXISTS (
 
         // tasks
 
-        def sdFormat    = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdFormat    = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
         params.taskStatus = 'not done'
         def query       = filterService.getTaskQuery(params, sdFormat)
         def contextOrg  = contextService.getOrg()
@@ -2935,9 +2938,47 @@ AND EXISTS (
         result.enableMyInstFormFields = true // enable special form fields
         result << preCon
 
-
+        def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
+        result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: 10, sort: 'dateCreated', order: 'desc'])
+        result.dashboardReminderPeriod = contextService.getUser().getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14).value
+        result.dueObjects = getDueObjects(result.dashboardReminderPeriod)
 
         result
+    }
+    private def getDueObjects(int daysToBeInformedBeforeToday){
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_WEEK, daysToBeInformedBeforeToday);
+        java.sql.Date infoDate = new java.sql.Date(cal.getTime().getTime());
+        java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
+
+        ArrayList dueObjects = new ArrayList()
+
+        dueObjects.addAll(queryService.getDueSubscriptions(contextService.org, today, infoDate, today, infoDate))
+
+        dueObjects.addAll( taskService.getTasksByResponsibles(
+                contextService.getUser(),
+                contextService.getOrg(),
+                [query:" and status != ? and endDate <= ?",
+                queryParams:[RefdataValue.getByValueAndCategory('Done', 'Task Status'),
+                        infoDate]]) )
+
+        dueObjects.addAll(queryService.getDueLicenseCustomProperties(contextService.org, today, infoDate))
+        dueObjects.addAll(queryService.getDueLicensePrivateProperties(contextService.org, today, infoDate))
+
+        dueObjects.addAll(PersonPrivateProperty.findAllByDateValueBetweenForOrgAndIsNotPulbic(today, infoDate, contextService.org))
+
+        dueObjects.addAll(OrgCustomProperty.findAllByDateValueBetween(today, infoDate))
+        dueObjects.addAll(queryService.getDueOrgPrivateProperties(contextService.org, today, infoDate))
+
+        dueObjects.addAll(queryService.getDueSubscriptionCustomProperties(contextService.org, today, infoDate))
+        dueObjects.addAll(queryService.getDueSubscriptionPrivateProperties(contextService.org, today, infoDate))
+
+        dueObjects = dueObjects.sort {
+                (it instanceof AbstractProperty)?
+                        it.dateValue : (((it instanceof Subscription || it instanceof License) && it.manualCancellationDate)? it.manualCancellationDate : it.endDate)?: java.sql.Timestamp.valueOf("0001-1-1 00:00:00")
+        }
+
+        dueObjects
     }
 
     private getTodoForInst(result, Integer periodInDays){
@@ -3283,7 +3324,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
         }
 
-        def sdFormat = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdFormat = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
         def query = filterService.getTaskQuery(params, sdFormat)
         result.taskInstanceList   = taskService.getTasksByResponsibles(result.user, result.institution, query)
         result.myTaskInstanceList = taskService.getTasksByCreator(result.user, null)
@@ -3303,8 +3344,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         def result = setResultGenerics()
 
         // new: filter preset
-        params.orgRoleType   = RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')?.id.toString()
-        params.orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')?.id.toString()
+        params.orgRoleType   = RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')?.id?.toString()
+        params.orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')?.id?.toString()
 
         if (params.selectedOrgs) {
             log.debug('adding orgs to consortia')
@@ -3688,7 +3729,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 titles.add(it.name)
             }
 
-            def sdf = new java.text.SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+            def sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
             HSSFWorkbook wb = new HSSFWorkbook();

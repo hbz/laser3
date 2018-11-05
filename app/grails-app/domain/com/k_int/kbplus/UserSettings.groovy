@@ -12,12 +12,12 @@ class UserSettings {
     def genericOIDService
 
     static enum KEYS {
-        DASHBOARD         (Org),
-        PAGE_SIZE         (Long),
-        DASHBOARD_REMINDER_PERIOD (Integer),
-        SHOW_SIMPLE_VIEWS (RefdataValue, 'YN'),
-        SHOW_INFO_ICON    (RefdataValue, 'YN'),
-        SHOW_EDIT_MODE    (RefdataValue, 'YN')
+        PAGE_SIZE                    (Long),
+        DASHBOARD                    (Org),
+        DASHBOARD_REMINDER_PERIOD    (Integer),
+        SHOW_SIMPLE_VIEWS            (RefdataValue, 'YN'),
+        SHOW_INFO_ICON               (RefdataValue, 'YN'),
+        SHOW_EDIT_MODE               (RefdataValue, 'YN')
 
         KEYS(type, rdc) {
             this.type = type
