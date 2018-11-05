@@ -495,7 +495,15 @@
         <div class="ui container">
             <div class="ui sub header item la-context-org">${contextOrg?.name}</div>
             <div class="right menu la-advanced-view">
-                        <g:if test="${controllerName=='subscriptionDetails' && actionName=='show'}">
+                <div class="item">
+                    <g:if test="${cachedContent}">
+                        <button class="ui icon button" data-tooltip="${message(code:'statusbar.cachedContent.tooltip')}" data-position="bottom right" data-variation="tiny">
+                            <i class="hourglass end icon green"></i>
+                        </button>
+                    </g:if>
+                </div>
+
+                    <g:if test="${controllerName=='subscriptionDetails' && actionName=='show'}">
                         <div class="item">
                             <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
                                 <button class="ui icon toggle button la-toggle-controls" data-tooltip="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right" data-variation="tiny">
@@ -531,13 +539,15 @@
                                 function toggleEditableElements(){
                                     var toggleButton = $(".ui.toggle.button");
                                     var toggleIcon = $(".ui.toggle.button .icon");
+                                    $(".table").trigger('reflow');
 
                                     if (  editMode) {
+                                        $('.ui .form').removeClass('hidden');
                                         $('#collapseableSubDetails').find('.button').removeClass('hidden');
                                         $(toggleButton).removeAttr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
                                         $(toggleButton).attr("data-tooltip","${message(code:'statusbar.showButtons.tooltip')}");
                                         $(toggleIcon ).removeClass( "slash" );
-                                        $(toggleButton).removeClass('active');
+                                        $(toggleButton).addClass('active');
 
                                         $('.xEditableValue').editable('option', 'disabled', false);
                                         $('.xEditable').editable('option', 'disabled', false);
@@ -545,12 +555,13 @@
                                         $('.xEditableManyToOne').editable('option', 'disabled', false);
                                     }
                                     else {
+                                        $('.ui .form').addClass('hidden');
                                         $('#collapseableSubDetails').find('.button').addClass('hidden');
                                         // hide all the x-editable
                                         $(toggleButton).removeAttr();
                                         $(toggleButton).attr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
                                         $( toggleIcon ).addClass( "slash" );
-                                        $(toggleButton).addClass('active');
+                                        $(toggleButton).removeClass('active');
 
                                         $('.xEditableValue').editable('option', 'disabled', true);
                                         $('.xEditable').editable('option', 'disabled', true);
@@ -564,10 +575,8 @@
                         </r:script>
                         </div>
                         </g:if>
-            <g:if test="${(params.mode)}">
-            <div class="item">
-
-
+                        <g:if test="${(params.mode)}">
+                            <div class="item">
                                 <g:if test="${params.mode=='advanced'}">
                                     <div class="ui toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right" data-variation="tiny">
                                         <i class="icon plus square"></i>

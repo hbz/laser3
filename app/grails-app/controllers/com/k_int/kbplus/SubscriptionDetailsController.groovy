@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -750,10 +751,10 @@ class SubscriptionDetailsController {
 
         def subStatus     = RefdataValue.get(params.subStatus) ?: RefdataCategory.lookupOrCreate('Subscription Status', 'Current')
 
-        def role_sub      = RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role')
-        def role_sub_cons = RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role')
-        def role_lic      = RefdataValue.getByValueAndCategory('Licensee_Consortial', 'Organisational Role')
-        def role_lic_cons = RefdataValue.getByValueAndCategory('Licensing Consortium', 'Organisational Role')
+        def role_sub      = RDStore.OR_SUBSCRIBER_CONS
+        def role_sub_cons = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        def role_lic      = RDStore.OR_LICENSEE_CONS
+        def role_lic_cons = RDStore.OR_LICENSING_CONSORTIUM
 
         def role_provider = RefdataValue.getByValueAndCategory('Provider', 'Organisational Role')
         def role_agency   = RefdataValue.getByValueAndCategory('Agency', 'Organisational Role')
@@ -1248,8 +1249,8 @@ class SubscriptionDetailsController {
 
         if (subscriber || consortia) {
 
-            def licensee_role =  RefdataValue.getByValueAndCategory('Licensee', 'Organisational Role')
-            def licensee_cons_role = RefdataValue.getByValueAndCategory('Licensing Consortium', 'Organisational Role')
+            def licensee_role =  RDStore.OR_LICENSEE
+            def licensee_cons_role = RDStore.OR_LICENSING_CONSORTIUM
 
             def template_license_type = RefdataValue.getByValueAndCategory('Template', 'License Type')
 

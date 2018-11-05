@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.*;
 import org.apache.poi.ss.usermodel.*;
@@ -661,7 +662,7 @@ class SubscriptionImportController {
         // assert an org-role
         def org_link = new OrgRole(org:result.institution,
                                    sub: new_subscription,
-                                   roleType: RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role')
+                                   roleType: RDStore.OR_SUBSCRIBER
         ).save();
   
         // Copy any links from SO

@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
 import grails.converters.JSON;
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
@@ -87,12 +88,12 @@ class FinanceController {
             orgRoleCons = OrgRole.findBySubAndOrgAndRoleType(
                     result.fixedSubscription,
                     result.institution,
-                    RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role')
+                    RDStore.OR_SUBSCRIPTION_CONSORTIA
             )
 
             orgRoleSubscr = OrgRole.findBySubAndRoleType(
                     result.fixedSubscription,
-                    RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role')
+                    RDStore.OR_SUBSCRIBER_CONS
             )
 
             if (orgRoleCons) {
@@ -104,8 +105,8 @@ class FinanceController {
                     result.foundMatches_CS = tmp.foundMatches
 
                     result.cost_items_CS = tmp.cost_items.sort{ x, y ->
-                        def xx = OrgRole.findBySubAndRoleType(x.sub, RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'))
-                        def yy = OrgRole.findBySubAndRoleType(y.sub, RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'))
+                        def xx = OrgRole.findBySubAndRoleType(x.sub, RDStore.OR_SUBSCRIBER_CONS)
+                        def yy = OrgRole.findBySubAndRoleType(y.sub, RDStore.OR_SUBSCRIBER_CONS)
                         xx.org.sortname <=> yy.org.sortname
                     }
                     result.cost_item_count_CS = tmp.cost_item_count

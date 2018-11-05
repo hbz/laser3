@@ -5,7 +5,7 @@ import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.auth.User
-import de.laser.domain.Constants
+import de.laser.helper.Constants
 import de.laser.api.v0.ApiReader
 import groovy.util.logging.Log4j
 
