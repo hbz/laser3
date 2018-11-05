@@ -60,7 +60,7 @@ abstract class AbstractProperty implements Serializable {
             return dateValue.getDateString()
     }
 
-    def copyInto(newProp){
+    def copyInto(AbstractProperty newProp){
         if(stringValue)
             newProp.stringValue = stringValue
         else if(intValue != null)

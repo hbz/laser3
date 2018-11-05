@@ -45,7 +45,7 @@ class LicensePrivateProperty extends PrivateProperty {
     ]
 
     @Override
-    def copyInto(newProp){
+    def copyInto(AbstractProperty newProp){
         newProp = super.copyInto(newProp)
 
         newProp.paragraph = paragraph

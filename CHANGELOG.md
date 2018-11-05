@@ -1,12 +1,13 @@
 
 0.10
 
+- added dashboard tab for upcoming dates
 - added inheritance for license and subscription custom properties
 - added modal dialog for object depending inheritance configuration
 - improved auto acception for pending changes
 - added translations for pending changes    
+- added optional cost items access for consortial subscribers
 - added export function for organisations, provider and consortia
-- added optinal cost items access for consortial subscribers
 - added export for mail addresses
 - added functionality for custom property replacement
 - added edit mode switch
