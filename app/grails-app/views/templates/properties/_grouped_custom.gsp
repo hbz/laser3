@@ -12,11 +12,6 @@
     <bootstrap:alert class="alert-danger">${error}</bootstrap:alert>
 </g:if>
 
-<%--
-${propDefGroup.getPropertyDefinitions()}
-<br />
---%>
-
 <table class="ui la-table-small la-table-inCard table">
     <g:if test="${propDefGroup}">
         <colgroup>
@@ -135,13 +130,13 @@ ${propDefGroup.getPropertyDefinitions()}
                 <g:else>
                     <td colspan="4">
                 </g:else>
-                    <%-- TODO
+
                     <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']" method="post"
                                   name="cust_prop_add_value"
                                   class="ui form"
                                   update="${custom_props_div}"
                                   onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
-yyyyy
+
                         <input type="hidden" name="propIdent" desc="${prop_desc}" class="customPropSelect"/>
                         <input type="hidden" name="ownerId" value="${ownobj.id}"/>
                         <input type="hidden" name="editable" value="${editable}"/>
@@ -151,7 +146,7 @@ yyyyy
 
                         <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button"/>
                     </g:formRemote>
-                    --%>
+
                 </td>
             </tr>
         </tfoot>
