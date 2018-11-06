@@ -1,11 +1,5 @@
 <g:if test="${editmode}">
-    <dl>
-        <dt></dt>
-        <dd>
-            <br />
-            <a class="ui button" data-semui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
-        </dd>
-    </dl>
+    <a class="ui button" data-semui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
 </g:if>
 
 <semui:modal id="${tmplModalID}" text="${tmplText}">
