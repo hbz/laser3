@@ -3012,7 +3012,7 @@ AND EXISTS (
                 [max: result.max, offset: result.offset]
         )
 
-        println result.changes
+        // println result.changes
         result.changes.addAll(result2)
     }
 
@@ -3455,7 +3455,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         if (params.cmd == 'newPropertyGroup') {
             def ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
 
-            println ownerType
+            // println ownerType
 
             if (params.name && ownerType) {
                 def propDefGroup = new PropertyDefinitionGroup(

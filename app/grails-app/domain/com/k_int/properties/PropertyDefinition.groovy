@@ -13,7 +13,7 @@ import javax.persistence.Transient
 import javax.validation.UnexpectedTypeException
 
 @Log4j
-class PropertyDefinition extends AbstractI10nTranslatable {
+class PropertyDefinition extends AbstractI10nTranslatable implements Serializable {
 
     @Transient
     final static TRUE  = true
@@ -182,7 +182,7 @@ class PropertyDefinition extends AbstractI10nTranslatable {
     }
 
     static def lookupOrCreate(name, typeClass, descr, multipleOccurence, mandatory, Org tenant) {
-        println typeClass
+        //println typeClass
         typeIsValid(typeClass)
 
         def type = findWhere(
@@ -358,7 +358,7 @@ class PropertyDefinition extends AbstractI10nTranslatable {
     static getLocalizedValue(key){
         def locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
 
-        println locale
+        //println locale
         if (PropertyDefinition.validTypes2.containsKey(key)) {
             return (PropertyDefinition.validTypes2.get(key)."${locale}") ?: PropertyDefinition.validTypes2.get(key)
         } else {
