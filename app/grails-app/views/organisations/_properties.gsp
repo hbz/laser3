@@ -1,9 +1,8 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.*" %>
 <!-- _properties -->
 
 <%-- grouped custom properties --%>
 
-<%--
 <g:each in="${PropertyDefinitionGroup.findAllByTenantAndOwnerType(contextService.getOrg(), Org.class.name)}" var="propDefGroup">
     <g:if test="${propDefGroup.visible?.value?.equalsIgnoreCase('Yes')}">
         <div class="ui card la-dl-no-table">
@@ -12,7 +11,7 @@
                 <div id="grouped_custom_props_div_${propDefGroup.id}">
                     <g:render template="/templates/properties/grouped_custom" model="${[
                             propDefGroup: propDefGroup,
-                            prop_desc: 'Organisation Property',
+                            prop_desc: 'Organisation Property', // TODO: change
                             ownobj: orgInstance,
                             custom_props_div: "grouped_custom_props_div_${propDefGroup.id}"
                     ]}"/>
@@ -27,7 +26,6 @@
         </r:script>
     </g:if>
 </g:each>
---%>
 
 <%-- custom properties --%>
 
@@ -61,7 +59,7 @@
 
                 <div id="custom_props_div_${authOrg.id}">
                     <g:render template="/templates/properties/private" model="${[
-                            prop_desc: PropertyDefinition.ORG_PROP,
+                            prop_desc: PropertyDefinition.ORG_PROP, // TODO: change
                             ownobj: orgInstance,
                             custom_props_div: "custom_props_div_${authOrg.id}",
                             tenant: authOrg

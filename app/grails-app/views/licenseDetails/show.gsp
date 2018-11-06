@@ -1,6 +1,7 @@
 <!doctype html>
 <r:require module="annotations" />
 <%@ page import="com.k_int.properties.PropertyDefinition" %>
+<laser:serviceInjection />
 
 <html>
   <head>
@@ -308,93 +309,15 @@
                         </div>
                     </div>
 
-                    <div class="ui card la-dl-no-table">
-                        <div class="content">
-                            <h5 class="ui header">
-                                ${message(code:'license.properties')}
-                                <% /*
-                                    if (license.instanceOf && ! license.instanceOf.isTemplate()) {
-                                        if (license.isSlaved?.value?.equalsIgnoreCase('yes')) {
-                                            println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
-                                        }
-                                        else {
-                                            println '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
-                                        }
-                                    }
-                                    else {
-                                        println '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
-                                    }
-                                */ %>
-                            </h5>
+                    <div id="new-dynamic-properties-block">
 
-                            <div id="custom_props_div_props">
-                                <g:render template="/templates/properties/custom" model="${[
-                                    prop_desc: PropertyDefinition.LIC_PROP,
-                                    ownobj: license,
-                                    custom_props_div: "custom_props_div_props" ]}"/>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="ui card la-dl-no-table">
-                        <div class="content">
+                        <g:render template="properties" model="${[
+                                license: license,
+                                authorizedOrgs: authorizedOrgs
+                        ]}" />
 
-                            <h5 class="ui header">
-                                ${message(code:'license.openaccess.properties')}
-                            </h5>
+                    </div><!-- #new-dynamic-properties-block -->
 
-                            <div id="custom_props_div_oa">
-                                <g:render template="/templates/properties/custom" model="${[
-                                        prop_desc: PropertyDefinition.LIC_OA_PROP,
-                                        ownobj: license,
-                                        custom_props_div: "custom_props_div_oa" ]}"/>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="ui card la-dl-no-table">
-                        <div class="content">
-
-                            <h5 class="ui header">
-                                ${message(code:'license.archive.properties')}
-                            </h5>
-
-                            <div id="custom_props_div_archive">
-                                <g:render template="/templates/properties/custom" model="${[
-                                        prop_desc: PropertyDefinition.LIC_ARC_PROP,
-                                        ownobj: license,
-                                        custom_props_div: "custom_props_div_archive" ]}"/>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="ui card la-dl-no-table">
-                        <div class="content">
-                            <g:each in="${authorizedOrgs}" var="authOrg">
-                            <g:if test="${authOrg.name == contextOrg?.name}">
-                                <h5 class="ui header">${message(code:'license.properties.private')} ${authOrg.name}</h5>
-
-                                <div id="custom_props_div_${authOrg.id}">
-                                    <g:render template="/templates/properties/private" model="${[
-                                            prop_desc: PropertyDefinition.LIC_PROP,
-                                            ownobj: license,
-                                            custom_props_div: "custom_props_div_${authOrg.id}",
-                                            tenant: authOrg]}"/>
-
-                                    <r:script language="JavaScript">
-                                            $(document).ready(function(){
-                                                c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
-                                            });
-                                    </r:script>
-                                </div>
-                            </g:if>
-                        </g:each>
-                            <r:script language="JavaScript">
-                            $(document).ready(function(){
-                                c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
-                                c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_oa");
-                                c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_archive");
-                            });
-                        </r:script>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="clearfix"></div>
