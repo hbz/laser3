@@ -543,6 +543,9 @@
                                     $(".table").trigger('reflow');
 
                                     if (  editMode) {
+                                        // show Contoll Elements
+                                        $('.card').removeClass('hidden');
+                                        $('.la-js-hide-me').removeClass('hidden');
                                         $('.ui .form').removeClass('hidden');
                                         $('#collapseableSubDetails').find('.button').removeClass('hidden');
                                         $(toggleButton).removeAttr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
@@ -556,6 +559,9 @@
                                         $('.xEditableManyToOne').editable('option', 'disabled', false);
                                     }
                                     else {
+                                        // hide Contoll Elements
+                                        $('.card.la-js-hideable').not( ":has(.la-js-hide-this-card)" ).addClass('hidden');
+                                        $('.la-js-hide-me').addClass('hidden');
                                         $('.ui .form').addClass('hidden');
                                         $('#collapseableSubDetails').find('.button').addClass('hidden');
                                         // hide all the x-editable

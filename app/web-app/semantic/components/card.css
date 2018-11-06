@@ -1093,3 +1093,6 @@ a.ui.card:hover,
 .ui.cards > .card > .content > a.header {
   color: #4183C4;
 }
+.la-sidekick .hidden + .ui.card {
+  margin-top: 0em;
+}

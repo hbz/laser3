@@ -3,6 +3,9 @@
 *******************************/
 // to see the Buttons only if hover or focus
 .ui.la-selectable.table tr{
+  &:last-child{
+    border-bottom: none;
+  }
   .button.la-selectable-button {
     opacity: 0;
   }
@@ -18,8 +21,9 @@
 }
 
 .ui.button.la-new-item {
-  margin-left: 1rem;
-  margin-top: 1rem
+  margin-left: .8rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem
 }
 
 /*--------------
@@ -43,4 +47,17 @@
 .la-contextBar .ui.button:hover,
 .la-contextBar .ui.button:focus{
   background-color: transparent !important;
+}
+/* Vertical  Style special for details show sides */
+.ui.la-vertical.buttons {
+  display: inline-flex;
+  flex-direction: column;
+}
+.ui.la-vertical.buttons .button {
+  display: block;
+  float: none;
+  width: 100%;
+  margin: @la-verticalGroupOffset;
+  box-shadow: @verticalBoxShadow;
+  border-radius: 0em;
 }

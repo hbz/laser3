@@ -171,7 +171,7 @@
                     </div>
                 </div>
 
-                <div class="ui card">
+                <div class="ui card la-js-hideable">
                         <div class="content">
 
                             <table class="ui la-selectable table">
@@ -182,7 +182,7 @@
                                 </colgroup>
                                 <g:each in="${subscriptionInstance.packages.sort{it.pkg.name}}" var="sp">
                                 <tr>
-                                <th scope="row" class="control-label">${message(code:'subscription.packages.label')}</th>
+                                <th scope="row" class="control-label la-js-hide-this-card">${message(code:'subscription.packages.label')}</th>
                                     <td>
                                         <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
 
@@ -212,7 +212,7 @@
                                     <col width="430"/>
                                 </colgroup>
                                 <tr>
-                                    <th scope="row" class="control-label">${message(code:'license')}</th>
+                                    <th scope="row" class="control-label la-js-hide-this-card">${message(code:'license')}</th>
                                     <td>
                                         <g:if test="${subscriptionInstance.owner == null}">
                                             <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
@@ -250,7 +250,7 @@
                     </div>
 
 
-                <div class="ui card">
+                <div class="ui card la-js-hideable">
                         <div class="content">
 
 
@@ -267,32 +267,33 @@
                                         roleRespValue: 'Specific subscription editor',
                                         editmode: editable
                               ]}" />
+                    <div class="ui la-vertical buttons la-js-hide-me">
+                        <g:render template="/templates/links/orgLinksModal"
+                                  model="${[linkType: subscriptionInstance?.class?.name,
+                                            parent: subscriptionInstance.class.name+':'+subscriptionInstance.id,
+                                            property: 'orgs',
+                                            recip_prop: 'sub',
+                                            tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'),
+                                            tmplText:'Anbieter hinzufügen',
+                                            tmplID:'ContentProvider',
+                                            tmplButtonText:'Anbieter hinzufügen',
+                                            tmplModalID:'osel_add_modal_anbieter',
+                                            editmode: editable
+                                  ]}" />
 
-                    <g:render template="/templates/links/orgLinksModal"
-                              model="${[linkType: subscriptionInstance?.class?.name,
+                        <g:render template="/templates/links/orgLinksModal"
+                                    model="${[linkType: subscriptionInstance?.class?.name,
                                         parent: subscriptionInstance.class.name+':'+subscriptionInstance.id,
                                         property: 'orgs',
                                         recip_prop: 'sub',
-                                        tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'),
-                                        tmplText:'Anbieter hinzufügen',
+                                        tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Agency', 'Organisational Role'),
+                                        tmplText:'Lieferant hinzufügen',
                                         tmplID:'ContentProvider',
-                                        tmplButtonText:'Anbieter hinzufügen',
-                                        tmplModalID:'osel_add_modal_anbieter',
+                                        tmplButtonText:'Lieferant hinzufügen',
+                                        tmplModalID:'osel_add_modal_agentur',
                                         editmode: editable
-                              ]}" />
-
-                    <g:render template="/templates/links/orgLinksModal"
-                                model="${[linkType: subscriptionInstance?.class?.name,
-                                    parent: subscriptionInstance.class.name+':'+subscriptionInstance.id,
-                                    property: 'orgs',
-                                    recip_prop: 'sub',
-                                    tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Agency', 'Organisational Role'),
-                                    tmplText:'Lieferant hinzufügen',
-                                    tmplID:'ContentProvider',
-                                    tmplButtonText:'Lieferant hinzufügen',
-                                    tmplModalID:'osel_add_modal_agentur',
-                                    editmode: editable
-                                ]}" />
+                                    ]}" />
+                    </div>
 
                 <% /*
                <dl>
@@ -336,7 +337,7 @@
 
                 <g:if test="${subscriptionInstance.costItems}">
 
-                    <div class="ui card la-dl-no-table">
+                    <div class="ui card la-dl-no-table la-js-hideable">
                         <div class="content">
                             <dl>
                                 <dt class="control-label">${message(code:'financials.label', default:'Financials')}</dt>
@@ -395,11 +396,11 @@
 
                 FINANCE --%>
                 <g:if test="${usage}">
-                    <div class="ui card la-dl-no-table">
+                    <div class="ui card la-dl-no-table la-js-hideable">
                         <div class="content">
                             <g:if test="${subscriptionInstance.costItems}">
                                 <dl>
-                                    <dt class="control-label">${message(code: 'subscription.details.costPerUse.header')}</dt>
+                                    <dt class="control-label la-js-hide-this-card">${message(code: 'subscription.details.costPerUse.header')}</dt>
                                     <dd><g:formatNumber number="${totalCostPerUse}" type="currency"
                                                         currencyCode="${currencyCode}" maxFractionDigits="2"
                                                         minFractionDigits="2" roundingMode="HALF_UP"/>
@@ -409,7 +410,7 @@
                                 <div class="ui divider"></div>
                             </g:if>
                             <dl>
-                                <dt class="control-label">${message(code: 'default.usage.label')}</dt>
+                                <dt class="control-label la-js-hide-this-card">${message(code: 'default.usage.label')}</dt>
                                 <dd>
                                     <table class="ui la-table-small celled la-table-inCard table">
                                         <thead>
@@ -482,7 +483,7 @@
                         </div>
                     </div>
                 </g:if>
-                <div class="ui card la-dl-no-table">
+                <div class="ui card la-dl-no-table la-js-hideable">
                     <div class="content">
                         <h5 class="ui header">
                             ${message(code:'subscription.properties')}
@@ -516,7 +517,7 @@
                     });
                 </r:script>
 
-                <div class="ui card la-dl-no-table">
+                <div class="ui card la-dl-no-table la-js-hideable">
                     <div class="content">
                         <g:each in="${authorizedOrgs}" var="authOrg">
                             <g:if test="${authOrg.name == contextOrg?.name}">
