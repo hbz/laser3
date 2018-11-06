@@ -22,6 +22,10 @@ class FilterService {
             query << " exists (select roletype from o.orgRoleType as roletype where roletype.id = :orgRoleType )"
             queryParams.put("orgRoleType", Long.parseLong(params.orgRoleType))
         }
+        if (params.orgRole?.length() > 0) {
+            query << " exists (select ogr from o.links as ogr where ogr.roleType.id = :orgRole )"
+            queryParams.put("orgRole", Long.parseLong(params.orgRole))
+        }
         if (params.orgSector?.length() > 0) {
             query << "o.sector.id = :orgSector"
             queryParams.put("orgSector", Long.parseLong(params.orgSector))
@@ -63,6 +67,7 @@ class FilterService {
         result.query = query
         result.queryParams = queryParams
 
+        println result
         result
     }
 

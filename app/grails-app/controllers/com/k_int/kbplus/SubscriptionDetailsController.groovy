@@ -1818,7 +1818,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                             for (prop in subMember.customProperties) {
                                 def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscription)
                                 copiedProp = prop.copyInto(copiedProp)
-                                newSubscription.addToCustomProperties(copiedProp)
+                                copiedProp.save(flush: true)
+                                //newSubscription.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                             }
                         }
                         if (subMember.privateProperties) {
@@ -1829,7 +1830,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                                 if (prop.type?.tenant?.id == contextOrg?.id) {
                                     def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscription)
                                     copiedProp = prop.copyInto(copiedProp)
-                                    newSubscription.addToPrivateProperties(copiedProp)
+                                    copiedProp.save(flush: true)
+                                    //newSubscription.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
                                 }
                             }
                         }
@@ -2046,7 +2048,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                                 for (prop in baseSub.customProperties) {
                                     def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSub)
                                     copiedProp = prop.copyInto(copiedProp)
-                                    newSub.addToCustomProperties(copiedProp)
+                                    copiedProp.save(flush: true)
+                                    //newSub.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                                 }
                             }
                             if (params.subscription.takePrivateProperties) {
@@ -2057,7 +2060,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                                     if (prop.type?.tenant?.id == contextOrg?.id) {
                                         def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSub)
                                         copiedProp = prop.copyInto(copiedProp)
-                                        newSub.addToPrivateProperties(copiedProp)
+                                        copiedProp.save(flush: true)
+                                        //newSub.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
                                     }
                                 }
                             }
@@ -2349,7 +2353,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                     for (prop in baseSubscription.customProperties) {
                         def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscriptionInstance)
                         copiedProp = prop.copyInto(copiedProp)
-                        newSubscriptionInstance.addToCustomProperties(copiedProp)
+                        copiedProp.save(flush: true)
+                        //newSubscriptionInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
                     }
                 }
                 if (params.subscription.copyPrivateProperties) {
@@ -2360,7 +2365,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                         if (prop.type?.tenant?.id == contextOrg?.id) {
                             def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscriptionInstance)
                             copiedProp = prop.copyInto(copiedProp)
-                            newSubscriptionInstance.addToPrivateProperties(copiedProp)
+                            copiedProp.save(flush: true)
+                            //newSubscriptionInstance.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
                         }
                     }
                 }
