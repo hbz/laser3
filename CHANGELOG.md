@@ -1,4 +1,13 @@
 
+0.10.1
+
+- bugfix: subscription renewal
+- bugfix: copying licenses
+- bugfix: copying subscriptions 
+- fixed: sluggish query at my providers 
+- fixed: my providers filter
+- fixed: null pointer at manage consortia view
+
 0.10
 
 - added dashboard tab for upcoming dates

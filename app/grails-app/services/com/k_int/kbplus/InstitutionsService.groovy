@@ -38,7 +38,8 @@ class InstitutionsService {
         for (prop in base.customProperties) {
             def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
             copiedProp = prop.copyInto(copiedProp)
-            licenseInstance.addToCustomProperties(copiedProp)
+            copiedProp.save(flush: true)
+            //licenseInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
         }
 
         if (! licenseInstance.save(flush: true)) {
@@ -129,7 +130,8 @@ class InstitutionsService {
         for (prop in baseLicense?.customProperties) {
             def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
             copiedProp = prop.copyInto(copiedProp)
-            licenseInstance.addToCustomProperties(copiedProp)
+            copiedProp.save(flush: true)
+            //licenseInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
         }
         // the url will set the shortcode of the organisation that this license should be linked with.
         if (!licenseInstance.save(flush: true)) {
