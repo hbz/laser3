@@ -471,18 +471,19 @@ from License as l where (
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def currentProviders() {
+
         def result = setResultGenerics()
 
         def role_sub            = RDStore.OR_SUBSCRIBER
         def role_sub_cons       = RDStore.OR_SUBSCRIBER_CONS
         def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
 
-        def roletype_provider   = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
-        def roletype_agency     = RefdataValue.getByValueAndCategory('Agency', 'OrgRoleType')
+        def ogr_provider   = RefdataValue.getByValueAndCategory('Provider', 'Organisational Role')
+        def ogr_agency     = RefdataValue.getByValueAndCategory('Agency', 'Organisational Role')
 
-        result.orgRoleTypes     = [roletype_provider, roletype_agency]
-        result.propList         = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-        params.sort             = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
+        result.orgRoles    = [ogr_provider, ogr_agency]
+        result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
+        params.sort        = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
         def mySubs = Subscription.executeQuery( """
             select s from Subscription as s join s.orgRelations as ogr where
@@ -492,17 +493,22 @@ from License as l where (
         """, [subOrg: contextService.getOrg(), roleSub: role_sub, roleSubCons: role_sub_cons, roleSubConsortia: role_sub_consortia])
 
         def orgListTotal = []
-        mySubs.each { sub ->
-            def providers = OrgRole.findAll("""from OrgRole where sub = :subscription and (roleType = :provider or roleType = :agency)""",
-                    [subscription: sub,
-                     provider: RefdataValue.getByValueAndCategory('Provider','Organisational Role'),
-                     agency:  RefdataValue.getByValueAndCategory('Agency','Organisational Role')])
-            providers.each { provider ->
-                if (provider && !orgListTotal.contains(provider.org)) {
-                    orgListTotal << provider.org
-                }
+
+        // new
+        def providers = OrgRole.findAll("""
+                from OrgRole where sub in (:subscriptions) and (roleType = :provider or roleType = :agency)
+            """, [
+                subscriptions: mySubs,
+                provider: ogr_provider,
+                agency:   ogr_agency
+        ])
+
+        providers.each { p ->
+            if (! orgListTotal.contains(p.org)) {
+                orgListTotal << p.org
             }
         }
+
 //        result.user = User.get(springSecurityService.principal.id)
         params.max        = params.max ?: result.user?.getDefaultPageSizeTMP()
 

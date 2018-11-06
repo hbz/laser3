@@ -1,3 +1,4 @@
+<%@ page import="com.k_int.kbplus.RefdataValue" %>
 <!doctype html>
 
 <html>
@@ -20,8 +21,8 @@
             <g:render template="/templates/filter/orgFilter"
                       model="[
                               propList: propList,
-                              orgRoleTypes: orgRoleTypes,
-                              tmplConfigShow: ['type', 'property', 'name', 'country']
+                              orgRoles: orgRoles,
+                              tmplConfigShow: ['role', 'property', 'name', 'country']
                       ]"/>
         </g:form>
     </semui:filter>

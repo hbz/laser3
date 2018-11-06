@@ -1,4 +1,9 @@
 
+0.10.1
+
+- fixed: sluggish my providers query 
+- fixed: my providers filter
+
 0.10
 
 - added dashboard tab for upcoming dates

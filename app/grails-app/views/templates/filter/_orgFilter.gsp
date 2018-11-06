@@ -30,6 +30,24 @@
         <input type="hidden" name="orgRoleType" value="${params.orgRoleType}" />
     </g:else>
 
+    <g:if test="${tmplConfigShow?.contains('role')}">
+        <div class="field">
+            <label>${message(code: 'org.orgRole.label')}</label>
+            <g:if test="${orgRoles == null || orgRoles.isEmpty()}">
+                <g:set var="orgRoles" value="${RefdataCategory.getAllRefdataValues('Organisational Role')}"/>
+            </g:if>
+            <laser:select class="ui dropdown" name="orgRole"
+                          from="${orgRoles}"
+                          optionKey="id"
+                          optionValue="value"
+                          value="${params.orgRole}"
+                          noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"/>
+        </div>
+    </g:if>
+    <g:else>
+        <input type="hidden" name="orgRoles" value="${params.orgRoles}" />
+    </g:else>
+
     <g:if test="${tmplConfigShow?.contains('sector')}">
         <div class="field">
             <label>${message(code: 'org.sector.label')}</label>
