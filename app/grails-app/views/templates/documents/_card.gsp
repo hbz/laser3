@@ -1,4 +1,4 @@
-<semui:card message="license.documents" class="documents la-js-hideable" href="#modalCreateDocument" editable="${editable}">
+<semui:card message="license.documents" class="documents la-js-hideable hidden" href="#modalCreateDocument" editable="${editable}">
 
     <g:each in="${ownobj.documents.sort{it.owner?.title}}" var="docctx">
         <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted'))}">

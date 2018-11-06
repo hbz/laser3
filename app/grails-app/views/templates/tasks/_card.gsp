@@ -3,7 +3,7 @@
 <!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextOrg, 'INST_EDITOR')} -->
 <g:set var="overwriteEditable" value="${editable || accessService.checkMinUserOrgRole(user, contextOrg, 'INST_EDITOR')}" />
 
-<semui:card message="task.plural" class="notes la-js-hideable" href="#modalCreateTask" editable="${overwriteEditable}">
+<semui:card message="task.plural" class="notes la-js-hideable hidden" href="#modalCreateTask" editable="${overwriteEditable}">
     <g:each in="${tasks}" var="tsk">
         <div class="ui small feed content la-js-hide-this-card ">
             <!--<div class="event">-->

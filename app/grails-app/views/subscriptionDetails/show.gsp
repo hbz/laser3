@@ -171,7 +171,7 @@
                     </div>
                 </div>
 
-                <div class="ui card la-js-hideable">
+                <div class="ui card la-js-hideable hidden">
                         <div class="content">
 
                             <table class="ui la-selectable table">
@@ -250,7 +250,7 @@
                     </div>
 
 
-                <div class="ui card la-js-hideable">
+                <div class="ui card la-js-hideable hidden">
                         <div class="content">
 
 
@@ -337,7 +337,7 @@
 
                 <g:if test="${subscriptionInstance.costItems}">
 
-                    <div class="ui card la-dl-no-table la-js-hideable">
+                    <div class="ui card la-dl-no-table la-js-hideable hidden">
                         <div class="content">
                             <dl>
                                 <dt class="control-label">${message(code:'financials.label', default:'Financials')}</dt>
@@ -396,7 +396,7 @@
 
                 FINANCE --%>
                 <g:if test="${usage}">
-                    <div class="ui card la-dl-no-table la-js-hideable">
+                    <div class="ui card la-dl-no-table la-js-hideable hidden">
                         <div class="content">
                             <g:if test="${subscriptionInstance.costItems}">
                                 <dl>
@@ -483,7 +483,7 @@
                         </div>
                     </div>
                 </g:if>
-                <div class="ui card la-dl-no-table la-js-hideable">
+                <div class="ui card la-dl-no-table la-js-hideable hidden">
                     <div class="content">
                         <h5 class="ui header">
                             ${message(code:'subscription.properties')}
@@ -517,7 +517,7 @@
                     });
                 </r:script>
 
-                <div class="ui card la-dl-no-table la-js-hideable">
+                <div class="ui card la-dl-no-table la-js-hideable hidden">
                     <div class="content">
                         <g:each in="${authorizedOrgs}" var="authOrg">
                             <g:if test="${authOrg.name == contextOrg?.name}">
