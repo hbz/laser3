@@ -24,7 +24,7 @@
         <g:each in="${orgList}" var="org">
             <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(prsFunction, org)}" var="person">
                 <g:each in ="${Contact.findAllByPrsAndContentType(person.getPrs(), rdvEmail)}" var="email">
-                    <% allEmailAddresses = (allEmailAddresses == null)? email?.content.trim() + "; " : allEmailAddresses + email?.content.trim() + "; "; %>
+                    <% allEmailAddresses = (allEmailAddresses == null)? email?.content?.trim() + "; " : allEmailAddresses + email?.content?.trim() + "; "; %>
                 </g:each>
             </g:each>
         </g:each>
