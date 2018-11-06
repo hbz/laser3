@@ -1,8 +1,12 @@
 
 0.10.1
 
-- fixed: sluggish my providers query 
-- fixed: my providers filter
+- fixed: sluggish query at my providers 
+- fixed: filter my providers 
+- bugfix: subscription renewal
+- bugfix: copying licenses
+- bugfix: copying subscriptions 
+- fixed: null pointer at manage consortia view
 
 0.10
 
