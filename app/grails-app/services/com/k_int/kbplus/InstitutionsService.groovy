@@ -35,18 +35,20 @@ class InstitutionsService {
             licenseInstance.startDate = base.startDate
             licenseInstance.endDate = base.endDate
         }
-        for (prop in base.customProperties) {
-            def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
-            copiedProp = prop.copyInto(copiedProp)
-            copiedProp.save(flush: true)
-            //licenseInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
-        }
+
 
         if (! licenseInstance.save(flush: true)) {
             log.error("Problem saving license ${licenseInstance.errors}");
             return licenseInstance
         } else {
             log.debug("Save ok");
+
+            for (prop in base.customProperties) {
+                def copiedProp = new LicenseCustomProperty(type: prop.type, owner: licenseInstance)
+                copiedProp = prop.copyInto(copiedProp)
+                copiedProp.save(flush: true)
+                //licenseInstance.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
+            }
 
             def licensee_role = RDStore.OR_LICENSEE
             def lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM

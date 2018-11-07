@@ -1,4 +1,9 @@
 
+0.10.2
+
+- fixed:  adding subscription members
+- hotfix: faulty url at finance view
+
 0.10.1
 
 - bugfix: subscription renewal
