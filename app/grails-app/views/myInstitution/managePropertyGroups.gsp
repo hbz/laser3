@@ -92,6 +92,7 @@
                         ajaxPostFunc()
                     },
                     detachable: true,
+                    autofocus: false,
                     closable: false,
                     transition: 'scale',
                     onApprove : function() {

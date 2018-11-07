@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.properties.PropertyDefinition"%>
+<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.Subscription; com.k_int.properties.PropertyDefinition"%>
 
 <semui:modal id="propDefGroupModal" message="propertyDefinitionGroup.create_new.label">
 
@@ -15,19 +15,32 @@
                     <label>Kategorie</label>
                     <select name="prop_descr" id="prop_descr_selector" class="ui dropdown">
                         <g:each in="${PropertyDefinition.AVAILABLE_GROUPS_DESCR}" var="pdDescr">
-                            <option value="${pdDescr}"><g:message code="propertyDefinition.${pdDescr}.label" default="${pdDescr}"/></option>
+                            <%-- TODO: REFACTORING --%>
+                            <g:if test="${pdDescr == PropertyDefinition.LIC_PROP && pdGroup?.ownerType == License.class.name}">
+                                <option selected="selected" value="${pdDescr}"><g:message code="propertyDefinition.${pdDescr}.label" default="${pdDescr}"/></option>
+                            </g:if>
+                            <g:elseif test="${pdDescr == PropertyDefinition.ORG_PROP && pdGroup?.ownerType == Org.class.name}">
+                                <option selected="selected" value="${pdDescr}"><g:message code="propertyDefinition.${pdDescr}.label" default="${pdDescr}"/></option>
+                            </g:elseif>
+                            <g:elseif test="${pdDescr == PropertyDefinition.SUB_PROP && pdGroup?.ownerType == Subscription.class.name}">
+                                <option selected="selected" value="${pdDescr}"><g:message code="propertyDefinition.${pdDescr}.label" default="${pdDescr}"/></option>
+                            </g:elseif>
+                            <g:else>
+                                <option value="${pdDescr}"><g:message code="propertyDefinition.${pdDescr}.label" default="${pdDescr}"/></option>
+                            </g:else>
+                            <%-- TODO: REFACTORING --%>
                         </g:each>
                     </select>
                 </div>
 
                 <div class="field">
                     <label>Name</label>
-                    <input type="text" name="name"/>
+                    <input type="text" name="name" value="${pdGroup?.name}"/>
                 </div>
 
                 <div class="field">
                     <label>Beschreibung</label>
-                    <textarea name="description"></textarea>
+                    <textarea name="description">${pdGroup?.description}</textarea>
                 </div>
             </div>
 
@@ -44,7 +57,7 @@
                                         ${pd.getI10n('name')}
                                     </td>
                                     <td>
-                                        <input type="checkbox" name="propertyDefinition" value="${pd.id}" />
+                                        <input type="checkbox" disabled="disabled" name="propertyDefinition" value="${pd.id}" />
                                     </td>
                                 </tr>
                             </g:each>
@@ -71,9 +84,13 @@
             },
             changeTable: function (target) {
                 $('#propDefGroupModal .table').addClass('hidden')
+                $('#propDefGroupModal .table input').attr('disabled', 'disabled')
+
                 $('#propDefGroupModal .table[data-propDefTable="' + target + '"]').removeClass('hidden')
+                $('#propDefGroupModal .table[data-propDefTable="' + target + '"] input').removeAttr('disabled')
             }
         }
         prop_descr_selector_controller.init()
+        setTimeout( function(){ $(window).trigger('resize')}, 500)
     }
 </script>
