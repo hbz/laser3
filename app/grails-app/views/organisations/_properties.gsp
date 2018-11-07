@@ -1,9 +1,65 @@
 <%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.*" %>
 <!-- _properties -->
 
+<g:set var="availPropDefGroups" value="${PropertyDefinitionGroup.findAllByTenantAndOwnerType(contextService.getOrg(), Org.class.name)}" />
+
+<div class="ui card la-dl-no-table">
+    <div class="content">
+        <h5 class="ui header">Merkmalsgruppen anzeigen (lokal vor global)</h5>
+
+        <table class="ui la-table-small la-table-inCard table">
+            <thead>
+                <tr>
+                    <th>Merkmalsgruppe</th>
+                    <th>Default</th>
+                    <th>Anzeigen</th>
+                    <th>Optionen</th>
+                </tr>
+            </thead>
+            <tbody>
+                <g:each in="${availPropDefGroups}" var="propDefGroup">
+                    <tr>
+                        <td>
+                            <strong>${propDefGroup.name}</strong>
+
+                            <g:if test="${propDefGroup.description}">
+                                <p>${propDefGroup.description}</p>
+                            </g:if>
+                        </td>
+                        <td>
+                            ${propDefGroup.visible ? propDefGroup.visible.getI10n('value') : 'Nein'}
+                        </td>
+                        <td>
+                            <g:set var="binding" value="${PropertyDefinitionGroupBinding.findByPropDefGroupAndOrg(propDefGroup, orgInstance)}" />
+
+                            <g:if test="${binding?.id}">
+                                <semui:xEditableRefData owner="${binding}" field="visible" config="YN" />
+                            </g:if>
+                        </td>
+                        <td class="x">
+                            <g:if test="${! binding?.id}">
+                                <g:if test="${propDefGroup.visible?.value=='Yes'}">
+                                    <button class="ui button">Lokal überschreiben</button>
+                                </g:if>
+                                <g:else>
+                                    <button class="ui button">Lokal überschreiben</button>
+                                </g:else>
+                            </g:if>
+                            <g:else>
+
+                            </g:else>
+                        </td>
+                        <%-- <input type="checkbox" value="${propDefGroup.class.name}:${propDefGroup.id}" /> --%>
+                    </tr>
+                </g:each>
+            </tbody>
+        </table>
+    </div>
+</div>
+
 <%-- grouped custom properties --%>
 
-<g:each in="${PropertyDefinitionGroup.findAllByTenantAndOwnerType(contextService.getOrg(), Org.class.name)}" var="propDefGroup">
+<g:each in="${availPropDefGroups}" var="propDefGroup">
     <g:if test="${propDefGroup.visible?.value?.equalsIgnoreCase('Yes')}">
         <div class="ui card la-dl-no-table">
             <div class="content">

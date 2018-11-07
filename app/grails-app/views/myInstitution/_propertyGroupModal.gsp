@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.Subscription; com.k_int.properties.PropertyDefinition"%>
+<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Org; com.k_int.kbplus.Subscription; com.k_int.properties.*"%>
 
 <semui:modal id="propDefGroupModal" message="propertyDefinitionGroup.create_new.label">
 
@@ -10,6 +10,11 @@
 
         <div class="ui two column grid">
             <div class="column">
+
+                <div class="field">
+                    <label>Name</label>
+                    <input type="text" name="name" value="${pdGroup?.name}"/>
+                </div>
 
                 <div class="field">
                     <label>Kategorie</label>
@@ -33,16 +38,14 @@
                     </select>
                 </div>
 
-                <div class="field">
-                    <label>Name</label>
-                    <input type="text" name="name" value="${pdGroup?.name}"/>
-                </div>
+            </div><!-- .column -->
 
+            <div class="column">
                 <div class="field">
                     <label>Beschreibung</label>
                     <textarea name="description">${pdGroup?.description}</textarea>
                 </div>
-            </div>
+            </div><!-- .column -->
 
             <div class="column">
                 <div class="field">
@@ -57,7 +60,12 @@
                                         ${pd.getI10n('name')}
                                     </td>
                                     <td>
-                                        <input type="checkbox" disabled="disabled" name="propertyDefinition" value="${pd.id}" />
+                                        <g:if test="${pdGroup && PropertyDefinitionGroupItem.findByPropDefAndPropDefGroup(pd, pdGroup)}">
+                                            <input type="checkbox" checked="checked" disabled="disabled" name="propertyDefinition" value="${pd.id}" />
+                                        </g:if>
+                                        <g:else>
+                                            <input type="checkbox" disabled="disabled" name="propertyDefinition" value="${pd.id}" />
+                                        </g:else>
                                     </td>
                                 </tr>
                             </g:each>
@@ -65,8 +73,10 @@
                         </table>
                     </g:each>
                 </div>
-            </div>
-        </div>
+            </div><!-- .column -->
+
+        </div><!-- .grid -->
+
 
     </g:form>
 </semui:modal>

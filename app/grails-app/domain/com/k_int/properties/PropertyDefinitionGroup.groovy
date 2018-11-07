@@ -13,13 +13,15 @@ class PropertyDefinitionGroup {
     Org    tenant
     String ownerType // PropertyDefinition.[LIC_PROP, SUB_PROP, ORG_PROP]
 
-    RefdataValue visible // RefdataCategory 'YN'
+    RefdataValue visible // RefdataCategory 'YN' ; default value: will be overwritten by existing bindings
 
     static hasMany = [
-            items: PropertyDefinitionGroupItem
+            items: PropertyDefinitionGroupItem,
+            bindings: PropertyDefinitionGroupBinding
     ]
     static mappedBy = [
-            items: 'propDefGroup'
+            items:    'propDefGroup',
+            bindings: 'propDefGroup'
     ]
 
     static mapping = {
@@ -31,7 +33,8 @@ class PropertyDefinitionGroup {
         ownerType   column: 'pdg_owner_type'
         visible     column: 'pdg_visible_rv_fk'
 
-        items cascade: 'all' // for deleting
+        items    cascade: 'all' // for deleting
+        bindings cascade: 'all' // for deleting
     }
 
     static constraints = {
