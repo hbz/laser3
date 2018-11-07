@@ -103,6 +103,13 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
             'class java.util.Date'        : ['de': 'Datum', 'en': 'Date']
     ]
 
+    static hasMany = [
+            propDefGroupItems: PropertyDefinitionGroupItem
+    ]
+    static mappedBy = [
+            propDefGroupItems: 'propDef'
+    ]
+
     static mapping = {
                       id column: 'pd_id'
                    descr column: 'pd_description', index: 'td_new_idx'
@@ -115,6 +122,8 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
                 softData column: 'pd_soft_data'
                 hardData column: 'pd_hard_data'
                       sort name: 'desc'
+
+        propDefGroupItems cascade: 'all'  // for deleting
     }
 
     static constraints = {

@@ -15,6 +15,13 @@ class PropertyDefinitionGroup {
 
     RefdataValue visible // RefdataCategory 'YN'
 
+    static hasMany = [
+            items: PropertyDefinitionGroupItem
+    ]
+    static mappedBy = [
+            items: 'propDefGroup'
+    ]
+
     static mapping = {
         id          column: 'pdg_id'
         version     column: 'pdg_version'
@@ -23,6 +30,8 @@ class PropertyDefinitionGroup {
         tenant      column: 'pdg_tenant_fk'
         ownerType   column: 'pdg_owner_type'
         visible     column: 'pdg_visible_rv_fk'
+
+        items cascade: 'all' // for deleting
     }
 
     static constraints = {
