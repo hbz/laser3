@@ -1,4 +1,8 @@
 
+0.10.3
+
+- hotfix: gorm lazy loading
+
 0.10.2
 
 - fixed:  adding subscription members

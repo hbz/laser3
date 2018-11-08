@@ -26,7 +26,7 @@
 
 <g:render template="nav" />
 
-<g:if test="${license.instanceOf && (contextOrg == license.getLicensingConsortium())}">
+<g:if test="${license.instanceOf && (contextOrg?.id == license.getLicensingConsortium()?.id)}">
     <div class="ui negative message">
         <div class="header"><g:message code="myinst.message.attention" /></div>
         <p>
