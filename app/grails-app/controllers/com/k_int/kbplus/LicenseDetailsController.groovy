@@ -101,7 +101,7 @@ class LicenseDetailsController {
         // restrict visible for templates/links/orgLinksAsList
         result.visibleOrgLinks = []
         result.license.orgLinks?.each { or ->
-            if (!(or.org == contextService.getOrg()) && !(or.roleType.value in ["Licensee", "Licensee_Consortial"])) {
+            if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ["Licensee", "Licensee_Consortial"])) {
                 result.visibleOrgLinks << or
             }
         }
@@ -842,7 +842,7 @@ from Subscription as s where
 
         result.visibleOrgLinks = []
         result.license.orgLinks?.each { or ->
-            if (!(or.org == contextService.getOrg()) && !(or.roleType.value in ["Licensee", "Licensee_Consortial"])) {
+            if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ["Licensee", "Licensee_Consortial"])) {
                 result.visibleOrgLinks << or
             }
         }
@@ -965,7 +965,7 @@ from Subscription as s where
                     }
                     //Copy References
                         baseLicense.orgLinks?.each { or ->
-                            if ((or.org == contextService.getOrg()) || (or.roleType.value in ["Licensee", "Licensee_Consortial"]) || (params.license.copyLinks)) {
+                            if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ["Licensee", "Licensee_Consortial"]) || (params.license.copyLinks)) {
                             OrgRole newOrgRole = new OrgRole()
                             InvokerHelper.setProperties(newOrgRole, or.properties)
                             newOrgRole.lic = licenseInstance

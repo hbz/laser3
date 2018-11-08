@@ -675,6 +675,16 @@
             </div>
         </div>
 
+        <%-- maintenance --%>
+        <g:if test="${com.k_int.kbplus.Setting.findByName('MaintenanceMode')?.value == 'true'}">
+            <div id="maintenance">
+                <div class="ui segment center aligned inverted orange">
+                    <strong>ACHTUNG:</strong>
+                    Das System wird in den nächsten Minuten aktualisiert. Bitte pflegen Sie aktuell keine Daten ein!
+                </div>
+            </div>
+        </g:if>
+
         <%-- global container for modals and ajax --%>
         <div id="dynamicModalContainer"></div>
 

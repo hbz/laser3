@@ -297,3 +297,9 @@ aside.metaboxContent + .metaboxContent-spacer {
     color: rgba(0,0,0,.8);
     transition: 0.1s color ease, 0.1s background-color ease;
 }
+
+#maintenance {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+}

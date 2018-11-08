@@ -21,7 +21,9 @@
             <div class="content ui form">
                 <div class="fields">
                     <div class="field">
-                        <button class="ui button" value="" href="#addPropDefGroupModal" data-semui="modal">${message(code:'propertyDefinitionGroup.create_new.label')}</button>
+                        <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'new']}" class="ui button trigger-modal">
+                            ${message(code:'propertyDefinitionGroup.create_new.label')}
+                        </g:link>
                     </div>
                 </div>
             </div>
@@ -57,84 +59,50 @@
                         <semui:xEditableRefData owner="${pdGroup}" field="visible" config="YN"/>
                     </td>
                     <td class="x">
-                        [edit]
-                        [delete]
+                        <g:if test="${editable}">
+                            <g:set var="pdgOID" value="${pdGroup.class.name + ':' + pdGroup.id}" />
+                            <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="ui icon button trigger-modal">
+                                <i class="write icon"></i>
+                            </g:link>
+                            <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'delete', oid:pdgOID]}" class="ui icon negative button">
+                                <i class="trash alternate icon"></i>
+                            </g:link>
+                        </g:if>
                     </td>
                 </tr>
             </g:each>
         </tbody>
     </table>
 
+    <script>
+        $('.trigger-modal').on('click', function(e) {
+            e.preventDefault();
 
-    <semui:modal id="addPropDefGroupModal" message="propertyDefinitionGroup.create_new.label">
+            $.ajax({
+                url: $(this).attr('href')
+            }).done( function (data) {
+                $('.ui.dimmer.modals > #propDefGroupModal').remove();
+                $('#dynamicModalContainer').empty().html(data);
 
-        <g:form class="ui form" url="[controller: 'myInstitution', action: 'managePropertyGroups']" method="POST">
-            <input type="hidden" name="cmd" value="newPropertyGroup"/>
+                $('#dynamicModalContainer .ui.modal').modal({
+                    onVisible: function () {
+                        r2d2.initDynamicSemuiStuff('#propDefGroupModal');
+                        r2d2.initDynamicXEditableStuff('#propDefGroupModal');
 
-            <div class="ui two column grid">
-                <div class="column">
-
-                    <div class="field">
-                        <label>Kategorie</label>
-                        <select name="prop_descr" id="prop_descr_selector" class="ui dropdown">
-                            <g:each in="${PropertyDefinition.AVAILABLE_GROUPS_DESCR}" var="pdDescr">
-                                <option value="${pdDescr}"><g:message code="propertyDefinition.${pdDescr}.label" default="${pdDescr}"/></option>
-                            </g:each>
-                        </select>
-                    </div>
-
-                    <div class="field">
-                        <label>Name</label>
-                        <input type="text" name="name"/>
-                    </div>
-
-                    <div class="field">
-                        <label>Beschreibung</label>
-                        <textarea name="description"></textarea>
-                    </div>
-                </div>
-
-                <div class="column">
-                    <div class="field">
-                        <label>Merkmale</label>
-
-                        <g:each in="${PropertyDefinition.AVAILABLE_GROUPS_DESCR}" var="pdDescr">
-                            <table class="ui table la-table-small hidden" data-propDefTable="${pdDescr}">
-                                <tbody>
-                                    <g:each in="${PropertyDefinition.findAllWhere(tenant:null, descr:pdDescr, [sort: 'name'])}" var="pd">
-                                        <tr>
-                                            <td>
-                                                ${pd.getI10n('name')}
-                                            </td>
-                                            <td>
-                                                <input type="checkbox" name="propertyDefinition" value="${pd.id}" />
-                                            </td>
-                                        </tr>
-                                    </g:each>
-                                </tbody>
-                            </table>
-                        </g:each>
-                    </div>
-                </div>
-            </div>
-            <script>
-                var prop_descr_selector_controller = {
-                    init: function() {
-                        $('#prop_descr_selector').on('change', function(){
-                            prop_descr_selector_controller.changeTable($(this).val())
-                        })
-
-                        $('#prop_descr_selector').trigger('change')
+                        ajaxPostFunc()
                     },
-                    changeTable: function(target) {
-                        $('#addPropDefGroupModal .table').addClass('hidden')
-                        $('#addPropDefGroupModal .table[data-propDefTable="' + target + '"]').removeClass('hidden')
+                    detachable: true,
+                    autofocus: false,
+                    closable: false,
+                    transition: 'scale',
+                    onApprove : function() {
+                        $(this).find('.ui.form').submit();
+                        return false;
                     }
-                }
-                prop_descr_selector_controller.init()
-            </script>
-        </g:form>
-    </semui:modal>
+                }).modal('show');
+            })
+        })
+    </script>
 
   </body>
 </html>

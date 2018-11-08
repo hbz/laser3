@@ -32,7 +32,7 @@
 
         <semui:objectStatus object="${license}" status="${license.status}" />
 
-        <g:if test="${! license.hasTemplate() && license.instanceOf && (contextOrg.id == license.getLicensingConsortium()?.id)}">
+        <g:if test="${! license.hasTemplate() && license.instanceOf && (contextOrg?.id == license.getLicensingConsortium()?.id)}">
             <div class="ui negative message">
                 <div class="header"><g:message code="myinst.message.attention" /></div>
                 <p>

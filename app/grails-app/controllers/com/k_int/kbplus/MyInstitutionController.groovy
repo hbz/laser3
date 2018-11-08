@@ -3458,27 +3458,63 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         def result = setResultGenerics()
         result.editable = true // true, because action is protected
 
-        if (params.cmd == 'newPropertyGroup') {
-            def ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
+        if (params.cmd == 'new') {
 
-            // println ownerType
+            render template: 'propertyGroupModal', model: result
+            return
+        }
+        else if (params.cmd == 'edit') {
+            result.pdGroup = genericOIDService.resolveOID(params.oid)
 
-            if (params.name && ownerType) {
-                def propDefGroup = new PropertyDefinitionGroup(
-                        name: params.name,
-                        description: params.description,
-                        tenant: result.institution,
-                        ownerType: ownerType
+            render template: 'propertyGroupModal', model: result
+            return
+        }
+        else if (params.cmd == 'delete') {
+            def pdg = genericOIDService.resolveOID(params.oid)
+            try {
+                pdg.delete()
+                flash.message = "Die Gruppe ${pdg.name} wurde gelöscht."
+            }
+            catch (e) {
+                flash.error = "Die Gruppe ${params.oid} konnte nicht gelöscht werden."
+            }
+        }
+        else if (params.cmd == 'processing') {
+            def propDefGroup
+            def valid
+
+            if (params.oid) {
+                propDefGroup = genericOIDService.resolveOID(params.oid)
+                valid = true
+            }
+            else {
+                def ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
+
+                if (params.name && ownerType) {
+                    propDefGroup = new PropertyDefinitionGroup(
+                            name: params.name,
+                            description: params.description,
+                            tenant: result.institution,
+                            ownerType: ownerType
+                    )
+                    if (propDefGroup.save(flush:true)) {
+                        valid = true
+                    }
+                }
+            }
+
+            if (valid) {
+                PropertyDefinitionGroupItem.executeUpdate(
+                        "DELETE PropertyDefinitionGroupItem pdgi WHERE pdgi.propDefGroup = :pdg",
+                        [pdg: propDefGroup]
                 )
 
-                if (propDefGroup.save(flush:true)) {
-                    params.list('propertyDefinition')?.each { pd ->
+                params.list('propertyDefinition')?.each { pd ->
 
-                        new PropertyDefinitionGroupItem(
-                                propDef: pd,
-                                propDefGroup: propDefGroup
-                        ).save(flush: true)
-                    }
+                    new PropertyDefinitionGroupItem(
+                            propDef: pd,
+                            propDefGroup: propDefGroup
+                    ).save(flush: true)
                 }
             }
         }

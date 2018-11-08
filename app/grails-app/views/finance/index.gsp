@@ -60,7 +60,7 @@
     <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'subscription.details.financials.label')} für ${institution.name}</h1>
 </g:else>
 
-<g:if test="${fixedSubscription?.instanceOf && (contextOrg == fixedSubscription?.getConsortia())}">
+<g:if test="${fixedSubscription?.instanceOf && (contextOrg?.id == fixedSubscription?.getConsortia()?.id)}">
     <div class="ui negative message">
         <div class="header"><g:message code="myinst.message.attention" /></div>
         <p>
@@ -110,11 +110,14 @@
             <script>
                 var isClicked = false;
                 $('#btnAddNewCostItem').on('click', function(event) {
+                    event.preventDefault();
+
                     // prevent 2 Clicks open 2 Modals
                     if (!isClicked) {
                         isClicked = true;
                         $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
                         $('#dynamicModalContainer').empty()
+
                         $.ajax({
                             url: "<g:createLink controller='finance' action='editCostItem'/>",
                             data: {

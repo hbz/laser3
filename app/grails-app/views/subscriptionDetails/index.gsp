@@ -28,7 +28,7 @@
 
     <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':subscriptionInstance]}"/>
 
-      <g:if test="${subscriptionInstance.instanceOf && (contextOrg == subscriptionInstance.getConsortia())}">
+      <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id == subscriptionInstance.getConsortia()?.id)}">
           <div class="ui negative message">
               <div class="header"><g:message code="myinst.message.attention" /></div>
               <p>
