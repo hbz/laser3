@@ -60,7 +60,7 @@
     <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'subscription.details.financials.label')} für ${institution.name}</h1>
 </g:else>
 
-<g:if test="${fixedSubscription?.instanceOf && (contextOrg == fixedSubscription?.getConsortia())}">
+<g:if test="${fixedSubscription?.instanceOf && (contextOrg?.id == fixedSubscription?.getConsortia()?.id)}">
     <div class="ui negative message">
         <div class="header"><g:message code="myinst.message.attention" /></div>
         <p>
