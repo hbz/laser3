@@ -14,7 +14,7 @@
             <g:set var="cssId" value="prsLinksModal-${role.org.id}-${role.roleType.id}" />
 
             <tr>
-                <th scope="row" class="control-label la-js-hide-this-card">${role?.roleType?.getI10n("value")}</th>
+                <th scope="row" class="control-label la-js-dont-hide-this-card">${role?.roleType?.getI10n("value")}</th>
                 <td>
                     <g:link controller="Organisations" action="show" id="${role.org.id}">${role?.org?.name}</g:link>
                 </td>

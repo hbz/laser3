@@ -1,9 +1,9 @@
 <%@ page import="com.k_int.kbplus.Doc" %>
-<semui:card message="license.notes" class="notes la-js-hideable hidden" href="#modalCreateNote" editable="${editable}">
+<semui:card message="license.notes" class="notes la-js-hideable ${css_class}" href="#modalCreateNote" editable="${editable}">
 
         <g:each in="${ownobj.documents.sort{it.owner?.title}}" var="docctx">
             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') )}">
-                <div class="ui small feed content la-js-hide-this-card">
+                <div class="ui small feed content la-js-dont-hide-this-card">
                     <!--<div class="event">-->
 
                             <div class="summary">

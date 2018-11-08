@@ -182,7 +182,7 @@
                                 </colgroup>
                                 <g:each in="${subscriptionInstance.packages.sort{it.pkg.name}}" var="sp">
                                 <tr>
-                                <th scope="row" class="control-label la-js-hide-this-card">${message(code:'subscription.packages.label')}</th>
+                                <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'subscription.packages.label')}</th>
                                     <td>
                                         <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
 
@@ -212,7 +212,7 @@
                                     <col width="430"/>
                                 </colgroup>
                                 <tr>
-                                    <th scope="row" class="control-label la-js-hide-this-card">${message(code:'license')}</th>
+                                    <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'license')}</th>
                                     <td>
                                         <g:if test="${subscriptionInstance.owner == null}">
                                             <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
@@ -267,7 +267,7 @@
                                         roleRespValue: 'Specific subscription editor',
                                         editmode: editable
                               ]}" />
-                    <div class="ui la-vertical buttons la-js-hide-me">
+                    <div class="ui la-vertical buttons la-js-hide-this-card">
                         <g:render template="/templates/links/orgLinksModal"
                                   model="${[linkType: subscriptionInstance?.class?.name,
                                             parent: subscriptionInstance.class.name+':'+subscriptionInstance.id,
@@ -400,7 +400,7 @@
                         <div class="content">
                             <g:if test="${subscriptionInstance.costItems}">
                                 <dl>
-                                    <dt class="control-label la-js-hide-this-card">${message(code: 'subscription.details.costPerUse.header')}</dt>
+                                    <dt class="control-label la-js-dont-hide-this-card">${message(code: 'subscription.details.costPerUse.header')}</dt>
                                     <dd><g:formatNumber number="${totalCostPerUse}" type="currency"
                                                         currencyCode="${currencyCode}" maxFractionDigits="2"
                                                         minFractionDigits="2" roundingMode="HALF_UP"/>
@@ -410,7 +410,7 @@
                                 <div class="ui divider"></div>
                             </g:if>
                             <dl>
-                                <dt class="control-label la-js-hide-this-card">${message(code: 'default.usage.label')}</dt>
+                                <dt class="control-label la-js-dont-hide-this-card">${message(code: 'default.usage.label')}</dt>
                                 <dd>
                                     <table class="ui la-table-small celled la-table-inCard table">
                                         <thead>
@@ -546,9 +546,9 @@
         </div>
 
         <aside class="four wide column la-sidekick">
-            <g:render template="/templates/tasks/card" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
-            <g:render template="/templates/documents/card" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
-            <g:render template="/templates/notes/card" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
+            <g:render template="/templates/tasks/card" model="${[ownobj:subscriptionInstance, owntp:'subscription', css_class:'hidden']}"  />
+            <g:render template="/templates/documents/card" model="${[ownobj:subscriptionInstance, owntp:'subscription', css_class:'hidden']}" />
+            <g:render template="/templates/notes/card" model="${[ownobj:subscriptionInstance, owntp:'subscription', css_class:'hidden']}" />
         </aside><!-- .four -->
     </div><!-- .grid -->
 
