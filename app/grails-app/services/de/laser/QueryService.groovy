@@ -1,14 +1,69 @@
 package de.laser
 
 import com.k_int.kbplus.*
+import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.auth.User
+
 import static de.laser.helper.RDStore.*
 
 class QueryService {
     def contextService
+    def taskService
+
+    def getDueObjects(int daysToBeInformedBeforeToday) {
+        getDueObjects(contextService.org, contextService.user, daysToBeInformedBeforeToday)
+    }
+
+    def getDueObjects(Org contextOrg, User contextUser, daysToBeInformedBeforeToday) {
+        java.sql.Date infoDate = null;
+        if (daysToBeInformedBeforeToday) {
+            Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.DAY_OF_WEEK, daysToBeInformedBeforeToday);
+            infoDate = new java.sql.Date(cal.getTime().getTime());
+        }
+        java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
+
+        ArrayList dueObjects = new ArrayList()
+
+        dueObjects.addAll(getDueSubscriptions(contextOrg, today, infoDate, today, infoDate))
+
+        dueObjects.addAll( taskService.getTasksByResponsibles(
+                contextUser,
+                contextOrg,
+                [query:" and status != ? and endDate <= ?",
+                 queryParams:[RefdataValue.getByValueAndCategory('Done', 'Task Status'),
+                              infoDate]]) )
+
+        dueObjects.addAll(getDueLicenseCustomProperties(contextOrg, today, infoDate))
+        dueObjects.addAll(getDueLicensePrivateProperties(contextOrg, today, infoDate))
+
+        dueObjects.addAll(PersonPrivateProperty.findAllByDateValueBetweenForOrgAndIsNotPulbic(today, infoDate, contextOrg))
+
+        dueObjects.addAll(OrgCustomProperty.findAllByDateValueBetween(today, infoDate))
+        dueObjects.addAll(getDueOrgPrivateProperties(contextOrg, today, infoDate))
+
+        dueObjects.addAll(getDueSubscriptionCustomProperties(contextOrg, today, infoDate))
+        dueObjects.addAll(getDueSubscriptionPrivateProperties(contextOrg, today, infoDate))
+
+        dueObjects = dueObjects.sort {
+            (it instanceof AbstractProperty)?
+                    it.dateValue : (((it instanceof Subscription || it instanceof License) && it.manualCancellationDate)? it.manualCancellationDate : it.endDate)?: java.sql.Timestamp.valueOf("0001-1-1 00:00:00")
+        }
+
+        dueObjects
+    }
+
     private def getQuery(Class propertyClass, Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
         def result = [:]
-        def query = "SELECT distinct(prop) FROM " + propertyClass.simpleName + " as prop WHERE (dateValue >= :from and dateValue <= :to) "
-        def queryParams = [from:fromDateValue, to:toDateValue]
+        def query
+        def queryParams
+        if (toDateValue) {
+            query = "SELECT distinct(prop) FROM " + propertyClass.simpleName + " as prop WHERE (dateValue >= :from and dateValue <= :to) "
+            queryParams = [from:fromDateValue, to:toDateValue]
+        } else {
+            query = "SELECT distinct(prop) FROM " + propertyClass.simpleName + " as prop WHERE dateValue >= :from "
+            queryParams = [from:fromDateValue]
+        }
         if (propertyClass.simpleName.toLowerCase().contains("private")) {
             queryParams << [myOrg:contextOrg]
             query += "and exists (select pd from PropertyDefinition as pd where prop.type = pd AND pd.tenant = :myOrg) "

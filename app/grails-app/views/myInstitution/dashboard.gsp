@@ -1,4 +1,5 @@
-<%@ page import="com.k_int.kbplus.*; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.abstract_domain.AbstractProperty" %>
+<%@ page import="com.k_int.kbplus.*; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.abstract_domain.AbstractProperty; com.k_int.kbplus.UserSettings" %>
+<g:set var="simpleDateFormat" value="${new java.text.SimpleDateFormat("yyyyMMdd")}"/>
 <!doctype html>
 <html>
     <head>
@@ -63,11 +64,18 @@
         </div>
 
         <semui:messages data="${flash}" />
-
         <br />
+        <div>
+            <g:message code="profile.dashboardReminderPeriod" default="Your search found ${resultsTotal} records"
+                   args="${user.getSettingsValue(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}"/>
+        </div>
 
         <div class="ui secondary pointing tabular menu">
-            <a class="item" data-tab="first">
+            <a class="active item" data-tab="first">
+                <i class="checked alarm end icon large"></i>
+                ${message(code:'myinst.dash.due_dates.label')}
+            </a>
+            <a class="item" data-tab="second">
                 <i class="clock outline icon large"></i>
                 <%
                     def countChanges = 0
@@ -78,33 +86,131 @@
                 ${countChanges}
                 ${message(code:'myinst.todo.label', default:'To Do')}
             </a>
-            <a class="item" data-tab="second" id="jsFallbackAnnouncements">
+            <a class="item" data-tab="third" id="jsFallbackAnnouncements">
                 <i class="warning circle icon large"></i>
                 ${recentAnnouncements.size()}
                 ${message(code:'announcement.plural', default:'Announcements')}
             </a>
-            <a class="item" data-tab="third">
+            <a class="item" data-tab="forth">
                 <i class="checked calendar icon large"></i>
                 ${tasks.size()}
                 ${message(code:'myinst.dash.task.label')}
             </a>
-            <a class="active item" data-tab="forth">
-                <i class="checked alarm end icon large"></i>
-                ${message(code:'myinst.dash.due_dates.label')}
-            </a>
         </div>
+%{--*************************************--}%
 
-        <div class="ui bottom attached tab segment" data-tab="first" style="border-top: 1px solid #d4d4d5; ">
+    <div class="ui bottom attached active tab segment" data-tab="first" style="border-top: 1px solid #d4d4d5; ">
+
+        <table class="ui celled table">
+            <thead>
+            <tr>
+                <th>${message(code:'myinst.dash.due_dates.attribute.label')}</th>
+                <th>${message(code:'myinst.dash.due_date.date.label')}</th>
+                <th>${message(code:'myinst.dash.due_dates.name.label')}</th>
+            </tr></thead>
+            <tbody>
+            <g:each in="${dueObjects}" var="obj">
+                <tr>
+                    <td>
+                        <g:if test="${obj instanceof Subscription || obj instanceof License}">
+                            <g:if test="${obj.manualCancellationDate}">
+                                ${message(code:'myinst.dash.due_date.noticePeriod.label')}
+                                <br>
+                            </g:if>
+                            ${message(code:'myinst.dash.due_date.enddate.label')}
+                        </g:if>
+                        <g:elseif test="${obj instanceof Task}">
+                            ${message(code:'myinst.dash.due_date.task.label')}
+                        </g:elseif>
+                        <g:elseif test="${obj instanceof AbstractProperty}">
+                            <i class="icon tags la-list-icon"></i>
+                            ${obj.type?.name}
+                        </g:elseif>
+                        <g:else>
+                            Not implemented yet!
+                        </g:else>
+                    </td>
+                    <td>
+                        <g:if test="${obj instanceof Subscription || obj instanceof License}">
+                            <g:set var="date" value="${obj.manualCancellationDate}"/>
+                        </g:if>
+                        <g:if test="${obj instanceof AbstractProperty}">
+                            <g:if test="${obj.dateValue}">
+                                <g:set var="date" value="${obj.dateValue}"/>
+                            </g:if>
+                        </g:if>
+                        <g:else>
+                            <g:if test="${obj.endDate}">
+                                <g:set var="date" value="${obj.endDate}"/>
+                            </g:if>
+                        </g:else>
+                        <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${date}"/>
+                        <g:if test="${(simpleDateFormat.format(date).compareTo(simpleDateFormat.format(new Date()))) == 0}">
+                            <span data-tooltip="${message(code:'myinst.dash.due_date.enddate.isDueToday.label')}" data-position="top right">
+                                <i class="icon yellow exclamation"></i>
+                            </span>
+                        </g:if>
+                        <g:elseif test="${(simpleDateFormat.format(date).compareTo(simpleDateFormat.format(new Date()))) < 0}">
+                            <span data-tooltip="${message(code:'myinst.dash.due_date.enddate.isOverdue.label')}" data-position="top right">
+                                <i class="icon red exclamation"></i>
+                            </span>
+                        </g:elseif>
+                    </td>
+                    <td>
+                        <div class="la-flexbox">
+                            <g:if test="${obj instanceof Subscription}">
+                                <i class="icon folder open la-list-icon"></i>
+                                <g:link controller="subscriptionDetails" action="show" id="${obj.id}">${obj.name}</g:link>
+                            </g:if>
+                            <g:elseif test="${obj instanceof License}">
+                                <i class="icon balance scale la-list-icon"></i>
+                                <g:link controller="licenseDetails" action="show" id="${obj.id}">${obj.name}</g:link>
+                            </g:elseif>
+                            <g:elseif test="${obj instanceof Task}">
+                                <span data-position="top right" data-tooltip="Aufgabe">
+                                    <i class="icon checked calendar la-list-icon"></i>
+                                </span>
+                                <a class="header" onclick="taskedit(${obj?.id});">${obj?.title}</a>
+                                &nbsp(Status: ${obj.status?.getI10n("value")})
+                            </g:elseif>
+                            <g:elseif test="${obj instanceof AbstractProperty}">
+                                <g:if test="${obj.owner instanceof Person}">
+                                    <i class="icon address book la-list-icon"></i>
+                                    <g:link controller="person" action="show" id="${obj.owner.id}">${obj.owner?.first_name}&nbsp${obj.owner?.last_name}</g:link>
+                                </g:if>
+                                <g:elseif test="${obj.owner instanceof Subscription}">
+                                    <i class="icon folder open la-list-icon"></i>
+                                    <g:link controller="subscriptionDetails" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
+                                </g:elseif>
+                                <g:elseif test="${obj.owner instanceof License}">
+                                    <i class="icon balance scale la-list-icon"></i>
+                                    <g:link controller="licenseDetails" action="show" id="${obj.owner?.id}">${obj.owner?.reference}</g:link>
+                                </g:elseif>
+                                <g:elseif test="${obj.owner instanceof Org}">
+                                    <i class="icon university la-list-icon"></i>
+                                    <g:link controller="organisations" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
+                                </g:elseif>
+                                <g:else>
+                                    ${obj.owner?.name}
+                                </g:else>
+                            </g:elseif>
+                            <g:else>
+                                Not implemented yet!
+                            </g:else>
+                        </div>
+                    </td>
+                </tr>
+            </g:each>
+            </tbody>
+        </table>
+    </div>
+%{--*************************************--}%
+        <div class="ui bottom attached tab segment" data-tab="second" style="border-top: 1px solid #d4d4d5; ">
             <g:if test="${editable}">
                 <div class="pull-right">
                     <g:link action="changes" class="ui button">${message(code:'myinst.todo.submit.label', default:'View To Do List')}</g:link>
                 </div>
             </g:if>
-
-            <div>
-                ${message(code: 'profile.dashboardReminderPeriod')}:
-                ${user.getSettingsValue(com.k_int.kbplus.UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}
-            </div>
 
             <div class="ui relaxed list" style="clear:both;padding-top:1rem;">
                 <g:each in="${changes}" var="changeSet">
@@ -160,18 +266,14 @@
                 </g:each>
             </div>
         </div>
+    %{--*************************************--}%
 
-        <div class="ui bottom attached tab segment" data-tab="second" style="border-top: 1px solid #d4d4d5; ">
+        <div class="ui bottom attached tab segment" data-tab="third" style="border-top: 1px solid #d4d4d5; ">
             <g:if test="${editable}">
                 <div class="pull-right">
                     <g:link action="announcements" class="ui button">${message(code:'myinst.ann.view.label', default:'View All Announcements')}</g:link>
                 </div>
             </g:if>
-
-            <div>
-                ${message(code: 'profile.dashboardReminderPeriod')}:
-                ${user.getSettingsValue(com.k_int.kbplus.UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}
-            </div>
 
             <div class="ui relaxed list" style="clear:both;padding-top:1rem;">
                 <g:each in="${recentAnnouncements}" var="ra">
@@ -205,8 +307,9 @@
                 </g:each>
             </div>
         </div>
+    %{--*************************************--}%
 
-        <div class="ui bottom attached tab" data-tab="third">
+        <div class="ui bottom attached tab" data-tab="forth">
 
             <g:if test="${editable}">
                 <div class="ui right aligned grid">
@@ -272,103 +375,8 @@
                 </g:each>
             </div>
         </div>
-    <div class="ui bottom attached active tab segment" data-tab="forth" style="border-top: 1px solid #d4d4d5; ">
-        Sie werden <b>${dashboardReminderPeriod} Tage</b> vor Fälligkeit an anstehende Termine erinnert.
-
-        <hr>
-        <table class="ui celled table">
-            <thead>
-            <tr>
-                <th>${message(code:'myinst.dash.due_dates.attribute.label')}</th>
-                <th>${message(code:'myinst.dash.due_date.date.label')}</th>
-                <th>${message(code:'myinst.dash.due_dates.name.label')}</th>
-            </tr></thead>
-            <tbody>
-            <g:each in="${dueObjects}" var="obj">
-                <tr>
-                    <td>
-                        <g:if test="${obj instanceof Subscription || obj instanceof License}">
-                            <g:if test="${obj.manualCancellationDate}">
-                                ${message(code:'myinst.dash.due_date.noticePeriod.label')}
-                                <br>
-                            </g:if>
-                            ${message(code:'myinst.dash.due_date.enddate.label')}
-                        </g:if>
-                        <g:elseif test="${obj instanceof Task}">
-                            ${message(code:'myinst.dash.due_date.task.label')}
-                        </g:elseif>
-                        <g:elseif test="${obj instanceof AbstractProperty}">
-                            <i class="icon tags la-list-icon"></i>
-                            ${obj.type?.name}
-                        </g:elseif>
-                        <g:else>
-                            Not implemented yet!
-                        </g:else>
-                    </td>
-                    <td>
-                        <g:if test="${obj instanceof Subscription || obj instanceof License}">
-                            <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${obj.manualCancellationDate}"/>
-                            <br>
-                        </g:if>
-                        <g:if test="${obj instanceof AbstractProperty}">
-                            <g:if test="${obj.dateValue}">
-                                <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${obj.dateValue}"/>
-                            </g:if>
-                        </g:if>
-                        <g:else>
-                            <g:if test="${obj.endDate}">
-                                <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${obj.endDate}"/>
-                            </g:if>
-                        </g:else>
-                    </td>
-                    <td>
-                        <div class="la-flexbox">
-                            <g:if test="${obj instanceof Subscription}">
-                                <i class="icon folder open la-list-icon"></i>
-                                <g:link controller="subscriptionDetails" action="show" id="${obj.id}">${obj.name}</g:link>
-                            </g:if>
-                            <g:elseif test="${obj instanceof License}">
-                                <i class="icon balance scale la-list-icon"></i>
-                                <g:link controller="licenseDetails" action="show" id="${obj.id}">${obj.name}</g:link>
-                            </g:elseif>
-                            <g:elseif test="${obj instanceof Task}">
-                                <span data-position="top right" data-tooltip="Aufgabe">
-                                    <i class="icon tasks la-list-icon"></i>
-                                </span>
-                                <a class="header" onclick="taskedit(${obj?.id});">${obj?.title}</a>
-                                &nbsp(Status: ${obj.status?.getI10n("value")})
-                            </g:elseif>
-                            <g:elseif test="${obj instanceof AbstractProperty}">
-                                <g:if test="${obj.owner instanceof Person}">
-                                    <i class="icon address book la-list-icon"></i>
-                                    <g:link controller="person" action="show" id="${obj.owner.id}">${obj.owner?.first_name}&nbsp${obj.owner?.last_name}</g:link>
-                                </g:if>
-                                <g:elseif test="${obj.owner instanceof Subscription}">
-                                    <i class="icon folder open la-list-icon"></i>
-                                    <g:link controller="subscriptionDetails" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
-                                </g:elseif>
-                                <g:elseif test="${obj.owner instanceof License}">
-                                    <i class="icon balance scale la-list-icon"></i>
-                                    <g:link controller="licenseDetails" action="show" id="${obj.owner?.id}">${obj.owner?.reference}</g:link>
-                                </g:elseif>
-                                <g:elseif test="${obj.owner instanceof Org}">
-                                    <i class="icon university la-list-icon"></i>
-                                    <g:link controller="organisations" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
-                                </g:elseif>
-                                <g:else>
-                                    ${obj.owner?.name}
-                                </g:else>
-                            </g:elseif>
-                            <g:else>
-                                Not implemented yet!
-                            </g:else>
-                        </div>
-                    </td>
-                </tr>
-            </g:each>
-            </tbody>
-        </table>
-   </div>
+    %{--*************************************--}%
+    %{--*************************************--}%
 
 
     <g:render template="/templates/tasks/modal_create" />

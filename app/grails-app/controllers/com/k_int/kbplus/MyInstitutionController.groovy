@@ -2946,45 +2946,9 @@ AND EXISTS (
 
         def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: 10, sort: 'dateCreated', order: 'desc'])
-        result.dashboardReminderPeriod = contextService.getUser().getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14).value
-        result.dueObjects = getDueObjects(result.dashboardReminderPeriod)
+        result.dueObjects = queryService.getDueObjects(contextService.getUser().getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14).value)
 
         result
-    }
-    private def getDueObjects(int daysToBeInformedBeforeToday){
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_WEEK, daysToBeInformedBeforeToday);
-        java.sql.Date infoDate = new java.sql.Date(cal.getTime().getTime());
-        java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
-
-        ArrayList dueObjects = new ArrayList()
-
-        dueObjects.addAll(queryService.getDueSubscriptions(contextService.org, today, infoDate, today, infoDate))
-
-        dueObjects.addAll( taskService.getTasksByResponsibles(
-                contextService.getUser(),
-                contextService.getOrg(),
-                [query:" and status != ? and endDate <= ?",
-                queryParams:[RefdataValue.getByValueAndCategory('Done', 'Task Status'),
-                        infoDate]]) )
-
-        dueObjects.addAll(queryService.getDueLicenseCustomProperties(contextService.org, today, infoDate))
-        dueObjects.addAll(queryService.getDueLicensePrivateProperties(contextService.org, today, infoDate))
-
-        dueObjects.addAll(PersonPrivateProperty.findAllByDateValueBetweenForOrgAndIsNotPulbic(today, infoDate, contextService.org))
-
-        dueObjects.addAll(OrgCustomProperty.findAllByDateValueBetween(today, infoDate))
-        dueObjects.addAll(queryService.getDueOrgPrivateProperties(contextService.org, today, infoDate))
-
-        dueObjects.addAll(queryService.getDueSubscriptionCustomProperties(contextService.org, today, infoDate))
-        dueObjects.addAll(queryService.getDueSubscriptionPrivateProperties(contextService.org, today, infoDate))
-
-        dueObjects = dueObjects.sort {
-                (it instanceof AbstractProperty)?
-                        it.dateValue : (((it instanceof Subscription || it instanceof License) && it.manualCancellationDate)? it.manualCancellationDate : it.endDate)?: java.sql.Timestamp.valueOf("0001-1-1 00:00:00")
-        }
-
-        dueObjects
     }
 
     private getTodoForInst(result, Integer periodInDays){
