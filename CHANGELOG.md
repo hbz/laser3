@@ -1,6 +1,7 @@
 
 0.10.4
 
+- added maintenance mode 
 - hotfix: shown deleted licenses
 
 0.10.3
