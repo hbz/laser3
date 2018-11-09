@@ -1,6 +1,9 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
+import com.k_int.properties.PropertyDefinitionGroup
+import com.k_int.properties.PropertyDefinitionGroupItem
+import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.SpringSecurityUtils;
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
@@ -874,6 +877,85 @@ class AdminController {
               attrMap     : attrMap,
               usedPdList  : usedPdList
             ]
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def managePropertyGroups() {
+        //def result = setResultGenerics()
+        def result = [:]
+        result.editable = true // true, because action is protected
+
+        if (params.cmd == 'new') {
+            result.formUrl = g.createLink([controller: 'admin', action: 'managePropertyGroups'])
+            render template: '/templates/properties/propertyGroupModal', model: result
+            return
+        }
+        else if (params.cmd == 'edit') {
+            result.pdGroup = genericOIDService.resolveOID(params.oid)
+            result.formUrl = g.createLink([controller: 'admin', action: 'managePropertyGroups'])
+
+            render template: '/templates/properties/propertyGroupModal', model: result
+            return
+        }
+        else if (params.cmd == 'delete') {
+            def pdg = genericOIDService.resolveOID(params.oid)
+            try {
+                pdg.delete()
+                flash.message = "Die Gruppe ${pdg.name} wurde gelöscht."
+            }
+            catch (e) {
+                flash.error = "Die Gruppe ${params.oid} konnte nicht gelöscht werden."
+            }
+        }
+        else if (params.cmd == 'processing') {
+            def valid
+            def propDefGroup
+            def ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
+
+            if (params.oid) {
+                propDefGroup = genericOIDService.resolveOID(params.oid)
+                propDefGroup.name = params.name ?: propDefGroup.name
+                propDefGroup.description = params.description
+                propDefGroup.ownerType = ownerType
+
+                if (propDefGroup.save(flush:true)) {
+                    valid = true
+                }
+            }
+            else {
+                if (params.name && ownerType) {
+                    propDefGroup = new PropertyDefinitionGroup(
+                        name: params.name,
+                        description: params.description,
+                        tenant: null,
+                        ownerType: ownerType
+                    )
+                    if (propDefGroup.save(flush:true)) {
+                        valid = true
+                    }
+                }
+            }
+
+            if (valid) {
+                PropertyDefinitionGroupItem.executeUpdate(
+                    "DELETE PropertyDefinitionGroupItem pdgi WHERE pdgi.propDefGroup = :pdg",
+                    [pdg: propDefGroup]
+                )
+
+                params.list('propertyDefinition')?.each { pd ->
+
+                    new PropertyDefinitionGroupItem(
+                          propDef: pd,
+                          propDefGroup: propDefGroup
+                    ).save(flush: true)
+                }
+            }
+        }
+
+        result.propDefGroups = PropertyDefinitionGroup.findAllWhere(
+                tenant: null
+        )
+        result
     }
 
     @Secured(['ROLE_ADMIN'])

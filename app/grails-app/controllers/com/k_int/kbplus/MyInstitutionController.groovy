@@ -3455,20 +3455,22 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADMIN")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADMIN") })
     def managePropertyGroups() {
         def result = setResultGenerics()
         result.editable = true // true, because action is protected
 
         if (params.cmd == 'new') {
+            result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
 
-            render template: 'propertyGroupModal', model: result
+            render template: '/templates/properties/propertyGroupModal', model: result
             return
         }
         else if (params.cmd == 'edit') {
             result.pdGroup = genericOIDService.resolveOID(params.oid)
+            result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
 
-            render template: 'propertyGroupModal', model: result
+            render template: '/templates/properties/propertyGroupModal', model: result
             return
         }
         else if (params.cmd == 'delete') {
@@ -3482,16 +3484,21 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
         }
         else if (params.cmd == 'processing') {
-            def propDefGroup
             def valid
+            def propDefGroup
+            def ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
 
             if (params.oid) {
                 propDefGroup = genericOIDService.resolveOID(params.oid)
-                valid = true
+                propDefGroup.name = params.name ?: propDefGroup.name
+                propDefGroup.description = params.description
+                propDefGroup.ownerType = ownerType
+
+                if (propDefGroup.save(flush:true)) {
+                    valid = true
+                }
             }
             else {
-                def ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
-
                 if (params.name && ownerType) {
                     propDefGroup = new PropertyDefinitionGroup(
                             name: params.name,

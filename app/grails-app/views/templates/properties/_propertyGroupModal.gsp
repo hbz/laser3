@@ -2,7 +2,7 @@
 
 <semui:modal id="propDefGroupModal" message="propertyDefinitionGroup.create_new.label">
 
-    <g:form class="ui form" url="[controller: 'myInstitution', action: 'managePropertyGroups']" method="POST">
+    <g:form class="ui form" url="${formUrl}" method="POST">
         <input type="hidden" name="cmd" value="processing"/>
         <g:if test="${pdGroup}">
             <input type="hidden" name="oid" value="${pdGroup.class.name}:${pdGroup.id}"/>
@@ -54,7 +54,7 @@
                     <g:each in="${PropertyDefinition.AVAILABLE_GROUPS_DESCR}" var="pdDescr">
                         <table class="ui table la-table-small hidden" data-propDefTable="${pdDescr}">
                             <tbody>
-                            <g:each in="${PropertyDefinition.findAllWhere(tenant:null, descr:pdDescr, [sort: 'name'])}" var="pd">
+                            <g:each in="${PropertyDefinition.findAllWhere(tenant:null, descr:pdDescr).sort{ a,b -> a.getI10n('name') <=> b.getI10n('name')}}" var="pd">
                                 <tr>
                                     <td>
                                         ${pd.getI10n('name')}

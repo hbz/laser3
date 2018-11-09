@@ -9,11 +9,11 @@
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+            <semui:crumb message="menu.admin.dash" controller="admin" action="index" />
             <semui:crumb message="menu.institutions.manage_prop_groups" class="active"/>
         </semui:breadcrumbs>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${institution.name}</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.institutions.manage_prop_groups"/></h1>
 
         <semui:messages data="${flash}" />
 
@@ -21,7 +21,7 @@
             <div class="content ui form">
                 <div class="fields">
                     <div class="field">
-                        <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'new']}" class="ui button trigger-modal">
+                        <g:link controller="admin" action="managePropertyGroups" params="${[cmd:'new']}" class="ui button trigger-modal">
                             ${message(code:'propertyDefinitionGroup.create_new.label')}
                         </g:link>
                     </div>
@@ -61,10 +61,10 @@
                     <td class="x">
                         <g:if test="${editable}">
                             <g:set var="pdgOID" value="${pdGroup.class.name + ':' + pdGroup.id}" />
-                            <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="ui icon button trigger-modal">
+                            <g:link controller="admin" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="ui icon button trigger-modal">
                                 <i class="write icon"></i>
                             </g:link>
-                            <g:link controller="myInstitution" action="managePropertyGroups" params="${[cmd:'delete', oid:pdgOID]}" class="ui icon negative button">
+                            <g:link controller="admin" action="managePropertyGroups" params="${[cmd:'delete', oid:pdgOID]}" class="ui icon negative button">
                                 <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>

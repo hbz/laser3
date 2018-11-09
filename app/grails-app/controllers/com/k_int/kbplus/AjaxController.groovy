@@ -908,7 +908,7 @@ class AjaxController {
 
         def ownobj              = genericOIDService.resolveOID(params.ownobj)
         def propDefGroup        = genericOIDService.resolveOID(params.propDefGroup)
-        def availPropDefGroups  = PropertyDefinitionGroup.findAllByTenantAndOwnerType(contextService.getOrg(), ownobj.class.name)
+        def availPropDefGroups  = PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), ownobj.class.name)
 
         if (ownobj && propDefGroup) {
             if (params.visible in ['Yes', 'No']) {
@@ -943,7 +943,7 @@ class AjaxController {
         def ownobj              = genericOIDService.resolveOID(params.ownobj)
         def propDefGroup        = genericOIDService.resolveOID(params.propDefGroup)
         def binding             = genericOIDService.resolveOID(params.propDefGroupBinding)
-        def availPropDefGroups  = PropertyDefinitionGroup.findAllByTenantAndOwnerType(contextService.getOrg(), ownobj.class.name)
+        def availPropDefGroups  = PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), ownobj.class.name)
 
         if (ownobj && propDefGroup && binding) {
             binding.delete(flush:true)
