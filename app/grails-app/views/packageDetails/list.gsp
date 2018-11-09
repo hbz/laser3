@@ -48,7 +48,7 @@
                   <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                     </div>
                   <div class="field">
-                      <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label')}" />
+                      <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}" />
                   </div>
               </div>
           </g:form>

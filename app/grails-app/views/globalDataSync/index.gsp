@@ -30,7 +30,7 @@
                 <div class="field">
                     <label>&nbsp;</label>
                     <input type="submit" class="ui secondary button"
-                           value="${message(code: 'default.button.search.label')}"/>
+                           value="${message(code: 'default.button.filter.label')}"/>
                 </div>
         </div>
     </g:form>
