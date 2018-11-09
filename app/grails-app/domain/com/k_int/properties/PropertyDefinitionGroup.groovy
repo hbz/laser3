@@ -1,9 +1,14 @@
 package com.k_int.properties
 
+import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
+import de.laser.domain.I10nTranslation
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.springframework.context.i18n.LocaleContextHolder
+
+import javax.persistence.Transient
 
 @Log4j
 class PropertyDefinitionGroup {
@@ -63,6 +68,36 @@ class PropertyDefinitionGroup {
                 result << GrailsHibernateUtil.unwrapIfProxy(cp)
             }
         }
+        result
+    }
+
+    static def refdataFind(params) {
+        def result = []
+
+        def genericOIDService = grails.util.Holders.applicationContext.getBean('genericOIDService') as GenericOIDService
+
+        def currentObject = genericOIDService.resolveOID(params.oid)
+        def propDefs = currentObject.getPropertyDefinitions()
+
+        def matches = I10nTranslation.refdataFindHelper(
+                'com.k_int.properties.PropertyDefinition',
+                'name',
+                params.q,
+                LocaleContextHolder.getLocale()
+        )
+
+        propDefs.each { it ->
+            if (it in matches) {
+                if (params.desc && params.desc != "*") {
+                    if (it.getDescr() == params.desc) {
+                        result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
+                    }
+                } else {
+                    result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
+                }
+            }
+        }
+
         result
     }
 }
