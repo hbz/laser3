@@ -135,7 +135,7 @@
                                   update="${custom_props_div}"
                                   onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
 
-                        <input type="hidden" name="propIdent" desc="${prop_desc}" class="customPropSelect"/>
+                        <input type="hidden" name="propIdent" data-desc="${prop_desc}" class="customPropSelect"/>
                         <input type="hidden" name="ownerId" value="${ownobj.id}"/>
                         <input type="hidden" name="editable" value="${editable}"/>
                         <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
