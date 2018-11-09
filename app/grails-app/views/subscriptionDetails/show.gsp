@@ -7,7 +7,6 @@
 %>
 
 <r:require module="annotations" />
-<laser:serviceInjection />
 
 <!doctype html>
 <html>
@@ -172,7 +171,7 @@
                     </div>
                 </div>
 
-                <div class="ui card la-js-hideable">
+                <div class="ui card la-js-hideable hidden">
                         <div class="content">
 
                             <table class="ui la-selectable table">
@@ -183,7 +182,7 @@
                                 </colgroup>
                                 <g:each in="${subscriptionInstance.packages.sort{it.pkg.name}}" var="sp">
                                 <tr>
-                                <th scope="row" class="control-label la-js-hide-this-card">${message(code:'subscription.packages.label')}</th>
+                                <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'subscription.packages.label')}</th>
                                     <td>
                                         <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
 
@@ -213,7 +212,7 @@
                                     <col width="430"/>
                                 </colgroup>
                                 <tr>
-                                    <th scope="row" class="control-label la-js-hide-this-card">${message(code:'license')}</th>
+                                    <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'license')}</th>
                                     <td>
                                         <g:if test="${subscriptionInstance.owner == null}">
                                             <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
@@ -251,7 +250,7 @@
                     </div>
 
 
-                <div class="ui card la-js-hideable">
+                <div class="ui card la-js-hideable hidden">
                         <div class="content">
 
 
@@ -268,7 +267,7 @@
                                         roleRespValue: 'Specific subscription editor',
                                         editmode: editable
                               ]}" />
-                    <div class="ui la-vertical buttons la-js-hide-me">
+                    <div class="ui la-vertical buttons la-js-hide-this-card">
                         <g:render template="/templates/links/orgLinksModal"
                                   model="${[linkType: subscriptionInstance?.class?.name,
                                             parent: subscriptionInstance.class.name+':'+subscriptionInstance.id,
@@ -338,7 +337,7 @@
 
                 <g:if test="${subscriptionInstance.costItems}">
 
-                    <div class="ui card la-dl-no-table la-js-hideable">
+                    <div class="ui card la-dl-no-table la-js-hideable hidden">
                         <div class="content">
                             <dl>
                                 <dt class="control-label">${message(code:'financials.label', default:'Financials')}</dt>
@@ -397,11 +396,11 @@
 
                 FINANCE --%>
                 <g:if test="${usage}">
-                    <div class="ui card la-dl-no-table la-js-hideable">
+                    <div class="ui card la-dl-no-table la-js-hideable hidden">
                         <div class="content">
                             <g:if test="${subscriptionInstance.costItems}">
                                 <dl>
-                                    <dt class="control-label la-js-hide-this-card">${message(code: 'subscription.details.costPerUse.header')}</dt>
+                                    <dt class="control-label la-js-dont-hide-this-card">${message(code: 'subscription.details.costPerUse.header')}</dt>
                                     <dd><g:formatNumber number="${totalCostPerUse}" type="currency"
                                                         currencyCode="${currencyCode}" maxFractionDigits="2"
                                                         minFractionDigits="2" roundingMode="HALF_UP"/>
@@ -411,7 +410,7 @@
                                 <div class="ui divider"></div>
                             </g:if>
                             <dl>
-                                <dt class="control-label la-js-hide-this-card">${message(code: 'default.usage.label')}</dt>
+                                <dt class="control-label la-js-dont-hide-this-card">${message(code: 'default.usage.label')}</dt>
                                 <dd>
                                     <table class="ui la-table-small celled la-table-inCard table">
                                         <thead>
@@ -484,24 +483,72 @@
                         </div>
                     </div>
                 </g:if>
+                <div class="ui card la-dl-no-table la-js-hideable hidden">
+                    <div class="content">
+                        <h5 class="ui header">
+                            ${message(code:'subscription.properties')}
+                            <% /*
+                                if (subscriptionInstance.instanceOf && ! subscriptionInstance.instanceOf.isTemplate()) {
+                                    if (subscriptionInstance.isSlaved?.value?.equalsIgnoreCase('yes')) {
+                                        println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
+                                    }
+                                    else {
+                                        println '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                    }
+                                }
+                                else {
+                                    println '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
+                                }
+                            */ %>
+                        </h5>
 
-                <div id="new-dynamic-properties-block">
+                        <div id="custom_props_div_props">
+                    <g:render template="/templates/properties/custom" model="${[
+                            prop_desc: PropertyDefinition.SUB_PROP,
+                            ownobj: subscriptionInstance,
+                            custom_props_div: "custom_props_div_props" ]}"/>
+                        </div>
+                    </div>
+                </div>
 
-                    <g:render template="properties" model="${[
-                            subscriptionInstance: subscriptionInstance,
-                            authorizedOrgs: authorizedOrgs
-                    ]}" />
+                <r:script language="JavaScript">
+                    $(document).ready(function(){
+                        c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
+                    });
+                </r:script>
 
-                </div><!-- #new-dynamic-properties-block -->
+                <div class="ui card la-dl-no-table la-js-hideable hidden">
+                    <div class="content">
+                        <g:each in="${authorizedOrgs}" var="authOrg">
+                            <g:if test="${authOrg.name == contextOrg?.name}">
+                                <h5 class="ui header">${message(code:'subscription.properties.private')} ${authOrg.name}</h5>
+
+                                <div id="custom_props_div_${authOrg.id}">
+                                    <g:render template="/templates/properties/private" model="${[
+                                            prop_desc: PropertyDefinition.SUB_PROP,
+                                            ownobj: subscriptionInstance,
+                                            custom_props_div: "custom_props_div_${authOrg.id}",
+                                            tenant: authOrg]}"/>
+
+                                    <r:script language="JavaScript">
+                                        $(document).ready(function(){
+                                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
+                                        });
+                                    </r:script>
+                                </div>
+                            </g:if>
+                        </g:each>
+                    </div>
+                </div>
 
                <div class="clear-fix"></div>
             </div>
         </div>
 
         <aside class="four wide column la-sidekick">
-            <g:render template="/templates/tasks/card" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
-            <g:render template="/templates/documents/card" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
-            <g:render template="/templates/notes/card" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
+            <g:render template="/templates/tasks/card" model="${[ownobj:subscriptionInstance, owntp:'subscription', css_class:'hidden']}"  />
+            <g:render template="/templates/documents/card" model="${[ownobj:subscriptionInstance, owntp:'subscription', css_class:'hidden']}" />
+            <g:render template="/templates/notes/card" model="${[ownobj:subscriptionInstance, owntp:'subscription', css_class:'hidden']}" />
         </aside><!-- .four -->
     </div><!-- .grid -->
 

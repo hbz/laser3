@@ -538,6 +538,11 @@
                                     })
                                 });
                                 function toggleEditableElements(){
+                                    // for future handling on other views
+                                    // 1. add class 'hidden' via markup to all cards that might be toggled
+                                    // 2. add class 'la-js-hideable' to all cards that might be toggled
+                                    // 3. add class 'la-js-dont-hide-this-card' to markup that is rendered only in case of card has content, like to a table <th>
+                                    // 4.
                                     var toggleButton = $(".ui.toggle.button");
                                     var toggleIcon = $(".ui.toggle.button .icon");
                                     $(".table").trigger('reflow');
@@ -545,7 +550,7 @@
                                     if (  editMode) {
                                         // show Contoll Elements
                                         $('.card').removeClass('hidden');
-                                        $('.la-js-hide-me').removeClass('hidden');
+                                        $('.la-js-hide-this-card').removeClass('hidden');
                                         $('.ui .form').removeClass('hidden');
                                         $('#collapseableSubDetails').find('.button').removeClass('hidden');
                                         $(toggleButton).removeAttr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
@@ -560,8 +565,9 @@
                                     }
                                     else {
                                         // hide Contoll Elements
-                                        $('.card.la-js-hideable').not( ":has(.la-js-hide-this-card)" ).addClass('hidden');
-                                        $('.la-js-hide-me').addClass('hidden');
+                                        $('.card').removeClass('hidden');
+                                        $('.card.la-js-hideable').not( ":has(.la-js-dont-hide-this-card)" ).addClass('hidden');
+                                        $('.la-js-hide-this-card').addClass('hidden');
                                         $('.ui .form').addClass('hidden');
                                         $('#collapseableSubDetails').find('.button').addClass('hidden');
                                         // hide all the x-editable

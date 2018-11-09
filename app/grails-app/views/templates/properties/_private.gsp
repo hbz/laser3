@@ -26,7 +26,7 @@
         </colgroup>
         <thead>
             <tr>
-                <th class="la-column-nowrap la-js-hide-this-card">${message(code:'property.table.property')}</th>
+                <th class="la-column-nowrap la-js-dont-hide-this-card">${message(code:'property.table.property')}</th>
                 <th>${message(code:'property.table.value')}</th>
                 <th>${message(code:'property.table.notes')}</th>
                 <th>${message(code:'property.table.delete')}</th>

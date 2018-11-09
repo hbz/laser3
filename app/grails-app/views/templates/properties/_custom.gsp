@@ -24,7 +24,7 @@
         </colgroup>
         <thead>
             <tr>
-                <th class="la-column-nowrap la-js-hide-this-card" >${message(code:'property.table.property')}</th>
+                <th class="la-column-nowrap la-js-dont-hide-this-card" >${message(code:'property.table.property')}</th>
                 <th>${message(code:'property.table.value')}</th>
                 <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
                     <th>${message(code:'property.table.paragraph')}</th>
@@ -38,7 +38,7 @@
         <g:each in="${ownobj.customProperties.sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
             <g:if test="${prop.type.descr == prop_desc}">
                 <tr>
-                    <td class="la-column-nowrap la-js-hide-this-card">
+                    <td class="la-column-nowrap la-js-dont-hide-this-card">
                         ${prop.type.getI10n('name')}
                         <%
                             if (AuditConfig.getConfig(prop)) {
