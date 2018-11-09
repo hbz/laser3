@@ -44,7 +44,7 @@
 
             <r:script language="JavaScript">
                 $(document).ready(function(){
-                    c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#grouped_custom_props_div_${propDefGroup.id}");
+                    c3po.initGroupedProperties("<g:createLink controller='ajax' action='lookup'/>", "#grouped_custom_props_div_${propDefGroup.id}");
                 });
             </r:script>
         </g:if>

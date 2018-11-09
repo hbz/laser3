@@ -1,25 +1,45 @@
 
 c3po = {
 
-    initProperties: function (ajaxurl, contextId, tenantId) {
-        // fallback for hardcoded id
-        if (!contextId) {
-            contextId = "#custom_props_div"
-        }
-        console.log("c3po.initProperties() " + ajaxurl + " : " + contextId + " : " + tenantId)
+    PROP_SEARCH_NATIVE: 'PROP_SEARCH_NATIVE',
+    PROP_SEARCH_GROUPED: 'PROP_SEARCH_GROUPED',
 
-        c3po.refdataCatSearch(ajaxurl, contextId)
-        c3po.searchProp(ajaxurl, contextId, tenantId)
-        c3po.showModalOnSelect(contextId)
-        c3po.showHideRefData(contextId)
-        c3po.hideModalOnSubmit(contextId)
+    initProperties: function (ajaxurl, cssId, tenantId) {
+        // fallback for hardcoded id
+        if (!cssId) {
+            cssId = "#custom_props_div"
+        }
+        console.log("c3po.initProperties() " + ajaxurl + " : " + cssId + " : " + tenantId)
+
+        c3po.refdataCatSearch(ajaxurl, cssId)
+        c3po.searchProp(c3po.PROP_SEARCH_NATIVE, ajaxurl, cssId, tenantId)
+        c3po.showModalOnSelect(cssId)
+        c3po.showHideRefData(cssId)
+        c3po.hideModalOnSubmit(cssId)
         //Needs to run to make the xEditable visible
         $('.xEditableValue').editable()
         $('.xEditableManyToOne').editable()
     },
 
-    refdataCatSearch: function (ajaxurl, contextId) {
-        console.log("c3po.refdataCatSearch() " + ajaxurl + " : " + contextId)
+    initGroupedProperties: function (ajaxurl, cssId, tenantId) {
+        // fallback for hardcoded id
+        if (!cssId) {
+            cssId = "#custom_props_div"
+        }
+        console.log("c3po.initGroupedProperties() " + ajaxurl + " : " + cssId + " : " + tenantId)
+
+        c3po.refdataCatSearch(ajaxurl, cssId)
+        c3po.searchProp(c3po.PROP_SEARCH_GROUPED, ajaxurl, cssId, tenantId)
+        c3po.showModalOnSelect(cssId)
+        c3po.showHideRefData(cssId)
+        c3po.hideModalOnSubmit(cssId)
+        //Needs to run to make the xEditable visible
+        $('.xEditableValue').editable()
+        $('.xEditableManyToOne').editable()
+    },
+
+    refdataCatSearch: function (ajaxurl, cssId) {
+        console.log("c3po.refdataCatSearch() " + ajaxurl + " : " + cssId)
 
         $("#cust_prop_refdatacatsearch").select2({
             placeholder: "Kategorie angeben ..",
@@ -41,12 +61,19 @@ c3po = {
         });
     },
 
-    searchProp: function (ajaxurl, contextId, tenantId) {
-        console.log("c3po.searchProp() " + ajaxurl + " : " + contextId + " : " + tenantId)
-        // store
-        var desc = $(contextId + " .customPropSelect").attr('desc')
+    searchProp: function (grouped, ajaxurl, cssId, tenantId) {
+        console.log("c3po.searchProp() " + ajaxurl + " : " + cssId + " : " + tenantId)
 
-        $(contextId + " .customPropSelect").select2({
+        var desc = $(cssId + " .customPropSelect").attr('data-desc')
+        var oid = $(cssId + " .customPropSelect").attr('data-oid')
+
+        var baseClass = 'com.k_int.properties.PropertyDefinition'
+
+        if (grouped == c3po.PROP_SEARCH_GROUPED) {
+            baseClass = 'com.k_int.properties.PropertyDefinitionGroup'
+        }
+
+        $(cssId + " .customPropSelect").select2({
             placeholder: "Eigenschaft suchen ..",
             minimumInputLength: 0,
             width: 300,
@@ -57,8 +84,9 @@ c3po = {
                     return {
                         q: term, // search term
                         desc: desc,
+                        oid: oid,
                         page_limit: 10,
-                        baseClass: 'com.k_int.properties.PropertyDefinition',
+                        baseClass: baseClass,
                         tenant: tenantId
                     };
                 },
@@ -73,10 +101,10 @@ c3po = {
     },
 
     // TODO -refactoring
-    showModalOnSelect: function (contextId) {
-        console.log("c3po.showModalOnSelect() " + contextId)
+    showModalOnSelect: function (cssId) {
+        console.log("c3po.showModalOnSelect() " + cssId)
 
-        $(contextId + " .customPropSelect").on("select2-selecting", function (e) {
+        $(cssId + " .customPropSelect").on("select2-selecting", function (e) {
             if (e.val == -1) {
                 var selectedText = e.object.text;
                 selectedText = selectedText.replace("Neue Eigenschaft: ", "")
@@ -88,8 +116,8 @@ c3po = {
     },
 
     // TODO -refactoring
-    showHideRefData: function (contextId) {
-        console.log("c3po.showHideRefData() " + contextId)
+    showHideRefData: function (cssId) {
+        console.log("c3po.showHideRefData() " + cssId)
 
         $('#cust_prop_modal_select').change(function () {
             var selectedText = $("#cust_prop_modal_select option:selected").val();
@@ -102,8 +130,8 @@ c3po = {
     },
 
     // TODO -refactoring
-    hideModalOnSubmit: function (contextId) {
-        console.log("c3po.hideModalOnSubmit() " + contextId)
+    hideModalOnSubmit: function (cssId) {
+        console.log("c3po.hideModalOnSubmit() " + cssId)
 
         $("#new_cust_prop_add_btn").click(function () {
             $('#cust_prop_add_modal').modal('hide');
