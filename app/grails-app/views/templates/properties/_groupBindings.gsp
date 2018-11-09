@@ -9,7 +9,8 @@
             <thead>
                 <tr>
                     <th>Merkmalsgruppe</th>
-                    <th>Default-Einstellung</th>
+                    <th></th>
+                    <th>Voreinstellung</th>
                     <th>Anzeigen</th>
                     <th></th>
                 </tr>
@@ -23,6 +24,9 @@
                             <g:if test="${propDefGroup.description}">
                                 <p>${propDefGroup.description}</p>
                             </g:if>
+                        </td>
+                        <td>
+                            ${propDefGroup.tenant ? '' : ' (global)'}
                         </td>
                         <td>
                             ${propDefGroup.visible ? propDefGroup.visible.getI10n('value') : 'Nein'}
@@ -58,7 +62,7 @@
                                                                editable:"${editable}"]'
                                                       onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#propDefGroupBindingConfig')"
                                                       update="propDefGroupBindingConfig" class="ui icon button">
-                                            Überschreiben
+                                            Nicht anzeigen
                                         </g:remoteLink>
                                     </g:if>
                                     <g:else>
@@ -69,7 +73,7 @@
                                                                editable:"${editable}"]'
                                                       onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#propDefGroupBindingConfig')"
                                                       update="propDefGroupBindingConfig" class="ui icon button">
-                                            Überschreiben
+                                            Anzeigen
                                         </g:remoteLink>
                                     </g:else>
                                 </g:if>

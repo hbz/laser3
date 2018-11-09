@@ -1,7 +1,7 @@
 <%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.*" %>
 <!-- _properties -->
 
-<g:set var="availPropDefGroups" value="${PropertyDefinitionGroup.findAllByTenantAndOwnerType(contextService.getOrg(), Org.class.name)}" />
+<g:set var="availPropDefGroups" value="${PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), Org.class.name)}" />
 
 <g:if test="${availPropDefGroups}">
 

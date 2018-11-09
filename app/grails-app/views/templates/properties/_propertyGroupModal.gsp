@@ -2,7 +2,7 @@
 
 <semui:modal id="propDefGroupModal" message="propertyDefinitionGroup.create_new.label">
 
-    <g:form class="ui form" url="[controller: 'myInstitution', action: 'managePropertyGroups']" method="POST">
+    <g:form class="ui form" url="${formUrl}" method="POST">
         <input type="hidden" name="cmd" value="processing"/>
         <g:if test="${pdGroup}">
             <input type="hidden" name="oid" value="${pdGroup.class.name}:${pdGroup.id}"/>

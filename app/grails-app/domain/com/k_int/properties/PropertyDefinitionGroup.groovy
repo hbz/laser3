@@ -45,7 +45,7 @@ class PropertyDefinitionGroup {
     static constraints = {
         name        (nullable: false, blank: false)
         description (nullable: true,  blank: true)
-        tenant      (nullable: false, blank: false)
+        tenant      (nullable: true, blank: false)
         ownerType   (nullable: false, blank: false)
         visible     (nullable: true)
     }
@@ -71,7 +71,15 @@ class PropertyDefinitionGroup {
         result
     }
 
-    static def refdataFind(params) {
+    static getAvailableGroups(Org tenant, String ownerType) {
+        def result = []
+        result.addAll( findAllWhere( tenant: null, ownerType: ownerType) )
+        result.addAll( findAllByTenantAndOwnerType(tenant, ownerType) )
+
+        result
+    }
+
+    static refdataFind(params) {
         def result = []
 
         def genericOIDService = grails.util.Holders.applicationContext.getBean('genericOIDService') as GenericOIDService
