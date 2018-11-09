@@ -124,12 +124,9 @@
 
 </div>
 
-<div class="fields">
-    <div class="field">
+<div class="field la-filter-search">
         <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-    </div>
-    <div class="field">
         <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui secondary button"/>
-    </div>
 </div>
+
 
