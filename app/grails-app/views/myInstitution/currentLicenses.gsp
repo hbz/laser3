@@ -157,10 +157,12 @@
                     <g:if test="${params.orgRole == 'Licensing Consortium'}">
                         <td>
                             <g:each in="${com.k_int.kbplus.License.findAllWhere(instanceOf: l)}" var="lChild">
-                                <g:link controller="licenseDetails" action="show" id="${lChild.id}">
-                                    ${lChild}
-                                </g:link>
-                                <br/>
+                                <g:if test="${lChild.status?.value != 'Deleted'}">
+                                    <g:link controller="licenseDetails" action="show" id="${lChild.id}">
+                                        ${lChild}
+                                    </g:link>
+                                    <br/>
+                                </g:if>
                             </g:each>
                         </td>
                     </g:if>
