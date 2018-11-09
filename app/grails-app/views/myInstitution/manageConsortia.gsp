@@ -42,7 +42,7 @@
         <g:render template="/templates/filter/orgFilterTable"
                   model="[orgList: consortiaMembers,
                           tmplShowCheckbox: true,
-                          tmplConfigShow: ['sortname', 'name', 'mainContact', 'currentFTEs', 'numberOfLicenses', 'wibid', 'isil', 'federalState', 'libraryNetwork', 'libraryType']
+                          tmplConfigShow: ['sortname', 'name', 'mainContact', 'currentFTEs', 'numberOfLicenses', 'libraryType']
                   ]"/>
 
         <br/>
