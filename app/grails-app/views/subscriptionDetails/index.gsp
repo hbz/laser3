@@ -99,7 +99,7 @@
                             </g:if>
                             <div class="field">
                                 <label>&nbsp;</label>
-                                <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Suchen')}" />
+                                <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filtern')}" />
                             </div>
                         </div>
                     </g:form>
