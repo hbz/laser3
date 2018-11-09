@@ -54,7 +54,7 @@
                     <g:each in="${PropertyDefinition.AVAILABLE_GROUPS_DESCR}" var="pdDescr">
                         <table class="ui table la-table-small hidden" data-propDefTable="${pdDescr}">
                             <tbody>
-                            <g:each in="${PropertyDefinition.findAllWhere(tenant:null, descr:pdDescr, [sort: 'name'])}" var="pd">
+                            <g:each in="${PropertyDefinition.findAllWhere(tenant:null, descr:pdDescr).sort{ a,b -> a.getI10n('name') <=> b.getI10n('name')}}" var="pd">
                                 <tr>
                                     <td>
                                         ${pd.getI10n('name')}

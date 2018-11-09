@@ -92,10 +92,10 @@ class PropertyDefinitionGroup {
                 'name',
                 params.q,
                 LocaleContextHolder.getLocale()
-        )
+        )?.collect{ it.id }
 
         propDefs.each { it ->
-            if (it in matches) {
+            if (it.id in matches) {
                 if (params.desc && params.desc != "*") {
                     if (it.getDescr() == params.desc) {
                         result.add([id: "${it.id}", text: "${it.getI10n('name')}"])
