@@ -62,7 +62,7 @@
             </div>
 
 
-            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  institution.getallOrgRoleType())}">
+            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution.getallOrgRoleTypeIds())}">
 
                 <div class="two fields">
                     <div class="field">
@@ -97,7 +97,7 @@
                         <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}" />
                     </div>
 
-            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  institution.getallOrgRoleType())}">
+            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution.getallOrgRoleTypeIds())}">
                 </div><!--.two fields-->
             </g:if>
 
@@ -135,7 +135,7 @@
                     <g:if test="${l.subscriptions && ( l.subscriptions.size() > 0 )}">
                         <g:each in="${l.subscriptions.sort{it.name}}" var="sub">
                           <g:if test="${sub.status?.value != 'Deleted'}">
-                                  <g:if test="${institution in sub.orgRelations.org || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  institution.getallOrgRoleType())}">
+                                  <g:if test="${institution in sub.orgRelations.org || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution.getallOrgRoleTypeIds())}">
                                   <div class="la-flexbox">
                                       <i class="icon folder open outline la-list-icon"></i>
                                       <g:link controller="subscriptionDetails" action="index" id="${sub.id}">${sub.name}</g:link><br/>

@@ -55,8 +55,10 @@ class InstitutionsService {
 
             log.debug("adding org link to new license");
 
+            def rdvConsortiumOrgRole = RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString()
+
             if (params.asOrgRoleType) {
-                if (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType').id in params.asOrgRoleType) {
+                if (rdvConsortiumOrgRole in params.asOrgRoleType) {
                     org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role))
                 } else {
                     org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role))
@@ -147,7 +149,9 @@ class InstitutionsService {
 
             log.debug("adding org link to new license");
 
-            if (params.asOrgRoleType && RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType').id in params.asOrgRoleType) {
+            def rdvConsortiumOrgRole = RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString()
+
+            if (params.asOrgRoleType && rdvConsortiumOrgRole in params.asOrgRoleType) {
                 org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role))
             } else {
                 org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role))

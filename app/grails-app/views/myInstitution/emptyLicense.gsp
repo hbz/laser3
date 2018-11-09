@@ -45,7 +45,7 @@
                 <semui:datepicker label="license.endDate" name="licenseEndDate" value="${params.licenseEndDate?:defaultEndYear}"/>
             </div>
 
-            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  orgRoleType)}">
+            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgRoleType)}">
                 <div class="field">
                     <label>${message(code:'myinst.emptySubscription.create_as', default:'Create with the role of')}</label>
 
