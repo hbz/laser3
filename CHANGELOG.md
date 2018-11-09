@@ -1,4 +1,8 @@
 
+0.10.4
+
+- hotfix: shown deleted licenses
+
 0.10.3
 
 - hotfix: gorm lazy loading
