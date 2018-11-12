@@ -90,10 +90,16 @@
                                 </g:else>
                             </g:if>
                         </td>
-                        <%-- <input type="checkbox" value="${propDefGroup.class.name}:${propDefGroup.id}" /> --%>
                     </tr>
                 </g:each>
             </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="5">
+                        <button class="ui button" onclick="javascript:window.document.location.reload()">Seite neu laden</button>
+                    </td>
+                </tr>
+            </tfoot>
         </table>
 
     </div><!-- #propDefGroupBindingConfig -->
