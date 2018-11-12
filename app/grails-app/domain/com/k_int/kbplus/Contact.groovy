@@ -119,7 +119,7 @@ class Contact implements Comparable<Contact>{
     int compareTo(Contact contact) {
         int result
         result = getCompareOrderValueForType(this).compareTo(getCompareOrderValueForType(contact))
-        if (result == 0) result = this.getContent().compareTo(contact.getContent())
+        if (result == 0) result = this.getContent()?.compareTo(contact.getContent())
         return result
     }
 
