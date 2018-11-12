@@ -808,7 +808,8 @@ class BootStrap {
         RefdataCategory.loc('License.Arc.HostingRestriction',               [en: 'Hosting Restriction', de: 'Hostingrecht Einschränkung'], BOOTSTRAP)
         RefdataCategory.loc('License.Arc.HostingSolution',                  [en: 'Hosting Solution', de: 'Hostingrecht Lösung'], BOOTSTRAP)
         RefdataCategory.loc('Package Status',                               [en: 'Package Status', de: 'Paketstatus'], BOOTSTRAP)
-        RefdataCategory.loc('Number Type',                               [en: 'Number Type', de: 'Zahlen-Typ'], BOOTSTRAP)
+        RefdataCategory.loc('Number Type',                                  [en: 'Number Type', de: 'Zahlen-Typ'], BOOTSTRAP)
+        RefdataCategory.loc('User.Settings.Dashboard.Tab',                  [en: 'Dashboard Tab', de: 'Dashbord Tab'], BOOTSTRAP)
         // refdata values
 
         RefdataValue.loc('YN',   [en: 'Yes', de: 'Ja'], BOOTSTRAP)
@@ -1120,6 +1121,11 @@ class BootStrap {
         RefdataValue.loc('Number Type',      [en: 'Scientific staff', de: 'wissenschaftliches Personal'], BOOTSTRAP)
         RefdataValue.loc('Number Type',      [en: 'User', de: 'Nutzer'], BOOTSTRAP)
         RefdataValue.loc('Number Type',      [en: 'Population', de: 'Einwohner'], BOOTSTRAP)
+
+        RefdataValue.loc('User.Settings.Dashboard.Tab',     [en: 'Changes', de: 'Änderungen'], BOOTSTRAP)
+        RefdataValue.loc('User.Settings.Dashboard.Tab',     [en: 'Announcements', de: 'Ankündigungen'], BOOTSTRAP)
+        RefdataValue.loc('User.Settings.Dashboard.Tab',     [en: 'Tasks', de: 'Aufgaben'], BOOTSTRAP)
+        RefdataValue.loc('User.Settings.Dashboard.Tab',     [en: 'Due Dates', de: 'Fällige Termine'], BOOTSTRAP)
 
         RefdataValue.loc('Access Method',      [key: 'ip4', en: 'IPv4', de: 'IPv4'], BOOTSTRAP)
         RefdataValue.loc('Access Method',      [key: 'ip6', en: 'IPv6', de: 'IPv6'], BOOTSTRAP)

@@ -66,8 +66,10 @@
 
         <br />
 
-        <div class="ui secondary pointing tabular menu">
-            <a class="item" data-tab="first">
+    <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', 'User.Settings.Dashboard.Tab'))}" />
+
+    <div class="ui secondary pointing tabular menu">
+            <a class="${US_DASHBOARD_TAB.getValue().value == 'Changes' ? 'active item':'item'}" data-tab="first">
                 <i class="clock outline icon large"></i>
                 <%
                     def countChanges = 0
@@ -78,17 +80,17 @@
                 ${countChanges}
                 ${message(code:'myinst.todo.label', default:'To Do')}
             </a>
-            <a class="item" data-tab="second" id="jsFallbackAnnouncements">
+            <a class="${US_DASHBOARD_TAB.getValue().value=='Announcements' ? 'active item':'item'}" data-tab="second" id="jsFallbackAnnouncements">
                 <i class="warning circle icon large"></i>
                 ${recentAnnouncements.size()}
                 ${message(code:'announcement.plural', default:'Announcements')}
             </a>
-            <a class="item" data-tab="third">
+            <a class="${US_DASHBOARD_TAB.getValue().value=='Tasks' ? 'active item':'item'}" data-tab="third">
                 <i class="checked calendar icon large"></i>
                 ${tasks.size()}
                 ${message(code:'myinst.dash.task.label')}
             </a>
-            <a class="active item" data-tab="forth">
+            <a class="${US_DASHBOARD_TAB.getValue().value=='Due Dates' ? 'active item':'item'}" data-tab="forth">
                 <i class="checked alarm end icon large"></i>
                 ${message(code:'myinst.dash.due_dates.label')}
             </a>

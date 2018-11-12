@@ -14,6 +14,7 @@ class UserSettings {
     static enum KEYS {
         PAGE_SIZE                    (Long),
         DASHBOARD                    (Org),
+        DASHBOARD_TAB                (RefdataValue, 'User.Settings.Dashboard.Tab'),
         DASHBOARD_REMINDER_PERIOD    (Integer),
         SHOW_SIMPLE_VIEWS            (RefdataValue, 'YN'),
         SHOW_INFO_ICON               (RefdataValue, 'YN'),
