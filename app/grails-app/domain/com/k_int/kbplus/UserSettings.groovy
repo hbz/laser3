@@ -40,7 +40,7 @@ class UserSettings {
     static mapping = {
         id         column:'us_id'
         version    column:'us_version'
-        user       column:'us_user_fk'
+        user       column:'us_user_fk', index: 'us_user_idx'
         key        column:'us_key_enum'
         strValue   column:'us_string_value'
         rdValue    column:'us_rv_fk'
