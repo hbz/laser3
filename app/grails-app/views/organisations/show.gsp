@@ -354,22 +354,30 @@
                             </div><!--.card-->
                     </g:if>
 
-                    <g:if test="${orgInstance?.links && ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
-                        <g:if test="${orgInstance.id == contextService.getOrg().id}">
+
+                    <g:if test="${sorted_links}">
+
+                        <g:if test="${orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADMIN')}">
                             <div class="ui card">
+                                <div class="content">
+                                   <g:render template="/templates/links/orgRoleContainer" model="[listOfLinks: sorted_links]" />
+                                </div>
+                            </div><!--.card-->
                         </g:if>
                         <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
                             <div class="ui card la-role-admin">
-                        </g:elseif>
-                        <g:else>
-                            <div class="ui card la-role-yoda">
-                        </g:else>
                                 <div class="content">
-
                                    <g:render template="/templates/links/orgRoleContainer" model="[listOfLinks: sorted_links]" />
-
                                 </div>
                             </div><!--.card-->
+                        </g:elseif>
+                        <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                            <div class="ui card la-role-yoda">
+                                <div class="content">
+                                   <g:render template="/templates/links/orgRoleContainer" model="[listOfLinks: sorted_links]" />
+                                </div>
+                            </div><!--.card-->
+                        </g:elseif>
                     </g:if>
 
                     <div id="new-dynamic-properties-block">

@@ -181,27 +181,27 @@
                                     <col width="430"/>
                                 </colgroup>
                                 <g:each in="${subscriptionInstance.packages.sort{it.pkg.name}}" var="sp">
-                                <tr>
-                                <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'subscription.packages.label')}</th>
-                                    <td>
-                                        <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
+                                    <tr>
+                                    <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'subscription.packages.label')}</th>
+                                        <td>
+                                            <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
 
-                                        <g:if test="${sp.pkg?.contentProvider}">
-                                            (${sp.pkg?.contentProvider?.name})
-                                        </g:if>
-                                    </td>
-                                    <td>
-                                        <g:if test="${editable}">
+                                            <g:if test="${sp.pkg?.contentProvider}">
+                                                (${sp.pkg?.contentProvider?.name})
+                                            </g:if>
+                                        </td>
+                                        <td>
+                                            <g:if test="${editable}">
 
-                                            <div class="ui mini icon buttons">
-                                                <button class="ui button la-selectable-button" onclick="unlinkPackage(${sp.pkg.id})">
-                                                    <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
-                                                </button>
-                                            </div>
-                                            <br />
-                                        </g:if>
-                                    </td>
-                                </tr>
+                                                <div class="ui mini icon buttons">
+                                                    <button class="ui button la-selectable-button" onclick="unlinkPackage(${sp.pkg.id})">
+                                                        <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
+                                                    </button>
+                                                </div>
+                                                <br />
+                                            </g:if>
+                                        </td>
+                                    </tr>
                                 </g:each>
                             </table>
 
