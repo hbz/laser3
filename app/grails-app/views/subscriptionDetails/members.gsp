@@ -35,7 +35,7 @@
                 </div>
 
                 <div class="field">
-                    <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label')}" />
+                    <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}" />
                 </div>
             </div>
         </form>
