@@ -327,16 +327,10 @@
                             </div><!--.card-->
                     </g:if>
 
-                    <g:if test="${orgInstance?.incomingCombos && ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
-                        <g:if test="${orgInstance.id == contextService.getOrg().id}">
+                    <g:if test="${orgInstance?.incomingCombos}">
+
+                        <g:if test="${orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADMIN')}">
                             <div class="ui card">
-                        </g:if>
-                        <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
-                            <div class="ui card la-role-admin">
-                        </g:elseif>
-                        <g:else>
-                            <div class="ui card la-role-yoda">
-                        </g:else>
                                 <div class="content">
                                     <dl>
                                         <dt><g:message code="org.incomingCombos.label" default="Incoming Combos" /></dt>
@@ -352,7 +346,45 @@
                                     </dl>
                                 </div>
                             </div><!--.card-->
-                    </g:if>
+                        </g:if>
+                        <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
+                            <div class="ui card la-role-admin">
+                                <div class="content">
+                                    <dl>
+                                        <dt><g:message code="org.incomingCombos.label" default="Incoming Combos" /></dt>
+                                        <dd>
+                                            <g:each in="${orgInstance.incomingCombos.sort{it.fromOrg.name}}" var="i">
+                                                <g:link controller="organisations" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
+                                                    (<g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
+                                                        ${id_in.identifier.ns.ns}: ${id_in.identifier.value}
+                                                    </g:each>)
+                                                    <br />
+                                            </g:each>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div><!--.card-->
+                        </g:elseif>
+                        <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                            <div class="ui card la-role-yoda">
+                                <div class="content">
+                                    <dl>
+                                        <dt><g:message code="org.incomingCombos.label" default="Incoming Combos" /></dt>
+                                        <dd>
+                                            <g:each in="${orgInstance.incomingCombos.sort{it.fromOrg.name}}" var="i">
+                                                <g:link controller="organisations" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
+                                                (<g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
+                                                ${id_in.identifier.ns.ns}: ${id_in.identifier.value}
+                                            </g:each>)
+                                                <br />
+                                            </g:each>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div><!--.card-->
+                        </g:elseif>
+
+                    </g:if><%-- incomingCombos --%>
 
 
                     <g:if test="${sorted_links}">
@@ -378,7 +410,7 @@
                                 </div>
                             </div><!--.card-->
                         </g:elseif>
-                    </g:if>
+                    </g:if><%-- sorted_links --%>
 
                     <div id="new-dynamic-properties-block">
 
