@@ -3,6 +3,7 @@ package de.laser
 import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
+import de.laser.helper.SqlDateUtils
 
 import static de.laser.helper.RDStore.*
 
@@ -15,12 +16,7 @@ class QueryService {
     }
 
     def getDueObjects(Org contextOrg, User contextUser, daysToBeInformedBeforeToday) {
-        java.sql.Date infoDate = null;
-        if (daysToBeInformedBeforeToday) {
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.DAY_OF_WEEK, daysToBeInformedBeforeToday);
-            infoDate = new java.sql.Date(cal.getTime().getTime());
-        }
+        java.sql.Date infoDate = daysToBeInformedBeforeToday? SqlDateUtils.getDateInNrOfDays(daysToBeInformedBeforeToday) : null
         java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
 
         ArrayList dueObjects = new ArrayList()
@@ -30,9 +26,10 @@ class QueryService {
         dueObjects.addAll( taskService.getTasksByResponsibles(
                 contextUser,
                 contextOrg,
-                [query:" and status != ? and endDate <= ?",
-                 queryParams:[RefdataValue.getByValueAndCategory('Done', 'Task Status'),
+                [query:" and status = ? and endDate <= ?",
+                 queryParams:[RefdataValue.getByValueAndCategory('Open', 'Task Status'),
                               infoDate]]) )
+
 
         dueObjects.addAll(getDueLicenseCustomProperties(contextOrg, today, infoDate))
         dueObjects.addAll(getDueLicensePrivateProperties(contextOrg, today, infoDate))

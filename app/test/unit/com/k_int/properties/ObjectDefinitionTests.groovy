@@ -11,6 +11,7 @@ import com.k_int.properties.ObjectDefinition
 /**
  * See the API for {@link grails.test.mixin.domain.DomainClassUnitTestMixin} for usage instructions
  */
+@Ignore
 @TestFor(ObjectDefinition)
 class ObjectDefinitionTests {
 

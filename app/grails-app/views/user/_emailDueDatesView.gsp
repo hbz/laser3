@@ -7,7 +7,10 @@
 
     <g:if test="${dueDates}">
 
-        Sie werden <b>${dashboardReminderPeriod} Tage</b> vor Fälligkeit an anstehende Termine erinnert.
+        <div>
+            <g:message code="profile.dashboardReminderPeriod" default="Your search found ${resultsTotal} records"
+                       args="${user.getSettingsValue(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}"/>
+        </div>
 
         <hr>
 

@@ -39,6 +39,7 @@ class MyInstitutionController {
     def filterService
     def propertyService
     def queryService
+    def dashboardDueDatesService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -60,6 +61,11 @@ class MyInstitutionController {
             new SimpleDateFormat('yyyy/MM'),
             new SimpleDateFormat('yyyy')
     ]
+    def cronjobtest(){
+        dashboardDueDatesService.updateDashboardTableInDatabase(false)
+        redirect controller: 'myInstitution', action: 'dashboard'
+
+    }
 
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })

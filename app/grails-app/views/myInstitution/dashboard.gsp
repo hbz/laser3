@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.*; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.abstract_domain.AbstractProperty; com.k_int.kbplus.UserSettings" %>
+<%@ page import="de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.abstract_domain.AbstractProperty; com.k_int.kbplus.UserSettings" %>
 <g:set var="simpleDateFormat" value="${new java.text.SimpleDateFormat("yyyyMMdd")}"/>
 <!doctype html>
 <html>
@@ -98,6 +98,9 @@
             </a>
         </div>
 %{--*************************************--}%
+    <g:link class="ui button" controller="myInstitution" action="cronjobtest" >
+        Dashboardtabelle in DB updaten
+    </g:link>
 
     <div class="ui bottom attached active tab segment" data-tab="first" style="border-top: 1px solid #d4d4d5; ">
 
@@ -145,12 +148,12 @@
                             </g:if>
                         </g:else>
                         <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${date}"/>
-                        <g:if test="${(simpleDateFormat.format(date).compareTo(simpleDateFormat.format(new Date()))) == 0}">
+                        <g:if test="${SqlDateUtils.isToday(date)}">
                             <span data-tooltip="${message(code:'myinst.dash.due_date.enddate.isDueToday.label')}" data-position="top right">
                                 <i class="icon yellow exclamation"></i>
                             </span>
                         </g:if>
-                        <g:elseif test="${(simpleDateFormat.format(date).compareTo(simpleDateFormat.format(new Date()))) < 0}">
+                        <g:elseif test="${SqlDateUtils.isBeforeToday(date)}">
                             <span data-tooltip="${message(code:'myinst.dash.due_date.enddate.isOverdue.label')}" data-position="top right">
                                 <i class="icon red exclamation"></i>
                             </span>
@@ -375,7 +378,6 @@
                 </g:each>
             </div>
         </div>
-    %{--*************************************--}%
     %{--*************************************--}%
 
 
