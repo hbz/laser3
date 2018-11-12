@@ -125,8 +125,27 @@
 </div>
 
 <div class="field la-filter-search">
-        <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-        <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui secondary button"/>
-</div>
 
+        <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+
+        <g:if test="${tmplConfigFormFilter}">
+            <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui secondary button" onclick="formFilter(event)" />
+            <r:script>
+                formFilter = function(e) {
+                    e.preventDefault()
+
+                    var form = $(e.target).parents('form')
+                    $(form).find(':input').filter(function () {
+                        return !this.value
+                    }).attr('disabled', 'disabled')
+
+                    form.submit()
+                }
+            </r:script>
+        </g:if>
+        <g:else>
+            <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui secondary button"/>
+        </g:else>
+
+</div>
 

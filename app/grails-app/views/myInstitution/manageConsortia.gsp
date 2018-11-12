@@ -31,7 +31,9 @@
     <semui:filter>
         <g:form action="manageConsortia" method="get" class="ui form">
             <g:render template="/templates/filter/orgFilter"
-                      model="[tmplConfigShow: ['property', 'name', 'federalState', 'libraryNetwork', 'libraryType']
+                      model="[
+                              tmplConfigShow: ['property', 'name', 'federalState', 'libraryNetwork', 'libraryType'],
+                              tmplConfigFormFilter: true
                       ]"/>
         </g:form>
     </semui:filter>

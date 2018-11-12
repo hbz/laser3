@@ -183,7 +183,7 @@
 
                             <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
                                 <g:each in="${license.subscriptions.sort{it.name}}" var="sub">
-                                    <g:if test="${contextOrg in sub.orgRelations.org || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  contextOrg.getallOrgRoleType())}">
+                                    <g:if test="${contextOrg in sub.orgRelations.org || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextOrg.getallOrgRoleTypeIds())}">
                                         <table class="ui la-selectable table">
                                             <colgroup>
                                                 <col width="130" />

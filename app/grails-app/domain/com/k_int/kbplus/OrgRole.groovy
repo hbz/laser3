@@ -27,8 +27,8 @@ class OrgRole {
   static mapping = {
           id column:'or_id'
      version column:'or_version'
-         org column:'or_org_fk', index:'or_org_rt_idx'
-    roleType column:'or_roletype_fk', index:'or_org_rt_idx'
+         org column:'or_org_fk',        index:'or_org_rt_idx'
+    roleType column:'or_roletype_fk',   index:'or_org_rt_idx'
          pkg column:'or_pkg_fk'
          sub column:'or_sub_fk'
          lic column:'or_lic_fk'

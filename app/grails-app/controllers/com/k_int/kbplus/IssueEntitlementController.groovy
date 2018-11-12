@@ -82,7 +82,7 @@ class IssueEntitlementController {
                   OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), org)
           if (result.institutional_usage_identifier && fsresult.usage) {
               result.statsWibid = org.getIdentifierByType('wibid')?.value
-              result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in org.getallOrgRoleType())) ? 'package' : 'institution'
+              result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in org.getallOrgRoleTypeIds())) ? 'package' : 'institution'
               result.usage = fsresult?.usage
               result.x_axis_labels = fsresult?.x_axis_labels
               result.y_axis_labels = fsresult?.y_axis_labels

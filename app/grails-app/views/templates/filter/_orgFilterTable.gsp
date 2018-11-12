@@ -15,13 +15,13 @@
             </th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('sortname')}">
-            <g:sortableColumn title="${message(code: 'org.sortname.label', default: 'Sortname')}" property="lower(o.sortname)"/>
+            <g:sortableColumn title="${message(code: 'org.sortname.label', default: 'Sortname')}" property="lower(o.sortname)" params="${request.getParameterMap()}"/>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('shortname')}">
-            <g:sortableColumn title="${message(code: 'org.shortname.label', default: 'Shortname')}" property="lower(o.shortname)"/>
+            <g:sortableColumn title="${message(code: 'org.shortname.label', default: 'Shortname')}" property="lower(o.shortname)" params="${request.getParameterMap()}"/>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('name')}">
-            <g:sortableColumn title="${message(code: 'org.fullName.label', default: 'Name')}" property="lower(o.name)"/>
+            <g:sortableColumn title="${message(code: 'org.fullName.label', default: 'Name')}" property="lower(o.name)" params="${request.getParameterMap()}"/>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('mainContact')}">
             <th>${message(code: 'org.mainContact.label', default: 'Main Contact')}</th>
