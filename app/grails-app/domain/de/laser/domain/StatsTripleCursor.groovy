@@ -1,11 +1,15 @@
 package de.laser.domain
 
+import com.k_int.kbplus.RefdataValue
+
 class StatsTripleCursor {
 
     String titleId
     String supplierId
     String customerId
     String haveUpTo
+    RefdataValue factType
+    Integer numFacts
 
     static mapping = {
         titleId column:'stats_title_id', index:'stats_cursor_idx'
@@ -18,5 +22,6 @@ class StatsTripleCursor {
         supplierId(nullable:false, blank:false,maxSize:32)
         customerId(nullable:false, blank:false,maxSize:32)
         haveUpTo(nullable:false, blank:false,maxSize:32)
+        numFacts(nullable:false, blank:false,maxSize:11)
     }
 }

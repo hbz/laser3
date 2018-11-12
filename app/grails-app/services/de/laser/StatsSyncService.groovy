@@ -173,100 +173,117 @@ class StatsSyncService {
                 }
                 it.value.startsWith('STATS')
             }
-
+/*
             def csr = StatsTripleCursor.findByTitleIdAndSupplierIdAndCustomerId(statsTitleIdentifier, platform, customer)
 
             if (csr == null) {
                 csr = new StatsTripleCursor(titleId: statsTitleIdentifier, supplierId: platform, customerId: customer, haveUpTo: null)
             }
             if ((csr.haveUpTo == null) || (csr.haveUpTo < mostRecentClosedPeriod)) {
+            */
+            def csr = null
 
-                reports.each { statsReport ->
-                    def matcher = statsReport.value =~ /^(.*).(\d)$/
-                    def report = matcher[0][1]
-                    def version = matcher[0][2]
-                    def reportType = getReportType(report)
-                    def titleId = title_io_inst.identifier.value
+            reports.each { statsReport ->
+                //TODO factCount
+                def factCount = 0
+                def matcher = statsReport.value =~ /^(.*).(\d)$/
+                def report = matcher[0][1]
+                def version = matcher[0][2]
+                def reportType = getReportType(report)
+                def titleId = title_io_inst.identifier.value
+                def factType = RefdataCategory.lookupOrCreate('FactType', statsReport.toString())
 
-                    def fromPeriod = csr.haveUpTo ?: SYNC_STATS_FROM
-                    try {
-                        def beginDate = "${fromPeriod}-01"
-                        def endDate = getLastDayOfMonth(mostRecentClosedPeriod)
-                        log.debug("Calling STATS API:  ${report}, Title with ID ${titleId}")
-                        log.debug("Period Begin: ${beginDate}, Period End: ${endDate}")
-                        stats_api_endpoint.get(
-                                path: path,
-                                contentType: ANY, // We get no XmlSlurper Objects for value XML
-                                query: [
-                                        APIKey        : apiKey,
-                                        RequestorID   : requestor,
-                                        CustomerID    : customer,
-                                        Report        : report,
-                                        Release       : version,
-                                        BeginDate     : beginDate,
-                                        EndDate       : endDate,
-                                        Platform      : platform,
-                                        ItemIdentifier: "${reportType}:zdbid:" + titleId
-                                ]) { response, xml ->
-                            if (xml) {
-                                if (responseHasUsageData(xml, titleId)) {
-                                    def statsTitles = xml.depthFirst().findAll {
-                                        it.name() == 'ItemName'
-                                    }
-                                    if (statsTitles.size() > 1) {
-                                        log.warn('Found more than one item for the given Identifier')
-                                        log.warn('Titles delivered by API: ')
-                                        log.warn(statsTitles)
-                                    }
-                                    def itemPerformances = xml.depthFirst().findAll {
-                                        it.name() == 'ItemPerformance'
-                                    }
-                                    def usageMap = getPeriodUsageMap(itemPerformances)
-                                    def cal = new GregorianCalendar()
-                                    usageMap.each { key, countPerMetric ->
-                                        def fact = [:]
-                                        countPerMetric.each { metric, count ->
-                                            fact.from = timeStampFormat.parse(key)
-                                            fact.to =timeStampFormat.parse(getLastDayOfMonth(key))
-                                            cal.setTime(fact.to)
-                                            fact.reportingYear=cal.get(Calendar.YEAR)
-                                            fact.reportingMonth=cal.get(Calendar.MONTH)+1
-                                            fact.type = statsReport.toString()
-                                            fact.value = count
-                                            fact.uid = "${titleId}:${platform}:${customer}:${key}:${metric}:${statsReport.value}"
-                                            fact.metric = RefdataValue.getByValueAndCategory(metric,'FactMetric')
-                                            fact.title = title_inst
-                                            fact.supplier = supplier_inst
-                                            fact.inst = org_inst
-                                            fact.juspio = title_io_inst
-                                            if (factService.registerFact(fact)) {
-                                                ++newFactCount
-                                            }
+                csr = StatsTripleCursor.findByTitleIdAndSupplierIdAndCustomerIdAndFactType(statsTitleIdentifier, platform, customer, factType)
+                if (csr == null) {
+                    csr = new StatsTripleCursor(titleId: statsTitleIdentifier, supplierId: platform, customerId: customer, haveUpTo: null, factType: factType)
+                    csr.numFacts = 0
+                }
+                if ((csr.haveUpTo == null) || (csr.haveUpTo < mostRecentClosedPeriod)) {
+
+                def fromPeriod = csr.haveUpTo ?: SYNC_STATS_FROM
+                try {
+                    def beginDate = "${fromPeriod}-01"
+                    def endDate = getLastDayOfMonth(mostRecentClosedPeriod)
+                    log.debug("Calling STATS API:  ${report}, Title with ID ${titleId}")
+                    log.debug("Period Begin: ${beginDate}, Period End: ${endDate}")
+                    stats_api_endpoint.get(
+                            path: path,
+                            contentType: ANY, // We get no XmlSlurper Objects for value XML
+                            query: [
+                                    APIKey        : apiKey,
+                                    RequestorID   : requestor,
+                                    CustomerID    : customer,
+                                    Report        : report,
+                                    Release       : version,
+                                    BeginDate     : beginDate,
+                                    EndDate       : endDate,
+                                    Platform      : platform,
+                                    ItemIdentifier: "${reportType}:zdbid:" + titleId
+                            ]) { response, xml ->
+                        if (xml) {
+                            if (responseHasUsageData(xml, titleId)) {
+                                def statsTitles = xml.depthFirst().findAll {
+                                    it.name() == 'ItemName'
+                                }
+                                if (statsTitles.size() > 1) {
+                                    log.warn('Found more than one item for the given Identifier')
+                                    log.warn('Titles delivered by API: ')
+                                    log.warn(statsTitles)
+                                }
+                                def itemPerformances = xml.depthFirst().findAll {
+                                    it.name() == 'ItemPerformance'
+                                }
+                                def usageMap = getPeriodUsageMap(itemPerformances)
+                                def cal = new GregorianCalendar()
+                                usageMap.each { key, countPerMetric ->
+                                    def fact = [:]
+                                    countPerMetric.each { metric, count ->
+                                        fact.from = timeStampFormat.parse(key)
+                                        fact.to =timeStampFormat.parse(getLastDayOfMonth(key))
+                                        cal.setTime(fact.to)
+                                        fact.reportingYear=cal.get(Calendar.YEAR)
+                                        fact.reportingMonth=cal.get(Calendar.MONTH)+1
+                                        fact.type = statsReport.toString()
+                                        fact.value = count
+                                        fact.uid = "${titleId}:${platform}:${customer}:${key}:${metric}:${statsReport.value}"
+                                        fact.metric = RefdataValue.getByValueAndCategory(metric,'FactMetric')
+                                        fact.title = title_inst
+                                        fact.supplier = supplier_inst
+                                        fact.inst = org_inst
+                                        fact.juspio = title_io_inst
+                                        if (factService.registerFact(fact)) {
+                                            ++factCount
+                                            ++newFactCount
                                         }
                                     }
-                                    log.debug("Title: ${title_inst.title}")
-                                    log.debug("ID: ${titleId}")
-
                                 }
-                            } else {
-                                log.error("No xml object returned, response status: ${response.statusLine}")
-                            }
-                        }
+                                log.debug("Title: ${title_inst.title}")
+                                log.debug("ID: ${titleId}")
 
-                    } catch (Exception e) {
-                        log.error("Error fetching data")
-                        log.error(e.message)
+                            }
+                        } else {
+                            log.error("No xml object returned, response status: ${response.statusLine}")
+                        }
                     }
+
+                } catch (Exception e) {
+                    log.error("Error fetching data")
+                    log.error(e.message)
                 }
+            }
                 csr.haveUpTo = mostRecentClosedPeriod
+                csr.numFacts = factCount
                 try {
-                csr.save(flush: true)
+                    csr.save(flush: true)
                 } catch (Exception e) {
                     log.error(e.message)
                     exceptionCount++
                 }
             }
-
+            // TODO remove?
+            // do we want that when there is an exception while saving csr...
+            // Exceptions are all catched, do we really want to save here when there were certain exceptions?
+            // csr save should be called in all situations, do we really need that here? If there was an exception before than it would occure here too...
             csr.save(flush:true)
             cleanUpGorm()
             def elapsed = System.currentTimeMillis() - start_time;

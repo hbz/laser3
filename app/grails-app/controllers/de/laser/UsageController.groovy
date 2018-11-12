@@ -3,10 +3,12 @@ package de.laser
 import com.k_int.kbplus.Fact
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgCustomProperty
+import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.domain.StatsTripleCursor
 import grails.plugin.springsecurity.annotation.Secured
 import grails.transaction.Transactional
+import org.hibernate.criterion.CriteriaSpecification
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class UsageController {
@@ -14,12 +16,68 @@ class UsageController {
     def statsSyncService
     def factService
     def contextService
+    def springSecurityService
 
     static transactional = false
 
     @Secured(['ROLE_STATISTICS_EDITOR','ROLE_ADMIN'])
     def index() {
         def result = initResult()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        // criteria and totalCount for PageResultList Object seems to be problematic with projections and aggregation
+        // use extra hql query for now
+
+        def hql = "select stc.id from StatsTripleCursor as stc"
+        def groupCondition = " group by stc.supplierId, stc.customerId, stc.haveUpTo,stc.factType"
+        def whereConditions = []
+        def queryParams = [:]
+        if (params.supplier){
+            whereConditions.add('supplierId=:supplierId')
+            queryParams += [supplierId: params.supplier]
+        }
+        if (params.institution) {
+            whereConditions.add('customerId=:customerId')
+            queryParams += [customerId: params.institution]
+        }
+        if (!whereConditions.empty) {
+            hql += " where " + whereConditions.join(' and ')
+        }
+        hql += groupCondition
+        if ((params.sort != null) && (params.sort.length() > 0)) {
+            hql += " order by stc.${params.sort} ${params.order}"
+        } else {
+            hql += " order by stc.supplierId asc"
+        }
+        def totalResultIds = StatsTripleCursor.executeQuery(hql, queryParams)
+
+        def criteria = StatsTripleCursor.createCriteria()
+        def results = criteria.list(max: result.max, offset: result.offset) {
+            projections {
+                groupProperty('supplierId', 'supplierId')
+                groupProperty('customerId', 'customerId')
+                groupProperty('haveUpTo', 'haveUpTo')
+                groupProperty('factType', 'factType')
+                sum('numFacts', 'numFacts')
+            }
+            if (params.supplier) {
+                eq("supplierId", params.supplier)
+            }
+            if (params.institution) {
+                eq("customerId", params.institution)
+            }
+            if ((params.sort != null) && (params.sort.length() > 0)) {
+                order(params.sort, params.order)
+            } else {
+                order("supplierId", "asc")
+            }
+
+            resultTransformer(CriteriaSpecification.ALIAS_TO_ENTITY_MAP)
+        }
+
+        result.availStatsRanges = results
+        result.num_stc_rows = totalResultIds.size()
         result
     }
 
@@ -40,9 +98,20 @@ class UsageController {
 
         result.institution = contextService.getOrg()
         result.institutionList = factService.institutionsWithRequestorIDAndAPIKey()
+        result.user = User.get(springSecurityService.principal.id)
         result.providerList = factService.providersWithStatssid()
         result.institutionsWithFacts = factService.getFactInstitutionList()
         result.providersWithFacts = factService.getFactProviderList()
+        result.natstatProviders = StatsTripleCursor.withCriteria {
+            projections {
+                distinct("supplierId")
+            }
+        }
+        result.natstatInstitutions = StatsTripleCursor.withCriteria {
+            projections {
+                distinct("customerId")
+            }
+        }
         result.cursorCount = factService.getSupplierCursorCount()
         result.apiKey = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("API Key"), result.institution)
         result.requestor = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
