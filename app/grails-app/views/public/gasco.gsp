@@ -14,7 +14,7 @@
     <br />
     <div class="ui grid">
         <div class="eleven wide column">
-            <div class="ui la-gasco-search segment">
+            <div class="ui la-search segment">
                 <g:form action="gasco" controller="public" method="get" class="form-inline ui small form">
 
                     <div class="field">
