@@ -66,7 +66,7 @@ class QueryService {
         Org institution = contextOrg
         def base_qry
         def qry_params
-        boolean isSubscriptionConsortia = ((OR_TYPE_CONSORTIUM?.id in institution.getallOrgRoleTypeIds()))
+        boolean isSubscriptionConsortia = ((OR_TYPE_CONSORTIUM?.id in institution?.getallOrgRoleTypeIds()))
         boolean isSubscriber = ! isSubscriptionConsortia
 
         if (isSubscriber) {
@@ -112,7 +112,7 @@ class QueryService {
         def result = [:]
         def base_qry
         def qry_params
-        boolean isLicensingConsortium = ((OR_TYPE_CONSORTIUM?.id in institution.getallOrgRoleTypeIds()))
+        boolean isLicensingConsortium = ((OR_TYPE_CONSORTIUM?.id in institution?.getallOrgRoleTypeIds()))
         boolean isLicensee = ! isLicensingConsortium
 
         if (isLicensee) {

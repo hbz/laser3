@@ -38,7 +38,7 @@
     </div>
 </g:if>
 
-<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution.getallOrgRoleTypeIds())}">
+<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgRoleTypeIds())}">
 
     <div class="ui info message">
         <div class="header">
@@ -125,7 +125,7 @@
         </g:if>
     </g:form>
 
-    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") && (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg().getallOrgRoleTypeIds())}">
+    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") && (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgRoleTypeIds())}">
         <hr />
 
         <div class="ui info message">
