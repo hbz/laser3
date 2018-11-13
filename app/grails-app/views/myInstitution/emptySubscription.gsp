@@ -82,7 +82,9 @@
                     <semui:filter>
                         <g:formRemote name="x" url="[controller:'MyInstitution', action:'ajaxEmptySubscription', params:[shortcode:contextService.getOrg()?.shortcode]]" update="orgListTable" class="ui form">
                             <g:render template="/templates/filter/orgFilter"
-                                      model="[tmplConfigShow: ['name']]" />
+                                      model="[
+                                              tmplConfigShow: ['name']
+                                      ]" />
                         </g:formRemote>
                     </semui:filter>
 
