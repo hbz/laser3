@@ -1077,10 +1077,10 @@
 .ui.form .inline.fields.la-filter-inline {
   padding-top: 0.3rem;
 }
-.ui.form .fields .field.la-filter-search {
+/*.ui.form .fields .field.la-filter-search {
   text-align: right;
   margin-top: 1.2rem;
-}
+} */
 .ui.form .fields .field {
   margin: 0em 0em 1em;
 }
