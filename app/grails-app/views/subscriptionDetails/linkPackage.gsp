@@ -90,7 +90,7 @@
 
       <div class="ui grid">
 
-%{--          <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution.getallOrgRoleTypeIds()) && (com.k_int.kbplus.Subscription.findAllByInstanceOf(com.k_int.kbplus.Subscription.get(params.id)).size() > 0) }">
+%{--          <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgRoleTypeIds()) && (com.k_int.kbplus.Subscription.findAllByInstanceOf(com.k_int.kbplus.Subscription.get(params.id)).size() > 0) }">
               <div class="sixteen wide column">
                   <div class="field">
                                 <div class="ui checkbox">
