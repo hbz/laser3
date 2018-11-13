@@ -29,7 +29,9 @@
         <semui:filter>
             <g:form action="listProvider" method="get" class="ui form">
                 <g:render template="/templates/filter/orgFilter"
-                          model="[tmplConfigShow: ['property', 'name', 'country']
+                          model="[
+                                  tmplConfigShow: ['property', 'name', 'country'],
+                                  tmplConfigFormFilter: true
                           ]"/>
             </g:form>
         </semui:filter>

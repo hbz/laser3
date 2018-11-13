@@ -402,4 +402,13 @@ class Org extends AbstractBaseDomain {
         }
         result
     }
+
+    def getallOrgRoleTypeIds()
+    {
+        def result = [];
+        orgRoleType.each {
+            result << it.id
+        }
+        result
+    }
 }

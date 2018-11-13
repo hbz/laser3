@@ -138,24 +138,35 @@
 
                 <div class="ui card">
                     <div class="content">
+                        <%-- ROLE_ADMIN: all , ROLE_ORG_EDITOR: all minus Consortium --%>
                         <dl>
                             <dt><g:message code="org.orgRoleType.label" default="Organisation Type" /></dt>
                             <dd>
+                                <%
+                                    // hotfix:
+                                    def orgRoleType_types = RefdataCategory.getAllRefdataValues('OrgRoleType')
+                                    def orgRoleType_editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
+                                    if (! orgRoleType_editable) {
+                                        orgRoleType_editable = SpringSecurityUtils.ifAnyGranted('ROLE_ORG_EDITOR')
+
+                                        orgRoleType_types = orgRoleType_types.minus(RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType'))
+                                    }
+
+                                %>
                                 <g:render template="orgRoleTypeAsList"
-                                          model="${[OrgRoleTypes:orgInstance.orgRoleType, Org:orgInstance, editable: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]}" />
-
+                                          model="${[org:orgInstance, orgRoleTypes:orgInstance.orgRoleType, availableOrgRoleTypes:orgRoleType_types, editable:orgRoleType_editable]}" />
                             </dd>
                         </dl>
 
                         <g:render template="orgRoleTypeModal"
-                                  model="${[Org:orgInstance, editable: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]}" />
+                                  model="${[org:orgInstance, availableOrgRoleTypes:orgRoleType_types, editable:orgRoleType_editable]}" />
                     </div>
                 </div>
 
                 <div class="ui card">
                     <div class="content">
-                    <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in orgInstance.orgRoleType)}">
+                    <g:if test="${(RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in orgInstance.orgRoleType)}">
                         <dl>
                             <dt><g:message code="org.libraryType.label" default="Library Type" /></dt>
                             <dd>

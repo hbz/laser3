@@ -9,7 +9,7 @@
 	</head>
 	<body>
 	<semui:breadcrumbs>
-		<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType') in addressInstance?.org.getallOrgRoleType())}">
+		<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')?.id in addressInstance?.org?.getallOrgRoleTypeIds())}">
 			<semui:crumb message="menu.institutions.all_provider" controller="organisations" action="listProvider"/>
 			<semui:crumb message="${addressInstance?.org?.getDesignation()}" controller="organisations" action="show" id="${addressInstance?.org?.id}"/>
 			<semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
