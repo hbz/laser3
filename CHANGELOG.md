@@ -4,9 +4,11 @@
 - reworked error page
 - added table indices for performance
 - added user setting for default dashbord tab
+- fixed: editing org role types as role_org_editor  
 - fixed: table sorting and filtering via org templates
-- fixed: contacts compareTo caused null pointer
-- hotfix: gorm lazy loading caused null pointer
+- bugfix: contacts compareTo caused null pointer
+- bugfix: accessing addresses caused null pointer
+- bugfix: gorm lazy loading caused null pointer
 
 0.10.4
 

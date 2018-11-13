@@ -3,20 +3,20 @@
         <dt></dt>
         <dd>
             <br/>
-            <a class="ui button" data-semui="modal" href="#OrgRoleType"><g:message code="org.orgRoleType.add.label"
-                                                                               default="Add new Organisation Type"/></a>
+            <a class="ui button" data-semui="modal" href="#orgRoleType">
+                <g:message code="org.orgRoleType.add.label" default="Add new Organisation Type"/>
+            </a>
         </dd>
     </dl>
 </g:if>
 
-<semui:modal id="OrgRoleType" message="org.orgRoleType.add.label">
-    <g:form  class="ui form" url="[controller: 'organisations', action: 'addOrgRoleType']"
-            method="post">
-        <input type="hidden" name="org" value="${Org.id}"/>
+<semui:modal id="orgRoleType" message="org.orgRoleType.add.label">
+    <g:form class="ui form" url="[controller: 'organisations', action: 'addOrgRoleType']" method="post">
+        <input type="hidden" name="org" value="${org.id}"/>
         <div class="field fieldcontain">
         <label><g:message code="org.orgRoleType.label" default="Organisation Type" />:</label>
 
-        <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.loc('OrgRoleType', [en: 'Organisation Type'])).sort{it?.getI10n('value')}}"
+        <g:select from="${availableOrgRoleTypes}"
                   class="ui dropdown fluid"
                   optionKey="id"
                   optionValue="${{ it?.getI10n('value') }}"

@@ -237,7 +237,7 @@ class MyInstitutionController {
         def qry = INSTITUTIONAL_LICENSES_QUERY
 
         if (! params.orgRole) {
-            if ((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution.getallOrgRoleTypeIds())) {
+            if ((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) {
                 params.orgRole = 'Licensing Consortium'
             }
             else {
@@ -405,7 +405,7 @@ from License as l where (
             return;
         }
 
-        result.orgRoleType = result.institution.getallOrgRoleTypeIds()
+        result.orgRoleType = result.institution?.getallOrgRoleTypeIds()
 
         def cal = new java.util.GregorianCalendar()
         def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
@@ -599,7 +599,7 @@ from License as l where (
         def qry_params
 
         if (! params.orgRole) {
-            if ((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution.getallOrgRoleTypeIds())) {
+            if ((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) {
                 params.orgRole = 'Subscription Consortia'
             }
             else {
@@ -694,7 +694,7 @@ from Subscription as s where (
 
         if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)) {
             result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
-            result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution.getallOrgRoleTypeIds())) ? 'package' : 'institution'
+            result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) ? 'package' : 'institution'
         }
 
         if ( params.exportXLS=='yes' ) {
@@ -892,7 +892,7 @@ from Subscription as s where (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def emptySubscription() {
         def result = setResultGenerics()
-        result.orgRoleType = result.institution.getallOrgRoleTypeIds()
+        result.orgRoleType = result.institution?.getallOrgRoleTypeIds()
         
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
@@ -925,7 +925,7 @@ from Subscription as s where (
     def processEmptySubscription() {
         log.debug(params)
         def result = setResultGenerics()
-        result.orgRoleType = result.institution.getallOrgRoleTypeIds()
+        result.orgRoleType = result.institution?.getallOrgRoleTypeIds()
 
         def role_sub = RDStore.OR_SUBSCRIBER
         def role_sub_cons = RDStore.OR_SUBSCRIBER_CONS
@@ -3668,7 +3668,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     def ajaxEmptySubscription() {
 
         def result = setResultGenerics()
-        result.orgRoleType = result.institution.getallOrgRoleTypeIds()
+        result.orgRoleType = result.institution?.getallOrgRoleTypeIds()
 
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
         if (result.editable) {
