@@ -22,8 +22,9 @@
                       model="[
                               propList: propList,
                               orgRoles: orgRoles,
-                              tmplConfigShow: ['role', 'property', 'name', 'country'],
-                              tmplConfigFormFilter: true
+                              tmplConfigShow: [['name'], ['role', 'country', 'property']],
+                              tmplConfigFormFilter: true,
+                              useNewLayouter: true
                       ]"/>
         </g:form>
     </semui:filter>
