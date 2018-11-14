@@ -60,7 +60,7 @@
             <th>${message(code: 'org.federalState.label')}</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('libraryNetwork')}">
-            <th class="la-th-wrap la-hyphenation">${message(code: 'org.libraryNetwork.label')}</th>
+            <th class="la-th-wrap la-hyphenation">${message(code: 'org.libraryNetworkTableHead.label')}</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('libraryType')}">
             <th>${message(code: 'org.libraryType.label')}</th>

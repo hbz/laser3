@@ -30,8 +30,9 @@
             <g:form action="listProvider" method="get" class="ui form">
                 <g:render template="/templates/filter/orgFilter"
                           model="[
-                                  tmplConfigShow: ['property', 'name', 'country'],
-                                  tmplConfigFormFilter: true
+                                  tmplConfigShow: [['name'], ['country', 'property'],],
+                                  tmplConfigFormFilter: true,
+                                  useNewLayouter: true
                           ]"/>
             </g:form>
         </semui:filter>

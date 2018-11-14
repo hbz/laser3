@@ -45,11 +45,15 @@
                   </div>
               </div>
 
-              <div class="fields">
-                  <semui:datepicker label="default.startsBefore.label" name="startsBefore" value="${params.startsBefore}" />
-                  <semui:datepicker label="default.endsAfter.label" name="endsAfter" value="${params.endsAfter}" />
+              <div class="three fields">
                   <div class="field">
-                      <label>&nbsp;</label>
+                    <semui:datepicker label="default.startsBefore.label" name="startsBefore" value="${params.startsBefore}" />
+                  </div>
+                  <div class="field">
+                    <semui:datepicker label="default.endsAfter.label" name="endsAfter" value="${params.endsAfter}" />
+                  </div>
+                  <div class="field la-filter-search">
+                      <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                       <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
                   </div>
               </div>

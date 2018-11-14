@@ -22,7 +22,7 @@
                       model="[
                               propList: propList,
                               orgRoles: orgRoles,
-                              tmplConfigShow: [['name'], ['role', 'country', 'property']],
+                              tmplConfigShow: [['name', 'role'], ['country', 'property']],
                               tmplConfigFormFilter: true,
                               useNewLayouter: true
                       ]"/>
