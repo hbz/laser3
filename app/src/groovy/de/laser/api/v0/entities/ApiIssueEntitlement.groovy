@@ -39,9 +39,8 @@ class ApiIssueEntitlement {
     /**
      * @return grails.converters.JSON | FORBIDDEN
      */
-    static getIssueEntitlements(SubscriptionPackage subPkg, User user, Org context){
+    static getIssueEntitlements(SubscriptionPackage subPkg, Org context, boolean hasAccess){
         def result = []
-        def hasAccess = ApiReader.isDataManager(user)
 
         if (! hasAccess) {
             def hasAccess2 = false

@@ -4,12 +4,28 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserRole
+import de.laser.api.v0.entities.ApiDoc
+import de.laser.api.v0.entities.ApiIssueEntitlement
+import de.laser.api.v0.entities.ApiLicense
+import de.laser.api.v0.entities.ApiOrg
+import de.laser.api.v0.entities.ApiPkg
+import de.laser.helper.Constants
 import groovy.util.logging.Log4j
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Log4j
 class ApiReader {
+
+    static SUPPORTED_FORMATS = [
+            'document':             [],
+            'issueEntitlements':    [Constants.MIME_TEXT_PLAIN, Constants.MIME_APPLICATION_JSON],
+            'license':              [Constants.MIME_APPLICATION_JSON],
+            'onixpl':               [Constants.MIME_APPLICATION_XML],
+            'organisation':         [Constants.MIME_APPLICATION_JSON],
+            'package':              [Constants.MIME_APPLICATION_JSON],
+            'subscription':         [Constants.MIME_APPLICATION_JSON]
+    ]
 
     /**
      * @param com.k_int.kbplus.SubscriptionPackage subPkg
