@@ -47,14 +47,22 @@
                         <g:sortableColumn property="display" params="${params}" title="${message(code: 'user.display.label', default: 'Display Name')}" />
                         <g:sortableColumn property="instname" params="${params}" title="${message(code: 'user.instname.label', default: 'Institution')}" />
                         <th>Enabled</th>
-                        <th></th>
+                        <th>API</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     <g:each in="${users}" var="user">
                         <tr>
-                            <td>${fieldValue(bean: user, field: "username")}</td>
+                            <td>
+                                ${fieldValue(bean: user, field: "username")}
+
+                                <g:if test="${! UserRole.findByUserAndRole(user, Role.findByAuthority('ROLE_USER'))}">
+                                    <span data-tooltip="Dieser Account besitzt keine ROLE_USER." data-position="top right">
+                                        <i class="icon minus circle red"></i>
+                                    </span>
+                                </g:if>
+                            </td>
                             <td>${user.getDisplayName()}</td>
                             <td>
                                 <g:each in="${user.getAuthorizedAffiliations()}" var="affi">
