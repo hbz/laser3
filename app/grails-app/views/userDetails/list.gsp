@@ -20,18 +20,18 @@
                 <g:form action="list" method="get" class="ui form">
                     <g:set value="${com.k_int.kbplus.auth.Role.findAll()}" var="auth_values"/>
 
-                    <div class="fields">
+                    <div class="three fields">
                         <div class="field">
                             <label>Name contains</label>
                             <input type="text" name="name" value="${params.name}"/>
                         </div>
                         <div class="field">
                             <label>Role</label>
-                            <g:select from="${auth_values}" noSelection="${['null':'-Any role-']}"
+                            <g:select from="${auth_values}" noSelection="${['null':'-Any role-']}" class="ui dropdown"
                                       value="authority" optionKey="id" optionValue="authority" name="authority" />
                         </div>
-                        <div class="field">
-                            <label>&nbsp;</label>
+                        <div class="field la-field-right-aligned">
+                            <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
                             <input type="submit" value="Search" class="ui secondary button"/>
                         </div>
                     </div>

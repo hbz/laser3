@@ -64,7 +64,7 @@
                     <input name="q" placeholder="" value="${params.q}"/>
                 </div>
                 <div class="field la-field-right-aligned">
-                    <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.filterreset.label')}</a>
+                    <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
                     <button type="submit" name="search" value="yes" class="ui secondary button">${message(code:'default.button.filter.label', default:'Filter')}</button>
                 </div>
       </g:form>

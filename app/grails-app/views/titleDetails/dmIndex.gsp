@@ -10,27 +10,29 @@
       <semui:crumb controller="titleDetails" action="list" message="menu.institutions.all_titles" />
       <semui:crumb text="${message(code:'datamanager.titleView.label', default:'Data Manager Titles View')}" class="active"/>
     </semui:breadcrumbs>
-
+    <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="datamanager.titleView.label"/></h1>
     <semui:filter>
       <g:form action="dmIndex" method="get" params="${params}" role="form" class="ui form">
 
         <input type="hidden" name="offset" value="${params.offset}"/>
-        <div class="field">
-            <label>${message(code:'title.label', default:'Title')} (${message(code:'datamanager.titleView.search.note', default:'Search on title text and identifiers')})</label>
-            <input name="q" placeholder="${message(code:'default.search_for.label', args:[message(code:'title.label')], default:'Search title')}" value="${params.q}"/>
-        </div>
-        <div class="field">
-            <label>${message(code:'default.status.label', default:'Status')}</label>
-            <g:select name="status"
-                  from="${availableStatuses}"
-                  optionKey="${{it.value}}"
-                  optionValue="${{it.getI10n('value')}}"
-                  noSelection="${['null': message(code:'datamanager.titleView.status.ph', default:'-Any Status-')]}"
-                  />
-        </div>
-        <div class="field">
-            <label>&nbsp;</label>
-            <button class="ui secondary button" type="submit" name="search" value="yes">${message(code:'default.button.filter.label', default:'Filter')}</button>
+        <div class="three fields">
+          <div class="field">
+              <label>${message(code:'title.label', default:'Title')} (${message(code:'datamanager.titleView.search.note', default:'Search on title text and identifiers')})</label>
+              <input name="q" placeholder="${message(code:'default.search_for.label', args:[message(code:'title.label')], default:'Search title')}" value="${params.q}"/>
+          </div>
+          <div class="field">
+              <label>${message(code:'default.status.label', default:'Status')}</label>
+              <g:select name="status"  class="ui dropdown"
+                    from="${availableStatuses}"
+                    optionKey="${{it.value}}"
+                    optionValue="${{it.getI10n('value')}}"
+                    noSelection="${['null': message(code:'datamanager.titleView.status.ph', default:'-Any Status-')]}"
+                    />
+          </div>
+          <div class="field la-field-right-aligned">
+              <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
+              <button class="ui secondary button" type="submit" name="search" value="yes">${message(code:'default.button.filter.label', default:'Filter')}</button>
+          </div>
         </div>
       </g:form>
     </semui:filter>
