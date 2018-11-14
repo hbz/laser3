@@ -325,7 +325,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
             if (context) {
                 user.authorizedAffiliations.each { uo -> //  com.k_int.kbplus.auth.UserOrg
-                    def org = Org.findWhere(id: uo.org.id, shortcode: params.get('context'))
+                    def org = Org.findWhere(id: uo.org.id, globalUID: params.get('context'))
                     if (org) {
                         contextOrg = org
                     }

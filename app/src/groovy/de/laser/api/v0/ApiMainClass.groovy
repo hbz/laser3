@@ -15,7 +15,11 @@ import javax.servlet.http.HttpServletRequest
 class ApiMainClass {
 
     /**
-     * @return Object | BAD_REQUEST | PRECONDITION_FAILED | NOT_ACCEPTABLE
+     * @return Object
+     * @return BAD_REQUEST: if invalid/missing (unsupported) identifier
+     * @return PRECONDITION_FAILED: if multiple matches(objects) are found
+     * @return NOT_ACCEPTABLE: if requested format(response) is not supported
+     * @return NOT_IMPLEMENTED: if requested method(object type) is not supported
      */
     static read(String obj, String query, String value, User user, Org contextOrg, String format) {
         def result

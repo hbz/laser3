@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.*" %>
+<%@ page import="com.k_int.kbplus.*; com.k_int.kbplus.auth.*" %>
 <!doctype html>
 <html>
   <head>
@@ -18,7 +18,7 @@
 
             <semui:filter>
                 <g:form action="list" method="get" class="ui form">
-                    <g:set value="${com.k_int.kbplus.auth.Role.findAll()}" var="auth_values"/>
+                    <g:set value="${Role.findAll()}" var="auth_values"/>
 
                     <div class="fields">
                         <div class="field">
@@ -48,6 +48,7 @@
                         <g:sortableColumn property="instname" params="${params}" title="${message(code: 'user.instname.label', default: 'Institution')}" />
                         <th>Enabled</th>
                         <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -55,7 +56,11 @@
                         <tr>
                             <td>${fieldValue(bean: user, field: "username")}</td>
                             <td>${user.getDisplayName()}</td>
-                            <td>${fieldValue(bean: user, field: "instname")}</td>
+                            <td>
+                                <g:each in="${user.getAuthorizedAffiliations()}" var="affi">
+                                    ${affi.org?.getDesignation()}<br />
+                                </g:each>
+                            </td>
                             <td>
                                 <sec:ifAnyGranted roles="ROLE_YODA">
                                     <semui:xEditable owner="${user}" field="enabled"/>
@@ -63,6 +68,25 @@
                                 <sec:ifNotGranted roles="ROLE_YODA">
                                     ${fieldValue(bean: user, field: "enabled")}
                                 </sec:ifNotGranted>
+                            </td>
+                            <td>
+                                <div class="ui list">
+                                    <g:if test="${UserRole.findByUserAndRole(user, Role.findByAuthority('ROLE_API'))}">
+                                        <div class="item"><i class="icon circle outline"></i> API</div>
+                                    </g:if>
+
+                                    <g:if test="${UserRole.findByUserAndRole(user, Role.findByAuthority('ROLE_API_READER'))}">
+                                        <div class="item"><i class="icon check circle outline"></i> Lesend</div>
+                                    </g:if>
+
+                                    <g:if test="${UserRole.findByUserAndRole(user, Role.findByAuthority('ROLE_API_WRITER'))}">
+                                        <div class="item"><i class="icon check circle"></i> Schreibend</div>
+                                    </g:if>
+
+                                    <g:if test="${UserRole.findByUserAndRole(user, Role.findByAuthority('ROLE_API_DATAMANAGER'))}">
+                                        <div class="item"><i class="icon circle"></i> Datamanager</div>
+                                    </g:if>
+                                </div>
                             </td>
                             <td class="x">
                                 <g:link action="edit" id="${user.id}" class="ui icon button"><i class="write icon"></i></g:link>

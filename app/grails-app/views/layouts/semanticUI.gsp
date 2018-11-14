@@ -53,136 +53,109 @@
                 <img class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
             </g:link>
 
-            <sec:ifLoggedIn>
+            <sec:ifAnyGranted roles="ROLE_USER">
+
                 <g:if test="${false}">
-                <div class="ui simple dropdown item">
-                    Data Explorer
-                    <i class="dropdown icon"></i>
+                    <div class="ui simple dropdown item">
+                        Data Explorer
+                        <i class="dropdown icon"></i>
 
-                    <div class="menu">
-                        <a class="item" href="${createLink(uri: '/home/search')}">Search</a>
-                        <g:link class="item" controller="packageDetails">Package</g:link>
-                        <g:link class="item" controller="organisations">Organisations</g:link>
-                        <g:link class="item" controller="platform">Platform</g:link>
-                        <g:link class="item" controller="titleDetails">Title Instance</g:link>
-                        <g:link class="item" controller="tipp">Title Instance Package Platform</g:link>
-                        <g:link class="item" controller="subscriptionDetails">Subscriptions</g:link>
-                        <g:link class="item" controller="licenseDetails">Licenses</g:link>
-                        <g:link class="item" controller="onixplLicenseDetails" action="list">ONIX-PL Licenses</g:link>
+                        <div class="menu">
+                            <a class="item" href="${createLink(uri: '/home/search')}">Search</a>
+                            <g:link class="item" controller="packageDetails">Package</g:link>
+                            <g:link class="item" controller="organisations">Organisations</g:link>
+                            <g:link class="item" controller="platform">Platform</g:link>
+                            <g:link class="item" controller="titleDetails">Title Instance</g:link>
+                            <g:link class="item" controller="tipp">Title Instance Package Platform</g:link>
+                            <g:link class="item" controller="subscriptionDetails">Subscriptions</g:link>
+                            <g:link class="item" controller="licenseDetails">Licenses</g:link>
+                            <g:link class="item" controller="onixplLicenseDetails" action="list">ONIX-PL Licenses</g:link>
+                        </div>
                     </div>
-                </div>
                 </g:if>
-            </sec:ifLoggedIn>
 
-            <% /*
-            <sec:ifLoggedIn>
-                <div class="ui simple dropdown item">
-                    Public
-                    <i class="dropdown icon"></i>
-
-                    <div class="menu">
-                        <g:link class="item" controller="packageDetails" action="index">${message(code:'menu.institutions.all_pkg')}</g:link>
-                        <g:link class="item" controller="titleDetails" action="index">${message(code:'menu.institutions.all_titles')}</g:link>
-                        <g:link class="item" controller="packageDetails" action="compare">${message(code:'menu.institutions.comp_pkg')}</g:link>
-                        <g:link class="item" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</g:link>
-
-                        <g:if test="${grailsApplication.config.feature.eBooks}">
-                            <a class="item" href="http://gokb.k-int.com/gokbLabs">${message(code:'menu.institutions.ebooks')}</a>
-                        </g:if>
-
-                        <a class="item" href="${message(code:'help.location')}">${message(code:'menu.institutions.help')}</a>
-                    </div>
-                </div>
-            </sec:ifLoggedIn>
-            */ %>
-
-            <g:if test="${contextUser}">
                 <g:if test="${contextOrg}">
-                    <sec:ifLoggedIn>
-                        <div class="ui simple dropdown item">
-                            ${message(code:'menu.public')}
-                            <i class="dropdown icon"></i>
+                    <div class="ui simple dropdown item">
+                        ${message(code:'menu.public')}
+                        <i class="dropdown icon"></i>
 
-                            <div class="menu">
-                                    <g:link class="item" controller="packageDetails" action="index">${message(code:'menu.institutions.all_pkg')}</g:link>
-                                    <g:link class="item" controller="titleDetails" action="index">${message(code:'menu.institutions.all_titles')}</g:link>
-                                <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
-                                    <g:link class="item" controller="organisations" action="index">${message(code:'menu.institutions.all_orgs')}</g:link>
-                                </sec:ifAnyGranted>
-                                    <g:link class="item" controller="organisations" action="listProvider">${message(code:'menu.institutions.all_provider')}</g:link>
-                                    <g:link class="item" controller="platform" action="list">${message(code:'menu.institutions.all_platforms')}</g:link>
+                        <div class="menu">
+                                <g:link class="item" controller="packageDetails" action="index">${message(code:'menu.institutions.all_pkg')}</g:link>
+                                <g:link class="item" controller="titleDetails" action="index">${message(code:'menu.institutions.all_titles')}</g:link>
+                            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
+                                <g:link class="item" controller="organisations" action="index">${message(code:'menu.institutions.all_orgs')}</g:link>
+                            </sec:ifAnyGranted>
+                                <g:link class="item" controller="organisations" action="listProvider">${message(code:'menu.institutions.all_provider')}</g:link>
+                                <g:link class="item" controller="platform" action="list">${message(code:'menu.institutions.all_platforms')}</g:link>
 
-                                <%--<div class="divider"></div>
+                            <%--<div class="divider"></div>
 
-                                <g:link class="item" controller="myInstitution" action="currentTitles">${message(code:'menu.institutions.myTitles')}</g:link>
-                                <g:link class="item" controller="myInstitution" action="tipview">${message(code:'menu.institutions.myCoreTitles')}</g:link>
-                                --%>
+                            <g:link class="item" controller="myInstitution" action="currentTitles">${message(code:'menu.institutions.myTitles')}</g:link>
+                            <g:link class="item" controller="myInstitution" action="tipview">${message(code:'menu.institutions.myCoreTitles')}</g:link>
+                            --%>
+                            <div class="divider"></div>
+
+                            <g:if test="${grailsApplication.config.feature.eBooks}">
+                                <a class="item" href="http://gokb.k-int.com/gokbLabs">${message(code:'menu.institutions.ebooks')}</a>
                                 <div class="divider"></div>
+                            </g:if>
 
-                                <g:if test="${grailsApplication.config.feature.eBooks}">
-                                    <a class="item" href="http://gokb.k-int.com/gokbLabs">${message(code:'menu.institutions.ebooks')}</a>
-                                    <div class="divider"></div>
-                                </g:if>
-
-                                <g:link class="item" controller="packageDetails" action="compare">${message(code:'menu.institutions.comp_pkg')}</g:link>
-                                <g:link class="item" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</g:link>
-                            </div>
+                            <g:link class="item" controller="packageDetails" action="compare">${message(code:'menu.institutions.comp_pkg')}</g:link>
+                            <g:link class="item" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</g:link>
                         </div>
-                    </sec:ifLoggedIn>
+                    </div>
 
-                    <sec:ifLoggedIn>
-                        <div class="ui simple dropdown item">
-                            ${message(code:'menu.my')}
-                            <i class="dropdown icon"></i>
+                    <div class="ui simple dropdown item">
+                        ${message(code:'menu.my')}
+                        <i class="dropdown icon"></i>
 
-                            <div class="menu">
+                        <div class="menu">
 
-                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentSubscriptions" message="menu.institutions.mySubs" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentSubscriptions" message="menu.institutions.mySubs" />
 
-                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentLicenses" message="menu.institutions.myLics" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentLicenses" message="menu.institutions.myLics" />
 
-                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentProviders" message="menu.institutions.myProviders" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentProviders" message="menu.institutions.myProviders" />
 
-                                <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgRoleTypeIds())}">
-                                    <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.myConsortia" />
-                                </g:if>
+                            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgRoleTypeIds())}">
+                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.myConsortia" />
+                            </g:if>
 
-                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.institutions.myTitles" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.institutions.myTitles" />
 
-                                <%--<semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="tipview" message="menu.institutions.myCoreTitles" />--%>
+                            <%--<semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="tipview" message="menu.institutions.myCoreTitles" />--%>
 
-                                <div class="divider"></div>
+                            <div class="divider"></div>
 
-                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="emptySubscription" message="menu.institutions.emptySubscription" />
+                            <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="emptySubscription" message="menu.institutions.emptySubscription" />
 
-                                <semui:securedMainNavItem affiliation="INST_USER" controller="subscriptionDetails" action="compare" message="menu.institutions.comp_sub" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="subscriptionDetails" action="compare" message="menu.institutions.comp_sub" />
 
-                                <%--<g:link class="item" controller="subscriptionImport" action="generateImportWorksheet"
-                                        params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.sub_work')}</g:link>
-                                <g:link class="item" controller="subscriptionImport" action="importSubscriptionWorksheet"
-                                        params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.imp_sub_work')}</g:link>--%>
+                            <%--<g:link class="item" controller="subscriptionImport" action="generateImportWorksheet"
+                                    params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.sub_work')}</g:link>
+                            <g:link class="item" controller="subscriptionImport" action="importSubscriptionWorksheet"
+                                    params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.imp_sub_work')}</g:link>--%>
 
-                                <div class="divider"></div>
+                            <div class="divider"></div>
 
-                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="emptyLicense" message="license.add.blank" />
+                            <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="emptyLicense" message="license.add.blank" />
 
-                                <semui:securedMainNavItem affiliation="INST_USER" controller="licenseCompare" action="index" message="menu.institutions.comp_lic" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="licenseCompare" action="index" message="menu.institutions.comp_lic" />
 
 
-                                <%--
-                                <div class="divider"></div>
-                                <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.institutions.comp_sub')}</g:link>
+                            <%--
+                            <div class="divider"></div>
+                            <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.institutions.comp_sub')}</g:link>
 
-                                <g:link class="item" controller="myInstitution" action="renewalsSearch">${message(code:'menu.institutions.gen_renewals')}</g:link>
-                                <g:link class="item" controller="myInstitution" action="renewalsUpload">${message(code:'menu.institutions.imp_renew')}</g:link>
+                            <g:link class="item" controller="myInstitution" action="renewalsSearch">${message(code:'menu.institutions.gen_renewals')}</g:link>
+                            <g:link class="item" controller="myInstitution" action="renewalsUpload">${message(code:'menu.institutions.imp_renew')}</g:link>
 
-                                <g:link class="item" controller="subscriptionImport" action="generateImportWorksheet"
-                                        params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.sub_work')}</g:link>
-                                <g:link class="item" controller="subscriptionImport" action="importSubscriptionWorksheet"
-                                        params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.imp_sub_work')}</g:link>--%>
-                            </div>
+                            <g:link class="item" controller="subscriptionImport" action="generateImportWorksheet"
+                                    params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.sub_work')}</g:link>
+                            <g:link class="item" controller="subscriptionImport" action="importSubscriptionWorksheet"
+                                    params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.imp_sub_work')}</g:link>--%>
                         </div>
-                    </sec:ifLoggedIn>
+                    </div>
 
                     <%--<sec:ifLoggedIn>
                    <div class="ui simple dropdown item">
@@ -201,55 +174,51 @@
                         </div>
                     </sec:ifLoggedIn>--%>
 
-                    <sec:ifLoggedIn>
-                        <div class="ui simple dropdown item">
-                            ${message(code:'menu.institutions.myInst')}
-                            <i class="dropdown icon"></i>
+                    <div class="ui simple dropdown item">
+                        ${message(code:'menu.institutions.myInst')}
+                        <i class="dropdown icon"></i>
 
-                            <div class="menu">
-                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="dashboard" message="menu.institutions.dash" />
+                        <div class="menu">
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="dashboard" message="menu.institutions.dash" />
 
-                                <g:link class="item" controller="organisations" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</g:link>
+                            <g:link class="item" controller="organisations" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</g:link>
 
-                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="tasks" message="menu.institutions.tasks" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="tasks" message="menu.institutions.tasks" />
 
-                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="changes" message="menu.institutions.todo" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="changes" message="menu.institutions.todo" />
 
-                                <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />
 
-                                <g:set var="newAffiliationRequests1" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatusAndOrg(0, contextService.getOrg(), [sort:'dateRequested']).size()}" />
-                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageAffiliationRequests" message="menu.institutions.affiliation_requests" newAffiliationRequests="${newAffiliationRequests1}" />
+                            <g:set var="newAffiliationRequests1" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatusAndOrg(0, contextService.getOrg(), [sort:'dateRequested']).size()}" />
+                            <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageAffiliationRequests" message="menu.institutions.affiliation_requests" newAffiliationRequests="${newAffiliationRequests1}" />
 
 
-                                %{--<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgRoleTypeIds())}">--}%
-                                    %{--<semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.manage_consortia" />--}%
-                                %{--</g:if>--}%
+                            %{--<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgRoleTypeIds())}">--}%
+                                %{--<semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.manage_consortia" />--}%
+                            %{--</g:if>--}%
 
-                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_private_props" />
-                                <semui:securedMainNavItem affiliation="INST_ADMIN"  controller="myInstitution" action="managePropertyGroups" message="menu.institutions.manage_prop_groups" />
+                            <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_private_props" />
+                            <semui:securedMainNavItem affiliation="INST_ADMIN"  controller="myInstitution" action="managePropertyGroups" message="menu.institutions.manage_prop_groups" />
 
-                                <g:if test="${grailsApplication.config.feature_finance}">
-                                    <%-- <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" /> --%>
+                            <g:if test="${grailsApplication.config.feature_finance}">
+                                <%-- <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" /> --%>
 
-                                    <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
+                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
 
-                                    <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
-                                </g:if>
+                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
+                            </g:if>
 
-                                <sec:ifAnyGranted roles="ROLE_YODA">
-                                    <div class="divider"></div>
+                            <sec:ifAnyGranted roles="ROLE_YODA">
+                                <div class="divider"></div>
 
-                                    <g:link class="item" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</g:link>
-                                    <%--<semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="changeLog" message="menu.institutions.change_log" />--%>
-                                </sec:ifAnyGranted>
+                                <g:link class="item" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</g:link>
+                                <%--<semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="changeLog" message="menu.institutions.change_log" />--%>
+                            </sec:ifAnyGranted>
 
-                            </div>
                         </div>
-                    </sec:ifLoggedIn>
+                    </div>
                 </g:if>
-            </g:if>
 
-            <sec:ifLoggedIn>
                 <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN,ROLE_GLOBAL_DATA">
                     <div class="ui simple dropdown item">
                         ${message(code:'menu.datamanager')}
@@ -294,9 +263,7 @@
                             </div>
                     </div>
                 </sec:ifAnyGranted>
-            </sec:ifLoggedIn>
 
-            <sec:ifLoggedIn>
                 <sec:ifAnyGranted roles="ROLE_ADMIN">
                     <div class="ui simple dropdown item">
                         Admin
@@ -396,9 +363,7 @@
                         </div>
                     </div>
                 </sec:ifAnyGranted>
-            </sec:ifLoggedIn>
 
-            <sec:ifLoggedIn>
                 <sec:ifAnyGranted roles="ROLE_YODA">
                     <div class="ui simple dropdown item">
                         Yoda
@@ -431,10 +396,8 @@
 
                     </div>
                 </sec:ifAnyGranted>
-            </sec:ifLoggedIn>
 
-            <div class="right menu">
-                <sec:ifLoggedIn>
+                <div class="right menu">
                     <div id="mainSearch" class="ui category search">
                         <div class="ui icon input">
                             <input  type="search" id="spotlightSearch" class="prompt" placeholder="Suche nach .. (ganzes Wort)" type="text">
@@ -483,186 +446,184 @@
                             </div>
                         </div>
                     </g:if>
-                </sec:ifLoggedIn>
-                <sec:ifNotLoggedIn>
-                    <g:link class="item" controller="myInstitution" action="dashboard">${message(code:'menu.user.login')}</g:link>
-                </sec:ifNotLoggedIn>
-            </div>
+                </div>
 
+            </sec:ifAnyGranted><%-- ROLE_USER --%>
+
+            <sec:ifNotGranted roles="ROLE_USER">
+                <sec:ifLoggedIn>
+                    <g:link class="item" controller="logout">${message(code:'menu.user.logout')}</g:link>
+                </sec:ifLoggedIn>
+            </sec:ifNotGranted>
 
         </div><!-- container -->
 
     </div><!-- main menu -->
-    <div class="ui fixed menu la-contextBar"  >
-        <div class="ui container">
-            <div class="ui sub header item la-context-org">${contextOrg?.name}</div>
-            <div class="right menu la-advanced-view">
-                <div class="item">
-                    <g:if test="${cachedContent}">
-                        <button class="ui icon button" data-tooltip="${message(code:'statusbar.cachedContent.tooltip')}" data-position="bottom right" data-variation="tiny">
-                            <i class="hourglass end icon green"></i>
-                        </button>
-                    </g:if>
-                </div>
 
-                    <g:if test="${controllerName=='subscriptionDetails' && actionName=='show'}">
-                        <div class="item">
-                            <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
-                                <button class="ui icon toggle button la-toggle-controls" data-tooltip="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right" data-variation="tiny">
-                                    <i class="pencil alternate icon"></i>
-                                </button>
-                            </g:if>
-                            <g:else>
-                                <button class="ui icon toggle button active la-toggle-controls"  data-tooltip="${message(code:'statusbar.hideButtons.tooltip')}"  data-position="bottom right" data-variation="tiny">
-                                    <i class="pencil alternate icon slash"></i>
-                                </button>
-                            </g:else>
+    <sec:ifAnyGranted roles="ROLE_USER">
 
-                        <r:script>
-                            $(function(){
-                                 <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
-                                    var editMode = true;
-                                </g:if>
-                                <g:else>
-                                    var editMode = false;
-                                </g:else>
-                                $(".ui.toggle.button").click(function(){
-                                    editMode = !editMode;
-                                    $.ajax({
-                                        url: '<g:createLink controller="ajax" action="toggleEditMode"/>',
-                                        data: {
-                                            showEditMode: editMode
-                                        },
-                                        success: function(){
-                                            toggleEditableElements()
-                                        }
-                                    })
-                                });
-                                function toggleEditableElements(){
-                                    // for future handling on other views
-                                    // 1. add class 'hidden' via markup to all cards that might be toggled
-                                    // 2. add class 'la-js-hideable' to all cards that might be toggled
-                                    // 3. add class 'la-js-dont-hide-this-card' to markup that is rendered only in case of card has content, like to a table <th>
-                                    // 4.
-                                    var toggleButton = $(".ui.toggle.button");
-                                    var toggleIcon = $(".ui.toggle.button .icon");
-                                    $(".table").trigger('reflow');
-
-                                    if (  editMode) {
-                                        // show Contoll Elements
-                                        $('.card').removeClass('hidden');
-                                        $('.la-js-hide-this-card').removeClass('hidden');
-                                        $('.ui .form').removeClass('hidden');
-                                        $('#collapseableSubDetails').find('.button').removeClass('hidden');
-                                        $(toggleButton).removeAttr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
-                                        $(toggleButton).attr("data-tooltip","${message(code:'statusbar.showButtons.tooltip')}");
-                                        $(toggleIcon ).removeClass( "slash" );
-                                        $(toggleButton).addClass('active');
-
-                                        $('.xEditableValue').editable('option', 'disabled', false);
-                                        $('.xEditable').editable('option', 'disabled', false);
-                                        $('.xEditableDatepicker').editable('option', 'disabled', false);
-                                        $('.xEditableManyToOne').editable('option', 'disabled', false);
-                                    }
-                                    else {
-                                        // hide Contoll Elements
-                                        $('.card').removeClass('hidden');
-                                        $('.card.la-js-hideable').not( ":has(.la-js-dont-hide-this-card)" ).addClass('hidden');
-                                        $('.la-js-hide-this-card').addClass('hidden');
-                                        $('.ui .form').addClass('hidden');
-                                        $('#collapseableSubDetails').find('.button').addClass('hidden');
-                                        // hide all the x-editable
-                                        $(toggleButton).removeAttr();
-                                        $(toggleButton).attr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
-                                        $( toggleIcon ).addClass( "slash" );
-                                        $(toggleButton).removeClass('active');
-
-                                        $('.xEditableValue').editable('option', 'disabled', true);
-                                        $('.xEditable').editable('option', 'disabled', true);
-                                        $('.xEditableDatepicker').editable('option', 'disabled', true);
-                                        $('.xEditableManyToOne').editable('option', 'disabled', true);
-                                    }
-                                }
-                                toggleEditableElements();
-                            });
-
-                        </r:script>
-                        </div>
+        <div class="ui fixed menu la-contextBar"  >
+            <div class="ui container">
+                <div class="ui sub header item la-context-org">${contextOrg?.name}</div>
+                <div class="right menu la-advanced-view">
+                    <div class="item">
+                        <g:if test="${cachedContent}">
+                            <button class="ui icon button" data-tooltip="${message(code:'statusbar.cachedContent.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                <i class="hourglass end icon green"></i>
+                            </button>
                         </g:if>
-                        <g:if test="${(params.mode)}">
+                    </div>
+
+                        <g:if test="${controllerName=='subscriptionDetails' && actionName=='show'}">
                             <div class="item">
-                                <g:if test="${params.mode=='advanced'}">
-                                    <div class="ui toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right" data-variation="tiny">
-                                        <i class="icon plus square"></i>
+                                <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
+                                    <button class="ui icon toggle button la-toggle-controls" data-tooltip="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                        <i class="pencil alternate icon"></i>
+                                    </button>
                                 </g:if>
                                 <g:else>
-                                    <div class="ui toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right" data-variation="tiny">
-                                        <i class="icon plus square green slash"></i>
+                                    <button class="ui icon toggle button active la-toggle-controls"  data-tooltip="${message(code:'statusbar.hideButtons.tooltip')}"  data-position="bottom right" data-variation="tiny">
+                                        <i class="pencil alternate icon slash"></i>
+                                    </button>
                                 </g:else>
-                            </div>
 
-
-
-                        <script>
-                            var LaToggle = {};
-                            LaToggle.advanced = {};
-                            LaToggle.advanced.button = {};
-
-                            // ready event
-                            LaToggle.advanced.button.ready = function() {
-
-                                // selector cache
-                                var
-                                    $button = $('.button.la-toggle-advanced'),
-
-                                    // alias
-                                    handler = {
-                                        activate: function() {
-                                            $icon = $(this).find('.icon');
-                                            if ($icon.hasClass("slash")) {
-                                                $icon.removeClass("slash");
-                                                window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'advanced']}" />";
+                            <r:script>
+                                $(function(){
+                                     <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
+                                        var editMode = true;
+                                    </g:if>
+                                    <g:else>
+                                        var editMode = false;
+                                    </g:else>
+                                    $(".ui.toggle.button").click(function(){
+                                        editMode = !editMode;
+                                        $.ajax({
+                                            url: '<g:createLink controller="ajax" action="toggleEditMode"/>',
+                                            data: {
+                                                showEditMode: editMode
+                                            },
+                                            success: function(){
+                                                toggleEditableElements()
                                             }
-                                             else {
-                                                $icon.addClass("slash");
-                                                window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'basic']}" />" ;
-                                            }
+                                        })
+                                    });
+                                    function toggleEditableElements(){
+                                        // for future handling on other views
+                                        // 1. add class 'hidden' via markup to all cards that might be toggled
+                                        // 2. add class 'la-js-hideable' to all cards that might be toggled
+                                        // 3. add class 'la-js-dont-hide-this-card' to markup that is rendered only in case of card has content, like to a table <th>
+                                        // 4.
+                                        var toggleButton = $(".ui.toggle.button");
+                                        var toggleIcon = $(".ui.toggle.button .icon");
+                                        $(".table").trigger('reflow');
+
+                                        if (  editMode) {
+                                            // show Contoll Elements
+                                            $('.card').removeClass('hidden');
+                                            $('.la-js-hide-this-card').removeClass('hidden');
+                                            $('.ui .form').removeClass('hidden');
+                                            $('#collapseableSubDetails').find('.button').removeClass('hidden');
+                                            $(toggleButton).removeAttr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
+                                            $(toggleButton).attr("data-tooltip","${message(code:'statusbar.showButtons.tooltip')}");
+                                            $(toggleIcon ).removeClass( "slash" );
+                                            $(toggleButton).addClass('active');
+
+                                            $('.xEditableValue').editable('option', 'disabled', false);
+                                            $('.xEditable').editable('option', 'disabled', false);
+                                            $('.xEditableDatepicker').editable('option', 'disabled', false);
+                                            $('.xEditableManyToOne').editable('option', 'disabled', false);
+                                        }
+                                        else {
+                                            // hide Contoll Elements
+                                            $('.card').removeClass('hidden');
+                                            $('.card.la-js-hideable').not( ":has(.la-js-dont-hide-this-card)" ).addClass('hidden');
+                                            $('.la-js-hide-this-card').addClass('hidden');
+                                            $('.ui .form').addClass('hidden');
+                                            $('#collapseableSubDetails').find('.button').addClass('hidden');
+                                            // hide all the x-editable
+                                            $(toggleButton).removeAttr();
+                                            $(toggleButton).attr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
+                                            $( toggleIcon ).addClass( "slash" );
+                                            $(toggleButton).removeClass('active');
+
+                                            $('.xEditableValue').editable('option', 'disabled', true);
+                                            $('.xEditable').editable('option', 'disabled', true);
+                                            $('.xEditableDatepicker').editable('option', 'disabled', true);
+                                            $('.xEditableManyToOne').editable('option', 'disabled', true);
                                         }
                                     }
+                                    toggleEditableElements();
+                                });
+
+                            </r:script>
+                            </div>
+                            </g:if>
+                            <g:if test="${(params.mode)}">
+                                <div class="item">
+                                    <g:if test="${params.mode=='advanced'}">
+                                        <div class="ui toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                            <i class="icon plus square"></i>
+                                    </g:if>
+                                    <g:else>
+                                        <div class="ui toggle la-toggle-advanced button" data-tooltip="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                            <i class="icon plus square green slash"></i>
+                                    </g:else>
+                                </div>
+
+
+
+                            <script>
+                                var LaToggle = {};
+                                LaToggle.advanced = {};
+                                LaToggle.advanced.button = {};
+
+                                // ready event
+                                LaToggle.advanced.button.ready = function() {
+
+                                    // selector cache
+                                    var
+                                        $button = $('.button.la-toggle-advanced'),
+
+                                        // alias
+                                        handler = {
+                                            activate: function() {
+                                                $icon = $(this).find('.icon');
+                                                if ($icon.hasClass("slash")) {
+                                                    $icon.removeClass("slash");
+                                                    window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'advanced']}" />";
+                                                }
+                                                 else {
+                                                    $icon.addClass("slash");
+                                                    window.location.href = "<g:createLink action="${actionName}" params="${params + ['mode':'basic']}" />" ;
+                                                }
+                                            }
+                                        }
+                                    ;
+                                    $button
+                                        .on('click', handler.activate)
+                                    ;
+                                };
+
+                                // attach ready event
+                                $(document)
+                                    .ready(LaToggle.advanced.button.ready)
                                 ;
-                                $button
-                                    .on('click', handler.activate)
-                                ;
-                            };
+                            </script>
 
-                            // attach ready event
-                            $(document)
-                                .ready(LaToggle.advanced.button.ready)
-                            ;
-                        </script>
+                    </div>
 
-                </div>
-
-                </div>
-                        </g:if>
-                <%--semui:editableLabel editable="${editable}" /--%>
+                    </div>
+                            </g:if>
+                    <%--semui:editableLabel editable="${editable}" /--%>
+            </div>
         </div>
-        </div>
-    </div><!-- Context Bar -->
+        </div><!-- Context Bar -->
 
+        <div class="ui right aligned sub header">${contextOrg?.name}</div>
 
-    <div class="ui right aligned sub header">${contextOrg?.name}</div>
-    <div class="navbar-push"></div>
+    </sec:ifAnyGranted><%-- ROLE_USER --%>
 
-        <sec:ifLoggedIn>
-            <g:if test="${contextUser!=null && ( contextUser.display==null || contextUser.display=='' ) }">
-                <div>
-                    <bootstrap:alert class="alert-info">Your display name is not currently set in user preferences. Please <g:link controller="profile" action="index">update
-                        Your display name</g:link> as soon as possible.
-                    </bootstrap:alert>
-                </div>
-            </g:if>
-        </sec:ifLoggedIn>
+        <div class="navbar-push"></div>
 
         <%-- global content container --%>
         <div class="ui main container">
@@ -676,16 +637,6 @@
             </div>
         </div>
 
-        <%-- maintenance --%>
-        <g:if test="${com.k_int.kbplus.Setting.findByName('MaintenanceMode')?.value == 'true'}">
-            <div id="maintenance">
-                <div class="ui segment center aligned inverted orange">
-                    <strong>ACHTUNG:</strong>
-                    Das System wird in den nächsten Minuten aktualisiert. Bitte pflegen Sie aktuell keine Daten ein!
-                </div>
-            </div>
-        </g:if>
-
         <%-- global container for modals and ajax --%>
         <div id="dynamicModalContainer"></div>
 
@@ -697,8 +648,17 @@
         <%-- global confirmation modal --%>
         <semui:confirmationModal  />
 
+        <%-- <a href="#globalJumpMark" class="ui button icon" style="position:fixed;right:0;bottom:0;"><i class="angle up icon"></i></a> --%
 
-    <%-- <a href="#globalJumpMark" class="ui button icon" style="position:fixed;right:0;bottom:0;"><i class="angle up icon"></i></a> --%>
+        <%-- maintenance --%>
+        <g:if test="${com.k_int.kbplus.Setting.findByName('MaintenanceMode')?.value == 'true'}">
+            <div id="maintenance">
+                <div class="ui segment center aligned inverted orange">
+                    <strong>ACHTUNG:</strong>
+                    Das System wird in den nächsten Minuten aktualisiert. Bitte pflegen Sie keine Daten mehr ein!
+                </div>
+            </div>
+        </g:if>
 
         <r:layoutResources/>
 
