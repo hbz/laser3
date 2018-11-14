@@ -63,9 +63,9 @@
                     <label>${message(code:'package.show.pkg_name', default:'Package Name')}</label>
                     <input name="q" placeholder="" value="${params.q}"/>
                 </div>
-                <div class="field">
-                    <button type="submit" name="search" value="yes" class="ui secondary button">${message(code:'default.button.filter.label', default:'Filter')}</button>
+                <div class="field la-field-right-aligned">
                     <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.filterreset.label')}</a>
+                    <button type="submit" name="search" value="yes" class="ui secondary button">${message(code:'default.button.filter.label', default:'Filter')}</button>
                 </div>
       </g:form>
    </semui:filter>

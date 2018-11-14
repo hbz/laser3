@@ -1008,7 +1008,7 @@ aside.ui.accordion .title:not(.ui) {
   border-left: none;
 }
 
-.ui.form .field.la-filter-search {
+.ui.form .field.la-field-right-aligned {
   text-align: right;
   margin-top: 1.6rem !important;
 }
@@ -21594,7 +21594,7 @@ ol.ui.horizontal.list li:before,
   padding-top: 0.3rem;
 }
 
-/*.ui.form .fields .field.la-filter-search {
+/*.ui.form .fields .field.la-field-right-aligned {
   text-align: right;
   margin-top: 1.2rem;
 } */
