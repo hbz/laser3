@@ -62,7 +62,7 @@ import="com.k_int.kbplus.RefdataCategory"
                     <div class="field">
                         <div class="three fields">
                             <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
-                            <div class="field la-filter-search">
+                            <div class="field la-field-right-aligned">
                                 <label></label>
                                 <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                                 <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">

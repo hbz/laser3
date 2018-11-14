@@ -25,7 +25,7 @@
 				<label>${message(code:'org.findProviderMatches.proposed')}</label>
 				<input type="text" name="proposedProvider" value="${params.proposedProvider}" />
 			</div>
-			<div class="field la-filter-search">
+			<div class="field la-field-right-aligned">
 				<a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.searchreset.label')}</a>
 				<input type="submit" value="${message(code:'default.button.search.label', default:'Filter')}" class="ui secondary button">
 			</div>
