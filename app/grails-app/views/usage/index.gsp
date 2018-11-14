@@ -123,17 +123,41 @@
     <g:sortableColumn property="haveUpTo" title="Until" params="${params}"/>
     <g:sortableColumn property="numFacts" title="Fact Count" params="${params}"/>
     <g:sortableColumn property="factType" title="Report" params="${params}"/>
+    <th>Errors</th>
   </tr>
   </thead>
   <tbody>
   <g:each in="${availStatsRanges}" var="asr" status="i">
-    <tr>
+    <g:set var="fs" bean="factService"/>
+    <g:set var="statsError" value="${fs.getStatsErrors(asr)}"/>
+
+    <tr class="stats-error-row-${i}">
       <td>${asr.customerId}</td>
       <td>${asr.supplierId}</td>
       <td>${asr.haveUpTo}</td>
       <td>${asr.numFacts}</td>
       <td>${asr.factType.value}</td>
+
+    <g:if test="${statsError.size()!=0}">
+      <td class="x">
+        <button class="ui icon button" data-target="stats-error-content-${i}">
+          <i class="info icon"></i>
+        </button>
+      </td>
+    </g:if>
     </tr>
+    <g:if test="${statsError.size()!=0}">
+    <tr class="stats-error-content-${i}" style="display:none">
+      <td colspan="5">
+        <div class="ui relaxed list">
+            <div class="header">Fehler</div>
+               <div class="item">
+                 ${statsError.jerror}
+               </div>
+        </div>
+      </td>
+    </tr>
+    </g:if>
   </g:each>
   </tbody>
 </table>
@@ -169,6 +193,12 @@
             </g:each>
         </td></tr>
 </table>
-
+<r:script>
+  $(function(){
+    $('tr[class*=stats-error-row] .button').click( function(){
+      $('.' + $(this).attr('data-target')).toggle()
+    })
+  })
+</r:script>
 </body>
 </html>

@@ -27,7 +27,7 @@ class UsageController {
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         // criteria and totalCount for PageResultList Object seems to be problematic with projections and aggregation
-        // use extra hql query for now
+        // use extra hql query for now, TODO only use hql base query and move the query out of this method
 
         def hql = "select stc.id from StatsTripleCursor as stc"
         def groupCondition = " group by stc.supplierId, stc.customerId, stc.haveUpTo,stc.factType"
@@ -130,6 +130,8 @@ class UsageController {
     @Secured(['ROLE_STATISTICS_EDITOR','ROLE_ADMIN'])
     def fetchSelection()
     {
+        // TODO when we switch to global API Key / Requestor, query SUSHI Service status endpoint here
+        // Do not continue if service is not active or there is an error with the API Credentials.
         def result = initResult()
         statsSyncService.addFilters(params)
         statsSyncService.doSync()

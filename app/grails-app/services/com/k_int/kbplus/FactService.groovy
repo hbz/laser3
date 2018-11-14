@@ -492,4 +492,16 @@ class FactService {
     return StatsTripleCursor.executeQuery(hql)
   }
 
+  def getStatsErrors(asr)
+  {
+    def criteria = StatsTripleCursor.createCriteria()
+    def results = criteria.list() {
+      eq('supplierId', asr.supplierId)
+      eq('customerId', asr.customerId)
+      eq('factType', asr.factType)
+      ne('jerror','')
+    }
+    results
+  }
+
 }
