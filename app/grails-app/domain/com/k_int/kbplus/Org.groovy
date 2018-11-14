@@ -396,7 +396,7 @@ class Org extends AbstractBaseDomain {
 
     def getallOrgRoleType()
     {
-        def result = [];
+        def result = []
         orgRoleType?.each {
                 result << it
         }
@@ -405,7 +405,7 @@ class Org extends AbstractBaseDomain {
 
     def getallOrgRoleTypeIds()
     {
-        def result = [];
+        def result = []
         orgRoleType?.each {
             result << it.id
         }
