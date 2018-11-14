@@ -6,8 +6,7 @@ import java.text.SimpleDateFormat
 class DateUtil {
 
     static Date toDate_NoTime(String value) {
-        def date = getSimpleDateFormat_NoTime().parseObject(value)
-        date
+        getSimpleDateFormat_NoTime().parseObject(value)
     }
     static getSimpleDateFormat_NoTime(){
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
