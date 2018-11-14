@@ -518,7 +518,7 @@ class OrganisationsController {
             return
         }
 
-        if ( SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') ) {
+        if ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR') ) {
             result.editable = true
         }
         else {
@@ -545,7 +545,7 @@ class OrganisationsController {
             return
         }
 
-        if ( SpringSecurityUtils.ifAllGranted('ROLE_ADMIN') ) {
+        if ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR') ) {
             result.editable = true
         }
         else {

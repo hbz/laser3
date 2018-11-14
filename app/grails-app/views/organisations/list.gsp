@@ -32,7 +32,9 @@
         <semui:filter>
             <g:form action="list" method="get" class="ui form">
                 <g:render template="/templates/filter/orgFilter"
-                          model="[tmplConfigShow: ['name', 'type', 'sector', 'federalState', 'libraryNetwork', 'libraryType']
+                          model="[
+                                  tmplConfigShow: ['name', 'type', 'sector', 'federalState', 'libraryNetwork', 'libraryType'],
+                                  tmplConfigFormFilter: true
                           ]"/>
             </g:form>
         </semui:filter>
