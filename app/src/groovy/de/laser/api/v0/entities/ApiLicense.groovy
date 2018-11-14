@@ -45,9 +45,8 @@ class ApiLicense {
     /**
      * @return grails.converters.JSON | FORBIDDEN
      */
-    static getLicense(License lic, User user, Org context){
+    static getLicense(License lic, Org context, boolean hasAccess){
         def result = []
-        def hasAccess = ApiReader.isDataManager(user)
 
         if (! hasAccess) {
             lic.orgLinks.each { orgRole ->
