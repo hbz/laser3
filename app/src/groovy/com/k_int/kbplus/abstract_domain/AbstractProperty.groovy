@@ -2,18 +2,19 @@ package com.k_int.kbplus.abstract_domain
 
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
+import org.codehaus.groovy.grails.web.util.StreamCharBuffer
 
 import javax.persistence.Transient
 
 abstract class AbstractProperty implements Serializable {
 
-    String          stringValue
-    Integer         intValue
-    BigDecimal      decValue
-    RefdataValue    refValue
-    String          note = ""
-    Date            dateValue
-    
+    String           stringValue
+    Integer          intValue
+    BigDecimal       decValue
+    RefdataValue     refValue
+    String           note = ""
+    Date             dateValue
+
     static mapping = {
         stringValue  type: 'text'
         note         type: 'text'
@@ -93,7 +94,7 @@ abstract class AbstractProperty implements Serializable {
                 result = null
                 break
             case Date.toString():
-                result = value.getDateString()
+                result = new java.text.SimpleDateFormat('dd.MM.yyyy').parse(value)
                 break
             default:
                 result = "AbstractProperty.parseValue failed"
