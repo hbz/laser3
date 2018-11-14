@@ -165,6 +165,18 @@
                         </div>
 
                         <div class="field">
+                            <label>Berechtigungen</label>
+                            <div class="ui list">
+                                <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER'))}">
+                                    <div class="item"><i class="icon check circle outline"></i> Lesend</div>
+                                </g:if>
+                                <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
+                                    <div class="item"><i class="icon check circle"></i> Schreibend</div>
+                                </g:if>
+                            </div>
+                        </div>
+
+                        <div class="field">
                             <label></label>
                             <g:link class="ui button" controller="api" action="index">${message(code:'api.linkTo', default:'Visit API')}</g:link>
                         </div>
