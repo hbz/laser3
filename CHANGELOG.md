@@ -3,8 +3,10 @@
 
 - increased session timeout to 120 minutes
 - fixed: empty license custom property when starting inheritance
-- fixed: null pointer at issue entitlement view 
 - fixed: preselected tab on dashboard
+- fixed: null pointer at issue entitlement view 
+- fixed: property filter query
+- fixed: invalid data format function
 
 0.10.5
 
