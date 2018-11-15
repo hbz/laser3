@@ -1,4 +1,9 @@
 
+0.10.6
+
+-
+- fixed: null pointer at issue entitlement view 
+
 0.10.5
 
 - reworked error page

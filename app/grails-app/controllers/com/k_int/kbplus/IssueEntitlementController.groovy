@@ -75,7 +75,7 @@ class IssueEntitlementController {
       if ( title_id != null &&
            org != null &&
            supplier_id != null ) {
-          result.natStatSupplierId = supplier.getIdentifierByType('statssid').value
+          result.natStatSupplierId = supplier.getIdentifierByType('statssid')?.value
           def fsresult = factService.generateUsageData(org.id, supplier_id, result.issueEntitlementInstance.subscription, title_id)
           def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(org.id, supplier_id, result.issueEntitlementInstance.subscription, title_id)
           result.institutional_usage_identifier =
