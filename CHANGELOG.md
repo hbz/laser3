@@ -2,6 +2,7 @@
 0.10.6
 
 - increased session timeout to 120 minutes
+- fixed: empty license custom property when starting inheritance
 - fixed: null pointer at issue entitlement view 
 - fixed: preselected tab on dashboard
 
