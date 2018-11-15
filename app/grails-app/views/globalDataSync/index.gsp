@@ -15,29 +15,25 @@
 
 <semui:filter>
     <g:form action="index" method="get" class="ui form">
-        <div class="fields">
+        <div class="two fields">
             <div class="field">
                 <label>${message(code: 'globalDataSync.search.text')}</label>
                 <input type="text" name="q" placeholder="${message(code: 'globalDataSync.search.ph')}"
                        value="${params.q}"/>
             </div>
-
-
-                <div class="field">
-                    <label>&nbsp;</label>
-                    <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.filterreset.label')}</a>
-                </div>
-                <div class="field">
-                    <label>&nbsp;</label>
-                    <input type="submit" class="ui secondary button"
-                           value="${message(code: 'default.button.filter.label')}"/>
-                </div>
+            <div class="field la-field-right-aligned">
+                <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
+                <input type="submit" class="ui secondary button"
+                       value="${message(code: 'default.button.filter.label')}"/>
+            </div>
         </div>
     </g:form>
     <g:form action="index" method="get" class="ui form">
         <div class="fields">
-            <g:link class="ui secondary button" params="[sort: 'ts', max: max, offset: offset, order: order]"><g:message
-                    code="globalDataSync.updated"/></g:link>
+            <div class="field">
+                <g:link class="ui secondary button" params="[sort: 'ts', max: max, offset: offset, order: order]"><g:message
+                        code="globalDataSync.updated"/></g:link>
+            </div>
         </div>
     </g:form>
 </semui:filter>
