@@ -15,21 +15,17 @@
     <semui:filter>
       <g:form action="index" role="form" class="ui form" method="get" params="${params}">
         <input type="hidden" name="offset" value="${params.offset}"/>
-        <div class="fields">
+        <div class="three fields">
           <div class="field">
-            <label for="q" class="control-label">${message(code: 'title.search')}</label>
+            <label for="q">${message(code: 'title.search')}</label>
             <input id="q" type="text" name="q" placeholder="${message(code: 'title.search.ph')}" value="${params.q}"/>
           </div>
           <div class="field">
-            <label for="filter" class="control-label">${message(code: 'title.search_in')}</label>
+            <label for="filter"">${message(code: 'title.search_in')}</label>
             <g:select class="ui dropdown" id="filter" name="filter" from="${[[key:'title',value:"${message(code: 'title.title.label')}"],[key:'publisher',value:"${message(code:'title.publisher.label')}"],[key:'',value:"${message(code: 'title.all.label')}"]]}" optionKey="key" optionValue="value" value="${params.filter}"/>
           </div>
-            <div class="field">
-              <label>&nbsp;</label>
+            <div class="field la-field-right-aligned">
               <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-            </div>
-            <div class="field">
-              <label>&nbsp;</label>
               <button class="ui secondary button" type="submit" name="search" value="yes">${message(code: 'default.button.filter.label')}</button>
             </div>
         </div>

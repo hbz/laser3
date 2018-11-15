@@ -19,7 +19,7 @@
 
         <semui:filter>
             <form class="ui form">
-                <div class="fields">
+                <div class="four fields">
                     <div class="field">
                         <label>${message(code: 'task.title.label', default: 'Title')}</label>
                         <div class="ui input">
@@ -44,14 +44,10 @@
                                   optionValue="value" />
                     </div>
                 </div>
-                    <div class="fields">
-                        <div class="field">
-                            <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.filterreset.label')}</a>
-                        </div>
-                        <div class="field">
-                            <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}"/>
-                        </div>
-                    </div>
+                <div class="field la-field-right-aligned">
+                    <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
+                    <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}"/>
+                </div>
             </form>
         </semui:filter>
 
