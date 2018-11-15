@@ -37,8 +37,8 @@
                 <div class="header"><g:message code="myinst.message.attention" /></div>
                 <p>
                     <g:message code="myinst.licenseDetails.message.ChildView" />
-                    <g:each in="${license.getAllLicensee()?.collect{itOrg -> itOrg.name}}" var="licensee">
-                        <span class="ui label">${licensee}</span> ,
+                    <g:each in="${license.getAllLicensee()?.collect{itOrg -> itOrg.getDesignation()}}" var="licensee">
+                        <span class="ui label">${licensee}</span>,
                     </g:each>
 
                     <g:message code="myinst.licenseDetails.message.ConsortialView" />

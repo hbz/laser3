@@ -28,7 +28,6 @@
             <g:render template="actions" />
         </semui:controlButtons>
 
-
         <g:if test="${params.asAt}">
             <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])}</h1>
         </g:if>
@@ -47,7 +46,10 @@
             <div class="header"><g:message code="myinst.message.attention" /></div>
             <p>
                 <g:message code="myinst.subscriptionDetails.message.ChildView" />
-                    <span class="ui label">${subscriptionInstance.getAllSubscribers()?.collect{itOrg -> itOrg.name}.join(',')}</span>.
+                <g:each in="${subscriptionInstance.getAllSubscribers()?.collect{itOrg -> itOrg.getDesignation()}}" var="subscr">
+                    <span class="ui label">${subscr}</span>,
+                </g:each>
+
                 <g:message code="myinst.subscriptionDetails.message.ConsortialView" />
                     <g:link controller="subscriptionDetails" action="show" id="${subscriptionInstance.instanceOf.id}"><g:message code="myinst.subscriptionDetails.message.here" /></g:link>.
             </p>
