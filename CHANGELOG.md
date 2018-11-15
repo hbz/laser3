@@ -1,8 +1,9 @@
 
 0.10.6
 
--
+- increased session timeout to 120 minutes
 - fixed: null pointer at issue entitlement view 
+- fixed: preselected tab on dashboard
 
 0.10.5
 
