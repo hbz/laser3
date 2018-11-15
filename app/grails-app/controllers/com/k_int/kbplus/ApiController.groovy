@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
 import de.laser.ContextService
+import de.laser.api.v0.ApiManager
 import de.laser.helper.Constants
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -296,7 +297,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
         def result
         def hasAccess = false
-        def apiManager = de.laser.api.v0.ApiMainClass
+        def apiManager = ApiManager
 
         def obj     = params.get('obj')
         def query   = params.get('q')

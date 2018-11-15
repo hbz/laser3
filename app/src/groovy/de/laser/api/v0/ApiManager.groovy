@@ -1,7 +1,9 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
+import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserRole
 import de.laser.api.v0.entities.*
 import de.laser.helper.Constants
 import grails.converters.JSON
@@ -12,7 +14,7 @@ import org.springframework.http.HttpStatus
 import javax.servlet.http.HttpServletRequest
 
 @Log4j
-class ApiMainClass {
+class ApiManager {
 
     /**
      * @return Object
@@ -40,7 +42,7 @@ class ApiMainClass {
         else if ('issueEntitlements'.equalsIgnoreCase(obj)) {
             if (format in ApiReader.SUPPORTED_FORMATS.issueEntitlements) {
                 def subPkg = ApiIssueEntitlement.findSubscriptionPackageBy(query, value)
-                if (subPkg && ! (subPkg in failureCodes) ) {
+                if (subPkg && !(subPkg in failureCodes) ) {
                     result = ApiIssueEntitlement.getIssueEntitlements(subPkg, contextOrg, hasAccess)
 
                     if (result && format == Constants.MIME_TEXT_PLAIN) {

@@ -101,7 +101,7 @@
                 query_q: 'q - Identifier for this query',
                 query_v: 'v - Value for this query',
                 authorization: 'Authorization - hmac-sha256 generated auth header',
-                context: 'context - Optional information if user has memberships in multiple organisations'
+                context: 'context - Concrete globalUID, if user has memberships in multiple organisations'
             }
 
             var reactAccess = function(element) {

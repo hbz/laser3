@@ -1,7 +1,7 @@
 ---
 swagger: "2.0"
 info:
-  version: "version 0 / tag 0.9"
+  version: "version 0 / tag 0.10"
   title: LAS:eR - API
   description: >
     Known Issues: _Authorization_ has to filled out manually. Usual javascript insertion isn't working due shadow dom mechanic of [React](https://facebook.github.io/react). Please copy and paste
@@ -71,7 +71,7 @@ parameters:
     name: context
     required: false
     type: string
-    description: Optional information if user has memberships in multiple organisations
+    description: Concrete globalUID, if user has memberships in multiple organisations
   authorization:
     in: header
     name: Authorization
