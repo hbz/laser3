@@ -994,7 +994,7 @@ definitions:
           scope:
             type: string
           sector:
-            deprecated: true
+            #deprecated: true
             type: string
             description: Mapping RefdataCategory "OrgSector"
             enum:
@@ -1006,7 +1006,7 @@ definitions:
             enum:
               [""]
           type:
-            deprecated: true
+            #deprecated: true
             type: string
             description: Mapping RefdataCategory "OrgType"
             enum:
