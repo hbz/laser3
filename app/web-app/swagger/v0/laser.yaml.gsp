@@ -1,7 +1,7 @@
 ---
 swagger: "2.0"
 info:
-  version: "0 / tag 0.11"
+  version: "0 / tag 0.12"
   title: LAS:eR - API
   description: >
     Known Issues:
@@ -445,6 +445,12 @@ definitions:
       sortableReference:
         type: string
 
+  LicenseStub(inLicense):
+    allOf:
+      - $ref: "#/definitions/LicenseStub"
+      - type: object
+        readOnly: true
+
   OrganisationStub:
     type: object
     properties:
@@ -770,10 +776,9 @@ definitions:
             type: string
             format: date
             example: "2011-08-31 23:55:59"
-    #      incomingLinks:
-    #        type: array
-    #        items:
-    #          $ref: "#/definitions/Link"
+          instanceOf:
+            readOnly: true # bug fixed due #/definitions/LicenseStub(inLicense).readOnly:true
+            $ref: "#/definitions/LicenseStub(inLicense)"
           isPublic:
             type: string
             description: Mapping RefdataCategory
@@ -811,10 +816,6 @@ definitions:
             type: array
             items:
               $ref: "#/definitions/OrganisationRole(onlyOrgRelation)" # resolved OrgRole
-    #      outgoingLinks:
-    #        type: array
-    #        items:
-    #          $ref: "#/definitions/Link"
     #      packages:
     #        type: array
     #        items:
@@ -867,15 +868,14 @@ definitions:
           endDate:
             type: string
             format: date
-    #      incomingLinks:
-    #        type: array
-    #        items:
-    #          $ref: "#/definitions/Link"
           isPublic:
             type: string
             description: Mapping RefdataCategory
             enum:
               [""]
+          instanceOf:
+            readOnly: true # bug fixed due #/definitions/LicenseStub(inLicense).readOnly:true
+            $ref: "#/definitions/LicenseStub(inLicense)"
           lastmod:
             type: string
             format: date
@@ -903,10 +903,6 @@ definitions:
           onixplLicense:
             readOnly: true # bug fixed due #/definitions/OnixplLicense.readOnly:true
             $ref: "#/definitions/OnixplLicense"
-    #      outgoingLinks:
-    #        type: array
-    #        items:
-    #          $ref: "#/definitions/Link"
     #      packages:
     #        type: array
     #        items:
@@ -932,32 +928,6 @@ definitions:
             description: Mapping RefdataCategory
             enum:
               [""]
-
-#  Link:
-#    type: object
-#    properties:
-#      id:
-#        type: integer
-#        readOnly: true
-#      fromLic:
-#        $ref: "#definitions/LicenseStub"
-#      isSlaved:
-#        type: string
-#        description: Mapping RefdataCategory
-#        enum:
-#          [""]
-#      status:
-#        type: string
-#        description: Mapping RefdataCategory
-#        enum:
-#          [""]
-#      toLic:
-#        $ref: "#definitions/LicenseStub"
-#      type:
-#        type: string
-#        description: Mapping RefdataCategory
-#        enum:
-#          [""]
 
   OnixplLicense:
     type: object
@@ -994,6 +964,12 @@ definitions:
             type: array
             items:
               $ref: "#/definitions/Contact"
+          fteStudents:
+            type: integer
+            example: 15000
+          fteStaff:
+            type: integer
+            example: 350
           impId:
             type: string
             readOnly: true
@@ -1006,9 +982,19 @@ definitions:
             type: array
             items:
               $ref: "#/definitions/Property"
+          #roleType:
+          #  type: array
+          #  items:
+          #    $ref: "#/definitions/OrgRoleType"
+          #
+          #  description: Mapping RefdataCategory "OrgRoleType"
+          #  enum:
+          #    [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgRoleType').collect{ it.value }.join(', ') }]
+          #  example: "Consortium"
           scope:
             type: string
           sector:
+            deprecated: true
             type: string
             description: Mapping RefdataCategory "OrgSector"
             enum:
@@ -1020,6 +1006,7 @@ definitions:
             enum:
               [""]
           type:
+            deprecated: true
             type: string
             description: Mapping RefdataCategory "OrgType"
             enum:
