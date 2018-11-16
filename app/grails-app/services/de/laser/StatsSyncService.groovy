@@ -222,6 +222,11 @@ class StatsSyncService {
                                         ItemIdentifier: "${reportType}:zdbid:" + titleId
                                 ]) { response, xml ->
                             if (xml) {
+                                def authenticationError = getSushiErrorMessage(xml)
+                                if (authenticationError){
+                                    jsonErrors.add(authenticationError)
+                                    csr.jerror = JsonOutput.toJson(jsonErrors)
+                                }
                                 if (responseHasUsageData(xml, titleId)) {
                                     def statsTitles = xml.depthFirst().findAll {
                                         it.name() == 'ItemName'
@@ -357,6 +362,16 @@ class StatsSyncService {
         return "${cal.get(Calendar.YEAR)}-${String.format('%02d',cal.get(Calendar.MONTH)+1)}-${cal.get(Calendar.DAY_OF_MONTH)}"
     }
 
+    private getSushiErrorMessage(xml){
+        if (xml.Exception.isEmpty() == false) {
+            def errorNumber = xml.Exception.Number
+            def sushiErrorList = ['2000', '2020', '3000', '3062']
+            if (errorNumber in sushiErrorList) {
+                return xml.Exception.Message.toString()
+            }
+        }
+        return false
+    }
 
     private Boolean responseHasUsageData(xml, titleId) {
         // TODO maybe better check for usage first
