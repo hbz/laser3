@@ -14,7 +14,7 @@ class SubscriptionsQueryService {
     def propertyService
     def contextService
 
-    def myInstitutionCurrentSubscriptionsQuery(def params) {
+    def myInstitutionCurrentSubscriptionsBaseQuery(def params) {
 
         def date_restriction
         def sdf = new SimpleDateFormat('dd.MM.yyyy')//TODO Umbauen auf das neue DateUtil
@@ -49,9 +49,6 @@ class SubscriptionsQueryService {
         def role_sub            = RDStore.OR_SUBSCRIBER
         def role_subCons        = RDStore.OR_SUBSCRIBER_CONS
         def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
-//        def roleTypes           = [role_sub, role_sub_consortia]
-//        def role_provider       = RefdataValue.getByValueAndCategory('Provider','Organisational Role')
-//        def role_agency         = RefdataValue.getByValueAndCategory('Agency','Organisational Role')
 
         // ORG: def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
         // ORG: def qry_params = ['roleTypes':roleTypes, 'activeInst':contextService.org]

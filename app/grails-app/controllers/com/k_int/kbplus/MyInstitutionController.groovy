@@ -39,6 +39,7 @@ class MyInstitutionController {
     def filterService
     def propertyService
     def queryService
+    def subscriptionsQueryService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -563,123 +564,12 @@ from License as l where (
             date_restriction = sdf.parse(params.validOn)
         }
 
-        /*
-        def dateBeforeFilter = null;
-        def dateBeforeFilterVal = null;
-        if(params.dateBeforeFilter && params.dateBeforeVal){
-            if(params.dateBeforeFilter == "renewalDate"){
-                dateBeforeFilter = " and s.manualRenewalDate < :date_before"
-                dateBeforeFilterVal =sdf.parse(params.dateBeforeVal)
-            }else if (params.dateBeforeFilter == "endDate"){
-                dateBeforeFilter = " and s.endDate < :date_before"
-                dateBeforeFilterVal =sdf.parse(params.dateBeforeVal)
-            }else{
-              result.remove('dateBeforeFilterVal')
-              result.remove('dateBeforeFilter')
-            }
-
-        }
-        */
-
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
+        result.num_sub_rows = Subscription.executeQuery("select count(s) " + tmpQ[0], tmpQ[1])[0]
+        result.subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1], [max: result.max, offset: result.offset]);
 
-
-        def role_sub            = RDStore.OR_SUBSCRIBER
-        def role_subCons        = RDStore.OR_SUBSCRIBER_CONS
-        def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
-        def roleTypes           = [role_sub, role_sub_consortia]
-        def role_provider       = RefdataValue.getByValueAndCategory('Provider','Organisational Role')
-        def role_agency         = RefdataValue.getByValueAndCategory('Agency','Organisational Role')
-
-        // ORG: def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
-        // ORG: def qry_params = ['roleTypes':roleTypes, 'activeInst':result.institution]
-
-        def base_qry
-        def qry_params
-
-        if (! params.orgRole) {
-            if ((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) {
-                params.orgRole = 'Subscription Consortia'
-            }
-            else {
-                params.orgRole = 'Subscriber'
-            }
-        }
-
-        if (params.orgRole == 'Subscriber') {
-
-            base_qry = """
-from Subscription as s where (
-    exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :activeInst ) ) 
-    AND ( s.status.value != 'Deleted' )
-    AND (
-        ( not exists ( select o from s.orgRelations as o where o.roleType = :scRoleType ) )
-        or
-        ( ( exists ( select o from s.orgRelations as o where o.roleType = :scRoleType ) ) AND ( s.instanceOf is not null) )
-    )
-)
-"""
-            qry_params = ['roleType1':role_sub, 'roleType2':role_subCons, 'activeInst':result.institution, 'scRoleType':role_sub_consortia]
-        }
-
-        if (params.orgRole == 'Subscription Consortia') {
-
-            base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is null AND s.status.value != 'Deleted' ) "
-            qry_params = ['roleType':role_sub_consortia, 'activeInst':result.institution]
-        }
-
-        if (params.q?.length() > 0) {
-            base_qry += (
-                    " and ( lower(s.name) like :name_filter " // filter by subscription
-                            + " or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and ( lower(sp.pkg.name) like :name_filter ) ) " // filter by pkg
-                            + " or exists ( select lic from License as lic where s.owner = lic and ( lower(lic.reference) like :name_filter ) ) " // filter by license
-                            + " or exists ( select orgR from OrgRole as orgR where orgR.sub = s and ( lower(orgR.org.name) like :name_filter"
-                            + " or lower(orgR.org.shortname) like :name_filter or lower(orgR.org.sortname) like :name_filter) ) " // filter by Anbieter, Konsortium, Agency
-                            +  " ) "
-            )
-
-            qry_params.put('name_filter', "%${params.q.trim().toLowerCase()}%");
-        }
-
-        // eval property filter
-
-        if (params.filterPropDef) {
-            (base_qry, qry_params) = propertyService.evalFilterQuery(params, base_qry, 's', qry_params)
-        }
-
-        if (date_restriction) {
-            base_qry += " and s.startDate <= :date_restr and (s.endDate >= :date_restr or s.endDate is null or s.endDate ='' )"
-            qry_params.put('date_restr', date_restriction)
-        }
-
-        /* if(dateBeforeFilter ){
-            base_qry += dateBeforeFilter
-            qry_params.put('date_before', dateBeforeFilterVal)
-        } */
-
-        def subTypes = params.list('subTypes')
-        if (subTypes) {
-            subTypes = subTypes.collect{it as Long}
-            base_qry += " and s.type.id in (:subTypes) "
-            qry_params.put('subTypes', subTypes)
-        }
-
-        if (params.status) {
-            base_qry += " and s.status.id = :status "
-            qry_params.put('status', (params.status as Long))
-        }
-
-        if ((params.sort != null) && (params.sort.length() > 0)) {
-            base_qry += (params.sort=="s.name") ? " order by LOWER(${params.sort}) ${params.order}":" order by ${params.sort} ${params.order}"
-        } else {
-            base_qry += " order by lower(trim(s.name)) asc"
-        }
-
-        //log.debug("query: ${base_qry} && params: ${qry_params}")
-
-        result.num_sub_rows = Subscription.executeQuery("select count(s) " + base_qry, qry_params)[0]
-        result.subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
         result.date_restriction = date_restriction;
 
         result.propList =
