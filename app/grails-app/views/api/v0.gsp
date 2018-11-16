@@ -132,8 +132,8 @@
             window.jabba = jabba
 
             setTimeout(function(){
-                jQuery('.topbar-wrapper').append('<span class="ui-box">Key <input name="apiKey" type="text" placeholder="Current API Key" value="${apiKey}"></span>')
-                jQuery('.topbar-wrapper').append('<span class="ui-box">Secret <input name="apiSecret" type="password" placeholder="Current API Secret" value="${apiSecret}"></span>')
+                jQuery('.topbar-wrapper').append('<span class="ui-box">Id <input name="apiId" type="text" placeholder="Current API Id" value="${apiId}"></span>')
+                jQuery('.topbar-wrapper').append('<span class="ui-box">Key <input name="apiKey" type="password" placeholder="Current API Key" value="${apiKey}"></span>')
                 jQuery('.topbar-wrapper').append('<span class="ui-box">Context <input name="apiContext" type="text" placeholder="Current Context" value="${apiContext}"></span>')
                 jQuery('.topbar-wrapper').append('<span class="ui-box">Authorization <input name="apiAuth" type="text" placeholder="Will be generated" value=""></span>')
 
@@ -168,8 +168,8 @@
             */
 
             function genDigist(div) {
+                var id      = jQuery('.topbar input[name=apiId]').val().trim()
                 var key     = jQuery('.topbar input[name=apiKey]').val().trim()
-                var secret  = jQuery('.topbar input[name=apiSecret]').val().trim()
                 var method  = jQuery(div).parents('.opblock').find('.opblock-summary-method').text()
                 var path    = "/api/${apiVersion}" + jQuery(div).parents('.opblock').find('.opblock-summary-path > span').text()
                 var timestamp = ""
@@ -189,8 +189,8 @@
                 }
 
                 var algorithm     = "hmac-sha256"
-                var digest        = CryptoJS.HmacSHA256(method + path + timestamp + nounce + query + body, secret)
-                var authorization = "hmac " + key + ":" + timestamp + ":" + nounce + ":" + digest + "," + algorithm
+                var digest        = CryptoJS.HmacSHA256(method + path + timestamp + nounce + query + body, key)
+                var authorization = "hmac " + id + ":" + timestamp + ":" + nounce + ":" + digest + "," + algorithm
 
                 return authorization
             }
