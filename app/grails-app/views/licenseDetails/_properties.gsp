@@ -32,7 +32,7 @@
                     <h5 class="ui header">Merkmale: ${propDefGroup.name}</h5>
                     <div id="grouped_custom_props_div_${propDefGroup.id}">
 
-                        <g:render template="/templates/properties/groups" model="${[
+                        <g:render template="/templates/properties/group" model="${[
                                 propDefGroup: propDefGroup,
                                 prop_desc: PropertyDefinition.LIC_PROP, // TODO: change
                                 ownobj: license,

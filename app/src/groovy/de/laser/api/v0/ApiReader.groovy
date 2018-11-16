@@ -84,6 +84,7 @@ class ApiReader {
         // References
 
         result.identifiers      = ApiReaderHelper.resolveIdentifiers(lic.ids) // com.k_int.kbplus.IdentifierOccurrence
+        result.instanceOf       = ApiReaderHelper.resolveLicenseStub(lic.instanceOf, context) // com.k_int.kbplus.License
         result.properties       = ApiReaderHelper.resolveProperties(lic, context)  // com.k_int.kbplus.(LicenseCustomProperty, LicensePrivateProperty)
         result.documents        = ApiReaderHelper.resolveDocuments(lic.documents) // com.k_int.kbplus.DocContext
         result.onixplLicense    = ApiReaderHelper.resolveOnixplLicense(lic.onixplLicense, lic, context) // com.k_int.kbplus.OnixplLicense
@@ -99,8 +100,6 @@ class ApiReader {
 
         // Ignored
 
-        //result.incomingLinks    = exportHelperService.resolveLinks(lic.incomingLinks) // com.k_int.kbplus.Link
-        //result.outgoinglinks    = exportHelperService.resolveLinks(lic.outgoinglinks) // com.k_int.kbplus.Link
         //result.packages         = exportHelperService.resolveStubs(lic.pkgs, exportHelperService.PACKAGE_STUB) // com.k_int.kbplus.Package
         /*result.persons          = exportHelperService.resolvePrsLinks(
                 lic.prsLinks, exportHelperService.NO_CONSTRAINT, exportHelperService.NO_CONSTRAINT, context
@@ -124,6 +123,8 @@ class ApiReader {
         result.name         = org.name
         result.scope        = org.scope
         result.shortcode    = org.shortcode
+        result.fteStudents  = org.fteStudents
+        result.fteStaff     = org.fteStaff
 
         // RefdataValues
 

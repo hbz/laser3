@@ -4,7 +4,6 @@
 <g:each in="${tmplConfigShow}" var="row">
 
     <g:set var="numberOfFields" value="${row.size()}" />
-
     <% if (row.contains('property')) { numberOfFields++ } %>
 
     <g:if test="${numberOfFields > 1}">
@@ -115,10 +114,11 @@
             </g:if>
 
         </g:each>
-
-    <g:if test="${row.size() > 1}">
+    <g:if test="${numberOfFields > 1}">
         </div><!-- .fields -->
     </g:if>
+
+
 </g:each>
 
 <g:set var="allFields" value="${tmplConfigShow.flatten()}" />
@@ -176,4 +176,5 @@
         </g:else>
 
 </div>
+
 

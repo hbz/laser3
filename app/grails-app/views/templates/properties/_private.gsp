@@ -37,7 +37,7 @@
         <g:each in="${ownobj.privateProperties.sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
             <g:if test="${prop.type?.tenant?.id == tenant?.id}">
                 <tr>
-                    <td class="la-column-nowrap">
+                    <td>
                         ${prop.type.getI10n('name')}
                         <g:if test="${prop.type.mandatory}">
                             <span data-position="top right" data-tooltip="${message(code:'default.mandatory.tooltip')}">
