@@ -14,6 +14,7 @@ info:
 <g:if test="${grails.util.Environment.current == grails.util.Environment.PRODUCTION}">basePath: /api/v0 # production
 
 schemes:
+  - https
   - http</g:if>
 <g:else>basePath: /laser/api/v0 # development
 
