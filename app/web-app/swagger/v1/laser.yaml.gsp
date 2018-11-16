@@ -1,7 +1,7 @@
 ---
 swagger: "2.0"
 info:
-  version: "version 1 / tag 0.1"
+  version: "1 / tag 0.1"
   title: LAS:eR - API
   description: >
     Known Issues: _Authorization_ has to filled out manually. Usual javascript insertion isn't working due shadow dom mechanic of [React](https://facebook.github.io/react). Please copy and paste

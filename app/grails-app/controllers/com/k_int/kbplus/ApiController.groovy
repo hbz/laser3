@@ -25,8 +25,8 @@ class ApiController {
         def result = [:]
         if (springSecurityService.isLoggedIn()) {
             def user = User.get(springSecurityService.principal.id)
-            result.apiKey = user?.apikey
-            result.apiSecret = user?.apisecret
+            result.apiId  = user?.apikey
+            result.apiKey = user?.apisecret
             result.apiContext = contextService.getOrg()?.globalUID ?: ''
         }
 

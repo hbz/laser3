@@ -291,12 +291,17 @@ class ApiReaderHelper {
             tmp.street1     = it.street_1
             tmp.street2     = it.street_2
             tmp.pob         = it.pob
+            tmp.pobZipcode  = it.pobZipcode
+            tmp.pobCity     = it.pobCity
             tmp.zipcode     = it.zipcode
             tmp.city        = it.city
-            tmp.state       = it.state
-            tmp.country     = it.country
+            tmp.name        = it.name
+            tmp.additionFirst  = it.additionFirst
+            tmp.additionSecond = it.additionSecond
 
             // RefdataValues
+            tmp.state       = it.state?.value
+            tmp.country     = it.country?.value
             tmp.type        = it.type?.value
 
             tmp = cleanUp(tmp, true, false)
@@ -720,10 +725,13 @@ class ApiReaderHelper {
             result.firstName       = prs.first_name
             result.middleName      = prs.middle_name
             result.lastName        = prs.last_name
+            result.title           = prs.title
 
             // RefdataValues
             result.gender          = prs.gender?.value
             result.isPublic        = prs.isPublic?.value
+            result.contactType     = prs.contactType?.value
+            result.roleType        = prs.roleType?.value
 
             // References
             result.contacts     = resolveContacts(prs.contacts, allowedContactTypes) // com.k_int.kbplus.Contact
