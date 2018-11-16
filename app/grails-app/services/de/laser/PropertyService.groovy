@@ -10,12 +10,22 @@ class PropertyService {
     def grailsApplication
     def genericOIDService
 
-    def evalFilterQuery(params, base_qry, hqlVar, base_qry_params) {
+    def evalFilterQuery(params, String base_qry, hqlVar, base_qry_params) {
+
+        def (query, qry_params) = evalFilterQuery(params, [] << base_qry, hqlVar, base_qry_params)
+        [query.join(" "), qry_params]
+    }
+
+    def evalFilterQuery(params, List<String> base_qry, hqlVar, base_qry_params) {
         def order_by
-        def pos = base_qry.toLowerCase().indexOf("order by")
-        if (pos >= 0) {
-            order_by = base_qry.substring(pos-1)
-            base_qry = base_qry.substring(0, pos-1)
+        for (int i = 0; i<base_qry.size(); i++) {
+            String qry_part = base_qry.get(i)
+            def pos = qry_part.toLowerCase().indexOf("order by")
+            if (pos >= 0) {
+                order_by = qry_part.substring(pos-1)
+                base_qry.remove(i)
+                base_qry.add(i, qry_part.substring(0, pos-1))
+            }
         }
 
         if (params.filterPropDef) {

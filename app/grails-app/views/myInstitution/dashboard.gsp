@@ -96,7 +96,7 @@
             </a>
         </div>
 
-        <div class="ui bottom attached tab segment" data-tab="first" style="border-top: 1px solid #d4d4d5; ">
+        <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Changes' ? 'active':''}" data-tab="first" style="border-top: 1px solid #d4d4d5; ">
             <g:if test="${editable}">
                 <div class="pull-right">
                     <g:link action="changes" class="ui button">${message(code:'myinst.todo.submit.label', default:'View To Do List')}</g:link>
@@ -163,7 +163,7 @@
             </div>
         </div>
 
-        <div class="ui bottom attached tab segment" data-tab="second" style="border-top: 1px solid #d4d4d5; ">
+        <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value=='Announcements' ? 'active':''}" data-tab="second" style="border-top: 1px solid #d4d4d5; ">
             <g:if test="${editable}">
                 <div class="pull-right">
                     <g:link action="announcements" class="ui button">${message(code:'myinst.ann.view.label', default:'View All Announcements')}</g:link>
@@ -208,7 +208,7 @@
             </div>
         </div>
 
-        <div class="ui bottom attached tab" data-tab="third">
+        <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value=='Tasks' ? 'active':''}" data-tab="third">
 
             <g:if test="${editable}">
                 <div class="ui right aligned grid">
@@ -274,7 +274,8 @@
                 </g:each>
             </div>
         </div>
-    <div class="ui bottom attached active tab segment" data-tab="forth" style="border-top: 1px solid #d4d4d5; ">
+
+        <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value=='Due Dates' ? 'active':''}" data-tab="forth" style="border-top: 1px solid #d4d4d5; ">
         Sie werden <b>${dashboardReminderPeriod} Tage</b> vor Fälligkeit an anstehende Termine erinnert.
 
         <hr>
@@ -370,7 +371,7 @@
             </g:each>
             </tbody>
         </table>
-   </div>
+        </div>
 
 
     <g:render template="/templates/tasks/modal_create" />
