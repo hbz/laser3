@@ -26,7 +26,9 @@
 
         <semui:messages data="${flash}"/>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}
+            <semui:totalNumber total="${num_sub_rows}"/>
+        </h1>
 
 <semui:filter>
     <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="form-inline ui small form">

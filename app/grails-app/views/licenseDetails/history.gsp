@@ -12,6 +12,7 @@
     <h1 class="ui left aligned icon header"><semui:headerIcon />
         <g:if test="${license.type?.value == 'Template'}">${message(code:'license.label')} (${license.type.getI10n('value')}):</g:if>
         <semui:xEditable owner="${license}" field="reference" id="reference"/>
+        <semui:totalNumber total="${historyLinesTotal?:'0'}"/>
     </h1>
 
     <g:render template="nav" />
