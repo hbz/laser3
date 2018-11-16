@@ -6,6 +6,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
+import de.laser.helper.DateUtil
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -196,7 +197,7 @@ class MyInstitutionController {
         result.editable      = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         def date_restriction = null;
-        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
 
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -409,7 +410,7 @@ from License as l where (
         result.orgRoleType = result.institution?.getallOrgRoleTypeIds()
 
         def cal = new java.util.GregorianCalendar()
-        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
 
         cal.setTimeInMillis(System.currentTimeMillis())
         cal.set(Calendar.MONTH, Calendar.JANUARY)
@@ -552,7 +553,7 @@ from License as l where (
         viableOrgs.add(result.institution)
 
         def date_restriction = null;
-        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdf = DateUtil.getSimpleDateFormat_NoTime()
 
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -606,7 +607,7 @@ from License as l where (
             String[] titles = [
                     'Name', 'Vertrag', 'Verknuepfte Pakete', 'Konsortium', 'Anbieter', 'Agentur', 'Anfangsdatum', 'Enddatum', 'Status', 'Typ' ]
 
-            def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+            def sdf = new DateUtil().getSimpleDateFormat_NoTime()
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
             HSSFWorkbook wb = new HSSFWorkbook();
@@ -716,7 +717,7 @@ from License as l where (
         def result = setResultGenerics()
 
         def date_restriction = null;
-        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
 
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -788,7 +789,7 @@ from License as l where (
 
         if (result.editable) {
             def cal = new java.util.GregorianCalendar()
-            def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+            def sdf = new DateUtil().getSimpleDateFormat_NoTime()
 
             cal.setTimeInMillis(System.currentTimeMillis())
             cal.set(Calendar.MONTH, Calendar.JANUARY)
@@ -837,7 +838,7 @@ from License as l where (
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
-            def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+            def sdf = new DateUtil().getSimpleDateFormat_NoTime()
             def startDate = params.valid_from ? sdf.parse(params.valid_from) : null
             def endDate = params.valid_to ? sdf.parse(params.valid_to) : null
 
@@ -1223,7 +1224,7 @@ from License as l where (
         // Set Date Restriction
         def date_restriction = null;
 
-        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
             date_restriction = sdf.parse(result.validOn)
@@ -1899,7 +1900,7 @@ AND EXISTS (
 
         boolean first = true;
 
-        def formatter = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def formatter = new DateUtil().getSimpleDateFormat_NoTime()
 
         // Add in JR1 and JR1a reports
         def c = new GregorianCalendar()
@@ -2825,7 +2826,7 @@ AND EXISTS (
 
         // tasks
 
-        def sdFormat    = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdFormat    = new DateUtil().getSimpleDateFormat_NoTime()
         params.taskStatus = 'not done'
         def query       = filterService.getTaskQuery(params, sdFormat)
         def contextOrg  = contextService.getOrg()
@@ -3028,7 +3029,7 @@ AND EXISTS (
                 result
             }
             csv {
-                def dateFormat = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+                def dateFormat = new DateUtil().getSimpleDateFormat_NoTime()
                 def changes = PendingChange.executeQuery("select pc "+base_query+"  order by ts desc", qry_params)
                 response.setHeader("Content-disposition", "attachment; filename=\"${result.institution.name}_changes.csv\"")
                 response.contentType = "text/csv"
@@ -3080,7 +3081,7 @@ AND EXISTS (
 
       if (request.method == 'POST' && result.tip ){
         log.debug("Add usage ${params}")
-        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
         def usageDate = sdf.parse(params.usageDate);
         def cal = new GregorianCalendar()
         cal.setTime(usageDate)
@@ -3222,7 +3223,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
         }
 
-        def sdFormat = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
         def query = filterService.getTaskQuery(params, sdFormat)
         result.taskInstanceList   = taskService.getTasksByResponsibles(result.user, result.institution, query)
         result.myTaskInstanceList = taskService.getTasksByCreator(result.user, null)

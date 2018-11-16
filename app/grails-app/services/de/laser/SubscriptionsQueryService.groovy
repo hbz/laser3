@@ -5,10 +5,11 @@ import com.k_int.kbplus.OrgCustomProperty
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.properties.PropertyDefinition
+import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 
 import javax.naming.Context
-import java.text.SimpleDateFormat
+
 
 class SubscriptionsQueryService {
     def propertyService
@@ -17,8 +18,7 @@ class SubscriptionsQueryService {
     def myInstitutionCurrentSubscriptionsBaseQuery(def params) {
 
         def date_restriction
-        def sdf = new SimpleDateFormat('dd.MM.yyyy')//TODO Umbauen auf das neue DateUtil
-        def validOn
+        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
 
         if (params.validOn == null) {
             date_restriction = sdf.parse(sdf.format(new Date(System.currentTimeMillis())))
@@ -86,7 +86,7 @@ from Subscription as s where (
             base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is null AND s.status.value != 'Deleted' ) "
             qry_params = ['roleType':role_sub_consortia, 'activeInst':contextService.org]
         }
-        //TODO Überprüfen: Einschränken auf mitgegebene org
+
         if (params.org) {
             base_qry += (" and  exists ( select orgR from OrgRole as orgR where orgR.sub = s and orgR.org = :org) ")
             qry_params.put('org', params.org)
