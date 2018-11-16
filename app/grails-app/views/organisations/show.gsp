@@ -425,6 +425,19 @@
 
                     <div id="new-dynamic-properties-block">
 
+                <%-- WORK IN PROGRESS
+                        <r:script>
+                            $.ajax({
+                                url: '<g:createLink controller="organisations" action="renderGroupedProperties_Ajax" id="${orgInstance.id}"/>',
+                                success: function (data) {
+                                    $('#new-dynamic-properties-block').append(data)
+                                    //c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#new-dynamic-properties-block");
+                                    //c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
+                                }
+                            })
+                        </r:script>
+                --%>
+
                         <g:render template="properties" model="${[
                                 orgInstance: orgInstance,
                                 authorizedOrgs: authorizedOrgs
