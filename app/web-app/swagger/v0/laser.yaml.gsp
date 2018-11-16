@@ -1,10 +1,13 @@
 ---
 swagger: "2.0"
 info:
-  version: "version 0 / tag 0.10"
+  version: "0 / tag 0.11"
   title: LAS:eR - API
   description: >
-    Known Issues: _Authorization_ has to filled out manually. Usual javascript insertion isn't working due shadow dom mechanic of [React](https://facebook.github.io/react). Please copy and paste
+    Known Issues:
+    _Authorization_ has to be set manually.
+    Usual javascript insertion isn't working due shadow dom mechanic of [React](https://facebook.github.io/react).
+    Please copy and paste
   contact:
     email: david.klober@hbz-nrw.de
 
@@ -575,9 +578,6 @@ definitions:
       street2:
         type: string
         example: "6"
-      pob:
-        type: string
-        example: "270451"
       zipcode:
         type: string
         example: "50674"
@@ -586,16 +586,40 @@ definitions:
         example: "Köln"
       state:
         type: string
+        description: Mapping RefdataCategory "Federal State"
+        enum:
+          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Federal State').collect{ it.value }.join(', ') }]
         example: "Nordrhein-Westfalen"
       country:
         type: string
+        description: Mapping RefdataCategory "Country"
+        enum:
+          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Country').collect{ it.value }.join(', ') }]
         example: "Deutschland"
       type:
         type: string
         description: Mapping RefdataCategory "AddressType"
         enum:
-          ["Postal address", "Billing address", "Delivery address"]
+          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('AddressType').collect{ it.value }.join(', ') }]
         example: "Postal address"
+      pob:
+        type: string
+        example: "270451"
+      pobZipcode:
+        type: string
+        example: "50674"
+      pobCity:
+        type: string
+        example: "Köln"
+      name:
+        type: string
+        example: "Universitätsbibliothek Gustafson"
+      additionFirst:
+        type: string
+        example: "Dezernat Finanzen und Beschaffung"
+      additionSecond:
+        type: string
+        example: "Kreditorenbuchhaltung"
 
   Cluster:
     allOf:
@@ -620,7 +644,7 @@ definitions:
         type: string
         description: Mapping RefdataCategory "ContactContentType"
         enum:
-          ["Mail", "Phone", "Fax"]
+          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('ContactContentType').collect{ it.value }.join(', ') }]
         example: "Mail"
       content:
         type: string
@@ -629,7 +653,7 @@ definitions:
         type: string
         description: Mapping RefdataCategory "ContactType"
         enum:
-          ["Job-related", "Personal"]
+          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('ContactType').collect{ it.value }.join(', ') }]
         example: "Job-related"
 
   Document:
@@ -988,7 +1012,7 @@ definitions:
             type: string
             description: Mapping RefdataCategory "OrgSector"
             enum:
-              ["Higher Education", "Publisher"]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgSector').collect{ it.value }.join(', ') }]
             example: "Higher Education"
           status:
             type: string
@@ -999,7 +1023,7 @@ definitions:
             type: string
             description: Mapping RefdataCategory "OrgType"
             enum:
-              ["Consortium", "Institution", "Other"]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgType').collect{ it.value }.join(', ') }]
             example: "Institution"
 
 #  OrganisationRole:
@@ -1059,7 +1083,7 @@ definitions:
         type: string
         description: Mapping RefdataCategory "Organisational Role"
         enum:
-          [""]
+          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Organisational Role').collect{ it.value }.join(', ') }]
       startDate:
         type: string
         format: date
@@ -1234,19 +1258,31 @@ definitions:
         type: string
         description: Mapping RefdataCategory "Gender"
         enum:
-          ["Female", "Male"]
+          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Gender').collect{ it.value }.join(', ') }]
         example: "Female"
       isPublic:
         type: string
         description: Mapping RefdataCategory "YN". If set *No*, it's an hidden entry to/from an addressbook (depending on the given organisation context)
         enum:
-          ["Yes", "No"]
+          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
         example: "Yes"
       lastName:
         type: string
         example: "Bauhaus"
       middleName:
         type: string
+      contactType:
+        type: string
+        description: Mapping RefdataCategory "Person Contact Type"
+        enum:
+          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Person Contact Type').collect{ it.value }.join(', ') }]
+        example: "Funktionskontakt"
+      roleType:
+        type: string
+        description: Mapping RefdataCategory "Person Position"
+        enum:
+          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Person Position').collect{ it.value }.join(', ') }]
+        example: "Technischer Support"
       properties: # mapping attr privateProperties
         type: array
         items:
@@ -1255,6 +1291,9 @@ definitions:
         type: array
         items:
           $ref: "#/definitions/PersonRole(usedAsFunction)"
+      title:
+        type: string
+        example: "Prof."
 
   PersonRole:
     type: object
@@ -1279,7 +1318,7 @@ definitions:
               Exclusive with responsibilityType |
               Mapping RefdataCategory "Person Function"
             enum:
-              ["General contact person"]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Person Function').collect{ it.value }.join(', ') }]
             example: "General contact person"
 
   PersonRole(usedAsResponsibility):
@@ -1309,7 +1348,7 @@ definitions:
               Exclusive with functionType |
               Mapping RefdataCategory "Person Responsibility"
             enum:
-              ["Specific license editor", "Specific subscription editor", "Specific package editor", "Specific cluster editor", "Specific title editor"]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Person Responsibility').collect{ it.value }.join(', ') }]
             example: "Specific license editor"
           subscription:
             description: |
@@ -1342,7 +1381,7 @@ definitions:
         type: string
         description: Mapping RefdataCategory "YN". If set *No*, it's an hidden entry to/from the given organisation context
         enum:
-          ["Yes", "No"]
+          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
         example: "Yes"
       value: # mapping attr stringValue, intValue, decValue, refValue
         type: string
@@ -1383,7 +1422,7 @@ definitions:
             type: string
             description: Mapping RefdataCategory "YN"
             enum:
-              ["Yes", "No"]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
     #      issueEntitlements:
     #        type: array
     #        items:
@@ -1393,7 +1432,7 @@ definitions:
             readOnly: true
             description: Mapping RefdataCategory "YN"
             enum:
-              ["Yes", "No"]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
           lastUpdated:
             type: string
             format: date
