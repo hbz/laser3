@@ -29,9 +29,4 @@ class SubscriptionPrivateProperty extends PrivateProperty {
         type    (nullable:false, blank:false)
         owner   (nullable:false, blank:false)
     }
-
-    def copyInto(newProp){
-        newProp = super.copyInto(newProp)
-        newProp
-    }
 }

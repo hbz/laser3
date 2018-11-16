@@ -42,11 +42,6 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditTrait {
         owner: Subscription
     ]
 
-    def copyInto(newProp){
-        newProp = super.copyInto(newProp)
-        newProp
-    }
-
     @Transient
     def onDelete = { oldMap ->
         log.debug("onDelete SubscriptionCustomProperty")

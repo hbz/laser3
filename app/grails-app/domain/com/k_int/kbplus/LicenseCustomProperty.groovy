@@ -47,7 +47,8 @@ class LicenseCustomProperty extends CustomProperty implements AuditTrait  {
         owner: License
     ]
 
-    def copyInto(newProp){
+    @Override
+    def copyInto(AbstractProperty newProp){
         newProp = super.copyInto(newProp)
 
         newProp.paragraph = paragraph
