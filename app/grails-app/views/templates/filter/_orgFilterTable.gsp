@@ -203,13 +203,19 @@
             <g:if test="${tmplConfigShow?.contains('numberOfSubscriptions')}">
                 <td>
                     <div class="la-flexbox">
-                        <g:link controller="myInstitution" action="currentSubscriptions" params="${[q:org.name]}" title="${message(code: 'org.licenses.tooltip', args: [org.name])}">
-                            <div class="ui circular label">
-                                <% (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org])
-                                    print Subscription.executeQuery("select count(s) " + base_qry, qry_params)[0]
-                                %>
-                            </div>
-                        </g:link>
+                        <% (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName])
+                            def numberOfSubscriptions = Subscription.executeQuery("select count(s) " + base_qry, qry_params)[0]
+                        %>
+                        <g:if test="${actionName == 'manageConsortia'}">
+                            ${numberOfSubscriptions}
+                        </g:if>
+                        <g:else>
+                            <g:link controller="myInstitution" action="currentSubscriptions" params="${[q:org.name]}" title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
+                                <div class="ui circular label">
+                                    ${numberOfSubscriptions}
+                                </div>
+                            </g:link>
+                        </g:else>
                     </div>
                 </td>
             </g:if>
