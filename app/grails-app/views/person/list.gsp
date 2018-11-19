@@ -11,7 +11,9 @@
 		<div>
 				
 
-					<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="default.list.label" args="[entityName]" /></h1>
+					<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="default.list.label" args="[entityName]" />
+						<semui:totalNumber total="${personInstanceTotal}"/>
+					</h1>
 
 
 			<semui:messages data="${flash}" />

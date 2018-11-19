@@ -14,7 +14,9 @@
             <g:render template="actions" />
         </semui:controlButtons>
 
-            <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'user.show_all.label')}</h1>
+            <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'user.show_all.label')}
+                <semui:totalNumber total="${total}"/>
+            </h1>
 
             <semui:filter>
                 <g:form action="list" method="get" class="ui form">

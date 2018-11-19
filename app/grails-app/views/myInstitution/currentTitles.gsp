@@ -36,7 +36,9 @@
 
     <semui:messages data="${flash}" />
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${institution?.name} - ${message(code:'myinst.currentTitles.label', default:'Current Titles')}</h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${institution?.name} - ${message(code:'myinst.currentTitles.label', default:'Current Titles')}
+      <semui:totalNumber total="${num_ti_rows}"/>
+    </h1>
 
     <semui:filter>
       <g:form id="filtering-form" action="currentTitles" controller="myInstitution" method="get" class="ui form">

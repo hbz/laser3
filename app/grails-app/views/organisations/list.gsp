@@ -25,7 +25,9 @@
             </semui:controlButtons>
 
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.institutions.all_orgs" /> - ${orgListTotal} Treffer</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.institutions.all_orgs" />
+            <semui:totalNumber total="${orgListTotal}"/>
+        </h1>
 
         <semui:messages data="${flash}" />
 

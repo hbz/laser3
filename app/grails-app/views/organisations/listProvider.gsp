@@ -23,7 +23,9 @@
         </sec:ifAnyGranted>
  </semui:controlButtons>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.institutions.all_provider" /> - ${orgListTotal} Treffer</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.institutions.all_provider" />
+            <semui:totalNumber total="${orgListTotal}"/>
+        </h1>
 
         <semui:messages data="${flash}" />
         <semui:filter>

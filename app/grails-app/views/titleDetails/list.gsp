@@ -10,7 +10,9 @@
       <semui:crumb message="menu.institutions.all_titles" class="active" />
     </semui:breadcrumbs>
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.all_titles')}</h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.all_titles')}
+      <semui:totalNumber total="${resultsTotal}"/>
+    </h1>
 
     <semui:filter>
       <g:form action="index" role="form" class="ui form" method="get" params="${params}">
