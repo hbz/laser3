@@ -13,7 +13,9 @@
             <semui:crumb message="menu.institutions.myProviders" class="active" />
         </semui:breadcrumbs>
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.institutions.myProviders" /></h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.institutions.myProviders" />
+        <semui:totalNumber total="${orgListTotal}"/>
+    </h1>
 
     <semui:messages data="${flash}" />
     <semui:filter>

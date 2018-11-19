@@ -1,4 +1,4 @@
-
+<!-- _groups.gsp -->
 <%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.License; de.laser.AuditConfig" %>
 
 <g:if test="${newProp}">
@@ -150,3 +150,4 @@
     </g:if>
 
 </table>
+<!-- _groups.gsp -->

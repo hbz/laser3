@@ -17,16 +17,32 @@
         <semui:form>
           <g:form action="reviewPackage" method="post" enctype="multipart/form-data" class="ui form">
 
-            <div class="fields">
+            <div class="four fields">
 
-              <div class="field">
+              <div class="field" id="uploadPackage">
                 <label>${message(code:'package.upload.file', default:'Upload File')}</label>
-                <input type="file" id="soFile" name="soFile"/><br/>
+                <div class="ui fluid action input">
+                  <input type="text" readonly="readonly" placeholder="${message(code:'template.addDocument.selectFile')}">
+                  <input type="file" id="soFile"  name="soFile"  style="display: none;">
+                  <div class="ui icon button" style="padding-left:30px; padding-right:30px">
+                    <i class="attach icon"></i>
+                  </div>
+                </div>
+                <r:script type="text/javascript">
+                  $('#uploadPackage .action .icon.button').click( function() {
+                    $(this).parent('.action').find('input:file').click();
+                  });
+
+                  $('input:file', '.ui.action.input').on('change', function(e) {
+                    var name = e.target.files[0].name;
+                    $('input:text', $(e.target).parent()).val(name);
+                  });
+                </r:script>
               </div>
 
               <div class="field">
                 <label>${message(code:'package.upload.docStyle', default:'Doc Style')}</label>
-                <select name="docstyle">
+                <select name="docstyle" class="ui dropdown">
                   <option value="csv" selected>${message(code:'package.upload.docStyle.csv', default:'Comma Separated')}</option>
                   <option value="tsv">${message(code:'package.upload.docStyle.tsv', default:'Tab Separated')}</option>
                 </select>

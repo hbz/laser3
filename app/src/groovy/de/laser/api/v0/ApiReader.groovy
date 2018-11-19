@@ -4,12 +4,28 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserRole
+import de.laser.api.v0.entities.ApiDoc
+import de.laser.api.v0.entities.ApiIssueEntitlement
+import de.laser.api.v0.entities.ApiLicense
+import de.laser.api.v0.entities.ApiOrg
+import de.laser.api.v0.entities.ApiPkg
+import de.laser.helper.Constants
 import groovy.util.logging.Log4j
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Log4j
 class ApiReader {
+
+    static SUPPORTED_FORMATS = [
+            'document':             [],
+            'issueEntitlements':    [Constants.MIME_TEXT_PLAIN, Constants.MIME_APPLICATION_JSON],
+            'license':              [Constants.MIME_APPLICATION_JSON],
+            'onixpl':               [Constants.MIME_APPLICATION_XML],
+            'organisation':         [Constants.MIME_APPLICATION_JSON],
+            'package':              [Constants.MIME_APPLICATION_JSON],
+            'subscription':         [Constants.MIME_APPLICATION_JSON]
+    ]
 
     /**
      * @param com.k_int.kbplus.SubscriptionPackage subPkg
@@ -68,6 +84,7 @@ class ApiReader {
         // References
 
         result.identifiers      = ApiReaderHelper.resolveIdentifiers(lic.ids) // com.k_int.kbplus.IdentifierOccurrence
+        result.instanceOf       = ApiReaderHelper.resolveLicenseStub(lic.instanceOf, context) // com.k_int.kbplus.License
         result.properties       = ApiReaderHelper.resolveProperties(lic, context)  // com.k_int.kbplus.(LicenseCustomProperty, LicensePrivateProperty)
         result.documents        = ApiReaderHelper.resolveDocuments(lic.documents) // com.k_int.kbplus.DocContext
         result.onixplLicense    = ApiReaderHelper.resolveOnixplLicense(lic.onixplLicense, lic, context) // com.k_int.kbplus.OnixplLicense
@@ -83,8 +100,6 @@ class ApiReader {
 
         // Ignored
 
-        //result.incomingLinks    = exportHelperService.resolveLinks(lic.incomingLinks) // com.k_int.kbplus.Link
-        //result.outgoinglinks    = exportHelperService.resolveLinks(lic.outgoinglinks) // com.k_int.kbplus.Link
         //result.packages         = exportHelperService.resolveStubs(lic.pkgs, exportHelperService.PACKAGE_STUB) // com.k_int.kbplus.Package
         /*result.persons          = exportHelperService.resolvePrsLinks(
                 lic.prsLinks, exportHelperService.NO_CONSTRAINT, exportHelperService.NO_CONSTRAINT, context
@@ -108,6 +123,8 @@ class ApiReader {
         result.name         = org.name
         result.scope        = org.scope
         result.shortcode    = org.shortcode
+        result.fteStudents  = org.fteStudents
+        result.fteStaff     = org.fteStaff
 
         // RefdataValues
 

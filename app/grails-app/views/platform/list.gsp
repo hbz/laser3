@@ -13,23 +13,21 @@
 	</semui:breadcrumbs>
 
 
-	<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="platforms.all_platforms.label" args="[entityName]" /></h1>
+	<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="platforms.all_platforms.label" args="[entityName]" />
+		<semui:totalNumber total="${platformInstanceTotal}"/>
+	</h1>
 
 			<semui:messages data="${flash}" />
 
 			<semui:filter>
 				<g:form action="list" method="get" class="ui form">
-                    <div class="fields">
+                    <div class="two fields">
                         <div class="field">
                             <label>${message(code:'default.search.text', default:'Search text')}</label>
                             <input type="text" name="q" placeholder="${message(code:'default.search.ph', default:'enter search term...')}" value="${params.q}" />
                         </div>
-						<div class="field">
-							<label>&nbsp;</label>
-							<a href="${request.forwardURI}" class="ui button">${message(code:'default.button.filterreset.label')}</a>
-						</div>
-                        <div class="field">
-                            <label>&nbsp;</label>
+						<div class="field la-field-right-aligned">
+							<a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
                             <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}" />
                         </div>
                     </div>

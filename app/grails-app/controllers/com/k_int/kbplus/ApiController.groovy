@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
 import de.laser.ContextService
+import de.laser.api.v0.ApiManager
 import de.laser.helper.Constants
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -24,8 +25,8 @@ class ApiController {
         def result = [:]
         if (springSecurityService.isLoggedIn()) {
             def user = User.get(springSecurityService.principal.id)
-            result.apiKey = user?.apikey
-            result.apiSecret = user?.apisecret
+            result.apiId  = user?.apikey
+            result.apiKey = user?.apisecret
             result.apiContext = contextService.getOrg()?.globalUID ?: ''
         }
 
@@ -296,7 +297,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
         def result
         def hasAccess = false
-        def apiManager = de.laser.api.v0.ApiMainClass
+        def apiManager = ApiManager
 
         def obj     = params.get('obj')
         def query   = params.get('q')

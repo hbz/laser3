@@ -38,8 +38,7 @@ class ApiDoc {
     /**
      * @return Doc | FORBIDDEN
      */
-    static getDocument(Doc doc, User user, Org context){
-        def hasAccess = ApiReader.isDataManager(user)
+    static getDocument(Doc doc, Org context, boolean hasAccess){
 
         if (! hasAccess) {
             DocContext.findAllByOwner(doc).each{ dc ->
@@ -76,13 +75,11 @@ class ApiDoc {
     /**
      * @return Doc | FORBIDDEN | null
      */
-    static getOnixPlDocument(License license, User user, Org context){
+    static getOnixPlDocument(License license, Org context, boolean hasAccess){
         def doc = license.onixplLicense?.doc
         if (! doc) {
             return null // not found
         }
-
-        def hasAccess = ApiReader.isDataManager(user)
 
         if (! hasAccess) {
             DocContext.findAllByOwner(doc).each { dc ->

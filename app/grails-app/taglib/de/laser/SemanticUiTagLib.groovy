@@ -540,6 +540,14 @@ class SemanticUiTagLib {
         }
         out <<   '</div>'
     }
+    def totalNumber = { attrs, body ->
+
+        def total = attrs.total
+
+        out << '<div class="ui circular label">'
+        out <<   total
+        out << '</div>'
+    }
 
     public SemanticUiTagLib ( ) { }
 

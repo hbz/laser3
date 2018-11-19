@@ -390,4 +390,44 @@ class YodaController {
         render result as JSON
     }
 
+    @Secured(['ROLE_YODA'])
+    def manageSystemMessage() {
+        def result = [:]
+        result.user = springSecurityService.currentUser
+
+        if(params.create)
+        {
+
+            if(!SystemMessage.findAllByText(params.text)) {
+
+                def systemMessage = new SystemMessage(office: params.office ?: null,
+                        text: params.text ?: '',
+                        showNow: params.showNow ?: 0)
+
+                if (systemMessage.save(flush: true)) {
+                    flash.message = 'System Nachricht erstellt'
+                } else {
+                    flash.error = 'System Nachricht wurde nicht erstellt!!'
+                }
+            }else {
+                flash.error = 'System Nachricht schon im System!!'
+            }
+        }
+
+
+        result.systemMessages = SystemMessage.findAll()
+        result.editable = true
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def deleteSystemMessage(Long id) {
+        if(SystemMessage.get(id)) {
+            SystemMessage.get(id).delete(flush: true)
+            flash.message = 'System Nachricht wurde gelöscht!!'
+        }
+
+        redirect(action: 'manageSystemMessage')
+    }
+
 }

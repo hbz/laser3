@@ -47,9 +47,8 @@ class ApiSubscription {
     /**
      * @return grails.converters.JSON | FORBIDDEN
      */
-    static getSubscription(Subscription sub, User user, Org context){
+    static getSubscription(Subscription sub, Org context, boolean hasAccess){
         def result = []
-        def hasAccess = ApiReader.isDataManager(user)
 
         if (! hasAccess) {
             sub.orgRelations.each { orgRole ->

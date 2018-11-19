@@ -21,7 +21,9 @@
       <g:render template="actions"/>
   </semui:controlButtons>
 
-  <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'myinst.packages')}</h1>
+  <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'myinst.packages')}
+    <semui:totalNumber total="${packageInstanceTotal}"/>
+  </h1>
 
     <semui:messages data="${flash}" />
 
@@ -33,7 +35,7 @@
                   <input type="text" name="q" placeholder="${message(code:'package.search.ph')}" value="${params.q}" />
               </div>
 
-              <div class="fields">
+              <div class="four fields">
                   <semui:datepicker label="package.search.updated_after" name="updateStartDate" value="${params.updateStartDate}" />
 
                   <semui:datepicker label="package.search.created_after" name="createStartDate" value="${params.createStartDate}" />
@@ -43,14 +45,12 @@
                   <semui:datepicker label="package.search.created_before" name="createEndDate" value="${params.createEndDate}" />
               </div>
 
-              <div class="fields">
-                  <div class="field">
-                  <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-                    </div>
-                  <div class="field">
-                      <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}" />
-                  </div>
+
+              <div class="field la-field-right-aligned">
+              <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+                  <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}" />
               </div>
+
           </g:form>
     </semui:filter>
 

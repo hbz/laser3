@@ -46,9 +46,8 @@ class ApiOrg {
     /**
      * @return grails.converters.JSON | FORBIDDEN
      */
-    static getOrganisation(Org org, User user, Org context) {
+    static getOrganisation(Org org, Org context, boolean hasAccess) {
         def result = []
-        def hasAccess = ApiReader.isDataManager(user)
 
         if (hasAccess) {
             result = ApiReader.exportOrganisation(org, context)

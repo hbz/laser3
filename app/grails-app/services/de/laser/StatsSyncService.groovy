@@ -3,6 +3,7 @@ package de.laser
 import com.k_int.kbplus.*
 import com.k_int.properties.*
 import de.laser.domain.StatsTripleCursor
+import groovy.json.JsonOutput
 import groovyx.net.http.*
 import java.text.SimpleDateFormat
 import static groovyx.net.http.ContentType.*
@@ -174,20 +175,32 @@ class StatsSyncService {
                 it.value.startsWith('STATS')
             }
 
-            def csr = StatsTripleCursor.findByTitleIdAndSupplierIdAndCustomerId(statsTitleIdentifier, platform, customer)
+            def csr = null
 
-            if (csr == null) {
-                csr = new StatsTripleCursor(titleId: statsTitleIdentifier, supplierId: platform, customerId: customer, haveUpTo: null)
-            }
-            if ((csr.haveUpTo == null) || (csr.haveUpTo < mostRecentClosedPeriod)) {
+            reports.each { statsReport ->
+                def factCount = 0
+                def matcher = statsReport.value =~ /^(.*).(\d)$/
+                def report = matcher[0][1]
+                def version = matcher[0][2]
+                def reportType = getReportType(report)
+                def titleId = title_io_inst.identifier.value
+                def factType = RefdataCategory.lookupOrCreate('FactType', statsReport.toString())
 
-                reports.each { statsReport ->
-                    def matcher = statsReport.value =~ /^(.*).(\d)$/
-                    def report = matcher[0][1]
-                    def version = matcher[0][2]
-                    def reportType = getReportType(report)
-                    def titleId = title_io_inst.identifier.value
-
+                // we could use a more complex structure, e.g. to try to seperate the SUSHI Exceptions from API
+                // for now use a list of error messages
+                def jsonErrors = []
+                csr = StatsTripleCursor.findByTitleIdAndSupplierIdAndCustomerIdAndFactType(statsTitleIdentifier, platform, customer, factType)
+                if (csr == null) {
+                    csr = new StatsTripleCursor(
+                        titleId: statsTitleIdentifier,
+                        supplierId: platform,
+                        customerId: customer,
+                        haveUpTo: null,
+                        factType: factType
+                    )
+                    csr.numFacts = 0
+                }
+                if ((csr.haveUpTo == null) || (csr.haveUpTo < mostRecentClosedPeriod)) {
                     def fromPeriod = csr.haveUpTo ?: SYNC_STATS_FROM
                     try {
                         def beginDate = "${fromPeriod}-01"
@@ -209,6 +222,11 @@ class StatsSyncService {
                                         ItemIdentifier: "${reportType}:zdbid:" + titleId
                                 ]) { response, xml ->
                             if (xml) {
+                                def authenticationError = getSushiErrorMessage(xml)
+                                if (authenticationError){
+                                    jsonErrors.add(authenticationError)
+                                    csr.jerror = JsonOutput.toJson(jsonErrors)
+                                }
                                 if (responseHasUsageData(xml, titleId)) {
                                     def statsTitles = xml.depthFirst().findAll {
                                         it.name() == 'ItemName'
@@ -240,6 +258,7 @@ class StatsSyncService {
                                             fact.inst = org_inst
                                             fact.juspio = title_io_inst
                                             if (factService.registerFact(fact)) {
+                                                ++factCount
                                                 ++newFactCount
                                             }
                                         }
@@ -249,24 +268,40 @@ class StatsSyncService {
 
                                 }
                             } else {
-                                log.error("No xml object returned, response status: ${response.statusLine}")
+                                def errorMessage = "No xml object returned, response status: ${response.statusLine}"
+                                log.error(errorMessage)
+                                jsonErrors.add(errorMessage)
+                                csr.jerror = JsonOutput.toJson(jsonErrors)
                             }
                         }
 
                     } catch (Exception e) {
                         log.error("Error fetching data")
                         log.error(e.message)
+                        jsonErrors.add(e.message)
+                        def jsonError = JsonOutput.toJson(jsonErrors)
+                        if (jsonError) {
+                            csr.jerror = jsonError
+                        }
                     }
                 }
                 csr.haveUpTo = mostRecentClosedPeriod
+                csr.numFacts = factCount
                 try {
-                csr.save(flush: true)
+                    csr.save(flush: true)
                 } catch (Exception e) {
                     log.error(e.message)
+                    jsonErrors.add(e.message)
+                    def jsonError = JsonOutput.toJson(jsonErrors)
+                    if (jsonError) {
+                        csr.jerror = jsonError
+                    }
                     exceptionCount++
                 }
             }
-
+            // TODO remove?
+            // Exceptions are all catched, do we really want to save here when there were certain exceptions?
+            // For now save the csr which should contain an error message
             csr.save(flush:true)
             cleanUpGorm()
             def elapsed = System.currentTimeMillis() - start_time;
@@ -327,6 +362,16 @@ class StatsSyncService {
         return "${cal.get(Calendar.YEAR)}-${String.format('%02d',cal.get(Calendar.MONTH)+1)}-${cal.get(Calendar.DAY_OF_MONTH)}"
     }
 
+    private getSushiErrorMessage(xml){
+        if (xml.Exception.isEmpty() == false) {
+            def errorNumber = xml.Exception.Number
+            def sushiErrorList = ['2000', '2020', '3000', '3062']
+            if (errorNumber in sushiErrorList) {
+                return xml.Exception.Message.toString()
+            }
+        }
+        return false
+    }
 
     private Boolean responseHasUsageData(xml, titleId) {
         // TODO maybe better check for usage first
