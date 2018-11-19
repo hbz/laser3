@@ -82,9 +82,13 @@ from Subscription as s where (
         }
 
         if (params.orgRole == 'Subscription Consortia') {
-
-            base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is null AND s.status.value != 'Deleted' ) "
-            qry_params = ['roleType':role_sub_consortia, 'activeInst':contextService.org]
+            if (params.actionName == 'manageConsortia') {
+                base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is not null AND s.status.value != 'Deleted' ) "
+                qry_params = ['roleType':role_sub_consortia, 'activeInst':contextService.org]
+            } else {
+                base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is null AND s.status.value != 'Deleted' ) "
+                qry_params = ['roleType':role_sub_consortia, 'activeInst':contextService.org]
+            }
         }
 
         if (params.org) {

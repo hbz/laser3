@@ -33,13 +33,10 @@
             <th>${message(code: 'org.privateContacts.label', default: 'Public Contacts')}</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('currentFTEs')}">
-            <th>${message(code: 'org.currentFTEs.label', default: 'Current FTEs')}</th>
+            <th class="la-th-wrap">${message(code: 'org.currentFTEs.label', default: 'Current FTEs')}</th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('licenses')}">
-            <th>${message(code: 'org.licenses.label', default: 'Public Contacts')}</th>
-        </g:if>
-        <g:if test="${tmplConfigShow?.contains('numberOfLicenses')}">
-            <th class="la-th-wrap">${message(code: 'org.numberOfLicenses.label', default: 'Number of Licenses')}</th>
+        <g:if test="${tmplConfigShow?.contains('numberOfSubscriptions')}">
+            <th class="la-th-wrap">${message(code: 'org.subscriptions.label', default: 'Public Contacts')}</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('identifier')}">
             <th>Identifier</th>
@@ -203,37 +200,19 @@
                     </g:each>
                 </td>
             </g:if>
-            <g:if test="${tmplConfigShow?.contains('licenses')}">
+            <g:if test="${tmplConfigShow?.contains('numberOfSubscriptions')}">
                 <td>
                     <div class="la-flexbox">
                         <g:link controller="myInstitution" action="currentSubscriptions" params="${[q:org.name]}" title="${message(code: 'org.licenses.tooltip', args: [org.name])}">
                             <div class="ui circular label">
-                                <%  def myParams = [:]
-                                    myParams.org = org
-                                    (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(myParams)
-                                    int numberOfSubscr = Subscription.executeQuery("select count(s) " + base_qry, qry_params)[0]
+                                <% (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org])
+                                    print Subscription.executeQuery("select count(s) " + base_qry, qry_params)[0]
                                 %>
-                                ${numberOfSubscr}
                             </div>
                         </g:link>
                     </div>
                 </td>
             </g:if>
-            <g:if test="${tmplConfigShow?.contains('numberOfLicenses')}">
-                <td>
-                    ${Subscription.executeQuery("SELECT distinct count(*) FROM Subscription as s " +
-                            "WHERE status != :status and startDate <= :today and endDate >= :today " +
-                            "and EXISTS (SELECT o FROM OrgRole as o WHERE s = o.sub AND o.roleType = :subscriber AND o.org = :org) " +
-                            "AND EXISTS (SELECT o2 FROM OrgRole as o2 WHERE s = o2.sub AND o2.roleType = :consortia AND o2.org = :ctxOrg)",
-                            [status:RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'),
-                             today:sqlDateToday,
-                             subscriber:RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'),
-                             org:org,
-                             consortia:RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role'),
-                             ctxOrg:contextService.getOrg()])[0]}
-                </td>
-            </g:if>
-
             <g:if test="${tmplConfigShow?.contains('identifier')}">
                 <td><g:if test="${org.ids}">
                     <div class="ui list">
