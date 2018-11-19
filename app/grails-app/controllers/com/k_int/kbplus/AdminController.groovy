@@ -936,7 +936,7 @@ class AdminController {
 
     //Change to GOKB ElasticSearch
     params.esgokb = "Package"
-    params.sort = "name.sort"
+    params.sort = "name"
 
     params.max = (result.user?.getDefaultPageSizeTMP() >= Package.getAll().size())? result.user?.getDefaultPageSizeTMP() : Package.getAll().size()
     params.q = ""
