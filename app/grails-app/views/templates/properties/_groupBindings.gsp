@@ -16,7 +16,7 @@
                 </tr>
             </thead>
             <tbody>
-                <g:each in="${availPropDefGroups.context}" var="propDefGroup">
+                <g:each in="${availPropDefGroups.all}" var="propDefGroup">
                     <tr>
                         <td>
                             <strong>${propDefGroup.name}</strong>

@@ -6,7 +6,7 @@
 
 <%-- modal --%>
 
-<g:if test="${availPropDefGroups.context}">
+<g:if test="${availPropDefGroups.all}">
     <semui:modal id="propDefGroupBindings" text="Merkmalsgruppen anzeigen" hideSubmitButton="hideSubmitButton">
 
         <g:render template="/templates/properties/groupBindings" model="${[

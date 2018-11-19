@@ -29,11 +29,11 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     @Transient
     final static String LIC_PROP    = 'License Property'
 
-    @Transient
-    @Deprecated
+    //@Transient
+    //@Deprecated
     //final static String LIC_OA_PROP = 'License Property: Open Access'
-    @Transient
-    @Deprecated
+    //@Transient
+    //@Deprecated
     //final static String LIC_ARC_PROP = 'License Property: Archive'
 
     @Transient
