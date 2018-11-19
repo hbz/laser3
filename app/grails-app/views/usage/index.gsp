@@ -152,7 +152,7 @@
         <div class="ui relaxed list">
             <div class="header">Fehler</div>
                <div class="item">
-                 ${statsError.jerror}
+                 ${statsError.jerror.unique()}
                </div>
         </div>
       </td>
