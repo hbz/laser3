@@ -82,6 +82,7 @@
         </div>
     </div><!--.card-->
 
+    <%--
     <div class="ui card la-dl-no-table">
         <div class="content">
 
@@ -113,12 +114,13 @@
             </div>
         </div>
     </div><!--.card-->
+    --%>
 
     <r:script language="JavaScript">
         $(document).ready(function(){
             c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
-            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_oa");
-            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_archive");
+            //c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_oa");
+            //c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_archive");
         });
     </r:script>
 

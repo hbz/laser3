@@ -224,8 +224,8 @@ class BootStrap {
         log.debug("createSubscriptionProperties ..")
         createSubscriptionProperties()
 
-        log.debug("createPrivateProperties ..")
-        createPrivateProperties()
+        //log.debug("createPrivateProperties ..")
+        //createPrivateProperties()
 
         log.debug("initializeDefaultSettings ..")
         initializeDefaultSettings()
@@ -508,7 +508,8 @@ class BootStrap {
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
 
-        def allOADescr = [en: PropertyDefinition.LIC_OA_PROP, de: PropertyDefinition.LIC_OA_PROP]
+        //def allOADescr = [en: PropertyDefinition.LIC_OA_PROP, de: PropertyDefinition.LIC_OA_PROP]
+        def allOADescr = [en: PropertyDefinition.LIC_PROP, de: PropertyDefinition.LIC_PROP]
 
         def requiredOAProps = [
                 [name: [en: "Open Access", de: "Open Access"],                                                              descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
@@ -533,7 +534,8 @@ class BootStrap {
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredOAProps)
 
-        def allArcDescr = [en: PropertyDefinition.LIC_ARC_PROP, de: PropertyDefinition.LIC_ARC_PROP]
+        //def allArcDescr = [en: PropertyDefinition.LIC_ARC_PROP, de: PropertyDefinition.LIC_ARC_PROP]
+        def allArcDescr = [en: PropertyDefinition.LIC_PROP, de: PropertyDefinition.LIC_PROP]
 
         def requiredARCProps = [
                 [name: [en: "Post Cancellation Online Access", de: "Zugriffsrechte: Dauerhaft"],                            descr: allArcDescr, type: RefdataValue.toString(), cat: 'YNO'],
