@@ -25,6 +25,10 @@
 
     <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
 
+    <semui:controlButtons>
+        <g:render template="actions" />
+    </semui:controlButtons>
+
     <h1 class="ui left aligned icon header"><semui:headerIcon />
         ${orgInstance.name}
     </h1>
@@ -425,25 +429,34 @@
 
                     <div id="new-dynamic-properties-block">
 
-                <%-- WORK IN PROGRESS
-                        <r:script>
-                            $.ajax({
-                                url: '<g:createLink controller="organisations" action="renderGroupedProperties_Ajax" id="${orgInstance.id}"/>',
-                                success: function (data) {
-                                    $('#new-dynamic-properties-block').append(data)
-                                    //c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#new-dynamic-properties-block");
-                                    //c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
-                                }
-                            })
-                        </r:script>
-                --%>
-
                         <g:render template="properties" model="${[
                                 orgInstance: orgInstance,
                                 authorizedOrgs: authorizedOrgs
                         ]}" />
 
+                        <r:script>
+                            $(function(){
+                                $('#new-dynamic-properties-block a.xEditableValue').each( function(i, elem) {
+                                    $(elem).on('save', function(e, params){
+                                        $target = $(e.target)
+                                        $updates = $('#new-dynamic-properties-block a.xEditableValue[id="' + $target.attr('id') + '"]')
+                                        $updates.attr('data-oldvalue', params.newValue) // TODO BUGGY
+                                        $updates.text(params.response)
+                                    })
+                                })
+                                $('#new-dynamic-properties-block a.xEditableManyToOne').each( function(i, elem) {
+                                    $(elem).on('save', function(e, params){
+                                        $target = $(e.target)
+                                        $updates = $('#new-dynamic-properties-block a.xEditableManyToOne[id="' + $target.attr('id') + '"]')
+                                        $updates.attr('data-value', params.newValue) // TODO BUGGY
+                                        $updates.text(params.response.newValue)
+                                    })
+                                })
+                            })
+
+                        </r:script>
                     </div><!-- #new-dynamic-properties-block -->
+
 
                 </div>
             </div>

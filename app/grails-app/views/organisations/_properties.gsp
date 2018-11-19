@@ -5,19 +5,15 @@
 <g:set var="availPropDefGroups" value="${PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), Org.class.name)}" />
 
 <g:if test="${availPropDefGroups}">
+    <semui:modal id="propDefGroupBindings" text="Merkmalsgruppen anzeigen" hideSubmitButton="hideSubmitButton">
 
-    <div class="ui card la-dl-no-table">
-        <div class="content">
-            <h5 class="ui header"><i class="icon cogs"></i>Merkmale anzeigen</h5>
+        <g:render template="/templates/properties/groupBindings" model="${[
+                propDefGroup: propDefGroup,
+                ownobj: orgInstance,
+                availPropDefGroups: availPropDefGroups
+        ]}" />
 
-            <g:render template="/templates/properties/groupBindings" model="${[
-                    propDefGroup: propDefGroup,
-                    ownobj: orgInstance,
-                    availPropDefGroups: availPropDefGroups
-            ]}" />
-        </div>
-    </div>
-
+    </semui:modal>
 </g:if>
 
 <%-- grouped custom properties --%>

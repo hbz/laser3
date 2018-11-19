@@ -61,7 +61,8 @@
                                                                visible:"No",
                                                                editable:"${editable}"]'
                                                       onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#propDefGroupBindingConfig')"
-                                                      update="propDefGroupBindingConfig" class="ui icon button">
+                                                      update="propDefGroupBindingConfig"
+                                                      class="ui icon button">
                                             Nicht anzeigen
                                         </g:remoteLink>
                                     </g:if>
@@ -72,7 +73,8 @@
                                                                visible:"Yes",
                                                                editable:"${editable}"]'
                                                       onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#propDefGroupBindingConfig')"
-                                                      update="propDefGroupBindingConfig" class="ui icon button">
+                                                      update="propDefGroupBindingConfig"
+                                                      class="ui icon button">
                                             Anzeigen
                                         </g:remoteLink>
                                     </g:else>
@@ -84,7 +86,8 @@
                                                            ownobj:"${ownobj.class.name}:${ownobj.id}",
                                                            editable:"${editable}"]'
                                                   onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#propDefGroupBindingConfig')"
-                                                  update="propDefGroupBindingConfig" class="ui icon negative button">
+                                                  update="propDefGroupBindingConfig"
+                                                  class="ui icon negative button">
                                         <i class="icon times"></i>
                                     </g:remoteLink>
                                 </g:else>
@@ -93,15 +96,13 @@
                     </tr>
                 </g:each>
             </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="5">
-                        <button class="ui button" onclick="javascript:window.document.location.reload()">Seite neu laden</button>
-                    </td>
-                </tr>
-            </tfoot>
         </table>
 
     </div><!-- #propDefGroupBindingConfig -->
 
+<script>
+   $('#propDefGroupBindings .button.propDefGroupBindings').on('click', function(){
+       window.location.reload()
+   })
+</script>
 <!-- _propertyGroupBindings -->
