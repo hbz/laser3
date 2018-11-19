@@ -32,7 +32,7 @@
             <g:form action="listProvider" method="get" class="ui form">
                 <g:render template="/templates/filter/orgFilter"
                           model="[
-                                  tmplConfigShow: [['name'], ['country', 'property'],],
+                                  tmplConfigShow: [['name'], ['country', 'property']],
                                   tmplConfigFormFilter: true,
                                   useNewLayouter: true
                           ]"/>
