@@ -553,7 +553,7 @@ from License as l where (
         viableOrgs.add(result.institution)
 
         def date_restriction = null;
-        def sdf = DateUtil.getSimpleDateFormat_NoTime()
+        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
 
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
