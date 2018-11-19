@@ -434,27 +434,6 @@
                                 authorizedOrgs: authorizedOrgs
                         ]}" />
 
-                        <r:script>
-                            $(function(){
-                                $('#new-dynamic-properties-block a.xEditableValue').each( function(i, elem) {
-                                    $(elem).on('save', function(e, params){
-                                        $target = $(e.target)
-                                        $updates = $('#new-dynamic-properties-block a.xEditableValue[id="' + $target.attr('id') + '"]')
-                                        $updates.attr('data-oldvalue', params.newValue) // TODO BUGGY
-                                        $updates.text(params.response)
-                                    })
-                                })
-                                $('#new-dynamic-properties-block a.xEditableManyToOne').each( function(i, elem) {
-                                    $(elem).on('save', function(e, params){
-                                        $target = $(e.target)
-                                        $updates = $('#new-dynamic-properties-block a.xEditableManyToOne[id="' + $target.attr('id') + '"]')
-                                        $updates.attr('data-value', params.newValue) // TODO BUGGY
-                                        $updates.text(params.response.newValue)
-                                    })
-                                })
-                            })
-
-                        </r:script>
                     </div><!-- #new-dynamic-properties-block -->
 
 

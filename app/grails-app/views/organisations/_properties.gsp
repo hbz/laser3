@@ -4,7 +4,9 @@
 
 <g:set var="availPropDefGroups" value="${PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), Org.class.name)}" />
 
-<g:if test="${availPropDefGroups}">
+<%-- modal --%>
+
+<g:if test="${availPropDefGroups.context}">
     <semui:modal id="propDefGroupBindings" text="Merkmalsgruppen anzeigen" hideSubmitButton="hideSubmitButton">
 
         <g:render template="/templates/properties/groupBindings" model="${[
@@ -18,7 +20,7 @@
 
 <%-- grouped custom properties --%>
 
-<g:each in="${availPropDefGroups}" var="propDefGroup">
+<g:each in="${availPropDefGroups.all}" var="propDefGroup">
     <% def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndOrg(propDefGroup, orgInstance) %>
 
     <g:if test="${propDefGroup.visible?.value?.equalsIgnoreCase('Yes') || binding?.visible?.value == 'Yes'}">
@@ -50,7 +52,7 @@
 
 <%-- custom properties --%>
 
-<g:if test="${! availPropDefGroups}">
+<g:if test="${! availPropDefGroups.all}">
 
     <div class="ui card la-dl-no-table">
         <div class="content">
@@ -101,5 +103,27 @@
         </div><!--.card-->
     </g:if>
 </g:each>
+
+<%--<r:script>
+    $(function(){
+        $('#new-dynamic-properties-block a.xEditableValue').each( function(i, elem) {
+            $(elem).on('save', function(e, params){
+                $target = $(e.target)
+                $updates = $('#new-dynamic-properties-block a.xEditableValue[id="' + $target.attr('id') + '"]')
+                $updates.attr('data-oldvalue', params.newValue) // TODO BUGGY
+                $updates.text(params.response)
+            })
+        })
+        $('#new-dynamic-properties-block a.xEditableManyToOne').each( function(i, elem) {
+            $(elem).on('save', function(e, params){
+                $target = $(e.target)
+                $updates = $('#new-dynamic-properties-block a.xEditableManyToOne[id="' + $target.attr('id') + '"]')
+                $updates.attr('data-value', params.newValue) // TODO BUGGY
+                $updates.text(params.response.newValue)
+            })
+        })
+    })
+
+</r:script>--%>
 
 <!-- _properties -->

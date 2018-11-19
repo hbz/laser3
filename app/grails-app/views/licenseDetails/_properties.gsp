@@ -1,27 +1,26 @@
 <%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.*" %>
+<laser:serviceInjection />
 <!-- _properties -->
 
 <g:set var="availPropDefGroups" value="${PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), License.class.name)}" />
 
-<g:if test="${availPropDefGroups}">
+<%-- modal --%>
 
-    <div class="ui card la-dl-no-table">
-        <div class="content">
-            <h5 class="ui header"><i class="icon cogs"></i>Merkmale anzeigen</h5>
+<g:if test="${availPropDefGroups.context}">
+    <semui:modal id="propDefGroupBindings" text="Merkmalsgruppen anzeigen" hideSubmitButton="hideSubmitButton">
 
-            <g:render template="/templates/properties/groupBindings" model="${[
-                    propDefGroup: propDefGroup,
-                    ownobj: license,
-                    availPropDefGroups: availPropDefGroups
-            ]}" />
-        </div>
-    </div>
+        <g:render template="/templates/properties/groupBindings" model="${[
+                propDefGroup: propDefGroup,
+                ownobj: license,
+                availPropDefGroups: availPropDefGroups
+        ]}" />
 
+    </semui:modal>
 </g:if>
 
 <%-- grouped custom properties --%>
 
-<g:each in="${availPropDefGroups}" var="propDefGroup">
+<g:each in="${availPropDefGroups.all}" var="propDefGroup">
     <% def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndLic(propDefGroup, license) %>
 
     <g:if test="${propDefGroup.visible?.value?.equalsIgnoreCase('Yes') || binding?.visible?.value == 'Yes'}">
@@ -53,7 +52,7 @@
 
 <%-- custom properties --%>
 
-<g:if test="${! availPropDefGroups}">
+<g:if test="${! availPropDefGroups.all}">
 
     <div class="ui card la-dl-no-table">
         <div class="content">
@@ -150,5 +149,27 @@
         </g:each>
     </div>
 </div><!--.card-->
+
+<%--<r:script>
+    $(function(){
+        $('#new-dynamic-properties-block a.xEditableValue').each( function(i, elem) {
+            $(elem).on('save', function(e, params){
+                $target = $(e.target)
+                $updates = $('#new-dynamic-properties-block a.xEditableValue[id="' + $target.attr('id') + '"]')
+                $updates.attr('data-oldvalue', params.newValue) // TODO BUGGY
+                $updates.text(params.response)
+            })
+        })
+        $('#new-dynamic-properties-block a.xEditableManyToOne').each( function(i, elem) {
+            $(elem).on('save', function(e, params){
+                $target = $(e.target)
+                $updates = $('#new-dynamic-properties-block a.xEditableManyToOne[id="' + $target.attr('id') + '"]')
+                $updates.attr('data-value', params.newValue) // TODO BUGGY
+                $updates.text(params.response.newValue)
+            })
+        })
+    })
+
+</r:script>--%>
 
 <!-- _properties -->

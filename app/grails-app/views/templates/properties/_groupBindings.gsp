@@ -16,7 +16,7 @@
                 </tr>
             </thead>
             <tbody>
-                <g:each in="${availPropDefGroups}" var="propDefGroup">
+                <g:each in="${availPropDefGroups.context}" var="propDefGroup">
                     <tr>
                         <td>
                             <strong>${propDefGroup.name}</strong>
@@ -101,8 +101,11 @@
     </div><!-- #propDefGroupBindingConfig -->
 
 <script>
-   $('#propDefGroupBindings .button.propDefGroupBindings').on('click', function(){
-       window.location.reload()
-   })
+    $(function(){
+        $('#propDefGroupBindings .actions .button.propDefGroupBindings').on('click', function(e){
+            e.preventDefault()
+            window.location.reload()
+        })
+    })
 </script>
 <!-- _propertyGroupBindings -->
