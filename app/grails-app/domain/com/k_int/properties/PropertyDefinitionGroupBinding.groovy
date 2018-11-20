@@ -11,7 +11,7 @@ class PropertyDefinitionGroupBinding {
 
     RefdataValue visible // RefdataCategory 'YN' ; default value: will overwrite existing groups
 
-    Boolean isVisibleForConsortial // Subscriber_Consortial, Licensee_Consortial
+    RefdataValue visibleForConsortiaMembers  // RefdataCategory 'YN' ; Subscriber_Consortial, Licensee_Consortial
 
     static belongsTo = [
             lic:    License,
@@ -28,16 +28,16 @@ class PropertyDefinitionGroupBinding {
         sub             column: 'pgb_sub_fk'
         propDefGroup    column: 'pgb_property_definition_group_fk'
         visible         column: 'pbg_visible_rv_fk'
-        isVisibleForConsortial column: 'pbg_is_viewable'
+        visibleForConsortiaMembers column: 'pbg_is_viewable_rv_fk'
     }
 
     static constraints = {
-        lic                     (nullable: true, unique: ['propDefGroup'])
-        org                     (nullable: true, unique: ['propDefGroup'])
-        sub                     (nullable: true, unique: ['propDefGroup'])
-        propDefGroup            (nullable: false, blank: false)
-        visible                 (nullable: true)
-        isVisibleForConsortial  (nullable: true, blank: false)
+        lic                         (nullable: true, unique: ['propDefGroup'])
+        org                         (nullable: true, unique: ['propDefGroup'])
+        sub                         (nullable: true, unique: ['propDefGroup'])
+        propDefGroup                (nullable: false, blank: false)
+        visible                     (nullable: true)
+        visibleForConsortiaMembers  (nullable: true)
     }
 }
 

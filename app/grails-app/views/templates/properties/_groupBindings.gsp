@@ -11,7 +11,8 @@
                     <th>Merkmalsgruppe</th>
                     <th></th>
                     <th>Voreinstellung</th>
-                    <th>Anzeigen</th>
+                    <th>Sichtbar</th>
+                    <th>Für Teilnehmer sichtbar</th>
                     <th></th>
                 </tr>
             </thead>
@@ -49,6 +50,11 @@
                             %>
                             <g:if test="${editable && binding}">
                                 <semui:xEditableRefData owner="${binding}" field="visible" config="YN" />
+                            </g:if>
+                        </td>
+                        <td>
+                            <g:if test="${editable && binding}">
+                                <semui:xEditableRefData owner="${binding}" field="visibleForConsortiaMembers" config="YN" />
                             </g:if>
                         </td>
                         <td class="x">

@@ -394,7 +394,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
             if (this.instanceOf && !this.instanceOf.isTemplate()) {
                 if (pdg.tenant == null || pdg.tenant?.id == source.getConsortia()?.id) {
 
-                    if (it.isVisibleForConsortial) {
+                    if (it.visibleForConsortiaMembers?.value == 'Yes') {
                         result << it
                     }
                 }

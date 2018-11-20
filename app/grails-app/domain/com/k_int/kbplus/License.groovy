@@ -430,7 +430,7 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
             if (this.instanceOf && ! this.instanceOf.isTemplate()) {
                 if (pdg.tenant == null || pdg.tenant?.id == source.getLicensingConsortium()?.id) {
 
-                    if (it.isVisibleForConsortial) {
+                    if (it.visibleForConsortiaMembers?.value == 'Yes') {
                         result << it
                     }
                 }

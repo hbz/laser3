@@ -33,7 +33,7 @@
                     <h5 class="ui header">
                         Merkmale: ${propDefGroup.name}
 
-                        <g:if test="${contextService.getOrg()?.id == propDefGroup.tenant?.id && binding.isVisibleForConsortial}">
+                        <g:if test="${contextService.getOrg()?.id == propDefGroup.tenant?.id && binding.visibleForConsortiaMembers?.value == 'Yes'}">
                             <span data-position="top right" data-tooltip="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
                                 <i class="ui icon eye orange"></i>
                             </span>
@@ -63,7 +63,7 @@
 
 <%-- custom properties --%>
 
-<g:if test="${! availPropDefGroups}">
+<g:if test="${! subscriptionInstance.getCalculatedPropDefGroupBindings()}">
 
     <div class="ui card la-dl-no-table la-js-hideable">
         <div class="content">
