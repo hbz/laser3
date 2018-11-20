@@ -1,4 +1,8 @@
 
+0.10.7
+
+- bugfix: faulty elastic search index during linking packages 
+
 0.10.6
 
 - increased session timeout to 120 minutes
