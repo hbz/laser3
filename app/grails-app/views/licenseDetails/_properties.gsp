@@ -6,7 +6,7 @@
 
 <%-- modal --%>
 
-<g:if test="${availPropDefGroups.all}">
+<g:if test="${availPropDefGroups}">
     <semui:modal id="propDefGroupBindings" text="Merkmalsgruppen anzeigen" hideSubmitButton="hideSubmitButton">
 
         <g:render template="/templates/properties/groupBindings" model="${[
@@ -20,15 +20,26 @@
 
 <%-- grouped custom properties --%>
 
-<g:each in="${availPropDefGroups.all}" var="propDefGroup">
-    <% def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndLic(propDefGroup, license) %>
+<g:each in="${license.getCalculatedPropDefGroupBindings()}" var="binding">
+    <g:set var="propDefGroup" value="${binding.propDefGroup}" />
 
+    <%-- check visibility of global group and binding --%>
     <g:if test="${propDefGroup.visible?.value?.equalsIgnoreCase('Yes') || binding?.visible?.value == 'Yes'}">
+        <%-- check binding override --%>
         <g:if test="${! (binding && binding?.visible?.value == 'No')}">
 
             <div class="ui card la-dl-no-table">
                 <div class="content">
-                    <h5 class="ui header">Merkmale: ${propDefGroup.name}</h5>
+                    <h5 class="ui header">
+                        Merkmale: ${propDefGroup.name}
+
+                        <g:if test="${contextService.getOrg()?.id == propDefGroup.tenant?.id && binding.isVisibleForConsortial}">
+                            <span data-position="top right" data-tooltip="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
+                                <i class="ui icon eye orange"></i>
+                            </span>
+                        </g:if>
+                    </h5>
+
                     <div id="grouped_custom_props_div_${propDefGroup.id}">
 
                         <g:render template="/templates/properties/group" model="${[
@@ -52,7 +63,7 @@
 
 <%-- custom properties --%>
 
-<g:if test="${! availPropDefGroups.all}">
+<g:if test="${! availPropDefGroups}">
 
     <div class="ui card la-dl-no-table">
         <div class="content">
@@ -82,45 +93,9 @@
         </div>
     </div><!--.card-->
 
-    <%--
-    <div class="ui card la-dl-no-table">
-        <div class="content">
-
-            <h5 class="ui header">
-                ${message(code:'license.openaccess.properties')}
-            </h5>
-
-            <div id="custom_props_div_oa">
-                <g:render template="/templates/properties/custom" model="${[
-                        prop_desc: PropertyDefinition.LIC_OA_PROP,
-                        ownobj: license,
-                        custom_props_div: "custom_props_div_oa" ]}"/>
-            </div>
-        </div>
-    </div><!--.card-->
-
-    <div class="ui card la-dl-no-table">
-        <div class="content">
-
-            <h5 class="ui header">
-                ${message(code:'license.archive.properties')}
-            </h5>
-
-            <div id="custom_props_div_archive">
-                <g:render template="/templates/properties/custom" model="${[
-                        prop_desc: PropertyDefinition.LIC_ARC_PROP,
-                        ownobj: license,
-                        custom_props_div: "custom_props_div_archive" ]}"/>
-            </div>
-        </div>
-    </div><!--.card-->
-    --%>
-
     <r:script language="JavaScript">
         $(document).ready(function(){
             c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
-            //c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_oa");
-            //c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_archive");
         });
     </r:script>
 

@@ -1,6 +1,8 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
+import com.k_int.properties.PropertyDefinitionGroup
+import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.traits.AuditTrait
 import de.laser.domain.AbstractBaseDomain
 import de.laser.interfaces.Permissions
@@ -412,6 +414,35 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
 
     def getNonDeletedDerivedLicenses() {
         License.where{ instanceOf == this && (status == null || status.value != 'Deleted') }
+    }
+
+    def getCalculatedPropDefGroupBindings() {
+        def result = []
+        // bindings from this or this.instanceOf if not a template
+        def source = (this.instanceOf && ! this.instanceOf.isTemplate() ? this.instanceOf : this)
+
+        def bindings = PropertyDefinitionGroupBinding.findAllByLic(source)
+
+        bindings.each{ it ->
+            def pdg = it.propDefGroup
+
+            // Licensee_Consortial
+            if (this.instanceOf && ! this.instanceOf.isTemplate()) {
+                if (pdg.tenant == null || pdg.tenant?.id == source.getLicensingConsortium()?.id) {
+
+                    if (it.isVisibleForConsortial) {
+                        result << it
+                    }
+                }
+            }
+            // Consortium or Local
+            else {
+                if (pdg.tenant == null || pdg.tenant?.id == contextService.getOrg()?.id) {
+                    result << it
+                }
+            }
+        }
+        result
     }
 
     @Override

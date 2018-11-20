@@ -6,7 +6,7 @@
 
 <%-- modal --%>
 
-<g:if test="${availPropDefGroups.all}">
+<g:if test="${availPropDefGroups}">
     <semui:modal id="propDefGroupBindings" text="Merkmalsgruppen anzeigen" hideSubmitButton="hideSubmitButton">
 
         <g:render template="/templates/properties/groupBindings" model="${[
@@ -20,7 +20,7 @@
 
 <%-- grouped custom properties --%>
 
-<g:each in="${availPropDefGroups.all}" var="propDefGroup">
+<g:each in="${availPropDefGroups}" var="propDefGroup">
     <% def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndOrg(propDefGroup, orgInstance) %>
 
     <g:if test="${propDefGroup.visible?.value?.equalsIgnoreCase('Yes') || binding?.visible?.value == 'Yes'}">
@@ -52,7 +52,7 @@
 
 <%-- custom properties --%>
 
-<g:if test="${! availPropDefGroups.all}">
+<g:if test="${! availPropDefGroups}">
 
     <div class="ui card la-dl-no-table">
         <div class="content">

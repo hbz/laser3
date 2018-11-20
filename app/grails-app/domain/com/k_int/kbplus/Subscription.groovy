@@ -1,6 +1,8 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
+import com.k_int.properties.PropertyDefinitionGroup
+import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.helper.RDStore
 import de.laser.traits.AuditTrait
 import de.laser.domain.AbstractBaseDomain
@@ -376,6 +378,35 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
 
     def getNonDeletedDerivedSubscriptions() {
         Subscription.where{ instanceOf == this && (status == null || status.value != 'Deleted') }
+    }
+
+    def getCalculatedPropDefGroupBindings() {
+        def result = []
+        // bindings from this or this.instanceOf if not a template
+        def source = (this.instanceOf && ! this.instanceOf.isTemplate() ? this.instanceOf : this)
+
+        def bindings = PropertyDefinitionGroupBinding.findAllBySub(source)
+
+        bindings.each{ it ->
+            def pdg = it.propDefGroup
+
+            // Subscriber_Consortial
+            if (this.instanceOf && !this.instanceOf.isTemplate()) {
+                if (pdg.tenant == null || pdg.tenant?.id == source.getConsortia()?.id) {
+
+                    if (it.isVisibleForConsortial) {
+                        result << it
+                    }
+                }
+            }
+            // Consortium or Local
+            else {
+                if (pdg.tenant == null || pdg.tenant?.id == contextService.getOrg()?.id) {
+                    result << it
+                }
+            }
+        }
+        result
     }
 
   public String toString() {

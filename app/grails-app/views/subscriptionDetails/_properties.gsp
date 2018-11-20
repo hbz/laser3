@@ -6,7 +6,7 @@
 
 <%-- modal --%>
 
-<g:if test="${availPropDefGroups.all}">
+<g:if test="${availPropDefGroups}">
     <semui:modal id="propDefGroupBindings" text="Merkmalsgruppen anzeigen" hideSubmitButton="hideSubmitButton">
 
         <g:render template="/templates/properties/groupBindings" model="${[
@@ -20,15 +20,26 @@
 
 <%-- grouped custom properties --%>
 
-<g:each in="${availPropDefGroups.all}" var="propDefGroup">
-    <% def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(propDefGroup, subscriptionInstance) %>
+<g:each in="${subscriptionInstance.getCalculatedPropDefGroupBindings()}" var="binding">
+    <g:set var="propDefGroup" value="${binding.propDefGroup}" />
 
+<%-- check visibility of global group and binding --%>
     <g:if test="${propDefGroup.visible?.value?.equalsIgnoreCase('Yes') || binding?.visible?.value == 'Yes'}">
+    <%-- check binding override --%>
         <g:if test="${! (binding && binding?.visible?.value == 'No')}">
 
             <div class="ui card la-dl-no-table">
                 <div class="content">
-                    <h5 class="ui header">Merkmale: ${propDefGroup.name}</h5>
+                    <h5 class="ui header">
+                        Merkmale: ${propDefGroup.name}
+
+                        <g:if test="${contextService.getOrg()?.id == propDefGroup.tenant?.id && binding.isVisibleForConsortial}">
+                            <span data-position="top right" data-tooltip="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
+                                <i class="ui icon eye orange"></i>
+                            </span>
+                        </g:if>
+                    </h5>
+
                     <div id="grouped_custom_props_div_${propDefGroup.id}">
 
                         <g:render template="/templates/properties/group" model="${[
@@ -52,7 +63,7 @@
 
 <%-- custom properties --%>
 
-<g:if test="${! availPropDefGroups.all}">
+<g:if test="${! availPropDefGroups}">
 
     <div class="ui card la-dl-no-table la-js-hideable">
         <div class="content">

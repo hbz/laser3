@@ -72,13 +72,12 @@ class PropertyDefinitionGroup {
     }
 
     static getAvailableGroups(Org tenant, String ownerType) {
-        def result = [:]
+        def result = []
         def global  = findAllWhere( tenant: null, ownerType: ownerType)
         def context = findAllByTenantAndOwnerType(tenant, ownerType)
 
-        result << ['all':       global + context]
-        result << ['global':    global]
-        result << ['context':   context]
+        result.addAll(global)
+        result.addAll(context)
 
         result
     }
