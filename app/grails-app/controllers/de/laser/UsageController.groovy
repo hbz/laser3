@@ -3,6 +3,7 @@ package de.laser
 import com.k_int.kbplus.Fact
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgCustomProperty
+import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
 import de.laser.controller.AbstractDebugController
@@ -100,7 +101,21 @@ class UsageController extends AbstractDebugController {
         result.institution = contextService.getOrg()
         result.institutionList = factService.institutionsWithRequestorIDAndAPIKey()
         result.user = User.get(springSecurityService.principal.id)
-        result.providerList = factService.providersWithStatssid()
+        def providersWithStatssid = factService.providersWithStatssid()
+        def providerList = []
+
+        def joinedInstitutions = result.institutionList.id.join(',')
+        providersWithStatssid.each {
+            def hql = "select s.id from Subscription s join s.orgRelations as supplier join s.orgRelations as institution " +
+                "where supplier.org.id=:supplierId and institution.org.id in (${joinedInstitutions}) and exists (select 1 from IssueEntitlement as ie where ie.subscription=s)"
+            def subsWithIssueEntitlements = Subscription.executeQuery(hql,[supplierId:it.id])
+            def listItem = [:]
+            listItem.id = it.id
+            listItem.name = it.name
+            listItem.optionDisabled = (subsWithIssueEntitlements.size() == 0)
+            providerList.add(listItem)
+        }
+        result.providerList = providerList
         result.institutionsWithFacts = factService.getFactInstitutionList()
         result.providersWithFacts = factService.getFactProviderList()
         result.natstatProviders = StatsTripleCursor.withCriteria {
