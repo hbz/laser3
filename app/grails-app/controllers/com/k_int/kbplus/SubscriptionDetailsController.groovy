@@ -1317,7 +1317,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
 
         //Change to GOKB ElasticSearch
         params.esgokb = "Package"
-        params.sort = "name.sort"
+        params.sort = "name"
 
         if (params.addType && (params.addType != '')) {
             if(params.esgokb)
