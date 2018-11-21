@@ -11,8 +11,8 @@
                     <th>Merkmalsgruppe</th>
                     <th></th>
                     <th>Voreinstellung</th>
-                    <th>Sichtbar</th>
-                    <th>Für Teilnehmer sichtbar</th>
+                    <th>Lokal sichtbar</th>
+                    <th>Für Teilnehmer sichtbar (falls lokal)</th>
                     <th></th>
                 </tr>
             </thead>
