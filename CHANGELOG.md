@@ -1,4 +1,8 @@
 
+0.10.8
+
+- hotfix: gorm failed to lazily initialize a collection
+
 0.10.7
 
 - bugfix: faulty elastic search index during linking packages 

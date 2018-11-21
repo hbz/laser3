@@ -2,16 +2,22 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
 import de.laser.domain.AbstractBaseDomain
+import groovy.sql.Sql
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.LogFactory
 import groovy.util.logging.*
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-
+import org.hibernate.Criteria
 import javax.persistence.Transient
 
 @Log4j
 class Org extends AbstractBaseDomain {
+
+    @Transient
+    def sessionFactory // TODO: ugliest HOTFIX ever
+    @Transient
+    def contextService
 
     String name
     String shortname
@@ -397,18 +403,22 @@ class Org extends AbstractBaseDomain {
     def getallOrgRoleType()
     {
         def result = []
-        orgRoleType?.each {
-                result << it
+        getallOrgRoleTypeIds()?.each { it ->
+                result << RefdataValue.get(it)
         }
         result
     }
 
     def getallOrgRoleTypeIds()
     {
-        def result = []
-        orgRoleType?.each {
-            result << it.id
-        }
+        // TODO: ugliest HOTFIX ever
+        def hibernateSession = sessionFactory.currentSession
+
+        String query = 'select refdata_value_id from org_roletype where org_id = ' + this.id
+        def sqlQuery = hibernateSession.createSQLQuery(query)
+        sqlQuery.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP)
+        def result = sqlQuery.list()?.collect{ it.refdata_value_id as Long }
+        log.debug('getallOrgRoleTypeIds(): ' + result)
         result
     }
 }
