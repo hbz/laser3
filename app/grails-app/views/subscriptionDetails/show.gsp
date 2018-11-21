@@ -151,6 +151,14 @@
                                     </g:else>
                                 </dd>
                             </dl>
+                            <dl>
+                                <dt class="control-label">${message(code:'subscription.form.label')}</dt>
+                                <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="form" config='Subscription Form'/></dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">${message(code:'subscription.resource.label')}</dt>
+                                <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="resource" config='Subscription Resource'/></dd>
+                            </dl>
                             <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id == subscriptionInstance.getConsortia()?.id)}">
                                 <dl>
                                     <dt class="control-label">${message(code:'subscription.isInstanceOfSub.label')}</dt>
@@ -166,7 +174,6 @@
                                     <dd>
                                         <semui:xEditableRefData owner="${subscriptionInstance}" field="isSlaved" config='YN'/>
                                     </dd>
-
                                 </dl>
                             </g:if>
                         </div>

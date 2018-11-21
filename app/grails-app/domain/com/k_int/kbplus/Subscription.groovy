@@ -28,10 +28,12 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
     @Transient
     def changeNotificationService
     @Transient
-            def springSecurityService
+    def springSecurityService
 
   RefdataValue status
   RefdataValue type         // RefdataCatagory 'Subscription Type'
+  RefdataValue form         // RefdataCatagory 'Subscription Form'
+  RefdataValue resource     // RefdataCatagory 'Subscription Resource'
 
   String name
   String identifier
@@ -97,6 +99,8 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
         status      column:'sub_status_rv_fk'
         type        column:'sub_type_rv_fk'
         owner       column:'sub_owner_license_fk'
+        form        column:'sub_form_fk'
+        resource    column:'sub_resource_fk'
         name        column:'sub_name'
         identifier  column:'sub_identifier'
         impId       column:'sub_imp_id', index:'sub_imp_id_idx'
@@ -117,6 +121,8 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
         status(nullable:true, blank:false)
         type(nullable:true, blank:false)
         owner(nullable:true, blank:false)
+        form        (nullable:true, blank:false)
+        resource    (nullable:true, blank:false)
         impId(nullable:true, blank:false)
         startDate(nullable:true, blank:false)
         endDate(nullable:true, blank:false)
