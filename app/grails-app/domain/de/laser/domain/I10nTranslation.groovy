@@ -20,8 +20,8 @@ class I10nTranslation {
     static mapping = {
         id          column:'i10n_id'
         version     column:'i10n_version'
-        referenceId column:'i10n_reference_id'
-        referenceClass column:'i10n_reference_class'
+        referenceId column:'i10n_reference_id',       index: 'i10n_ref_idx'
+        referenceClass column:'i10n_reference_class', index: 'i10n_ref_idx'
         referenceField column:'i10n_reference_field'
         valueDe     column:'i10n_value_de'
         valueEn     column:'i10n_value_en'
@@ -96,7 +96,7 @@ class I10nTranslation {
 
     // -- initializations --
 
-    // used in gsp to create translations for on-the-fly-created refdatas
+    // used in gsp to create translations for on-the-fly-created refdatas and property definitions
     static createI10nOnTheFly(Object reference, String referenceField) {
 
         def values = [:] // no effect in set()

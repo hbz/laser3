@@ -108,7 +108,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
         endDate     column:'sub_end_date'
         manualRenewalDate       column:'sub_manual_renewal_date'
         manualCancellationDate  column:'sub_manual_cancellation_date'
-        instanceOf              column:'sub_parent_sub_fk'
+        instanceOf              column:'sub_parent_sub_fk', index:'sub_parent_idx'
         previousSubscription    column:'sub_previous_subscription_fk'
         isSlaved        column:'sub_is_slaved'
         noticePeriod    column:'sub_notice_period'

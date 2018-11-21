@@ -102,7 +102,7 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
                isPublic column:'lic_is_public_rdv_fk'
            noticePeriod column:'lic_notice_period'
              licenseUrl column:'lic_license_url'
-             instanceOf column:'lic_parent_lic_fk'
+             instanceOf column:'lic_parent_lic_fk', index:'lic_parent_idx'
                isSlaved column:'lic_is_slaved'
             licenseType column:'lic_license_type_str'
           licenseStatus column:'lic_license_status_str'

@@ -11,7 +11,8 @@ class SystemAdminCustomProperty extends CustomProperty {
     SystemAdmin owner
 
     static mapping = {
-        includes AbstractProperty.mapping
+        includes    AbstractProperty.mapping
+        owner       index:'owner_idx'
     }
 
     static belongsTo = [
