@@ -32,7 +32,7 @@
         <g:form action="manageConsortia" method="get" class="ui form">
             <g:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: [['name', 'libraryType'],['federalState', 'libraryNetwork','property']],
+                              tmplConfigShow: [['name', 'libraryType'], ['federalState', 'libraryNetwork','property']],
                               tmplConfigFormFilter: true,
                               useNewLayouter: true
                       ]"/>

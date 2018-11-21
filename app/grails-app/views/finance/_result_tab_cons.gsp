@@ -3,6 +3,27 @@
 
 <laser:serviceInjection />
 
+
+<%--
+    def jsonSource = []
+
+    cost_items.each{ ci ->
+        def or = OrgRole.findBySubAndRoleType(ci.sub, RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'))
+
+        jsonSource << [
+                "name": "${or.org.sortname}",
+                "type": "${or.org.orgType}",
+                "federal": "${or.org.federalState}",
+                "cost": "${ci.costInLocalCurrency}"
+        ]
+    }
+
+    //println jsonSource
+
+    def jb = new groovy.json.JsonBuilder(jsonSource)
+    println jb.toPrettyString()
+--%>
+
 <table id="costTable_${i}" class="ui celled sortable table table-tworow la-table ignore-floatThead">
 
 <thead>
@@ -34,7 +55,6 @@
         </tr>
     </g:if>
     <g:else>
-
         <g:each in="${cost_items}" var="ci" status="jj">
             <g:set var="orgRoles" value="${OrgRole.findBySubAndRoleType(ci.sub, RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'))}" />
 

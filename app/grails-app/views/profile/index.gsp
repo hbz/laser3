@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'profile', default: 'LAS:eR User Profile')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'profile', default: 'LAS:eR User Profile')}</title>
 </head>
 
 <body>
@@ -21,6 +21,7 @@
     <div class="column wide eight">
 
         <div class="ui segment">
+
             <g:form action="updateProfile" class="ui form">
                 <h4 class="ui dividing header">
                     ${message(code: 'profile.user', default:'User Profile')}
@@ -66,7 +67,22 @@
     </div><!-- .column -->
 
     <div class="column wide eight">
+
         <div class="ui segment">
+
+            <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_YODA'))}">
+                <g:img dir="images" file="yoda.gif" style="
+                    position: absolute;
+                    top: -40px;
+                    right: -25px;
+                    z-index: 9;
+                    padding: 10px;
+                    background: #fff;
+                    border: 1px solid #ccc;
+                    height: 240px;
+                " />
+            </g:if>
+
             <g:form action="updatePassword" class="ui form">
 
                 <h4 class="ui dividing header">

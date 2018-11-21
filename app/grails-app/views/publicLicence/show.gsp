@@ -48,6 +48,7 @@
                             custom_props_div: "custom_props_div_props" ]}"/>
                 </div>
 
+                <%--
                 <h6 class="ui header">${message(code:'license.openaccess.properties')}</h6>
 
                 <div id="custom_props_div_oa">
@@ -65,12 +66,12 @@
                             ownobj: license,
                             custom_props_div: "custom_props_div_archive" ]}"/>
                 </div>
-
+                --%>
                 <r:script language="JavaScript">
                         $(document).ready(function(){
                             c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
-                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_oa");
-                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_archive");
+                            //c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_oa");
+                            //c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_archive");
                         });
                 </r:script>
 

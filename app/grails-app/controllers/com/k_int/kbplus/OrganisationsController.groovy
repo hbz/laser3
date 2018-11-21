@@ -292,31 +292,6 @@ class OrganisationsController {
       result
     }
 
-    def renderGroupedProperties_Ajax() {
-        // JUST FOR TESTING
-        // JUST FOR TESTING
-        // JUST FOR TESTING
-
-        def user            = User.get(springSecurityService.principal.id)
-        def authorizedOrgs  = user?.authorizedOrgs
-        def orgInstance     = Org.get(params.id)
-        def editable        = false
-
-        // copied from show()
-        def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
-        def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
-
-        //IF ORG is a Provider
-        if(orgInstance.sector == orgSector || orgRoleType in orgInstance.orgRoleType) {
-            editable = accessService.checkMinUserOrgRole(user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_COM_EDITOR,ROLE_ORG_EDITOR')
-        }
-        else {
-            editable = accessService.checkMinUserOrgRole(user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
-        }
-
-        render template: "properties", model: [ orgInstance: orgInstance, authorizedOrgs: authorizedOrgs, editable: editable ]
-    }
-
     @Secured(['ROLE_USER'])
     def properties() {
         def result = [:]

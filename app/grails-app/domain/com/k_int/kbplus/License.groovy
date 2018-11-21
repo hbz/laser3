@@ -1,6 +1,8 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
+import com.k_int.properties.PropertyDefinitionGroup
+import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.traits.AuditTrait
 import de.laser.domain.AbstractBaseDomain
 import de.laser.interfaces.Permissions
@@ -412,6 +414,62 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
 
     def getNonDeletedDerivedLicenses() {
         License.where{ instanceOf == this && (status == null || status.value != 'Deleted') }
+    }
+
+    def getCaculatedPropDefGroups() {
+        def result = [ 'global':[], 'local':[], 'member':[], fallback: true ]
+
+        // ALL type depending groups without checking tenants or bindings
+        def groups = PropertyDefinitionGroup.findAllByOwnerType(License.class.name)
+        groups.each{ it ->
+
+            if (this.instanceOf && ! this.instanceOf.isTemplate()) {
+                def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndLic(it, this.instanceOf)
+
+                // global groups
+                if (it.tenant == null) {
+                    if (binding) {
+                        result.member << [it, binding]
+                    } else {
+                        result.global << it
+                    }
+                }
+                // consortium @ member; getting group by tenant and instanceOf.binding
+                if (it.tenant?.id == contextService.getOrg()?.id) {
+                    if (binding) {
+                        result.member << [it, binding]
+                    }
+                }
+                // licensee consortial; getting group by consortia and instanceOf.binding
+                else if (it.tenant?.id == this.instanceOf.getLicensingConsortium()?.id) {
+                    if (binding) {
+                        result.member << [it, binding]
+                    }
+                }
+            }
+            else {
+                def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndLic(it, this)
+
+                // global groups
+                if (it.tenant == null) {
+                    if (binding) {
+                        result.local << [it, binding]
+                    } else {
+                        result.global << it
+                    }
+                }
+                // locals; getting group by tenant and binding
+                if (it.tenant?.id == contextService.getOrg()?.id) {
+                    if (binding) {
+                        result.local << [it, binding]
+                    }
+                }
+            }
+        }
+
+        result.fallback = (result.global.size() == 0 && result.local.size() == 0 && result.member.size() == 0)
+
+        result
     }
 
     @Override

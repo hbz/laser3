@@ -211,11 +211,13 @@ class MyInstitutionController {
 
         result.propList =
                 PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
-                        defList: [PropertyDefinition.LIC_PROP, PropertyDefinition.LIC_OA_PROP, PropertyDefinition.LIC_ARC_PROP],
+                        //defList: [PropertyDefinition.LIC_PROP, PropertyDefinition.LIC_OA_PROP, PropertyDefinition.LIC_ARC_PROP],
+                        defList: [PropertyDefinition.LIC_PROP],
                     ] // public properties
                 ) +
                         PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant = :tenant", [
-                                defList: [PropertyDefinition.LIC_PROP, PropertyDefinition.LIC_OA_PROP, PropertyDefinition.LIC_ARC_PROP],
+                                //defList: [PropertyDefinition.LIC_PROP, PropertyDefinition.LIC_OA_PROP, PropertyDefinition.LIC_ARC_PROP],
+                                defList: [PropertyDefinition.LIC_PROP],
                                 tenant: contextService.getOrg()
                             ]// private properties
                         )

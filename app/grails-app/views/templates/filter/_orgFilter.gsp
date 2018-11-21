@@ -121,33 +121,28 @@
 
 </g:each>
 
+
 <g:set var="allFields" value="${tmplConfigShow.flatten()}" />
 
-<g:if test="${! allFields.contains('orgRoleType')}">
+<g:if test="${! allFields.contains('type') && params.orgRoleType}">
     <input type="hidden" name="orgRoleType" value="${params.orgRoleType}" />
 </g:if>
-
-<g:if test="${! allFields.contains('orgRoles')}">
-    <input type="hidden" name="orgRoles" value="${params.orgRoles}" />
+<g:if test="${! allFields.contains('role') && params.orgRole}">
+    <input type="hidden" name="orgRole" value="${params.orgRole}" />
 </g:if>
-
-<g:if test="${! allFields.contains('orgSector')}">
+<g:if test="${! allFields.contains('sector') && params.orgSector}">
     <input type="hidden" name="orgSector" value="${params.orgSector}" />
 </g:if>
-
-<g:if test="${! allFields.contains('libraryNetwork')}">
+<g:if test="${! allFields.contains('federalState') && params.federalState}">
     <input type="hidden" name="federalState" value="${params.federalState}" />
 </g:if>
-
-<g:if test="${! allFields.contains('libraryNetwork')}">
+<g:if test="${! allFields.contains('libraryNetwork') && params.libraryNetwork}">
     <input type="hidden" name="libraryNetwork" value="${params.libraryNetwork}" />
 </g:if>
-
-<g:if test="${! allFields.contains('libraryType')}">
+<g:if test="${! allFields.contains('libraryType') && params.libraryType}">
     <input type="hidden" name="libraryType" value="${params.libraryType}" />
 </g:if>
-
-<g:if test="${! allFields.contains('country')}">
+<g:if test="${! allFields.contains('country') && params.country}">
     <input type="hidden" name="country" value="${params.country}" />
 </g:if>
 

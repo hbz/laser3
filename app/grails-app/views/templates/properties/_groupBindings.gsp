@@ -11,7 +11,8 @@
                     <th>Merkmalsgruppe</th>
                     <th></th>
                     <th>Voreinstellung</th>
-                    <th>Anzeigen</th>
+                    <th>Lokal sichtbar</th>
+                    <th>Für Teilnehmer sichtbar (falls lokal)</th>
                     <th></th>
                 </tr>
             </thead>
@@ -51,6 +52,11 @@
                                 <semui:xEditableRefData owner="${binding}" field="visible" config="YN" />
                             </g:if>
                         </td>
+                        <td>
+                            <g:if test="${editable && binding}">
+                                <semui:xEditableRefData owner="${binding}" field="visibleForConsortiaMembers" config="YN" />
+                            </g:if>
+                        </td>
                         <td class="x">
                             <g:if test="${editable}">
                                 <g:if test="${! binding}">
@@ -61,7 +67,8 @@
                                                                visible:"No",
                                                                editable:"${editable}"]'
                                                       onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#propDefGroupBindingConfig')"
-                                                      update="propDefGroupBindingConfig" class="ui icon button">
+                                                      update="propDefGroupBindingConfig"
+                                                      class="ui icon button">
                                             Nicht anzeigen
                                         </g:remoteLink>
                                     </g:if>
@@ -72,7 +79,8 @@
                                                                visible:"Yes",
                                                                editable:"${editable}"]'
                                                       onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#propDefGroupBindingConfig')"
-                                                      update="propDefGroupBindingConfig" class="ui icon button">
+                                                      update="propDefGroupBindingConfig"
+                                                      class="ui icon button">
                                             Anzeigen
                                         </g:remoteLink>
                                     </g:else>
@@ -84,7 +92,8 @@
                                                            ownobj:"${ownobj.class.name}:${ownobj.id}",
                                                            editable:"${editable}"]'
                                                   onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#propDefGroupBindingConfig')"
-                                                  update="propDefGroupBindingConfig" class="ui icon negative button">
+                                                  update="propDefGroupBindingConfig"
+                                                  class="ui icon negative button">
                                         <i class="icon times"></i>
                                     </g:remoteLink>
                                 </g:else>
@@ -93,15 +102,16 @@
                     </tr>
                 </g:each>
             </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="5">
-                        <button class="ui button" onclick="javascript:window.document.location.reload()">Seite neu laden</button>
-                    </td>
-                </tr>
-            </tfoot>
         </table>
 
     </div><!-- #propDefGroupBindingConfig -->
 
+<script>
+    $(function(){
+        $('#propDefGroupBindings .actions .button.propDefGroupBindings').on('click', function(e){
+            e.preventDefault()
+            window.location.reload()
+        })
+    })
+</script>
 <!-- _propertyGroupBindings -->
