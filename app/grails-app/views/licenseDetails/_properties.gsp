@@ -6,17 +6,15 @@
 
 <%-- modal --%>
 
-<g:if test="${availPropDefGroups}">
-    <semui:modal id="propDefGroupBindings" text="Merkmalsgruppen anzeigen" hideSubmitButton="hideSubmitButton">
+<semui:modal id="propDefGroupBindings" text="Merkmalsgruppen anzeigen" hideSubmitButton="hideSubmitButton">
 
-        <g:render template="/templates/properties/groupBindings" model="${[
-                propDefGroup: propDefGroup,
-                ownobj: license,
-                availPropDefGroups: availPropDefGroups
-        ]}" />
+    <g:render template="/templates/properties/groupBindings" model="${[
+            propDefGroup: propDefGroup,
+            ownobj: license,
+            availPropDefGroups: availPropDefGroups
+    ]}" />
 
-    </semui:modal>
-</g:if>
+</semui:modal>
 
 <%-- grouped custom properties --%>
 

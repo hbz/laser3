@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.*" %>
+<%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Subscription; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.*" %>
 <laser:serviceInjection />
 <!-- _propertiesParts -->
 
@@ -8,10 +8,12 @@
         <h5 class="ui header">
             Merkmale: ${propDefGroup.name} (${propDefGroup.id})
 
-            <g:if test="${! propDefGroupBinding || propDefGroupBinding?.visibleForConsortiaMembers?.value == 'Yes'}">
-                <span data-position="top right" data-tooltip="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
-                    <i class="ui icon eye orange"></i>
-                </span>
+            <g:if test="${propDefGroup.ownerType in [License.class.name, Subscription.class.name]}">
+                <g:if test="${! propDefGroupBinding || propDefGroupBinding?.visibleForConsortiaMembers?.value == 'Yes'}">
+                    <span data-position="top right" data-tooltip="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
+                        <i class="ui icon eye orange"></i>
+                    </span>
+                </g:if>
             </g:if>
         </h5>
 

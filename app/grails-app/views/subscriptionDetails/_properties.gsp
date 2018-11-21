@@ -6,64 +6,67 @@
 
 <%-- modal --%>
 
-<g:if test="${availPropDefGroups}">
-    <semui:modal id="propDefGroupBindings" text="Merkmalsgruppen anzeigen" hideSubmitButton="hideSubmitButton">
+<semui:modal id="propDefGroupBindings" text="Merkmalsgruppen anzeigen" hideSubmitButton="hideSubmitButton">
 
-        <g:render template="/templates/properties/groupBindings" model="${[
-                propDefGroup: propDefGroup,
-                ownobj: subscriptionInstance,
-                availPropDefGroups: availPropDefGroups
-        ]}" />
+    <g:render template="/templates/properties/groupBindings" model="${[
+            propDefGroup: propDefGroup,
+            ownobj: subscriptionInstance,
+            availPropDefGroups: availPropDefGroups
+    ]}" />
 
-    </semui:modal>
-</g:if>
+</semui:modal>
 
 <%-- grouped custom properties --%>
 
-<g:each in="${subscriptionInstance.getCalculatedPropDefGroupBindings()}" var="binding">
-    <g:set var="propDefGroup" value="${binding.propDefGroup}" />
+<g:set var="allPropDefGroups" value="${subscriptionInstance.getCaculatedPropDefGroups()}" />
 
-<%-- check visibility of global group and binding --%>
-    <g:if test="${propDefGroup.visible?.value?.equalsIgnoreCase('Yes') || binding?.visible?.value == 'Yes'}">
-    <%-- check binding override --%>
-        <g:if test="${! (binding && binding?.visible?.value == 'No')}">
+<g:each in="${allPropDefGroups.global}" var="propDefGroup">
+    <g:if test="${propDefGroup.visible?.value?.equalsIgnoreCase('Yes')}">
 
-            <div class="ui card la-dl-no-table">
-                <div class="content">
-                    <h5 class="ui header">
-                        Merkmale: ${propDefGroup.name}
+        <g:render template="/templates/properties/groupWrapper" model="${[
+                propDefGroup: propDefGroup,
+                propDefGroupBinding: null,
+                prop_desc: PropertyDefinition.SUB_PROP,
+                ownobj: subscriptionInstance,
+                custom_props_div: "grouped_custom_props_div_${propDefGroup.id}"
+        ]}"/>
+    </g:if>
+</g:each>
 
-                        <g:if test="${contextService.getOrg()?.id == propDefGroup.tenant?.id && binding.visibleForConsortiaMembers?.value == 'Yes'}">
-                            <span data-position="top right" data-tooltip="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
-                                <i class="ui icon eye orange"></i>
-                            </span>
-                        </g:if>
-                    </h5>
+<g:each in="${allPropDefGroups.local}" var="propDefInfo">
+<%-- check binding visibility --%>
+    <g:if test="${propDefInfo[1]?.visible?.value == 'Yes'}">
 
-                    <div id="grouped_custom_props_div_${propDefGroup.id}">
+        <g:render template="/templates/properties/groupWrapper" model="${[
+                propDefGroup: propDefInfo[0],
+                propDefGroupBinding: propDefInfo[1],
+                prop_desc: PropertyDefinition.SUB_PROP,
+                ownobj: subscriptionInstance,
+                custom_props_div: "grouped_custom_props_div_${propDefInfo[0].id}"
+        ]}"/>
+    </g:if>
+</g:each>
 
-                        <g:render template="/templates/properties/group" model="${[
-                                propDefGroup: propDefGroup,
-                                prop_desc: PropertyDefinition.SUB_PROP,  // TODO: change
-                                ownobj: subscriptionInstance,
-                                custom_props_div: "grouped_custom_props_div_${propDefGroup.id}"
-                        ]}"/>
-                    </div>
-                </div>
-            </div><!--.card-->
+<g:each in="${allPropDefGroups.member}" var="propDefInfo">
+<%-- check binding visibility --%>
+    <g:if test="${propDefInfo[1]?.visible?.value == 'Yes'}">
+    <%-- check member visibility --%>
+        <g:if test="${propDefInfo[1]?.visibleForConsortiaMembers?.value == 'Yes'}">
 
-            <r:script language="JavaScript">
-                $(document).ready(function(){
-                    c3po.initGroupedProperties("<g:createLink controller='ajax' action='lookup'/>", "#grouped_custom_props_div_${propDefGroup.id}");
-                });
-            </r:script>
+            <g:render template="/templates/properties/groupWrapper" model="${[
+                    propDefGroup: propDefInfo[0],
+                    propDefGroupBinding: propDefInfo[1],
+                    prop_desc: PropertyDefinition.SUB_PROP,
+                    ownobj: subscriptionInstance,
+                    custom_props_div: "grouped_custom_props_div_${propDefInfo[0].id}"
+            ]}"/>
         </g:if>
     </g:if>
 </g:each>
 
 <%-- custom properties --%>
 
-<g:if test="${! subscriptionInstance.getCalculatedPropDefGroupBindings()}">
+<g:if test="${allPropDefGroups.fallback}">
 
     <div class="ui card la-dl-no-table la-js-hideable">
         <div class="content">

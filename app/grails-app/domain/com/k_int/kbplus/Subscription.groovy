@@ -380,32 +380,59 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
         Subscription.where{ instanceOf == this && (status == null || status.value != 'Deleted') }
     }
 
-    def getCalculatedPropDefGroupBindings() {
-        def result = []
-        // bindings from this or this.instanceOf if not a template
-        def source = (this.instanceOf && ! this.instanceOf.isTemplate() ? this.instanceOf : this)
+    def getCaculatedPropDefGroups() {
+        def result = [ 'global':[], 'local':[], 'member':[], fallback: true ]
 
-        def bindings = PropertyDefinitionGroupBinding.findAllBySub(source)
+        // ALL type depending groups without checking tenants or bindings
+        def groups = PropertyDefinitionGroup.findAllByOwnerType(Subscription.class.name)
+        groups.each{ it ->
 
-        bindings.each{ it ->
-            def pdg = it.propDefGroup
+            if (this.instanceOf && ! this.instanceOf.isTemplate()) {
+                def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, this.instanceOf)
 
-            // Subscriber_Consortial
-            if (this.instanceOf && !this.instanceOf.isTemplate()) {
-                if (pdg.tenant == null || pdg.tenant?.id == source.getConsortia()?.id) {
-
-                    if (it.visibleForConsortiaMembers?.value == 'Yes') {
-                        result << it
+                // global groups
+                if (it.tenant == null) {
+                    if (binding) {
+                        result.member << [it, binding]
+                    } else {
+                        result.global << it
+                    }
+                }
+                // consortium @ member; getting group by tenant and instanceOf.binding
+                if (it.tenant?.id == contextService.getOrg()?.id) {
+                    if (binding) {
+                        result.member << [it, binding]
+                    }
+                }
+                // licensee consortial; getting group by consortia and instanceOf.binding
+                else if (it.tenant?.id == this.instanceOf.getConsortia()?.id) {
+                    if (binding) {
+                        result.member << [it, binding]
                     }
                 }
             }
-            // Consortium or Local
             else {
-                if (pdg.tenant == null || pdg.tenant?.id == contextService.getOrg()?.id) {
-                    result << it
+                def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, this)
+
+                // global groups
+                if (it.tenant == null) {
+                    if (binding) {
+                        result.local << [it, binding]
+                    } else {
+                        result.global << it
+                    }
+                }
+                // locals; getting group by tenant and binding
+                if (it.tenant?.id == contextService.getOrg()?.id) {
+                    if (binding) {
+                        result.local << [it, binding]
+                    }
                 }
             }
         }
+
+        result.fallback = (result.global.size() == 0 && result.local.size() == 0 && result.member.size() == 0)
+
         result
     }
 
