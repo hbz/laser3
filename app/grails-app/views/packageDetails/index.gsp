@@ -51,7 +51,9 @@
       <semui:crumb message="package.show.all" class="active"/>
     </semui:breadcrumbs>
 
-  <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'package.show.all')}</h1>
+  <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'package.show.all')}
+    <semui:totalNumber total="${resultsTotal}"/>
+  </h1>
 
   <semui:messages data="${flash}" />
 
@@ -63,9 +65,9 @@
                     <label>${message(code:'package.show.pkg_name', default:'Package Name')}</label>
                     <input name="q" placeholder="" value="${params.q}"/>
                 </div>
-                <div class="field">
+                <div class="field la-field-right-aligned">
+                    <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
                     <button type="submit" name="search" value="yes" class="ui secondary button">${message(code:'default.button.filter.label', default:'Filter')}</button>
-                    <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.filterreset.label')}</a>
                 </div>
       </g:form>
    </semui:filter>

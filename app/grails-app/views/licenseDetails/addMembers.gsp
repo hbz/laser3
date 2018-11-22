@@ -26,7 +26,7 @@
 
 <g:render template="nav" />
 
-<g:if test="${license.instanceOf && (contextOrg == license.getLicensingConsortium())}">
+<g:if test="${license.instanceOf && (contextOrg?.id == license.getLicensingConsortium()?.id)}">
     <div class="ui negative message">
         <div class="header"><g:message code="myinst.message.attention" /></div>
         <p>
@@ -38,7 +38,7 @@
     </div>
 </g:if>
 
-<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  institution.getallOrgRoleType())}">
+<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgRoleTypeIds())}">
 
     <div class="ui info message">
         <div class="header">
@@ -54,7 +54,10 @@
         <g:form action="addMembers" method="get" params="[id: params.id]" class="ui form">
             <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
             <g:render template="/templates/filter/orgFilter"
-                      model="[tmplConfigShow: ['name', 'federalState', 'libraryNetwork', 'libraryType']
+                      model="[
+                              tmplConfigShow: [['name'], ['federalState', 'libraryNetwork', 'libraryType']],
+                              tmplConfigFormFilter: true,
+                              useNewLayouter: true
                       ]"/>
         </g:form>
     </semui:filter>
@@ -122,7 +125,7 @@
         </g:if>
     </g:form>
 
-    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") && (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  contextService.getOrg().orgRoleType)}">
+    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") && (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgRoleTypeIds())}">
         <hr />
 
         <div class="ui info message">

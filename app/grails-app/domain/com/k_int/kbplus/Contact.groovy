@@ -23,8 +23,8 @@ class Contact implements Comparable<Contact>{
         content     column:'ct_content'
         contentType column:'ct_content_type_rv_fk'
         type        column:'ct_type_rv_fk'
-        prs         column:'ct_prs_fk'
-        org         column:'ct_org_fk'
+        prs         column:'ct_prs_fk', index: 'ct_prs_idx'
+        org         column:'ct_org_fk', index: 'ct_org_idx'
     }
     
     static constraints = {
@@ -119,7 +119,7 @@ class Contact implements Comparable<Contact>{
     int compareTo(Contact contact) {
         int result
         result = getCompareOrderValueForType(this).compareTo(getCompareOrderValueForType(contact))
-        if (result == 0) result = this.getContent().compareTo(contact.getContent())
+        if (result == 0) result = this.getContent()?.compareTo(contact.getContent())
         return result
     }
 

@@ -26,7 +26,7 @@ class LicensePrivateProperty extends PrivateProperty {
 
         id      column:'lpp_id'
         version column:'lpp_version'
-        owner   column:'lpp_owner_fk'
+        owner   column:'lpp_owner_fk', index:'lpp_owner_idx'
         type    column:'lpp_type_fk'
 
         paragraph type:'text'

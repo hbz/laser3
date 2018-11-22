@@ -1,6 +1,8 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import com.k_int.properties.PropertyDefinitionGroup
+import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AuditConfig
 import de.laser.domain.AbstractI10nTranslatable
 import grails.plugin.springsecurity.annotation.Secured
@@ -900,6 +902,60 @@ class AjaxController {
             prop_desc: type.descr // form data
     ])
   }
+
+    @Secured(['ROLE_USER'])
+    def addCustomPropertyGroupBinding() {
+
+        def ownobj              = genericOIDService.resolveOID(params.ownobj)
+        def propDefGroup        = genericOIDService.resolveOID(params.propDefGroup)
+        def availPropDefGroups  = PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), ownobj.class.name)
+
+        if (ownobj && propDefGroup) {
+            if (params.visible in ['Yes', 'No']) {
+                def gb = new PropertyDefinitionGroupBinding(
+                        propDefGroup: propDefGroup,
+                        visible: RefdataValue.getByValueAndCategory(params.visible, 'YN')
+                )
+                if (ownobj.class.name == License.class.name) {
+                    gb.lic = ownobj
+                }
+                else if (ownobj.class.name == Org.class.name) {
+                    gb.org = ownobj
+                }
+                else if (ownobj.class.name == Subscription.class.name) {
+                    gb.sub = ownobj
+                }
+                gb.save(flush:true)
+            }
+        }
+
+        render(template: "/templates/properties/groupBindings", model:[
+                propDefGroup: propDefGroup,
+                ownobj: ownobj,
+                availPropDefGroups: availPropDefGroups,
+                editable: params.editable
+        ])
+    }
+
+
+    @Secured(['ROLE_USER'])
+    def deleteCustomPropertyGroupBinding() {
+        def ownobj              = genericOIDService.resolveOID(params.ownobj)
+        def propDefGroup        = genericOIDService.resolveOID(params.propDefGroup)
+        def binding             = genericOIDService.resolveOID(params.propDefGroupBinding)
+        def availPropDefGroups  = PropertyDefinitionGroup.getAvailableGroups(contextService.getOrg(), ownobj.class.name)
+
+        if (ownobj && propDefGroup && binding) {
+            binding.delete(flush:true)
+        }
+
+        render(template: "/templates/properties/groupBindings", model:[
+                propDefGroup: propDefGroup,
+                ownobj: ownobj,
+                availPropDefGroups: availPropDefGroups,
+                editable: params.editable
+        ])
+    }
 
     /**
     * Add domain specific private property

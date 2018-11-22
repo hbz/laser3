@@ -420,9 +420,9 @@ aside.ui.accordion .title:not(.ui) {
   border-top-left-radius: 0;
   border-left: none;
 }
-.la-filter-search {
+.ui.form .field.la-field-right-aligned {
   text-align: right;
-  margin-top: 1.2rem!important;
+  margin-top: 1.6rem !important;
 }
 
 

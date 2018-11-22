@@ -47,10 +47,8 @@ class ApiPkg {
     /**
      * @return grails.converters.JSON | FORBIDDEN
      */
-    static getPackage(Package pkg, User user, Org context) {
+    static getPackage(Package pkg, Org context, boolean hasAccess) {
         def result = []
-        def hasAccess = ApiReader.isDataManager(user)
-
         // TODO
         if (! hasAccess) {
             pkg.orgs.each { orgRole ->

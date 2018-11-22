@@ -28,7 +28,7 @@
 
     <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':subscriptionInstance]}"/>
 
-      <g:if test="${subscriptionInstance.instanceOf && (contextOrg == subscriptionInstance.getConsortia())}">
+      <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id == subscriptionInstance.getConsortia()?.id)}">
           <div class="ui negative message">
               <div class="header"><g:message code="myinst.message.attention" /></div>
               <p>
@@ -76,7 +76,7 @@
                         <input type="hidden" name="sort" value="${params.sort}">
                         <input type="hidden" name="order" value="${params.order}">
 
-                        <div class="fields">
+                        <div class="three fields">
                             <div class="field">
                                 <label>
                                     <g:annotatedLabel owner="${subscriptionInstance}" property="qryFilter"> ${message(code:'default.filter.label', default:'Filter')} </g:annotatedLabel>
@@ -97,9 +97,9 @@
                                     <semui:datepicker label="subscription.details.asAt" name="asAt" value="${params.asAt}" />
                                 </div>
                             </g:if>
-                            <div class="field">
-                                <label>&nbsp;</label>
-                                <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Suchen')}" />
+                            <div class="field la-field-right-aligned">
+                                <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
+                                <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filtern')}" />
                             </div>
                         </div>
                     </g:form>

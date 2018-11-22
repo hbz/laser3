@@ -16,7 +16,7 @@ class PersonPrivateProperty extends PrivateProperty {
         id      column:'ppp_id'
         version column:'ppp_version'
         type    column:'ppp_type_fk'
-        owner   column:'ppp_owner_fk'
+        owner   column:'ppp_owner_fk', index:'ppp_owner_idx'
     }
 
     static constraints = {

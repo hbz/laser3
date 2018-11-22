@@ -347,6 +347,20 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
+
+    def searchSegment = { attrs, body ->
+
+        def method      = attrs.method ?: 'GET'
+        def controller  = attrs.controller ?: ''
+        def action      = attrs.action ?: ''
+
+        out << '<div class="ui la-search segment">'
+        out <<   '<form class="ui form" controller="' + controller + '" action="' + action + '" method="' + method + '">'
+        out <<     body()
+        out <<   '</form>'
+        out << '</div>'
+    }
+
     //<semui:form> CONTENT <semui:form>
 
     def form = { attrs, body ->
@@ -363,13 +377,9 @@ class SemanticUiTagLib {
         def method      = attrs.method ?: 'GET'
         def controller  = attrs.controller ?: ''
         def action      = attrs.action ?: ''
-        def text        = attrs.text ? attrs.text : ''
-        def message     = attrs.message ? "${message(code: attrs.message)}" : ''
-        def title       = (text && message) ? text + " - " + message : text + message
 
         out << '<div class="ui segment">'
         out <<   '<form class="ui form" controller="' + controller + '" action="' + action + '" method="' + method + '">'
-        out <<     '<label>' + title + '</label>'
         out <<     body()
         out <<   '</form>'
         out << '</div>'
@@ -529,6 +539,14 @@ class SemanticUiTagLib {
             out << '<i class="arrow right icon disabled"></i>'
         }
         out <<   '</div>'
+    }
+    def totalNumber = { attrs, body ->
+
+        def total = attrs.total
+
+        out << '<div class="ui circular label">'
+        out <<   total
+        out << '</div>'
     }
 
     public SemanticUiTagLib ( ) { }

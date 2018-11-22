@@ -67,8 +67,8 @@ class CostItem extends AbstractBaseDomain implements TemplateSupport {
         globalUID       column: 'ci_guid'
         type            column: 'ci_type_rv_fk'
         version         column: 'ci_version'
-        sub             column: 'ci_sub_fk'
-        owner           column: 'ci_owner'
+        sub             column: 'ci_sub_fk',        index: 'ci_sub_idx'
+        owner           column: 'ci_owner',         index: 'ci_owner_idx'
         subPkg          column: 'ci_subPkg_fk'
         issueEntitlement    column: 'ci_e_fk'
         order           column: 'ci_ord_fk'
@@ -148,11 +148,13 @@ class CostItem extends AbstractBaseDomain implements TemplateSupport {
             return false
     }
 
+    @Deprecated
     @Override
     def isTemplate() {
         return (type != null) && (type == RefdataValue.getByValueAndCategory('Template', 'License Type'))
     }
 
+    @Deprecated
     @Override
     def hasTemplate() {
         return instanceOf ? instanceOf.isTemplate() : false

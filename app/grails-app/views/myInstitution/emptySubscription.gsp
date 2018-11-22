@@ -38,7 +38,7 @@
                     <semui:datepicker label="subscription.endDate.label" name="valid_to" value="${defaultEndYear}" />
                 </div>
 
-                <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  orgRoleType)}">
+                <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgRoleType)}">
                     <div class="field">
                         <label>${message(code:'myinst.emptySubscription.create_as', default:'Create with the role of')}</label>
 
@@ -61,7 +61,7 @@
 
     <hr>
 
-        <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  orgRoleType)}">
+        <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgRoleType)}">
 
             <g:if test="${! cons_members}">
                 <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
@@ -82,7 +82,11 @@
                     <semui:filter>
                         <g:formRemote name="x" url="[controller:'MyInstitution', action:'ajaxEmptySubscription', params:[shortcode:contextService.getOrg()?.shortcode]]" update="orgListTable" class="ui form">
                             <g:render template="/templates/filter/orgFilter"
-                                      model="[tmplConfigShow: ['name']]" />
+                                      model="[
+                                              tmplConfigShow: [['name']],
+                                              tmplConfigFormFilter: true,
+                                              useNewLayouter: true
+                                      ]" />
                         </g:formRemote>
                     </semui:filter>
 

@@ -26,7 +26,7 @@
         </colgroup>
         <thead>
             <tr>
-                <th class="la-column-nowrap la-js-hide-this-card">${message(code:'property.table.property')}</th>
+                <th class="la-column-nowrap la-js-dont-hide-this-card">${message(code:'property.table.property')}</th>
                 <th>${message(code:'property.table.value')}</th>
                 <th>${message(code:'property.table.notes')}</th>
                 <th>${message(code:'property.table.delete')}</th>
@@ -37,7 +37,7 @@
         <g:each in="${ownobj.privateProperties.sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
             <g:if test="${prop.type?.tenant?.id == tenant?.id}">
                 <tr>
-                    <td class="la-column-nowrap">
+                    <td>
                         ${prop.type.getI10n('name')}
                         <g:if test="${prop.type.mandatory}">
                             <span data-position="top right" data-tooltip="${message(code:'default.mandatory.tooltip')}">
@@ -98,7 +98,7 @@
                                   update="${custom_props_div}"
                                   onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})">
 
-                        <input type="hidden" name="propIdent"  desc="${prop_desc}" class="customPropSelect"/>
+                        <input type="hidden" name="propIdent"  data-desc="${prop_desc}" class="customPropSelect"/>
                         <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>
                         <input type="hidden" name="tenantId"   value="${tenant?.id}"/>
                         <input type="hidden" name="editable"   value="${editable}"/>

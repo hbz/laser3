@@ -25,14 +25,19 @@
             </semui:controlButtons>
 
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.institutions.all_orgs" /> - ${orgListTotal} Treffer</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.institutions.all_orgs" />
+            <semui:totalNumber total="${orgListTotal}"/>
+        </h1>
 
         <semui:messages data="${flash}" />
 
         <semui:filter>
             <g:form action="list" method="get" class="ui form">
                 <g:render template="/templates/filter/orgFilter"
-                          model="[tmplConfigShow: ['name', 'type', 'sector', 'federalState', 'libraryNetwork', 'libraryType']
+                          model="[
+                                  tmplConfigShow: [['name', 'type'], ['sector', 'federalState', 'libraryNetwork', 'libraryType']],
+                                  tmplConfigFormFilter: true,
+                                  useNewLayouter: true
                           ]"/>
             </g:form>
         </semui:filter>

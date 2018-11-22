@@ -36,7 +36,7 @@
                 <th>Beschreibung</th>
                 <th>Merkmale</th>
                 <th>Typ</th>
-                <th>Sichtbar</th>
+                <th>Anzeigen (Voreinstellung)</th>
                 <th></th>
             </tr>
         </thead>
@@ -92,6 +92,7 @@
                         ajaxPostFunc()
                     },
                     detachable: true,
+                    autofocus: false,
                     closable: false,
                     transition: 'scale',
                     onApprove : function() {

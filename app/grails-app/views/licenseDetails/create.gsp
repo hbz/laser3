@@ -13,9 +13,14 @@
 
         <p>${message(code:'license.create.note')}</p>
 
-        <semui:simpleForm action="processNewTemplateLicense" method="get" message="license.create.ref">
-            <input type="text" name="reference"/>
-            <input class="ui button js-click-control" type="submit" value="${message(code:'default.button.create.label', default:'Create')}"/>
+        <semui:simpleForm action="processNewTemplateLicense" method="get">
+            <div class="field">
+                <label>${message(code:'license.create.ref')}</label>
+                <input type="text" name="reference"/>
+            </div>
+            <div class="field">
+                <input class="ui button js-click-control" type="submit" value="${message(code:'default.button.create.label', default:'Create')}"/>
+            </div>
         </semui:simpleForm>
 
   </body>

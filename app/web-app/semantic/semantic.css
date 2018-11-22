@@ -1008,9 +1008,9 @@ aside.ui.accordion .title:not(.ui) {
   border-left: none;
 }
 
-.la-filter-search {
+.ui.form .field.la-field-right-aligned {
   text-align: right;
-  margin-top: 1.2rem!important;
+  margin-top: 1.6rem !important;
 }
 
 /*******************************
@@ -19578,7 +19578,7 @@ ol.ui.horizontal.list li:before,
   border-right: 10px solid #98B500;
 }
 
-.ui.segment.la-gasco-search {
+.ui.segment.la-search {
   background: #f1ebe5;
   border: none;
 }
@@ -21594,10 +21594,10 @@ ol.ui.horizontal.list li:before,
   padding-top: 0.3rem;
 }
 
-.ui.form .fields .field.la-filter-search {
+/*.ui.form .fields .field.la-field-right-aligned {
   text-align: right;
   margin-top: 1.2rem;
-}
+} */
 
 .ui.form .fields .field {
   margin: 0em 0em 1em;

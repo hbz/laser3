@@ -34,6 +34,7 @@ class LicenseCustomProperty extends CustomProperty implements AuditTrait  {
     static mapping = {
         includes   AbstractProperty.mapping
         paragraph  type: 'text'
+        owner      index:'owner_idx'
     }
 
     static constraints = {
@@ -47,7 +48,8 @@ class LicenseCustomProperty extends CustomProperty implements AuditTrait  {
         owner: License
     ]
 
-    def copyInto(newProp){
+    @Override
+    def copyInto(AbstractProperty newProp){
         newProp = super.copyInto(newProp)
 
         newProp.paragraph = paragraph

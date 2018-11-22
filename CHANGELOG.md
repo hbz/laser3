@@ -1,4 +1,46 @@
 
+0.10.8
+
+- hotfix: gorm failed to lazily initialize a collection
+
+0.10.7
+
+- bugfix: faulty elastic search index during linking packages 
+
+0.10.6
+
+- increased session timeout to 120 minutes
+- fixed: empty license custom property when starting inheritance
+- fixed: preselected tab on dashboard
+- fixed: null pointer at issue entitlement view 
+- fixed: property filter query
+- fixed: invalid data format function
+
+0.10.5
+
+- reworked error page
+- added table indices for performance
+- added user setting for default dashbord tab
+- fixed: editing org role types as role_org_editor  
+- fixed: table sorting and filtering via org templates
+- bugfix: contacts compareTo caused null pointer
+- bugfix: accessing addresses caused null pointer
+- bugfix: gorm lazy loading caused null pointer
+
+0.10.4
+
+- added maintenance mode 
+- hotfix: shown deleted licenses
+
+0.10.3
+
+- hotfix: gorm lazy loading causes null pointer
+
+0.10.2
+
+- fixed:  adding subscription members
+- hotfix: faulty url at finance view
+
 0.10.1
 
 - bugfix: subscription renewal

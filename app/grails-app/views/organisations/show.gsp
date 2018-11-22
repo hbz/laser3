@@ -25,6 +25,10 @@
 
     <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
 
+    <semui:controlButtons>
+        <g:render template="actions" />
+    </semui:controlButtons>
+
     <h1 class="ui left aligned icon header"><semui:headerIcon />
         ${orgInstance.name}
     </h1>
@@ -139,24 +143,35 @@
 
                 <div class="ui card">
                     <div class="content">
+                        <%-- ROLE_ADMIN: all , ROLE_ORG_EDITOR: all minus Consortium --%>
                         <dl>
                             <dt><g:message code="org.orgRoleType.label" default="Organisation Type" /></dt>
                             <dd>
+                                <%
+                                    // hotfix:
+                                    def orgRoleType_types = RefdataCategory.getAllRefdataValues('OrgRoleType')
+                                    def orgRoleType_editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
+                                    if (! orgRoleType_editable) {
+                                        orgRoleType_editable = SpringSecurityUtils.ifAnyGranted('ROLE_ORG_EDITOR')
+
+                                        orgRoleType_types = orgRoleType_types.minus(RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType'))
+                                    }
+
+                                %>
                                 <g:render template="orgRoleTypeAsList"
-                                          model="${[OrgRoleTypes:orgInstance.orgRoleType, Org:orgInstance, editable: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]}" />
-
+                                          model="${[org:orgInstance, orgRoleTypes:orgInstance.orgRoleType, availableOrgRoleTypes:orgRoleType_types, editable:orgRoleType_editable]}" />
                             </dd>
                         </dl>
 
                         <g:render template="orgRoleTypeModal"
-                                  model="${[Org:orgInstance, editable: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]}" />
+                                  model="${[org:orgInstance, availableOrgRoleTypes:orgRoleType_types, editable:orgRoleType_editable]}" />
                     </div>
                 </div>
 
                 <div class="ui card">
                     <div class="content">
-                    <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in orgInstance.orgRoleType)}">
+                    <g:if test="${(RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in orgInstance.orgRoleType)}">
                         <dl>
                             <dt><g:message code="org.libraryType.label" default="Library Type" /></dt>
                             <dd>
@@ -327,16 +342,10 @@
                             </div><!--.card-->
                     </g:if>
 
-                    <g:if test="${orgInstance?.incomingCombos && ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
-                        <g:if test="${orgInstance.id == contextService.getOrg().id}">
+                    <g:if test="${orgInstance?.incomingCombos}">
+
+                        <g:if test="${orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADMIN')}">
                             <div class="ui card">
-                        </g:if>
-                        <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
-                            <div class="ui card la-role-admin">
-                        </g:elseif>
-                        <g:else>
-                            <div class="ui card la-role-yoda">
-                        </g:else>
                                 <div class="content">
                                     <dl>
                                         <dt><g:message code="org.incomingCombos.label" default="Incoming Combos" /></dt>
@@ -352,25 +361,71 @@
                                     </dl>
                                 </div>
                             </div><!--.card-->
-                    </g:if>
-
-                    <g:if test="${orgInstance?.links && ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
-                        <g:if test="${orgInstance.id == contextService.getOrg().id}">
-                            <div class="ui card">
                         </g:if>
                         <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
                             <div class="ui card la-role-admin">
-                        </g:elseif>
-                        <g:else>
-                            <div class="ui card la-role-yoda">
-                        </g:else>
                                 <div class="content">
-
-                                   <g:render template="/templates/links/orgRoleContainer" model="[listOfLinks: sorted_links]" />
-
+                                    <dl>
+                                        <dt><g:message code="org.incomingCombos.label" default="Incoming Combos" /></dt>
+                                        <dd>
+                                            <g:each in="${orgInstance.incomingCombos.sort{it.fromOrg.name}}" var="i">
+                                                <g:link controller="organisations" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
+                                                    (<g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
+                                                        ${id_in.identifier.ns.ns}: ${id_in.identifier.value}
+                                                    </g:each>)
+                                                    <br />
+                                            </g:each>
+                                        </dd>
+                                    </dl>
                                 </div>
                             </div><!--.card-->
-                    </g:if>
+                        </g:elseif>
+                        <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                            <div class="ui card la-role-yoda">
+                                <div class="content">
+                                    <dl>
+                                        <dt><g:message code="org.incomingCombos.label" default="Incoming Combos" /></dt>
+                                        <dd>
+                                            <g:each in="${orgInstance.incomingCombos.sort{it.fromOrg.name}}" var="i">
+                                                <g:link controller="organisations" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
+                                                (<g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
+                                                ${id_in.identifier.ns.ns}: ${id_in.identifier.value}
+                                            </g:each>)
+                                                <br />
+                                            </g:each>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div><!--.card-->
+                        </g:elseif>
+
+                    </g:if><%-- incomingCombos --%>
+
+
+                    <g:if test="${sorted_links}">
+
+                        <g:if test="${orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADMIN')}">
+                            <div class="ui card">
+                                <div class="content">
+                                   <g:render template="/templates/links/orgRoleContainer" model="[listOfLinks: sorted_links]" />
+                                </div>
+                            </div><!--.card-->
+                        </g:if>
+                        <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
+                            <div class="ui card la-role-admin">
+                                <div class="content">
+                                   <g:render template="/templates/links/orgRoleContainer" model="[listOfLinks: sorted_links]" />
+                                </div>
+                            </div><!--.card-->
+                        </g:elseif>
+                        <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                            <div class="ui card la-role-yoda">
+                                <div class="content">
+                                   <g:render template="/templates/links/orgRoleContainer" model="[listOfLinks: sorted_links]" />
+                                </div>
+                            </div><!--.card-->
+                        </g:elseif>
+                    </g:if><%-- sorted_links --%>
 
                     <div id="new-dynamic-properties-block">
 
@@ -380,6 +435,7 @@
                         ]}" />
 
                     </div><!-- #new-dynamic-properties-block -->
+
 
                 </div>
             </div>

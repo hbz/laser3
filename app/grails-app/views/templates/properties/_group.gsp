@@ -1,7 +1,4 @@
-%{-- To use, add the g:render custom_props inside a div with id=custom_props_div_xxx, add g:javascript src=properties.js --}%
-%{-- on head of container page, and on window load execute  --}%
-%{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_xxx"); --}%
-
+<!-- _groups.gsp -->
 <%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.License; de.laser.AuditConfig" %>
 
 <g:if test="${newProp}">
@@ -95,7 +92,8 @@
                                 <span data-position="top right" data-tooltip="${message(code:'property.audit.tooltip')}">
                                 <g:remoteLink controller="ajax" action="togglePropertyAuditConfig"
                                               before="if(!confirm('${auditMsg}')) return false"
-                                              params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]' id="${prop.id}"
+                                              params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]'
+                                              id="${prop.id}"
                                               onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                               update="${custom_props_div}" class="ui icon button">
                                     <i class="thumbtack icon"></i>
@@ -108,7 +106,8 @@
 
                                 <g:remoteLink controller="ajax" action="deleteCustomProperty"
                                               before="if(!confirm('${confirmMsg}')) return false"
-                                              params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}"]' id="${prop.id}"
+                                              params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}"]'
+                                              id="${prop.id}"
                                               onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                               update="${custom_props_div}" class="ui icon negative button">
                                     <i class="trash alternate icon"></i>
@@ -137,7 +136,7 @@
                                   update="${custom_props_div}"
                                   onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
 
-                        <input type="hidden" name="propIdent" desc="${prop_desc}" class="customPropSelect"/>
+                        <input type="hidden" name="propIdent" data-desc="${prop_desc}" data-oid="${propDefGroup.class.name}:${propDefGroup.id}" class="customPropSelect"/>
                         <input type="hidden" name="ownerId" value="${ownobj.id}"/>
                         <input type="hidden" name="editable" value="${editable}"/>
                         <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
@@ -153,3 +152,4 @@
     </g:if>
 
 </table>
+<!-- _groups.gsp -->

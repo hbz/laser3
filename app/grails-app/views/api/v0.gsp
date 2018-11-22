@@ -19,19 +19,29 @@
           margin:0;
           background: #fff;
         }
+        #swagger-ui {
+            margin-top: 80px;
+        }
         #swagger-ui .topbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
             padding: 0px 30px;
-            background-color: #004678;
+            background-color: rgba(0,0,0, 0.1);
+            box-shadow: 0 5px 5px rgba(255,255,255, 0.3);
+        }
+        .ui-box {
+            font-size: 12px;
+            padding: 5px 10px;
+        }
+        .ui-box input {
+            width: 250px;
+            padding: 8px 10px;
+            border: 1px solid #d9d9d9;
         }
         #swagger-ui .topbar .link,
         #swagger-ui .topbar .download-url-wrapper {
             display: none;
-        }
-        #swagger-ui .topbar .ui-box {
-            padding: 5px 10px;
-        }
-        #swagger-ui .topbar .ui-box input {
-            padding: 4px 6px;
         }
         #swagger-ui .information-container pre.base-url + a {
             display: none;
@@ -86,8 +96,28 @@
 
     <script>
         window.onload = function() {
-            var ui = SwaggerUIBundle({
-                url: "${grailsApplication.config.grails.serverURL}/api/v0/spec",
+
+            var placeholders = {
+                query_q: 'q - Identifier for this query',
+                query_v: 'v - Value for this query',
+                authorization: 'Authorization - hmac-sha256 generated auth header',
+                context: 'context - Concrete globalUID, if user has memberships in multiple organisations'
+            }
+
+            var reactAccess = function(element) {
+                for (var key in element) {
+                    if (key.startsWith("__reactInternalInstance$")) {
+                        var compInternals = element[key]._currentElement
+                        var compWrapper = compInternals._owner
+                        var comp = compWrapper._instance
+                        return comp
+                    }
+                }
+                return null
+            }
+
+            var jabba = SwaggerUIBundle({
+                url: "${grailsApplication.config.grails.serverURL}/api/${apiVersion}/spec",
                 dom_id: '#swagger-ui',
                 presets: [
                     SwaggerUIBundle.presets.apis,
@@ -99,35 +129,58 @@
                 layout: "StandaloneLayout"
             })
 
-            window.ui = ui
+            window.jabba = jabba
 
             setTimeout(function(){
-                jQuery('.topbar-wrapper').append('<span class="ui-box"><input name="apiKey" type="text" placeholder="Your API Key" value="${apiKey}"></span>')
-                jQuery('.topbar-wrapper').append('<span class="ui-box"><input name="apiSecret" type="password" placeholder="Your API Secret" value="${apiSecret}"></span>')
+                jQuery('.topbar-wrapper').append('<span class="ui-box">Id <input name="apiId" type="text" placeholder="Current API Id" value="${apiId}"></span>')
+                jQuery('.topbar-wrapper').append('<span class="ui-box">Key <input name="apiKey" type="password" placeholder="Current API Key" value="${apiKey}"></span>')
+                jQuery('.topbar-wrapper').append('<span class="ui-box">Context <input name="apiContext" type="text" placeholder="Current Context" value="${apiContext}"></span>')
+                jQuery('.topbar-wrapper').append('<span class="ui-box">Authorization <input name="apiAuth" type="text" placeholder="Will be generated" value=""></span>')
 
                 jQuery('.opblock').delegate('input, textarea', 'change', function() {
-                    genDigist(jQuery(this).parents('.parameters').first())
+                    var div = jQuery(this).parents('.parameters').first()
+                    var auth = genDigist(div)
+
+                    jQuery('.topbar-wrapper input[name="apiAuth"]').val(auth)
+                })
+
+                jQuery('.topbar-wrapper input').on('focus', function(){
+                    jQuery(this).select()
                 })
             }, 1200)
 
-            // todo: change full path dynamically
-            // todo: set authorization via shadow dom
+            /*
+            function setContext(div) {
+                var context = jQuery('.topbar-wrapper input[name=apiContext]').val()
+                var elem    = jQuery(div).find('input[placeholder="' + placeholders.context + '"]')
+                var react   = reactAccess(elem[0])
+
+
+                elem.attr('value', context)
+                elem.val(context)
+
+                //react.props.value = context
+                react.setState({value: context})
+
+                //elem.trigger('change')
+                //react.forceUpdate()
+            }
+            */
 
             function genDigist(div) {
+                var id      = jQuery('.topbar input[name=apiId]').val().trim()
                 var key     = jQuery('.topbar input[name=apiKey]').val().trim()
-                var secret  = jQuery('.topbar input[name=apiSecret]').val().trim()
                 var method  = jQuery(div).parents('.opblock').find('.opblock-summary-method').text()
-                var path    = "/api/v0" + jQuery(div).parents('.opblock').find('.opblock-summary-path > span').text()
+                var path    = "/api/${apiVersion}" + jQuery(div).parents('.opblock').find('.opblock-summary-path > span').text()
                 var timestamp = ""
                 var nounce    = ""
-                var context = jQuery(div).find('input[placeholder="context - Optional information if user has memberships in multiple organisations"]').val().trim()
+                var context = jQuery(div).find('input[placeholder="' + placeholders.context + '"]').val().trim()
                 var query     = ""
                 var body      = ""
 
                 if(method == "GET") {
-                    query = "q=" + jQuery(div).find('input[placeholder="q - Identifier for this query"]').val().trim()
-                    //query   = "q=" + jQuery(div).find('select').val()
-                            + "&v=" + jQuery(div).find('input[placeholder="v - Value for this query"]').val().trim()
+                    query = "q=" + jQuery(div).find('input[placeholder="' + placeholders.query_q + '"]').val().trim()
+                            + "&v=" + jQuery(div).find('input[placeholder="' + placeholders.query_v + '"]').val().trim()
                             + (context ? "&context=" + context : '')
                 }
                 else if(method == "POST") {
@@ -135,12 +188,11 @@
                     body  = jQuery(div).find('.body-param > textarea').val().trim()
                 }
 
-                var algorithm = "hmac-sha256"
-                var digest    = CryptoJS.HmacSHA256(method + path + timestamp + nounce + query + body, secret)
-                var authorization = "hmac " + key + ":" + timestamp + ":" + nounce + ":" + digest + "," + algorithm
+                var algorithm     = "hmac-sha256"
+                var digest        = CryptoJS.HmacSHA256(method + path + timestamp + nounce + query + body, key)
+                var authorization = "hmac " + id + ":" + timestamp + ":" + nounce + ":" + digest + "," + algorithm
 
-                var input = jQuery(div).find('input[placeholder="Authorization - hmac-sha256 generated auth header"]')
-                jQuery(input).val(authorization).attr('value', authorization)
+                return authorization
             }
         }
     </script>

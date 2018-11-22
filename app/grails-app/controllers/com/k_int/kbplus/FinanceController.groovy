@@ -633,6 +633,7 @@ class FinanceController {
         result.id = params.id
         result.sub = params.sub
         result.inSubMode = params.sub ? true : false
+
         result.tab = params.tab
 
         if (result.inSubMode) {
@@ -669,7 +670,8 @@ class FinanceController {
                     }
                 }
             }
-            redirect(uri: (request.getHeader('referer')).minus('?tab=owner').minus('?tab=sc'), params: [tab: result.tab])
+
+            redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [tab: result.tab])
         }
         else {
             result.formUrl = g.createLink(mapping:"subfinanceCopyCI", params:[sub:result.sub, id:result.id, tab:result.tab])
@@ -705,7 +707,7 @@ class FinanceController {
 
         result.tab = params.tab
 
-        redirect(uri: (request.getHeader('referer')).minus('?tab=owner').minus('?tab=sc'), params: [tab: result.tab])
+        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [tab: result.tab])
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -921,7 +923,7 @@ class FinanceController {
 
         result.tab = params.tab
 
-        redirect(uri: (request.getHeader('referer')).minus('?tab=owner').minus('?tab=sc'), params: [tab: result.tab])
+        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [tab: result.tab])
     }
 
     @Deprecated

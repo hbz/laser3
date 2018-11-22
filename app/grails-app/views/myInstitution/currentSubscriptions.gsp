@@ -26,7 +26,9 @@
 
         <semui:messages data="${flash}"/>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${institution?.name} - ${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}
+            <semui:totalNumber total="${num_sub_rows}"/>
+        </h1>
 
 <semui:filter>
     <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="form-inline ui small form">
@@ -140,7 +142,7 @@
             <div class="field">
                 <div class="two fields">
 
-                    <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  institution.getallOrgRoleType())}">
+                    <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgRoleTypeIds())}">
                         <div class="field">
 
                             <%--
@@ -176,7 +178,7 @@
                         </div>
                     </g:if>
 
-                    <div class="field la-filter-search">
+                    <div class="field la-field-right-aligned">
                         <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                         <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
                     </div>

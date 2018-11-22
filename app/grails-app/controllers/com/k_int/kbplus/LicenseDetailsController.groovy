@@ -101,7 +101,7 @@ class LicenseDetailsController {
         // restrict visible for templates/links/orgLinksAsList
         result.visibleOrgLinks = []
         result.license.orgLinks?.each { or ->
-            if (!(or.org == contextService.getOrg()) && !(or.roleType.value in ["Licensee", "Licensee_Consortial"])) {
+            if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ["Licensee", "Licensee_Consortial"])) {
                 result.visibleOrgLinks << or
             }
         }
@@ -239,7 +239,7 @@ select s from Subscription as s where (
             log.debug( 'ignored setting.cons_members because: LCurrent.instanceOf (LParent.noTemplate)')
         }
         else {
-            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution?.getallOrgRoleType())) {
+            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) {
 
                 def consMembers = Org.executeQuery(
                         'select o from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :inst and c.type.value = :cons',
@@ -293,16 +293,16 @@ select s from Subscription as s where (
         }
         result.institution = contextService.getOrg()
 
-        def orgRoleType       = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType').id]
-        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution.getallOrgRoleType())) {
-            orgRoleType = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType').id]
+        def orgRoleType       = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType').id.toString()]
+        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) {
+            orgRoleType = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString()]
         }
         def role_lic      = RDStore.OR_LICENSEE_CONS
         def role_lic_cons = RDStore.OR_LICENSING_CONSORTIUM
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
-            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in result.institution.getallOrgRoleType())) {
+            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) {
                 def cons_members = []
                 def licenseCopy
 
@@ -842,7 +842,7 @@ from Subscription as s where
 
         result.visibleOrgLinks = []
         result.license.orgLinks?.each { or ->
-            if (!(or.org == contextService.getOrg()) && !(or.roleType.value in ["Licensee", "Licensee_Consortial"])) {
+            if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ["Licensee", "Licensee_Consortial"])) {
                 result.visibleOrgLinks << or
             }
         }
@@ -965,7 +965,7 @@ from Subscription as s where
                     }
                     //Copy References
                         baseLicense.orgLinks?.each { or ->
-                            if ((or.org == contextService.getOrg()) || (or.roleType.value in ["Licensee", "Licensee_Consortial"]) || (params.license.copyLinks)) {
+                            if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ["Licensee", "Licensee_Consortial"]) || (params.license.copyLinks)) {
                             OrgRole newOrgRole = new OrgRole()
                             InvokerHelper.setProperties(newOrgRole, or.properties)
                             newOrgRole.lic = licenseInstance

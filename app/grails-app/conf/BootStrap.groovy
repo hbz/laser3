@@ -173,6 +173,10 @@ class BootStrap {
 
         def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'true', value: 'true').save()
 
+        //def maintenance_mode = Setting.findByName('MaintenanceMode') ?: new Setting(name: 'MaintenanceMode', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'false', value: 'false').save()
+
+        def systemMessage = SystemMessage.findByText('Das System wird in den nächsten Minuten aktualisiert. Bitte pflegen Sie keine Daten mehr ein!') ?: new SystemMessage(text: 'Das System wird in den nächsten Minuten aktualisiert. Bitte pflegen Sie keine Daten mehr ein!', showNow: false).save()
+
         // SpringSecurityUtils.clientRegisterFilter( 'oracleSSOFilter', SecurityFilterPosition.PRE_AUTH_FILTER.order)
         // SpringSecurityUtils.clientRegisterFilter('securityContextPersistenceFilter', SecurityFilterPosition.PRE_AUTH_FILTER)
         SpringSecurityUtils.clientRegisterFilter('ediauthFilter', SecurityFilterPosition.PRE_AUTH_FILTER)
@@ -220,8 +224,8 @@ class BootStrap {
         log.debug("createSubscriptionProperties ..")
         createSubscriptionProperties()
 
-        log.debug("createPrivateProperties ..")
-        createPrivateProperties()
+        //log.debug("createPrivateProperties ..")
+        //createPrivateProperties()
 
         log.debug("initializeDefaultSettings ..")
         initializeDefaultSettings()
@@ -504,7 +508,8 @@ class BootStrap {
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
 
-        def allOADescr = [en: PropertyDefinition.LIC_OA_PROP, de: PropertyDefinition.LIC_OA_PROP]
+        //def allOADescr = [en: PropertyDefinition.LIC_OA_PROP, de: PropertyDefinition.LIC_OA_PROP]
+        def allOADescr = [en: PropertyDefinition.LIC_PROP, de: PropertyDefinition.LIC_PROP]
 
         def requiredOAProps = [
                 [name: [en: "Open Access", de: "Open Access"],                                                              descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
@@ -529,7 +534,8 @@ class BootStrap {
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredOAProps)
 
-        def allArcDescr = [en: PropertyDefinition.LIC_ARC_PROP, de: PropertyDefinition.LIC_ARC_PROP]
+        //def allArcDescr = [en: PropertyDefinition.LIC_ARC_PROP, de: PropertyDefinition.LIC_ARC_PROP]
+        def allArcDescr = [en: PropertyDefinition.LIC_PROP, de: PropertyDefinition.LIC_PROP]
 
         def requiredARCProps = [
                 [name: [en: "Post Cancellation Online Access", de: "Zugriffsrechte: Dauerhaft"],                            descr: allArcDescr, type: RefdataValue.toString(), cat: 'YNO'],
@@ -787,7 +793,9 @@ class BootStrap {
         RefdataCategory.loc('Person Contact Type',  	                    [en: 'Person: Contact Type', de: 'Kontaktart'], BOOTSTRAP)
         RefdataCategory.loc('Person Position',      	                    [en: 'Person Position', de: 'Position'], BOOTSTRAP)
         RefdataCategory.loc('Person Responsibility',	                    [en: 'Person Responsibility', de: 'Verantwortlich'], BOOTSTRAP)
-        RefdataCategory.loc('Subscription Status',          	            [en: 'Subscription Status', de: 'Lizenzstatus'], BOOTSTRAP)
+        RefdataCategory.loc('Subscription Form',          	            [en: 'Subscription Form', de: 'Lizenzform'], BOOTSTRAP)
+        RefdataCategory.loc('Subscription Resource',          	        [en: 'Resource type', de: 'Ressourcentyp'], BOOTSTRAP)
+        RefdataCategory.loc('Subscription Status',          	        [en: 'Subscription Status', de: 'Lizenzstatus'], BOOTSTRAP)
         RefdataCategory.loc('Task Priority',                	            [en: 'Task Priority', de: 'Aufgabenpriorität'], BOOTSTRAP)
         RefdataCategory.loc('Task Status',          	                    [en: 'Task Status', de: 'Aufgabenstatus'], BOOTSTRAP)
         RefdataCategory.loc('Ticket.Category',          	                  [en: 'Ticket Category', de: 'Kategorie'], BOOTSTRAP)
@@ -806,7 +814,8 @@ class BootStrap {
         RefdataCategory.loc('License.Arc.HostingRestriction',               [en: 'Hosting Restriction', de: 'Hostingrecht Einschränkung'], BOOTSTRAP)
         RefdataCategory.loc('License.Arc.HostingSolution',                  [en: 'Hosting Solution', de: 'Hostingrecht Lösung'], BOOTSTRAP)
         RefdataCategory.loc('Package Status',                               [en: 'Package Status', de: 'Paketstatus'], BOOTSTRAP)
-        RefdataCategory.loc('Number Type',                               [en: 'Number Type', de: 'Zahlen-Typ'], BOOTSTRAP)
+        RefdataCategory.loc('Number Type',                                  [en: 'Number Type', de: 'Zahlen-Typ'], BOOTSTRAP)
+        RefdataCategory.loc('User.Settings.Dashboard.Tab',                  [en: 'Dashboard Tab', de: 'Dashbord Tab'], BOOTSTRAP)
         // refdata values
 
         RefdataValue.loc('YN',   [en: 'Yes', de: 'Ja'], BOOTSTRAP)
@@ -1012,16 +1021,39 @@ class BootStrap {
         RefdataValue.loc('Person Responsibility',    [en: 'Specific cluster editor', de: 'Gruppenkontakt'], BOOTSTRAP)
         RefdataValue.loc('Person Responsibility',    [en: 'Specific title editor', de: 'Titelbearbeiter'], BOOTSTRAP)
 
-        RefdataValue.loc('Subscription Status',      [en: 'Current', de: 'Aktuell'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Form',      [key: 'test', en: 'Test', de: 'Test'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Form',      [key: 'offer', en: 'Offer', de: 'Angebot'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Form',      [key: 'license', en: 'License', de: 'Lizenz'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Form',      [key: 'singlePurchase', en: 'Single Purchase', de: 'Einmalkauf'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Form',      [key: 'desideratum', en: 'Desideratum', de: 'Desiderat'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Form',      [key: 'purchaseUpdate', en: 'Purchase with update fee', de: 'Kauf mit Update Fee'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Form',      [key: 'purchaseOngoing', en: 'Ongoing Purchase', de: 'Kauf laufend'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Form',      [key: 'obligation', en: 'Obligation', de: 'Pflichtlizenz'], BOOTSTRAP)
+
+        RefdataValue.loc('Subscription Resource', [key: 'database', en: 'Database', de: 'Datenbank'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Resource', [key: 'ejournalSingle', en: 'E-Journal single title', de: 'E-Journal Einzeltitel'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Resource', [key: 'ebookSingle', en: 'E-Book single title', de: 'E-Book Einzeltitel'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Resource', [key: 'data', en: 'Data', de: 'Daten'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Resource', [key: 'software', en: 'Software', de: 'Software'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Resource', [key: 'ejournalPackage', en: 'E-Journal Package', de: 'E-Journal Paket'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Resource', [key: 'ebookPackage', en: 'E-Book Package', de: 'E-Book Paket'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Resource', [key: 'mixed', en: 'Mixed Package', de: 'Gemischtes Paket'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Resource', [key: 'ereference', en: 'E-Reference', de: 'E-Reference'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Resource', [key: 'other', en: 'Other', de: 'Sonstige'], BOOTSTRAP)
+
+        RefdataValue.loc('Subscription Status',      [en: 'Current', de: 'Aktiv'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [en: 'Expired', de: 'Abgelaufen'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Status',      [en: 'Terminated', de: 'Beendet'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Status',      [en: 'Under Negotiation',   de: 'In Verhandlung'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Status',      [en: 'Terminated', de: 'Abbestellt'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Status',      [en: 'Under Negotiation', de: 'In Verhandlung'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [en: 'Under Consideration', de: 'Entscheidung steht aus'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Status',      [en: 'Under Consortial Examination',   de: 'Wird konsortial geprüft'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Status',      [en: 'Under Institutional Examination',   de: 'Wird institutionell geprüft'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Status',      [en: 'Test',   de: 'Test'], BOOTSTRAP)
-        RefdataValue.loc('Subscription Status',      [en: 'Intended', de: 'Geplant'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Status',      [en: 'Under Consortial Examination', de: 'Wird konsortial geprüft'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Status',      [en: 'Under Institutional Examination', de: 'Wird institutionell geprüft'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Status',      [en: 'No longer usable', de: 'Nicht mehr nutzbar'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Status',      [en: 'Publication discontinued', de: 'Erscheinen eingestellt'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Status',      [en: 'Rejected', de: 'Abgelehnt'], BOOTSTRAP)
+        //RefdataValue.loc('Subscription Status',      [en: 'Test',   de: 'Test'], BOOTSTRAP)
+        //RefdataValue.loc('Subscription Status',      [en: 'Intended', de: 'Geplant'], BOOTSTRAP)
 
 		RefdataValue.loc('Subscription Type',      [en: 'Alliance Licence', de: 'Allianzlizenz'], BOOTSTRAP)
 		RefdataValue.loc('Subscription Type',      [en: 'National Licence', de: 'Nationallizenz'], BOOTSTRAP)
@@ -1118,6 +1150,11 @@ class BootStrap {
         RefdataValue.loc('Number Type',      [en: 'Scientific staff', de: 'wissenschaftliches Personal'], BOOTSTRAP)
         RefdataValue.loc('Number Type',      [en: 'User', de: 'Nutzer'], BOOTSTRAP)
         RefdataValue.loc('Number Type',      [en: 'Population', de: 'Einwohner'], BOOTSTRAP)
+
+        RefdataValue.loc('User.Settings.Dashboard.Tab',     [en: 'Changes', de: 'Änderungen'], BOOTSTRAP)
+        RefdataValue.loc('User.Settings.Dashboard.Tab',     [en: 'Announcements', de: 'Ankündigungen'], BOOTSTRAP)
+        RefdataValue.loc('User.Settings.Dashboard.Tab',     [en: 'Tasks', de: 'Aufgaben'], BOOTSTRAP)
+        RefdataValue.loc('User.Settings.Dashboard.Tab',     [en: 'Due Dates', de: 'Fällige Termine'], BOOTSTRAP)
 
         RefdataValue.loc('Access Method',      [key: 'ip4', en: 'IPv4', de: 'IPv4'], BOOTSTRAP)
         RefdataValue.loc('Access Method',      [key: 'ip6', en: 'IPv6', de: 'IPv6'], BOOTSTRAP)

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Numbers; com.k_int.kbplus.License; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.SubscriptionsQueryService; de.laser.helper.RDStore; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Numbers; com.k_int.kbplus.License; com.k_int.kbplus.Contact; com.k_int.kbplus.Org; com.k_int.kbplus.OrgRole; com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection />
 <table class="ui sortable celled la-table table">
     <g:set var="sqlDateToday" value="${new java.sql.Date(System.currentTimeMillis())}"/>
@@ -15,13 +15,13 @@
             </th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('sortname')}">
-            <g:sortableColumn title="${message(code: 'org.sortname.label', default: 'Sortname')}" property="lower(o.sortname)"/>
+            <g:sortableColumn title="${message(code: 'org.sortname.label', default: 'Sortname')}" property="lower(o.sortname)" params="${request.getParameterMap()}"/>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('shortname')}">
-            <g:sortableColumn title="${message(code: 'org.shortname.label', default: 'Shortname')}" property="lower(o.shortname)"/>
+            <g:sortableColumn title="${message(code: 'org.shortname.label', default: 'Shortname')}" property="lower(o.shortname)" params="${request.getParameterMap()}"/>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('name')}">
-            <g:sortableColumn title="${message(code: 'org.fullName.label', default: 'Name')}" property="lower(o.name)"/>
+            <g:sortableColumn title="${message(code: 'org.fullName.label', default: 'Name')}" property="lower(o.name)" params="${request.getParameterMap()}"/>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('mainContact')}">
             <th>${message(code: 'org.mainContact.label', default: 'Main Contact')}</th>
@@ -33,13 +33,10 @@
             <th>${message(code: 'org.privateContacts.label', default: 'Public Contacts')}</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('currentFTEs')}">
-            <th>${message(code: 'org.currentFTEs.label', default: 'Current FTEs')}</th>
+            <th class="la-th-wrap">${message(code: 'org.currentFTEs.label', default: 'Current FTEs')}</th>
         </g:if>
-        <g:if test="${tmplConfigShow?.contains('licenses')}">
-            <th>${message(code: 'org.licenses.label', default: 'Public Contacts')}</th>
-        </g:if>
-        <g:if test="${tmplConfigShow?.contains('numberOfLicenses')}">
-            <th class="la-th-wrap">${message(code: 'org.numberOfLicenses.label', default: 'Number of Licenses')}</th>
+        <g:if test="${tmplConfigShow?.contains('numberOfSubscriptions')}">
+            <th class="la-th-wrap">${message(code: 'org.subscriptions.label', default: 'Public Contacts')}</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('identifier')}">
             <th>Identifier</th>
@@ -60,7 +57,7 @@
             <th>${message(code: 'org.federalState.label')}</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('libraryNetwork')}">
-            <th class="la-th-wrap la-hyphenation">${message(code: 'org.libraryNetwork.label')}</th>
+            <th class="la-th-wrap la-hyphenation">${message(code: 'org.libraryNetworkTableHead.label')}</th>
         </g:if>
         <g:if test="${tmplConfigShow?.contains('libraryType')}">
             <th>${message(code: 'org.libraryType.label')}</th>
@@ -203,43 +200,25 @@
                     </g:each>
                 </td>
             </g:if>
-            <g:if test="${tmplConfigShow?.contains('licenses')}">
+            <g:if test="${tmplConfigShow?.contains('numberOfSubscriptions')}">
                 <td>
                     <div class="la-flexbox">
-                        <div class="ui circular label">
-                            ${Subscription.executeQuery("SELECT distinct count(*) FROM Subscription as s " +
-                                    "WHERE status != :status and startDate <= :heute and endDate >= :heute " +
-                                    "and EXISTS (SELECT o FROM OrgRole as o WHERE s = o.sub AND o.roleType = :provider AND o.org = :org) " +
-                                    "AND EXISTS (SELECT o2 FROM OrgRole as o2 WHERE s = o2.sub AND (o2.roleType = :subscriber or o2.roleType = :subscriber_consortial or o2.roleType = :consortia) " +
-                                    "AND o2.org = :ctxOrg)",
-                                    [status:RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'),
-                                     heute:sqlDateToday,
-                                     provider:RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'),
-                                     org:org,
-                                     subscriber:RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role'),
-                                     subscriber_consortial:RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'),
-                                     consortia:RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role'),
-                                     ctxOrg:contextService.getOrg()])[0]}
-                        </div>
+                        <% (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName])
+                            def numberOfSubscriptions = Subscription.executeQuery("select count(s) " + base_qry, qry_params)[0]
+                        %>
+                        <g:if test="${actionName == 'manageConsortia'}">
+                            ${numberOfSubscriptions}
+                        </g:if>
+                        <g:else>
+                            <g:link controller="myInstitution" action="currentSubscriptions" params="${[q:org.name]}" title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">
+                                <div class="ui circular label">
+                                    ${numberOfSubscriptions}
+                                </div>
+                            </g:link>
+                        </g:else>
                     </div>
-
                 </td>
             </g:if>
-            <g:if test="${tmplConfigShow?.contains('numberOfLicenses')}">
-                <td>
-                    ${Subscription.executeQuery("SELECT distinct count(*) FROM Subscription as s " +
-                            "WHERE status != :status and startDate <= :heute and endDate >= :heute " +
-                            "and EXISTS (SELECT o FROM OrgRole as o WHERE s = o.sub AND o.roleType = :subscriber AND o.org = :org) " +
-                            "AND EXISTS (SELECT o2 FROM OrgRole as o2 WHERE s = o2.sub AND o2.roleType = :consortia AND o2.org = :ctxOrg)",
-                            [status:RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'),
-                             heute:sqlDateToday,
-                             subscriber:RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'),
-                             org:org,
-                             consortia:RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role'),
-                             ctxOrg:contextService.getOrg()])[0]}
-                </td>
-            </g:if>
-
             <g:if test="${tmplConfigShow?.contains('identifier')}">
                 <td><g:if test="${org.ids}">
                     <div class="ui list">

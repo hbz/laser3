@@ -7,7 +7,6 @@
 %>
 
 <r:require module="annotations" />
-<laser:serviceInjection />
 
 <!doctype html>
 <html>
@@ -29,7 +28,6 @@
             <g:render template="actions" />
         </semui:controlButtons>
 
-
         <g:if test="${params.asAt}">
             <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'myinst.subscriptionDetails.snapshot', args:[params.asAt])}</h1>
         </g:if>
@@ -43,12 +41,15 @@
 
         <semui:objectStatus object="${subscriptionInstance}" status="${subscriptionInstance.status}" />
 
-    <g:if test="${subscriptionInstance.instanceOf && (contextOrg == subscriptionInstance.getConsortia())}">
+    <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id == subscriptionInstance.getConsortia()?.id)}">
         <div class="ui negative message">
             <div class="header"><g:message code="myinst.message.attention" /></div>
             <p>
                 <g:message code="myinst.subscriptionDetails.message.ChildView" />
-                    <span class="ui label">${subscriptionInstance.getAllSubscribers()?.collect{itOrg -> itOrg.name}.join(',')}</span>.
+                <g:each in="${subscriptionInstance.getAllSubscribers()?.collect{itOrg -> itOrg.getDesignation()}}" var="subscr">
+                    <span class="ui label">${subscr}</span>,
+                </g:each>
+
                 <g:message code="myinst.subscriptionDetails.message.ConsortialView" />
                     <g:link controller="subscriptionDetails" action="show" id="${subscriptionInstance.instanceOf.id}"><g:message code="myinst.subscriptionDetails.message.here" /></g:link>.
             </p>
@@ -150,6 +151,14 @@
                                     </g:else>
                                 </dd>
                             </dl>
+                            <dl>
+                                <dt class="control-label">${message(code:'subscription.form.label')}</dt>
+                                <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="form" config='Subscription Form'/></dd>
+                            </dl>
+                            <dl>
+                                <dt class="control-label">${message(code:'subscription.resource.label')}</dt>
+                                <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="resource" config='Subscription Resource'/></dd>
+                            </dl>
                             <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id == subscriptionInstance.getConsortia()?.id)}">
                                 <dl>
                                     <dt class="control-label">${message(code:'subscription.isInstanceOfSub.label')}</dt>
@@ -165,14 +174,13 @@
                                     <dd>
                                         <semui:xEditableRefData owner="${subscriptionInstance}" field="isSlaved" config='YN'/>
                                     </dd>
-
                                 </dl>
                             </g:if>
                         </div>
                     </div>
                 </div>
 
-                <div class="ui card la-js-hideable">
+                <div class="ui card la-js-hideable hidden">
                         <div class="content">
 
                             <table class="ui la-selectable table">
@@ -182,27 +190,27 @@
                                     <col width="430"/>
                                 </colgroup>
                                 <g:each in="${subscriptionInstance.packages.sort{it.pkg.name}}" var="sp">
-                                <tr>
-                                <th scope="row" class="control-label la-js-hide-this-card">${message(code:'subscription.packages.label')}</th>
-                                    <td>
-                                        <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
+                                    <tr>
+                                    <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'subscription.packages.label')}</th>
+                                        <td>
+                                            <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
 
-                                        <g:if test="${sp.pkg?.contentProvider}">
-                                            (${sp.pkg?.contentProvider?.name})
-                                        </g:if>
-                                    </td>
-                                    <td>
-                                        <g:if test="${editable}">
+                                            <g:if test="${sp.pkg?.contentProvider}">
+                                                (${sp.pkg?.contentProvider?.name})
+                                            </g:if>
+                                        </td>
+                                        <td>
+                                            <g:if test="${editable}">
 
-                                            <div class="ui mini icon buttons">
-                                                <button class="ui button la-selectable-button" onclick="unlinkPackage(${sp.pkg.id})">
-                                                    <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
-                                                </button>
-                                            </div>
-                                            <br />
-                                        </g:if>
-                                    </td>
-                                </tr>
+                                                <div class="ui mini icon buttons">
+                                                    <button class="ui button la-selectable-button" onclick="unlinkPackage(${sp.pkg.id})">
+                                                        <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
+                                                    </button>
+                                                </div>
+                                                <br />
+                                            </g:if>
+                                        </td>
+                                    </tr>
                                 </g:each>
                             </table>
 
@@ -213,7 +221,7 @@
                                     <col width="430"/>
                                 </colgroup>
                                 <tr>
-                                    <th scope="row" class="control-label la-js-hide-this-card">${message(code:'license')}</th>
+                                    <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'license')}</th>
                                     <td>
                                         <g:if test="${subscriptionInstance.owner == null}">
                                             <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
@@ -251,7 +259,7 @@
                     </div>
 
 
-                <div class="ui card la-js-hideable">
+                <div class="ui card la-js-hideable hidden">
                         <div class="content">
 
 
@@ -268,7 +276,7 @@
                                         roleRespValue: 'Specific subscription editor',
                                         editmode: editable
                               ]}" />
-                    <div class="ui la-vertical buttons la-js-hide-me">
+                    <div class="ui la-vertical buttons la-js-hide-this-card">
                         <g:render template="/templates/links/orgLinksModal"
                                   model="${[linkType: subscriptionInstance?.class?.name,
                                             parent: subscriptionInstance.class.name+':'+subscriptionInstance.id,
@@ -338,7 +346,7 @@
 
                 <g:if test="${subscriptionInstance.costItems}">
 
-                    <div class="ui card la-dl-no-table la-js-hideable">
+                    <div class="ui card la-dl-no-table la-js-hideable hidden">
                         <div class="content">
                             <dl>
                                 <dt class="control-label">${message(code:'financials.label', default:'Financials')}</dt>
@@ -397,11 +405,11 @@
 
                 FINANCE --%>
                 <g:if test="${usage}">
-                    <div class="ui card la-dl-no-table la-js-hideable">
+                    <div class="ui card la-dl-no-table la-js-hideable hidden">
                         <div class="content">
                             <g:if test="${subscriptionInstance.costItems}">
                                 <dl>
-                                    <dt class="control-label la-js-hide-this-card">${message(code: 'subscription.details.costPerUse.header')}</dt>
+                                    <dt class="control-label la-js-dont-hide-this-card">${message(code: 'subscription.details.costPerUse.header')}</dt>
                                     <dd><g:formatNumber number="${totalCostPerUse}" type="currency"
                                                         currencyCode="${currencyCode}" maxFractionDigits="2"
                                                         minFractionDigits="2" roundingMode="HALF_UP"/>
@@ -411,7 +419,7 @@
                                 <div class="ui divider"></div>
                             </g:if>
                             <dl>
-                                <dt class="control-label la-js-hide-this-card">${message(code: 'default.usage.label')}</dt>
+                                <dt class="control-label la-js-dont-hide-this-card">${message(code: 'default.usage.label')}</dt>
                                 <dd>
                                     <table class="ui la-table-small celled la-table-inCard table">
                                         <thead>
@@ -499,9 +507,9 @@
         </div>
 
         <aside class="four wide column la-sidekick">
-            <g:render template="/templates/tasks/card" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
-            <g:render template="/templates/documents/card" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
-            <g:render template="/templates/notes/card" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
+            <g:render template="/templates/tasks/card" model="${[ownobj:subscriptionInstance, owntp:'subscription', css_class:'hidden']}"  />
+            <g:render template="/templates/documents/card" model="${[ownobj:subscriptionInstance, owntp:'subscription', css_class:'hidden']}" />
+            <g:render template="/templates/notes/card" model="${[ownobj:subscriptionInstance, owntp:'subscription', css_class:'hidden']}" />
         </aside><!-- .four -->
     </div><!-- .grid -->
 

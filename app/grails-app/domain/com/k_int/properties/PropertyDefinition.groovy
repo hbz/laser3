@@ -28,10 +28,14 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
 
     @Transient
     final static String LIC_PROP    = 'License Property'
-    @Transient
-    final static String LIC_OA_PROP = 'License Property: Open Access'
-    @Transient
-    final static String LIC_ARC_PROP = 'License Property: Archive'
+
+    //@Transient
+    //@Deprecated
+    //final static String LIC_OA_PROP = 'License Property: Open Access'
+    //@Transient
+    //@Deprecated
+    //final static String LIC_ARC_PROP = 'License Property: Archive'
+
     @Transient
     final static String ORG_CONF    = 'Organisation Config'
     @Transient
@@ -46,8 +50,8 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     @Transient
     final static String[] AVAILABLE_CUSTOM_DESCR = [
             LIC_PROP,
-            LIC_OA_PROP,
-            LIC_ARC_PROP,
+            //LIC_OA_PROP,
+            //LIC_ARC_PROP,
             ORG_CONF,
             SUB_PROP,
             SYS_CONF,

@@ -32,13 +32,13 @@
 
         <semui:objectStatus object="${license}" status="${license.status}" />
 
-        <g:if test="${! license.hasTemplate() && license.instanceOf && (contextOrg.id == license.getLicensingConsortium()?.id)}">
+        <g:if test="${! license.hasTemplate() && license.instanceOf && (contextOrg?.id == license.getLicensingConsortium()?.id)}">
             <div class="ui negative message">
                 <div class="header"><g:message code="myinst.message.attention" /></div>
                 <p>
                     <g:message code="myinst.licenseDetails.message.ChildView" />
-                    <g:each in="${license.getAllLicensee()?.collect{itOrg -> itOrg.name}}" var="licensee">
-                        <span class="ui label">${licensee}</span> ,
+                    <g:each in="${license.getAllLicensee()?.collect{itOrg -> itOrg.getDesignation()}}" var="licensee">
+                        <span class="ui label">${licensee}</span>,
                     </g:each>
 
                     <g:message code="myinst.licenseDetails.message.ConsortialView" />
@@ -183,7 +183,7 @@
 
                             <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
                                 <g:each in="${license.subscriptions.sort{it.name}}" var="sub">
-                                    <g:if test="${contextOrg in sub.orgRelations.org || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  contextOrg.getallOrgRoleType())}">
+                                    <g:if test="${contextOrg?.id in sub.orgRelations?.org?.id || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextOrg?.getallOrgRoleTypeIds())}">
                                         <table class="ui la-selectable table">
                                             <colgroup>
                                                 <col width="130" />

@@ -14,7 +14,7 @@
     <br />
     <div class="ui grid">
         <div class="eleven wide column">
-            <div class="ui la-gasco-search segment">
+            <div class="ui la-search segment">
                 <g:form action="gasco" controller="public" method="get" class="form-inline ui small form">
 
                     <div class="field">
@@ -73,7 +73,7 @@
                             value="${params.consortia}"/>
                     </div>
 
-                    <div class="field la-filter-search ">
+                    <div class="field la-field-right-aligned ">
                         <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                         <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label', default:'Search')}">
                     </div>

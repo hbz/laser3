@@ -5,9 +5,6 @@ import groovy.util.logging.Log4j
 @Log4j
 class PropertyDefinitionGroupItem {
 
-    //PropertyDefinition propDef
-    //PropertyDefinitionGroup propDefGroup
-
     static belongsTo = [
             propDef:        PropertyDefinition,
             propDefGroup:   PropertyDefinitionGroup
@@ -21,7 +18,7 @@ class PropertyDefinitionGroupItem {
     }
 
     static constraints = {
-        propDef         (nullable: false, blank: false)
+        propDef         (nullable: false, blank: false, unique: ['propDefGroup'])
         propDefGroup    (nullable: false, blank: false)
     }
 }

@@ -38,7 +38,7 @@
         <semui:actionsDropdownItem controller="myInstitution" action="renewalsUpload"
                                    message="menu.institutions.imp_renew"/>
         </g:if>
-        <g:if test="${subscriptionInstance?.type == com.k_int.kbplus.RefdataValue.getByValueAndCategory("Consortial Licence", "Subscription Type") && (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  contextService.getOrg().orgRoleType) && !(com.k_int.kbplus.Subscription.findAllByPreviousSubscription(subscriptionInstance))}">
+        <g:if test="${subscriptionInstance?.type == com.k_int.kbplus.RefdataValue.getByValueAndCategory("Consortial Licence", "Subscription Type") && (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgRoleTypeIds()) && !(com.k_int.kbplus.Subscription.findAllByPreviousSubscription(subscriptionInstance))}">
             <semui:actionsDropdownItem controller="subscriptionDetails" action="renewSubscriptionConsortia"
                                        params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>
         </g:if>
@@ -51,7 +51,14 @@
         </g:if>
 
         <g:if test="${showConsortiaFunctions}">
-            <semui:actionsDropdownItem id="audit_config_opener" message="property.audit.menu"/>
+            <g:if test="${actionName == 'show'}">
+                <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
+                    <div class="divider"></div>
+                    <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalsgruppen anzeigen" />
+                </g:if>
+
+                <semui:actionsDropdownItem id="audit_config_opener" message="property.audit.menu"/>
+            </g:if>
         </g:if>
 
     </semui:actionsDropdown>

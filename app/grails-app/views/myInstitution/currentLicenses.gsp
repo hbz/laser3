@@ -27,7 +27,9 @@
 
   <semui:messages data="${flash}" />
 
-  <h1 class="ui left aligned icon header"><semui:headerIcon />${institution?.name} - ${message(code:'license.plural', default:'Licenses')}</h1>
+  <h1 class="ui left aligned icon header"><semui:headerIcon />${institution?.name} - ${message(code:'license.plural', default:'Licenses')}
+      <semui:totalNumber total="${licenseCount}"/>
+  </h1>
 
     <semui:filter class="license-searches">
         <form class="ui form">
@@ -62,7 +64,7 @@
             </div>
 
 
-            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  institution.getallOrgRoleType())}">
+            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgRoleTypeIds())}">
 
                 <div class="two fields">
                     <div class="field">
@@ -91,13 +93,13 @@
 
             </g:if>
 
-                    <div class="field la-filter-search">
+                    <div class="field la-field-right-aligned">
                         <a href="${request.forwardURI}" class="ui reset primary primary button">${message(code:'default.button.reset.label')}</a>
 
                         <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}" />
                     </div>
 
-            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  institution.getallOrgRoleType())}">
+            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgRoleTypeIds())}">
                 </div><!--.two fields-->
             </g:if>
 
@@ -105,9 +107,6 @@
     </semui:filter>
 
         <div class="license-results">
-        <g:if test="${licenseCount && licenseCount>0}">
-          <span>${message(code:'license.current.showing', args:[licenseCount])}</span>
-        </g:if>
           <table class="ui sortable celled la-table table">
             <thead>
               <tr>
@@ -135,10 +134,10 @@
                     <g:if test="${l.subscriptions && ( l.subscriptions.size() > 0 )}">
                         <g:each in="${l.subscriptions.sort{it.name}}" var="sub">
                           <g:if test="${sub.status?.value != 'Deleted'}">
-                                  <g:if test="${institution in sub.orgRelations.org || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in  institution.getallOrgRoleType())}">
+                                  <g:if test="${institution?.id in sub.orgRelations?.org?.id || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgRoleTypeIds())}">
                                   <div class="la-flexbox">
                                       <i class="icon folder open outline la-list-icon"></i>
-                                      <g:link controller="subscriptionDetails" action="index" id="${sub.id}">${sub.name}</g:link><br/>
+                                      <g:link controller="subscriptionDetails" action="show" id="${sub.id}">${sub.name}</g:link><br/>
                                   </div>
                                   </g:if>
                           </g:if>
@@ -157,10 +156,12 @@
                     <g:if test="${params.orgRole == 'Licensing Consortium'}">
                         <td>
                             <g:each in="${com.k_int.kbplus.License.findAllWhere(instanceOf: l)}" var="lChild">
-                                <g:link controller="licenseDetails" action="show" id="${lChild.id}">
-                                    ${lChild}
-                                </g:link>
-                                <br/>
+                                <g:if test="${lChild.status?.value != 'Deleted'}">
+                                    <g:link controller="licenseDetails" action="show" id="${lChild.id}">
+                                        ${lChild}
+                                    </g:link>
+                                    <br/>
+                                </g:if>
                             </g:each>
                         </td>
                     </g:if>

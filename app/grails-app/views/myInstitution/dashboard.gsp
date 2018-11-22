@@ -70,12 +70,22 @@
                    args="${user.getSettingsValue(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}"/>
         </div>
 
-        <div class="ui secondary pointing tabular menu">
-            <a class="active item" data-tab="first">
+    <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', 'User.Settings.Dashboard.Tab'))}" />
+
+    <div class="ui secondary pointing tabular menu">
+            <a class="${US_DASHBOARD_TAB.getValue().value=='Due Dates' ? 'active item':'item'}" data-tab="first">
                 <i class="checked alarm end icon large"></i>
                 ${dueDates.size}
                 ${message(code:'myinst.dash.due_dates.label')}
             </a>
+        %{--<div class="ui secondary pointing tabular menu">--}%
+            %{--<a class="active item" data-tab="first">--}%
+                %{--<i class="checked alarm end icon large"></i>--}%
+                %{--${dueDates.size}--}%
+                %{--${message(code:'myinst.dash.due_dates.label')}--}%
+            %{--</a>--}%
+            <a class="${US_DASHBOARD_TAB.getValue().value == 'Changes' ? 'active item':'item'}" data-tab="second">
+
             <a class="item" data-tab="second">
                 <i class="clock outline icon large"></i>
                 <%
@@ -87,15 +97,19 @@
                 ${countChanges}
                 ${message(code:'myinst.todo.label', default:'To Do')}
             </a>
-            <a class="item" data-tab="third" id="jsFallbackAnnouncements">
+            <a class="${US_DASHBOARD_TAB.getValue().value=='Announcements' ? 'active item':'item'}" data-tab="third" id="jsFallbackAnnouncements">
                 <i class="warning circle icon large"></i>
                 ${recentAnnouncements.size()}
                 ${message(code:'announcement.plural', default:'Announcements')}
             </a>
-            <a class="item" data-tab="forth">
+            <a class="${US_DASHBOARD_TAB.getValue().value=='Tasks' ? 'active item':'item'}" data-tab="forth">
                 <i class="checked calendar icon large"></i>
                 ${tasks.size()}
                 ${message(code:'myinst.dash.task.label')}
+            </a>
+            <a class="${US_DASHBOARD_TAB.getValue().value=='Due Dates' ? 'active item':'item'}" data-tab="fifth">
+                <i class="checked alarm end icon large"></i>
+                ${message(code:'myinst.dash.due_dates.label')}
             </a>
         </div>
 %{--***************************************************************************************************************--}%
@@ -243,8 +257,9 @@
                 %{--</tbody>--}%
             %{--</table>--}%
         </div>
+
 %{--***************************************************************************************************************--}%
-        <div class="ui bottom attached tab segment" data-tab="second" style="border-top: 1px solid #d4d4d5; ">
+        <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Changes' ? 'active':''}" data-tab="second" style="border-top: 1px solid #d4d4d5; ">
             <g:if test="${editable}">
                 <div class="pull-right">
                     <g:link action="changes" class="ui button">${message(code:'myinst.todo.submit.label', default:'View To Do List')}</g:link>
@@ -307,7 +322,7 @@
         </div>
 %{--***************************************************************************************************************--}%
 
-        <div class="ui bottom attached tab segment" data-tab="third" style="border-top: 1px solid #d4d4d5; ">
+        <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value=='Announcements' ? 'active':''}" data-tab="third" style="border-top: 1px solid #d4d4d5; ">
             <g:if test="${editable}">
                 <div class="pull-right">
                     <g:link action="announcements" class="ui button">${message(code:'myinst.ann.view.label', default:'View All Announcements')}</g:link>
@@ -346,8 +361,9 @@
                 </g:each>
             </div>
         </div>
+
     %{--***************************************************************************************************************--}%
-        <div class="ui bottom attached tab" data-tab="forth">
+        <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value=='Tasks' ? 'active':''}" data-tab="forth">
 
             <g:if test="${editable}">
                 <div class="ui right aligned grid">

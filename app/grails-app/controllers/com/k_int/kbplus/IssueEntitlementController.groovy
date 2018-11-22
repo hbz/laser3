@@ -75,14 +75,14 @@ class IssueEntitlementController {
       if ( title_id != null &&
            org != null &&
            supplier_id != null ) {
-          result.natStatSupplierId = supplier.getIdentifierByType('statssid').value
+          result.natStatSupplierId = supplier.getIdentifierByType('statssid')?.value
           def fsresult = factService.generateUsageData(org.id, supplier_id, result.issueEntitlementInstance.subscription, title_id)
           def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(org.id, supplier_id, result.issueEntitlementInstance.subscription, title_id)
           result.institutional_usage_identifier =
                   OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), org)
           if (result.institutional_usage_identifier && fsresult.usage) {
               result.statsWibid = org.getIdentifierByType('wibid')?.value
-              result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType') in org.getallOrgRoleType())) ? 'package' : 'institution'
+              result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in org?.getallOrgRoleTypeIds())) ? 'package' : 'institution'
               result.usage = fsresult?.usage
               result.x_axis_labels = fsresult?.x_axis_labels
               result.y_axis_labels = fsresult?.y_axis_labels
