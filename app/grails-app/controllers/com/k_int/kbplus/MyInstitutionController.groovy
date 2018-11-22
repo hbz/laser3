@@ -4,6 +4,7 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
+import de.laser.DashboardDueDate
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.converters.JSON
@@ -14,6 +15,7 @@ import org.apache.poi.hssf.usermodel.*
 import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
 import com.k_int.properties.*
+import de.laser.DashboardDueDate
 
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
@@ -2952,8 +2954,9 @@ AND EXISTS (
 
         def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: 10, sort: 'dateCreated', order: 'desc'])
-        result.dueObjects = queryService.getDueObjects(contextService.getUser().getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14).value)
-
+        result.dueDates = DashboardDueDate.executeQuery("select distinct (d) from DashboardDueDate as d where responsibleUser = ? and responsibleOrg = ? order by date, oid asc", [contextService.user, contextService.org])
+        //old nur zum Vergleich
+//        result.dueObjects = queryService.getDueObjects(contextService.getUser().getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14).value)
         result
     }
 

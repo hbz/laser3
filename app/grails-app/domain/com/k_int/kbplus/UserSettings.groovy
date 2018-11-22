@@ -15,6 +15,7 @@ class UserSettings {
         PAGE_SIZE                    (Long),
         DASHBOARD                    (Org),
         DASHBOARD_REMINDER_PERIOD    (Integer),
+        IS_REMIND_BY_EMAIL           (RefdataValue, 'YN'),
         SHOW_SIMPLE_VIEWS            (RefdataValue, 'YN'),
         SHOW_INFO_ICON               (RefdataValue, 'YN'),
         SHOW_EDIT_MODE               (RefdataValue, 'YN')

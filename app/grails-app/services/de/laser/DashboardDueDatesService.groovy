@@ -52,7 +52,9 @@ class DashboardDueDatesService {
     //TODO beim Rollback Eintrag in die Logdatei
     @Transactional(propagation= Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
     def updateDashboardTableInDatabase(boolean isSendEmail){
-        Dashboard.executeUpdate("DELETE from Dashboard")
+        try{
+
+        DashboardDueDate.executeUpdate("DELETE from DashboardDueDate ")
 
         def users = User.getAll()
         users.each { user ->
@@ -60,34 +62,38 @@ class DashboardDueDatesService {
             int reminderPeriod = user.getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14).value
             userOrgs.each {userOrg ->
                 def org = userOrg.getOrg()
-                def dueObjects = queryService.getDueObjects(org, user, reminderPeriod)
-                List<Dashboard> dashbordEntries = []
+                HashSet dueObjects = queryService.getDueObjects(org, user, reminderPeriod)
+                List<DashboardDueDate> dashbordEntries = []
                 dueObjects.each { obj ->
                     if (obj instanceof Subscription) {
                         if (obj.manualCancellationDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.manualCancellationDate, reminderPeriod)) {
-                            Dashboard dashEntry = new Dashboard(obj, true, user, org)
+                            DashboardDueDate dashEntry = new DashboardDueDate(obj, true, user, org)
                             dashEntry.save(flush: true)
                             dashbordEntries.add(dashEntry)
                         }
                         if (obj.endDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.endDate, reminderPeriod)) {
-                            Dashboard dashEntry = new Dashboard(obj, false, user, org)
+                            DashboardDueDate dashEntry = new DashboardDueDate(obj, false, user, org)
                             dashEntry.save(flush: true)
                             dashbordEntries.add(dashEntry)
                         }
                     } else {
-                        Dashboard dashEntry = new Dashboard(obj, user, org)
+                        DashboardDueDate dashEntry = new DashboardDueDate(obj, user, org)
                         dashEntry.save(flush: true)
                         dashbordEntries.add(dashEntry)
                     }
-                    if (isSendEmail) {
-                        sendEmailWithDashboardToUser(user, dashbordEntries)
-                    }
+                }
+                if (isSendEmail && user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RefdataValue.getByValueAndCategory('Yes','YN'))) {
+                    sendEmailWithDashboardToUser(user, dashbordEntries)
+                    log.debug("Start DashboardDueDatesService sendEmail to "+ user.getDisplayName() + user.email);
                 }
             }
         }
+        } catch (Throwable t) {
+            log.debug("Bei DashboardDueDatesService.updateDashboardTableInDatabase ist ein Fehler aufgetreten: " + t.getMessage());
+        }
     }
 
-    def sendEmailWithDashboardToUser(User user, List<Dashboard> dashboardEntries) {
+    def sendEmailWithDashboardToUser(User user, List<DashboardDueDate> dashboardEntries) {
         def emailReceiver = user.getEmail()
         def subject = "LAS:eR - Erinnerung an Ihre fälligen Termine"
         sendEmail(emailReceiver, subject, dashboardEntries, null, null)

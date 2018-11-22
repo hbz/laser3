@@ -110,10 +110,17 @@
                     <semui:xEditableRefData owner="${user}" field="showInfoIcon" config="YN" />
                 </div>
                 --%>
+
                 <div class="field">
-                    <label>${message(code: 'profile.dashboardReminderPeriod', default:'DASHBOARD_REMINDER_PERIOD')}</label>
+                    <label>${message(code: 'profile.reminderPeriod', default:'Reminder period')}</label>
                     <g:set var="US_DASHBOARD_REMINDER_PERIOD" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}" />
-                    <semui:xEditable owner="${US_DASHBOARD_REMINDER_PERIOD}" field="strValue" />
+                    <semui:xEditable owner="${US_DASHBOARD_REMINDER_PERIOD}" field="strValue" />&nbspTage vor dem Termin
+                </div>
+
+                <div class="field">
+                    <label>${message(code: 'profile.isRemindByEmail', default:'Remind by E-Mail?')}</label>
+                    <g:set var="US_IS_REMIND_BY_EMAIL" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RefdataValue.getByValueAndCategory('Yes','YN'))}" />
+                    <semui:xEditableRefData owner="${US_IS_REMIND_BY_EMAIL}" field="rdValue" config="${US_IS_REMIND_BY_EMAIL.key.rdc}" />
                 </div>
 
                 <div class="field">
@@ -131,12 +138,6 @@
                 <div class="field">
                     <label>${message(code: 'profile.pagesize', default:'Default Page Size')}</label>
                     <semui:xEditable owner="${user.getSetting(UserSettings.KEYS.PAGE_SIZE, 10)}" field="strValue" />
-                </div>
-
-                <div class="field">
-                    <label>${message(code: 'profile.reminderPeriod', default:'Reminder period')}</label>
-                    <g:set var="US_DASHBOARD_REMINDER_PERIOD" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}" />
-                    <semui:xEditable owner="${US_DASHBOARD_REMINDER_PERIOD}" field="strValue" />&nbspTage vor dem Termin
                 </div>
 
             </div>
