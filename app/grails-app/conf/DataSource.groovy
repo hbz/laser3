@@ -18,11 +18,11 @@ environments {
     development {
         dataSource {
             dbCreate = "update"
-            driverClassName = "com.mysql.jdbc.Driver"
-            dialect = "org.hibernate.dialect.MySQL5Dialect"
+            driverClassName = "org.postgresql.Driver"
+            dialect = "org.hibernate.dialect.PostgreSQLDialect"
             username = "laser"
             password = "laser"
-            url = "jdbc:mysql://localhost/laser?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8"
+            url = "jdbc:postgresql://localhost:5432/laser"
             pooled = true
             properties {
                 maxActive = -1
@@ -39,11 +39,11 @@ environments {
     test {
         dataSource {
             dbCreate = "create-drop"
-            driverClassName = "com.mysql.jdbc.Driver"
-            dialect = "org.hibernate.dialect.MySQL5Dialect"
+            driverClassName = "org.postgresql.Driver"
+            dialect = "org.hibernate.dialect.PostgreSQLDialect"
             username = "laser"
             password = "laser"
-            url = "jdbc:mysql://localhost/laserTest?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8"
+            url = "jdbc:postgresql://localhost:5432/laser"
             pooled = true
             properties {
                 maxActive = -1
@@ -60,12 +60,11 @@ environments {
     production {
         dataSource {
             dbCreate = "none" // disabled due database migration plugin; overwritten on dev-server
-            driverClassName = "com.mysql.jdbc.Driver"
+            driverClassName = "org.postgresql.Driver"
+            dialect = "org.hibernate.dialect.PostgreSQLDialect"
             username = "laser"
             password = "laser"
-            url = "jdbc:mysql://localhost/laser?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8"
-            pooled = true
-            dialect = "org.hibernate.dialect.MySQL5Dialect"
+            url = "jdbc:postgresql://localhost:5432/laser"
             properties {
                 maxActive = -1
                 minEvictableIdleTimeMillis=1800000
