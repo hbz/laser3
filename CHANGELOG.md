@@ -1,4 +1,8 @@
 
+0.11
+
+       RC
+
 0.10.8
 
 - hotfix: gorm failed to lazily initialize a collection
