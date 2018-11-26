@@ -6,6 +6,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import com.k_int.properties.PropertyDefinition
 import de.laser.domain.StatsTripleCursor
+import de.laser.helper.RDStore
 import de.laser.helper.SqlDateUtils
 import groovyx.gpars.GParsPool
 import groovyx.net.http.RESTClient
@@ -31,38 +32,37 @@ class DashboardDueDatesService {
     void init() {
         from = grailsApplication.config.notifications.email.from
         replyTo = grailsApplication.config.notifications.email.replyTo
-        log.debug("Initialised DashboardDueDatesService...")
+        log.info("Initialised DashboardDueDatesService...")
     }
 
     def takeCareOfDueDates() {
         synchronized(this) {
             if ( update_running == true ) {
-                log.debug("Exiting DashboardDueDatesService takeCareOfDueDates - one already running");
+                log.info("Exiting DashboardDueDatesService takeCareOfDueDates - one already running");
                 return
             }
             else {
                 update_running = true;
-                log.debug("Start DashboardDueDatesService takeCareOfDueDates");
-                updateDashboardTableInDatabase(false)
-                log.debug("Finished DashboardDueDatesService takeCareOfDueDates");
+                log.info("Start DashboardDueDatesService takeCareOfDueDates");
+                updateDashboardTableInDatabase(true)
+                log.info("Finished DashboardDueDatesService takeCareOfDueDates");
             }
         }
     }
-
-    //TODO beim Rollback Eintrag in die Logdatei
-    @Transactional(propagation= Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
+    //TODO Mails werden nach localhost Port 30 geschickt, siehe Einstellung unter grails-app/conf/Config.groovy
+    //TODO Rollback überprüfen
+//    @Transactional(propagation= Propagation.REQUIRES_NEW, rollbackFor = Throwable.class)
     def updateDashboardTableInDatabase(boolean isSendEmail){
         try{
 
         DashboardDueDate.executeUpdate("DELETE from DashboardDueDate ")
-
-        def users = User.getAll()
+        def users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
         users.each { user ->
-            def userOrgs = UserOrg.findAllByUser(user)
+            def qry = "select distinct o from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = ? and ( uo.status=1 or uo.status=3)) order by o.name"
+            def orgs = Org.executeQuery(qry, user);
             int reminderPeriod = user.getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14).value
-            userOrgs.each {userOrg ->
-                def org = userOrg.getOrg()
-                HashSet dueObjects = queryService.getDueObjects(org, user, reminderPeriod)
+            orgs.each {org ->
+                def dueObjects = queryService.getDueObjects(org, user, reminderPeriod)
                 List<DashboardDueDate> dashbordEntries = []
                 dueObjects.each { obj ->
                     if (obj instanceof Subscription) {
@@ -82,34 +82,41 @@ class DashboardDueDatesService {
                         dashbordEntries.add(dashEntry)
                     }
                 }
-                if (isSendEmail && user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RefdataValue.getByValueAndCategory('Yes','YN'))) {
-                    sendEmailWithDashboardToUser(user, dashbordEntries)
-                    log.debug("Start DashboardDueDatesService sendEmail to "+ user.getDisplayName() + user.email);
+                boolean userWantsEmailReminder = RDStore.YN_YES.equals(user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO).rdValue)
+                if (isSendEmail && userWantsEmailReminder){
+                    if (user.email == null || user.email.isEmpty()) {
+                        log.info("Folgender Benutzer wünscht eine Emailbenachrichtigung für fällige Termine, hat aber keine E-Mail-Adresse hinterlegt:  " + user.username);
+                    } else {
+                        sendEmailWithDashboardToUser(user, org, dashbordEntries)
+                    }
                 }
             }
         }
         } catch (Throwable t) {
-            log.debug("Bei DashboardDueDatesService.updateDashboardTableInDatabase ist ein Fehler aufgetreten: " + t.getMessage());
+            log.error("Bei DashboardDueDatesService.updateDashboardTableInDatabase ist ein Fehler aufgetreten: " + t.getMessage());
+//            log.error("Bei DashboardDueDatesService.updateDashboardTableInDatabase Transaction Rollback");
+            throw t
         }
     }
 
-    def sendEmailWithDashboardToUser(User user, List<DashboardDueDate> dashboardEntries) {
+    def sendEmailWithDashboardToUser(User user, Org org, List<DashboardDueDate> dashboardEntries) {
         def emailReceiver = user.getEmail()
-        def subject = "LAS:eR - Erinnerung an Ihre fälligen Termine"
-        sendEmail(emailReceiver, subject, dashboardEntries, null, null)
+        def subject = "LAS:eR - Fälligen Termine ("+org.name+")"
+        sendEmail(emailReceiver, subject, dashboardEntries, null, null, user, org)
     }
 
-    def sendEmail(userAddress, subjectTrigger, dashboardEntries, overrideReplyTo, overrideFrom) {
+    def sendEmail(userAddress, subjectTrigger, dashboardEntries, overrideReplyTo, overrideFrom, user, org) {
         try {
             mailService.sendMail {
                 to userAddress
                 from overrideFrom != null ? overrideFrom : from
                 replyTo overrideReplyTo != null ? overrideReplyTo : replyTo
                 subject subjectTrigger
-                body(view: "/user/_emailDueDatesView", model: [dashboardEntries: dashboardEntries])
+                body(view: "/user/_emailDueDatesView", model: [user: user, org: org, dueDates: dashboardEntries])
             }
+            log.info("SendEmail finished to "+ user.getDisplayName() + " - " + user.email);
         } catch (Exception e) {
-            log.error("DashboardDueDatesService - mailReminder() :: Unable to perform email due to exception ${e.message}")
+            log.error("DashboardDueDatesService - sendEmail() :: Unable to perform email due to exception ${e.message}")
         }
     }
 }

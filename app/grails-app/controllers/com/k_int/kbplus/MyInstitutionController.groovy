@@ -66,7 +66,7 @@ class MyInstitutionController {
             new SimpleDateFormat('yyyy')
     ]
     def cronjobtest(){
-        dashboardDueDatesService.updateDashboardTableInDatabase(false)
+        dashboardDueDatesService.updateDashboardTableInDatabase(true)
         redirect controller: 'myInstitution', action: 'dashboard'
 
     }

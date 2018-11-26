@@ -139,7 +139,7 @@
 
                 <div class="field">
                     <label>${message(code: 'profile.isRemindByEmail', default:'Remind by E-Mail?')}</label>
-                    <g:set var="US_IS_REMIND_BY_EMAIL" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RefdataValue.getByValueAndCategory('Yes','YN'))}" />
+                    <g:set var="US_IS_REMIND_BY_EMAIL" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RefdataValue.getByValueAndCategory('No','YN'))}" />
                     <semui:xEditableRefData owner="${US_IS_REMIND_BY_EMAIL}" field="rdValue" config="${US_IS_REMIND_BY_EMAIL.key.rdc}" />
                 </div>
 
