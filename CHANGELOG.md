@@ -1,7 +1,13 @@
 
 0.11
 
-       RC
+- added functionality for grouping and management of custom properties
+- added new subscription properties
+- merged license: open access and license: archive into license properties 
+- reworked some list views, added count of total items
+- reworked filter layouts
+- fixed property filter for date type
+- fixed deletion of tasks
 
 0.10.8
 
