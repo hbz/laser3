@@ -37,7 +37,7 @@
             <!-- 1-1 -->
             <div class="field">
                 <label>${message(code: 'default.search.text', default: 'Search text')}
-                    <span data-position="right center" data-variation="tiny" data-tooltip="default.search.tooltip.subscription">
+                    <span data-position="right center" data-variation="tiny" data-tooltip="${message(code:'default.search.tooltip.subscription')}">
                         <i class="question circle icon"></i>
                     </span>
                 </label>
