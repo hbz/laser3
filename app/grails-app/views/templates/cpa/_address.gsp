@@ -47,7 +47,11 @@
             <g:if test="${editable && tmplShowDeleteButton}">
                 <div class="ui mini icon buttons">
                     <g:set var="oid" value="${address.class.name}:${address.id}" />
-                    <g:link class="ui negative button js-open-confirm-modal" data-confirm-term="diese Kontaktdresse" controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: oid]"  >
+                    <g:link class="ui negative button js-open-confirm-modal"
+                            data-confirm-term-what="address"
+                            data-confirm-term-where="addressbook"
+                            data-confirm-term-how="delete"
+                            controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: oid]"  >
                         <i class="trash alternate icon"></i>
                     </g:link>
                 </div>

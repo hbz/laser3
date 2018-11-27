@@ -9,9 +9,12 @@
                 <g:if test="${type.id in availableOrgRoleTypes.collect{ it.id }}">
                     <div class="content la-space-right">
                         <div class="ui mini icon buttons">
-                            <g:link class="ui negative button js-open-confirm-modal" data-confirm-term="diesen Organisationstyp"
+                            <g:link class="ui negative button js-open-confirm-modal"
+                                    data-confirm-term-what="organisationtype"
+                                    data-confirm-term-where="organisation"
+                                    data-confirm-term-how="unlink"
                                     controller="organisations" action="deleteOrgRoleType" params="[org: org.id, removeOrgRoleType: type.id]">
-                                <i class="trash alternate icon"></i>
+                                <i class="chain broken icon"></i>
                             </g:link>
                         </div>
                     </div>

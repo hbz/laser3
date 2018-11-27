@@ -157,7 +157,11 @@ ${personInstance}
                                                 <g:if test="${editable}">
                                                     <div class="ui mini icon buttons">
                                                         <g:set var="oid" value="${link.class.name}:${link.id}" />
-                                                        <g:link class="ui negative button" controller="person" action="deletePersonRole" id="${personInstance.id}" params="[oid: oid]">
+                                                        <g:link class="ui negative button"
+                                                            data-confirm-term-what="task"
+                                                            data-confirm-term-where="system"
+                                                            data-confirm-term-how="delete"
+                                                            controller="person" action="deletePersonRole"  params="[oid: oid]">
                                                             <i class="trash alternate icon"></i>
                                                         </g:link>
                                                     </div>

@@ -140,11 +140,89 @@ r2d2 = {
         // confirmation modal
         $(".js-open-confirm-modal").click(function(event){
             var dataAttr = this.getAttribute("data-confirm-id")? this.getAttribute("data-confirm-id")+'_form':false;
-            var tmpTerm = this.getAttribute("data-confirm-term")? this.getAttribute("data-confirm-term"):"dieses Element";
+            var what = this.getAttribute("data-confirm-term-what")? this.getAttribute("data-confirm-term-what"):"dieses Element";
+            var whatDetail = this.getAttribute("data-confirm-term-what-detail");
+            var where = this.getAttribute("data-confirm-term-where")? this.getAttribute("data-confirm-term-where"):"aus dem System";
+            var how = this.getAttribute("data-confirm-term-how") ? this.getAttribute("data-confirm-term-how"):"delete";
+            var messageHow = how == "delete" ? "löschen" :"aufheben";
             var url = this.getAttribute('href')? this.getAttribute('href'): false;
 
             event.preventDefault();
-            $('#js-confirmation-term').text(tmpTerm);
+            if (how == "unlink"){
+                switch (what) {
+                    case "organisationtype":
+                        messageWhat = "die Verknüpfung des Organisationstyps";
+                        break;
+                    case "contact":
+                        messageWhat = "die Verknüpfung des Kontakts";
+                        break;
+                    default:
+                        messageWhat = "die Verknüpfung des Objektes";
+                }
+                switch (where) {
+                    case "organisation":
+                        messageWhere = "mit der Organisation";
+                        break;
+                    default:
+                        messageWhere = "mit dem System";
+                }
+            }
+            if (how == "delete"){
+                switch (what) {
+                    case "organisationtype":
+                        messageWhat = "den Organisationstyp";
+                        break;
+                    case "task":
+                        messageWhat = "die Aufgabe";
+                        break;
+                    case "person":
+                        messageWhat = "die Person";
+                        break;
+                    case "contactItems":
+                        messageWhat = "die Kontaktdaten";
+                        break;
+                    case "contact":
+                        messageWhat = "den Kontakt";
+                        break;
+                    case "address":
+                        messageWhat = "die Adresse";
+                        break;
+                    default:
+                        messageWhat = "das Objekt";
+                }
+                switch (where) {
+                    case "organisation":
+                        messageWhere = "aus der Organisation";
+                        break;
+                    case "addressbook":
+                        messageWhere = "aus dem Adressbuch";
+                        break;
+                    case "yourOrganisation":
+                        messageWhere = "aus dem Adressbuch";
+                        break;
+                    case "system":
+                        messageWhere = "aus dem System";
+                        break;
+                    default:
+                        messageWhere = "aus dem System";
+                }
+            }
+            $('#js-confirmation-term-what').text(messageWhat);
+            $('#js-confirmation-term-what-detail').text(whatDetail);
+
+            $('#js-confirmation-term-where').text(messageWhere);
+            $('#js-confirmation-term-how').text(messageHow);
+            switch (how) {
+                case "delete":
+                    $('#js-confirmation-button').html('Löschen<i class="trash alternate icon"></i>');
+                    break;
+                case "unlink":
+                    $('#js-confirmation-button').html('Aufheben<i class="chain broken icon"></i>');
+                    break;
+                default:
+                    $('#js-confirmation-button').html('Entfernen<i class="x icon"></i>');
+            }
+
             $('.mini.modal')
                 .modal({
 
