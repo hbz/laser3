@@ -1153,8 +1153,7 @@ from License as l where (
     }
 
     @Deprecated
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(['ROLE_ADMIN'])
     def processAddSubscription() {
 
         def user = User.get(springSecurityService.principal.id)
@@ -2633,7 +2632,10 @@ AND EXISTS (
                 previousSubscription: old_subOID ?: null,
                 type: Subscription.get(old_subOID)?.type ?: null,
                 isPublic: RefdataValue.getByValueAndCategory('No','YN'),
-                owner: params.subscription.copyLicense ? (Subscription.get(old_subOID)?.owner) : null)
+                owner: params.subscription.copyLicense ? (Subscription.get(old_subOID)?.owner) : null,
+                resource: Subscription.get(old_subOID)?.resource ?: null,
+                form: Subscription.get(old_subOID)?.form ?: null
+        )
         log.debug("New Sub: ${new_subscription.startDate}  - ${new_subscription.endDate}")
         def packages_referenced = []
         Date earliest_start_date = null

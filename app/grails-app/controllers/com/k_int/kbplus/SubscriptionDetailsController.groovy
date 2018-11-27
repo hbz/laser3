@@ -817,7 +817,9 @@ class SubscriptionDetailsController {
                                 isSlaved: RefdataValue.getByValueAndCategory('Yes', 'YN'),
                                 isPublic: result.subscriptionInstance.isPublic,
                                 impId: java.util.UUID.randomUUID().toString(),
-                                owner: licenseCopy
+                                owner: licenseCopy,
+                                resource: result.subscriptionInstance.resource ?: null,
+                                form: result.subscriptionInstance.form ?: null
                         )
 
                         if(!cons_sub.save()){
@@ -1808,7 +1810,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                                 isSlaved: subMember.isSlaved,
                                 isPublic: subMember.isPublic,
                                 impId: java.util.UUID.randomUUID().toString(),
-                                owner: newSubConsortia.owner?.id ? subMember.owner?.id : null
+                                owner: newSubConsortia.owner?.id ? subMember.owner?.id : null,
+                                resource: newSubConsortia.resource ?: null,
+                                form: newSubConsortia.form ?: null
                         )
                         newSubscription.save(flush: true)
 
@@ -1994,7 +1998,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                                 isPublic: baseSub.isPublic,
                                 isSlaved: baseSub.isSlaved,
                                 type: baseSub.type,
-                                status: RefdataValue.loc('Subscription Status', [en: 'Intended', de: 'Geplant'])
+                                status: RefdataValue.loc('Subscription Status', [en: 'Intended', de: 'Geplant']),
+                                resource: baseSub.resource ?: null,
+                                form: baseSub.form ?: null
                         )
                         if (!newSub.save(flush: true)) {
                             log.error("Problem saving subscription ${newSub.errors}");
@@ -2218,7 +2224,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                     isPublic: baseSubscription.isPublic,
                     isSlaved: baseSubscription.isSlaved,
                     startDate: params.subscription.copyDates ? baseSubscription?.startDate : null,
-                    endDate: params.subscription.copyDates ? baseSubscription?.endDate : null
+                    endDate: params.subscription.copyDates ? baseSubscription?.endDate : null,
+                    resource: baseSubscription.resource ?: null,
+                    form: baseSubscription.form ?: null,
             )
 
 
