@@ -307,7 +307,7 @@ from License as l where (
         //log.debug("query = ${base_qry}");
         //log.debug("params = ${qry_params}");
 
-        result.licenseCount = License.executeQuery("select count(l) ${base_qry}", qry_params)[0];
+        result.licenseCount = License.executeQuery("select l.id ${base_qry}", qry_params).size()
         result.licenses = License.executeQuery("select l ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
         def filename = "${result.institution.name}_licenses"
         withFormat {
@@ -452,7 +452,7 @@ from License as l where (
             query += " order by sortableReference asc"
         }
 
-        result.numLicenses = License.executeQuery("select count(l) ${query}", qparams)[0]
+        result.numLicenses = License.executeQuery("select l.id ${query}", qparams).size()
         result.licenses = License.executeQuery("select l ${query}", qparams,[max: result.max, offset: result.offset])
 
         //We do the following to remove any licenses the user does not have access rights
@@ -524,11 +524,11 @@ from License as l where (
             (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, fsq2.query, 'o', [:])
             def tmpQueryParams2 = fsq2.queryParams << tmpQueryParams
             result.orgList      = Org.findAll(tmpQuery, tmpQueryParams2, params)
-            result.orgListTotal = Org.executeQuery("select count (o) ${tmpQuery}", tmpQueryParams2)[0]
+            result.orgListTotal = Org.executeQuery("select o.id ${tmpQuery}", tmpQueryParams2).size()
 
         } else {
             result.orgList      = Org.findAll(fsq2.query, fsq2.queryParams, params)
-            result.orgListTotal = Org.executeQuery("select count (o) ${fsq2.query}", fsq2.queryParams)[0]
+            result.orgListTotal = Org.executeQuery("select o.id ${fsq2.query}", fsq2.queryParams).size()
         }
         result
     }
@@ -570,7 +570,8 @@ from License as l where (
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
-        result.num_sub_rows = Subscription.executeQuery("select count(s) " + tmpQ[0], tmpQ[1])[0]
+
+        result.num_sub_rows = Subscription.executeQuery("select s.id " + tmpQ[0], tmpQ[1]).size()
         result.subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1], [max: result.max, offset: result.offset]);
 
         result.date_restriction = date_restriction;
@@ -1346,6 +1347,7 @@ from License as l where (
 
             result.titles = sql.rows("SELECT ${queryStr} ${order_by_clause} ${limits_clause} ".toString(),qry_params).collect{ TitleInstance.get(it.tipp_ti_fk)  }
 
+            // TODO postgresql migration
             def queryCnt = "SELECT count(*) from (SELECT ${queryStr}) as ras".toString()
             result.num_ti_rows = sql.firstRow(queryCnt,qry_params)['count(*)']
             result = setFiltersLists(result, date_restriction)
@@ -2892,8 +2894,12 @@ AND EXISTS (
 
         def baseParams = [owner: result.institution, tsCheck: tsCheck, stats: ['Accepted']]
 
-        def baseQuery1 = "select pc.subscription, count(*) as count from PendingChange as pc where pc.owner = :owner and pc.ts >= :tsCheck " +
-                " and pc.subscription is not NULL and pc.subscription.status.value != 'Deleted' and pc.status.value in (:stats) group by pc.subscription"
+        // TODO postgresql migration
+        def baseQuery1 = "select distinct pc.subscription from PendingChange as pc where pc.owner = :owner and pc.ts >= :tsCheck " +
+                " and pc.subscription is not NULL and pc.subscription.status.value != 'Deleted' and pc.status.value in (:stats)"
+
+        //def baseQuery1 = "select pc.subscription, count(*) as count from PendingChange as pc where pc.owner = :owner and pc.ts >= :tsCheck " +
+        //        " and pc.subscription is not NULL and pc.subscription.status.value != 'Deleted' and pc.status.value in (:stats) group by pc.subscription"
 
         def result1 = PendingChange.executeQuery(
                 baseQuery1,
@@ -2902,8 +2908,12 @@ AND EXISTS (
         )
         result.changes.addAll(result1)
 
-        def baseQuery2 = "select pc.license, count(*) as count from PendingChange as pc where pc.owner = :owner and pc.ts >= :tsCheck" +
-                " and pc.license is not NULL and pc.license.status.value != 'Deleted' and pc.status.value in (:stats) group by pc.license"
+        // TODO postgresql migration
+        def baseQuery2 = "select distinct pc.license from PendingChange as pc where pc.owner = :owner and pc.ts >= :tsCheck" +
+                " and pc.license is not NULL and pc.license.status.value != 'Deleted' and pc.status.value in (:stats)"
+
+        //def baseQuery2 = "select pc.license, count(*) as count from PendingChange as pc where pc.owner = :owner and pc.ts >= :tsCheck" +
+        //        " and pc.license is not NULL and pc.license.status.value != 'Deleted' and pc.status.value in (:stats) group by pc.license"
 
         def result2 = PendingChange.executeQuery(
                 baseQuery2,
