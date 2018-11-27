@@ -341,7 +341,7 @@ class OrganisationsController {
 
         result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
-      def tracked_roles = ["ROLE_ADMIN":"KB+ Administrator"]
+      def tracked_roles = ["ROLE_ADMIN":"LAS:eR Administrator"]
 
       if (!orgInstance) {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
