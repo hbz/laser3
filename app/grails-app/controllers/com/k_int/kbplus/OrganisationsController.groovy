@@ -79,6 +79,8 @@ class OrganisationsController {
         params.max  = params.max ?: result.user?.getDefaultPageSizeTMP()
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
+        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+
         def fsq = filterService.getOrgQuery(params)
 
         result.orgList  = Org.findAll(fsq.query, fsq.queryParams, params)
@@ -248,7 +250,7 @@ class OrganisationsController {
         def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
 
         //IF ORG is a Provider
-        if(orgInstance.sector == orgSector || orgRoleType in orgInstance.orgRoleType)
+        if(orgInstance.sector == orgSector || orgRoleType?.id in orgInstance?.getallOrgRoleTypeIds())
         {
             result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_COM_EDITOR,ROLE_ORG_EDITOR')
         }else {

@@ -2664,9 +2664,10 @@ AND EXISTS (
         }
 
         if (!new_subscription.issueEntitlements) {
-            new_subscription.issueEntitlements = new java.util.TreeSet()
+           // new_subscription.issueEntitlements = new java.util.TreeSet()
         }
 
+        if(ent_count > -1){
         for (int i = 0; i <= ent_count; i++) {
             def entitlement = params.entitlements."${i}";
             log.debug("process entitlement[${i}]: ${entitlement} - TIPP id is ${entitlement.tipp_id}");
@@ -2746,6 +2747,7 @@ AND EXISTS (
             } else {
                 log.debug("Unable to locate tipp with id ${entitlement.tipp_id}");
             }
+        }
         }
         log.debug("done entitlements...");
 
