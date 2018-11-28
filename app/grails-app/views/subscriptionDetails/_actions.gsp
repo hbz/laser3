@@ -52,12 +52,14 @@
 
         <g:if test="${showConsortiaFunctions}">
             <g:if test="${actionName == 'show'}">
-                <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
+                <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR")}">
                     <div class="divider"></div>
                     <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalsgruppen anzeigen" />
                 </g:if>
-
-                <semui:actionsDropdownItem id="audit_config_opener" message="property.audit.menu"/>
+                <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
+                    <div class="divider"></div>
+                    <semui:actionsDropdownItem id="audit_config_opener" message="property.audit.menu"/>
+                </g:if>
             </g:if>
         </g:if>
 
