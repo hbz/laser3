@@ -497,7 +497,6 @@ from License as l where (
         """, [subOrg: contextService.getOrg(), roleSub: role_sub, roleSubCons: role_sub_cons, roleSubConsortia: role_sub_consortia])
 
         def orgListTotal = []
-
         // new
         def providers = OrgRole.findAll("""
                 from OrgRole where sub in (:subscriptions) and (roleType = :provider or roleType = :agency)
@@ -512,12 +511,10 @@ from License as l where (
                 orgListTotal << p.org
             }
         }
-
 //        result.user = User.get(springSecurityService.principal.id)
         params.max        = params.max ?: result.user?.getDefaultPageSizeTMP()
 
         def fsq2  = filterService.getOrgQuery([constraint_orgIds: orgListTotal.collect{ it2 -> it2.id }] << params)
-
         if (params.filterPropDef) {
             def tmpQuery
             def tmpQueryParams
@@ -1227,6 +1224,9 @@ from License as l where (
         // Set Date Restriction
         def date_restriction = null;
 
+        // TODO postgresql migration
+
+        /*
         def sdf = new DateUtil().getSimpleDateFormat_NoTime()
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -1239,7 +1239,7 @@ from License as l where (
             date_restriction = sdf.parse(params.validOn)
             log.debug("Getting titles as of ${date_restriction} (given)")
         }
-        
+        */
         // Set is_inst_admin
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
 
@@ -1274,8 +1274,8 @@ from License as l where (
                 max:result.max,
                 offset:result.offset,
                 institution: result.institution.id,
-                del_sub:del_sub.id,
-                del_ie:del_ie.id,
+                del_sub: del_sub.id,
+                del_ie: del_ie.id,
                 role_sub: role_sub.id,
                 role_sub_cons: role_sub_cons.id,
                 role_cons: role_sub_consortia.id]
@@ -1290,8 +1290,8 @@ from License as l where (
         }
         sub_qry += "WHERE ie.ie_tipp_fk=tipp.tipp_id and tipp.tipp_ti_fk=ti2.ti_id and ( orole.or_roletype_fk = :role_sub or orole.or_roletype_fk = :role_sub_cons or orole.or_roletype_fk = :role_cons ) "
         sub_qry += "AND orole.or_org_fk = :institution "
-        sub_qry += "AND (sub.sub_status_rv_fk is null or sub.sub_status_rv_fk <> :del_sub) "
-        sub_qry += "AND (ie.ie_status_rv_fk is null or ie.ie_status_rv_fk <> :del_ie ) "
+        sub_qry += "AND (sub.sub_status_rv_fk is null or sub.sub_status_rv_fk != :del_sub) "
+        sub_qry += "AND (ie.ie_status_rv_fk is null or ie.ie_status_rv_fk != :del_ie ) "
 
         if (date_restriction) {
             sub_qry += " AND sub.sub_start_date <= :date_restriction AND sub.sub_end_date >= :date_restriction "
@@ -1341,15 +1341,17 @@ from License as l where (
 
         def sql = new Sql(dataSource)
 
-        def queryStr = "tipp.tipp_ti_fk, count(ie.ie_id) ${sub_qry} group by tipp.tipp_ti_fk ${having_clause} ".toString()
+        def queryStr = "tipp.tipp_ti_fk, count(ie.ie_id) ${sub_qry} group by ti.sort_title, tipp.tipp_ti_fk ${having_clause} ".toString()
+
+        log.debug(" SELECT ${queryStr} ${order_by_clause} ${limits_clause} ")
+
         //If html return Titles and count
         if (isHtmlOutput) {
 
             result.titles = sql.rows("SELECT ${queryStr} ${order_by_clause} ${limits_clause} ".toString(),qry_params).collect{ TitleInstance.get(it.tipp_ti_fk)  }
 
-            // TODO postgresql migration
-            def queryCnt = "SELECT count(*) from (SELECT ${queryStr}) as ras".toString()
-            result.num_ti_rows = sql.firstRow(queryCnt,qry_params)['count(*)']
+            def queryCnt = "SELECT count(*) as count from (SELECT ${queryStr}) as ras".toString()
+            result.num_ti_rows = sql.firstRow(queryCnt,qry_params)['count']
             result = setFiltersLists(result, date_restriction)
         }else{
             //Else return IEs
