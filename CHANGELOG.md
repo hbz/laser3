@@ -1,4 +1,8 @@
 
+0.10.9
+
+- bugfix: visible private contacts
+
 0.10.8
 
 - hotfix: gorm failed to lazily initialize a collection
