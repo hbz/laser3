@@ -2,7 +2,7 @@
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_xxx"); --}%
 
-<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition" %>
+<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; java.net.URL" %>
 <laser:serviceInjection />
 
 <!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->
@@ -65,6 +65,14 @@
                         </g:elseif>
                         <g:elseif test="${prop.type.type == RefdataValue.toString()}">
                             <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}" />
+                        </g:elseif>
+                        <g:elseif test="${prop.type.type == URL.toString()}">
+                            <semui:xEditableRefData owner="${prop}" type="text" field="urlValue" overwriteEditable="${overwriteEditable}" />
+                            <span data-position="top right" data-tooltip="Diese URL aufrufen ..">
+                                <a href="${contact?.content}" target="_blank" class="ui mini icon blue button">
+                                    <i class="share square icon"></i>
+                                </a>
+                            </span>
                         </g:elseif>
                     </td>
                     <td>

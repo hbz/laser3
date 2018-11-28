@@ -96,15 +96,17 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
                              "Text":    String.toString(), 
                              "Refdata": RefdataValue.toString(), 
                              "Decimal": BigDecimal.toString(),
-                             "Date":    Date.toString()]
+                             "Date":    Date.toString(),
+                             "Url":     URL.toString()]
 
     @Transient
     static def validTypes2 = [
-            'class java.lang.Integer'     : ['de': 'Zahl', 'en': 'Number'],
-            'class java.lang.String'      : ['de': 'Text', 'en': 'Text'],
-            'class com.k_int.kbplus.RefdataValue'   : ['de': 'Referenzwert', 'en': 'Refdata'],
-            'class java.math.BigDecimal'  : ['de': 'Dezimalzahl', 'en': 'Decimal'],
-            'class java.util.Date'        : ['de': 'Datum', 'en': 'Date']
+            'class java.lang.Integer'             : ['de': 'Zahl', 'en': 'Number'],
+            'class java.lang.String'              : ['de': 'Text', 'en': 'Text'],
+            'class com.k_int.kbplus.RefdataValue' : ['de': 'Referenzwert', 'en': 'Refdata'],
+            'class java.math.BigDecimal'          : ['de': 'Dezimalzahl', 'en': 'Decimal'],
+            'class java.util.Date'                : ['de': 'Datum', 'en': 'Date'],
+            'class java.net.URL'                  : ['de': 'Url', 'en': 'Url']
     ]
 
     static hasMany = [
