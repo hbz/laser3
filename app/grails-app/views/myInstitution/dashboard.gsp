@@ -105,6 +105,9 @@
             <g:link class="ui button" controller="myInstitution" action="cronjobtest" >
                 Dashboardtabelle in DB updaten
             </g:link>
+            <g:link class="ui button" controller="myInstitution" action="sendAllEmailsTest" >
+                Alle Emails für Dashboardtabelleeinträge senden
+            </g:link>
             <div>
                 <g:render template="/user/dueDatesView"
                           model="[user: contextService.user,

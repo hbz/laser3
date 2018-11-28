@@ -68,7 +68,11 @@ class MyInstitutionController {
     def cronjobtest(){
         dashboardDueDatesService.updateDashboardTableInDatabase(true)
         redirect controller: 'myInstitution', action: 'dashboard'
+    }
 
+    def sendAllEmailsTest() {
+        dashboardDueDatesService.sendEmailsForDueDatesOfAllUsers()
+        redirect controller: 'myInstitution', action: 'dashboard'
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
@@ -2847,9 +2851,7 @@ AND EXISTS (
 
         def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: 10, sort: 'dateCreated', order: 'desc'])
-        result.dueDates = DashboardDueDate.executeQuery("select distinct (d) from DashboardDueDate as d where responsibleUser = ? and responsibleOrg = ? order by date, oid asc", [contextService.user, contextService.org])
-        //old nur zum Vergleich
-//        result.dueObjects = queryService.getDueObjects(contextService.getUser().getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14).value)
+        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org)
         result
     }
 
