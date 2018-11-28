@@ -20,7 +20,7 @@
                     <label>Kategorie</label>
                     <select name="prop_descr" id="prop_descr_selector" class="ui dropdown">
                         <g:each in="${PropertyDefinition.AVAILABLE_GROUPS_DESCR}" var="pdDescr">
-                            <%-- TODO: REFACTORING --%>
+                            <%-- TODO: REFACTORING: x.class.name with pd.desc --%>
                             <g:if test="${pdDescr == PropertyDefinition.LIC_PROP && pdGroup?.ownerType == License.class.name}">
                                 <option selected="selected" value="${pdDescr}"><g:message code="propertyDefinition.${pdDescr}.label" default="${pdDescr}"/></option>
                             </g:if>
@@ -33,7 +33,7 @@
                             <g:else>
                                 <option value="${pdDescr}"><g:message code="propertyDefinition.${pdDescr}.label" default="${pdDescr}"/></option>
                             </g:else>
-                            <%-- TODO: REFACTORING --%>
+                            <%-- TODO: REFACTORING: x.class.name with pd.desc --%>
                         </g:each>
                     </select>
                 </div>

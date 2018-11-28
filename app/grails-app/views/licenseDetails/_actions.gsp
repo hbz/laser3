@@ -18,12 +18,13 @@
 
         <semui:actionsDropdownItem controller="licenseDetails" action="copyLicense" params="${[id:license?.id]}" message="myinst.copyLicense" />
 
-        <g:if test="${showConsortiaFunctions}">
-            <g:if test="${actionName == 'show'}">
-                <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR")}">
-                    <div class="divider"></div>
-                    <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalsgruppen anzeigen" />
-                </g:if>
+        <g:if test="${actionName == 'show'}">
+            <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR")}">
+                <div class="divider"></div>
+                <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalsgruppen anzeigen" />
+            </g:if>
+
+            <g:if test="${showConsortiaFunctions}">
                 <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
                     <div class="divider"></div>
                     <semui:actionsDropdownItem id="audit_config_opener" message="property.audit.menu"/>

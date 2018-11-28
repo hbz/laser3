@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.properties.PropertyDefinition"%>
+<%@ page import="com.k_int.properties.PropertyDefinition;com.k_int.kbplus.*"%>
 
 <!doctype html>
 <html>
@@ -53,7 +53,17 @@
                         ${pdGroup.getPropertyDefinitions().size()}
                     </td>
                     <td>
-                        ${pdGroup.ownerType}
+                        <%-- TODO: REFACTORING: x.class.name with pd.desc --%>
+                        <g:if test="${pdGroup.ownerType == License.class.name}">
+                            <g:message code="propertyDefinition.License Property.label" default="${pdDescr}"/>
+                        </g:if>
+                        <g:elseif test="${pdGroup.ownerType == Org.class.name}">
+                            <g:message code="propertyDefinition.Organisation Property.label" default="${pdDescr}"/>
+                        </g:elseif>
+                        <g:elseif test="${pdGroup.ownerType == Subscription.class.name}">
+                            <g:message code="propertyDefinition.Subscription Property.label" default="${pdDescr}"/>
+                        </g:elseif>
+                        <%-- TODO: REFACTORING x.class.name with pd.desc --%>
                     </td>
                     <td>
                         <semui:xEditableRefData owner="${pdGroup}" field="visible" config="YN"/>

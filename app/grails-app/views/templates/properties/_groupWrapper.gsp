@@ -6,7 +6,7 @@
 <div class="ui card la-dl-no-table">
     <div class="content">
         <h5 class="ui header">
-            Merkmale: ${propDefGroup.name} (${propDefGroup.id})
+            Merkmale: ${propDefGroup.name}
 
             <g:if test="${propDefGroup.ownerType in [License.class.name, Subscription.class.name]}">
                 <g:if test="${! propDefGroupBinding || propDefGroupBinding?.visibleForConsortiaMembers?.value == 'Yes'}">
