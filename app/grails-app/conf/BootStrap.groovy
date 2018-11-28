@@ -1075,7 +1075,9 @@ class BootStrap {
         RefdataValue.loc('Subscription Form',      [key: 'purchaseOngoing', en: 'Ongoing Purchase', de: 'Kauf laufend'], BOOTSTRAP)
         RefdataValue.loc('Subscription Form',      [key: 'obligation', en: 'Obligation', de: 'Pflichtlizenz'], BOOTSTRAP)
 
+        RefdataValue.loc('Subscription Resource', [key: 'avMedia', en: 'AV-Media', de: 'AV-Medien'], BOOTSTRAP)
         RefdataValue.loc('Subscription Resource', [key: 'database', en: 'Database', de: 'Datenbank'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Resource', [key: 'econferenceProceedings', en: 'E-Conference Proceedings', de: 'E-Conference Proceedings'], BOOTSTRAP)
         RefdataValue.loc('Subscription Resource', [key: 'ejournalSingle', en: 'E-Journal single title', de: 'E-Journal Einzeltitel'], BOOTSTRAP)
         RefdataValue.loc('Subscription Resource', [key: 'ebookSingle', en: 'E-Book single title', de: 'E-Book Einzeltitel'], BOOTSTRAP)
         RefdataValue.loc('Subscription Resource', [key: 'data', en: 'Data', de: 'Daten'], BOOTSTRAP)
@@ -1089,6 +1091,7 @@ class BootStrap {
         RefdataValue.loc('Subscription Status',      [en: 'Current', de: 'Aktiv'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [en: 'Expired', de: 'Abgelaufen'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Status',      [en: 'Ordered', de: 'Bestellt'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [en: 'Terminated', de: 'Abbestellt'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [en: 'Under Negotiation', de: 'In Verhandlung'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [en: 'Under Consideration', de: 'Entscheidung steht aus'], BOOTSTRAP)
