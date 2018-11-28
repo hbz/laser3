@@ -3,6 +3,7 @@ package com.k_int.kbplus.abstract_domain
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
 import de.laser.helper.DateUtil
+import org.codehaus.groovy.grails.validation.routines.UrlValidator
 import org.codehaus.groovy.grails.web.util.StreamCharBuffer
 
 import javax.persistence.Transient
@@ -65,7 +66,7 @@ abstract class AbstractProperty implements Serializable {
         if(dateValue)
             return dateValue.getDateString()
         if(urlValue)
-            return urlValue.getDateString()
+            return urlValue.toString()
     }
 
     def copyInto(AbstractProperty newProp){
@@ -133,7 +134,12 @@ abstract class AbstractProperty implements Serializable {
         }
             //TODO Validator einfügen
         else if (type == URL.toString()) {
-            urlValue = parseValue(value, type)
+//            UrlValidator validaor = new UrlValidator()
+//            if (validaor.isValid(value)) {
+                urlValue = parseValue(value, type)
+//            } else {
+//                throw new Exception("URL is invalid")
+//            }
         }
     }
 }
