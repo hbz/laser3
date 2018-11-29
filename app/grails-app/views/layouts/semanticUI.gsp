@@ -203,8 +203,10 @@
                                 <%-- <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" /> --%>
 
                                 <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
+                            <semui:securedMainNavItem message="menu.institutions.financeImport" />
+                                <%-- this is part one of ticket #730! --%>
+                            <%--<semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />--%>
 
-                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
                             </g:if>
 
                             <sec:ifAnyGranted roles="ROLE_YODA">
