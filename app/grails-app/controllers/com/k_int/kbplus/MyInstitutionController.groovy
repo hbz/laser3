@@ -591,7 +591,7 @@ from License as l where (
         }
 
         if ( params.exportXLS=='yes' ) {
-            def subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params);
+            def subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]);
             exportcurrentSubscription(subscriptions)
             return
         }
@@ -3193,8 +3193,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 }
             } else if (params.cmd == "deleteBudgetCode") {
                 def bc = genericOIDService.resolveOID(params.bc)
-
-                if (bc && bc.owner == result.institution) {
+                if (bc && bc.owner.id == result.institution.id) {
                     bc.delete()
                 }
             }
@@ -3645,7 +3644,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     private def exportOrg(orgs, message, addHigherEducationTitles) {
         try {
             def titles = [
-                    'Name', 'Kurzname', 'Sortiername']
+                    'Name', g.message(code: 'org.shortname.label'), g.message(code: 'org.sortname.label')]
 
             def orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
             def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
@@ -3653,11 +3652,11 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
             if(addHigherEducationTitles)
             {
-                titles.add('Bibliothekstyp')
-                titles.add('Verbundszugehörigkeit')
-                titles.add('Trägerschaft')
-                titles.add('Bundesland')
-                titles.add('Land')
+                titles.add(g.message(code: 'org.libraryType.label'))
+                titles.add(g.message(code: 'org.libraryNetwork.label'))
+                titles.add(g.message(code: 'org.funderType.label'))
+                titles.add(g.message(code: 'org.federalState.label'))
+                titles.add(g.message(code: 'org.country.label'))
             }
 
             def propList =
