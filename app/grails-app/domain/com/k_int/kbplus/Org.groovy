@@ -352,7 +352,7 @@ class Org extends AbstractBaseDomain {
                            name:name,
                            sector:sector,
                            ipRange:iprange,
-                           impId: imp_uuid?.size() > 0 ? imp_uuid : java.util.UUID.randomUUID().toString()
+                           impId: imp_uuid?.length() > 0 ? imp_uuid : java.util.UUID.randomUUID().toString()
           ).save()
           if(orgRoleTyp) {
               result.addToOrgRoleType(orgRoleTyp).save()

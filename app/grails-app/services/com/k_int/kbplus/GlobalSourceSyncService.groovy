@@ -36,7 +36,7 @@ class GlobalSourceSyncService {
       return
     }
 
-    if (newtitle.impId) {
+    if (Holders.config.globalDataSync.replaceLocalImpIds.TitleInstance && newtitle.impId) {
       title_instance.impId = newtitle.impId
     }
 
@@ -148,6 +148,7 @@ class GlobalSourceSyncService {
       def publisher = [:]
       publisher.name = pub.name.text()
       publisher.status = pub.status.text()
+      publisher.uuid = pub.'@uuid'?.text()?.length() > 0 ?: null
 //       if ( pub.identifiers)
 //         publisher.identifiers = []
 //
@@ -244,6 +245,10 @@ class GlobalSourceSyncService {
           }
           else {
             log.warn("Record tracker ${grt.id} for ${newpkg.name} pointed to a record with another import uuid: ${grt.localOid}!")
+
+            if(Holders.config.globalDataSync.replaceLocalImpIds.Package) {
+              pkg.impId = newpkg.impId
+            }
           }
         }
 
@@ -426,7 +431,7 @@ class GlobalSourceSyncService {
           tippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Retired', de: 'im Ruhestand'])
         }
 
-        if(tipp.tippUuid && db_tipp.impId != tipp.tippUuid) {
+        if(Holders.config.globalDataSync.replaceLocalImpIds.TIPP && tipp.tippUuid && db_tipp.impId != tipp.tippUuid) {
           db_tipp.impId = tipp.tippUuid
           db_tipp.save(flush:true, failOnError:true)
         }
@@ -1157,7 +1162,7 @@ class GlobalSourceSyncService {
 
                   def publisher_identifiers = []
                   def orgSector = RefdataValue.loc('OrgSector', [en: 'Publisher', de: 'Veröffentlicher']);
-                  def publisher = Org.lookupOrCreate(pub.name, orgSector, null, publisher_identifiers, null)
+                  def publisher = Org.lookupOrCreate(pub.name, orgSector, null, publisher_identifiers, null, pub.uuid)
                   def pub_role = RefdataValue.loc('Organisational Role', [en: 'Publisher', de: 'Veröffentlicher']);
                   def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                   def start_date
