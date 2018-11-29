@@ -24,7 +24,9 @@
     <g:render template="actions"/>
 </semui:controlButtons>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'menu.institutions.manage_consortia')}</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'menu.institutions.manage_consortia')}
+<semui:totalNumber total="${consortiaMembersCount}"/>
+</h1>
 
 <semui:messages data="${flash}"/>
 
