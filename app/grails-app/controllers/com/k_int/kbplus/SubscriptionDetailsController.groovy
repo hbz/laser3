@@ -714,17 +714,17 @@ class SubscriptionDetailsController {
 
         if ( params.exportXLS=='yes' ) {
 
-            def orgs = [:]
+            def orgs = []
 
 
-           [validSubChilds].each { subChild ->
+           validSubChilds.each { subChild ->
 
                subChild.getAllSubscribers().each { subscr ->
-                   orgs << subscr
+                   orgs.add(subscr)
                }
            }
 
-            def message = g.message(code: 'menu.institutions.all_orgs')
+            def message = g.message(code: 'subscriptionDetails.members.members')
 
             exportOrg(orgs, message, true)
             return
@@ -2448,7 +2448,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
     private def exportOrg(orgs, message, addHigherEducationTitles) {
         try {
             def titles = [
-                    'Name', 'Kurzname', 'Sortiername']
+                    'Name', g.message(code: 'org.shortname.label'), g.message(code: 'org.sortname.label')]
 
             def orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
             def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
@@ -2456,12 +2456,16 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
 
             if(addHigherEducationTitles)
             {
-                titles.add('Bibliothekstyp')
-                titles.add('Verbundszugehörigkeit')
-                titles.add('Trägerschaft')
-                titles.add('Bundesland')
-                titles.add('Land')
+                titles.add(g.message(code: 'org.libraryType.label'))
+                titles.add(g.message(code: 'org.libraryNetwork.label'))
+                titles.add(g.message(code: 'org.funderType.label'))
+                titles.add(g.message(code: 'org.federalState.label'))
+                titles.add(g.message(code: 'org.country.label'))
             }
+
+            titles.add(g.message(code: 'subscription.details.startDate'))
+            titles.add(g.message(code: 'subscription.details.endDate'))
+            titles.add(g.message(code: 'subscription.details.status'))
 
             def propList =
                     PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
@@ -2545,6 +2549,16 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                     cell = row.createCell(cellnum++);
                     cell.setCellValue(new HSSFRichTextString(org.country?.getI10n('value') ?: ' '));
                 }
+
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(new HSSFRichTextString(org.startDate ?: ' '));
+
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(new HSSFRichTextString(org.endDate ?: ' '));
+
+                cell = row.createCell(cellnum++);
+                cell.setCellValue(new HSSFRichTextString(org.status?.getI10n('value') ?: ' '));
+
 
                 propList.each { pd ->
                     def value = ''
