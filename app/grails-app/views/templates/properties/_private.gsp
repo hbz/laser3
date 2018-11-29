@@ -67,14 +67,13 @@
                             <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}" />
                         </g:elseif>
                         <g:elseif test="${prop.type.type == URL.toString()}">
-                            %{--TODO: Globus einfügen--}%
-                            <semui:xEditable owner="${prop}" type="text" field="urlValue" overwriteEditable="${overwriteEditable}" />
+                            <semui:xEditable owner="${prop}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" />
                             %{--Todo beim drüber hovern soll der link-Button erscheinen--}%
-                            %{--<span data-position="top right" data-tooltip="Diese URL aufrufen ..">--}%
-                                %{--<a href="${prop.value}" target="_blank" class="ui mini icon blue button">--}%
-                                    %{--<i class="share square icon"></i>--}%
-                                %{--</a>--}%
-                            %{--</span>--}%
+                            <span data-position="top right" data-tooltip="Diese URL aufrufen ..">
+                                <a href="${prop.value}" target="_blank" class="ui mini icon blue button">
+                                    <i class="share square icon"></i>
+                                </a>
+                            </span>
                         </g:elseif>
                     </td>
                     <td>
