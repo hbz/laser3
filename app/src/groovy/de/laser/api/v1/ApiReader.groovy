@@ -314,7 +314,7 @@ class ApiReader {
 
         def costItems = CostItem.findAllByOwner(context)
         costItems.each {
-            result << ApiReader.exportCostItem(it, context).globalUID
+            result << ApiReader.exportCostItem(it, context)?.globalUID
         }
 
         return ApiReaderHelper.cleanUp(result, true, true)
