@@ -21,7 +21,7 @@
 <g:set var="allPropDefGroups" value="${orgInstance.getCaculatedPropDefGroups()}" />
 
 <g:each in="${allPropDefGroups.global}" var="propDefGroup">
-    <g:if test="${propDefGroup.visible?.value?.equalsIgnoreCase('Yes')}">
+    <g:if test="${propDefGroup.visible?.value == 'Yes'}">
 
         <g:render template="/templates/properties/groupWrapper" model="${[
                 propDefGroup: propDefGroup,

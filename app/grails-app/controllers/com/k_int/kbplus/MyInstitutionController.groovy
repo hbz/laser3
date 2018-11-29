@@ -591,7 +591,7 @@ from License as l where (
         }
 
         if ( params.exportXLS=='yes' ) {
-            def subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params);
+            def subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]);
             exportcurrentSubscription(subscriptions)
             return
         }
@@ -3193,8 +3193,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 }
             } else if (params.cmd == "deleteBudgetCode") {
                 def bc = genericOIDService.resolveOID(params.bc)
-
-                if (bc && bc.owner == result.institution) {
+                if (bc && bc.owner.id == result.institution.id) {
                     bc.delete()
                 }
             }
