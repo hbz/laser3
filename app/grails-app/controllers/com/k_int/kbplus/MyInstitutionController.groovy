@@ -591,7 +591,7 @@ from License as l where (
         }
 
         if ( params.exportXLS=='yes' ) {
-            def subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params);
+            def subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]);
             exportcurrentSubscription(subscriptions)
             return
         }
