@@ -63,7 +63,11 @@ class Platform extends AbstractBaseDomain {
     def platform = null;
     def platform_candidates = null;
 
-    if ( params.name && (params.name.trim().length() > 0)  ) {
+    if ( params.impId && params.impId.trim().length() > 0) {
+      platform = Platform.findByImpId(params.impId)
+    }
+
+    if ( !platform && params.name && (params.name.trim().length() > 0)  ) {
 
       String norm_name = params.name.trim().toLowerCase();
 
@@ -85,7 +89,7 @@ class Platform extends AbstractBaseDomain {
       }
 
       if ( !platform && !platform_candidates) {
-        platform = new Platform(impId:java.util.UUID.randomUUID().toString(),
+        platform = new Platform(impId:params.impId?.length() > 0 ? params.impId : java.util.UUID.randomUUID().toString(),
                                 name:params.name,
                                 normname:norm_name,
                                 provenance:params.provenance,

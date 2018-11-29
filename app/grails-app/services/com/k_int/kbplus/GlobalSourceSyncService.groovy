@@ -1,6 +1,6 @@
 package com.k_int.kbplus
 
-import com.k_int.goai.OaiClient
+import de.laser.oai.OaiClient
 import com.k_int.kbplus.auth.User
 import de.laser.oai.OaiClientLaser
 
@@ -34,6 +34,10 @@ class GlobalSourceSyncService {
     if ( title_instance == null ) {
       log.debug("Failed to resolve ${grt.localOid} - Exiting");
       return
+    }
+
+    if (newtitle.impId) {
+      title_instance.impId = newtitle.impId
     }
 
     title_instance.status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Deleted', de: 'Gelöscht'])
@@ -81,12 +85,12 @@ class GlobalSourceSyncService {
       def toset = []
 
       historyEvent.from.each { he ->
-        def participant = TitleInstance.lookupOrCreate(he.ids,he.title)
+        def participant = TitleInstance.lookupOrCreate(he.ids,he.title,he.uuid)
         fromset.add(participant)
       }
 
       historyEvent.to.each { he ->
-        def participant = TitleInstance.lookupOrCreate(he.ids,he.title)
+        def participant = TitleInstance.lookupOrCreate(he.ids,he.title,he.uuid)
         toset.add(participant)
       }
 
@@ -130,9 +134,15 @@ class GlobalSourceSyncService {
     result.parsed_rec.history = []
     result.parsed_rec.publishers = []
     result.parsed_rec.status = md.gokb.title.status.text()
+    result.parsed_rec.medium = md.gokb.title.medium.text()
+    result.parsed_rec.type = md.gokb.title.type?.text() ?: null
 
     result.title = md.gokb.title.name.text()
     result.parsed_rec.title = md.gokb.title.name.text()
+
+    if (md.gokb.title.'@uuid'?.text()) {
+      result.parsed_rec.impId = md.gokb.title.'@uuid'.text()
+    }
 
     md.gokb.title.publishers?.publisher.each{ pub ->
       def publisher = [:]
@@ -171,6 +181,7 @@ class GlobalSourceSyncService {
         def new_history_statement = [:]
         new_history_statement.title=hef.title.text()
         new_history_statement.ids = []
+        new_history_statement.uuid = hef.'@uuid'?.text() ?: null
         hef.identifiers.identifier.each { i ->
           new_history_statement.ids.add([namespace:i.'@namespace'.text(), value:i.'@value'.text()])
         }
@@ -182,6 +193,7 @@ class GlobalSourceSyncService {
         def new_history_statement = [:]
         new_history_statement.title=het.title.text()
         new_history_statement.ids = []
+        new_history_statement.uuid = hef.'@uuid'?.text() ?: null
         het.identifiers.identifier.each { i ->
           new_history_statement.ids.add([namespace:i.'@namespace'.text(), value:i.'@value'.text()])
         }
@@ -226,6 +238,15 @@ class GlobalSourceSyncService {
       }
 
       if( pkg ) {
+        if (newpkg.impId && newpkg.impId != pkg.impId) {
+          if(pkg.impId.startsWith('org.gokb.cred')) {
+            pkg.impId = newpkg.impId
+          }
+          else {
+            log.warn("Record tracker ${grt.id} for ${newpkg.name} pointed to a record with another import uuid: ${grt.localOid}!")
+          }
+        }
+
         newpkg.identifiers.each {
           log.debug("Checking package has ${it.namespace}:${it.value}");
           pkg.checkAndAddMissingIdentifier(it.namespace, it.value);
@@ -251,7 +272,7 @@ class GlobalSourceSyncService {
       pkg = new Package(
               identifier: grt.identifier,
               name: grt.name,
-              impId: grt.owner.identifier,
+              impId: grt.owner.uuid ?: grt.owner.identifier,
               autoAccept: false,
               packageType: null,
               packageStatus: packageStatus,
@@ -294,7 +315,7 @@ class GlobalSourceSyncService {
       println("new tipp: ${tipp}");
       println("identifiers: ${tipp.title.identifiers}");
 
-      def title_instance = TitleInstance.lookupOrCreate(tipp.title.identifiers,tipp.title.name, tipp.title.titleType)
+      def title_instance = TitleInstance.lookupOrCreate(tipp.title.identifiers,tipp.title.name, tipp.title.titleType, tipp.title.impId)
       println("Result of lookup or create for ${tipp.title.name} with identifiers ${tipp.title.identifiers} is ${title_instance}");
       def origin_uri = null
       tipp.title.identifiers.each { i ->
@@ -302,9 +323,9 @@ class GlobalSourceSyncService {
           origin_uri = i.value
         }
       }
-      updatedTitleafterPackageReconcile(grt, origin_uri, title_instance)
+      updatedTitleafterPackageReconcile(grt, origin_uri, title_instance.id)
 
-      def plat_instance = Platform.lookupOrCreatePlatform([name:tipp.platform]);
+      def plat_instance = Platform.lookupOrCreatePlatform([name:tipp.platform, impId: tipp.platformUuid]);
       def tipp_status_str = tipp.status ? tipp.status.capitalize():'Current'
       def tipp_status = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS,tipp_status_str);
 
@@ -314,7 +335,7 @@ class GlobalSourceSyncService {
         new_tipp.platform = plat_instance;
         new_tipp.title = title_instance;
         new_tipp.status = tipp_status;
-        new_tipp.impId = tipp.tippId;
+        new_tipp.impId = tipp.tippUuid ?: tipp.tippId;
 
         // We rely upon there only being 1 coverage statement for now, it seems likely this will need
         // to change in the future.
@@ -352,7 +373,7 @@ class GlobalSourceSyncService {
                 pkg          : [id: ctx.id],
                 platform     : [id: plat_instance.id],
                 title        : [id: title_instance.id],
-                impId        : tipp.tippId,
+                impId        : tipp.tippUuid ?: tipp.tippId,
                 status       : [id: tipp_status.id],
                 startDate    : ((cov.startDate != null) && (cov.startDate.length() > 0)) ? sdf.parse(cov.startDate) : null,
                 startVolume  : cov.startVolume,
@@ -383,18 +404,31 @@ class GlobalSourceSyncService {
       println("updated tipp, ctx = ${ctx.toString()}");
 
       // Find title with ID tipp... in package ctx
-      def title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers,tipp.title.name)
+      def title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers,tipp.title.name,tipp.title.impId)
 
-      def db_tipp = ctx.tipps.find { it.impId == tipp.tippId }
+      def db_tipp = null
+
+      if(tipp.tippUuid) {
+        db_tipp = ctx.tipps.find { it.impId == tipp.tippUuid}
+      }
+
+      if(!db_tipp) {
+        db_tipp = ctx.tipps.find { it.impId == tipp.tippId }
+      }
 
       if ( db_tipp != null) {
 
-        def TippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])
+        def tippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])
 
         if (tipp.status == 'Current') {
-          TippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Current', de: 'Aktuell'])
+          tippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Current', de: 'Aktuell'])
         } else if (tipp.status == 'Retired') {
-          TippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Retired', de: 'im Ruhestand'])
+          tippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Retired', de: 'im Ruhestand'])
+        }
+
+        if(tipp.tippUuid && db_tipp.impId != tipp.tippUuid) {
+          db_tipp.impId = tipp.tippUuid
+          db_tipp.save(flush:true, failOnError:true)
         }
 
         def changetext
@@ -434,7 +468,7 @@ class GlobalSourceSyncService {
                   PendingChange.PROP_PKG,
                   ctx,
                   // pendingChange.message_GS02
-                  "Eine TIPP/Coverage Änderung für den Titel \"${title_of_tipp_to_update.title}\", ${changetext}, Status: ${TippStatus}",
+                  "Eine TIPP/Coverage Änderung für den Titel \"${title_of_tipp_to_update.title}\", ${changetext}, Status: ${tippStatus}",
                   null,
                   [
                           changeTarget: "com.k_int.kbplus.TitleInstancePackagePlatform:${db_tipp.id}",
@@ -453,13 +487,21 @@ class GlobalSourceSyncService {
     def onDeletedTipp = { ctx, tipp, auto_accept ->
 
       // Find title with ID tipp... in package ctx
-      def title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name)
+      def title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name, tipp.title.impId)
 
       def TippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])
+
       if (tipp.status == 'Retired') {
         TippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Retired', de: 'im Ruhestand'])
       }
-      def db_tipp = ctx.tipps.find { it.impId == tipp.tippId }
+
+      def db_tipp = null
+
+      if(tipp.tippUuid) {
+        db_tipp = ctx.tipps.find { it.impId == tipp.tippUuid }
+      }else {
+        db_tipp = ctx.tipps.find { it.impId == tipp.tippId }
+      }
 
       if (db_tipp != null && !(db_tipp.status.equals(TippStatus))) {
 
@@ -491,7 +533,7 @@ class GlobalSourceSyncService {
           ctx.name = value
           def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
           announcement_content = "<p>${messageSource.getMessage('announcement.package.ChangeTitle', null, "Change Package Title on ", locale)}  ${contextObject.getURL() ? "<a href=\"${contextObject.getURL()}\">${ctx.name}</a>" : "${ctx.name}"} ${new Date().toString()}</p>"
-          announcement_content += "<p><ul><li>${messageSource.getMessage("announcement.package.TitleChange", [oldvalue, value] as Object[],"Package Title was change from {0} to {1}.", locale)}</li></ul></p>"
+          announcement_content += "<p><ul><li>${messageSource.getMessage("announcement.package.TitleChange", [oldvalue, value] as Object[],"Package Title was changed from {0} to {1}.", locale)}</li></ul></p>"
           println("updated pkg prop");
           break;
         default:
@@ -580,6 +622,7 @@ class GlobalSourceSyncService {
     result.parsed_rec = [:]
     result.parsed_rec.packageName = md.gokb.package.name.text()
     result.parsed_rec.packageId = md.gokb.package.'@id'.text()
+    result.parsed_rec.impId = md.gokb.package.'@uuid'?.text() ?: null
     result.parsed_rec.packageProvider = md.gokb.package.nominalProvider.text()
     result.parsed_rec.tipps = []
     result.parsed_rec.identifiers = []
@@ -600,23 +643,29 @@ class GlobalSourceSyncService {
     int ctr=0
     md.gokb.package.TIPPs.TIPP.each { tip ->
       log.debug("Processing tipp ${ctr++} from package ${result.parsed_rec.packageId} - ${result.title} (source:${synctask.uri})");
+      def title_simplename = tip.title.mediumByTypClass?.text() ?: (tip.title.type?.text() ?: null)
+
       def newtip = [
               title      : [
                       name       : tip.title.name.text(),
                       identifiers: [],
-                      titleType: tip.title.mediumByTypClass.text()
+                      impId: tip.title.'@uuid'?.text() ?: null,
+                      titleType: title_simplename ?: null
               ],
-              status     : tip.status?.text() ?: 'Current',
-              titleId    : tip.title.'@id'.text(),
-              platform   : tip.platform.name.text(),
-              platformId : tip.platform.'@id'.text(),
-              coverage   : [],
-              url        : tip.url.text(),
-              identifiers: [],
-              tippId     : tip.'@id'.text(),
-              accessStart: tip.access.'@start'.text(),
-              accessEnd  : tip.access.'@end'.text(),
-              medium     : tip.medium.text()
+              status      : tip.status?.text() ?: 'Current',
+              titleId     : tip.title.'@id'.text(),
+              titleUuid   : tip.title.'@uuid'?.text() ?: null,
+              platform    : tip.platform.name.text(),
+              platformId  : tip.platform.'@id'.text(),
+              platformUuid: tip.platform.'@uuid'?.text() ?: null,
+              coverage    : [],
+              url         : tip.url.text(),
+              identifiers : [],
+              tippId      : tip.'@id'.text(),
+              tippUuid    : tip.'@uuid'?.text()?: '',
+              accessStart : tip.access.'@start'.text(),
+              accessEnd   : tip.access.'@end'.text(),
+              medium      : tip.medium.text()
       ];
 
       tip.coverage.each { cov ->
@@ -661,7 +710,16 @@ class GlobalSourceSyncService {
 
     // We need to create a new global record tracker. If there is already a local title for this remote title, link to it,
     // otherwise create a new title and link to it. See if we can locate a title.
-    def title_instance = TitleInstance.lookupOrCreate(newtitle.identifiers,newtitle.title)
+    def title_type = null
+
+    if(newtitle.type) {
+      title_type = newtitle.type
+    }else{
+      title_type = newtitle.medium + "Instance"
+    }
+
+
+    def title_instance = TitleInstance.lookupOrCreate(newtitle.identifiers,newtitle.title, title_type, newtitle.impId)
 
     if ( title_instance != null ) {
 
@@ -789,37 +847,64 @@ class GlobalSourceSyncService {
       oai_client.getChangesSince(date, sync_job.fullPrefix) { rec ->
 
         log.debug("Got OAI Record ${rec.header.identifier} datestamp: ${rec.header.datestamp} job:${sync_job.id} url:${sync_job.uri} cfg:${cfg.name}")
-
-        def qryparams = [sync_job.id, rec.header.identifier.text()]
+        def rec_uuid = rec.header.uuid?.text() ?: null
+        def rec_identifier = rec.header.identifier.text()
+        def qryparams = [sync_job.id, rec_identifier, rec_uuid ?: "0"]
         def record_timestamp = sdf.parse(rec.header.datestamp.text())
-        def existing_record_info = GlobalRecordInfo.executeQuery('select r from GlobalRecordInfo as r where r.source.id = ? and r.identifier = ?', qryparams);
-        if (existing_record_info.size() == 1) {
+        def existing_record_info = null
+
+        def found_record_info = GlobalRecordInfo.executeQuery('select r from GlobalRecordInfo as r where r.source.id = ? and (r.identifier = ? OR (r.uuid IS NOT NULL AND r.uuid = ?))', qryparams);
+
+        if (found_record_info.size() == 1) {
+          existing_record_info = found_record_info[0]
+        }else if (found_record_info.size() > 1) {
+
+          found_record_info.each { fri ->
+            if(rec_uuid) {
+              if (fri.uuid && fri.uuid == rec_uuid){
+                existing_record_info = fri
+              }
+            } else {
+              if (!existing_record_info) {
+                existing_record_info = found_record_info[0]
+              }else {
+                log.warn("Found multiple record infos with identifier ${rec_identifier}!")
+              }
+            }
+          }
+        }
+
+        if (existing_record_info) {
           log.debug("convert xml into json - config is ${cfg} ");
           def parsed_rec = cfg.converter.call(rec.metadata, sync_job)
 
           // Deserialize
-          def bais = new ByteArrayInputStream((byte[]) (existing_record_info[0].record))
+          def bais = new ByteArrayInputStream((byte[]) (existing_record_info.record))
           def ins = new ObjectInputStream(bais);
           def old_rec_info = ins.readObject()
           ins.close()
           def new_record_info = parsed_rec.parsed_rec
 
+          if(!existing_record_info.uuid && rec_uuid) {
+            existing_record_info.uuid = rec_uuid
+          }
+
           // For each tracker we need to update the local object which reflects that remote record
-          existing_record_info[0].trackers.each { tracker ->
+          existing_record_info.trackers.each { tracker ->
             cfg.reconciler.call(tracker, old_rec_info, new_record_info)
           }
 
           log.debug("Calling compliance check, cfg name is ${cfg.name}");
-          existing_record_info[0].kbplusCompliant = cfg.complianceCheck.call(parsed_rec.parsed_rec)
-          log.debug("Result of compliance check: ${existing_record_info[0].kbplusCompliant}");
+          existing_record_info.kbplusCompliant = cfg.complianceCheck.call(parsed_rec.parsed_rec)
+          log.debug("Result of compliance check: ${existing_record_info.kbplusCompliant}");
 
           // Finally, update our local copy of the remote object
           def baos = new ByteArrayOutputStream()
           def out = new ObjectOutputStream(baos)
           out.writeObject(new_record_info)
           out.close()
-          existing_record_info[0].record = baos.toByteArray();
-          existing_record_info[0].desc = "Package ${parsed_rec.title} consisting of ${parsed_rec.parsed_rec.tipps?.size()} titles"
+          existing_record_info.record = baos.toByteArray();
+          existing_record_info.desc = "Package ${parsed_rec.title} consisting of ${parsed_rec.parsed_rec.tipps?.size()} titles"
 
 
           def status = RefdataValue.loc("${cfg.name} Status", [en: 'Deleted', de: 'Gelöscht'])
@@ -830,8 +915,8 @@ class GlobalSourceSyncService {
             status = RefdataValue.loc("${cfg.name} Status", [en: 'Retired', de: 'im Ruhestand'])
           }
 
-          existing_record_info[0].globalRecordInfoStatus = status
-          existing_record_info[0].save()
+          existing_record_info.globalRecordInfoStatus = status
+          existing_record_info.save()
         } else {
           log.debug("First time we have seen this record - converting ${cfg.name}");
           def parsed_rec = cfg.converter.call(rec.metadata, sync_job)
@@ -866,6 +951,7 @@ class GlobalSourceSyncService {
                   ts: record_timestamp,
                   name: parsed_rec.title,
                   identifier: rec.header.identifier.text(),
+                  uuid: rec_uuid,
                   desc: "${parsed_rec.title}",
                   source: sync_job,
                   rectype: sync_job.rectype,
@@ -900,7 +986,10 @@ class GlobalSourceSyncService {
         log.debug("Updating sync job max timestamp");
         sync_job.haveUpTo = new Date(max_timestamp)
         sync_job.save(flush: true);
-        sleep(3000);
+
+        if (rectype == 'Package') {
+          sleep(3000);
+        }
       }
     }
     catch ( Exception e ) {
@@ -1033,7 +1122,7 @@ class GlobalSourceSyncService {
       log.debug("Skip record - not KBPlus compliant");
     } else {
 
-              def title_instance = genericOIDService.resolveOID(local_id)
+              def title_instance = TitleInstance.get(local_id)
 
               if (title_instance == null) {
                 log.debug("Failed to resolve ${local_id} - Exiting");
@@ -1085,12 +1174,12 @@ class GlobalSourceSyncService {
                 def toset = []
 
                 historyEvent.from.each { he ->
-                  def participant = TitleInstance.lookupOrCreate(he.ids, he.title)
+                  def participant = TitleInstance.lookupOrCreate(he.ids, he.title, he.uuid)
                   fromset.add(participant)
                 }
 
                 historyEvent.to.each { he ->
-                  def participant = TitleInstance.lookupOrCreate(he.ids, he.title)
+                  def participant = TitleInstance.lookupOrCreate(he.ids, he.title, he.uuid)
                   toset.add(participant)
                 }
 
@@ -1133,7 +1222,14 @@ class GlobalSourceSyncService {
     def grs = GlobalRecordSource.get(gli.source.id)
     def uri = grs.uri.replaceAll("packages", "")
     def oai = new OaiClientLaser()
-    def record = oai.getRecord(uri, 'packages', grt.owner.identifier)
+    def record = null
+
+    if(grt.owner.uuid) {
+      record = oai.getRecord(uri, 'packages', grt.owner.uuid)
+    }
+    else {
+      record = oai.getRecord(uri, 'packages', grt.owner.identifier)
+    }
 
     def newrecord = record ? packageConv(record.metadata, grs) : null
 

@@ -35,15 +35,20 @@ public class GokbDiffEngine {
 
     while ( tippa != null || tippb != null ) {
 
-        if (tippa != null && tippb != null && tippa.tippId == tippb.tippId) {
+      if (tippa != null && tippb != null &&
+          (tippa.tippId == tippb.tippId ||
+            (tippa.tippUuid && tippb.tippUuid && tippa.tippUuid == tippb.tippUuid)
+          )
+         ) {
 
         def tipp_diff = getTippDiff(tippa, tippb)
 
-            if (tippb.status != 'Current' && tipp_diff.size() == 0) {
+        if (tippb.status != 'Current' && tipp_diff.size() == 0) {
           deletedTippClosure(ctx, tippa, auto_accept)
           System.out.println("Title "+tippa+" Was removed from the package");
+
           tippa = ai.hasNext() ? ai.next() : null;
-                tippb = bi.hasNext() ? bi.next() : null
+          tippb = bi.hasNext() ? bi.next() : null
         }
         else if ( tipp_diff.size() == 0 ) {
           tippUnchangedClosure(ctx, tippa);
