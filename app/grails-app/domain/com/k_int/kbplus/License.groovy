@@ -423,6 +423,7 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
         def groups = PropertyDefinitionGroup.findAllByOwnerType(License.class.name)
         groups.each{ it ->
 
+            // cons_members
             if (this.instanceOf && ! this.instanceOf.isTemplate()) {
                 def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndLic(it, this.instanceOf)
 
@@ -447,21 +448,15 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
                     }
                 }
             }
+            // consortium or locals
             else {
                 def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndLic(it, this)
 
-                // global groups
-                if (it.tenant == null) {
+                if (it.tenant == null || it.tenant?.id == contextService.getOrg()?.id) {
                     if (binding) {
                         result.local << [it, binding]
                     } else {
                         result.global << it
-                    }
-                }
-                // locals; getting group by tenant and binding
-                if (it.tenant?.id == contextService.getOrg()?.id) {
-                    if (binding) {
-                        result.local << [it, binding]
                     }
                 }
             }
