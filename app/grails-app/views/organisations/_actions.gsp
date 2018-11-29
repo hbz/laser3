@@ -13,7 +13,7 @@
     <g:if test="${actionName == 'show'}">
         <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR")}">
             <semui:actionsDropdown>
-                <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalsgruppen anzeigen" />
+                <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalsgruppen konfigurieren" />
             </semui:actionsDropdown>
         </g:if>
     </g:if>

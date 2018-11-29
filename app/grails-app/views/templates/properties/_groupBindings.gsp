@@ -10,9 +10,11 @@
                 <tr>
                     <th>Merkmalsgruppe</th>
                     <th></th>
-                    <th>Voreinstellung</th>
-                    <th>Lokal sichtbar</th>
-                    <th>Für Teilnehmer sichtbar (falls lokal)</th>
+                    <th>Anzeigen<br />(Voreinstellung)</th>
+                    <th>Anzeigen<br />(Überschreiben)</th>
+                    <g:if test="${showConsortiaFunctions}">
+                        <th>Auch für Teilnehmer<br />anzeigen</th>
+                    </g:if>
                     <th></th>
                 </tr>
             </thead>
@@ -52,11 +54,11 @@
                                 <semui:xEditableRefData owner="${binding}" field="visible" config="YN" />
                             </g:if>
                         </td>
-                        <td>
-                            <g:if test="${editable && binding}">
+                        <g:if test="${editable && binding && showConsortiaFunctions}">
+                            <td>
                                 <semui:xEditableRefData owner="${binding}" field="visibleForConsortiaMembers" config="YN" />
-                            </g:if>
-                        </td>
+                            </td>
+                        </g:if>
                         <td class="x">
                             <g:if test="${editable}">
                                 <g:if test="${! binding}">
