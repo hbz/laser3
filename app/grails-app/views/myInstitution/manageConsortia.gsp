@@ -57,5 +57,7 @@
     </g:form>
     <g:render template="../templates/copyEmailaddresses" model="[orgList: consortiaMembers]"/>
 
+    <semui:paginate action="manageConsortia" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${consortiaMembersCount}" />
+
 </body>
 </html>
