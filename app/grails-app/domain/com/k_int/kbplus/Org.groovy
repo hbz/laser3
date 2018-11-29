@@ -12,6 +12,7 @@ import groovy.util.logging.*
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.hibernate.Criteria
 import javax.persistence.Transient
+import grails.util.Holders
 
 @Log4j
 class Org extends AbstractBaseDomain {
@@ -380,7 +381,7 @@ class Org extends AbstractBaseDomain {
                                      type: RefdataValue.getByValueAndCategory('Consortium','Combo Type')
             ).save()
           }
-        } else if (imp_uuid && imp_uuid != result.impId){
+        } else if (Holders.config.globalDataSync.replaceLocalImpIds.Org && imp_uuid && imp_uuid != result.impId){
           result.impId = imp_uuid
         }
  

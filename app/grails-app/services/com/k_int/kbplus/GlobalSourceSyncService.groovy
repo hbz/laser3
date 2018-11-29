@@ -1097,6 +1097,7 @@ class GlobalSourceSyncService {
     def cfg = rectypes[2]
 
     def uri = GlobalRecordSource.get(GlobalRecordInfo.get(grt.owner.id).source.id).uri
+    def record_uuid = grt.owner.uuid
 
     uri = uri.replaceAll("packages", "")
 
@@ -1106,7 +1107,15 @@ class GlobalSourceSyncService {
     }
 
     def oai = new OaiClientLaser()
-    def titlerecord = oai.getRecord(uri, 'titles', 'org.gokb.cred.TitleInstance:'+title_id)
+    def titlerecord = null
+
+    if(record_uuid) {
+      titlerecord = oai.getRecord(uri, 'titles', record_uuid)
+    }
+
+    if(!titlerecord) {
+      titlerecord = oai.getRecord(uri, 'titles', 'org.gokb.cred.TitleInstance:'+title_id)
+    }
 
     if(titlerecord == null)
     {

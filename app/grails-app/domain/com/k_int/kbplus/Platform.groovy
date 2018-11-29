@@ -5,6 +5,7 @@ import de.laser.domain.AbstractBaseDomain
 import javax.persistence.Transient
 import com.k_int.ClassUtils
 import org.apache.commons.logging.*
+import grails.util.Holders
 
 class Platform extends AbstractBaseDomain {
 
@@ -96,6 +97,9 @@ class Platform extends AbstractBaseDomain {
                                 primaryUrl:(params.primaryUrl ?: null),
                                 lastmod:System.currentTimeMillis()).save(flush:true)
 
+      } else if (platform && Holders.config.globalDataSync.replaceLocalImpIds.Platform && params.impId) {
+        platform.impId = params.impId
+        platform.save(flush:true)
       }
     }
     platform;
