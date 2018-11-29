@@ -59,7 +59,7 @@ class GlobalSourceSyncService {
 //         def publisher_identifiers = pub.identifiers
         def publisher_identifiers = []
         def orgSector = RefdataValue.loc('OrgSector',  [en: 'Publisher', de: 'Veröffentlicher']);
-        def publisher = Org.lookupOrCreate(pub.name, orgSector, null, publisher_identifiers, null)
+        def publisher = Org.lookupOrCreate(pub.name, orgSector, null, publisher_identifiers, null, pub.uuid)
         def pub_role = RefdataValue.loc('Organisational Role',  [en: 'Publisher', de: 'Veröffentlicher']);
         def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         def start_date
@@ -148,7 +148,7 @@ class GlobalSourceSyncService {
       def publisher = [:]
       publisher.name = pub.name.text()
       publisher.status = pub.status.text()
-      publisher.uuid = pub.'@uuid'?.text()?.length() > 0 ?: null
+      publisher.uuid = pub.'@uuid'?.text()?.length() > 0 ? pub.'@uuid'?.text() : null
 //       if ( pub.identifiers)
 //         publisher.identifiers = []
 //
