@@ -1597,6 +1597,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
         if (params.cmd?.equalsIgnoreCase('unlinkLicense')) {
             if (result.subscriptionInstance.owner) {
                 result.subscriptionInstance.setOwner(null)
+                params.remove('cmd')
             }
         }
 
