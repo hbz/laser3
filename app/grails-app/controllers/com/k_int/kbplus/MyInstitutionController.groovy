@@ -3325,12 +3325,11 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 cmb.delete()
             }
         }
-//        def tmpQuery, tmpQueryParams
         def fsq = filterService.getOrgComboQuery(params, result.institution)
         def consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
-        def tmpQueryParams  = [oids: consortiaMembers.collect{ it.id }]
 
-        if (params.filterPropDef && tmpQueryParams.oids) {
+        if (params.filterPropDef && consortiaMembers) {
+            def tmpQueryParams           = [oids: consortiaMembers.collect{ it.id }]
             def tmpQuery                 = "select o FROM Org o WHERE o.id IN (:oids)"
             (tmpQuery, tmpQueryParams)   = propertyService.evalFilterQuery(params, tmpQuery, 'o', tmpQueryParams)
             result.consortiaMembers      = Org.executeQuery( tmpQuery, tmpQueryParams, [max: result.max, offset: result.offset] )
