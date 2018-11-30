@@ -933,7 +933,8 @@ class AjaxController {
                 propDefGroup: propDefGroup,
                 ownobj: ownobj,
                 availPropDefGroups: availPropDefGroups,
-                editable: params.editable
+                editable: params.editable,
+                showConsortiaFunctions: params.showConsortiaFunctions
         ])
     }
 
@@ -953,7 +954,8 @@ class AjaxController {
                 propDefGroup: propDefGroup,
                 ownobj: ownobj,
                 availPropDefGroups: availPropDefGroups,
-                editable: params.editable
+                editable: params.editable,
+                showConsortiaFunctions: params.showConsortiaFunctions
         ])
     }
 
