@@ -1180,6 +1180,10 @@ aside.ui.accordion .title:not(.ui) {
   margin-left: -3px;
 }
 
+.editable-disabled {
+  cursor: text !important;
+}
+
 .la-space-right {
   padding-right: 20px;
 }

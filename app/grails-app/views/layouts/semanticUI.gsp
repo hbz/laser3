@@ -528,10 +528,14 @@
                                             $(toggleButton).attr("data-tooltip","${message(code:'statusbar.showButtons.tooltip')}");
                                             $(toggleIcon ).removeClass( "slash" );
                                             $(toggleButton).addClass('active');
-                                            $('.xEditableValue').not('.ui.modal .xEditableValue').editable('option', 'disabled', false);
-                                            $('.xEditable').not('.ui.modal .xEditable').editable('option', 'disabled', false);
-                                            $('.xEditableDatepicker').not('.ui.modal .xEditableDatepicker').editable('option', 'disabled', false);
-                                            $('.xEditableManyToOne').not('.ui.modal .xEditableManyToOne').editable('option', 'disabled', false);
+                                            var enableXeditable = function(cssClass){
+                                                var selection = $(cssClass).not('.ui.modal' + ' ' + cssClass);
+                                                selection.editable('option', 'disabled', false);
+                                            }
+                                            enableXeditable ('.xEditableValue');
+                                            enableXeditable ('.xEditable');
+                                            enableXeditable ('.xEditableDatepicker');
+                                            enableXeditable ('.xEditableManyToOne');
                                         }
                                         else {
                                             // hide Contoll Elements
@@ -545,10 +549,14 @@
                                             $( toggleIcon ).addClass( "slash" );
                                             $(toggleButton).removeClass('active');
                                             // hide all the x-editable
-                                            $('.xEditableValue').not('.ui.modal .xEditableValue').editable('option', 'disabled', true);
-                                            $('.xEditable').not('.ui.modal .xEditable').editable('option', 'disabled', true);
-                                            $('.xEditableDatepicker').not('.ui.modal .xEditableDatepicker').editable('option', 'disabled', true);
-                                            $('.xEditableManyToOne').not('.ui.modal .xEditableManyToOne').editable('option', 'disabled', true);
+                                            var diableXeditable = function(cssClass){
+                                                var selection = $(cssClass).not('.ui.modal' + ' ' + cssClass);
+                                                selection.editable('option', 'disabled', true);
+                                            }
+                                            diableXeditable ('.xEditableValue');
+                                            diableXeditable ('.xEditable');
+                                            diableXeditable ('.xEditableDatepicker');
+                                            diableXeditable ('.xEditableManyToOne');
                                         }
                                     }
                                     toggleEditableElements();
