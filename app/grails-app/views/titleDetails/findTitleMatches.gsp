@@ -13,18 +13,16 @@
 
     <p>${message(code:'title.findTitleMatches.note')}</p>
 
-            <semui:simpleForm controller="titleDetails" action="findTitleMatches" method="get" message="title.findTitleMatches.proposed">
-              <input type="text" name="proposedTitle" value="${params.proposedTitle}" />
-              <label>&nbsp;</label>
-              <div class="fields">
-                  <div class="field">
-                    <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.filterreset.label')}</a>
-                    </div>
-                  <div class="field">
-                    <input type="submit" value="${message(code:'default.button.filter.label', default:'Filter')}" class="ui button">
-                  </div>
+            <semui:searchSegment controller="titleDetails" action="findTitleMatches" method="get" >
+              <div class="field">
+                <label>${message(code:'title.findTitleMatches.proposed')}</label>
+                <input type="text" name="proposedTitle" value="${params.proposedTitle}" />
               </div>
-            </semui:simpleForm>
+              <div class="field la-field-right-aligned">
+                <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.searchreset.label')}</a>
+                <input type="submit" value="${message(code:'default.button.search.label', default:'Filter')}" class="ui secondary button">
+              </div>
+            </semui:searchSegment>
 
             <br/>
 

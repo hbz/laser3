@@ -1008,9 +1008,9 @@ aside.ui.accordion .title:not(.ui) {
   border-left: none;
 }
 
-.la-filter-search {
+.ui.form .field.la-field-right-aligned {
   text-align: right;
-  margin-top: 1.2rem!important;
+  margin-top: 1.6rem !important;
 }
 
 /*******************************
@@ -5382,6 +5382,10 @@ aside.ui.accordion .title:not(.ui) {
          Button Overrides
 *******************************/
 
+.ui.la-selectable.table tr:last-child {
+  border-bottom: none;
+}
+
 .ui.la-selectable.table tr .button.la-selectable-button {
   opacity: 0;
 }
@@ -5399,8 +5403,9 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .ui.button.la-new-item {
-  margin-left: 1rem;
+  margin-left: .8rem;
   margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 /*--------------
@@ -5428,6 +5433,28 @@ aside.ui.accordion .title:not(.ui) {
 .la-contextBar .ui.button:hover,
 .la-contextBar .ui.button:focus {
   background-color: transparent !important;
+}
+
+/* Vertical  Style special for details show sides */
+
+.ui.la-vertical.buttons {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+
+.ui.la-vertical.buttons .button {
+  display: block;
+  float: none;
+  width: 100%;
+  margin: 1rem 0.8rem;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  border-radius: 0em;
 }
 /*!
  * # Semantic UI 2.3.1 - Container
@@ -19551,7 +19578,7 @@ ol.ui.horizontal.list li:before,
   border-right: 10px solid #98B500;
 }
 
-.ui.segment.la-gasco-search {
+.ui.segment.la-search {
   background: #f1ebe5;
   border: none;
 }
@@ -21567,10 +21594,10 @@ ol.ui.horizontal.list li:before,
   padding-top: 0.3rem;
 }
 
-.ui.form .fields .field.la-filter-search {
+/*.ui.form .fields .field.la-field-right-aligned {
   text-align: right;
   margin-top: 1.2rem;
-}
+} */
 
 .ui.form .fields .field {
   margin: 0em 0em 1em;
@@ -29916,6 +29943,10 @@ a.ui.card:hover,
 .ui.card > .content > a.header,
 .ui.cards > .card > .content > a.header {
   color: #4183C4;
+}
+
+.la-sidekick .hidden + .ui.card {
+  margin-top: 0em;
 }
 /*!
  * # Semantic UI 2.3.1 - Comment

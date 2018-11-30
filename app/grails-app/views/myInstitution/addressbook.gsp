@@ -41,35 +41,29 @@ import="com.k_int.kbplus.RefdataCategory"
 
             <semui:filter>
                 <g:form action="addressbook" controller="myInstitution" method="get" class="form-inline ui small form">
-                    <div class="field">
-                        <div class="three fields">
-                            <div class="field">
-                                <label>${message(code: 'person.filter.name')}</label>
-                                <div class="ui input">
-                                    <input type="text" name="prs" value="${params.prs}"
-                                           placeholder="${message(code: 'person.filter.name')}" />
-                                </div>
-                            </div>
-                            <div class="field">
-                                <label>${message(code: 'person.filter.org')}</label>
-                                <div class="ui input">
-                                    <input type="text" name="org" value="${params.org}"
-                                           placeholder="${message(code: 'person.filter.org')}" />
-                                </div>
+                    <div class="four fields">
+                        <div class="field">
+                            <label>${message(code: 'person.filter.name')}</label>
+                            <div class="ui input">
+                                <input type="text" name="prs" value="${params.prs}"
+                                       placeholder="${message(code: 'person.filter.name')}" />
                             </div>
                         </div>
-                    </div>
-                    <div class="field">
-                        <div class="three fields">
-                            <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
-                            <div class="field la-filter-search">
-                                <label></label>
-                                <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-                                <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
+                        <div class="field">
+                            <label>${message(code: 'person.filter.org')}</label>
+                            <div class="ui input">
+                                <input type="text" name="org" value="${params.org}"
+                                       placeholder="${message(code: 'person.filter.org')}" />
                             </div>
                         </div>
+                        <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
                     </div>
 
+                    <div class="field la-field-right-aligned">
+                        <label></label>
+                        <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
+                    </div>
                 </g:form>
             </semui:filter>
 

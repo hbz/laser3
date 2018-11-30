@@ -1,7 +1,9 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
+import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserRole
 import de.laser.api.v0.entities.*
 import de.laser.helper.Constants
 import grails.converters.JSON
@@ -12,28 +14,36 @@ import org.springframework.http.HttpStatus
 import javax.servlet.http.HttpServletRequest
 
 @Log4j
-class ApiMainClass {
+class ApiManager {
 
     /**
-     * @return Object | BAD_REQUEST | PRECONDITION_FAILED | NOT_ACCEPTABLE
+     * @return Object
+     * @return BAD_REQUEST: if invalid/missing (unsupported) identifier
+     * @return PRECONDITION_FAILED: if multiple matches(objects) are found
+     * @return NOT_ACCEPTABLE: if requested format(response) is not supported
+     * @return NOT_IMPLEMENTED: if requested method(object type) is not supported
      */
     static read(String obj, String query, String value, User user, Org contextOrg, String format) {
         def result
+
+        def failureCodes = [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED]
+        def hasAccess    = ApiReader.isDataManager(user)
+
         log.debug("API-READ: ${obj} (${format}) @ ${query}:${value}")
 
         if ('document'.equalsIgnoreCase(obj)) {
-            //if (format in [ContentType.ALL]) {
+            //if (format in ApiReader.SUPPORTED_FORMATS.document) {
                 result = ApiDoc.findDocumentBy(query, value)
-                if (result && !(result in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED])) {
-                    result = ApiDoc.getDocument((Doc) result, user, contextOrg)
+                if (result && !(result in failureCodes)) {
+                    result = ApiDoc.getDocument((Doc) result, contextOrg, hasAccess)
                 }
             //}
         }
         else if ('issueEntitlements'.equalsIgnoreCase(obj)) {
-            if (format in [Constants.MIME_TEXT_PLAIN, Constants.MIME_APPLICATION_JSON]) {
+            if (format in ApiReader.SUPPORTED_FORMATS.issueEntitlements) {
                 def subPkg = ApiIssueEntitlement.findSubscriptionPackageBy(query, value)
-                if (subPkg && ! (subPkg in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED]) ) {
-                    result = ApiIssueEntitlement.getIssueEntitlements(subPkg, user, contextOrg)
+                if (subPkg && !(subPkg in failureCodes) ) {
+                    result = ApiIssueEntitlement.getIssueEntitlements(subPkg, contextOrg, hasAccess)
 
                     if (result && format == Constants.MIME_TEXT_PLAIN) {
                         def kbart = ApiKbartConverter.convertIssueEntitlements(result)
@@ -46,10 +56,11 @@ class ApiMainClass {
             }
         }
         else if ('license'.equalsIgnoreCase(obj)) {
-            if (format in [Constants.MIME_APPLICATION_JSON]) {
+            if (format in ApiReader.SUPPORTED_FORMATS.license) {
                 result = ApiLicense.findLicenseBy(query, value)
-                if (result && !(result in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED])) {
-                    result = ApiLicense.getLicense((License) result, user, contextOrg)
+
+                if (result && !(result in failureCodes)) {
+                    result = ApiLicense.getLicense((License) result, contextOrg, hasAccess)
                 }
             }
             else {
@@ -57,10 +68,11 @@ class ApiMainClass {
             }
         }
         else if ('onixpl'.equalsIgnoreCase(obj)) {
-            if (format in [Constants.MIME_APPLICATION_XML]) {
+            if (format in ApiReader.SUPPORTED_FORMATS.onixpl) {
                 def lic = ApiLicense.findLicenseBy(query, value)
-                if (lic && !(lic in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED])) {
-                    result = ApiDoc.getOnixPlDocument((License) lic, user, contextOrg)
+
+                if (lic && !(lic in failureCodes)) {
+                    result = ApiDoc.getOnixPlDocument((License) lic, contextOrg, hasAccess)
                 }
             }
             else {
@@ -68,10 +80,11 @@ class ApiMainClass {
             }
         }
         else if ('organisation'.equalsIgnoreCase(obj)) {
-            if (format in [Constants.MIME_APPLICATION_JSON]) {
+            if (format in ApiReader.SUPPORTED_FORMATS.organisation) {
                 result = ApiOrg.findOrganisationBy(query, value)
-                if (result && !(result in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED])) {
-                    result = ApiOrg.getOrganisation((Org) result, user, contextOrg)
+
+                if (result && !(result in failureCodes)) {
+                    result = ApiOrg.getOrganisation((Org) result, contextOrg, hasAccess)
                 }
             }
             else {
@@ -79,10 +92,11 @@ class ApiMainClass {
             }
         }
         else if ('package'.equalsIgnoreCase(obj)) {
-            if (format in [Constants.MIME_APPLICATION_JSON]) {
+            if (format in ApiReader.SUPPORTED_FORMATS.package) {
                 result = ApiPkg.findPackageBy(query, value)
-                if (result && !(result in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED])) {
-                    result = ApiPkg.getPackage((Package) result, user, contextOrg)
+
+                if (result && !(result in failureCodes)) {
+                    result = ApiPkg.getPackage((Package) result, contextOrg, hasAccess)
                 }
             }
             else {
@@ -90,10 +104,11 @@ class ApiMainClass {
             }
         }
         else if ('subscription'.equalsIgnoreCase(obj)) {
-            if (format in [Constants.MIME_APPLICATION_JSON]) {
+            if (format in ApiReader.SUPPORTED_FORMATS.subscription) {
                 result = ApiSubscription.findSubscriptionBy(query, value)
-                if (result && !(result in [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED])) {
-                    result = ApiSubscription.getSubscription((Subscription) result, user, contextOrg)
+
+                if (result && !(result in failureCodes)) {
+                    result = ApiSubscription.getSubscription((Subscription) result, contextOrg, hasAccess)
                 }
             }
             else {

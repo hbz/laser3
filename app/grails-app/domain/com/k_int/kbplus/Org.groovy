@@ -1,6 +1,8 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
+import com.k_int.properties.PropertyDefinitionGroup
+import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.AbstractBaseDomain
 import groovy.sql.Sql
 import org.apache.commons.lang3.StringUtils
@@ -200,6 +202,29 @@ class Org extends AbstractBaseDomain {
             //result = qr.get(0);
             result = GrailsHibernateUtil.unwrapIfProxy( qr.get(0) ) // fix: unwrap proxy
         }
+        result
+    }
+
+    def getCaculatedPropDefGroups() {
+        def result = [ 'global':[], 'local':[], fallback: true ]
+
+        // ALL type depending groups without checking tenants or bindings
+        def groups = PropertyDefinitionGroup.findAllByOwnerType(Org.class.name)
+        groups.each{ it ->
+
+            def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndOrg(it, this)
+
+            if (it.tenant == null || it.tenant?.id == contextService.getOrg()?.id) {
+                if (binding) {
+                    result.local << [it, binding]
+                } else {
+                    result.global << it
+                }
+            }
+        }
+
+        result.fallback = (result.global.size() == 0 && result.local.size() == 0)
+
         result
     }
 

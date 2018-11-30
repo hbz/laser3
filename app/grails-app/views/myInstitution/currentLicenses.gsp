@@ -27,7 +27,9 @@
 
   <semui:messages data="${flash}" />
 
-  <h1 class="ui left aligned icon header"><semui:headerIcon />${institution?.name} - ${message(code:'license.plural', default:'Licenses')}</h1>
+  <h1 class="ui left aligned icon header"><semui:headerIcon />${institution?.name} - ${message(code:'license.plural', default:'Licenses')}
+      <semui:totalNumber total="${licenseCount}"/>
+  </h1>
 
     <semui:filter class="license-searches">
         <form class="ui form">
@@ -91,7 +93,7 @@
 
             </g:if>
 
-                    <div class="field la-filter-search">
+                    <div class="field la-field-right-aligned">
                         <a href="${request.forwardURI}" class="ui reset primary primary button">${message(code:'default.button.reset.label')}</a>
 
                         <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}" />
@@ -105,9 +107,6 @@
     </semui:filter>
 
         <div class="license-results">
-        <g:if test="${licenseCount && licenseCount>0}">
-          <span>${message(code:'license.current.showing', args:[licenseCount])}</span>
-        </g:if>
           <table class="ui sortable celled la-table table">
             <thead>
               <tr>

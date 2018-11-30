@@ -8,10 +8,10 @@
 }
 
 
-.ui.form .fields .field.la-filter-search {
+/*.ui.form .fields .field.la-field-right-aligned {
   text-align: right;
   margin-top: 1.2rem;
-}
+} */
 
 .ui.form .fields .field {
   margin: 0em 0em 1em;

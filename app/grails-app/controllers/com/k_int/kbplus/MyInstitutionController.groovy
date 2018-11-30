@@ -6,6 +6,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
+import de.laser.helper.DateUtil
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -13,7 +14,7 @@ import org.apache.poi.hslf.model.*
 import org.apache.poi.hssf.usermodel.*
 import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
-import com.k_int.properties.PropertyDefinition
+import com.k_int.properties.*
 
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
@@ -39,6 +40,7 @@ class MyInstitutionController {
     def filterService
     def propertyService
     def queryService
+    def subscriptionsQueryService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -195,7 +197,7 @@ class MyInstitutionController {
         result.editable      = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
         def date_restriction = null;
-        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
 
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -209,11 +211,13 @@ class MyInstitutionController {
 
         result.propList =
                 PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
-                        defList: [PropertyDefinition.LIC_PROP, PropertyDefinition.LIC_OA_PROP, PropertyDefinition.LIC_ARC_PROP],
+                        //defList: [PropertyDefinition.LIC_PROP, PropertyDefinition.LIC_OA_PROP, PropertyDefinition.LIC_ARC_PROP],
+                        defList: [PropertyDefinition.LIC_PROP],
                     ] // public properties
                 ) +
                         PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant = :tenant", [
-                                defList: [PropertyDefinition.LIC_PROP, PropertyDefinition.LIC_OA_PROP, PropertyDefinition.LIC_ARC_PROP],
+                                //defList: [PropertyDefinition.LIC_PROP, PropertyDefinition.LIC_OA_PROP, PropertyDefinition.LIC_ARC_PROP],
+                                defList: [PropertyDefinition.LIC_PROP],
                                 tenant: contextService.getOrg()
                             ]// private properties
                         )
@@ -408,7 +412,7 @@ from License as l where (
         result.orgRoleType = result.institution?.getallOrgRoleTypeIds()
 
         def cal = new java.util.GregorianCalendar()
-        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
 
         cal.setTimeInMillis(System.currentTimeMillis())
         cal.set(Calendar.MONTH, Calendar.JANUARY)
@@ -551,7 +555,7 @@ from License as l where (
         viableOrgs.add(result.institution)
 
         def date_restriction = null;
-        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
 
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -563,123 +567,12 @@ from License as l where (
             date_restriction = sdf.parse(params.validOn)
         }
 
-        /*
-        def dateBeforeFilter = null;
-        def dateBeforeFilterVal = null;
-        if(params.dateBeforeFilter && params.dateBeforeVal){
-            if(params.dateBeforeFilter == "renewalDate"){
-                dateBeforeFilter = " and s.manualRenewalDate < :date_before"
-                dateBeforeFilterVal =sdf.parse(params.dateBeforeVal)
-            }else if (params.dateBeforeFilter == "endDate"){
-                dateBeforeFilter = " and s.endDate < :date_before"
-                dateBeforeFilterVal =sdf.parse(params.dateBeforeVal)
-            }else{
-              result.remove('dateBeforeFilterVal')
-              result.remove('dateBeforeFilter')
-            }
-
-        }
-        */
-
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
+        result.num_sub_rows = Subscription.executeQuery("select count(s) " + tmpQ[0], tmpQ[1])[0]
+        result.subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1], [max: result.max, offset: result.offset]);
 
-
-        def role_sub            = RDStore.OR_SUBSCRIBER
-        def role_subCons        = RDStore.OR_SUBSCRIBER_CONS
-        def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
-        def roleTypes           = [role_sub, role_sub_consortia]
-        def role_provider       = RefdataValue.getByValueAndCategory('Provider','Organisational Role')
-        def role_agency         = RefdataValue.getByValueAndCategory('Agency','Organisational Role')
-
-        // ORG: def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
-        // ORG: def qry_params = ['roleTypes':roleTypes, 'activeInst':result.institution]
-
-        def base_qry
-        def qry_params
-
-        if (! params.orgRole) {
-            if ((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) {
-                params.orgRole = 'Subscription Consortia'
-            }
-            else {
-                params.orgRole = 'Subscriber'
-            }
-        }
-
-        if (params.orgRole == 'Subscriber') {
-
-            base_qry = """
-from Subscription as s where (
-    exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :activeInst ) ) 
-    AND ( s.status.value != 'Deleted' )
-    AND (
-        ( not exists ( select o from s.orgRelations as o where o.roleType = :scRoleType ) )
-        or
-        ( ( exists ( select o from s.orgRelations as o where o.roleType = :scRoleType ) ) AND ( s.instanceOf is not null) )
-    )
-)
-"""
-            qry_params = ['roleType1':role_sub, 'roleType2':role_subCons, 'activeInst':result.institution, 'scRoleType':role_sub_consortia]
-        }
-
-        if (params.orgRole == 'Subscription Consortia') {
-
-            base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is null AND s.status.value != 'Deleted' ) "
-            qry_params = ['roleType':role_sub_consortia, 'activeInst':result.institution]
-        }
-
-        if (params.q?.length() > 0) {
-            base_qry += (
-                    " and ( lower(s.name) like :name_filter " // filter by subscription
-                            + " or exists ( select sp from SubscriptionPackage as sp where sp.subscription = s and ( lower(sp.pkg.name) like :name_filter ) ) " // filter by pkg
-                            + " or exists ( select lic from License as lic where s.owner = lic and ( lower(lic.reference) like :name_filter ) ) " // filter by license
-                            + " or exists ( select orgR from OrgRole as orgR where orgR.sub = s and ( lower(orgR.org.name) like :name_filter"
-                            + " or lower(orgR.org.shortname) like :name_filter or lower(orgR.org.sortname) like :name_filter) ) " // filter by Anbieter, Konsortium, Agency
-                            +  " ) "
-            )
-
-            qry_params.put('name_filter', "%${params.q.trim().toLowerCase()}%");
-        }
-
-        // eval property filter
-
-        if (params.filterPropDef) {
-            (base_qry, qry_params) = propertyService.evalFilterQuery(params, base_qry, 's', qry_params)
-        }
-
-        if (date_restriction) {
-            base_qry += " and s.startDate <= :date_restr and (s.endDate >= :date_restr or s.endDate is null or s.endDate ='' )"
-            qry_params.put('date_restr', date_restriction)
-        }
-
-        /* if(dateBeforeFilter ){
-            base_qry += dateBeforeFilter
-            qry_params.put('date_before', dateBeforeFilterVal)
-        } */
-
-        def subTypes = params.list('subTypes')
-        if (subTypes) {
-            subTypes = subTypes.collect{it as Long}
-            base_qry += " and s.type.id in (:subTypes) "
-            qry_params.put('subTypes', subTypes)
-        }
-
-        if (params.status) {
-            base_qry += " and s.status.id = :status "
-            qry_params.put('status', (params.status as Long))
-        }
-
-        if ((params.sort != null) && (params.sort.length() > 0)) {
-            base_qry += (params.sort=="s.name") ? " order by LOWER(${params.sort}) ${params.order}":" order by ${params.sort} ${params.order}"
-        } else {
-            base_qry += " order by lower(trim(s.name)) asc"
-        }
-
-        //log.debug("query: ${base_qry} && params: ${qry_params}")
-
-        result.num_sub_rows = Subscription.executeQuery("select count(s) " + base_qry, qry_params)[0]
-        result.subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
         result.date_restriction = date_restriction;
 
         result.propList =
@@ -698,7 +591,7 @@ from Subscription as s where (
         }
 
         if ( params.exportXLS=='yes' ) {
-            def subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params);
+            def subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]);
             exportcurrentSubscription(subscriptions)
             return
         }
@@ -716,7 +609,7 @@ from Subscription as s where (
             String[] titles = [
                     'Name', 'Vertrag', 'Verknuepfte Pakete', 'Konsortium', 'Anbieter', 'Agentur', 'Anfangsdatum', 'Enddatum', 'Status', 'Typ' ]
 
-            def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+            def sdf = new DateUtil().getSimpleDateFormat_NoTime()
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
             HSSFWorkbook wb = new HSSFWorkbook();
@@ -826,7 +719,7 @@ from Subscription as s where (
         def result = setResultGenerics()
 
         def date_restriction = null;
-        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
 
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -898,7 +791,7 @@ from Subscription as s where (
 
         if (result.editable) {
             def cal = new java.util.GregorianCalendar()
-            def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+            def sdf = new DateUtil().getSimpleDateFormat_NoTime()
 
             cal.setTimeInMillis(System.currentTimeMillis())
             cal.set(Calendar.MONTH, Calendar.JANUARY)
@@ -947,7 +840,7 @@ from Subscription as s where (
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
-            def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+            def sdf = new DateUtil().getSimpleDateFormat_NoTime()
             def startDate = params.valid_from ? sdf.parse(params.valid_from) : null
             def endDate = params.valid_to ? sdf.parse(params.valid_to) : null
 
@@ -1260,8 +1153,7 @@ from Subscription as s where (
     }
 
     @Deprecated
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(['ROLE_ADMIN'])
     def processAddSubscription() {
 
         def user = User.get(springSecurityService.principal.id)
@@ -1333,7 +1225,7 @@ from Subscription as s where (
         // Set Date Restriction
         def date_restriction = null;
 
-        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
             date_restriction = sdf.parse(result.validOn)
@@ -2009,7 +1901,7 @@ AND EXISTS (
 
         boolean first = true;
 
-        def formatter = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def formatter = new DateUtil().getSimpleDateFormat_NoTime()
 
         // Add in JR1 and JR1a reports
         def c = new GregorianCalendar()
@@ -2740,7 +2632,10 @@ AND EXISTS (
                 previousSubscription: old_subOID ?: null,
                 type: Subscription.get(old_subOID)?.type ?: null,
                 isPublic: RefdataValue.getByValueAndCategory('No','YN'),
-                owner: params.subscription.copyLicense ? (Subscription.get(old_subOID)?.owner) : null)
+                owner: params.subscription.copyLicense ? (Subscription.get(old_subOID)?.owner) : null,
+                resource: Subscription.get(old_subOID)?.resource ?: null,
+                form: Subscription.get(old_subOID)?.form ?: null
+        )
         log.debug("New Sub: ${new_subscription.startDate}  - ${new_subscription.endDate}")
         def packages_referenced = []
         Date earliest_start_date = null
@@ -2771,9 +2666,10 @@ AND EXISTS (
         }
 
         if (!new_subscription.issueEntitlements) {
-            new_subscription.issueEntitlements = new java.util.TreeSet()
+           // new_subscription.issueEntitlements = new java.util.TreeSet()
         }
 
+        if(ent_count > -1){
         for (int i = 0; i <= ent_count; i++) {
             def entitlement = params.entitlements."${i}";
             log.debug("process entitlement[${i}]: ${entitlement} - TIPP id is ${entitlement.tipp_id}");
@@ -2853,6 +2749,7 @@ AND EXISTS (
             } else {
                 log.debug("Unable to locate tipp with id ${entitlement.tipp_id}");
             }
+        }
         }
         log.debug("done entitlements...");
 
@@ -2935,7 +2832,7 @@ AND EXISTS (
 
         // tasks
 
-        def sdFormat    = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdFormat    = new DateUtil().getSimpleDateFormat_NoTime()
         params.taskStatus = 'not done'
         def query       = filterService.getTaskQuery(params, sdFormat)
         def contextOrg  = contextService.getOrg()
@@ -3018,7 +2915,7 @@ AND EXISTS (
                 [max: result.max, offset: result.offset]
         )
 
-        println result.changes
+        // println result.changes
         result.changes.addAll(result2)
     }
 
@@ -3033,11 +2930,7 @@ AND EXISTS (
 
         log.debug("Count3=${result.num_todos}");
 
-        def change_summary = PendingChange.executeQuery(
-                "select distinct(pc.oid), count(pc), min(pc.ts), max(pc.ts) from PendingChange as pc left outer join pc.license as lic left outer join lic.status as lic_status left outer join pc.subscription as sub left outer join sub.status as sub_status left outer join pc.pkg as pkg left outer join pkg.packageStatus as pkg_status where pc.owner = ? and (pc.status = ? or pc.status is null) and ((lic_status is null or lic_status!=?) and (sub_status is null or sub_status!=?) and (pkg_status is null or pkg_status!=?)) group by pc.oid",
-                [result.institution,pc_status,lic_del,sub_del,pkg_del],
-                [max: result.max?:100, offset: result.offset?:0]
-        )
+        def change_summary = PendingChange.executeQuery("select distinct(pc.oid), count(pc), min(pc.ts), max(pc.ts) from PendingChange as pc left outer join pc.license as lic left outer join lic.status as lic_status left outer join pc.subscription as sub left outer join sub.status as sub_status left outer join pc.pkg as pkg left outer join pkg.packageStatus as pkg_status where pc.owner = ? and (pc.status = ? or pc.status is null) and ((lic_status is null or lic_status!=?) and (sub_status is null or sub_status!=?) and (pkg_status is null or pkg_status!=?)) group by pc.oid", [result.institution,pc_status,lic_del,sub_del,pkg_del], [max: result.max?:100, offset: result.offset?:0]);
         result.changes = []
 
         change_summary.each { cs ->
@@ -3142,7 +3035,7 @@ AND EXISTS (
                 result
             }
             csv {
-                def dateFormat = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+                def dateFormat = new DateUtil().getSimpleDateFormat_NoTime()
                 def changes = PendingChange.executeQuery("select pc "+base_query+"  order by ts desc", qry_params)
                 response.setHeader("Content-disposition", "attachment; filename=\"${result.institution.name}_changes.csv\"")
                 response.contentType = "text/csv"
@@ -3194,7 +3087,7 @@ AND EXISTS (
 
       if (request.method == 'POST' && result.tip ){
         log.debug("Add usage ${params}")
-        def sdf = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
         def usageDate = sdf.parse(params.usageDate);
         def cal = new GregorianCalendar()
         cal.setTime(usageDate)
@@ -3300,8 +3193,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 }
             } else if (params.cmd == "deleteBudgetCode") {
                 def bc = genericOIDService.resolveOID(params.bc)
-
-                if (bc && bc.owner == result.institution) {
+                if (bc && bc.owner.id == result.institution.id) {
                     bc.delete()
                 }
             }
@@ -3323,7 +3215,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
         if (params.deleteId) {
             def dTask = Task.get(params.deleteId)
-            if (dTask && dTask.creator.id == result.user.id) {
+            if (dTask && (dTask.creator.id == result.user.id || contextService.getUser().hasAffiliation("INST_ADM"))) {
                 try {
                     dTask.delete(flush: true)
                     flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
@@ -3331,10 +3223,12 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 catch (Exception e) {
                     flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
                 }
+            } else {
+                flash.message = message(code: 'default.not.deleted.notAutorized.message', args: [message(code: 'task.label', default: 'Task'), params.deleteId])
             }
         }
 
-        def sdFormat = new SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        def sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
         def query = filterService.getTaskQuery(params, sdFormat)
         result.taskInstanceList   = taskService.getTasksByResponsibles(result.user, result.institution, query)
         result.myTaskInstanceList = taskService.getTasksByCreator(result.user, null)
@@ -3453,6 +3347,84 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             return
         }
 
+        result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def managePropertyGroups() {
+        def result = setResultGenerics()
+        result.editable = true // true, because action is protected
+
+        if (params.cmd == 'new') {
+            result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
+
+            render template: '/templates/properties/propertyGroupModal', model: result
+            return
+        }
+        else if (params.cmd == 'edit') {
+            result.pdGroup = genericOIDService.resolveOID(params.oid)
+            result.formUrl = g.createLink([controller: 'myInstitution', action: 'managePropertyGroups'])
+
+            render template: '/templates/properties/propertyGroupModal', model: result
+            return
+        }
+        else if (params.cmd == 'delete') {
+            def pdg = genericOIDService.resolveOID(params.oid)
+            try {
+                pdg.delete()
+                flash.message = "Die Gruppe ${pdg.name} wurde gelöscht."
+            }
+            catch (e) {
+                flash.error = "Die Gruppe ${params.oid} konnte nicht gelöscht werden."
+            }
+        }
+        else if (params.cmd == 'processing') {
+            def valid
+            def propDefGroup
+            def ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
+
+            if (params.oid) {
+                propDefGroup = genericOIDService.resolveOID(params.oid)
+                propDefGroup.name = params.name ?: propDefGroup.name
+                propDefGroup.description = params.description
+                propDefGroup.ownerType = ownerType
+
+                if (propDefGroup.save(flush:true)) {
+                    valid = true
+                }
+            }
+            else {
+                if (params.name && ownerType) {
+                    propDefGroup = new PropertyDefinitionGroup(
+                            name: params.name,
+                            description: params.description,
+                            tenant: result.institution,
+                            ownerType: ownerType
+                    )
+                    if (propDefGroup.save(flush:true)) {
+                        valid = true
+                    }
+                }
+            }
+
+            if (valid) {
+                PropertyDefinitionGroupItem.executeUpdate(
+                        "DELETE PropertyDefinitionGroupItem pdgi WHERE pdgi.propDefGroup = :pdg",
+                        [pdg: propDefGroup]
+                )
+
+                params.list('propertyDefinition')?.each { pd ->
+
+                    new PropertyDefinitionGroupItem(
+                            propDef: pd,
+                            propDefGroup: propDefGroup
+                    ).save(flush: true)
+                }
+            }
+        }
+
+        result.propDefGroups = PropertyDefinitionGroup.findAllByTenant(result.institution, [sort: 'name'])
         result
     }
 
@@ -3672,7 +3644,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     private def exportOrg(orgs, message, addHigherEducationTitles) {
         try {
             def titles = [
-                    'Name', 'Kurzname', 'Sortiername']
+                    'Name', g.message(code: 'org.shortname.label'), g.message(code: 'org.sortname.label')]
 
             def orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
             def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
@@ -3680,11 +3652,11 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
             if(addHigherEducationTitles)
             {
-                titles.add('Bibliothekstyp')
-                titles.add('Verbundszugehörigkeit')
-                titles.add('Trägerschaft')
-                titles.add('Bundesland')
-                titles.add('Land')
+                titles.add(g.message(code: 'org.libraryType.label'))
+                titles.add(g.message(code: 'org.libraryNetwork.label'))
+                titles.add(g.message(code: 'org.funderType.label'))
+                titles.add(g.message(code: 'org.federalState.label'))
+                titles.add(g.message(code: 'org.country.label'))
             }
 
             def propList =

@@ -585,7 +585,7 @@ class FinanceController {
         }
 
         if (params.filterCIInvoiceFrom) {
-            println sdf.parse(params.filterCIInvoiceFrom)
+            // println sdf.parse(params.filterCIInvoiceFrom)
 
             fqResult.qry_string += " AND (ci.invoiceDate >= :invoiceDateFrom AND ci.invoiceDate IS NOT null) "
             countCheck          += " AND (ci.invoiceDate >= :invoiceDateFrom AND ci.invoiceDate IS NOT null) "
@@ -594,7 +594,7 @@ class FinanceController {
         }
 
         if (params.filterCIInvoiceTo) {
-            println sdf.parse(params.filterCIInvoiceTo)
+            // println sdf.parse(params.filterCIInvoiceTo)
 
             fqResult.qry_string += " AND (ci.invoiceDate <= :invoiceDateTo AND ci.invoiceDate IS NOT null) "
             countCheck          += " AND (ci.invoiceDate <= :invoiceDateTo AND ci.invoiceDate IS NOT null) "

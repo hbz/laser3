@@ -1,6 +1,8 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
+import de.laser.ContextService
+import de.laser.api.v0.ApiManager
 import de.laser.helper.Constants
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -9,6 +11,7 @@ import grails.plugin.springsecurity.annotation.Secured
 class ApiController {
 
     def springSecurityService
+    ContextService contextService
     ApiService apiService
 
     ApiController(){
@@ -22,16 +25,19 @@ class ApiController {
         def result = [:]
         if (springSecurityService.isLoggedIn()) {
             def user = User.get(springSecurityService.principal.id)
-            result.apiKey = user?.apikey
-            result.apiSecret = user?.apisecret
+            result.apiId  = user?.apikey
+            result.apiKey = user?.apisecret
+            result.apiContext = contextService.getOrg()?.globalUID ?: ''
         }
 
         switch ( (params.version ?: 'v0').toLowerCase() ) {
             case '1':
             case 'v1':
+                result.apiVersion = 'v1'
                 render view: 'v1', model: result
                 break
             default:
+                result.apiVersion = 'v0'
                 render view: 'v0', model: result
                 break
         }
@@ -291,7 +297,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
         def result
         def hasAccess = false
-        def apiManager = de.laser.api.v0.ApiMainClass
+        def apiManager = ApiManager
 
         def obj     = params.get('obj')
         def query   = params.get('q')
@@ -320,7 +326,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
             if (context) {
                 user.authorizedAffiliations.each { uo -> //  com.k_int.kbplus.auth.UserOrg
-                    def org = Org.findWhere(id: uo.org.id, shortcode: params.get('context'))
+                    def org = Org.findWhere(id: uo.org.id, globalUID: params.get('context'))
                     if (org) {
                         contextOrg = org
                     }
@@ -430,7 +436,11 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         def query   = params.get('q')
         def value   = params.get('v', '')
         def context = params.get('context')
+        def startDate = params.get('startDate') ? new Date().parse("yyyy-MM-dd", params.get('startDate')) : new Date()
+        def endDate = params.get('endDate') ? new Date().parse("yyyy-MM-dd", params.get('endDate')) : new Date()
         def format
+
+
 
 
         Org contextOrg = null
@@ -497,7 +507,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                             break
                     }
 
-                    result = apiManager.read((String) obj, (String) query, (String) value, (User) user, (Org) contextOrg, format)
+                    result = apiManager.read((String) obj, (String) query, (String) value, (User) user, (Org) contextOrg, format, (Date) startDate, (Date) endDate)
 
                     if (result instanceof Doc) {
                         if (result.contentType == Doc.CONTENT_TYPE_STRING) {

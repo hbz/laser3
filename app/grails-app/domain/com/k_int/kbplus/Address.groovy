@@ -47,8 +47,8 @@ class Address {
         additionFirst   column:'adr_addition_first'
         additionSecond  column:'adr_addition_second'
         type     column:'adr_type_rv_fk'
-        prs      column:'adr_prs_fk'
-        org      column:'adr_org_fk'
+        prs      column:'adr_prs_fk', index: 'adr_prs_idx'
+        org      column:'adr_org_fk', index: 'adr_org_idx'
     }
     
     static constraints = {

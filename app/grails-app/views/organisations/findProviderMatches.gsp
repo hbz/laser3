@@ -20,19 +20,17 @@
 
 		<p>${message(code:'org.findProviderMatches.note')}</p>
 
-		<semui:simpleForm controller="organisations" action="findProviderMatches" method="get" message="org.findProviderMatches.proposed">
-			<input type="text" name="proposedProvider" value="${params.proposedProvider}" />
-
-			<label>&nbsp;</label>
-			<div class="fields">
-				<div class="field">
-					<a href="${request.forwardURI}" class="ui button">${message(code:'default.button.filterreset.label')}</a>
-				</div>
-				<div class="field">
-					<input type="submit" value="${message(code:'default.button.filter.label', default:'Filter')}" class="ui button">
-				</div>
+		<semui:searchSegment controller="organisations" action="findProviderMatches" method="get">
+			<div class="field">
+				<label>${message(code:'org.findProviderMatches.proposed')}</label>
+				<input type="text" name="proposedProvider" value="${params.proposedProvider}" />
 			</div>
-		</semui:simpleForm>
+			<div class="field la-field-right-aligned">
+				<a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.searchreset.label')}</a>
+				<input type="submit" value="${message(code:'default.button.search.label', default:'Filter')}" class="ui secondary button">
+			</div>
+		</semui:searchSegment>
+
 
 
 				<g:if test="${providerMatches != null}">

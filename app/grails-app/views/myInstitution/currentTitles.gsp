@@ -36,7 +36,9 @@
 
     <semui:messages data="${flash}" />
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${institution?.name} - ${message(code:'myinst.currentTitles.label', default:'Current Titles')}</h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${institution?.name} - ${message(code:'myinst.currentTitles.label', default:'Current Titles')}
+      <semui:totalNumber total="${num_ti_rows}"/>
+    </h1>
 
     <semui:filter>
       <g:form id="filtering-form" action="currentTitles" controller="myInstitution" method="get" class="ui form">
@@ -107,32 +109,28 @@
               </div>
           </div>
 
-          <div class="fields">
-
-              <div class="field">
+            <div class="four fields">
+                <div class="field">
                   <label>${message(code:'default.search.text', default:'Search text')}</label>
                   <input type="hidden" name="sort" value="${params.sort}">
                   <input type="hidden" name="order" value="${params.order}">
                   <input type="text" name="filter" value="${params.filter}" style="padding-left:5px;" placeholder="${message(code:'default.search.ph', default:'enter search term...')}"/>
-              </div>
-              <div class="field">
+                </div>
+                <div class="field">
                   <semui:datepicker label="myinst.currentTitles.subs_valid_on" name="validOn" value="${validOn}" />
-              </div>
-              <div class="field">
+                </div>
+                <div class="field">
                   <label>${message(code:'myinst.currentTitles.dupes', default:'Titles we subscribe to through 2 or more packages')}</label>
                   <div class="ui checkbox">
                       <input type="checkbox" class="hidden" name="filterMultiIE" value="${true}"<%=(params.filterMultiIE)?' checked="true"':''%>/>
                   </div>
-              </div>
-          </div>
-          <div class="fields">
-                    <div class="field">
-                              <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-                    </div>
-                    <div class="field">
-                      <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}"/>
-                    </div>
-          </div>
+                </div>
+                <div class="field la-field-right-aligned">
+                    <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+                    <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}"/>
+                </div>
+            </div>
+
       </g:form>
     </semui:filter>
 

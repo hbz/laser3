@@ -6,6 +6,18 @@
 
 - bugfix: visible private contacts
 
+0.11
+
+- added functionality for grouping and management of custom properties
+- added new subscription properties
+- merged license: open access and license: archive into license properties 
+- reworked some list views, added count of total items
+- reworked filter layouts
+- fixed property filter for date type
+- fixed deletion of tasks
+- various markup and style changes
+- minor bugfixes
+
 0.10.8
 
 - hotfix: gorm failed to lazily initialize a collection

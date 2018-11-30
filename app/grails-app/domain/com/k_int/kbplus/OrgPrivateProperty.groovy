@@ -16,7 +16,7 @@ class OrgPrivateProperty extends PrivateProperty {
         id      column:'opp_id'
         version column:'opp_version'
         type    column:'opp_type_fk'
-        owner   column:'opp_owner_fk'
+        owner   column:'opp_owner_fk', index:'opp_owner_idx'
     }
 
     static constraints = {

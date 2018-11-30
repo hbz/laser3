@@ -23,15 +23,18 @@
         </sec:ifAnyGranted>
  </semui:controlButtons>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.institutions.all_provider" /> - ${orgListTotal} Treffer</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.institutions.all_provider" />
+            <semui:totalNumber total="${orgListTotal}"/>
+        </h1>
 
         <semui:messages data="${flash}" />
         <semui:filter>
             <g:form action="listProvider" method="get" class="ui form">
                 <g:render template="/templates/filter/orgFilter"
                           model="[
-                                  tmplConfigShow: ['property', 'name', 'country'],
-                                  tmplConfigFormFilter: true
+                                  tmplConfigShow: [['name'], ['country', 'property']],
+                                  tmplConfigFormFilter: true,
+                                  useNewLayouter: true
                           ]"/>
             </g:form>
         </semui:filter>

@@ -19,13 +19,13 @@
                         <g:link class="item" action="list" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
                     </semui:exportDropdownItem>
                 </semui:exportDropdown>
-                <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
                     <g:render template="actions" />
-                </sec:ifAnyGranted>
             </semui:controlButtons>
 
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.institutions.all_orgs" /> - ${orgListTotal} Treffer</h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.institutions.all_orgs" />
+            <semui:totalNumber total="${orgListTotal}"/>
+        </h1>
 
         <semui:messages data="${flash}" />
 
@@ -33,8 +33,9 @@
             <g:form action="list" method="get" class="ui form">
                 <g:render template="/templates/filter/orgFilter"
                           model="[
-                                  tmplConfigShow: ['name', 'type', 'sector', 'federalState', 'libraryNetwork', 'libraryType'],
-                                  tmplConfigFormFilter: true
+                                  tmplConfigShow: [['name', 'type'], ['sector', 'federalState', 'libraryNetwork', 'libraryType']],
+                                  tmplConfigFormFilter: true,
+                                  useNewLayouter: true
                           ]"/>
             </g:form>
         </semui:filter>

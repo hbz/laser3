@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition" %>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.PropertyDefinition; com.k_int.properties.PropertyDefinitionGroup" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection />
 
@@ -24,6 +24,10 @@
     </semui:debugInfo>
 
     <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
+
+    <semui:controlButtons>
+        <g:render template="actions" />
+    </semui:controlButtons>
 
     <h1 class="ui left aligned icon header"><semui:headerIcon />
         ${orgInstance.name}
@@ -91,7 +95,8 @@
                             </dd>
                         </dl>
                         <dl>
-                            <dt><g:message code="org.sortname.label" default="Sortname" /></dt>
+                            <dt><g:message code="org.sortname.label" default="Sortname" /><br>
+                                <g:message code="org.sortname.onlyForLibraries.label" default="(Nur für Bibliotheken)" /></dt>
                             <dd>
                                 <semui:xEditable owner="${orgInstance}" field="sortname"/>
                             </dd>
@@ -337,16 +342,10 @@
                             </div><!--.card-->
                     </g:if>
 
-                    <g:if test="${orgInstance?.incomingCombos && ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
-                        <g:if test="${orgInstance.id == contextService.getOrg().id}">
+                    <g:if test="${orgInstance?.incomingCombos}">
+
+                        <g:if test="${orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADMIN')}">
                             <div class="ui card">
-                        </g:if>
-                        <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
-                            <div class="ui card la-role-admin">
-                        </g:elseif>
-                        <g:else>
-                            <div class="ui card la-role-yoda">
-                        </g:else>
                                 <div class="content">
                                     <dl>
                                         <dt><g:message code="org.incomingCombos.label" default="Incoming Combos" /></dt>
@@ -362,70 +361,80 @@
                                     </dl>
                                 </div>
                             </div><!--.card-->
-                    </g:if>
-
-                    <g:if test="${orgInstance?.links && ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
-                        <g:if test="${orgInstance.id == contextService.getOrg().id}">
-                            <div class="ui card">
                         </g:if>
                         <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
                             <div class="ui card la-role-admin">
-                        </g:elseif>
-                        <g:else>
-                            <div class="ui card la-role-yoda">
-                        </g:else>
                                 <div class="content">
-
-                                   <g:render template="/templates/links/orgRoleContainer" model="[listOfLinks: sorted_links]" />
-
+                                    <dl>
+                                        <dt><g:message code="org.incomingCombos.label" default="Incoming Combos" /></dt>
+                                        <dd>
+                                            <g:each in="${orgInstance.incomingCombos.sort{it.fromOrg.name}}" var="i">
+                                                <g:link controller="organisations" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
+                                                    (<g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
+                                                        ${id_in.identifier.ns.ns}: ${id_in.identifier.value}
+                                                    </g:each>)
+                                                    <br />
+                                            </g:each>
+                                        </dd>
+                                    </dl>
                                 </div>
                             </div><!--.card-->
-                    </g:if>
+                        </g:elseif>
+                        <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                            <div class="ui card la-role-yoda">
+                                <div class="content">
+                                    <dl>
+                                        <dt><g:message code="org.incomingCombos.label" default="Incoming Combos" /></dt>
+                                        <dd>
+                                            <g:each in="${orgInstance.incomingCombos.sort{it.fromOrg.name}}" var="i">
+                                                <g:link controller="organisations" action="show" id="${i.fromOrg.id}">${i.fromOrg?.name}</g:link>
+                                                (<g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id_in">
+                                                ${id_in.identifier.ns.ns}: ${id_in.identifier.value}
+                                            </g:each>)
+                                                <br />
+                                            </g:each>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div><!--.card-->
+                        </g:elseif>
+
+                    </g:if><%-- incomingCombos --%>
 
 
-                <div class="ui card la-dl-no-table">
-                    <div class="content">
-                        <h5 class="ui header">${message(code:'org.properties')}</h5>
+                    <g:if test="${sorted_links}">
 
-                        <div id="custom_props_div_props">
-                            <g:render template="/templates/properties/custom" model="${[
-                                    prop_desc: PropertyDefinition.ORG_PROP,
-                                    ownobj: orgInstance,
-                                    custom_props_div: "custom_props_div_props" ]}"/>
-                        </div>
-                    </div>
-                </div><!--.card-->
+                        <g:if test="${orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADMIN')}">
+                            <div class="ui card">
+                                <div class="content">
+                                   <g:render template="/templates/links/orgRoleContainer" model="[listOfLinks: sorted_links]" />
+                                </div>
+                            </div><!--.card-->
+                        </g:if>
+                        <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
+                            <div class="ui card la-role-admin">
+                                <div class="content">
+                                   <g:render template="/templates/links/orgRoleContainer" model="[listOfLinks: sorted_links]" />
+                                </div>
+                            </div><!--.card-->
+                        </g:elseif>
+                        <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                            <div class="ui card la-role-yoda">
+                                <div class="content">
+                                   <g:render template="/templates/links/orgRoleContainer" model="[listOfLinks: sorted_links]" />
+                                </div>
+                            </div><!--.card-->
+                        </g:elseif>
+                    </g:if><%-- sorted_links --%>
 
-            <r:script language="JavaScript">
-                $(document).ready(function(){
-                    c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
-                });
-            </r:script>
+                    <div id="new-dynamic-properties-block">
 
-            <g:each in="${authorizedOrgs}" var="authOrg">
-                <g:if test="${authOrg.name == contextOrg?.name}">
-                    <div class="ui card la-dl-no-table">
-                        <div class="content">
-                            <h5 class="ui header">${message(code:'org.properties.private')} ${authOrg.name}</h5>
+                        <g:render template="properties" model="${[
+                                orgInstance: orgInstance,
+                                authorizedOrgs: authorizedOrgs
+                        ]}" />
 
-                            <div id="custom_props_div_${authOrg.id}">
-                                <g:render template="/templates/properties/private" model="${[
-                                        prop_desc: PropertyDefinition.ORG_PROP,
-                                        ownobj: orgInstance,
-                                        custom_props_div: "custom_props_div_${authOrg.id}",
-                                        tenant: authOrg]}"/>
-
-                                <r:script language="JavaScript">
-                                    $(document).ready(function(){
-                                        c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
-                                    });
-                                </r:script>
-                            </div>
-                        </div>
-                    </div><!--.card-->
-                </g:if>
-            </g:each>
-
+                    </div><!-- #new-dynamic-properties-block -->
 
 
                 </div>

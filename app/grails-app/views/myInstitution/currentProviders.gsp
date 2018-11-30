@@ -13,7 +13,9 @@
             <semui:crumb message="menu.institutions.myProviders" class="active" />
         </semui:breadcrumbs>
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.institutions.myProviders" /></h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.institutions.myProviders" />
+        <semui:totalNumber total="${orgListTotal}"/>
+    </h1>
 
     <semui:messages data="${flash}" />
     <semui:filter>
@@ -22,8 +24,9 @@
                       model="[
                               propList: propList,
                               orgRoles: orgRoles,
-                              tmplConfigShow: ['role', 'property', 'name', 'country'],
-                              tmplConfigFormFilter: true
+                              tmplConfigShow: [['name', 'role'], ['country', 'property']],
+                              tmplConfigFormFilter: true,
+                              useNewLayouter: true
                       ]"/>
         </g:form>
     </semui:filter>
@@ -31,7 +34,7 @@
     <g:render template="/templates/filter/orgFilterTable"
               model="[orgList: orgList,
                       tmplShowCheckbox: false,
-                      tmplConfigShow: ['lineNumber', 'shortname', 'name', 'publicContacts', 'privateContacts', 'licenses', 'identifier']
+                      tmplConfigShow: ['lineNumber', 'shortname', 'name', 'privateContacts', 'numberOfSubscriptions']
               ]"/>
     <semui:paginate total="${orgListTotal}" params="${params}" />
   </body>

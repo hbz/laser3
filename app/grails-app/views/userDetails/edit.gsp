@@ -3,36 +3,69 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI">
-    <title>${ui.display}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="user.edit.label" /></title>
   </head>
-  <body>
+    <body>
 
     <g:render template="breadcrumb" model="${[ params:params ]}"/>
 
-     <h1 class="ui left aligned icon header"><semui:headerIcon />
+    <h1 class="ui left aligned icon header"><semui:headerIcon />
+        <g:message code="user.edit.label" />: ${ui.username}
+    </h1>
 
-         ${ui.username} :
-         <span id="displayEdit"
-               class="xEditableValue"
-               data-type="textarea"
-               data-pk="${ui.class.name}:${ui.id}"
-               data-name="display"
-               data-url='<g:createLink controller="ajax" action="editableSetValue"/>'
-               data-original-title="${ui.display}">${ui.display}</span></h1>
+    <semui:messages data="${flash}" />
 
+    <div class="ui two column grid">
 
-            <semui:messages data="${flash}" />
+        <div class="column wide eight">
+            <div class="ui segment form">
 
-            <sec:ifAnyGranted roles="ROLE_YODA">
-                <h3 class="ui header">Enabled</h3>
-                <p><semui:xEditable owner="${ui}" field="enabled"/></p>
-            </sec:ifAnyGranted>
+                <h4 class="ui header">Anzeigename</h4>
 
-          <h3 class="ui header">
-            ${message(code:'user.affiliation.plural', default:'Affiliations')}
-          </h3>
+                <span id="displayEdit"
+                      class="xEditableValue"
+                      data-type="textarea"
+                      data-pk="${ui.class.name}:${ui.id}"
+                      data-name="display"
+                      data-url='<g:createLink controller="ajax" action="editableSetValue"/>'
+                      data-original-title="${ui.display}">${ui.display}</span>
 
-          <table class="ui celled la-table table">
+                <h4 class="ui header">Enabled</h4>
+
+                <sec:ifAnyGranted roles="ROLE_YODA">
+                    <semui:xEditable owner="${ui}" field="enabled" />
+                </sec:ifAnyGranted>
+            </div>
+        </div>
+
+        <div class="column wide eight">
+            <div class="ui segment form">
+
+                <g:if test="${ui.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | ui.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
+
+                    <h4 class="ui header">${message(code: 'api.label', default:'API')}</h4>
+
+                    <div class="ui field">
+                        <label>${message(code: 'api.apikey.label', default:'API-Key')}</label>
+                        <input type="text" readonly="readonly" value="${ui.apikey}" />
+                    </div>
+
+                    <div class="ui field">
+                        <label>${message(code: 'api.apisecret.label', default:'API-Secret')}</label>
+                        <input type="text" readonly="readonly" value="${ui.apisecret}" />
+                    </div>
+                </g:if>
+
+            </div>
+        </div>
+
+    </div><!-- grid -->
+
+            <h4 class="ui dividing header">
+                ${message(code:'user.affiliation.plural', default:'Affiliations')}
+            </h4>
+
+          <table class="ui celled la-table la-table-small table">
             <thead>
               <tr>
                 <th>${message(code:'user.id', default:'Id')}</th>
@@ -60,9 +93,9 @@
             </tbody>
           </table>
 
-          <h3 class="ui header">${message(code:'user.role.plural', default:'Roles')}</h3>
+          <h4 class="ui dividing header">${message(code:'user.role.plural', default:'Roles')}</h4>
 
-          <table class="ui celled la-table table">
+          <table class="ui celled la-table la-table-small table">
             <thead>
               <tr>
                 <th>${message(code:'user.role', default:'Role')}</th>
@@ -81,28 +114,20 @@
                 </tr>
               </g:each>
             </tbody>
+              <tfoot>
+              <tr>
+                  <td colspan="2">
+                      <g:form class="ui form" controller="ajax" action="addToCollection">
+                          <input type="hidden" name="__context" value="${ui.class.name}:${ui.id}"/>
+                          <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.auth.UserRole"/>
+                          <input type="hidden" name="__recip" value="user"/>
+                          <input type="hidden" name="role" id="userRoleSelect"/>
+                          <input type="submit" class="ui button" value="${message(code:'user.role.add', default:'Add Role...')}"/>
+                      </g:form>
+                  </td>
+              </tr>
+              </tfoot>
           </table>
-
-           <g:form class="ui form" controller="ajax" action="addToCollection">
-              <input type="hidden" name="__context" value="${ui.class.name}:${ui.id}"/>
-              <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.auth.UserRole"/>
-              <input type="hidden" name="__recip" value="user"/>
-              <input type="hidden" name="role" id="userRoleSelect"/>
-              <input type="submit" class="ui button" value="${message(code:'user.role.add', default:'Add Role...')}"/>
-            </g:form>
-
-
-        <div class="ui form">
-            <g:if test="${ui.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | ui.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
-                <h3 class="ui header">${message(code: 'api.label', default:'API')}</h3>
-
-                <p>${message(code: 'api.apikey.label', default:'API-Key')}</p>
-                <input type="text" readonly="readonly" value="${ui.apikey}">
-
-                <p>${message(code: 'api.apisecret.label', default:'API-Secret')}</p>
-                <input type="text" readonly="readonly" value="${ui.apisecret}">
-            </g:if>
-        </div>
 
   <r:script language="JavaScript">
 

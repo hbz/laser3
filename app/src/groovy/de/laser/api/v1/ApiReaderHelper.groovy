@@ -253,6 +253,9 @@ class ApiReaderHelper {
             result.impId        = sub.impId
             result.startDate    = sub.startDate
             result.endDate      = sub.endDate
+            result.form         = sub.form?.value
+            result.type         = sub.type?.value
+            result.resource     = sub.resource?.value
             // References
             result.identifiers = resolveIdentifiers(sub.ids) // com.k_int.kbplus.IdentifierOccurrence
 

@@ -334,6 +334,7 @@ class ProfileController {
 
         if (cache.get('propDefs')) {
             propDefs = cache.get('propDefs')
+            log.debug('propDefs from cache')
         }
         else {
             PropertyDefinition.AVAILABLE_CUSTOM_DESCR.each { it ->
@@ -347,6 +348,7 @@ class ProfileController {
 
         if (cache.get('usedRdvList')) {
             usedRdvList = cache.get('usedRdvList')
+            log.debug('usedRdvList from cache')
         }
         else {
             (usedRdvList, rdvAttrMap) = refdataService.getUsageDetails()
@@ -355,6 +357,7 @@ class ProfileController {
 
         if (cache.get('usedPdList')) {
             usedPdList = cache.get('usedPdList')
+            log.debug('usedPdList from cache')
         }
         else {
             (usedPdList, pdAttrMap) = propertyService.getUsageDetails()

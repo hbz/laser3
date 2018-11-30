@@ -15,7 +15,7 @@ class SubscriptionPrivateProperty extends PrivateProperty {
         id      column:'spp_id'
         version column:'spp_version'
         type    column:'spp_type_fk'
-        owner   column:'spp_owner_fk'
+        owner   column:'spp_owner_fk', index:'spp_owner_idx'
     }
 
     static belongsTo = [

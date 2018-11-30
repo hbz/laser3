@@ -78,6 +78,7 @@
 @verticalBoxShadow: none;
 @groupButtonOffset: 0px 0px 0px 0px;
 @verticalGroupOffset: 0px 0px 0px 0px;
+@la-verticalGroupOffset: 1rem 0.8rem;
 
 /*-------------------
         States

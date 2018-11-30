@@ -13,12 +13,17 @@
     <g:render template="breadcrumb" model="${[ params:params ]}"/>
 
     <semui:controlButtons>
+        <semui:exportDropdown>
+            <semui:exportDropdownItem>
+                <g:link class="item" action="members" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
+            </semui:exportDropdownItem>
+        </semui:exportDropdown>
         <g:render template="actions" />
     </semui:controlButtons>
 
     <h1 class="ui left aligned icon header"><semui:headerIcon />
         <semui:xEditable owner="${subscriptionInstance}" field="name" />
-        <semui:anualRings object="${subscriptionInstance}" controller="subscriptionDetails" action="permissionInfo" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+        <semui:anualRings object="${subscriptionInstance}" controller="subscriptionDetails" action="members" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
     </h1>
 
     <g:render template="nav" />
@@ -35,7 +40,7 @@
                 </div>
 
                 <div class="field">
-                    <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label')}" />
+                    <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}" />
                 </div>
             </div>
         </form>

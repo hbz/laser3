@@ -36,7 +36,10 @@
         <g:form action="addMembers" method="get" params="[id: params.id]" class="ui form">
             <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
             <g:render template="/templates/filter/orgFilter"
-                      model="[tmplConfigShow: ['name', 'federalState', 'libraryNetwork', 'libraryType']
+                      model="[
+                              tmplConfigShow: [['name'], ['federalState', 'libraryNetwork', 'libraryType']],
+                              tmplConfigFormFilter: true,
+                              useNewLayouter: true
                       ]"/>
         </g:form>
     </semui:filter>

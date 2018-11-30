@@ -28,10 +28,14 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
 
     @Transient
     final static String LIC_PROP    = 'License Property'
-    @Transient
-    final static String LIC_OA_PROP = 'License Property: Open Access'
-    @Transient
-    final static String LIC_ARC_PROP = 'License Property: Archive'
+
+    //@Transient
+    //@Deprecated
+    //final static String LIC_OA_PROP = 'License Property: Open Access'
+    //@Transient
+    //@Deprecated
+    //final static String LIC_ARC_PROP = 'License Property: Archive'
+
     @Transient
     final static String ORG_CONF    = 'Organisation Config'
     @Transient
@@ -46,8 +50,8 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     @Transient
     final static String[] AVAILABLE_CUSTOM_DESCR = [
             LIC_PROP,
-            LIC_OA_PROP,
-            LIC_ARC_PROP,
+            //LIC_OA_PROP,
+            //LIC_ARC_PROP,
             ORG_CONF,
             SUB_PROP,
             SYS_CONF,
@@ -59,6 +63,13 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
             SUB_PROP,
             ORG_PROP,
             PRS_PROP
+    ]
+
+    @Transient
+    final static String[] AVAILABLE_GROUPS_DESCR = [
+            LIC_PROP,
+            SUB_PROP,
+            ORG_PROP
     ]
 
     String name
@@ -73,8 +84,10 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     boolean multipleOccurrence
     // mandatory
     boolean mandatory
-    // indicates this object is created via front-end and still not hard coded in bootstrap.groovy
+    // indicates this object is created via front-end
     boolean softData
+    // indicates this object is created via current bootstrap
+    boolean hardData
 
     //Map keys can change and they wont affect any of the functionality
     @Deprecated
@@ -94,6 +107,13 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
             'class java.util.Date'        : ['de': 'Datum', 'en': 'Date']
     ]
 
+    static hasMany = [
+            propDefGroupItems: PropertyDefinitionGroupItem
+    ]
+    static mappedBy = [
+            propDefGroupItems: 'propDef'
+    ]
+
     static mapping = {
                       id column: 'pd_id'
                    descr column: 'pd_description', index: 'td_new_idx'
@@ -104,7 +124,10 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
       multipleOccurrence column: 'pd_multiple_occurrence'
                mandatory column: 'pd_mandatory'
                 softData column: 'pd_soft_data'
+                hardData column: 'pd_hard_data'
                       sort name: 'desc'
+
+        propDefGroupItems cascade: 'all'  // for deleting
     }
 
     static constraints = {
@@ -116,6 +139,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         multipleOccurrence  (nullable: true,  blank: true,  default: false)
         mandatory           (nullable: false, blank: false, default: false)
         softData            (nullable: false, blank: false, default: false)
+        hardData            (nullable: false, blank:false,  default: false)
     }
 
     private static def typeIsValid(key) {
@@ -171,7 +195,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     }
 
     static def lookupOrCreate(name, typeClass, descr, multipleOccurence, mandatory, Org tenant) {
-        println typeClass
+        //println typeClass
         typeIsValid(typeClass)
 
         def type = findWhere(
@@ -224,8 +248,31 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         result
     }
 
+    def getDescrClass() {
+        getDescrClass(this.descr)
+    }
+
+    static getDescrClass(String descr) {
+        def result
+        def parts = descr.split(" ")
+
+        if (parts.size() >= 2) {
+            if (parts[0] == "Organisation") {
+                parts[0] = "Org"
+            }
+
+            result = Class.forName('com.k_int.kbplus.' + parts[0])?.name
+        }
+        result
+    }
+
     def getImplClass(String customOrPrivate) {
-        def parts = this.descr.split(" ")
+        getImplClass(this.descr, customOrPrivate)
+    }
+
+    static getImplClass(String descr, String customOrPrivate) {
+        def result
+        def parts = descr.split(" ")
 
         if (parts.size() >= 2) {
             if (parts[0] == "Organisation") {
@@ -236,16 +283,16 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
 
             try {
                 if (customOrPrivate.equalsIgnoreCase('custom') && Class.forName(cp)) {
-                    return cp
+                    result = cp
                 }
                 if (customOrPrivate.equalsIgnoreCase('private') && Class.forName(pp)) {
-                    return pp
+                    result = pp
                 }
             } catch (Exception e) {
 
             }
         }
-        null
+        result
     }
 
     def countUsages() {
@@ -324,7 +371,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     static getLocalizedValue(key){
         def locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
 
-        println locale
+        //println locale
         if (PropertyDefinition.validTypes2.containsKey(key)) {
             return (PropertyDefinition.validTypes2.get(key)."${locale}") ?: PropertyDefinition.validTypes2.get(key)
         } else {

@@ -8,7 +8,9 @@
 		<title><g:message code="default.list.label" args="[entityName]" /></title>
 	</head>
 	<body>
-		<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="default.list.label" args="[entityName]" /></h1>
+		<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="default.list.label" args="[entityName]" />
+			<semui:totalNumber total="${creatorTitleInstanceTotal}"/>
+		</h1>
 
         <semui:messages data="${flash}" />
 

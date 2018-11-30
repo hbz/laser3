@@ -5,16 +5,16 @@
     <head>
         <meta name="layout" content="semanticUI">
         <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.institutions.manage_props')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.institutions.manage_private_props')}</title>
     </head>
     <body>
 
     <semui:breadcrumbs>
         <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
-        <semui:crumb message="menu.institutions.manage_props" class="active" />
+        <semui:crumb message="menu.institutions.manage_private_props" class="active" />
     </semui:breadcrumbs>
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${institution?.name} - ${message(code: 'menu.institutions.manage_props')}</h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${institution.name}<semui:headerIcon /></h1>
 
     <semui:messages data="${flash}" />
 

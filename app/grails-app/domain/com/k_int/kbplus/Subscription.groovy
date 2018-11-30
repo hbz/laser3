@@ -1,6 +1,8 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
+import com.k_int.properties.PropertyDefinitionGroup
+import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.helper.RDStore
 import de.laser.traits.AuditTrait
 import de.laser.domain.AbstractBaseDomain
@@ -26,10 +28,12 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
     @Transient
     def changeNotificationService
     @Transient
-            def springSecurityService
+    def springSecurityService
 
   RefdataValue status
   RefdataValue type         // RefdataCatagory 'Subscription Type'
+  RefdataValue form         // RefdataCatagory 'Subscription Form'
+  RefdataValue resource     // RefdataCatagory 'Subscription Resource'
 
   String name
   String identifier
@@ -95,6 +99,8 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
         status      column:'sub_status_rv_fk'
         type        column:'sub_type_rv_fk'
         owner       column:'sub_owner_license_fk'
+        form        column:'sub_form_fk'
+        resource    column:'sub_resource_fk'
         name        column:'sub_name'
         identifier  column:'sub_identifier'
         impId       column:'sub_imp_id', index:'sub_imp_id_idx'
@@ -102,7 +108,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
         endDate     column:'sub_end_date'
         manualRenewalDate       column:'sub_manual_renewal_date'
         manualCancellationDate  column:'sub_manual_cancellation_date'
-        instanceOf              column:'sub_parent_sub_fk'
+        instanceOf              column:'sub_parent_sub_fk', index:'sub_parent_idx'
         previousSubscription    column:'sub_previous_subscription_fk'
         isSlaved        column:'sub_is_slaved'
         noticePeriod    column:'sub_notice_period'
@@ -115,6 +121,8 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
         status(nullable:true, blank:false)
         type(nullable:true, blank:false)
         owner(nullable:true, blank:false)
+        form        (nullable:true, blank:false)
+        resource    (nullable:true, blank:false)
         impId(nullable:true, blank:false)
         startDate(nullable:true, blank:false)
         endDate(nullable:true, blank:false)
@@ -376,6 +384,57 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
 
     def getNonDeletedDerivedSubscriptions() {
         Subscription.where{ instanceOf == this && (status == null || status.value != 'Deleted') }
+    }
+
+    def getCaculatedPropDefGroups() {
+        def result = [ 'global':[], 'local':[], 'member':[], fallback: true ]
+
+        // ALL type depending groups without checking tenants or bindings
+        def groups = PropertyDefinitionGroup.findAllByOwnerType(Subscription.class.name)
+        groups.each{ it ->
+
+            // cons_members
+            if (this.instanceOf && ! this.instanceOf.isTemplate()) {
+                def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, this.instanceOf)
+
+                // global groups
+                if (it.tenant == null) {
+                    if (binding) {
+                        result.member << [it, binding]
+                    } else {
+                        result.global << it
+                    }
+                }
+                // consortium @ member; getting group by tenant and instanceOf.binding
+                if (it.tenant?.id == contextService.getOrg()?.id) {
+                    if (binding) {
+                        result.member << [it, binding]
+                    }
+                }
+                // subscriber consortial; getting group by consortia and instanceOf.binding
+                else if (it.tenant?.id == this.instanceOf.getConsortia()?.id) {
+                    if (binding) {
+                        result.member << [it, binding]
+                    }
+                }
+            }
+            // consortium or locals
+            else {
+                def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, this)
+
+                if (it.tenant == null || it.tenant?.id == contextService.getOrg()?.id) {
+                    if (binding) {
+                        result.local << [it, binding]
+                    } else {
+                        result.global << it
+                    }
+                }
+            }
+        }
+
+        result.fallback = (result.global.size() == 0 && result.local.size() == 0 && result.member.size() == 0)
+
+        result
     }
 
   public String toString() {

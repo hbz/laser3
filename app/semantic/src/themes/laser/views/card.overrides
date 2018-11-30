@@ -105,3 +105,7 @@
 .ui.card>.content>a.header, .ui.cards>.card>.content>a.header {
   color: @linkColor;
 }
+
+.la-sidekick .hidden + .ui.card {
+  margin-top: 0em;
+}
