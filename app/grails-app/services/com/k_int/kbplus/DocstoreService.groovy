@@ -6,6 +6,7 @@ import groovy.xml.MarkupBuilder
 import groovyx.net.http.*
 import groovyx.net.http.ContentType.*
 import groovyx.net.http.Method.*
+import org.codehaus.groovy.runtime.InvokerHelper
 
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
@@ -366,9 +367,20 @@ class DocstoreService {
     destination = genericOIDService.resolveOID(destination)
     if(source == null  ||  destination == null) return;
     source.documents.each{
-      def docCopy = new DocContext(owner:it.owner,globannounce:it.globannounce,status:it.status,doctype:it.doctype,alert:it.alert,domain:it.domain)
+      /*def docCopy = new DocContext(owner:it.owner,globannounce:it.globannounce,status:it.status,doctype:it.doctype,alert:it.alert,domain:it.domain)
       destination.addToDocuments(docCopy)
-      destination.save(flush:true)
+      destination.save(flush:true)*/
+
+      Doc newDoc = new Doc()
+      InvokerHelper.setProperties(newDoc, it.owner.properties)
+      newDoc.save(flush: true)
+
+      DocContext newDocContext = new DocContext()
+      InvokerHelper.setProperties(newDocContext, it.properties)
+      newDocContext.subscription = destination
+      newDocContext.owner = newDoc
+      newDocContext.save(flush: true)
+
     }
   }
 

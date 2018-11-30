@@ -64,7 +64,7 @@ class User implements Permissions {
   }
 
   static mapping = {
-    password column: '`password`'
+      password column: '`password`'
   }
 
   Set<Role> getAuthorities() {

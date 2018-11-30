@@ -2,7 +2,6 @@
 <laser:serviceInjection />
 
 <!-- _propertyGroupBindings -->
-
     <div id="propDefGroupBindingConfig">
 
         <table class="ui la-table-small la-table-inCard table">
@@ -10,9 +9,11 @@
                 <tr>
                     <th>Merkmalsgruppe</th>
                     <th></th>
-                    <th>Voreinstellung</th>
-                    <th>Lokal sichtbar</th>
-                    <th>Für Teilnehmer sichtbar (falls lokal)</th>
+                    <th>Anzeigen<br />(Voreinstellung)</th>
+                    <th>Anzeigen<br />(Überschreiben)</th>
+                    <g:if test="${showConsortiaFunctions}">
+                        <th>Auch für Teilnehmer<br />anzeigen</th>
+                    </g:if>
                     <th></th>
                 </tr>
             </thead>
@@ -52,11 +53,13 @@
                                 <semui:xEditableRefData owner="${binding}" field="visible" config="YN" />
                             </g:if>
                         </td>
-                        <td>
-                            <g:if test="${editable && binding}">
-                                <semui:xEditableRefData owner="${binding}" field="visibleForConsortiaMembers" config="YN" />
-                            </g:if>
-                        </td>
+                        <g:if test="${showConsortiaFunctions}">
+                            <td>
+                                <g:if test="${editable && binding}">
+                                    <semui:xEditableRefData owner="${binding}" field="visibleForConsortiaMembers" config="YN" />
+                                </g:if>
+                            </td>
+                        </g:if>
                         <td class="x">
                             <g:if test="${editable}">
                                 <g:if test="${! binding}">
@@ -65,7 +68,9 @@
                                                       params='[propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}",
                                                                ownobj:"${ownobj.class.name}:${ownobj.id}",
                                                                visible:"No",
-                                                               editable:"${editable}"]'
+                                                               editable:"${editable}",
+                                                               showConsortiaFunctions:"${showConsortiaFunctions}"
+                                                                ]'
                                                       onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#propDefGroupBindingConfig')"
                                                       update="propDefGroupBindingConfig"
                                                       class="ui icon button">
@@ -77,7 +82,9 @@
                                                       params='[propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}",
                                                                ownobj:"${ownobj.class.name}:${ownobj.id}",
                                                                visible:"Yes",
-                                                               editable:"${editable}"]'
+                                                               editable:"${editable}",
+                                                               showConsortiaFunctions:"${showConsortiaFunctions}"
+                                                               ]'
                                                       onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#propDefGroupBindingConfig')"
                                                       update="propDefGroupBindingConfig"
                                                       class="ui icon button">
@@ -90,7 +97,9 @@
                                                   params='[propDefGroupBinding: "${binding.class.name}:${binding.id}",
                                                            propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}",
                                                            ownobj:"${ownobj.class.name}:${ownobj.id}",
-                                                           editable:"${editable}"]'
+                                                           editable:"${editable}",
+                                                           showConsortiaFunctions:"${showConsortiaFunctions}"
+                                                  ]'
                                                   onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#propDefGroupBindingConfig')"
                                                   update="propDefGroupBindingConfig"
                                                   class="ui icon negative button">

@@ -589,7 +589,7 @@ from License as l where (
         }
 
         if ( params.exportXLS=='yes' ) {
-            def subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params);
+            def subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]);
             exportcurrentSubscription(subscriptions)
             return
         }
@@ -1151,8 +1151,7 @@ from License as l where (
     }
 
     @Deprecated
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(['ROLE_ADMIN'])
     def processAddSubscription() {
 
         def user = User.get(springSecurityService.principal.id)
@@ -2637,7 +2636,10 @@ AND EXISTS (
                 previousSubscription: old_subOID ?: null,
                 type: Subscription.get(old_subOID)?.type ?: null,
                 isPublic: RefdataValue.getByValueAndCategory('No','YN'),
-                owner: params.subscription.copyLicense ? (Subscription.get(old_subOID)?.owner) : null)
+                owner: params.subscription.copyLicense ? (Subscription.get(old_subOID)?.owner) : null,
+                resource: Subscription.get(old_subOID)?.resource ?: null,
+                form: Subscription.get(old_subOID)?.form ?: null
+        )
         log.debug("New Sub: ${new_subscription.startDate}  - ${new_subscription.endDate}")
         def packages_referenced = []
         Date earliest_start_date = null
@@ -2668,9 +2670,10 @@ AND EXISTS (
         }
 
         if (!new_subscription.issueEntitlements) {
-            new_subscription.issueEntitlements = new java.util.TreeSet()
+           // new_subscription.issueEntitlements = new java.util.TreeSet()
         }
 
+        if(ent_count > -1){
         for (int i = 0; i <= ent_count; i++) {
             def entitlement = params.entitlements."${i}";
             log.debug("process entitlement[${i}]: ${entitlement} - TIPP id is ${entitlement.tipp_id}");
@@ -2750,6 +2753,7 @@ AND EXISTS (
             } else {
                 log.debug("Unable to locate tipp with id ${entitlement.tipp_id}");
             }
+        }
         }
         log.debug("done entitlements...");
 
@@ -3201,8 +3205,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 }
             } else if (params.cmd == "deleteBudgetCode") {
                 def bc = genericOIDService.resolveOID(params.bc)
-
-                if (bc && bc.owner == result.institution) {
+                if (bc && bc.owner.id == result.institution.id) {
                     bc.delete()
                 }
             }
@@ -3359,8 +3362,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADMIN")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADMIN") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def managePropertyGroups() {
         def result = setResultGenerics()
         result.editable = true // true, because action is protected
@@ -3653,7 +3656,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     private def exportOrg(orgs, message, addHigherEducationTitles) {
         try {
             def titles = [
-                    'Name', 'Kurzname', 'Sortiername']
+                    'Name', g.message(code: 'org.shortname.label'), g.message(code: 'org.sortname.label')]
 
             def orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
             def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
@@ -3661,11 +3664,11 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
             if(addHigherEducationTitles)
             {
-                titles.add('Bibliothekstyp')
-                titles.add('Verbundszugehörigkeit')
-                titles.add('Trägerschaft')
-                titles.add('Bundesland')
-                titles.add('Land')
+                titles.add(g.message(code: 'org.libraryType.label'))
+                titles.add(g.message(code: 'org.libraryNetwork.label'))
+                titles.add(g.message(code: 'org.funderType.label'))
+                titles.add(g.message(code: 'org.federalState.label'))
+                titles.add(g.message(code: 'org.country.label'))
             }
 
             def propList =
