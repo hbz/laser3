@@ -60,12 +60,12 @@ class ApiCostItem {
     /**
      * @return grails.converters.JSON | FORBIDDEN
      */
-    static getCostItems(User user, Org context){
+    static getCostItems(User user, Org context, Date startDate, Date endDate){
         def result = []
         def hasAccess = de.laser.api.v1.ApiReader.isDataManager(user)
 
         if (hasAccess) {
-            result = de.laser.api.v1.ApiReader.exportCostItems(ApiReaderHelper.IGNORE_NONE, context)
+            result = de.laser.api.v1.ApiReader.exportCostItems(ApiReaderHelper.IGNORE_NONE, context, startDate, endDate)
         }
 
         return (hasAccess ? (result ? new JSON(result) : null) : Constants.HTTP_FORBIDDEN)
