@@ -1,10 +1,3 @@
-0.10.10
-
-- changed v1 api
-
-0.10.9
-
-- bugfix: visible private contacts
 
 0.11
 
@@ -17,6 +10,14 @@
 - fixed deletion of tasks
 - various markup and style changes
 - minor bugfixes
+
+0.10.10
+
+- changed v1 api
+
+0.10.9
+
+- bugfix: visible private contacts
 
 0.10.8
 
