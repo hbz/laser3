@@ -204,7 +204,7 @@
 
                                 <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
                             <semui:securedMainNavItem message="menu.institutions.financeImport" />
-                                <%-- this is part one of ticket #730! --%>
+                                <%-- this is part one of ticket #753! --%>
                             <%--<semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />--%>
 
                             </g:if>
