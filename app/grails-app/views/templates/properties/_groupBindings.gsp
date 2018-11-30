@@ -2,7 +2,6 @@
 <laser:serviceInjection />
 
 <!-- _propertyGroupBindings -->
-
     <div id="propDefGroupBindingConfig">
 
         <table class="ui la-table-small la-table-inCard table">
@@ -54,9 +53,11 @@
                                 <semui:xEditableRefData owner="${binding}" field="visible" config="YN" />
                             </g:if>
                         </td>
-                        <g:if test="${editable && binding && showConsortiaFunctions}">
+                        <g:if test="${showConsortiaFunctions}">
                             <td>
-                                <semui:xEditableRefData owner="${binding}" field="visibleForConsortiaMembers" config="YN" />
+                                <g:if test="${editable && binding}">
+                                    <semui:xEditableRefData owner="${binding}" field="visibleForConsortiaMembers" config="YN" />
+                                </g:if>
                             </td>
                         </g:if>
                         <td class="x">
@@ -67,7 +68,9 @@
                                                       params='[propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}",
                                                                ownobj:"${ownobj.class.name}:${ownobj.id}",
                                                                visible:"No",
-                                                               editable:"${editable}"]'
+                                                               editable:"${editable}",
+                                                               showConsortiaFunctions:"${showConsortiaFunctions}"
+                                                                ]'
                                                       onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#propDefGroupBindingConfig')"
                                                       update="propDefGroupBindingConfig"
                                                       class="ui icon button">
@@ -79,7 +82,9 @@
                                                       params='[propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}",
                                                                ownobj:"${ownobj.class.name}:${ownobj.id}",
                                                                visible:"Yes",
-                                                               editable:"${editable}"]'
+                                                               editable:"${editable}",
+                                                               showConsortiaFunctions:"${showConsortiaFunctions}"
+                                                               ]'
                                                       onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#propDefGroupBindingConfig')"
                                                       update="propDefGroupBindingConfig"
                                                       class="ui icon button">
@@ -92,7 +97,9 @@
                                                   params='[propDefGroupBinding: "${binding.class.name}:${binding.id}",
                                                            propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}",
                                                            ownobj:"${ownobj.class.name}:${ownobj.id}",
-                                                           editable:"${editable}"]'
+                                                           editable:"${editable}",
+                                                           showConsortiaFunctions:"${showConsortiaFunctions}"
+                                                  ]'
                                                   onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#propDefGroupBindingConfig')"
                                                   update="propDefGroupBindingConfig"
                                                   class="ui icon negative button">

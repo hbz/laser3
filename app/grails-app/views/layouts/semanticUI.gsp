@@ -513,44 +513,42 @@
                                         // 1. add class 'hidden' via markup to all cards that might be toggled
                                         // 2. add class 'la-js-hideable' to all cards that might be toggled
                                         // 3. add class 'la-js-dont-hide-this-card' to markup that is rendered only in case of card has content, like to a table <th>
-                                        // 4.
+
                                         var toggleButton = $(".ui.toggle.button");
                                         var toggleIcon = $(".ui.toggle.button .icon");
                                         $(".table").trigger('reflow');
 
                                         if (  editMode) {
                                             // show Contoll Elements
-                                            $('.card').removeClass('hidden');
+                                            $('.card').not('.ui.modal .card').removeClass('hidden');
                                             $('.la-js-hide-this-card').removeClass('hidden');
-                                            $('.ui .form').removeClass('hidden');
+                                            $('.ui .form').not('.ui.modal .ui.form').removeClass('hidden');
                                             $('#collapseableSubDetails').find('.button').removeClass('hidden');
                                             $(toggleButton).removeAttr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
                                             $(toggleButton).attr("data-tooltip","${message(code:'statusbar.showButtons.tooltip')}");
                                             $(toggleIcon ).removeClass( "slash" );
                                             $(toggleButton).addClass('active');
-
-                                            $('.xEditableValue').editable('option', 'disabled', false);
-                                            $('.xEditable').editable('option', 'disabled', false);
-                                            $('.xEditableDatepicker').editable('option', 'disabled', false);
-                                            $('.xEditableManyToOne').editable('option', 'disabled', false);
+                                            $('.xEditableValue').not('.ui.modal .xEditableValue').editable('option', 'disabled', false);
+                                            $('.xEditable').not('.ui.modal .xEditable').editable('option', 'disabled', false);
+                                            $('.xEditableDatepicker').not('.ui.modal .xEditableDatepicker').editable('option', 'disabled', false);
+                                            $('.xEditableManyToOne').not('.ui.modal .xEditableManyToOne').editable('option', 'disabled', false);
                                         }
                                         else {
                                             // hide Contoll Elements
-                                            $('.card').removeClass('hidden');
+                                            $('.card').not('.ui.modal .card').removeClass('hidden');
                                             $('.card.la-js-hideable').not( ":has(.la-js-dont-hide-this-card)" ).addClass('hidden');
                                             $('.la-js-hide-this-card').addClass('hidden');
-                                            $('.ui .form').addClass('hidden');
-                                            $('#collapseableSubDetails').find('.button').addClass('hidden');
-                                            // hide all the x-editable
+                                            $('.ui.form').not('.ui.modal .ui.form').addClass('hidden');
+                                            $('#collapseableSubDetails').not('.ui.modal').find('.button').not('.ui.modal .button').addClass('hidden');
                                             $(toggleButton).removeAttr();
                                             $(toggleButton).attr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
                                             $( toggleIcon ).addClass( "slash" );
                                             $(toggleButton).removeClass('active');
-
-                                            $('.xEditableValue').editable('option', 'disabled', true);
-                                            $('.xEditable').editable('option', 'disabled', true);
-                                            $('.xEditableDatepicker').editable('option', 'disabled', true);
-                                            $('.xEditableManyToOne').editable('option', 'disabled', true);
+                                            // hide all the x-editable
+                                            $('.xEditableValue').not('.ui.modal .xEditableValue').editable('option', 'disabled', true);
+                                            $('.xEditable').not('.ui.modal .xEditable').editable('option', 'disabled', true);
+                                            $('.xEditableDatepicker').not('.ui.modal .xEditableDatepicker').editable('option', 'disabled', true);
+                                            $('.xEditableManyToOne').not('.ui.modal .xEditableManyToOne').editable('option', 'disabled', true);
                                         }
                                     }
                                     toggleEditableElements();

@@ -434,9 +434,9 @@ databaseChangeLog = {
 		addForeignKeyConstraint(baseColumnNames: "pde_property_definition_group_fk", baseTableName: "property_definition_group_item", constraintName: "FKA535F455D48EB011", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "pdg_id", referencedTableName: "property_definition_group", referencesUniqueColumn: "false")
 	}
 
-	changeSet(author: "kloberd (generated)", id: "1542893167281-22") {
-		addForeignKeyConstraint(baseColumnNames: "fact_type_id", baseTableName: "stats_triple_cursor", constraintName: "FKB71D92B77430C71E", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "rdv_id", referencedTableName: "refdata_value", referencesUniqueColumn: "false")
-	}
+	//changeSet(author: "kloberd (generated)", id: "1542893167281-22") {
+	//	addForeignKeyConstraint(baseColumnNames: "fact_type_id", baseTableName: "stats_triple_cursor", constraintName: "FKB71D92B77430C71E", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "rdv_id", referencedTableName: "refdata_value", referencesUniqueColumn: "false")
+	//}
 
 	changeSet(author: "kloberd (generated)", id: "1542893167281-23") {
 		addForeignKeyConstraint(baseColumnNames: "sub_form_fk", baseTableName: "subscription", constraintName: "FK1456591DA64FB8D2", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "rdv_id", referencedTableName: "refdata_value", referencesUniqueColumn: "false")
