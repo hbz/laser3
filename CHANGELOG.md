@@ -8,6 +8,8 @@
 - reworked filter layouts
 - fixed property filter for date type
 - fixed deletion of tasks
+- various markup and style changes
+- minor bugfixes
 
 0.10.8
 
