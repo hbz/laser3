@@ -3300,6 +3300,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         params.orgRoleType   = RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')?.id?.toString()
         params.orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')?.id?.toString()
 
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         result.propList =
                 PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
                         defList: [PropertyDefinition.ORG_PROP],
@@ -3324,17 +3326,19 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
         }
         def fsq = filterService.getOrgComboQuery(params, result.institution)
+        def consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
 
-        def consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams, params)
-
-        def tmpQuery        = ["SELECT o FROM Org o WHERE o.id IN (:oids)"]
-        def tmpQueryParams  = [oids: consortiaMembers.collect{ it.id }]
-
-        if (params.filterPropDef && tmpQueryParams.oids) {
-            (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, tmpQuery, 'o', tmpQueryParams)
-            result.consortiaMembers = Org.executeQuery( tmpQuery.join(' '), tmpQueryParams )
+        if (params.filterPropDef && consortiaMembers) {
+            def tmpQueryParams           = [oids: consortiaMembers.collect{ it.id }]
+            def tmpQuery                 = "select o FROM Org o WHERE o.id IN (:oids)"
+            (tmpQuery, tmpQueryParams)   = propertyService.evalFilterQuery(params, tmpQuery, 'o', tmpQueryParams)
+            result.consortiaMembers      = Org.executeQuery( tmpQuery, tmpQueryParams, [max: result.max, offset: result.offset] )
+            tmpQuery                     = "select count(o) " + tmpQuery.minus("select o ")
+            result.consortiaMembersCount = Org.executeQuery( tmpQuery, tmpQueryParams )[0]
         } else {
-            result.consortiaMembers = consortiaMembers
+            result.consortiaMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params << [max: result.max, offset: result.offset] )
+            def tmpQuery                 = "select count(o) " + fsq.query.minus("select o ")
+            result.consortiaMembersCount = Org.executeQuery( tmpQuery, fsq.queryParams)[0]
         }
 
         if ( params.exportXLS=='yes' ) {
