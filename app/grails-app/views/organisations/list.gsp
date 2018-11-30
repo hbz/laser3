@@ -19,9 +19,7 @@
                         <g:link class="item" action="list" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
                     </semui:exportDropdownItem>
                 </semui:exportDropdown>
-                <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
                     <g:render template="actions" />
-                </sec:ifAnyGranted>
             </semui:controlButtons>
 
 
