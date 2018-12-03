@@ -10,7 +10,6 @@ import static de.laser.helper.RDStore.*
 class QueryService {
     def contextService
     def subscriptionsQueryService
-
     def taskService
 
     def getDueObjects(int daysToBeInformedBeforeToday) {

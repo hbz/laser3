@@ -38,19 +38,29 @@ class DashboardDueDatesService {
     }
 
     public void takeCareOfDueDates(boolean isUpdateDashboardTableInDatabase, boolean isSendEmailsForDueDatesOfAllUsers) {
-        synchronized(this) {
+//        synchronized(this) {
             if ( update_running == true ) {
                 log.info("Exiting DashboardDueDatesService takeCareOfDueDates - one already running");
                 return
             } else {
-                update_running = true;
-                log.info("Start DashboardDueDatesService takeCareOfDueDates");
-                    if (isUpdateDashboardTableInDatabase) { updateDashboardTableInDatabase() }
-                    if (isSendEmailsForDueDatesOfAllUsers) { sendEmailsForDueDatesOfAllUsers()}
-                log.info("Finished DashboardDueDatesService takeCareOfDueDates");
-                update_running = false
+                try {
+                    update_running = true;
+                    log.info("Start DashboardDueDatesService takeCareOfDueDates");
+                    if (isUpdateDashboardTableInDatabase) {
+                        updateDashboardTableInDatabase()
+                    }
+                    if (isSendEmailsForDueDatesOfAllUsers) {
+                        sendEmailsForDueDatesOfAllUsers()
+                    }
+                    log.info("Finished DashboardDueDatesService takeCareOfDueDates");
+                } catch (Throwable t) {
+                    log.error("DashboardDueDatesService - takeCareOfDueDates() :: Unable to perform email due to exception ${t.message}")
+                    update_running = false
+                } finally {
+                    update_running = false
+                }
             }
-        }
+//        }
     }
     private void updateDashboardTableInDatabase(){
         List<DashboardDueDate> dashboarEntriesToInsert = []

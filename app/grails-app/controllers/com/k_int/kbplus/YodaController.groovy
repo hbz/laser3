@@ -435,20 +435,18 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def dueDates_updateDashboardDB(){
         flash.message = "Datenbank wird upgedatet"
-        def future = executorService.submit({
+//        def future = executorService.submit({
             dashboardDueDatesService.takeCareOfDueDates(true, false)
-        } as java.util.concurrent.Callable)
-        flash.message = "Datenbank ist upgedatet"
+//        } as java.util.concurrent.Callable)
         redirect(url: request.getHeader('referer'))
     }
 
     @Secured(['ROLE_YODA'])
     def dueDates_sendAllEmails() {
         flash.message = "Emails mit fälligen Terminen werden vesandt"
-        def future = executorService.submit({
+//        def future = executorService.submit({
             dashboardDueDatesService.takeCareOfDueDates(false, true)
-        } as java.util.concurrent.Callable)
-        flash.message = "Emails mit fälligen Terminen sind vesandt"
+//        } as java.util.concurrent.Callable)
         redirect(url: request.getHeader('referer'))
     }
 
