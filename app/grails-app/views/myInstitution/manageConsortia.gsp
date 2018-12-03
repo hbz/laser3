@@ -24,7 +24,9 @@
     <g:render template="actions"/>
 </semui:controlButtons>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'menu.institutions.manage_consortia')}</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'menu.institutions.manage_consortia')}
+<semui:totalNumber total="${consortiaMembersCount}"/>
+</h1>
 
 <semui:messages data="${flash}"/>
 
@@ -48,7 +50,6 @@
                           tmplConfigShow: ['sortname', 'name', 'mainContact', 'currentFTEs', 'numberOfSubscriptions', 'libraryType']
                   ]"/>
 
-        <br/>
 
         <g:if test="${consortiaMembers}">
             <input type="submit" class="ui button"
@@ -56,6 +57,7 @@
         </g:if>
     </g:form>
     <g:render template="../templates/copyEmailaddresses" model="[orgList: consortiaMembers]"/>
+    <semui:paginate action="manageConsortia" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${consortiaMembersCount}" />
 
 </body>
 </html>

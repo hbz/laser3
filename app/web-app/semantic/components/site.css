@@ -574,6 +574,9 @@ aside.ui.accordion .title:not(.ui) {
   margin-top: -20px;
   margin-left: -3px;
 }
+.editable-disabled {
+  cursor: text !important;
+}
 .la-space-right {
   padding-right: 20px;
 }
