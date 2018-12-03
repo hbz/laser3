@@ -102,12 +102,6 @@
 
     </div>
         <div class="ui bottom attached active tab segment" data-tab="first" style="border-top: 1px solid #d4d4d5; ">
-            <g:link class="ui button" controller="myInstitution" action="cronjobtest" >
-                Dashboardtabelle in DB updaten
-            </g:link>
-            <g:link class="ui button" controller="myInstitution" action="sendAllEmailsTest" >
-                Alle Emails für Dashboardtabelleeinträge senden
-            </g:link>
             <div>
                 <g:render template="/user/dueDatesView"
                           model="[user: contextService.user,

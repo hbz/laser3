@@ -19,6 +19,9 @@ laserSystemId = 'local'
 // - enable notification
 // - enable reminder
 //hbzMaster = true
+isUpdateDashboardTableInDatabase = true
+isSendEmailsForDueDatesOfAllUsers = true
+
 
 // Database Migration Plugin
 grails.plugin.databasemigration.updateOnStart = false

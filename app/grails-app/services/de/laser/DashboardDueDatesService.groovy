@@ -23,6 +23,7 @@ class DashboardDueDatesService {
 
     def queryService
     def mailService
+    def executorService
     def grailsApplication
     String from
     String replyTo
@@ -36,65 +37,58 @@ class DashboardDueDatesService {
         log.info("Initialised DashboardDueDatesService...")
     }
 
-    public void takeCareOfDueDates() {
+    public void takeCareOfDueDates(boolean isUpdateDashboardTableInDatabase, boolean isSendEmailsForDueDatesOfAllUsers) {
         synchronized(this) {
             if ( update_running == true ) {
                 log.info("Exiting DashboardDueDatesService takeCareOfDueDates - one already running");
                 return
-            }
-            else {
+            } else {
                 update_running = true;
                 log.info("Start DashboardDueDatesService takeCareOfDueDates");
-                updateDashboardTableInDatabase(true)
+                def future = executorService.submit({
+                    if (isUpdateDashboardTableInDatabase) { updateDashboardTableInDatabase() }
+                    if (isSendEmailsForDueDatesOfAllUsers) { sendEmailsForDueDatesOfAllUsers()}
+                } as java.util.concurrent.Callable)
                 log.info("Finished DashboardDueDatesService takeCareOfDueDates");
+                update_running = false
             }
         }
     }
-    //TODO Mails werden nach localhost Port 30 geschickt, siehe Einstellung unter grails-app/conf/Config.groovy
-    //TODO Rollback überprüfen
-//    @Transactional(propagation= Propagation.REQUIRES_NEW, rollbackFor = Throwable.class)
-    public void updateDashboardTableInDatabase(boolean isSendEmail){
-        try{
-            DashboardDueDate.executeUpdate("DELETE from DashboardDueDate ")
-            def users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
-            users.each { user ->
-                def orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, user);
-                int reminderPeriod = user.getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14).value
-                orgs.each {org ->
-                    def dueObjects = queryService.getDueObjects(org, user, reminderPeriod)
-                    List<DashboardDueDate> dashbordEntries = []
-                    dueObjects.each { obj ->
-                        if (obj instanceof Subscription) {
-                            if (obj.manualCancellationDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.manualCancellationDate, reminderPeriod)) {
-                                DashboardDueDate dashEntry = new DashboardDueDate(obj, true, user, org)
-                                dashEntry.save(flush: true)
-                                dashbordEntries.add(dashEntry)
-                            }
-                            if (obj.endDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.endDate, reminderPeriod)) {
-                                DashboardDueDate dashEntry = new DashboardDueDate(obj, false, user, org)
-                                dashEntry.save(flush: true)
-                                dashbordEntries.add(dashEntry)
-                            }
-                        } else {
-                            DashboardDueDate dashEntry = new DashboardDueDate(obj, user, org)
-                            dashEntry.save(flush: true)
-                            dashbordEntries.add(dashEntry)
+    private void updateDashboardTableInDatabase(){
+        List<DashboardDueDate> dashboarEntriesToInsert = []
+        def users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
+        users.each { user ->
+            def orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, user);
+            int reminderPeriod = user.getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14).value
+            orgs.each {org ->
+                def dueObjects = queryService.getDueObjects(org, user, reminderPeriod)
+                dueObjects.each { obj ->
+                    if (obj instanceof Subscription) {
+                        if (obj.manualCancellationDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.manualCancellationDate, reminderPeriod)) {
+                            dashboarEntriesToInsert.add(new DashboardDueDate(obj, true, user, org))
                         }
-                    }
-                    boolean userWantsEmailReminder = RDStore.YN_YES.equals(user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO).rdValue)
-                    if (isSendEmail && userWantsEmailReminder){
-                        sendEmailWithDashboardToUser(user, org, dashbordEntries)
+                        if (obj.endDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.endDate, reminderPeriod)) {
+                            dashboarEntriesToInsert.add(new DashboardDueDate(obj, false, user, org))
+                        }
+                    } else {
+                        dashboarEntriesToInsert.add(new DashboardDueDate(obj, user, org))
                     }
                 }
             }
-        } catch (Throwable t) {
-            log.error("Bei DashboardDueDatesService.updateDashboardTableInDatabase ist ein Fehler aufgetreten: " + t.getMessage());
-//            log.error("Bei DashboardDueDatesService.updateDashboardTableInDatabase Transaction Rollback");
-            throw t
         }
+        DashboardDueDate.withTransaction { status ->
+            try {
+                DashboardDueDate.executeUpdate("DELETE from DashboardDueDate ")
+                dashboarEntriesToInsert.each { it.save(flush: true) }
+            } catch (Throwable t) {
+                status.setRollbackOnly()
+            }
+
+        }
+
     }
 
-    public void sendEmailsForDueDatesOfAllUsers() {
+    private void sendEmailsForDueDatesOfAllUsers() {
         def users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
         users.each { user ->
             boolean userWantsEmailReminder = RDStore.YN_YES.equals(user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO).rdValue)
@@ -110,23 +104,23 @@ class DashboardDueDatesService {
 
     private void sendEmailWithDashboardToUser(User user, Org org, List<DashboardDueDate> dashboardEntries) {
         def emailReceiver = user.getEmail()
-        def subject = "LAS:eR - Fälligen Termine ("+org.name+")"
+        def subject = "LASe:R - Fällige Termine ("+org.name+")"
         sendEmail(emailReceiver, subject, dashboardEntries, null, null, user, org)
     }
 
-    private void sendEmail(emailReceiver, subject, dashboardEntries, overrideReplyTo, overrideFrom, user, org) {
+    private void sendEmail(userAddress, subjectTrigger, dashboardEntries, overrideReplyTo, overrideFrom, user, org) {
         try {
-            if (emailReceiver == null || emailReceiver.isEmpty()) {
+            if (userAddress == null || userAddress.isEmpty()) {
                 log.info("Folgender Benutzer hat keine Emailadresse hinterlegt und kann nicht über fällige Termine informiert werden: " + user.username);
             } else {
                 mailService.sendMail {
-                    to emailReceiver
+                    to userAddress
                     from overrideFrom != null ? overrideFrom : from
                     replyTo overrideReplyTo != null ? overrideReplyTo : replyTo
-                    subject subject
+                    subject subjectTrigger
                     body(view: "/user/_emailDueDatesView", model: [user: user, org: org, dueDates: dashboardEntries])
                 }
-                log.info("SendEmail finished to "+ user.getDisplayName() + " - " + user.email);
+                log.info("DashboardDueDatesService - SendEmail finished to "+ user.getDisplayName() + " - " + user.email);
             }
         } catch (Exception e) {
             log.error("DashboardDueDatesService - sendEmail() :: Unable to perform email due to exception ${e.message}")

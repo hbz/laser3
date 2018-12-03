@@ -65,15 +65,6 @@ class MyInstitutionController {
             new SimpleDateFormat('yyyy/MM'),
             new SimpleDateFormat('yyyy')
     ]
-    def cronjobtest(){
-        dashboardDueDatesService.updateDashboardTableInDatabase(true)
-        redirect controller: 'myInstitution', action: 'dashboard'
-    }
-
-    def sendAllEmailsTest() {
-        dashboardDueDatesService.sendEmailsForDueDatesOfAllUsers()
-        redirect controller: 'myInstitution', action: 'dashboard'
-    }
 
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })

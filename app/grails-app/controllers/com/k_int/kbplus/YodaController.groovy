@@ -21,6 +21,7 @@ class YodaController {
     def dataloadService
     def globalSourceSyncService
     def contextService
+    def dashboardDueDatesService
 
     static boolean ftupdate_running = false
 
@@ -429,5 +430,20 @@ class YodaController {
 
         redirect(action: 'manageSystemMessage')
     }
+
+    @Secured(['ROLE_YODA'])
+    def dueDates_updateDashboardDB(){
+        dashboardDueDatesService.takeCareOfDueDates(true, false)
+        flash.message = "Datenbank wurde upgedatet"
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_YODA'])
+    def dueDates_sendAllEmails() {
+        dashboardDueDatesService.takeCareOfDueDates(false, true)
+        flash.message = "Emails mit fälligen Terminen wurden vesandt"
+        redirect(url: request.getHeader('referer'))
+    }
+
 
 }

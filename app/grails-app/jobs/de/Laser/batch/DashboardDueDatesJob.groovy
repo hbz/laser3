@@ -11,17 +11,14 @@ class DashboardDueDatesJob {
     }
 
     def execute() {
-        log.debug("Execute::dashboardDueDatesJob");
-//        if ( grailsApplication.config.KBPlusMaster == true ) {
-//            log.debug("This server is marked as KBPlus master. Running DashboardDueDates batch job");
-            dashboardDueDatesService.takeCareOfDueDates()
-//        }
-//        else if ( grailsApplication.config.hbzMaster == true && grailsApplication.config.StatsSyncJobActiv == true ) {
-//            log.debug("This server is marked as KBPlus master. Running DashboardDueDates batch job");
-//            dashboardDueDatesService.takeCareOfDueDates()
-//        }
-//        else {
-//            log.debug("This server is NOT marked as KBPlus master. NOT Running DashboardDueDates batch job");
-//        }
+        if (grailsApplication.config.isUpdateDashboardTableInDatabase || grailsApplication.config.isSendEmailsForDueDatesOfAllUsers) {
+            log.debug("Execute::dashboardDueDatesJob");
+            dashboardDueDatesService.takeCareOfDueDates(
+                    grailsApplication.config.isUpdateDashboardTableInDatabase,
+                    grailsApplication.config.isSendEmailsForDueDatesOfAllUsers
+            )
+        } else {
+            log.debug("DashboardDueDates batch job: isUpdateDashboardTableInDatabase and isSendEmailsForDueDatesOfAllUsers are switched off in grailsApplication.config file");
+        }
     }
 }
