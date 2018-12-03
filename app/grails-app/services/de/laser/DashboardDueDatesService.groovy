@@ -45,10 +45,8 @@ class DashboardDueDatesService {
             } else {
                 update_running = true;
                 log.info("Start DashboardDueDatesService takeCareOfDueDates");
-                def future = executorService.submit({
                     if (isUpdateDashboardTableInDatabase) { updateDashboardTableInDatabase() }
                     if (isSendEmailsForDueDatesOfAllUsers) { sendEmailsForDueDatesOfAllUsers()}
-                } as java.util.concurrent.Callable)
                 log.info("Finished DashboardDueDatesService takeCareOfDueDates");
                 update_running = false
             }
@@ -104,7 +102,7 @@ class DashboardDueDatesService {
 
     private void sendEmailWithDashboardToUser(User user, Org org, List<DashboardDueDate> dashboardEntries) {
         def emailReceiver = user.getEmail()
-        def subject = "LASe:R - Fällige Termine ("+org.name+")"
+        def subject = "LASe:R - Fällige Termine (" + org.name + ")"
         sendEmail(emailReceiver, subject, dashboardEntries, null, null, user, org)
     }
 
@@ -120,7 +118,7 @@ class DashboardDueDatesService {
                     subject subjectTrigger
                     body(view: "/user/_emailDueDatesView", model: [user: user, org: org, dueDates: dashboardEntries])
                 }
-                log.info("DashboardDueDatesService - SendEmail finished to "+ user.getDisplayName() + " - " + user.email);
+                log.info("DashboardDueDatesService - sendEmail() finished to "+ user.getDisplayName() + " - " + user.email + "-" + org.name);
             }
         } catch (Exception e) {
             log.error("DashboardDueDatesService - sendEmail() :: Unable to perform email due to exception ${e.message}")

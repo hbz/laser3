@@ -6,8 +6,8 @@ class DashboardDueDatesJob {
 
     static triggers = {
         cron name:'DashboardDueDatesTrigger', cronExpression: "0 0 22 * * ?" //Fire at 22:00 every day
-//        cron name:'DashboardDueDatesTrigger', cronExpression: "* /15 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every 15th minute
-//        cron name:'DashboardDueDatesTrigger', cronExpression: "* /1 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every 2nd minute
+//        cron name:'DashboardDueDatesTrigger', cronExpression: "0 /15 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every 15th minute
+//        cron name:'DashboardDueDatesTrigger', cronExpression: "0 /5 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every 5th minute
     }
 
     def execute() {

@@ -22,6 +22,7 @@ class YodaController {
     def globalSourceSyncService
     def contextService
     def dashboardDueDatesService
+    def executorService
 
     static boolean ftupdate_running = false
 
@@ -433,15 +434,21 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def dueDates_updateDashboardDB(){
-        dashboardDueDatesService.takeCareOfDueDates(true, false)
-        flash.message = "Datenbank wurde upgedatet"
+        flash.message = "Datenbank wird upgedatet"
+        def future = executorService.submit({
+            dashboardDueDatesService.takeCareOfDueDates(true, false)
+        } as java.util.concurrent.Callable)
+        flash.message = "Datenbank ist upgedatet"
         redirect(url: request.getHeader('referer'))
     }
 
     @Secured(['ROLE_YODA'])
     def dueDates_sendAllEmails() {
-        dashboardDueDatesService.takeCareOfDueDates(false, true)
-        flash.message = "Emails mit fälligen Terminen wurden vesandt"
+        flash.message = "Emails mit fälligen Terminen werden vesandt"
+        def future = executorService.submit({
+            dashboardDueDatesService.takeCareOfDueDates(false, true)
+        } as java.util.concurrent.Callable)
+        flash.message = "Emails mit fälligen Terminen sind vesandt"
         redirect(url: request.getHeader('referer'))
     }
 
