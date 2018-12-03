@@ -60,6 +60,18 @@ class PublicController {
                 queryParams.put('consortia', consortia)
             }
 
+            def subTypes = []
+            if (params.containsKey('subTypes')) {
+                params.list('subTypes').each{
+                    subTypes.add(Long.parseLong(it))
+                }
+                if (subTypes) {
+                    query += " and s.type.id in (:subTypes) "
+                    queryParams.put('subTypes', subTypes)
+                }
+            }
+
+/*
             def subTypes = params.list('subTypes')
             if (subTypes) {
                 subTypes = subTypes.collect { it as Long }
@@ -72,6 +84,7 @@ class PublicController {
                 // fake negative result for query without checked subTypes
                 queryParams.put('subTypes', [0.longValue()])
             }
+*/
 
             if (q || consortia || subTypes) {
                 result.subscriptionsCount = Subscription.executeQuery("select count(s) " + query, queryParams)[0]
