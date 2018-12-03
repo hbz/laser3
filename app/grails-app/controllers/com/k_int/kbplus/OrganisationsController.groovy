@@ -112,6 +112,8 @@ class OrganisationsController {
         params.orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')?.id?.toString()
         params.sort        = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
+        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR')
+
         def fsq            = filterService.getOrgQuery(params)
         def orgListTotal   = Org.findAll(fsq.query, fsq.queryParams)
         params.max         = params.max ?: result.user?.getDefaultPageSizeTMP()

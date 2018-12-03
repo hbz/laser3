@@ -652,7 +652,7 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
   def setReferencePropertyAsCustProp(custPropName, newVal) {
     def custProp = getCustomPropByName(custPropName)
     if(custProp == null){
-      def type = PropertyDefinition.findByName(custPropName)
+      def type = PropertyDefinition.findWhere(name: custPropName, tenant: null)
       custProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, this, type)
     }
 
