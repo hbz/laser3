@@ -211,4 +211,18 @@ class SemanticUiNavigationTagLib {
             out << '<div class="item disabled">' + linkBody + '</div>'
         }
     }
+
+    // introduced as of December 3rd, 2018 with ticket #793
+    // <semui:securedMainNavItemDisabled controller="controller" action="action" params="params" text="${text}" message="local.string" affiliation="INST_EDITOR" />
+
+
+    def securedMainNavItemDisabled = { attrs, body ->
+
+        def lbText    = attrs.text ? attrs.text : ''
+        def lbMessage = attrs.message ? "${message(code: attrs.message)}" : ''
+        def linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
+
+        out << '<span data-tooltip="'+attrs.tooltipText+'"><div class="item disabled">' + linkBody + '</div></span>'
+    }
+
 }
