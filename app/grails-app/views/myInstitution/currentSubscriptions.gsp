@@ -36,7 +36,11 @@
         <div class="three fields">
             <!-- 1-1 -->
             <div class="field">
-                <label>${message(code: 'default.search.text', default: 'Search text')} (Lizenz, Vertrag, Paket, Anbieter, Konsortium, Lieferant)</label>
+                <label>${message(code: 'default.search.text', default: 'Search text')}
+                    <span data-position="right center" data-variation="tiny" data-tooltip="${message(code:'default.search.tooltip.subscription')}">
+                        <i class="question circle icon"></i>
+                    </span>
+                </label>
 
                 <div class="ui input">
                     <input type="text" name="q"
@@ -142,9 +146,9 @@
             <div class="field">
                 <div class="two fields">
 
-                    <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgRoleTypeIds())}">
-                        <div class="field">
 
+                        <div class="field">
+                            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgRoleTypeIds())}">
                             <%--
                             <g:if test="${params.orgRole == 'Subscriber'}">
                                 <input id="radioSubscriber" type="hidden" value="Subscriber" name="orgRole" tabindex="0" class="hidden">
@@ -175,8 +179,9 @@
                                     </div>
                                 </div>
                             </div>
+                            </g:if>
                         </div>
-                    </g:if>
+
 
                     <div class="field la-field-right-aligned">
                         <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>

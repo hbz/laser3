@@ -120,6 +120,24 @@ from Subscription as s where (
             qry_params.put('date_restr', date_restriction)
         }
 
+        if (params.endDateFrom && params.endDateTo && params.manualCancellationDateFrom && params.manualCancellationDateTo) {
+            base_qry += " and ((s.endDate >= :endFrom and s.endDate <= :endTo) OR (s.manualCancellationDate >= :cancellFrom and s.manualCancellationDate <= :cancellTo))"
+            qry_params.put("endFrom", params.endDateFrom)
+            qry_params.put("endTo", params.endDateTo)
+            qry_params.put("cancellFrom", params.manualCancellationDateFrom)
+            qry_params.put("cancellTo", params.manualCancellationDateTo)
+        } else {
+            if (params.endDateFrom && params.endDateTo) {
+                base_qry += " and (s.endDate >= :endFrom and s.endDate <= :endTo)"
+                qry_params.put("endFrom", params.endDateFrom)
+                qry_params.put("endTo", params.endDateTo)
+            } else if (params.manualCancellationDateFrom && params.manualCancellationDateTo) {
+                base_qry += " and (s.manualCancellationDate >= :cancellFrom and s.manualCancellationDate <= :cancellTo)"
+                qry_params.put("cancellFrom", params.manualCancellationDateFrom)
+                qry_params.put("cancellTo", params.manualCancellationDateTo)
+            }
+        }
+
         /* if(dateBeforeFilter ){
             base_qry += dateBeforeFilter
             qry_params.put('date_before', dateBeforeFilterVal)

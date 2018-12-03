@@ -381,7 +381,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       // Title.ID needs to be the global identifier, so we need to pull out the global id for each title
       // and use that.
       def title_id = tip.title.getIdentifierValue('uri')?:"uri://KBPlus/localhost/title/${tip.title.id}";
-      def tipp_id = tip.getIdentifierValue('uri')?:"uri://KBPlus/localhost/title/${tip.id}";
+      def tipp_id = tip.getIdentifierValue('uri')?:"uri://KBPlus/localhost/tipp/${tip.id}";
 
       def newtip = [
                      title: [
@@ -394,19 +394,23 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                      platformId:tip.platform.id,
                      coverage:[],
                      url:tip.hostPlatformURL,
-                     identifiers:[]
+                     identifiers:[],
+                     status: tip.status,
+                     accessStart: tip.accessStartDate,
+                     accessEnd: tip.accessEndDate
                    ];
 
       // Need to format these dates using correct mask
       newtip.coverage.add([
                         startDate:tip.startDate ? sdf.format(tip.startDate) : '',
                         endDate:tip.endDate ? sdf.format(tip.endDate) : '',
-                        startVolume:tip.startVolume,
-                        endVolume:tip.endVolume,
-                        startIssue:tip.startIssue,
-                        endIssue:tip.endIssue,
-                        coverageDepth:tip.coverageDepth,
-                        coverageNote:tip.coverageNote
+                        startVolume:tip.startVolume ?: '',
+                        endVolume:tip.endVolume ?: '',
+                        startIssue:tip.startIssue ?: '',
+                        endIssue:tip.endIssue ?: '',
+                        coverageDepth:tip.coverageDepth ?: '',
+                        coverageNote:tip.coverageNote ?: '',
+                        embargo: tip.embargo ?: ''
                       ]);
 
       tip.title.ids.each { id ->
