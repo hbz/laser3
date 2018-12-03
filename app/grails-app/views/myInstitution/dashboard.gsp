@@ -282,7 +282,7 @@
         Sie werden <b>${dashboardReminderPeriod} Tage</b> vor Fälligkeit an anstehende Termine erinnert.
 
         <hr>
-        <table class="ui celled table">
+        <table class="ui celled table la-table-dashboard">
             <thead>
             <tr>
                 <th>${message(code:'myinst.dash.due_dates.attribute.label')}</th>

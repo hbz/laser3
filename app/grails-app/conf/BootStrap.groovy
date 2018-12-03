@@ -382,12 +382,13 @@ class BootStrap {
 
         requiredProps.each { prop ->
             def name = prop.name['en']
-            def pd   = PropertyDefinition.findByName(name)
+            def pd   = PropertyDefinition.findWhere(name: name, tenant: null)
 
             if (! pd) {
                 log.debug("Unable to locate property definition for ${name} .. creating")
                 pd = new PropertyDefinition(name: name)
             }
+
             pd.type  = prop.type
             pd.descr = prop.descr['en']
             pd.softData = false
@@ -590,6 +591,7 @@ class BootStrap {
                 [name: [en: "Preis gerundet", de: "Preis gerundet"],                descr:allDescr, type: OT.Rdv, cat:'YN'],
                 [name: [en: "Teilzahlung", de: "Teilzahlung"],                      descr:allDescr, type: OT.Rdv, cat:'YN'],
                 [name: [en: "Statistik", de: "Statistik"],                          descr:allDescr, type: OT.String],
+                [name: [en: "Statistikzugang", de: "Statistikzugang"],              descr:allDescr, type: OT.String],
                 [name: [en: "Simuser", de: "Simuser"],                              descr:allDescr, type: OT.Rdv, cat:'YN'],
                 [name: [en: "KBART", de: "KBART"],                                  descr:allDescr, type: OT.Rdv, cat:'YN'],
                 [name: [en: "reverse charge", de: "reverse charge"],                descr:allDescr, type: OT.Rdv, cat:'YN'],
@@ -646,21 +648,8 @@ class BootStrap {
     def createPropertyDefinitionsWithI10nTranslations(requiredProps) {
 
         requiredProps.each { default_prop ->
-            /* TODO merge_conflict @ 0.4.5 into 0.5
-            def key = default_prop.key ?: default_prop.name['en']
-            def prop = PropertyDefinition.findByName(key)
-
-            if (! prop) {
-                log.debug("Unable to locate property definition for ${key} .. creating")
-                prop = new PropertyDefinition(name: key)
-
-                if (default_prop.cat != null) {
-                    prop.setRefdataCategory(default_prop.cat)
-                }
-            }
-            */
-            def prop
-            def tenant
+            def prop   = null
+            def tenant = null
 
             if (default_prop.tenant) {
                 tenant = Org.findByShortname(default_prop.tenant)
@@ -672,7 +661,7 @@ class BootStrap {
                     return
                 }
             } else {
-                prop = PropertyDefinition.findByName(default_prop.name['en'])
+                prop = PropertyDefinition.findWhere(name: default_prop.name['en'], tenant: null)
             }
 
             if (! prop) {

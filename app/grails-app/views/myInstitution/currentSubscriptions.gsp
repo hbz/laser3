@@ -347,8 +347,7 @@
                             <i class="chart bar outline icon"></i>
                           </laser:statsLink>
                         </g:if>
-
-                        <g:if test="${editable && ((institution in s.allSubscribers) || s.consortia == institution)}">
+                        <g:if test="${editable && ((institution?.id in s.allSubscribers.collect{ it.id }) || s.consortia?.id == institution?.id)}">
                             <g:link controller="myInstitution" action="actionCurrentSubscriptions"
                                     class="ui icon negative button"
                                     params="${[curInst: institution.id, basesubscription: s.id]}"

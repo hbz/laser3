@@ -81,6 +81,23 @@
   border-top:none;
 }
 /*--------------
+     la-table-dashboard
+---------------*/
+.ui.la-table-dashboard.table{
+  //border-collapse: separate;
+  background-color: white;
+  tr {
+    td {
+      background-color: white;
+    }
+  }
+}
+
+.ui.la-table-dashboard.table tr th,
+.ui.la-table-dashboard.table tr td {
+  //border-top:none;
+}
+/*--------------
      la-table-inCard
 ---------------*/
 .ui.table.la-table-inCard {
