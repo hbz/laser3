@@ -313,3 +313,11 @@ aside.metaboxContent + .metaboxContent-spacer {
 .ui.fixed.inverted.menu {
     min-height: 50px;
 }
+
+/* overrides default disabled element behavior, is for SemanticUiNavigationTagLib::securedMainNavItemDisabled and myInstitution/dashboard.gsp */
+
+.item .disabled[data-tooltip]{
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    color: rgba(0,0,0,0.3)
+}
