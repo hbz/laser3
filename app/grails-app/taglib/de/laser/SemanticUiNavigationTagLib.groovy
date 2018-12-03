@@ -222,7 +222,7 @@ class SemanticUiNavigationTagLib {
         def lbMessage = attrs.message ? "${message(code: attrs.message)}" : ''
         def linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
 
-        out << '<span data-tooltip="'+attrs.tooltipText+'"><div class="item disabled">' + linkBody + '</div></span>'
+        out << '<span data-tooltip="Die Funktion \''+attrs.message+'\' ist zur Zeit nicht verfügbar!"><div class="item disabled">' + linkBody + '</div></span>'
     }
 
 }

@@ -203,7 +203,7 @@
                                 <%-- <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" /> --%>
 
                                 <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
-                            <semui:securedMainNavItemDisabled message="menu.institutions.financeImport" tooltipText="Menüpunkt 'Kostenstellen deaktivieren' ist zur Zeit nicht aktiv!" />
+                            <semui:securedMainNavItemDisabled message="menu.institutions.financeImport" />
                                 <%-- this is part one of ticket #753! --%>
                             <%--<semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />--%>
 

@@ -43,7 +43,7 @@
                         <g:if test="${grailsApplication.config.feature_finance}">
                             <div class="item">
                                 <%-- as placeholder for the missing finances link --%>
-                                <span data-tooltip="Der Menüpunkt 'Finanzen' ist derzeit in Entwicklung.">${message(code: 'menu.institutions.finance', default: 'Finances')}</span>
+                                <span data-tooltip="Die Funktion 'Finanzen' ist zur Zeit nicht verfügbar!">${message(code: 'menu.institutions.finance', default: 'Finances')}</span>
                             </div>
                             <%--<semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />--%>
                         </g:if>
