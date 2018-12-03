@@ -28,6 +28,7 @@ class LicenseDetailsController {
     def contextService
     def addressbookService
     def filterService
+    def selectListQueryService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -158,24 +159,10 @@ class LicenseDetailsController {
 
         def licensee = result.license.getLicensee();
         def consortia = result.license.getLicensingConsortium();
+      //a new query builder service for selection lists has been introduced
+      String subscrQuery = selectListQueryService.buildSubscriptionList(consortia,result.license.subscriptions)
 
-        def subscrQuery = """
-select s from Subscription as s where (
-  exists ( select o from s.orgRelations as o where (o.roleType.value IN ('Subscriber', 'Subscription Consortia')) and o.org = :co) ) 
-  AND ( LOWER(s.status.value) != 'deleted' ) 
-)
-"""
-
-        if(consortia)
-        {
-            subscrQuery = """
-select s from Subscription as s where (
-  exists ( select o from s.orgRelations as o where (o.roleType.value IN ('Subscription Consortia')) and o.org = :co) ) 
-  AND ( LOWER(s.status.value) != 'deleted' AND (s.instanceOf is null or s.instanceOf = '') 
-)
-"""
-        }
-
+      //inject here: all picked entries
         result.availableSubs = Subscription.executeQuery("${subscrQuery} order by LOWER(s.name) asc", [co: contextService.getOrg()])
 
 
