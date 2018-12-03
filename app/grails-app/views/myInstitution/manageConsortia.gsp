@@ -52,7 +52,7 @@
 
 
         <g:if test="${consortiaMembers}">
-            <input type="submit" class="ui button"
+            <input type="submit" class="ui button" onclick="if(confirm('Wollen Sie die ausgewählten Konsorten wirklich entfernen?')){return true;} return false;"
                value="${message(code: 'default.button.revoke.label', default: 'Revoke')}"/>
         </g:if>
     </g:form>
