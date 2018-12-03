@@ -101,7 +101,6 @@
                             </g:if>
 
                             <g:link class="item" controller="packageDetails" action="compare">${message(code:'menu.institutions.comp_pkg')}</g:link>
-                            <g:link class="item" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</g:link>
                         </div>
                     </div>
 
@@ -198,14 +197,16 @@
                             %{--</g:if>--}%
 
                             <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_private_props" />
-                            <semui:securedMainNavItem affiliation="INST_ADMIN"  controller="myInstitution" action="managePropertyGroups" message="menu.institutions.manage_prop_groups" />
+                            <semui:securedMainNavItem affiliation="INST_EDITOR"  controller="myInstitution" action="managePropertyGroups" message="menu.institutions.manage_prop_groups" />
 
                             <g:if test="${grailsApplication.config.feature_finance}">
                                 <%-- <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" /> --%>
 
                                 <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
+                            <semui:securedMainNavItem message="menu.institutions.financeImport" />
+                                <%-- this is part one of ticket #753! --%>
+                            <%--<semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />--%>
 
-                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
                             </g:if>
 
                             <sec:ifAnyGranted roles="ROLE_YODA">
@@ -250,6 +251,7 @@
                             <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</g:link>
                             <g:link class="item" controller="subscriptionImport" action="generateImportWorksheet">${message(code:'menu.datamanager.sub_work')}</g:link>
                             <g:link class="item" controller="subscriptionImport" action="importSubscriptionWorksheet" params="${[dm:'true']}">${message(code:'menu.datamanager.imp_sub_work')}</g:link>
+                            <g:link class="item" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</g:link>
                             <g:link class="item" controller="dataManager" action="changeLog">${message(code:'menu.datamanager.changelog')}</g:link><div class="divider"></div>
                             </sec:ifAnyGranted>
 
@@ -522,44 +524,50 @@
                                         // 1. add class 'hidden' via markup to all cards that might be toggled
                                         // 2. add class 'la-js-hideable' to all cards that might be toggled
                                         // 3. add class 'la-js-dont-hide-this-card' to markup that is rendered only in case of card has content, like to a table <th>
-                                        // 4.
+
                                         var toggleButton = $(".ui.toggle.button");
                                         var toggleIcon = $(".ui.toggle.button .icon");
                                         $(".table").trigger('reflow');
 
                                         if (  editMode) {
                                             // show Contoll Elements
-                                            $('.card').removeClass('hidden');
+                                            $('.card').not('.ui.modal .card').removeClass('hidden');
                                             $('.la-js-hide-this-card').removeClass('hidden');
-                                            $('.ui .form').removeClass('hidden');
+                                            $('.ui .form').not('.ui.modal .ui.form').removeClass('hidden');
                                             $('#collapseableSubDetails').find('.button').removeClass('hidden');
                                             $(toggleButton).removeAttr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
                                             $(toggleButton).attr("data-tooltip","${message(code:'statusbar.showButtons.tooltip')}");
                                             $(toggleIcon ).removeClass( "slash" );
                                             $(toggleButton).addClass('active');
-
-                                            $('.xEditableValue').editable('option', 'disabled', false);
-                                            $('.xEditable').editable('option', 'disabled', false);
-                                            $('.xEditableDatepicker').editable('option', 'disabled', false);
-                                            $('.xEditableManyToOne').editable('option', 'disabled', false);
+                                            var enableXeditable = function(cssClass){
+                                                var selection = $(cssClass).not('.ui.modal' + ' ' + cssClass);
+                                                selection.editable('option', 'disabled', false);
+                                            }
+                                            enableXeditable ('.xEditableValue');
+                                            enableXeditable ('.xEditable');
+                                            enableXeditable ('.xEditableDatepicker');
+                                            enableXeditable ('.xEditableManyToOne');
                                         }
                                         else {
                                             // hide Contoll Elements
-                                            $('.card').removeClass('hidden');
+                                            $('.card').not('.ui.modal .card').removeClass('hidden');
                                             $('.card.la-js-hideable').not( ":has(.la-js-dont-hide-this-card)" ).addClass('hidden');
                                             $('.la-js-hide-this-card').addClass('hidden');
-                                            $('.ui .form').addClass('hidden');
-                                            $('#collapseableSubDetails').find('.button').addClass('hidden');
-                                            // hide all the x-editable
+                                            $('.ui.form').not('.ui.modal .ui.form').addClass('hidden');
+                                            $('#collapseableSubDetails').not('.ui.modal').find('.button').not('.ui.modal .button').addClass('hidden');
                                             $(toggleButton).removeAttr();
                                             $(toggleButton).attr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
                                             $( toggleIcon ).addClass( "slash" );
                                             $(toggleButton).removeClass('active');
-
-                                            $('.xEditableValue').editable('option', 'disabled', true);
-                                            $('.xEditable').editable('option', 'disabled', true);
-                                            $('.xEditableDatepicker').editable('option', 'disabled', true);
-                                            $('.xEditableManyToOne').editable('option', 'disabled', true);
+                                            // hide all the x-editable
+                                            var diableXeditable = function(cssClass){
+                                                var selection = $(cssClass).not('.ui.modal' + ' ' + cssClass);
+                                                selection.editable('option', 'disabled', true);
+                                            }
+                                            diableXeditable ('.xEditableValue');
+                                            diableXeditable ('.xEditable');
+                                            diableXeditable ('.xEditableDatepicker');
+                                            diableXeditable ('.xEditableManyToOne');
                                         }
                                     }
                                     toggleEditableElements();
@@ -661,7 +669,7 @@
         <%-- <a href="#globalJumpMark" class="ui button icon" style="position:fixed;right:0;bottom:0;"><i class="angle up icon"></i></a> --%
 
         <%-- maintenance --%>
-<g:if test="${com.k_int.kbplus.SystemMessage.findAllByShowNowAndOrg(true, contextOrg) || com.k_int.kbplus.SystemMessage.findAllByShowNowAndOrgIsNull(true)}">
+        <g:if test="${com.k_int.kbplus.SystemMessage.findAllByShowNowAndOrg(true, contextOrg) || com.k_int.kbplus.SystemMessage.findAllByShowNowAndOrgIsNull(true)}">
             <div id="maintenance">
                 <div class="ui segment center aligned inverted orange">
                     <strong>ACHTUNG:</strong>

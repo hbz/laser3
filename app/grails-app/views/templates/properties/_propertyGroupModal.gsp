@@ -20,7 +20,7 @@
                     <label>Kategorie</label>
                     <select name="prop_descr" id="prop_descr_selector" class="ui dropdown">
                         <g:each in="${PropertyDefinition.AVAILABLE_GROUPS_DESCR}" var="pdDescr">
-                            <%-- TODO: REFACTORING --%>
+                            <%-- TODO: REFACTORING: x.class.name with pd.desc --%>
                             <g:if test="${pdDescr == PropertyDefinition.LIC_PROP && pdGroup?.ownerType == License.class.name}">
                                 <option selected="selected" value="${pdDescr}"><g:message code="propertyDefinition.${pdDescr}.label" default="${pdDescr}"/></option>
                             </g:if>
@@ -33,14 +33,11 @@
                             <g:else>
                                 <option value="${pdDescr}"><g:message code="propertyDefinition.${pdDescr}.label" default="${pdDescr}"/></option>
                             </g:else>
-                            <%-- TODO: REFACTORING --%>
+                            <%-- TODO: REFACTORING: x.class.name with pd.desc --%>
                         </g:each>
                     </select>
                 </div>
 
-            </div><!-- .column -->
-
-            <div class="column">
                 <div class="field">
                     <label>Beschreibung</label>
                     <textarea name="description">${pdGroup?.description}</textarea>
@@ -51,27 +48,40 @@
                 <div class="field">
                     <label>Merkmale</label>
 
-                    <g:each in="${PropertyDefinition.AVAILABLE_GROUPS_DESCR}" var="pdDescr">
-                        <table class="ui table la-table-small hidden" data-propDefTable="${pdDescr}">
-                            <tbody>
-                            <g:each in="${PropertyDefinition.findAllWhere(tenant:null, descr:pdDescr).sort{ a,b -> a.getI10n('name') <=> b.getI10n('name')}}" var="pd">
-                                <tr>
-                                    <td>
-                                        ${pd.getI10n('name')}
-                                    </td>
-                                    <td>
-                                        <g:if test="${pdGroup && PropertyDefinitionGroupItem.findByPropDefAndPropDefGroup(pd, pdGroup)}">
-                                            <input type="checkbox" checked="checked" disabled="disabled" name="propertyDefinition" value="${pd.id}" />
-                                        </g:if>
-                                        <g:else>
-                                            <input type="checkbox" disabled="disabled" name="propertyDefinition" value="${pd.id}" />
-                                        </g:else>
-                                    </td>
-                                </tr>
-                            </g:each>
-                            </tbody>
-                        </table>
-                    </g:each>
+
+                    <div class="scrollWrapper">
+
+                        <g:each in="${PropertyDefinition.AVAILABLE_GROUPS_DESCR}" var="pdDescr">
+                            <table class="ui table la-table-small hidden scrollContent" data-propDefTable="${pdDescr}">
+                                <tbody>
+                                <g:each in="${PropertyDefinition.findAllWhere(tenant:null, descr:pdDescr).sort{ a,b -> a.getI10n('name') <=> b.getI10n('name')}}" var="pd">
+                                    <tr>
+                                        <td>
+                                            ${pd.getI10n('name')}
+                                        </td>
+                                        <td>
+                                            <g:if test="${pdGroup && PropertyDefinitionGroupItem.findByPropDefAndPropDefGroup(pd, pdGroup)}">
+                                                <input type="checkbox" checked="checked" disabled="disabled" name="propertyDefinition" value="${pd.id}" />
+                                            </g:if>
+                                            <g:else>
+                                                <input type="checkbox" disabled="disabled" name="propertyDefinition" value="${pd.id}" />
+                                            </g:else>
+                                        </td>
+                                    </tr>
+                                </g:each>
+                                </tbody>
+                            </table>
+                        </g:each>
+
+                    </div>
+                    <style>
+                        .scrollWrapper {
+                            overflow-y: scroll;
+                            max-height: 400px;
+                        }
+                        .scrollContent {
+                        }
+                    </style>
                 </div>
             </div><!-- .column -->
 
