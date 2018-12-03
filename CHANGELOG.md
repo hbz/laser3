@@ -1,4 +1,11 @@
 
+0.11.1
+
+- added pagination for manage consortia view
+- fixed subscription list: view and filter
+- fixed providers list: missing editable permission
+- fixed custom properties bootstrapping
+
 0.11
 
 - added functionality for grouping and management of custom properties
