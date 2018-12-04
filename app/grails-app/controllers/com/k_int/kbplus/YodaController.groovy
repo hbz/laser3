@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.domain.SystemBench
 import de.laser.helper.DebugAnnotation
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -92,6 +93,18 @@ class YodaController {
                 cacheService.clear(cache)
             }
         }
+
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def benchInfo() {
+        def result = [:]
+
+        result.benchesByUri =
+                SystemBench.executeQuery("select sb, avg(sb.ms) as ms, count(*) from SystemBench sb group by sb.uri").sort{it[1]}.reverse()
+        result.benchesByUriAndContext =
+                SystemBench.executeQuery("select sb, avg(sb.ms) as ms, count(*) from SystemBench sb group by sb.uri, sb.context").sort{it[1]}.reverse()
 
         result
     }
