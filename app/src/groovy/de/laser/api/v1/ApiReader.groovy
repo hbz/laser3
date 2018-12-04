@@ -327,6 +327,13 @@ class ApiReader {
 
         return ApiReaderHelper.cleanUp(result, true, true)
     }
+    static exportCostItems(def ignoreRelation, Org context){
+        def result = []
+
+        result = CostItem.findAllByOwner(context).globalUID
+
+        return ApiReaderHelper.cleanUp(result, true, true)
+    }
 
 
     // ################### HELPER ###################
