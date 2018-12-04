@@ -2,16 +2,16 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code:'laser', default:'LAS:eR')} : Bench Info</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : App Profiler</title>
 </head>
 <body>
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
-    <semui:crumb text="Bench Info" class="active"/>
+    <semui:crumb text="App Profiler" class="active"/>
 </semui:breadcrumbs>
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />Bench Info</h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />App Profiler</h1>
 
     <h3 class="ui header">Global</h3>
 
@@ -24,7 +24,7 @@
             </tr>
         </thead>
         <tbody>
-            <g:each in="${benchesByUri}" var="bench">
+            <g:each in="${byUri}" var="bench">
                 <tr data-uri="${bench[0].uri}">
                     <td data-uri="${bench[0].uri}">${bench[0].uri}</td>
                     <td>${(bench[1] / 1000).round(2)}</td>
@@ -46,7 +46,7 @@
             </tr>
         </thead>
         <tbody>
-            <g:each in="${benchesByUriAndContext}" var="bench">
+            <g:each in="${byUriAndContext}" var="bench">
                 <tr data-uri="${bench[0].uri}" data-context="${bench[0].context?.getDesignation()}">
                     <td data-uri="${bench[0].uri}">${bench[0].uri}</td>
                     <td>${(bench[1] / 1000).round(2)}</td>

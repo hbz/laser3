@@ -1,11 +1,12 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.controller.AbstractDebugController
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class OnixplLicenseDetailsController {
+class OnixplLicenseDetailsController extends AbstractDebugController {
 
     def springSecurityService
 

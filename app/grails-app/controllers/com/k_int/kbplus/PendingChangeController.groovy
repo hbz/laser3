@@ -1,9 +1,10 @@
 package com.k_int.kbplus
 
+import de.laser.controller.AbstractDebugController
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class PendingChangeController {
+class PendingChangeController extends AbstractDebugController {
 
     def genericOIDService
     def pendingChangeService

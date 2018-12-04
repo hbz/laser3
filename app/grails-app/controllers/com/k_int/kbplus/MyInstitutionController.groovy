@@ -4,6 +4,7 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
+import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import de.laser.helper.DateUtil
@@ -22,7 +23,7 @@ import java.text.SimpleDateFormat
 import groovy.sql.Sql
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class MyInstitutionController {
+class MyInstitutionController extends AbstractDebugController {
     def dataSource
     def springSecurityService
     def ESSearchService

@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.controller.AbstractDebugController
 import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
@@ -8,7 +9,7 @@ import com.k_int.kbplus.auth.*;
 import grails.plugin.springsecurity.SpringSecurityUtils
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class TippController {
+class TippController extends AbstractDebugController {
 
  def springSecurityService
 

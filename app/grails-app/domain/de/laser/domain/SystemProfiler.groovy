@@ -2,7 +2,7 @@ package de.laser.domain
 
 import com.k_int.kbplus.Org
 
-class SystemBench {
+class SystemProfiler {
 
     final static THRESHOLD_MS = 1500;
 
@@ -14,13 +14,15 @@ class SystemBench {
     Date dateCreated
 
     static mapping = {
-        id          column:'sb_id'
-        version     column:'sb_version'
-        uri         column:'sb_uri',    index: 'sb_uri_idx'
-        params      column:'sb_params', type: 'text'
-        ms          column:'sb_ms'
-        context     column:'sb_context_fk'
-        dateCreated column:'sb_created'
+        //table (name: 'debug_profiler')
+
+        id          column:'sp_id'
+        version     column:'sp_version'
+        uri         column:'sp_uri',        index: 'sp_uri_idx'
+        params      column:'sp_params',     type: 'text'
+        ms          column:'sp_ms'
+        context     column:'sp_context_fk'
+        dateCreated column:'sp_created'
     }
 
     static constraints = {

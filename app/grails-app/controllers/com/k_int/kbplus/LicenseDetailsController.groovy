@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
+import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.converters.*
@@ -12,7 +13,7 @@ import org.codehaus.groovy.runtime.InvokerHelper
 
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class LicenseDetailsController {
+class LicenseDetailsController extends AbstractDebugController {
 
     def springSecurityService
     def taskService

@@ -1,12 +1,13 @@
 package com.k_int.kbplus
 
+import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.User
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class LicenseCompareController {
+class LicenseCompareController extends AbstractDebugController {
   
     static String INSTITUTIONAL_LICENSES_QUERY = " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ol.roleType = ? ) AND l.status.value != 'Deleted'"
     def springSecurityService
