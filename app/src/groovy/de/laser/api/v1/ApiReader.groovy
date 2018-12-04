@@ -312,7 +312,7 @@ class ApiReader {
     static exportCostItems(def ignoreRelation, Org context, Date startDate, Date endDate){
         def result = []
             if(startDate && endDate) {
-                def costItems = CostItem.findAllByOwnerAndDateCreatedBetween(context, startDate, endDate)
+                def costItems = CostItem.findAllByOwnerAndLastUpdatedBetween(context, startDate, endDate)
                 costItems.each {
                     result << ApiReader.exportCostItem(it, context)
                 }
