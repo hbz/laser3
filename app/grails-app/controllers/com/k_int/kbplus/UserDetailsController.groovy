@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.controller.AbstractDebugController
 import org.springframework.dao.DataIntegrityViolationException
 import grails.converters.*
 import org.elasticsearch.groovy.common.xcontent.*
@@ -11,7 +12,7 @@ import grails.gorm.*
 import java.security.MessageDigest
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class UserDetailsController {
+class UserDetailsController extends AbstractDebugController {
 
     def springSecurityService
     def genericOIDService

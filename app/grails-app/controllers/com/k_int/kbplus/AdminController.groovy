@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
+import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.SpringSecurityUtils;
 import grails.plugin.springsecurity.annotation.Secured
@@ -11,7 +12,7 @@ import au.com.bytecode.opencsv.CSVReader
 import com.k_int.properties.PropertyDefinition
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class AdminController {
+class AdminController extends AbstractDebugController {
 
   def springSecurityService
   def dataloadService

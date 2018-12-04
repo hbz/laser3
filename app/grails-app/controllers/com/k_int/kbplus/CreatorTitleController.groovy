@@ -2,12 +2,13 @@ package com.k_int.kbplus
 
 
 import com.k_int.kbplus.auth.User
+import de.laser.controller.AbstractDebugController
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.security.access.annotation.Secured
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['ROLE_YODA'])
-class CreatorTitleController {
+class CreatorTitleController extends AbstractDebugController {
 
 	def springSecurityService
 
