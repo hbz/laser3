@@ -103,14 +103,21 @@ class DocWidgetController extends AbstractDebugController {
           //doc_content.setBlobData(input_stream, input_file.size)
           doc_content.save()
 
-          def fPath = '/tmp/laser'
-          def fName = doc_content.uuid
+          try {
+              def fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+              def fName = doc_content.uuid
 
-          File folder = new File("${fPath}")
-          if (! folder.exists()) {
-            folder.mkdirs()
+              File folder = new File("${fPath}")
+              if (!folder.exists()) {
+                  folder.mkdirs()
+              }
+              input_file.transferTo(new File("${fPath}/${fName}"))
           }
-          input_file.transferTo( new File("${fPath}/${fName}"))
+          catch(Exception e) {
+              // fallback
+              doc_content.setBlobData(input_stream, input_file.size)
+              doc_content.save()
+          }
 
           def doc_context = new DocContext(
                   "${params.ownertp}": instance,
