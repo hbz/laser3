@@ -1,0 +1,17 @@
+LOAD DATABASE
+    FROM mysql://admin@localhost/laser-postgresql-qa
+    INTO postgresql://laser:laser@localhost:5432/laser
+
+    WITH drop schema,
+         schema only,
+         no foreign keys
+
+    CAST type bigint when (= precision 20) to bigint drop typemod,
+         type date drop not null drop default using zero-dates-to-null,
+         type tinyint to boolean using tinyint-to-boolean,
+         type year to integer
+         -- type bigint drop not null --removing not null constraint?
+
+    -- INCLUDING ONLY TABLE NAMES MATCHING 'dummy';
+    EXCLUDING TABLE NAMES MATCHING 'databasechangelog', 'databasechangeloglock';
+

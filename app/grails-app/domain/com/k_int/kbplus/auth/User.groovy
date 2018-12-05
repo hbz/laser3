@@ -64,6 +64,7 @@ class User implements Permissions {
   }
 
   static mapping = {
+      table (name: '`user`')
       password column: '`password`'
   }
 

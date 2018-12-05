@@ -1,7 +1,10 @@
 # PostgreSQL Migration
 
+- bootstrap application; init table generation by GORM
+- migrate data with pgLoader using migrate2postgresql.load
 
-### todo
+
+### Refactorings
 
 #### /myInstitution/currentTitles
 

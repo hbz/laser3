@@ -384,6 +384,11 @@ grails.cache.config = {
     }
 }
 
+// postgresql sequences for primary keys
+grails.gorm.default.mapping = {
+   id generator: 'identity'
+}
+
 // URL Mapping Cache Max Size, defaults to 5000
 //grails.urlmapping.cache.maxsize = 1000
 
