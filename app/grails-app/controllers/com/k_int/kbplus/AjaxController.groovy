@@ -874,34 +874,39 @@ class AjaxController extends AbstractDebugController {
 
   @Secured(['ROLE_USER'])
   def addCustomPropertyValue(){
-    def error
-    def newProp
-    def owner = grailsApplication.getArtefact("Domain",params.ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
-    def type  = PropertyDefinition.get(params.propIdent.toLong())
+    if(params.propIdent.length() > 0) {
+      def error
+      def newProp
+      def owner = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ", ""))?.getClazz()?.get(params.ownerId)
+      def type = PropertyDefinition.get(params.propIdent.toLong())
 
-    def existingProp = owner.customProperties.find{it.type.name == type.name}
+      def existingProp = owner.customProperties.find { it.type.name == type.name }
 
-    if(existingProp == null || type.multipleOccurrence){
+      if (existingProp == null || type.multipleOccurrence) {
         newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, type)
-        if(newProp.hasErrors()){
-            log.error(newProp.errors)
-        } else{
-            log.debug("New custom property created: " + newProp.type.name)
+        if (newProp.hasErrors()) {
+          log.error(newProp.errors)
+        } else {
+          log.debug("New custom property created: " + newProp.type.name)
         }
-    } else{
-        error = message(code:'ajax.addCustomPropertyValue.error', default:'A property of this type is already added')
-    }
+      } else {
+        error = message(code: 'ajax.addCustomPropertyValue.error', default: 'A property of this type is already added')
+      }
 
       owner.refresh()
 
-    request.setAttribute("editable", params.editable == "true")
-    render(template: "/templates/properties/custom", model:[
-            ownobj:owner,
-            newProp:newProp,
-            error:error,
-            custom_props_div: "${params.custom_props_div}", // JS markup id
-            prop_desc: type.descr // form data
-    ])
+      request.setAttribute("editable", params.editable == "true")
+      render(template: "/templates/properties/custom", model: [
+              ownobj          : owner,
+              newProp         : newProp,
+              error           : error,
+              custom_props_div: "${params.custom_props_div}", // JS markup id
+              prop_desc       : type.descr // form data
+      ])
+    }
+    else {
+      log.error("Form submitted with missing values")
+    }
   }
 
     @Secured(['ROLE_USER'])
