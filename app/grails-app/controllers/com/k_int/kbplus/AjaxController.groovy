@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AuditConfig
+import de.laser.controller.AbstractDebugController
 import de.laser.domain.AbstractI10nTranslatable
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
@@ -12,7 +13,7 @@ import com.k_int.properties.PropertyDefinition
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Secured(['permitAll']) // TODO
-class AjaxController {
+class AjaxController extends AbstractDebugController {
 
     def genericOIDService
     def contextService

@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
+import de.laser.controller.AbstractDebugController
 import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.*;
@@ -9,7 +10,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class PackageDetailsController {
+class PackageDetailsController extends AbstractDebugController {
 
     def springSecurityService
     def transformerService

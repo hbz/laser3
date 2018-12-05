@@ -1,11 +1,12 @@
 package com.k_int.kbplus
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
+import de.laser.controller.AbstractDebugController
 import grails.plugin.cache.Cacheable;
 import grails.plugin.springsecurity.annotation.Secured;
 
 @Secured(['permitAll'])
-class PublicController {
+class PublicController extends AbstractDebugController {
 
     def springSecurityService
     def genericOIDService

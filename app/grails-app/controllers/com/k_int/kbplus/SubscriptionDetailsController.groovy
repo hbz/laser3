@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
+import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -28,7 +29,7 @@ import static groovyx.net.http.ContentType.*
 
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class SubscriptionDetailsController {
+class SubscriptionDetailsController extends AbstractDebugController {
 
     def springSecurityService
     def contextService

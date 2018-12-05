@@ -1,3 +1,7 @@
+0.11.2
+
+- added system profiler
+- api v1 changes
 
 0.11.1
 
