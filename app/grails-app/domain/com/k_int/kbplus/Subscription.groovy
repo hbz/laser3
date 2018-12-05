@@ -393,6 +393,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
         def groups = PropertyDefinitionGroup.findAllByOwnerType(Subscription.class.name)
         groups.each{ it ->
 
+            // cons_members
             if (this.instanceOf && ! this.instanceOf.isTemplate()) {
                 def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, this.instanceOf)
 
@@ -410,28 +411,22 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
                         result.member << [it, binding]
                     }
                 }
-                // licensee consortial; getting group by consortia and instanceOf.binding
+                // subscriber consortial; getting group by consortia and instanceOf.binding
                 else if (it.tenant?.id == this.instanceOf.getConsortia()?.id) {
                     if (binding) {
                         result.member << [it, binding]
                     }
                 }
             }
+            // consortium or locals
             else {
                 def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, this)
 
-                // global groups
-                if (it.tenant == null) {
+                if (it.tenant == null || it.tenant?.id == contextService.getOrg()?.id) {
                     if (binding) {
                         result.local << [it, binding]
                     } else {
                         result.global << it
-                    }
-                }
-                // locals; getting group by tenant and binding
-                if (it.tenant?.id == contextService.getOrg()?.id) {
-                    if (binding) {
-                        result.local << [it, binding]
                     }
                 }
             }

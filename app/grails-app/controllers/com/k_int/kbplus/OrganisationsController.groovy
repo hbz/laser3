@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.PrivateProperty
+import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import grails.converters.JSON
 import org.apache.poi.hssf.usermodel.HSSFRichTextString
@@ -15,7 +16,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import com.k_int.properties.*
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class OrganisationsController {
+class OrganisationsController extends AbstractDebugController {
 
     def springSecurityService
     def accessService
@@ -79,6 +80,8 @@ class OrganisationsController {
         params.max  = params.max ?: result.user?.getDefaultPageSizeTMP()
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
+        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+
         def fsq = filterService.getOrgQuery(params)
 
         result.orgList  = Org.findAll(fsq.query, fsq.queryParams, params)
@@ -109,6 +112,8 @@ class OrganisationsController {
         params.orgSector   = RefdataValue.getByValueAndCategory('Publisher','OrgSector')?.id?.toString()
         params.orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')?.id?.toString()
         params.sort        = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
+
+        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR')
 
         def fsq            = filterService.getOrgQuery(params)
         def orgListTotal   = Org.findAll(fsq.query, fsq.queryParams)
@@ -248,7 +253,7 @@ class OrganisationsController {
         def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
 
         //IF ORG is a Provider
-        if(orgInstance.sector == orgSector || orgRoleType in orgInstance.orgRoleType)
+        if(orgInstance.sector == orgSector || orgRoleType?.id in orgInstance?.getallOrgRoleTypeIds())
         {
             result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_COM_EDITOR,ROLE_ORG_EDITOR')
         }else {
@@ -341,7 +346,7 @@ class OrganisationsController {
 
         result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
-      def tracked_roles = ["ROLE_ADMIN":"KB+ Administrator"]
+      def tracked_roles = ["ROLE_ADMIN":"LAS:eR Administrator"]
 
       if (!orgInstance) {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
@@ -564,7 +569,7 @@ class OrganisationsController {
     private def exportOrg(orgs, message, addHigherEducationTitles) {
         try {
             def titles = [
-                    'Name', 'Kurzname', 'Sortiername']
+                    'Name', g.message(code: 'org.shortname.label'), g.message(code: 'org.sortname.label')]
 
             def orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
             def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
@@ -572,11 +577,11 @@ class OrganisationsController {
 
             if(addHigherEducationTitles)
             {
-                titles.add('Bibliothekstyp')
-                titles.add('Verbundszugehörigkeit')
-                titles.add('Trägerschaft')
-                titles.add('Bundesland')
-                titles.add('Land')
+                titles.add(g.message(code: 'org.libraryType.label'))
+                titles.add(g.message(code: 'org.libraryNetwork.label'))
+                titles.add(g.message(code: 'org.funderType.label'))
+                titles.add(g.message(code: 'org.federalState.label'))
+                titles.add(g.message(code: 'org.country.label'))
             }
 
             def propList =

@@ -1204,6 +1204,17 @@
 }
 
 /*--------------
+     la-table-dashboard
+---------------*/
+
+.ui.la-table-dashboard.table {
+  background-color: white;
+}
+.ui.la-table-dashboard.table tr td {
+  background-color: white;
+}
+
+/*--------------
      la-table-inCard
 ---------------*/
 

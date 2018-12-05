@@ -40,9 +40,12 @@
                         <div class="item">
                             <g:link controller="myInstitution" action="announcements">${message(code: 'announcement.plural', default: 'Announcements')}</g:link>
                         </div>
-
                         <g:if test="${grailsApplication.config.feature_finance}">
-                            <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />
+                            <div class="item">
+                                <%-- as placeholder for the missing finances link --%>
+                                <div class="disabled" data-tooltip="Die Funktion 'Finanzen' ist zur Zeit nicht verfügbar!" data-position="bottom center">${message(code: 'menu.institutions.finance', default: 'Finances')}</div>
+                            </div>
+                            <%--<semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />--%>
                         </g:if>
                     </div>
                 </div>
@@ -279,7 +282,7 @@
         Sie werden <b>${dashboardReminderPeriod} Tage</b> vor Fälligkeit an anstehende Termine erinnert.
 
         <hr>
-        <table class="ui celled table">
+        <table class="ui celled table la-table-dashboard">
             <thead>
             <tr>
                 <th>${message(code:'myinst.dash.due_dates.attribute.label')}</th>

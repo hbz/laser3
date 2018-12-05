@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -92,6 +93,18 @@ class YodaController {
                 cacheService.clear(cache)
             }
         }
+
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def appProfiler() {
+        def result = [:]
+
+        result.byUri =
+                SystemProfiler.executeQuery("select sp, avg(sp.ms) as ms, count(*) from SystemProfiler sp group by sp.uri").sort{it[1]}.reverse()
+        result.byUriAndContext =
+                SystemProfiler.executeQuery("select sp, avg(sp.ms) as ms, count(*) from SystemProfiler sp group by sp.uri, sp.context").sort{it[1]}.reverse()
 
         result
     }

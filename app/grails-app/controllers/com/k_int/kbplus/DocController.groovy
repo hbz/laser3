@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import org.springframework.dao.DataIntegrityViolationException
 import grails.converters.*
@@ -9,7 +10,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.*;
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class DocController {
+class DocController extends AbstractDebugController {
 
 	def springSecurityService
 

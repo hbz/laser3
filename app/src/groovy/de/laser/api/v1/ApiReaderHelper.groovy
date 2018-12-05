@@ -165,6 +165,8 @@ class ApiReaderHelper {
             result.orgType      = org.orgType?.value
             result.orgRoleType  = resolveOrgRoleTypes(org.orgRoleType)
             result.libraryType  = org.libraryType?.value
+            result.federalState = org.federalState?.value
+            result.country      = org.country?.value
 
             // References
             result.identifiers = resolveIdentifiers(org.ids) // com.k_int.kbplus.IdentifierOccurrence
@@ -251,6 +253,9 @@ class ApiReaderHelper {
             result.impId        = sub.impId
             result.startDate    = sub.startDate
             result.endDate      = sub.endDate
+            result.form         = sub.form?.value
+            result.type         = sub.type?.value
+            result.resource     = sub.resource?.value
             // References
             result.identifiers = resolveIdentifiers(sub.ids) // com.k_int.kbplus.IdentifierOccurrence
 

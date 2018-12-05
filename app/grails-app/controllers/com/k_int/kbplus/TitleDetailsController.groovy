@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.controller.AbstractDebugController
 import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.*
@@ -10,7 +11,7 @@ import com.k_int.kbplus.*;
 import grails.plugin.springsecurity.SpringSecurityUtils
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class TitleDetailsController {
+class TitleDetailsController extends AbstractDebugController {
 
     def springSecurityService
     def ESSearchService

@@ -1,11 +1,12 @@
 package com.k_int.kbplus
 
+import de.laser.controller.AbstractDebugController
 import org.springframework.dao.DataIntegrityViolationException
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.*
 import grails.plugin.springsecurity.annotation.Secured
 
-class AccessMethodController {
+class AccessMethodController extends AbstractDebugController {
 
     def springSecurityService
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], update: ['GET', 'POST'], delete: 'GET']

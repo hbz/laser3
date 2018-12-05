@@ -5,13 +5,14 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgCustomProperty
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
+import de.laser.controller.AbstractDebugController
 import de.laser.domain.StatsTripleCursor
 import grails.plugin.springsecurity.annotation.Secured
 import grails.transaction.Transactional
 import org.hibernate.criterion.CriteriaSpecification
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class UsageController {
+class UsageController extends AbstractDebugController {
 
     def statsSyncService
     def factService

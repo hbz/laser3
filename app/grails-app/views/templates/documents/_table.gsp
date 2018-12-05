@@ -18,10 +18,10 @@
                 <tr>
                     <%--<g:if test="${editable}"><td><input type="checkbox" name="_deleteflag.${docctx.id}" value="true"/></td></g:if> : REMOVED BULK--%>
                     <td>
-                        <semui:xEditable owner="${docctx.owner}" field="title" id="title"/>
+                        <semui:xEditable owner="${docctx.owner}" field="title" id="title" />
                     </td>
                     <td>
-                        <semui:xEditable owner="${docctx.owner}" field="filename" id="filename"/>
+                        <semui:xEditable owner="${docctx.owner}" field="filename" id="filename" validation="notEmpty"/>
                     </td>
                     <td>
                         ${docctx.owner?.type?.getI10n('value')}

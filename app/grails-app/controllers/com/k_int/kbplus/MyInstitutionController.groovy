@@ -4,6 +4,7 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
+import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import de.laser.helper.DateUtil
@@ -22,7 +23,7 @@ import java.text.SimpleDateFormat
 import groovy.sql.Sql
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class MyInstitutionController {
+class MyInstitutionController extends AbstractDebugController {
     def dataSource
     def springSecurityService
     def ESSearchService
@@ -591,7 +592,7 @@ from License as l where (
         }
 
         if ( params.exportXLS=='yes' ) {
-            def subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params);
+            def subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]);
             exportcurrentSubscription(subscriptions)
             return
         }
@@ -1153,8 +1154,7 @@ from License as l where (
     }
 
     @Deprecated
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @Secured(['ROLE_ADMIN'])
     def processAddSubscription() {
 
         def user = User.get(springSecurityService.principal.id)
@@ -2633,7 +2633,10 @@ AND EXISTS (
                 previousSubscription: old_subOID ?: null,
                 type: Subscription.get(old_subOID)?.type ?: null,
                 isPublic: RefdataValue.getByValueAndCategory('No','YN'),
-                owner: params.subscription.copyLicense ? (Subscription.get(old_subOID)?.owner) : null)
+                owner: params.subscription.copyLicense ? (Subscription.get(old_subOID)?.owner) : null,
+                resource: Subscription.get(old_subOID)?.resource ?: null,
+                form: Subscription.get(old_subOID)?.form ?: null
+        )
         log.debug("New Sub: ${new_subscription.startDate}  - ${new_subscription.endDate}")
         def packages_referenced = []
         Date earliest_start_date = null
@@ -2664,9 +2667,10 @@ AND EXISTS (
         }
 
         if (!new_subscription.issueEntitlements) {
-            new_subscription.issueEntitlements = new java.util.TreeSet()
+           // new_subscription.issueEntitlements = new java.util.TreeSet()
         }
 
+        if(ent_count > -1){
         for (int i = 0; i <= ent_count; i++) {
             def entitlement = params.entitlements."${i}";
             log.debug("process entitlement[${i}]: ${entitlement} - TIPP id is ${entitlement.tipp_id}");
@@ -2746,6 +2750,7 @@ AND EXISTS (
             } else {
                 log.debug("Unable to locate tipp with id ${entitlement.tipp_id}");
             }
+        }
         }
         log.debug("done entitlements...");
 
@@ -3189,8 +3194,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 }
             } else if (params.cmd == "deleteBudgetCode") {
                 def bc = genericOIDService.resolveOID(params.bc)
-
-                if (bc && bc.owner == result.institution) {
+                if (bc && bc.owner.id == result.institution.id) {
                     bc.delete()
                 }
             }
@@ -3297,6 +3301,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         params.orgRoleType   = RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')?.id?.toString()
         params.orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')?.id?.toString()
 
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         result.propList =
                 PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
                         defList: [PropertyDefinition.ORG_PROP],
@@ -3321,17 +3327,19 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
         }
         def fsq = filterService.getOrgComboQuery(params, result.institution)
+        def consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
 
-        def consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams, params)
-
-        def tmpQuery        = ["SELECT o FROM Org o WHERE o.id IN (:oids)"]
-        def tmpQueryParams  = [oids: consortiaMembers.collect{ it.id }]
-
-        if (params.filterPropDef && tmpQueryParams.oids) {
-            (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, tmpQuery, 'o', tmpQueryParams)
-            result.consortiaMembers = Org.executeQuery( tmpQuery.join(' '), tmpQueryParams )
+        if (params.filterPropDef && consortiaMembers) {
+            def tmpQueryParams           = [oids: consortiaMembers.collect{ it.id }]
+            def tmpQuery                 = "select o FROM Org o WHERE o.id IN (:oids)"
+            (tmpQuery, tmpQueryParams)   = propertyService.evalFilterQuery(params, tmpQuery, 'o', tmpQueryParams)
+            result.consortiaMembers      = Org.executeQuery( tmpQuery, tmpQueryParams, [max: result.max, offset: result.offset] )
+            tmpQuery                     = "select count(o) " + tmpQuery.minus("select o ")
+            result.consortiaMembersCount = Org.executeQuery( tmpQuery, tmpQueryParams )[0]
         } else {
-            result.consortiaMembers = consortiaMembers
+            result.consortiaMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params << [max: result.max, offset: result.offset] )
+            def tmpQuery                 = "select count(o) " + fsq.query.minus("select o ")
+            result.consortiaMembersCount = Org.executeQuery( tmpQuery, fsq.queryParams)[0]
         }
 
         if ( params.exportXLS=='yes' ) {
@@ -3347,8 +3355,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADMIN")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADMIN") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def managePropertyGroups() {
         def result = setResultGenerics()
         result.editable = true // true, because action is protected
@@ -3641,7 +3649,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     private def exportOrg(orgs, message, addHigherEducationTitles) {
         try {
             def titles = [
-                    'Name', 'Kurzname', 'Sortiername']
+                    'Name', g.message(code: 'org.shortname.label'), g.message(code: 'org.sortname.label')]
 
             def orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
             def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
@@ -3649,11 +3657,11 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
             if(addHigherEducationTitles)
             {
-                titles.add('Bibliothekstyp')
-                titles.add('Verbundszugehörigkeit')
-                titles.add('Trägerschaft')
-                titles.add('Bundesland')
-                titles.add('Land')
+                titles.add(g.message(code: 'org.libraryType.label'))
+                titles.add(g.message(code: 'org.libraryNetwork.label'))
+                titles.add(g.message(code: 'org.funderType.label'))
+                titles.add(g.message(code: 'org.federalState.label'))
+                titles.add(g.message(code: 'org.country.label'))
             }
 
             def propList =

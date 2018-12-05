@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -8,7 +9,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.*
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class PersonController {
+class PersonController extends AbstractDebugController {
 
     def springSecurityService
     def addressbookService
