@@ -436,12 +436,9 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         def query   = params.get('q')
         def value   = params.get('v', '')
         def context = params.get('context')
-        def startDate = params.get('startDate') ? new Date().parse("yyyy-MM-dd", params.get('startDate')) : new Date()
-        def endDate = params.get('endDate') ? new Date().parse("yyyy-MM-dd", params.get('endDate')) : new Date()
+        def startDate = params.get('startDate') ? new Date().parse("yyyy-MM-dd", params.get('startDate')) : null
+        def endDate = params.get('endDate') ? new Date().parse("yyyy-MM-dd", params.get('endDate')) : null
         def format
-
-
-
 
         Org contextOrg = null
         User user = (User) request.getAttribute('authorizedApiUser')
@@ -507,8 +504,11 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                             break
                     }
 
-                    result = apiManager.read((String) obj, (String) query, (String) value, (User) user, (Org) contextOrg, format, (Date) startDate, (Date) endDate)
-
+                    if(startDate && endDate) {
+                        result = apiManager.read((String) obj, (String) query, (String) value, (User) user, (Org) contextOrg, format, (Date) startDate, (Date) endDate)
+                    }else {
+                        result = apiManager.read((String) obj, (String) query, (String) value, (User) user, (Org) contextOrg, format)
+                    }
                     if (result instanceof Doc) {
                         if (result.contentType == Doc.CONTENT_TYPE_STRING) {
                             response.contentType = result.mimeType
