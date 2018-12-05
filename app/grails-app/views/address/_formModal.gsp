@@ -2,7 +2,7 @@
 
 <semui:modal id="addressFormModal" text="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}">
 
-    <g:form class="ui form" url="[controller: 'address', action: 'create']" method="POST">
+    <g:form  id="create_address" class="ui form" url="[controller: 'address', action: 'create']" method="POST">
         <input type="hidden" name="redirect" value="true" />
 
         <div class="field">
@@ -160,3 +160,43 @@
 
     </g:form>
 </semui:modal>
+<r:script>
+        function handleRequired() {
+            $('#create_address')
+                    .form({
+
+                inline: true,
+                fields: {
+                    street_1: {
+                        identifier  : 'street_1',
+                        rules: [
+                            {
+                                type   : 'empty',
+                                prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                            }
+                        ]
+                    },
+
+                    zipcode: {
+                        identifier  : 'zipcode',
+                        rules: [
+                            {
+                                type   : 'empty',
+                                prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                            }
+                        ]
+                    },
+                    city: {
+                        identifier  : 'city',
+                        rules: [
+                            {
+                                type   : 'empty',
+                                prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                            }
+                        ]
+                    },
+                 }
+            });
+        }
+        handleRequired()
+</r:script>
