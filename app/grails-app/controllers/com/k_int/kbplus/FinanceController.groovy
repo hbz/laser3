@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
+import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.converters.JSON;
@@ -9,7 +10,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class FinanceController {
+class FinanceController extends AbstractDebugController {
 
     def springSecurityService
     def accessService

@@ -1,4 +1,6 @@
 package com.k_int.kbplus
+
+import de.laser.controller.AbstractDebugController
 import grails.converters.*
 import org.elasticsearch.groovy.common.xcontent.*
 import groovy.xml.MarkupBuilder
@@ -7,7 +9,7 @@ import com.k_int.kbplus.auth.*;
 import grails.plugin.springsecurity.SpringSecurityUtils
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class SpotlightController {
+class SpotlightController extends AbstractDebugController {
   def ESSearchService
   def springSecurityService
   def dataloadService

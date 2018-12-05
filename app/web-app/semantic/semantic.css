@@ -1180,6 +1180,10 @@ aside.ui.accordion .title:not(.ui) {
   margin-left: -3px;
 }
 
+.editable-disabled {
+  cursor: text !important;
+}
+
 .la-space-right {
   padding-right: 20px;
 }
@@ -28314,6 +28318,18 @@ Floated Menu / Item
 .ui.la-table.table tr th,
 .ui.la-table.table tr td {
   border-top: none;
+}
+
+/*--------------
+     la-table-dashboard
+---------------*/
+
+.ui.la-table-dashboard.table {
+  background-color: white;
+}
+
+.ui.la-table-dashboard.table tr td {
+  background-color: white;
 }
 
 /*--------------

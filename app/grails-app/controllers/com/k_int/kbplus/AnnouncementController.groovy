@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.controller.AbstractDebugController
 import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
@@ -9,7 +10,7 @@ import com.k_int.kbplus.auth.*;
 import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class AnnouncementController {
+class AnnouncementController extends AbstractDebugController {
 
     def springSecurityService
     def alertsService

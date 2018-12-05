@@ -1,3 +1,14 @@
+0.11.2
+
+- added system profiler
+- api v1 changes
+
+0.11.1
+
+- added pagination for manage consortia view
+- fixed subscription list: view and filter
+- fixed providers list: missing editable permission
+- fixed custom properties bootstrapping
 
 0.11
 

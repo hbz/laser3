@@ -143,15 +143,15 @@ from Subscription as s where (
             qry_params.put('date_before', dateBeforeFilterVal)
         } */
 
-        def subTypes = null
+        def subTypes = []
         if (params.containsKey('subTypes')) {
-            subTypes = params.get('subTypes')
-//        }
-//        def subTypes = params.list('subTypes')
-//        if (subTypes) {
-            subTypes = subTypes.collect{it as Long}
-            base_qry += " and s.type.id in (:subTypes) "
-            qry_params.put('subTypes', subTypes)
+            params.list('subTypes').each{
+                subTypes.add(Long.parseLong(it))
+            }
+            if (subTypes) {
+                base_qry += " and s.type.id in (:subTypes) "
+                qry_params.put('subTypes', subTypes)
+            }
         }
 
         if (params.status) {

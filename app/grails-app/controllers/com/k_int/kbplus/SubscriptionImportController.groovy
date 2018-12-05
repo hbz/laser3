@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.controller.AbstractDebugController
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.*;
@@ -9,7 +10,7 @@ import org.apache.poi.hssf.util.HSSFColor;
 import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class SubscriptionImportController {
+class SubscriptionImportController extends AbstractDebugController {
 
   def springSecurityService
   def ESSearchService

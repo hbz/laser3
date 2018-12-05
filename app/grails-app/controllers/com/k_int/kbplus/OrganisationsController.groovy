@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.PrivateProperty
+import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import grails.converters.JSON
 import org.apache.poi.hssf.usermodel.HSSFRichTextString
@@ -15,7 +16,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import com.k_int.properties.*
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class OrganisationsController {
+class OrganisationsController extends AbstractDebugController {
 
     def springSecurityService
     def accessService
@@ -111,6 +112,8 @@ class OrganisationsController {
         params.orgSector   = RefdataValue.getByValueAndCategory('Publisher','OrgSector')?.id?.toString()
         params.orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')?.id?.toString()
         params.sort        = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
+
+        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR')
 
         def fsq            = filterService.getOrgQuery(params)
         def orgListTotal   = Org.findAll(fsq.query, fsq.queryParams)

@@ -302,4 +302,14 @@ aside.metaboxContent + .metaboxContent-spacer {
     position: fixed;
     width: 100%;
     bottom: 0;
+    text-shadow: 1px 1px 2px rgba(0,0,0, 0.5);
+}
+#maintenance > .segment {
+    padding: 2em 0 3em;
+}
+
+/* fix: bouncing top nav bar */
+
+.ui.fixed.inverted.menu {
+    min-height: 50px;
 }
