@@ -38,7 +38,12 @@
             <g:if test="${prop.type?.tenant?.id == tenant?.id}">
                 <tr>
                     <td>
-                        ${prop.type.getI10n('name')}
+                        <g:if test="${prop.type.getI10n('expl') != ' °'}">
+                            <span data-tooltip="${prop.type.getI10n('expl')}">${prop.type.getI10n('name')}</span>
+                        </g:if>
+                        <g:else>
+                            ${prop.type.getI10n('name')}
+                        </g:else>
                         <g:if test="${prop.type.mandatory}">
                             <span data-position="top right" data-tooltip="${message(code:'default.mandatory.tooltip')}">
                                 <i class="star icon yellow"></i>
@@ -96,7 +101,7 @@
                                   name="cust_prop_add_value"
                                   class="ui form"
                                   update="${custom_props_div}"
-                                  onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})">
+                                  onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})">
 
                         <input type="hidden" name="propIdent"  data-desc="${prop_desc}" class="customPropSelect"/>
                         <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>
