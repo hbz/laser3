@@ -97,6 +97,8 @@
                             ${message(code:'default.unknown')}
                         </g:else>
                         <br />
+                        Status: ${tipp.status.value}
+                        Gehört zu Lizenz: ${}
                     </td>
 
                     <td>

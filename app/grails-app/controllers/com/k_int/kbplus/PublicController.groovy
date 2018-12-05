@@ -6,7 +6,7 @@ import grails.plugin.cache.Cacheable;
 import grails.plugin.springsecurity.annotation.Secured;
 
 @Secured(['permitAll'])
-class PublicController extends AbstractDebugController {
+class PublicController {
 
     def springSecurityService
     def genericOIDService
@@ -119,6 +119,7 @@ class PublicController extends AbstractDebugController {
             if (scp) {
                 result.subscription = sub
 
+//                def query = "SELECT tipp FROM TitleInstancePackagePlatform as tipp WHERE tipp.pkg = :pkg and (tipp.status.value != 'Deleted' and tipp.status.value != 'Retired')"
                 def query = "SELECT tipp FROM TitleInstancePackagePlatform as tipp WHERE tipp.pkg = :pkg and tipp.status.value != 'Deleted'"
                 def queryParams = [pkg: pkg]
 
