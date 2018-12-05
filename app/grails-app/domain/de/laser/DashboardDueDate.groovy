@@ -20,13 +20,9 @@ class DashboardDueDate {
     User responsibleUser
     Org  responsibleOrg
     Timestamp lastUpdated
-    transient static final String PROP_KEY_NOTICE_PERIOD = 'myinst.dash.due_date.noticePeriod.label'
-    transient static final String PROP_KEY_ENDDATE = 'myinst.dash.due_date.enddate.label'
-    transient static final String PROP_KEY_TASK_DATE = 'myinst.dash.due_date.task.label'
 
     DashboardDueDate(Subscription obj, boolean isManualCancellationDate, User responsibleUser, Org responsibleOrg){
         this(
-//                isManualCancellationDate? getPropertyValue(PROP_KEY_NOTICE_PERIOD) : getPropertyValue(PROP_KEY_ENDDATE),
                 isManualCancellationDate? 'Kündigungsdatum' : 'Enddatum',
                 isManualCancellationDate? obj.manualCancellationDate : obj.endDate,
                 obj,
@@ -37,7 +33,6 @@ class DashboardDueDate {
         this(obj.type?.name?: obj.class.simpleName, obj.dateValue, obj, responsibleUser, responsibleOrg)
     }
     DashboardDueDate(Task obj, User responsibleUser, Org responsibleOrg){
-//        this(getPropertyValue(PROP_KEY_TASK_DATE), obj.endDate, obj, responsibleUser, responsibleOrg)
         this('Fälligkeitsdatum', obj.endDate, obj, responsibleUser, responsibleOrg)
     }
     private DashboardDueDate(attribut, date, object, responsibleUser, responsibleOrg){

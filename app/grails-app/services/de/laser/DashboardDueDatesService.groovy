@@ -8,6 +8,7 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.domain.StatsTripleCursor
 import de.laser.helper.RDStore
 import de.laser.helper.SqlDateUtils
+import grails.util.Holders
 import groovyx.gpars.GParsPool
 import groovyx.net.http.RESTClient
 import groovyx.net.http.URIBuilder
@@ -89,11 +90,10 @@ class DashboardDueDatesService {
                 DashboardDueDate.executeUpdate("DELETE from DashboardDueDate ")
                 dashboarEntriesToInsert.each { it.save(flush: true) }
             } catch (Throwable t) {
+                log.error("DashboardDueDatesService - updateDashboardTableInDatabase() :: Rollback for reason: ${t.message}")
                 status.setRollbackOnly()
             }
-
         }
-
     }
 
     private void sendEmailsForDueDatesOfAllUsers() {
@@ -112,14 +112,16 @@ class DashboardDueDatesService {
 
     private void sendEmailWithDashboardToUser(User user, Org org, List<DashboardDueDate> dashboardEntries) {
         def emailReceiver = user.getEmail()
-        def subject = "LASe:R - Fällige Termine (" + org.name + ")"
+        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+        String subject = messageSource.getMessage('email.subject.dueDates', null, locale) + " (" + org.name + ")"
         sendEmail(emailReceiver, subject, dashboardEntries, null, null, user, org)
     }
 
     private void sendEmail(userAddress, subjectTrigger, dashboardEntries, overrideReplyTo, overrideFrom, user, org) {
         try {
             if (userAddress == null || userAddress.isEmpty()) {
-                log.info("Folgender Benutzer hat keine Emailadresse hinterlegt und kann nicht über fällige Termine informiert werden: " + user.username);
+                log.info("The following user does not have an email address and can not be informed about due dates: " + user.username);
             } else {
                 mailService.sendMail {
                     to userAddress
@@ -128,7 +130,7 @@ class DashboardDueDatesService {
                     subject subjectTrigger
                     body(view: "/user/_emailDueDatesView", model: [user: user, org: org, dueDates: dashboardEntries])
                 }
-                log.info("DashboardDueDatesService - sendEmail() finished to "+ user.getDisplayName() + " - " + user.email + "-" + org.name);
+                log.info("DashboardDueDatesService - sendEmail() finished to "+ user.getDisplayName() + " (" + user.email + ") " + org.name);
             }
         } catch (Exception e) {
             log.error("DashboardDueDatesService - sendEmail() :: Unable to perform email due to exception ${e.message}")

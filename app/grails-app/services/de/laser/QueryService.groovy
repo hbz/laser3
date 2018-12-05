@@ -8,13 +8,8 @@ import de.laser.helper.SqlDateUtils
 import static de.laser.helper.RDStore.*
 
 class QueryService {
-    def contextService
     def subscriptionsQueryService
     def taskService
-
-    def getDueObjects(int daysToBeInformedBeforeToday) {
-        getDueObjects(contextService.org, contextService.user, daysToBeInformedBeforeToday)
-    }
 
     def getDueObjects(Org contextOrg, User contextUser, daysToBeInformedBeforeToday) {
         java.sql.Date infoDate = daysToBeInformedBeforeToday? SqlDateUtils.getDateInNrOfDays(daysToBeInformedBeforeToday) : null
@@ -123,7 +118,7 @@ class QueryService {
         queryParams.validOn = ""
         def base_qry
         def qry_params
-        (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams)
+        (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextOrg)
         def result = [:]
         result.query = "select s ${base_qry}"
         result.queryParams = qry_params
