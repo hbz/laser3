@@ -19,6 +19,9 @@ laserSystemId = 'local'
 // - enable notification
 // - enable reminder
 //hbzMaster = true
+isUpdateDashboardTableInDatabase = true
+isSendEmailsForDueDatesOfAllUsers = true
+
 
 // Database Migration Plugin
 grails.plugin.databasemigration.updateOnStart = false
@@ -929,10 +932,11 @@ financialImportTSVLoaderMappings = [
 grails.mail.disabled = false //System wide
 grails.mail.poolSize = 20 //default 5 emails at a time, then que based system (prereq = async true)
 //grails.mail.overrideAddress="ryan@k-int.com" //Test env only, overrides to and from address
-notifications.email.from = 'wincenter@hbz-nrw.de'
-notifications.email.replyTo = 'wincenter@hbz-nrw.de'
+//grails.mail.port = 30//TODO: Diese Zeile fürs Deploy entfernen!!!
+notifications.email.from = 'laser_support@hbz-nrw.de'
+notifications.email.replyTo = 'laser_support@hbz-nrw.de'
 notifications.email.genericTemplate = true //If enabled, no customisation in email i.e. Reminder inst info, User info... Else, Customised template will be sent to user
-systemEmail = 'wincenter@hbz-nrw.de'
+systemEmail = 'laser_support@hbz-nrw.de'
 
 //Finance
 grails.plugins.remotepagination.enableBootstrap = true

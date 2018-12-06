@@ -34,4 +34,10 @@ class GenericOIDService {
     result
   }
 
+  def getOID(def object) {
+    if (object) {
+      return "${object.class.name}:${object.id}"
+    }
+    null
+  }
 }
