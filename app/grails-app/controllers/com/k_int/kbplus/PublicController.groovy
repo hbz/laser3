@@ -186,7 +186,7 @@ class PublicController {
                         " and exists (SELECT tipp FROM TitleInstancePackagePlatform as tipp WHERE ie.tipp = tipp and tipp.pkg = :pkg )"
                 def queryParams = [sub: sub, pkg: pkg]
 
-                result.issueEntitlementsCount = TitleInstancePackagePlatform.executeQuery("select count(ie) " + base_query, queryParams)[0]
+                result.issueEntitlementsCount = IssueEntitlement.executeQuery("select count(ie) " + base_query, queryParams)[0]
 
                 def query = "SELECT ie " + base_query
 
