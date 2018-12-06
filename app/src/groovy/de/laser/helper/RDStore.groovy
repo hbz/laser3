@@ -25,4 +25,8 @@ class RDStore {
     static final LICENSE_DELETED = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
 
     static final OR_TYPE_CONSORTIUM = RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')
+
+    static final YN_YES = RefdataValue.getByValueAndCategory('Yes','YN')
+    static final YN_NO = RefdataValue.getByValueAndCategory('No','YN')
+
 }

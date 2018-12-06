@@ -2,6 +2,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.RDStore
 import grails.plugin.cache.Cacheable;
 import grails.plugin.springsecurity.annotation.Secured;
 
@@ -119,7 +120,6 @@ class PublicController {
             if (scp) {
                 result.subscription = sub
 
-//                def query = "SELECT tipp FROM TitleInstancePackagePlatform as tipp WHERE tipp.pkg = :pkg and (tipp.status.value != 'Deleted' and tipp.status.value != 'Retired')"
                 def query = "SELECT tipp FROM TitleInstancePackagePlatform as tipp WHERE tipp.pkg = :pkg and tipp.status.value != 'Deleted'"
                 def queryParams = [pkg: pkg]
 
@@ -156,6 +156,67 @@ class PublicController {
             }
         }
 
+        result
+    }
+
+    @Secured(['permitAll'])
+    def gascoDetailsIssueEntitlements() {
+        def result = [:]
+
+        result.issueEntitlements = []
+
+        result.idnsPreset = IdentifierNamespace.findAll {
+            ns in ['eissn', 'issn', 'zdb', 'ezb']
+        }
+
+        if (params.id) {
+            def sp  = SubscriptionPackage.get(params.long('id'))
+            def sub = sp?.subscription
+//            def pkg = sp?.pkg
+            def scp = SubscriptionCustomProperty.findByOwnerAndTypeAndRefValue(
+                    sub,
+                    PropertyDefinition.findByDescrAndName('Subscription Property', 'GASCO Entry'),
+                    RDStore.YN_YES
+            )
+
+            if (scp) {
+                result.subscription = sub
+
+                def base_query = " FROM IssueEntitlement as ie WHERE ie.subscription = :sub and (ie.status.value != 'Deleted' and ie.status.value != 'Retired')"
+                def queryParams = [sub: sub]
+
+                result.issueEntitlementsCount = TitleInstancePackagePlatform.executeQuery("select count(ie) " + base_query, queryParams)[0]
+
+                def query = "SELECT ie " + base_query
+
+                def q = params.q?.trim()
+                if (q) {
+                    query += " AND ( LOWER(tipp.title.title) LIKE :q ) "
+
+                    queryParams.put('q', '%' + q.toLowerCase() + '%')
+                }
+
+                def idv = params.idv?.trim()
+                if (idv) {
+                    query += " AND ( EXISTS ( " +
+                        " SELECT io FROM IdentifierOccurrence AS io " +
+                        " WHERE io.ti = tipp.title AND io.identifier.value LIKE :idv "
+
+                    if (params.idns) {
+                        query += " AND io.identifier.ns = :idns "
+
+                        queryParams.put('idns', IdentifierNamespace.get(params.idns))
+                    }
+                    query += " ) ) "
+
+                    queryParams.put('idv', '%' + idv.toLowerCase() + '%')
+                }
+                result.issueEntitlements = IssueEntitlement.executeQuery(query, queryParams)
+            }
+            else {
+                redirect controller: 'public', action: 'gasco'
+            }
+        }
         result
     }
 
