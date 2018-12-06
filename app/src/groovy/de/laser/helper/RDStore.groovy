@@ -21,10 +21,4 @@ class RDStore {
     static final YN_YES = RefdataValue.getByValueAndCategory('Yes','YN')
     static final YN_NO = RefdataValue.getByValueAndCategory('No','YN')
 
-
-    static final OR_TYPE_CONSORTIUM = RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')
-
-    static final YN_YES = RefdataValue.getByValueAndCategory('Yes','YN')
-    static final YN_NO = RefdataValue.getByValueAndCategory('No','YN')
-
 }
