@@ -39,7 +39,7 @@
             <g:if test="${prop.type.descr == prop_desc}">
                 <tr>
                     <td class="la-js-dont-hide-this-card">
-                        <g:if test="${prop.type.getI10n('expl') != ' °'}">
+                        <g:if test="${!prop.type.getI10n('expl').contains(' °')}">
                             <span data-tooltip="${prop.type.getI10n('expl')}">${prop.type.getI10n('name')}</span>
                         </g:if>
                         <g:else>

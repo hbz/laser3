@@ -971,6 +971,7 @@ class AjaxController extends AbstractDebugController {
     */
     @Secured(['ROLE_USER'])
     def addPrivatePropertyValue(){
+      if(params.propIdent.length() > 0) {
         def error
         def newProp
         def tenant = Org.get(params.tenantId)
@@ -978,25 +979,25 @@ class AjaxController extends AbstractDebugController {
         def type   = PropertyDefinition.get(params.propIdent.toLong())
 
         if (! type) { // new property via select2; tmp deactivated
-            error = message(code:'propertyDefinition.private.deactivated')
+          error = message(code:'propertyDefinition.private.deactivated')
         }
         else {
-            def existingProps = owner.privateProperties.findAll {
-                it.owner.id == owner.id
-                it.type.name == type.name // this sucks due lazy proxy problem
-            }
-            existingProps.removeAll { it.type.name != type.name } // dubious fix
+          def existingProps = owner.privateProperties.findAll {
+            it.owner.id == owner.id
+            it.type.name == type.name // this sucks due lazy proxy problem
+          }
+          existingProps.removeAll { it.type.name != type.name } // dubious fix
 
-            if (existingProps.size() == 0 || type.multipleOccurrence) {
-                newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, type)
-                if (newProp.hasErrors()) {
-                    log.error(newProp.errors)
-                } else {
-                    log.debug("New private property created: " + newProp.type.name)
-                }
+          if (existingProps.size() == 0 || type.multipleOccurrence) {
+            newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, type)
+            if (newProp.hasErrors()) {
+              log.error(newProp.errors)
             } else {
-                error = message(code: 'ajax.addCustomPropertyValue.error', default: 'A property of this type is already added')
+              log.debug("New private property created: " + newProp.type.name)
             }
+          } else {
+            error = message(code: 'ajax.addCustomPropertyValue.error', default: 'A property of this type is already added')
+          }
         }
 
         owner.refresh()
@@ -1010,6 +1011,10 @@ class AjaxController extends AbstractDebugController {
                 custom_props_div: "custom_props_div_${tenant.id}", // JS markup id
                 prop_desc: type?.descr // form data
         ])
+      }
+      else  {
+        log.error("Form submitted with mising values")
+      }
     }
 
     @Secured(['ROLE_USER'])

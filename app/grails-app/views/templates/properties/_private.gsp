@@ -38,7 +38,7 @@
             <g:if test="${prop.type?.tenant?.id == tenant?.id}">
                 <tr>
                     <td>
-                        <g:if test="${prop.type.getI10n('expl') != ' °'}">
+                        <g:if test="${!prop.type.getI10n('expl').contains(' °')}">
                             <span data-tooltip="${prop.type.getI10n('expl')}">${prop.type.getI10n('name')}</span>
                         </g:if>
                         <g:else>
