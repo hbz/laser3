@@ -50,8 +50,7 @@
             </div>
             <!-- 1-2 -->
             <div class="field fieldcontain">
-                <semui:datepicker label="default.valid_on.label" name="validOn" placeholder="filter.placeholder"
-                                  value="${validOn}"/>
+                <semui:datepicker label="default.valid_on.label" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
             </div>
             <% /*
             <!-- 1-3 -->

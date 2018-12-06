@@ -202,10 +202,7 @@ class MyInstitutionController extends AbstractDebugController {
         def date_restriction = null;
         def sdf = new DateUtil().getSimpleDateFormat_NoTime()
 
-        if (params.validOn == null) {
-            result.validOn = sdf.format(new Date(System.currentTimeMillis()))
-            date_restriction = sdf.parse(result.validOn)
-        } else if (params.validOn.trim() == '') {
+        if (params.validOn == null || params.validOn.trim() == '') {
             result.validOn = ""
         } else {
             result.validOn = params.validOn
@@ -560,10 +557,7 @@ from License as l where (
         def date_restriction = null;
         def sdf = new DateUtil().getSimpleDateFormat_NoTime()
 
-        if (params.validOn == null) {
-            result.validOn = sdf.format(new Date(System.currentTimeMillis()))
-            date_restriction = sdf.parse(result.validOn)
-        } else if (params.validOn.trim() == '') {
+        if (params.validOn == null || params.validOn.trim() == '') {
             result.validOn = ""
         } else {
             result.validOn = params.validOn
@@ -571,6 +565,10 @@ from License as l where (
         }
 
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+
+        if(!params.status) {
+            params.status = RefdataValue.getByValueAndCategory('Current','Subscription Status').id
+        }
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.num_sub_rows = Subscription.executeQuery("select count(s) " + tmpQ[0], tmpQ[1])[0]

@@ -20,9 +20,7 @@ class SubscriptionsQueryService {
         def date_restriction
         def sdf = new DateUtil().getSimpleDateFormat_NoTime()
 
-        if (params.validOn == null) {
-            date_restriction = sdf.parse(sdf.format(new Date(System.currentTimeMillis())))
-        } else if (params.validOn.trim() == '') {
+        if (params.validOn == null || params.validOn.trim() == '') {
             date_restriction = null
         } else {
             date_restriction = sdf.parse(params.validOn)
@@ -165,7 +163,7 @@ from Subscription as s where (
             base_qry += " order by lower(trim(s.name)) asc"
         }
 
-        //log.debug("query: ${base_qry} && params: ${qry_params}")
+        log.debug("query: ${base_qry} && params: ${qry_params}")
 
         return [base_qry, qry_params]
     }
