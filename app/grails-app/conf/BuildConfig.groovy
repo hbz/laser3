@@ -82,7 +82,8 @@ grails.project.dependency.resolution = {
         runtime 'xerces:xercesImpl:2.11.0'
 
         //runtime 'mysql:mysql-connector-java:5.1.30'
-        provided 'org.postgresql:postgresql:9.4.1212.jre6'
+        runtime 'org.postgresql:postgresql:9.4.1212.jre6'
+        //provided 'org.postgresql:postgresql:9.4.1212.jre6'
 
         compile 'org.elasticsearch:elasticsearch:2.1.2'
         runtime ('org.elasticsearch:elasticsearch-groovy:2.1.2') {
