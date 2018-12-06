@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.UserSettings; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserOrg" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.UserSettings; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.auth.Role;com.k_int.kbplus.auth.UserOrg; de.laser.helper.RDStore" %>
 <!doctype html>
 <html>
 <head>
@@ -22,7 +22,7 @@
 
         <div class="ui segment">
 
-            <g:form action="updateProfile" class="ui form">
+            <g:form action="updateProfile" class="ui form updateProfile">
                 <h4 class="ui dividing header">
                     ${message(code: 'profile.user', default:'User Profile')}
                 </h4>
@@ -32,14 +32,14 @@
                     <input type="text" readonly="readonly" value="${user.username}"/>
                 </div>
 
-                <div class="field">
+                <div class="field ">
                     <label>${message(code: 'profile.display', default:'Display Name')}</label>
                     <input type="text" name="userDispName" value="${user.display}"/>
                 </div>
 
-                <div class="field">
+                <div class="field required">
                     <label>${message(code: 'profile.email', default:'Email Address')}</label>
-                    <input type="text" name="email" value="${user.email}"/>
+                    <input type="text" id="email" name="email" value="${user.email}"/>
                 </div>
 
                 <div class="field">
@@ -62,6 +62,10 @@
                 </div>
 
             </g:form>
+            <r:script>
+
+
+            </r:script>
         </div><!-- .segment -->
 
     </div><!-- .column -->
@@ -131,16 +135,21 @@
                     <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', 'User.Settings.Dashboard.Tab'))}" />
                     <semui:xEditableRefData owner="${US_DASHBOARD_TAB}" field="rdValue" config="${US_DASHBOARD_TAB.key.rdc}" />
                 </div>
-
                 <div class="field">
-                    <label>${message(code: 'profile.dashboardReminderPeriod', default:'DASHBOARD_REMINDER_PERIOD')}</label>
+                    <label>${message(code: 'profile.reminderPeriod', default:'Reminder period')}</label>
                     <g:set var="US_DASHBOARD_REMINDER_PERIOD" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}" />
-                    <semui:xEditable owner="${US_DASHBOARD_REMINDER_PERIOD}" field="strValue" />
+                    <semui:xEditable owner="${US_DASHBOARD_REMINDER_PERIOD}" field="strValue" />&nbspTage vor dem Termin
                 </div>
 
                 <div class="field">
+                    <label>${message(code: 'profile.isRemindByEmail', default:'Remind by E-Mail?')}</label>
+                    <g:set var="US_IS_REMIND_BY_EMAIL" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO)}" />
+                    <semui:xEditableRefData owner="${US_IS_REMIND_BY_EMAIL}" field="rdValue" config="${US_IS_REMIND_BY_EMAIL.key.rdc}" />
+                </div>
+
+    <div class="field">
                     <label>${message(code: 'profile.editMode', default:'Show Edit Mode')}</label>
-                    <g:set var="US_SHOW_EDIT_MODE" value="${user.getSetting(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))}" />
+                    <g:set var="US_SHOW_EDIT_MODE" value="${user.getSetting(UserSettings.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)}" />
                     <semui:xEditableRefData owner="${US_SHOW_EDIT_MODE}" field="rdValue" config="${US_SHOW_EDIT_MODE.key.rdc}" />
                 </div>
 
@@ -391,7 +400,22 @@
 
 <r:script>
     $(document).ready(function () {
-
+                    $('.updateProfile')
+                            .form({
+                        on: 'blur',
+                        inline: true,
+                        fields: {
+                            email: {
+                                identifier  : 'email',
+                                rules: [
+                                    {
+                                        type   : 'empty',
+                                        prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                                    }
+                                ]
+                            }
+                         }
+                    });
         $('#passwordToggler').on('change', function(e) {
             $('input.pw').attr('type', ($(this).is(":checked") ? 'text' : 'password'))
         })
