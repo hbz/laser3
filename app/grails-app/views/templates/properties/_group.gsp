@@ -89,7 +89,6 @@
                         <semui:xEditable owner="${prop}" type="textarea" field="note"/>
                     </td>
                     <td class="x">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
-
                         <g:if test="${editable == true}">
                             <g:if test="${ownobj.hasProperty('instanceOf') && showConsortiaFunctions}">
                                 <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />
@@ -97,9 +96,9 @@
                                 <span data-position="top right" data-tooltip="${message(code:'property.audit.tooltip')}">
                                 <g:remoteLink controller="ajax" action="togglePropertyAuditConfig"
                                               before="if(!confirm('${auditMsg}')) return false"
-                                              params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]'
+                                              params='[propClass: prop.getClass(), propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}", ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]'
                                               id="${prop.id}"
-                                              onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                              onSuccess="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                               update="${custom_props_div}" class="ui icon button">
                                     <i class="thumbtack icon"></i>
                                 </g:remoteLink>
@@ -111,9 +110,9 @@
 
                                 <g:remoteLink controller="ajax" action="deleteCustomProperty"
                                               before="if(!confirm('${confirmMsg}')) return false"
-                                              params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}"]'
+                                              params='[propClass: prop.getClass(), propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}", ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:"${showConsortiaFunctions}"]'
                                               id="${prop.id}"
-                                              onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                              onSuccess="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                               update="${custom_props_div}" class="ui icon negative button">
                                     <i class="trash alternate icon"></i>
                                 </g:remoteLink>
@@ -139,12 +138,14 @@
                                   name="cust_prop_add_value"
                                   class="ui form"
                                   update="${custom_props_div}"
-                                  onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
+                                  onSuccess="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
 
                         <input type="hidden" name="propIdent" data-desc="${prop_desc}" data-oid="${propDefGroup.class.name}:${propDefGroup.id}" class="customPropSelect"/>
                         <input type="hidden" name="ownerId" value="${ownobj.id}"/>
                         <input type="hidden" name="editable" value="${editable}"/>
+                        <input type="hidden" name="showConsortiaFunctions" value="${showConsortiaFunctions}"/>
                         <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
+                        <input type="hidden" name="propDefGroup" value="${propDefGroup.class.name}:${propDefGroup.id}"/>
 
                         <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
 

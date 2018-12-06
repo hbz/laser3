@@ -896,13 +896,29 @@ class AjaxController extends AbstractDebugController {
       owner.refresh()
 
       request.setAttribute("editable", params.editable == "true")
-      render(template: "/templates/properties/custom", model: [
-              ownobj          : owner,
-              newProp         : newProp,
-              error           : error,
-              custom_props_div: "${params.custom_props_div}", // JS markup id
-              prop_desc       : type.descr // form data
-      ])
+      boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
+      if(params.propDefGroup) {
+        render(template: "/templates/properties/group", model: [
+                ownobj          : owner,
+                newProp         : newProp,
+                error           : error,
+                showConsortiaFunctions: showConsortiaFunctions,
+                propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
+                custom_props_div: "${params.custom_props_div}", // JS markup id
+                prop_desc       : type.descr // form data
+        ])
+      }
+      else {
+        render(template: "/templates/properties/custom", model: [
+                ownobj          : owner,
+                newProp         : newProp,
+                showConortiaFunctions: showConsortiaFunctions,
+                error           : error,
+                custom_props_div: "${params.custom_props_div}", // JS markup id
+                prop_desc       : type.descr // form data
+        ])
+      }
+
     }
     else {
       log.error("Form submitted with missing values")
@@ -1165,13 +1181,25 @@ class AjaxController extends AbstractDebugController {
         }
 
         request.setAttribute("editable", params.editable == "true")
-        render(template: "/templates/properties/custom", model:[
-                ownobj:owner,
-                newProp:property,
-                showConsortiaFunctions: params.showConsortiaFunctions,
-                custom_props_div: "${params.custom_props_div}", // JS markup id
-                prop_desc: prop_desc // form data
-        ])
+        if(params.propDefGroup) {
+          render(template: "/templates/properties/group", model: [
+                  ownobj          : owner,
+                  newProp         : property,
+                  showConsortiaFunctions: params.showConsortiaFunctions,
+                  propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
+                  custom_props_div: "${params.custom_props_div}", // JS markup id
+                  prop_desc       : prop_desc // form data
+          ])
+        }
+        else {
+          render(template: "/templates/properties/custom", model: [
+                  ownobj                : owner,
+                  newProp               : property,
+                  showConsortiaFunctions: params.showConsortiaFunctions,
+                  custom_props_div      : "${params.custom_props_div}", // JS markup id
+                  prop_desc             : prop_desc // form data
+          ])
+        }
     }
 
     @Secured(['ROLE_USER'])
@@ -1200,12 +1228,26 @@ class AjaxController extends AbstractDebugController {
             log.debug("Deleted custom property: " + property.type.name)
         }
         request.setAttribute("editable", params.editable == "true")
-        render(template: "/templates/properties/custom", model:[
-                ownobj:owner,
-                newProp:property,
-                custom_props_div: "${params.custom_props_div}", // JS markup id
-                prop_desc: prop_desc // form data
-        ])
+        boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
+        if(params.propDefGroup) {
+          render(template: "/templates/properties/group", model: [
+                  ownobj          : owner,
+                  newProp         : property,
+                  showConsortiaFunctions: showConsortiaFunctions,
+                  propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
+                  custom_props_div: "${params.custom_props_div}", // JS markup id
+                  prop_desc       : prop_desc // form data
+          ])
+        }
+        else {
+          render(template: "/templates/properties/custom", model:[
+                  ownobj:owner,
+                  newProp:property,
+                  showConsortiaFunctions: showConsortiaFunctions,
+                  custom_props_div: "${params.custom_props_div}", // JS markup id
+                  prop_desc: prop_desc // form data
+          ])
+        }
     }
 
   /**

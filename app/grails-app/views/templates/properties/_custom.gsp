@@ -112,7 +112,7 @@
 
                                 <g:remoteLink controller="ajax" action="deleteCustomProperty"
                                               before="if(!confirm('${confirmMsg}')) return false"
-                                              params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}"]' id="${prop.id}"
+                                              params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:"${showConsortiaFunctions}"]' id="${prop.id}"
                                               onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                               update="${custom_props_div}" class="ui icon negative button">
                                     <i class="trash alternate icon"></i>
@@ -143,6 +143,7 @@
                         <input type="hidden" name="propIdent" data-desc="${prop_desc}" class="customPropSelect"/>
                         <input type="hidden" name="ownerId" value="${ownobj.id}"/>
                         <input type="hidden" name="editable" value="${editable}"/>
+                        <input type="hidden" name="showConsortiaFunctions" value="${showConsortiaFunctions}"/>
                         <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
 
                         <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
