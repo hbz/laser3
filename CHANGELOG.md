@@ -1,3 +1,8 @@
+0.11.3
+
+- reworked consortia subscription message
+- fixed: cost after tax rounding
+
 0.11.2
 
 - added system profiler
