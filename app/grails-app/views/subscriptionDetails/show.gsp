@@ -42,18 +42,7 @@
         <semui:objectStatus object="${subscriptionInstance}" status="${subscriptionInstance.status}" />
 
     <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id == subscriptionInstance.getConsortia()?.id)}">
-        <div class="ui negative message">
-            <div class="header"><g:message code="myinst.message.attention" /></div>
-            <p>
-                <g:message code="myinst.subscriptionDetails.message.ChildView" />
-                <g:each in="${subscriptionInstance.getAllSubscribers()?.collect{itOrg -> itOrg.getDesignation()}}" var="subscr">
-                    <span class="ui label">${subscr}</span>,
-                </g:each>
-
-                <g:message code="myinst.subscriptionDetails.message.ConsortialView" />
-                    <g:link controller="subscriptionDetails" action="show" id="${subscriptionInstance.instanceOf.id}"><g:message code="myinst.subscriptionDetails.message.here" /></g:link>.
-            </p>
-        </div>
+        <g:render template="message" />
     </g:if>
 
         <semui:meta>

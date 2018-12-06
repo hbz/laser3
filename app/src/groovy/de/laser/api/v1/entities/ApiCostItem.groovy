@@ -70,6 +70,17 @@ class ApiCostItem {
 
         return (hasAccess ? (result ? new JSON(result) : null) : Constants.HTTP_FORBIDDEN)
     }
+
+    static getCostItems(User user, Org context){
+        def result = []
+        def hasAccess = de.laser.api.v1.ApiReader.isDataManager(user)
+
+        if (hasAccess) {
+            result = de.laser.api.v1.ApiReader.exportCostItems(ApiReaderHelper.IGNORE_NONE, context)
+        }
+
+        return (hasAccess ? (result ? new JSON(result) : null) : Constants.HTTP_FORBIDDEN)
+    }
 }
 
 

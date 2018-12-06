@@ -123,7 +123,8 @@
                         ${i + 1}
                     </td>
                     <td>
-                        ${sub}
+                        <g:set var="anzeigeName" value="${sub.customProperties.find{ it.type == com.k_int.properties.PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Anzeigename')}?.stringValue}" />
+                            ${anzeigeName ?: sub}
 
                         <g:each in="${sub.packages}" var="subPkg" status="j">
                             <div class="la-flexbox">
@@ -142,7 +143,9 @@
                         %{--${sub.type?.getI10n('value')}--}%
                     %{--</td>--}%
                     <td class="la-break-all">
-                    ${sub.getConsortia()?.name}
+
+                    <g:set var="verhandlername" value="${sub.customProperties.find{ it.type == com.k_int.properties.PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Verhandlername')}?.stringValue}" />
+                    ${verhandlername ?: sub.getConsortia()?.name}
                         <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RefdataValue.getByValueAndCategory('GASCO-Contact', 'Person Function'), sub.getConsortia())}" var="person">
                             <div class="ui list">
                                 <div class="item">
