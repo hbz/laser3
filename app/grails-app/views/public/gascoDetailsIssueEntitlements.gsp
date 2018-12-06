@@ -98,8 +98,6 @@
                             ${message(code:'default.unknown')}
                         </g:else>
                         <br />
-                        *** Status: ${tipp.status.value}<br>
-                        *** Gehört zu Subscription: ${((com.k_int.kbplus.IssueEntitlement)issueEntitlement).subscription}
                     </td>
 
                     <td>
