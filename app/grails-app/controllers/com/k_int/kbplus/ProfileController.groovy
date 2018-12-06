@@ -17,7 +17,7 @@ import net.sf.ehcache.CacheManager
 import net.sf.ehcache.Element
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class ProfileController extends AbstractDebugController {
+class ProfileController {
 
     def cacheService
     def contextService
