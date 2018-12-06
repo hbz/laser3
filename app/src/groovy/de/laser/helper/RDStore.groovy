@@ -21,5 +21,4 @@ class RDStore {
     static final YN_YES = RefdataValue.getByValueAndCategory('Yes','YN')
     static final YN_NO = RefdataValue.getByValueAndCategory('No','YN')
 
-
 }
