@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.RDStore
+import de.laser.controller.AbstractDebugController
 import grails.converters.*
 import grails.plugin.cache.Cacheable
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -16,7 +17,7 @@ import net.sf.ehcache.CacheManager
 import net.sf.ehcache.Element
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class ProfileController {
+class ProfileController extends AbstractDebugController {
 
     def cacheService
     def contextService

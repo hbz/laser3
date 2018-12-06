@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
+import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -23,12 +24,13 @@ import org.elasticsearch.client.Client
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 
+
 //For Transform
 import static groovyx.net.http.ContentType.*
 
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class SubscriptionDetailsController {
+class SubscriptionDetailsController extends AbstractDebugController {
 
     def springSecurityService
     def contextService
@@ -209,7 +211,7 @@ class SubscriptionDetailsController {
         }
 
         result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
+        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance,RefdataValue.getByValueAndCategory('Deleted','Subscription Status'))
 
         withFormat {
             html result
@@ -710,7 +712,7 @@ class SubscriptionDetailsController {
         //}
 
         result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
+        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance,RefdataValue.getByValueAndCategory('Deleted','Subscription Status'))
 
         if ( params.exportXLS=='yes' ) {
 
@@ -980,7 +982,7 @@ class SubscriptionDetailsController {
         }
 
         result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
+        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance,RefdataValue.getByValueAndCategory('Deleted','Subscription Status'))
 
         result
     }
@@ -1119,7 +1121,7 @@ class SubscriptionDetailsController {
             result.subscriber_shortcode = result.institution.shortcode
         }
         result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
+        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance,RefdataValue.getByValueAndCategory('Deleted','Subscription Status'))
         result
     }
 
@@ -1137,7 +1139,7 @@ class SubscriptionDetailsController {
         }
 
         result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
+        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance,RefdataValue.getByValueAndCategory('Deleted','Subscription Status'))
         result
     }
 
@@ -1169,7 +1171,7 @@ class SubscriptionDetailsController {
         result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.subscriptionInstance, params)
 
         result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
+        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance,RefdataValue.getByValueAndCategory('Deleted','Subscription Status'))
 
         log.debug(result.taskInstanceList)
         result
@@ -1210,7 +1212,7 @@ class SubscriptionDetailsController {
         }
         result.contextOrg = contextService.getOrg()
         result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
+        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance,RefdataValue.getByValueAndCategory('Deleted','Subscription Status'))
         result
     }
 
@@ -1507,7 +1509,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
         result.historyLinesTotal = AuditLogEvent.executeQuery("select count(e.id) from AuditLogEvent as e where className=? and persistedObjectId=?", qry_params)[0];
 
         result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
+        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance,RefdataValue.getByValueAndCategory('Deleted','Subscription Status'))
 
         result
     }
@@ -1539,7 +1541,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
         )[0]
 
         result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
+        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance,RefdataValue.getByValueAndCategory('Deleted','Subscription Status'))
 
         result
     }
@@ -1638,7 +1640,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
         }
 
         result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
+        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance,RefdataValue.getByValueAndCategory('Deleted','Subscription Status'))
 
 
         // ---- pendingChanges : start
@@ -2110,7 +2112,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
 
 
             result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-            result.navNextSubscription = Subscription.findByPreviousSubscription(result.subscriptionInstance)
+            result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance,RefdataValue.getByValueAndCategory('Deleted','Subscription Status'))
 
             // tasks
             def contextOrg = contextService.getOrg()

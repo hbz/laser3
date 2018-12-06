@@ -37,7 +37,12 @@
 
                 <tr>
                     <td class="la-column-nowrap">
-                        ${prop.type.getI10n('name')}
+                        <g:if test="${prop.type.getI10n('expl') != ' °'}">
+                            <span data-tooltip="${prop.type.getI10n('expl')}">${prop.type.getI10n('name')}</span>
+                        </g:if>
+                        <g:else>
+                            ${prop.type.getI10n('name')}
+                        </g:else>
                         <%
                             if (AuditConfig.getConfig(prop)) {
                                 println '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
@@ -134,7 +139,7 @@
                                   name="cust_prop_add_value"
                                   class="ui form"
                                   update="${custom_props_div}"
-                                  onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
+                                  onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
 
                         <input type="hidden" name="propIdent" data-desc="${prop_desc}" data-oid="${propDefGroup.class.name}:${propDefGroup.id}" class="customPropSelect"/>
                         <input type="hidden" name="ownerId" value="${ownobj.id}"/>

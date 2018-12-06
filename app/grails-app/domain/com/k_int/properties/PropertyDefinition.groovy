@@ -76,6 +76,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     String descr
     String type
     String refdataCategory
+    String expl
 
     // used for private properties
     Org tenant
@@ -118,6 +119,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
                       id column: 'pd_id'
                    descr column: 'pd_description', index: 'td_new_idx'
                     name column: 'pd_name',        index: 'td_new_idx'
+                    expl column: 'pd_explanation', index: 'td_new_idx'
                     type column: 'pd_type',        index: 'td_type_idx'
          refdataCategory column: 'pd_rdc',         index: 'td_type_idx'
                   tenant column: 'pd_tenant_fk'
@@ -133,6 +135,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     static constraints = {
         name                (nullable: false, blank: false)
         descr               (nullable: true,  blank: false)
+        expl                (nullable: true,  blank: true)
         type                (nullable: false, blank: false)
         refdataCategory     (nullable: true)
         tenant              (nullable: true,  blank: true)
@@ -194,22 +197,24 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         GrailsHibernateUtil.unwrapIfProxy(newProp)
     }
 
-    static def lookupOrCreate(name, typeClass, descr, multipleOccurence, mandatory, Org tenant) {
+    static def lookupOrCreate(name, typeClass, descr, expl,  multipleOccurence, mandatory, Org tenant) {
         //println typeClass
         typeIsValid(typeClass)
 
         def type = findWhere(
                 name:   name,
                 descr:  descr,
+                expl:   expl,
                 tenant: tenant
         )
 
         if (!type) {
-            log.debug("No PropertyDefinition match for ${name} : ${descr} @ ${tenant?.name}. Creating new ..")
+            log.debug("No PropertyDefinition match for ${name} : ${descr} ( ${expl} ) @ ${tenant?.name}. Creating new ..")
 
             type = new PropertyDefinition(
                     name:   name,
                     descr:  descr,
+                    expl:   expl,
                     type:   typeClass,
                     // refdataCategory:    rdc,
                     multipleOccurrence: (multipleOccurence ? true : false),
@@ -308,6 +313,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     def afterInsert() {
         I10nTranslation.createOrUpdateI10n(this, 'name',  [de: this.name, en: this.name])
         I10nTranslation.createOrUpdateI10n(this, 'descr', [de: this.descr, en: this.descr])
+        I10nTranslation.createOrUpdateI10n(this, 'expl', [de: this.expl, en: this.expl])
     }
 
     def afterDelete() {

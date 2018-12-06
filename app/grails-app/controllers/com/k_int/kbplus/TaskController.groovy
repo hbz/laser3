@@ -1,11 +1,12 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class TaskController {
+class TaskController extends AbstractDebugController {
 
 	def springSecurityService
     def contextService

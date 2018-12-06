@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.PrivateProperty
+import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import grails.converters.JSON
 import org.apache.poi.hssf.usermodel.HSSFRichTextString
@@ -15,7 +16,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import com.k_int.properties.*
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class OrganisationsController {
+class OrganisationsController extends AbstractDebugController {
 
     def springSecurityService
     def accessService

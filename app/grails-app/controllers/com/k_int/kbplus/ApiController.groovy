@@ -3,12 +3,13 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.*
 import de.laser.ContextService
 import de.laser.api.v0.ApiManager
+import de.laser.controller.AbstractDebugController
 import de.laser.helper.Constants
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['permitAll']) // TODO
-class ApiController {
+class ApiController extends AbstractDebugController {
 
     def springSecurityService
     ContextService contextService

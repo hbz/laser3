@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.controller.AbstractDebugController
 import org.springframework.dao.DataIntegrityViolationException
 import grails.converters.*
 import org.elasticsearch.groovy.common.xcontent.*
@@ -16,7 +17,7 @@ import org.mozilla.universalchardet.UniversalDetector;
 import org.apache.commons.io.input.BOMInputStream
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class UploadController {
+class UploadController extends AbstractDebugController {
 
   def springSecurityService
   def sessionFactory
