@@ -309,35 +309,32 @@ class ApiReader {
      * @param com.k_int.kbplus.Org context
      * @return
      */
+    static exportCostItems(def ignoreRelation, Org context, Date startDate, Date endDate){
+        def result = []
+            if(startDate && endDate) {
+                def costItems = CostItem.findAllByOwnerAndLastUpdatedBetween(context, startDate, endDate)
+                costItems.each {
+                    result << ApiReader.exportCostItem(it, context)
+                }
+
+            }else{
+                def costItems = CostItem.findAllByOwner(context)
+                costItems.each {
+                    result << ApiReader.exportCostItem(it, context)
+                }
+
+            }
+
+        return ApiReaderHelper.cleanUp(result, true, true)
+    }
     static exportCostItems(def ignoreRelation, Org context){
         def result = []
 
-        def costItems = CostItem.findAllByOwner(context)
-        costItems.each {
-            result << ApiReader.exportCostItem(it, context)?.globalUID
-        }
+        result = CostItem.findAllByOwner(context).globalUID
 
         return ApiReaderHelper.cleanUp(result, true, true)
     }
 
-    static exportCostItems(def ignoreRelation, Org context, Date startDate, Date endDate){
-        def result = []
-        if(startDate && endDate) {
-            def costItems = CostItem.findAllByOwnerAndDateCreatedBetween(context, startDate, endDate)
-            costItems.each {
-                result << ApiReader.exportCostItem(it, context)?.globalUID
-            }
-
-        }else{
-            def costItems = CostItem.findAllByOwner(context)
-            costItems.each {
-                result << ApiReader.exportCostItem(it, context)?.globalUID
-            }
-
-        }
-
-        return ApiReaderHelper.cleanUp(result, true, true)
-    }
 
     // ################### HELPER ###################
 

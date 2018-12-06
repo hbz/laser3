@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
+import de.laser.helper.RDStore
 import de.laser.controller.AbstractDebugController
 import grails.converters.*
 import grails.plugin.cache.Cacheable
@@ -16,7 +17,7 @@ import net.sf.ehcache.CacheManager
 import net.sf.ehcache.Element
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class ProfileController extends AbstractDebugController {
+class ProfileController {
 
     def cacheService
     def contextService
@@ -196,6 +197,23 @@ class ProfileController extends AbstractDebugController {
 
     redirect(action: "index")
   }
+    @Secured(['ROLE_USER'])
+    def updateIsEmailReminder() {
+        def user1 = User.get(springSecurityService.principal.id)
+
+        flash.message=""
+        def was_isEmailReminder = user1.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO)
+        if ( was_isEmailReminder != params.isEmailReminder ) {
+            was_isEmailReminder = params.isEmailReminder
+            flash.message += message(code:'profile.updateProfile.updated.isEmailReminder', default:"isEmailReminder updated<br/>")
+            if ( ! user1.email && was_isEmailReminder.equals(RDStore.YN_YES)) {
+                flash.error = message(code:'profile.updateProfile.updated.isEmailReminder.error', default:"Please enter the email address<br/>")
+            }
+        }
+        user.save();
+
+        redirect(action: "index")
+    }
 
     @Secured(['ROLE_USER'])
     def updatePassword() {

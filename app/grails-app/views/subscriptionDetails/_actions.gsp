@@ -32,7 +32,7 @@
             <semui:actionsDropdownItem controller="subscriptionDetails" action="addMembers" params="${[id:params.id]}" message="subscription.details.addMembers.label" />
         </g:if>
 
-        <g:if test="${subscriptionInstance?.type == com.k_int.kbplus.RefdataValue.getByValueAndCategory("Local Licence", "Subscription Type")}">
+        <g:if test="${subscriptionInstance?.type == com.k_int.kbplus.RefdataValue.getByValueAndCategory("Local Licence", "Subscription Type") && !(com.k_int.kbplus.Subscription.findAllByPreviousSubscription(subscriptionInstance))}">
             <semui:actionsDropdownItem controller="subscriptionDetails" action="launchRenewalsProcess"
                                    params="${[id: params.id]}" message="subscription.details.renewals.label"/>
             <semui:actionsDropdownItem controller="myInstitution" action="renewalsUpload"
