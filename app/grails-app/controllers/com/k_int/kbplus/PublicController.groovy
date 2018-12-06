@@ -6,7 +6,7 @@ import grails.plugin.cache.Cacheable;
 import grails.plugin.springsecurity.annotation.Secured;
 
 @Secured(['permitAll'])
-class PublicController extends AbstractDebugController {
+class PublicController {
 
     def springSecurityService
     def genericOIDService
