@@ -9,13 +9,11 @@ import org.apache.log4j.RollingFileAppender
 grails.project.groupId  = appName // change this to alter the default package name and Maven publishing destination
 grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 
-documentStorageLocation = '/tmp/laser' // TODO
-
 laserSystemId = 'local'
+documentStorageLocation = '/tmp/laser'
 
 //localauth = true
-
-// showDebugInfo = false
+//showDebugInfo = false
 
 // @NotificationsJob
 // - enable notification
