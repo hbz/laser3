@@ -333,7 +333,7 @@
                         </td>
                         <td>
                         <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:s.id]}">
-                            ${CostItem.findAllBySubInList(Subscription.findAllByInstanceOfAndStatusNotEqual(s, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')))?.size()}
+                            ${CostItem.findAllBySubInListAndOwner(Subscription.findAllByInstanceOfAndStatusNotEqual(s, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')), institution)?.size()}
                         </g:link>
                         </td>
                     </g:if>
