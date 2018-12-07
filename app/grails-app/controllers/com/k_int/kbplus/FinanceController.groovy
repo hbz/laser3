@@ -148,7 +148,20 @@ class FinanceController extends AbstractDebugController {
           //          CostItem.findAllWhere(owner: result.institution, sub: result.fixedSubscription)
           //        : CostItem.findAllWhere(owner: result.institution)
 
+          //TODO: Nochmal überdenken
           def myCostItems = CostItem.findAllWhere(owner: result.institution)
+          switch (result.queryMode)
+          {
+              case MODE_OWNER:
+                  myCostItems = result.cost_items
+                  break
+              case MODE_CONS_AT_SUBSCR:
+                  myCostItems = result.cost_items_SUBSCR
+                  break
+              case MODE_CONS:
+                  myCostItems = result.cost_items_CS
+                  break
+          }
 
           result.allCIInvoiceNumbers = (myCostItems.collect{ it -> it?.invoice?.invoiceNumber }).findAll{ it }.unique().sort()
           result.allCIOrderNumbers   = (myCostItems.collect{ it -> it?.order?.orderNumber }).findAll{ it }.unique().sort()
