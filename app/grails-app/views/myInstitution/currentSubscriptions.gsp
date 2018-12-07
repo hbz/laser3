@@ -79,6 +79,8 @@
 
         <div class="four fields">
 
+            <!-- 2-1 + 2-2 -->
+            <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
 <%--
             <!-- 2-1 -->
             <div class="field disabled fieldcontain">
@@ -101,24 +103,29 @@
                               value="${params.status}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
-            <!-- 2-3 -->
-            <div class="field disabled fieldcontain la-combi-input-left">
-                <label>${message(code:'subscription.property.search')}</label>
-                <g:select class="ui dropdown" id="availablePropertyTypes" name="availablePropertyTypes"
-                          from="${custom_prop_types}" optionKey="value" optionValue="key" value="${params.propertyFilterType}"/>
-            </div>
-            <!-- 2-4 -->
-            <div class="field disabled fieldcontain la-combi-input-right">
-                <label for="propertyFilter">Wert</label>
-
-                <input id="propertyFilter" type="text" name="propertyFilter"
-                       placeholder="${message(code: 'license.search.property.ph')}" value="${params.propertyFilter ?: ''}"/>
-                <input type="hidden" id="propertyFilterType" name="propertyFilterType" value="${params.propertyFilterType}"/>
-            </div>
 
            --%>
+            <!-- 2-3 -->
+            <div class="field">
+                <label>${message(code:'subscription.form.label')}</label>
+                <laser:select class="ui dropdown" name="form"
+                              from="${RefdataCategory.getAllRefdataValues('Subscription Form')}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.form}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+            <!-- 2-4 -->
+            <div class="field">
+                <label>${message(code:'subscription.resource.label')}</label>
+                <laser:select class="ui dropdown" name="resource"
+                              from="${RefdataCategory.getAllRefdataValues('Subscription Resource')}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.resource}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
 
-            <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
         </div>
 
         <div class="two fields">

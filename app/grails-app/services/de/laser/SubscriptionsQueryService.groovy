@@ -157,13 +157,23 @@ from Subscription as s where (
             qry_params.put('status', (params.status as Long))
         }
 
+        if (params.form) {
+            base_qry += "and s.form.id = :form "
+            qry_params.put('form', (params.form as Long))
+        }
+
+        if (params.resource) {
+          base_qry += "and s.resource.id = :resource "
+          qry_params.put('resource', (params.resource as Long))
+        }
+
         if ((params.sort != null) && (params.sort.length() > 0)) {
             base_qry += (params.sort=="s.name") ? " order by LOWER(${params.sort}) ${params.order}":" order by ${params.sort} ${params.order}"
         } else {
             base_qry += " order by lower(trim(s.name)) asc"
         }
 
-        log.debug("query: ${base_qry} && params: ${qry_params}")
+        //log.debug("query: ${base_qry} && params: ${qry_params}")
 
         return [base_qry, qry_params]
     }
