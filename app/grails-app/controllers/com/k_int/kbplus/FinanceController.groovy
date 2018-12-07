@@ -108,7 +108,7 @@ class FinanceController extends AbstractDebugController {
                     result.cost_items_CS = tmp.cost_items.sort{ x, y ->
                         def xx = OrgRole.findBySubAndRoleType(x.sub, RDStore.OR_SUBSCRIBER_CONS)
                         def yy = OrgRole.findBySubAndRoleType(y.sub, RDStore.OR_SUBSCRIBER_CONS)
-                        xx.org.sortname <=> yy.org.sortname
+                        xx?.org?.sortname <=> yy?.org?.sortname
                     }
                     result.cost_item_count_CS = tmp.cost_item_count
                 }
