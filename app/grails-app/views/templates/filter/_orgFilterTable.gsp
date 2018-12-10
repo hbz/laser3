@@ -136,26 +136,28 @@
 
             <g:if test="${tmplConfigShow?.contains('mainContact')}">
             <td>
-                <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RefdataValue.getByValueAndCategory('General contact person', 'Person Function'), org)}" var="person">
-                    ${person?.getPrs()?.getFirst_name()} ${person?.getPrs()?.getLast_name()}<br>
-                    <g:each in ="${Contact.findAllByPrsAndContentType(
-                            person.getPrs(),
-                            RefdataValue.getByValueAndCategory('E-Mail', 'ContactContentType')
+                <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RefdataValue.getByValueAndCategory('General contact person', 'Person Function'), org)}" var="personRole">
+                    <g:if test="${(personRole.prs?.isPublic?.value=='Yes') || (personRole.prs?.isPublic?.value=='No' && personRole?.prs?.tenant?.id == contextService.getOrg()?.id)}">
+                        ${personRole?.getPrs()?.getFirst_name()} ${personRole?.getPrs()?.getLast_name()}<br>
+                        <g:each in ="${Contact.findAllByPrsAndContentType(
+                                personRole.getPrs(),
+                                RefdataValue.getByValueAndCategory('E-Mail', 'ContactContentType')
                         )}" var="email">
                             <i class="ui icon envelope outline"></i>
-                            <span data-position="right center" data-tooltip="Mail senden an ${person?.getPrs()?.getFirst_name()} ${person?.getPrs()?.getLast_name()}">
+                            <span data-position="right center" data-tooltip="Mail senden an ${personRole?.getPrs()?.getFirst_name()} ${personRole?.getPrs()?.getLast_name()}">
                                 <a href="mailto:${email?.content}" >${email?.content}</a>
                             </span><br>
-                    </g:each>
-                    <g:each in ="${Contact.findAllByPrsAndContentType(
-                        person.getPrs(),
-                        RefdataValue.getByValueAndCategory('Phone', 'ContactContentType')
+                        </g:each>
+                        <g:each in ="${Contact.findAllByPrsAndContentType(
+                                personRole.getPrs(),
+                                RefdataValue.getByValueAndCategory('Phone', 'ContactContentType')
                         )}" var="telNr">
-                        <i class="ui icon phone"></i>
-                        <span data-position="right center">
-                            ${telNr?.content}
-                        </span><br>
-                    </g:each>
+                            <i class="ui icon phone"></i>
+                            <span data-position="right center">
+                                ${telNr?.content}
+                            </span><br>
+                        </g:each>
+                    </g:if>
                 </g:each>
             </td>
         </g:if>
@@ -203,7 +205,7 @@
             <g:if test="${tmplConfigShow?.contains('numberOfSubscriptions')}">
                 <td>
                     <div class="la-flexbox">
-                        <% (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName])
+                        <% (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName], contextService.org)
                             def numberOfSubscriptions = Subscription.executeQuery("select count(s) " + base_qry, qry_params)[0]
                         %>
                         <g:if test="${actionName == 'manageConsortia'}">

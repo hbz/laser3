@@ -16,6 +16,14 @@ class BootStrap {
     //  indicates this object is created via current bootstrap
     final static BOOTSTRAP = true
 
+    final static OT = [
+            Date:   Date.toString(),
+            Int:    Integer.toString(),
+            RdC:    RefdataCategory.toString(),
+            Rdv:    RefdataValue.toString(),
+            String: String.toString(),
+    ]
+
     def init = { servletContext ->
 
         log.info("SystemId: ${grailsApplication.config.laserSystemId}")
@@ -357,29 +365,30 @@ class BootStrap {
 
         def requiredProps = [
                 [name: [en: "onix_ghost_license"],
-                    descr:allDescr, type:String.toString(), val:"Jisc Collections Model Journals License 2015", note:"Default license used for comparison when viewing a single onix license."],
+                    descr:allDescr, type: OT.String, val:"Jisc Collections Model Journals License 2015", note:"Default license used for comparison when viewing a single onix license."],
                 [name: [en: "net.sf.jasperreports.export.csv.exclude.origin.keep.first.band.1"],
-                    descr:allDescr, type:String.toString(), val:"columnHeader", note:"Only show 1 column header for csv"],
+                    descr:allDescr, type: OT.String, val:"columnHeader", note:"Only show 1 column header for csv"],
                 [name: [en: "net.sf.jasperreports.export.xls.exclude.origin.keep.first.band.1"],
-                    descr:allDescr, type:String.toString(), val:"columnHeader", note:"Only show 1 column header for xls"],
+                    descr:allDescr, type: OT.String, val:"columnHeader", note:"Only show 1 column header for xls"],
                 [name: [en: "net.sf.jasperreports.export.xls.exclude.origin.band.1"],
-                    descr:allDescr, type:String.toString(), val:"pageHeader", note:" Remove header/footer from csv/xls"],
+                    descr:allDescr, type: OT.String, val:"pageHeader", note:" Remove header/footer from csv/xls"],
                 [name: [en: "net.sf.jasperreports.export.xls.exclude.origin.band.2"],
-                    descr:allDescr, type:String.toString(), val:"pageFooter", note:" Remove header/footer from csv/xls"],
+                    descr:allDescr, type: OT.String, val:"pageFooter", note:" Remove header/footer from csv/xls"],
                 [name: [en: "net.sf.jasperreports.export.csv.exclude.origin.band.1"],
-                    descr:allDescr, type:String.toString(), val:"pageHeader", note: " Remove header/footer from csv/xls"],
+                    descr:allDescr, type: OT.String, val:"pageHeader", note: " Remove header/footer from csv/xls"],
                 [name: [en: "net.sf.jasperreports.export.csv.exclude.origin.band.2"],
-                    descr:allDescr, type:String.toString(), val:"pageFooter", note: " Remove header/footer from csv/xls"]
+                    descr:allDescr, type: OT.String, val:"pageFooter", note: " Remove header/footer from csv/xls"]
         ]
 
         requiredProps.each { prop ->
             def name = prop.name['en']
-            def pd   = PropertyDefinition.findByName(name)
+            def pd   = PropertyDefinition.findWhere(name: name, tenant: null)
 
             if (! pd) {
                 log.debug("Unable to locate property definition for ${name} .. creating")
                 pd = new PropertyDefinition(name: name)
             }
+
             pd.type  = prop.type
             pd.descr = prop.descr['en']
             pd.softData = false
@@ -397,8 +406,8 @@ class BootStrap {
         def allDescr = [en: PropertyDefinition.ORG_CONF, de: PropertyDefinition.ORG_CONF]
 
         def requiredProps = [
-                [name: [en: "API Key", de: "API Key"],         descr:allDescr, type:String.toString()],
-                [name: [en: "RequestorID", de: "RequestorID"], descr:allDescr, type:String.toString()],
+                [name: [en: "API Key", de: "API Key"],         descr:allDescr, type: OT.String],
+                [name: [en: "RequestorID", de: "RequestorID"], descr:allDescr, type: OT.String],
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
     }
@@ -416,94 +425,94 @@ class BootStrap {
         def allDescr = [en: PropertyDefinition.LIC_PROP, de: PropertyDefinition.LIC_PROP]
 
         def requiredProps = [
-                [name: [en: "Agreement Date", de: "Abschlussdatum"],                            descr:allDescr, type:Date.toString()],
-                //[name: [en: "Authorized Users", de: "Autorisierte Nutzer"],                     descr:allDescr, type:String.toString()],
-                [name: [en: "Alumni Access"],                                                   descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                //[name: [en: "Cancellation Allowance", de: "Außerordentliche Kündigung"],        descr:allDescr, type:String.toString()],
-                [name: [en: "Change to licensed material", de: "Änderung am Vertragsgegenstand"], descr:allDescr, type:String.toString()],
-                [name: [en: "Concurrent Access", de: "Concurrent Access"],                      descr:allDescr, type:RefdataValue.toString(), cat:'ConcurrentAccess'],
-                [name: [en: "Concurrent Users", de: "Concurrent Users"],                        descr:allDescr, type:Integer.toString()],
-                //[name: [en: "Correction Time", de: "Korrekturfrist bei Vertragsverletzungen"],  descr:allDescr, type:String.toString()],
-                [name: [en: "Enterprise Access"],                                               descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                //[name: [en: "ILL - InterLibraryLoans", de: "Fernleihe"],                        descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                //[name: [en: "Include In Coursepacks", de: "Semesterapparat"],                   descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Include in VLE"],                                                  descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Invoicing", de: "Rechnungsstellung"],                              descr:allDescr, type:Date.toString()],
-                [name: [en: "Metadata delivery"],                                               descr:allDescr, type:String.toString()],
-                [name: [en: "Method of Authentication", de: "Authentifizierungsverfahren"],     descr:allDescr, type:String.toString()],
-                [name: [en: "Multi Site Access"],                                               descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                //[name: [en: "Notice Period"],                                                   descr:allDescr, type:Date.toString()],
-                [name: [en: "New Underwriter", de: "Aufnahme neuer Teilnehmer"],                descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Payment target", de: "Zahlungsziel"],                              descr:allDescr, type:Date.toString()],
-                // [name: [en: "Place of jurisdiction", de: "Gerichtsstand"],                      descr:allDescr, type:String.toString()],
-                [name: [en: "Partners Access"],                                                 descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Permitted Uses"],                                                  descr:allDescr, type:String.toString()],
-                [name: [en: "Post Cancellation Access Entitlement"],                            descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                //[name: [en: "Remote Access", de: "Remote-Zugriff"],                             descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Regional Restriction", de: "Regionale Einschränkung"],             descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Service regulations", de: "Servicestandards"],                     descr:allDescr, type:String.toString()],
-                [name: [en: "Signed"],                                                          descr:allDescr, type:RefdataValue.toString(), cat:'YN'],
-                [name: [en: "Usage Statistics", de: "Lieferung von Statistiken"],               descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                //[name: [en: "Walk In Access", de: "Walk-In User"],                              descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Wifi Access", de: "WLAN-Zugriff"],                                 descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
+                [name: [en: "Agreement Date", de: "Abschlussdatum"],                            descr:allDescr, type: OT.Date],
+                //[name: [en: "Authorized Users", de: "Autorisierte Nutzer"],                     descr:allDescr, type: OT.String],
+                [name: [en: "Alumni Access"],                                                   descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                //[name: [en: "Cancellation Allowance", de: "Außerordentliche Kündigung"],        descr:allDescr, type: OT.String],
+                [name: [en: "Change to licensed material", de: "Änderung am Vertragsgegenstand"], descr:allDescr, type: OT.String],
+                [name: [en: "Concurrent Access", de: "Concurrent Access"],                      descr:allDescr, type: OT.Rdv, cat:'ConcurrentAccess'],
+                [name: [en: "Concurrent Users", de: "Concurrent Users"],                        descr:allDescr, type: OT.Int],
+                //[name: [en: "Correction Time", de: "Korrekturfrist bei Vertragsverletzungen"],  descr:allDescr, type: OT.String],
+                [name: [en: "Enterprise Access"],                                               descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                //[name: [en: "ILL - InterLibraryLoans", de: "Fernleihe"],                        descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                //[name: [en: "Include In Coursepacks", de: "Semesterapparat"],                   descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                [name: [en: "Include in VLE"],                                                  descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                [name: [en: "Invoicing", de: "Rechnungsstellung"],                              descr:allDescr, type: OT.Date],
+                [name: [en: "Metadata delivery"],                                               descr:allDescr, type: OT.String],
+                [name: [en: "Method of Authentication", de: "Authentifizierungsverfahren"],     descr:allDescr, type: OT.String],
+                [name: [en: "Multi Site Access"],                                               descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                //[name: [en: "Notice Period"],                                                   descr:allDescr, type: OT.Date],
+                [name: [en: "New Underwriter", de: "Aufnahme neuer Teilnehmer"],                descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                [name: [en: "Payment target", de: "Zahlungsziel"],                              descr:allDescr, type: OT.Date],
+                // [name: [en: "Place of jurisdiction", de: "Gerichtsstand"],                      descr:allDescr, type: OT.String],
+                [name: [en: "Partners Access"],                                                 descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                [name: [en: "Permitted Uses"],                                                  descr:allDescr, type: OT.String],
+                [name: [en: "Post Cancellation Access Entitlement"],                            descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                //[name: [en: "Remote Access", de: "Remote-Zugriff"],                             descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                [name: [en: "Regional Restriction", de: "Regionale Einschränkung"],             descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                [name: [en: "Service regulations", de: "Servicestandards"],                     descr:allDescr, type: OT.String],
+                [name: [en: "Signed"],                                                          descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "Usage Statistics", de: "Lieferung von Statistiken"],               descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                //[name: [en: "Walk In Access", de: "Walk-In User"],                              descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                [name: [en: "Wifi Access", de: "WLAN-Zugriff"],                                 descr:allDescr, type: OT.Rdv, cat:'YNO'],
 
                 // New Properties by FAK / Verde Review
-                [name: [en: "General Terms note", de: "Allgemeine Bedingungen"],                    descr:allDescr, type:String.toString()],
-                [name: [en: "User restriction note", de: "Benutzungsbeschränkungen"],               descr:allDescr, type:String.toString()],
-                [name: [en: "Authorized user definition", de: "Definition für berechtigte Nutzer"], descr:allDescr, type:String.toString()],
-                [name: [en: "Local authorized user defintion", de: "Lokale Definition für berechtigte Nutzer"],      descr:allDescr, type:String.toString()],
-                [name: [en: "ILL print or fax", de: "Fernleihe per Papier oder Fax"],           descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
-                [name: [en: "ILL secure electronic transmission", de: "Fernleihe über sichere elektonische Übermittlung"], descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
-                [name: [en: "ILL electronic", de: "Fernleihe elektronisch"],                    descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
-                [name: [en: "ILL record keeping required", de: "Fernleihdatensatz muss gespeichert werden"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                //[name: [en: "ILL term note", de: "Fernleihbedingungen"],                        descr:allDescr, type:String.toString()],
-                [name: [en: "Fair use clause indicator", de: "Hinweis auf Klausel über die 'faire Nutzung'"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "All rights reserved indicator", de: "Hinweis auf 'Alle Rechte vorbehalten'"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Data protection override", de: "Datenschutz aufgehoben"],          descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Citation requirement detail", de: "Details der Zitier-Regeln"],    descr:allDescr, type:String.toString()],
-                [name: [en: "Digitial copy", de: "Digitalkopie"],                               descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
-                //[name: [en: "Digitial copy term note", de: "Digitalkopie Bedingungen"],         descr:allDescr, type:String.toString()],
-                [name: [en: "Print copy", de: "Druckkopie"],                                    descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
-                //[name: [en: "Print copy term note", de: "Druckkopie Bedingungen"],              descr:allDescr, type:String.toString()],
-                [name: [en: "Scholarly sharing", de: "Weitergabe im Rahmen der Lehre"],         descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
-                //[name: [en: "Scholarly sharing term note", de: "Weitergabe im Rahmen der Lehre Bedingungen"], descr:allDescr, type:String.toString()],
-                [name: [en: "Distance Education", de: "Fernstudium"],                           descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
-                //[name: [en: "Distance Education term note", de: "Fernstudium Bedingungen"],     descr:allDescr, type:String.toString()],
-                [name: [en: "Course reserve print", de: "Seminarapparat gedruckt"],             descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
-                [name: [en: "Course reserve electronic/cached", de: "Seminarapparat elektronisch"], descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
-                //[name: [en: "Course reserve term note", de: "Seminarapparat Bedingungen"],      descr:allDescr, type:String.toString()],
-                [name: [en: "Electronic link", de: "Elektronischer Link"],                      descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
-                //[name: [en: "Electronic link term note", de: "Elektronischer Link Bedingungen"], descr:allDescr, type:String.toString()],
-                [name: [en: "Course pack print", de: "Skripte gedruckt"],                       descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
-                [name: [en: "Course pack electronic", de: "Skripte elektronisch"],              descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
-                //[name: [en: "Course pack term note", de: "Skripte Bedingungen"],                descr:allDescr, type:String.toString()],
-                [name: [en: "Remote Access", de: "Remote-Zugriff"],                             descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Walk-in Access", de: "Vor-Ort-Nutzung"],                           descr:allDescr, type:RefdataValue.toString(), cat:'Permissions'],
-                //[name: [en: "Walk-in term note", de: "Vor-Ort-Nutzung Bedingungen"],            descr:allDescr, type:String.toString()],
-                [name: [en: "Completeness of content clause", de: "Klausel zur Vollständigkeit der Inhalte"], descr:allDescr, type:RefdataValue.toString(), cat:'Existence'],
-                [name: [en: "Concurrency with print version", de: "Gleichzeitigkeit mit Druckversion"], descr:allDescr, type:RefdataValue.toString(), cat:'Existence'],
-                [name: [en: "User information confidentiality", de: "Vertraulichkeit der Nutzerdaten"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Clickwrap modification", de: "Clickthrough"],                        descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Indemnification by licensor", de: "Entschädigung durch den Lizenzgeber"], descr:allDescr, type:RefdataValue.toString(), cat:'Indemnification'],
-                [name: [en: "Indemnification by licensor indicator", de: "Entschädigung durch den Lizenzgeber Anzeiger"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Confidentiality of agreement", de: "Vertraulichkeit der Vereinbarung"], descr:allDescr, type:RefdataValue.toString(), cat:'Confidentiality'],
-                //[name: [en: "Confidentiality note", de: "Vertraulichkeit der Vereinbarung Anmerkung"], descr:allDescr, type:String.toString()],
-                [name: [en: "Governing law", de: "Anzuwendendes Recht"],                        descr:allDescr, type:String.toString()],
-                [name: [en: "Governing jurisdiction", de: "Gerichtsstand"],                     descr:allDescr, type:String.toString()],
-                [name: [en: "Applicable copyright law", de: "Maßgebliches Urheberrechtsgesetz"], descr:allDescr, type:String.toString()],
-                [name: [en: "Cure period for breach", de: "Zeitraum der Behebung bei Vertragsbruch"], descr:allDescr, type:String.toString()],
-                [name: [en: "Content warranty", de: "Gewährleistung über den Inhalt"],          descr:allDescr, type:String.toString()],
-                [name: [en: "Performance warranty", de: "Gewährleistung einer Systemleistung/Performanz"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Uptime guarantee", de: "Gewährleistung einer verfügbaren Betriebszeit"], descr:allDescr, type:String.toString()],
-                [name: [en: "Maintenance window", de: "Wartungsfenster"],                       descr:allDescr, type:String.toString()],
-                [name: [en: "Licensee termination right", de: "Kündigungsrecht des Lizenznehmers"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Licensee termination condition", de: "Kündigungsrecht des Lizenznehmers Voraussetzung"], descr:allDescr, type:RefdataValue.toString(), cat:'Termination Condition'],
-                [name: [en: "Licensee termination notice period", de: "Kündigungsfrist des Lizenznehmers"], descr:allDescr, type:String.toString()],
-                [name: [en: "Licensor termination right", de: "Kündigungsrecht des Lizenzgebers"], descr:allDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "Licensor termination condition", de: "Kündigungsrecht des Lizenzgebers Voraussetzung"], descr:allDescr, type:RefdataValue.toString(), cat:'Termination Condition'],
-                [name: [en: "Licensor termination notice period", de: "Kündigungsfrist des Lizenzgebers"], descr:allDescr, type:String.toString()],
-                //[name: [en: "Termination right note", de: "Kündigungsrecht Hinweise"], descr:allDescr, type:String.toString()],
-                [name: [en: "Termination requirement note", de: "Kündigungsrecht besondere Anforderung"], descr:allDescr, type:String.toString()]
+                [name: [en: "General Terms note", de: "Allgemeine Bedingungen"],                    descr:allDescr, type: OT.String],
+                [name: [en: "User restriction note", de: "Benutzungsbeschränkungen"],               descr:allDescr, type: OT.String],
+                [name: [en: "Authorized user definition", de: "Definition für berechtigte Nutzer"], descr:allDescr, type: OT.String],
+                [name: [en: "Local authorized user defintion", de: "Lokale Definition für berechtigte Nutzer"],      descr:allDescr, type: OT.String],
+                [name: [en: "ILL print or fax", de: "Fernleihe per Papier oder Fax"],           descr:allDescr, type: OT.Rdv, cat:'Permissions'],
+                [name: [en: "ILL secure electronic transmission", de: "Fernleihe über sichere elektonische Übermittlung"], descr:allDescr, type: OT.Rdv, cat:'Permissions'],
+                [name: [en: "ILL electronic", de: "Fernleihe elektronisch"],                    descr:allDescr, type: OT.Rdv, cat:'Permissions'],
+                [name: [en: "ILL record keeping required", de: "Fernleihdatensatz muss gespeichert werden"], descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                //[name: [en: "ILL term note", de: "Fernleihbedingungen"],                        descr:allDescr, type: OT.String],
+                [name: [en: "Fair use clause indicator", de: "Hinweis auf Klausel über die 'faire Nutzung'"], descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                [name: [en: "All rights reserved indicator", de: "Hinweis auf 'Alle Rechte vorbehalten'"], descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                [name: [en: "Data protection override", de: "Datenschutz aufgehoben"],          descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                [name: [en: "Citation requirement detail", de: "Details der Zitier-Regeln"],    descr:allDescr, type: OT.String],
+                [name: [en: "Digitial copy", de: "Digitalkopie"],                               descr:allDescr, type: OT.Rdv, cat:'Permissions'],
+                //[name: [en: "Digitial copy term note", de: "Digitalkopie Bedingungen"],         descr:allDescr, type: OT.String],
+                [name: [en: "Print copy", de: "Druckkopie"],                                    descr:allDescr, type: OT.Rdv, cat:'Permissions'],
+                //[name: [en: "Print copy term note", de: "Druckkopie Bedingungen"],              descr:allDescr, type: OT.String],
+                [name: [en: "Scholarly sharing", de: "Weitergabe im Rahmen der Lehre"],         descr:allDescr, type: OT.Rdv, cat:'Permissions'],
+                //[name: [en: "Scholarly sharing term note", de: "Weitergabe im Rahmen der Lehre Bedingungen"], descr:allDescr, type: OT.String],
+                [name: [en: "Distance Education", de: "Fernstudium"],                           descr:allDescr, type: OT.Rdv, cat:'Permissions'],
+                //[name: [en: "Distance Education term note", de: "Fernstudium Bedingungen"],     descr:allDescr, type: OT.String],
+                [name: [en: "Course reserve print", de: "Seminarapparat gedruckt"],             descr:allDescr, type: OT.Rdv, cat:'Permissions'],
+                [name: [en: "Course reserve electronic/cached", de: "Seminarapparat elektronisch"], descr:allDescr, type: OT.Rdv, cat:'Permissions'],
+                //[name: [en: "Course reserve term note", de: "Seminarapparat Bedingungen"],      descr:allDescr, type: OT.String],
+                [name: [en: "Electronic link", de: "Elektronischer Link"],                      descr:allDescr, type: OT.Rdv, cat:'Permissions'],
+                //[name: [en: "Electronic link term note", de: "Elektronischer Link Bedingungen"], descr:allDescr, type: OT.String],
+                [name: [en: "Course pack print", de: "Skripte gedruckt"],                       descr:allDescr, type: OT.Rdv, cat:'Permissions'],
+                [name: [en: "Course pack electronic", de: "Skripte elektronisch"],              descr:allDescr, type: OT.Rdv, cat:'Permissions'],
+                //[name: [en: "Course pack term note", de: "Skripte Bedingungen"],                descr:allDescr, type: OT.String],
+                [name: [en: "Remote Access", de: "Remote-Zugriff"],                             descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                [name: [en: "Walk-in Access", de: "Vor-Ort-Nutzung"],                           descr:allDescr, type: OT.Rdv, cat:'Permissions'],
+                //[name: [en: "Walk-in term note", de: "Vor-Ort-Nutzung Bedingungen"],            descr:allDescr, type: OT.String],
+                [name: [en: "Completeness of content clause", de: "Klausel zur Vollständigkeit der Inhalte"], descr:allDescr, type: OT.Rdv, cat:'Existence'],
+                [name: [en: "Concurrency with print version", de: "Gleichzeitigkeit mit Druckversion"], descr:allDescr, type: OT.Rdv, cat:'Existence'],
+                [name: [en: "User information confidentiality", de: "Vertraulichkeit der Nutzerdaten"], descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                [name: [en: "Clickwrap modification", de: "Clickthrough"],                        descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                [name: [en: "Indemnification by licensor", de: "Entschädigung durch den Lizenzgeber"], descr:allDescr, type: OT.Rdv, cat:'Indemnification'],
+                [name: [en: "Indemnification by licensor indicator", de: "Entschädigung durch den Lizenzgeber Anzeiger"], descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                [name: [en: "Confidentiality of agreement", de: "Vertraulichkeit der Vereinbarung"], descr:allDescr, type: OT.Rdv, cat:'Confidentiality'],
+                //[name: [en: "Confidentiality note", de: "Vertraulichkeit der Vereinbarung Anmerkung"], descr:allDescr, type: OT.String],
+                [name: [en: "Governing law", de: "Anzuwendendes Recht"],                        descr:allDescr, type: OT.String],
+                [name: [en: "Governing jurisdiction", de: "Gerichtsstand"],                     descr:allDescr, type: OT.String],
+                [name: [en: "Applicable copyright law", de: "Maßgebliches Urheberrechtsgesetz"], descr:allDescr, type: OT.String],
+                [name: [en: "Cure period for breach", de: "Zeitraum der Behebung bei Vertragsbruch"], descr:allDescr, type: OT.String],
+                [name: [en: "Content warranty", de: "Gewährleistung über den Inhalt"],          descr:allDescr, type: OT.String],
+                [name: [en: "Performance warranty", de: "Gewährleistung einer Systemleistung/Performanz"], descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                [name: [en: "Uptime guarantee", de: "Gewährleistung einer verfügbaren Betriebszeit"], descr:allDescr, type: OT.String],
+                [name: [en: "Maintenance window", de: "Wartungsfenster"],                       descr:allDescr, type: OT.String],
+                [name: [en: "Licensee termination right", de: "Kündigungsrecht des Lizenznehmers"], descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                [name: [en: "Licensee termination condition", de: "Kündigungsrecht des Lizenznehmers Voraussetzung"], descr:allDescr, type: OT.Rdv, cat:'Termination Condition'],
+                [name: [en: "Licensee termination notice period", de: "Kündigungsfrist des Lizenznehmers"], descr:allDescr, type: OT.String],
+                [name: [en: "Licensor termination right", de: "Kündigungsrecht des Lizenzgebers"], descr:allDescr, type: OT.Rdv, cat:'YNO'],
+                [name: [en: "Licensor termination condition", de: "Kündigungsrecht des Lizenzgebers Voraussetzung"], descr:allDescr, type: OT.Rdv, cat:'Termination Condition'],
+                [name: [en: "Licensor termination notice period", de: "Kündigungsfrist des Lizenzgebers"], descr:allDescr, type: OT.String],
+                //[name: [en: "Termination right note", de: "Kündigungsrecht Hinweise"], descr:allDescr, type: OT.String],
+                [name: [en: "Termination requirement note", de: "Kündigungsrecht besondere Anforderung"], descr:allDescr, type: OT.String]
 
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
@@ -512,25 +521,25 @@ class BootStrap {
         def allOADescr = [en: PropertyDefinition.LIC_PROP, de: PropertyDefinition.LIC_PROP]
 
         def requiredOAProps = [
-                [name: [en: "Open Access", de: "Open Access"],                                                              descr: allOADescr, type: RefdataValue.toString(), cat: 'YN'],
-                [name: [en: "Type", de: "Variante"],                                                                        descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.Type'],
-                [name: [en: "Electronically Archivable Version", de: "Archivierbare Version"],                              descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.eArcVersion'],
-                [name: [en: "Embargo Period", de: "Embargo"],                                                               descr: allOADescr, type: Integer.toString()],
-                [name: [en: "Receiving Modalities", de: "Bezugsmodalitäten"],                                               descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.ReceivingModalities', multiple:true],
-                [name: [en: "Authority", de: "Autorität"],                                                                  descr: allOADescr, type: RefdataValue.toString(), cat:'Authority'],
-                [name: [en: "Repository", de: "Repositorium"],                                                              descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.Repository', multiple:true],
-                [name: [en: "APC Discount", de: "Sonderkonditionen für Autoren"],                                           descr: allOADescr, type: String.toString()],
-                [name: [en: "Vouchers Free OA Articles", de: "Vouchers"],                                                   descr: allOADescr, type: String.toString()],
-                [name: [en: "Corresponding Author Identification", de: "Autorenidentifikation"],                            descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.CorrespondingAuthorIdentification', multiple:true],
-                [name: [en: "Branding", de: "Branding"],                                                                    descr: allOADescr, type: String.toString()],
-                [name: [en: "Funder", de: "Funder"],                                                                        descr: allOADescr, type: String.toString()],
-                [name: [en: "License to Publish", de: "Publikationslizenz"],                                                descr: allOADescr, type: RefdataValue.toString(), cat: 'License.OA.LicenseToPublish', multiple:true],
-                [name: [en: "Offsetting", de: "Offsetting Berechnungsmodell"],                                              descr: allOADescr, type: String.toString()],
-                [name: [en: "Publishing Fee", de: "Publishing Fee"],                                                        descr: allOADescr, type: String.toString()],
-                [name: [en: "Reading Fee", de: "Reading Fee"],                                                                  descr: allOADescr, type: String.toString()],
-                [name: [en: "OA First Date", de: "OA Startdatum"],                                                          descr: allOADescr, type: Date.toString()],
-                [name: [en: "OA Last Date", de: "OA Enddatum"],                                                             descr: allOADescr, type: Date.toString()],
-                [name: [en: "OA Note", de: "OA Bemerkung"],                                                                 descr: allOADescr, type: String.toString()]
+                [name: [en: "Open Access", de: "Open Access"],                                                              descr: allOADescr, type: OT.Rdv, cat: 'YN'],
+                [name: [en: "Type", de: "Variante"],                                                                        descr: allOADescr, type: OT.Rdv, cat: 'License.OA.Type'],
+                [name: [en: "Electronically Archivable Version", de: "Archivierbare Version"],                              descr: allOADescr, type: OT.Rdv, cat: 'License.OA.eArcVersion'],
+                [name: [en: "Embargo Period", de: "Embargo"],                                                               descr: allOADescr, type: OT.Int],
+                [name: [en: "Receiving Modalities", de: "Bezugsmodalitäten"],                                               descr: allOADescr, type: OT.Rdv, cat: 'License.OA.ReceivingModalities', multiple:true],
+                [name: [en: "Authority", de: "Autorität"],                                                                  descr: allOADescr, type: OT.Rdv, cat:'Authority'],
+                [name: [en: "Repository", de: "Repositorium"],                                                              descr: allOADescr, type: OT.Rdv, cat: 'License.OA.Repository', multiple:true],
+                [name: [en: "APC Discount", de: "Sonderkonditionen für Autoren"],                                           descr: allOADescr, type: OT.String],
+                [name: [en: "Vouchers Free OA Articles", de: "Vouchers"],                                                   descr: allOADescr, type: OT.String],
+                [name: [en: "Corresponding Author Identification", de: "Autorenidentifikation"],                            descr: allOADescr, type: OT.Rdv, cat: 'License.OA.CorrespondingAuthorIdentification', multiple:true],
+                [name: [en: "Branding", de: "Branding"],                                                                    descr: allOADescr, type: OT.String],
+                [name: [en: "Funder", de: "Funder"],                                                                        descr: allOADescr, type: OT.String],
+                [name: [en: "License to Publish", de: "Publikationslizenz"],                                                descr: allOADescr, type: OT.Rdv, cat: 'License.OA.LicenseToPublish', multiple:true],
+                [name: [en: "Offsetting", de: "Offsetting Berechnungsmodell"],                                              descr: allOADescr, type: OT.String],
+                [name: [en: "Publishing Fee", de: "Publishing Fee"],                                                        descr: allOADescr, type: OT.String],
+                [name: [en: "Reading Fee", de: "Reading Fee"],                                                              descr: allOADescr, type: OT.String],
+                [name: [en: "OA First Date", de: "OA Startdatum"],                                                          descr: allOADescr, type: OT.Date],
+                [name: [en: "OA Last Date", de: "OA Enddatum"],                                                             descr: allOADescr, type: OT.Date],
+                [name: [en: "OA Note", de: "OA Bemerkung"],                                                                 descr: allOADescr, type: OT.String]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredOAProps)
 
@@ -538,21 +547,21 @@ class BootStrap {
         def allArcDescr = [en: PropertyDefinition.LIC_PROP, de: PropertyDefinition.LIC_PROP]
 
         def requiredARCProps = [
-                [name: [en: "Post Cancellation Online Access", de: "Zugriffsrechte: Dauerhaft"],                            descr: allArcDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "Continuing Access: Payment Note", de: "Zugriffsrechte: Kosten"],                               descr: allArcDescr, type: RefdataValue.toString(), cat: 'License.Arc.PaymentNote'],
-                [name: [en: "Continuing Access: Restrictions", de: "Zugriffsrechte: Einschränkungen"],                      descr: allArcDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "Continuing Access: Title Transfer", de: "Zugriffsrechte: Titeltransfer"],                      descr: allArcDescr, type: RefdataValue.toString(), cat: 'License.Arc.TitleTransferRegulation'],
-                [name: [en: "Archival Copy: Permission", de: "Archivkopie: Recht"],                                         descr: allArcDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "Archival Copy Content", de: "Archivkopie Form"],                                               descr: allArcDescr, type: RefdataValue.toString(), cat: 'License.Arc.ArchivalCopyContent', multiple:true],
-                [name: [en: "Archival Copy: Cost", de: "Archivkopie: Kosten"],                                              descr: allArcDescr, type: RefdataValue.toString(), cat: 'License.Arc.ArchivalCopyCost'],
-                [name: [en: "Archival Copy: Time", de: "Archivkopie: Zeitpunkt"],                                           descr: allArcDescr, type: RefdataValue.toString(), cat: 'License.Arc.ArchivalCopyTime'],
-                [name: [en: "Hosting: Permission", de: "Hostingrecht"],                                                     descr: allArcDescr, type: RefdataValue.toString(), cat: 'YNO'],
-                [name: [en: "Hosting: Obligation", de: "Hostingpflicht"],                                                   descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
-                [name: [en: "Hosting Time", de: "Hostingrecht Zeitpunkt"],                                                  descr: allArcDescr, type: RefdataValue.toString(), cat: 'License.Arc.HostingTime', multiple:true],
-                [name: [en: "Hosting: Additonal Agreement Necessary", de: "Hostingrecht: Zusatzvereinbarung notwendig"],    descr: allArcDescr, type: RefdataValue.toString(), cat: 'YN'],
-                [name: [en: "Hosting: Authorized", de: "Hostingrecht: Berechtigte"],                                        descr: allArcDescr, type: RefdataValue.toString(), cat: 'License.Arc.Authorized', multiple:true],
-                [name: [en: "Hosting: Restriction", de: "Hostingrecht: Einschränkung"],                                     descr: allArcDescr, type: RefdataValue.toString(), cat: 'License.Arc.HostingRestriction', multiple:true],
-                [name: [en: "Hosting: Solution", de: "Hostingrecht: Lösung"],                                               descr: allArcDescr, type: RefdataValue.toString(), cat: 'License.Arc.HostingSolution', multiple:true],
+                [name: [en: "Post Cancellation Online Access", de: "Zugriffsrechte: Dauerhaft"],                            descr: allArcDescr, type: OT.Rdv, cat: 'YNO'],
+                [name: [en: "Continuing Access: Payment Note", de: "Zugriffsrechte: Kosten"],                               descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.PaymentNote'],
+                [name: [en: "Continuing Access: Restrictions", de: "Zugriffsrechte: Einschränkungen"],                      descr: allArcDescr, type: OT.Rdv, cat: 'YNO'],
+                [name: [en: "Continuing Access: Title Transfer", de: "Zugriffsrechte: Titeltransfer"],                      descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.TitleTransferRegulation'],
+                [name: [en: "Archival Copy: Permission", de: "Archivkopie: Recht"],                                         descr: allArcDescr, type: OT.Rdv, cat: 'YNO'],
+                [name: [en: "Archival Copy Content", de: "Archivkopie Form"],                                               descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.ArchivalCopyContent', multiple:true],
+                [name: [en: "Archival Copy: Cost", de: "Archivkopie: Kosten"],                                              descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.ArchivalCopyCost'],
+                [name: [en: "Archival Copy: Time", de: "Archivkopie: Zeitpunkt"],                                           descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.ArchivalCopyTime'],
+                [name: [en: "Hosting: Permission", de: "Hostingrecht"],                                                     descr: allArcDescr, type: OT.Rdv, cat: 'YNO'],
+                [name: [en: "Hosting: Obligation", de: "Hostingpflicht"],                                                   descr: allArcDescr, type: OT.Rdv, cat: 'YN'],
+                [name: [en: "Hosting Time", de: "Hostingrecht Zeitpunkt"],                                                  descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.HostingTime', multiple:true],
+                [name: [en: "Hosting: Additonal Agreement Necessary", de: "Hostingrecht: Zusatzvereinbarung notwendig"],    descr: allArcDescr, type: OT.Rdv, cat: 'YN'],
+                [name: [en: "Hosting: Authorized", de: "Hostingrecht: Berechtigte"],                                        descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.Authorized', multiple:true],
+                [name: [en: "Hosting: Restriction", de: "Hostingrecht: Einschränkung"],                                     descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.HostingRestriction', multiple:true],
+                [name: [en: "Hosting: Solution", de: "Hostingrecht: Lösung"],                                               descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.HostingSolution', multiple:true],
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredARCProps)
     }
@@ -562,8 +571,54 @@ class BootStrap {
         def allDescr = [en: PropertyDefinition.SUB_PROP, de: PropertyDefinition.SUB_PROP]
 
         def requiredProps = [
-                [name: [en: "GASCO Entry", de: "GASCO-Eintrag"], descr:allDescr, type:RefdataValue.toString(), cat:'YN']
-
+                [name: [en: "GASCO Entry", de: "GASCO-Eintrag"],                    descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "EZB Gelbschaltung", de: "EZB Gelbschaltung"],          descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "Metadata Delivery", de: "Metadatenlieferung"],         descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "Metadata Source", de: "Metadaten Quelle"],             descr:allDescr, type: OT.String],
+                [name: [en: "Preisvorteil durch weitere Produktteilnahme", de: "Preisvorteil durch weitere Produktteilnahme"], descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "Produktabhängigkeit", de: "Produktabhängigkeit"],      descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "Rabattstaffel", de: "Rabattstaffel"],                  descr:allDescr, type: OT.String],
+                [name: [en: "Bundesweit offen", de: "Bundesweit offen"],            descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "Rechnungsstellung durch Anbieter", de: "Rechnungsstellung durch Anbieter"],    descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "Mengenrabatt Stichtag", de: "Mengenrabatt Stichtag"],  descr:allDescr, type: OT.Date, cat:'YN'],
+                [name: [en: "Testzeitraum", de: "Testzeitraum"],                    descr:allDescr, type: OT.String],
+                [name: [en: "Unterjähriger Einstieg", de: "Unterjähriger Einstieg"],descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "Neueinsteigerrabatt", de: "Neueinsteigerrabatt"],      descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "Simuser", de: "Simuser"],                              descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "Simuser Zahl", de: "Simuser Zahl"],                    descr:allDescr, type: OT.String],
+                [name: [en: "Rechnungszeitpunkt", de: "Rechnungszeitpunkt"],        descr:allDescr, type: OT.String],
+                [name: [en: "Zahlungsziel", de: "Zahlungsziel"],                    descr:allDescr, type: OT.String],
+                [name: [en: "Preis gerundet", de: "Preis gerundet"],                descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "Teilzahlung", de: "Teilzahlung"],                      descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "Statistik", de: "Statistik"],                          descr:allDescr, type: OT.String],
+                [name: [en: "Statistikzugang", de: "Statistikzugang"],              descr:allDescr, type: OT.String],
+                [name: [en: "Simuser", de: "Simuser"],                              descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "KBART", de: "KBART"],                                  descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "reverse charge", de: "reverse charge"],                descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "Private Einrichtungen", de: "Private Einrichtungen"],  descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "Mehrjahreslaufzeit", de: "Mehrjahreslaufzeit"],        descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "Rabatt", de: "Rabatt"],                                descr:allDescr, type: OT.String],
+                [name: [en: "Rabatt Zählung", de: "Rabatt Zählung"],                descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "Kündigungsfrist", de: "Kündigungsfrist"],              descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "Zusätzliche Software erforderlich?", de: "Zusätzliche Software erforderlich?"],    descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "Preissteigerung", de: "Preissteigerung"],              descr:allDescr, type: OT.String],
+                [name: [en: "Preis abhängig von", de: "Preis abhängig von"],        descr:allDescr, type: OT.String],
+                [name: [en: "Abbestellquote", de: "Abbestellquote"],                descr:allDescr, type: OT.String],
+                [name: [en: "Bestellnummer im Erwerbungssystem", de: "Bestellnummer im Erwerbungssystem"],      descr:allDescr, type: OT.String],
+                [name: [en: "Zugangskennungen für Nutzer (pro Zeitschrift)", de: "Zugangskennungen für Nutzer (pro Zeitschrift)"], descr:allDescr, type: OT.String],
+                [name: [en: "Subscriptionsnummer vom Verlag", de: "Subscriptionsnummer vom Verlag"],            descr:allDescr, type: OT.String],
+                [name: [en: "DBIS-Eintrag", de: "DBIS-Eintrag"],                    descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "Abbestellgrund", de: "Abbestellgrund"],                descr:allDescr, type: OT.String],
+                [name: [en: "Hosting-Gebühr", de: "Hosting-Gebühr"],                descr:allDescr, type: OT.String],
+                [name: [en: "Pick&Choose-Paket", de: "Pick&Choose-Paket"],          descr:allDescr, type: OT.String],
+                [name: [en: "PDA/EBS-Programm", de: "PDA/EBS-Programm"],            descr:allDescr, type: OT.String],
+                [name: [en: "Produktsigel beantragt", de: "Produktsigel beantragt"],                    descr:allDescr, type: OT.String],
+                [name: [en: "Fachstatistik / Klassifikation", de: "Fachstatistik / Klassifikation"],    descr:allDescr, type: OT.Int],
+                [name: [en: "Archivzugriff", de: "Archivzugriff"],                                      descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "Eingeschränkter Benutzerkreis", de: "Eingeschränkter Benutzerkreis"],      descr:allDescr, type: OT.String],
+                [name: [en: "SFX-Eintrag", de: "SFX-Eintrag"],                      descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "GASCO-Anzeigename", de: "GASCO-Anzeigename"],          descr:allDescr, type: OT.String],
+                [name: [en: "GASCO-Verhandlername", de: "GASCO-Verhandlername"],    descr:allDescr, type: OT.String]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
     }
@@ -574,27 +629,20 @@ class BootStrap {
 
         // TODO - remove HOTFIX: hardcoded hbz properties
         def requiredOrgProps = [
-                [name: [en: "Note", de: "Anmerkung"],
-                            tenant: 'hbz', descr: allOrgDescr, type: String.toString()],
-                [name: [en: "promotionsrecht", de: "Promotionsrecht"],
-                            tenant: 'hbz', descr: allOrgDescr, type:RefdataValue.toString(), cat:'YNO'],
-                [name: [en: "privatrechtlich", de: "Privatrechtlich"],
-                            tenant: 'hbz', descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
-                [name: [en: "ezb teilnehmer", de: "EZB-Teilnehmer"],
-                            tenant: 'hbz', descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
-                [name: [en: "nationallizenz teilnehmer", de: "Nationallizenz-Teilnehmer"],
-                            tenant: 'hbz', descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
-                [name: [en: "discovery system", de: "Discovery-System"],
-                            tenant: 'hbz', descr: allOrgDescr, type:RefdataValue.toString(), cat:'YN'],
-                [name: [en: "verwendete discovery systeme", de: "Verwendete Discovery-Systeme"],
-                            tenant: 'hbz', descr: allOrgDescr, type:String.toString()]
+                [name: [en: "Note", de: "Anmerkung"], tenant: 'hbz', descr: allOrgDescr, type: OT.String],
+                [name: [en: "promotionsrecht", de: "Promotionsrecht"], tenant: 'hbz', descr: allOrgDescr, type: OT.Rdv, cat:'YNO'],
+                [name: [en: "privatrechtlich", de: "Privatrechtlich"], tenant: 'hbz', descr: allOrgDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "ezb teilnehmer", de: "EZB-Teilnehmer"], tenant: 'hbz', descr: allOrgDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "nationallizenz teilnehmer", de: "Nationallizenz-Teilnehmer"], tenant: 'hbz', descr: allOrgDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "discovery system", de: "Discovery-System"], tenant: 'hbz', descr: allOrgDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "verwendete discovery systeme", de: "Verwendete Discovery-Systeme"], tenant: 'hbz', descr: allOrgDescr, type: OT.String]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredOrgProps)
 
         def allPrsDescr = [en: PropertyDefinition.PRS_PROP, de: PropertyDefinition.PRS_PROP]
 
         def requiredPrsProps = [
-                [name: [en: "Note", de: "Anmerkung"], descr: allPrsDescr, type: String.toString()]
+                [name: [en: "Note", de: "Anmerkung"], descr: allPrsDescr, type: OT.String]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredPrsProps)
     }
@@ -602,21 +650,8 @@ class BootStrap {
     def createPropertyDefinitionsWithI10nTranslations(requiredProps) {
 
         requiredProps.each { default_prop ->
-            /* TODO merge_conflict @ 0.4.5 into 0.5
-            def key = default_prop.key ?: default_prop.name['en']
-            def prop = PropertyDefinition.findByName(key)
-
-            if (! prop) {
-                log.debug("Unable to locate property definition for ${key} .. creating")
-                prop = new PropertyDefinition(name: key)
-
-                if (default_prop.cat != null) {
-                    prop.setRefdataCategory(default_prop.cat)
-                }
-            }
-            */
-            def prop
-            def tenant
+            def prop   = null
+            def tenant = null
 
             if (default_prop.tenant) {
                 tenant = Org.findByShortname(default_prop.tenant)
@@ -628,7 +663,7 @@ class BootStrap {
                     return
                 }
             } else {
-                prop = PropertyDefinition.findByName(default_prop.name['en'])
+                prop = PropertyDefinition.findWhere(name: default_prop.name['en'], tenant: null)
             }
 
             if (! prop) {
@@ -662,8 +697,8 @@ class BootStrap {
     def addDefaultPageMappings() {
 
         if (! SitePage.findAll()) {
-            def home    = new SitePage(alias: "Home",    action: "index",       controller: "home").save()
-            def profile = new SitePage(alias: "Profile", action: "index",       controller: "profile").save()
+            def home    = new SitePage(alias: "Home",    action: "index", controller: "home").save()
+            def profile = new SitePage(alias: "Profile", action: "index", controller: "profile").save()
             //def pages   = new SitePage(alias: "Pages",   action: "managePages", controller: "spotlight").save()
 
             dataloadService.updateSiteMapping()
@@ -899,6 +934,7 @@ class BootStrap {
         RefdataValue.loc('FactType', [en: 'JR1R4'], BOOTSTRAP)
         RefdataValue.loc('FactType', [en: 'JR1GOAR4'], BOOTSTRAP)
         RefdataValue.loc('FactType', [en: 'DB1R4'], BOOTSTRAP)
+
         RefdataValue.loc('FactMetric', [en: 'ft_total'], BOOTSTRAP)
         RefdataValue.loc('FactMetric', [en: 'record_view'], BOOTSTRAP)
         RefdataValue.loc('FactMetric', [en: 'result_click'], BOOTSTRAP)
@@ -1030,7 +1066,9 @@ class BootStrap {
         RefdataValue.loc('Subscription Form',      [key: 'purchaseOngoing', en: 'Ongoing Purchase', de: 'Kauf laufend'], BOOTSTRAP)
         RefdataValue.loc('Subscription Form',      [key: 'obligation', en: 'Obligation', de: 'Pflichtlizenz'], BOOTSTRAP)
 
+        RefdataValue.loc('Subscription Resource', [key: 'avMedia', en: 'AV-Media', de: 'AV-Medien'], BOOTSTRAP)
         RefdataValue.loc('Subscription Resource', [key: 'database', en: 'Database', de: 'Datenbank'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Resource', [key: 'econferenceProceedings', en: 'E-Conference Proceedings', de: 'E-Conference Proceedings'], BOOTSTRAP)
         RefdataValue.loc('Subscription Resource', [key: 'ejournalSingle', en: 'E-Journal single title', de: 'E-Journal Einzeltitel'], BOOTSTRAP)
         RefdataValue.loc('Subscription Resource', [key: 'ebookSingle', en: 'E-Book single title', de: 'E-Book Einzeltitel'], BOOTSTRAP)
         RefdataValue.loc('Subscription Resource', [key: 'data', en: 'Data', de: 'Daten'], BOOTSTRAP)
@@ -1044,6 +1082,7 @@ class BootStrap {
         RefdataValue.loc('Subscription Status',      [en: 'Current', de: 'Aktiv'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [en: 'Expired', de: 'Abgelaufen'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Status',      [en: 'Ordered', de: 'Bestellt'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [en: 'Terminated', de: 'Abbestellt'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [en: 'Under Negotiation', de: 'In Verhandlung'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [en: 'Under Consideration', de: 'Entscheidung steht aus'], BOOTSTRAP)

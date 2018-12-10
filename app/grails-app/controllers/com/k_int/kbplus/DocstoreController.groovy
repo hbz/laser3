@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.controller.AbstractDebugController
 import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -12,7 +13,7 @@ import org.elasticsearch.groovy.common.xcontent.*
 import com.k_int.kbplus.auth.*
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class DocstoreController {
+class DocstoreController extends AbstractDebugController {
 
     def docstoreService
     def messageSource

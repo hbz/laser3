@@ -1,6 +1,7 @@
 package de.laser
 
 import com.k_int.kbplus.Combo
+import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgCustomProperty
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
@@ -13,9 +14,8 @@ import javax.naming.Context
 
 class SubscriptionsQueryService {
     def propertyService
-    def contextService
 
-    def myInstitutionCurrentSubscriptionsBaseQuery(def params) {
+    def myInstitutionCurrentSubscriptionsBaseQuery(def params, Org contextOrg) {
 
         def date_restriction
         def sdf = new DateUtil().getSimpleDateFormat_NoTime()
@@ -51,13 +51,13 @@ class SubscriptionsQueryService {
         def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
 
         // ORG: def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
-        // ORG: def qry_params = ['roleTypes':roleTypes, 'activeInst':contextService.org]
+        // ORG: def qry_params = ['roleTypes':roleTypes, 'activeInst':contextOrg]
 
         def base_qry
         def qry_params
 
         if (! params.orgRole) {
-            if ((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in contextService.org?.getallOrgRoleTypeIds())) {
+            if ((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in contextOrg?.getallOrgRoleTypeIds())) {
                 params.orgRole = 'Subscription Consortia'
             }
             else {
@@ -78,16 +78,16 @@ from Subscription as s where (
     )
 )
 """
-            qry_params = ['roleType1':role_sub, 'roleType2':role_subCons, 'activeInst':contextService.org, 'scRoleType':role_sub_consortia]
+            qry_params = ['roleType1':role_sub, 'roleType2':role_subCons, 'activeInst':contextOrg, 'scRoleType':role_sub_consortia]
         }
 
         if (params.orgRole == 'Subscription Consortia') {
             if (params.actionName == 'manageConsortia') {
                 base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is not null AND s.status.value != 'Deleted' ) "
-                qry_params = ['roleType':role_sub_consortia, 'activeInst':contextService.org]
+                qry_params = ['roleType':role_sub_consortia, 'activeInst':contextOrg]
             } else {
                 base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is null AND s.status.value != 'Deleted' ) "
-                qry_params = ['roleType':role_sub_consortia, 'activeInst':contextService.org]
+                qry_params = ['roleType':role_sub_consortia, 'activeInst':contextOrg]
             }
         }
 
@@ -120,20 +120,38 @@ from Subscription as s where (
             qry_params.put('date_restr', date_restriction)
         }
 
+        if (params.endDateFrom && params.endDateTo && params.manualCancellationDateFrom && params.manualCancellationDateTo) {
+            base_qry += " and ((s.endDate >= :endFrom and s.endDate <= :endTo) OR (s.manualCancellationDate >= :cancellFrom and s.manualCancellationDate <= :cancellTo))"
+            qry_params.put("endFrom", params.endDateFrom)
+            qry_params.put("endTo", params.endDateTo)
+            qry_params.put("cancellFrom", params.manualCancellationDateFrom)
+            qry_params.put("cancellTo", params.manualCancellationDateTo)
+        } else {
+            if (params.endDateFrom && params.endDateTo) {
+                base_qry += " and (s.endDate >= :endFrom and s.endDate <= :endTo)"
+                qry_params.put("endFrom", params.endDateFrom)
+                qry_params.put("endTo", params.endDateTo)
+            } else if (params.manualCancellationDateFrom && params.manualCancellationDateTo) {
+                base_qry += " and (s.manualCancellationDate >= :cancellFrom and s.manualCancellationDate <= :cancellTo)"
+                qry_params.put("cancellFrom", params.manualCancellationDateFrom)
+                qry_params.put("cancellTo", params.manualCancellationDateTo)
+            }
+        }
+
         /* if(dateBeforeFilter ){
             base_qry += dateBeforeFilter
             qry_params.put('date_before', dateBeforeFilterVal)
         } */
 
-        def subTypes = null
+        def subTypes = []
         if (params.containsKey('subTypes')) {
-            subTypes = params.get('subTypes')
-//        }
-//        def subTypes = params.list('subTypes')
-//        if (subTypes) {
-            subTypes = subTypes.collect{it as Long}
-            base_qry += " and s.type.id in (:subTypes) "
-            qry_params.put('subTypes', subTypes)
+            params.list('subTypes').each{
+                subTypes.add(Long.parseLong(it))
+            }
+            if (subTypes) {
+                base_qry += " and s.type.id in (:subTypes) "
+                qry_params.put('subTypes', subTypes)
+            }
         }
 
         if (params.status) {

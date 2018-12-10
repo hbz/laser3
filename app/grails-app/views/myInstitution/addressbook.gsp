@@ -1,9 +1,5 @@
 <%@ page
-import="com.k_int.kbplus.Org"  
-import="com.k_int.kbplus.Person" 
-import="com.k_int.kbplus.PersonRole"
-import="com.k_int.kbplus.RefdataValue" 
-import="com.k_int.kbplus.RefdataCategory" 
+import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory"
 %>
 
 <!doctype html>

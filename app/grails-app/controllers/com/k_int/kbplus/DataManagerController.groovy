@@ -1,12 +1,13 @@
 package com.k_int.kbplus
 
+import de.laser.controller.AbstractDebugController
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import com.k_int.kbplus.auth.User
 import grails.plugin.springsecurity.SpringSecurityUtils
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class DataManagerController {
+class DataManagerController extends AbstractDebugController {
 
   def springSecurityService 
 

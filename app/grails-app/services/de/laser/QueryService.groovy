@@ -1,14 +1,62 @@
 package de.laser
 
 import com.k_int.kbplus.*
+import com.k_int.kbplus.abstract_domain.AbstractProperty
+import com.k_int.kbplus.auth.User
+import de.laser.helper.SqlDateUtils
+
 import static de.laser.helper.RDStore.*
 
 class QueryService {
-    def contextService
+    def subscriptionsQueryService
+    def taskService
+
+    def getDueObjects(Org contextOrg, User contextUser, daysToBeInformedBeforeToday) {
+        java.sql.Date infoDate = daysToBeInformedBeforeToday? SqlDateUtils.getDateInNrOfDays(daysToBeInformedBeforeToday) : null
+        java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
+
+        ArrayList dueObjects = new ArrayList()
+
+        dueObjects.addAll(getDueSubscriptions(contextOrg, today, infoDate, today, infoDate))
+
+        dueObjects.addAll( taskService.getTasksByResponsibles(
+                contextUser,
+                contextOrg,
+                [query:" and status = ? and endDate <= ?",
+                 queryParams:[RefdataValue.getByValueAndCategory('Open', 'Task Status'),
+                              infoDate]]) )
+
+
+        dueObjects.addAll(getDueLicenseCustomProperties(contextOrg, today, infoDate))
+        dueObjects.addAll(getDueLicensePrivateProperties(contextOrg, today, infoDate))
+
+        dueObjects.addAll(PersonPrivateProperty.findAllByDateValueBetweenForOrgAndIsNotPulbic(today, infoDate, contextOrg))
+
+        dueObjects.addAll(OrgCustomProperty.findAllByDateValueBetween(today, infoDate))
+        dueObjects.addAll(getDueOrgPrivateProperties(contextOrg, today, infoDate))
+
+        dueObjects.addAll(getDueSubscriptionCustomProperties(contextOrg, today, infoDate))
+        dueObjects.addAll(getDueSubscriptionPrivateProperties(contextOrg, today, infoDate))
+
+        dueObjects = dueObjects.sort {
+            (it instanceof AbstractProperty)?
+                    it.dateValue : (((it instanceof Subscription || it instanceof License) && it.manualCancellationDate)? it.manualCancellationDate : it.endDate)?: java.sql.Timestamp.valueOf("0001-1-1 00:00:00")
+        }
+
+        dueObjects
+    }
+
     private def getQuery(Class propertyClass, Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
         def result = [:]
-        def query = "SELECT distinct(prop) FROM " + propertyClass.simpleName + " as prop WHERE (dateValue >= :from and dateValue <= :to) "
-        def queryParams = [from:fromDateValue, to:toDateValue]
+        def query
+        def queryParams
+        if (toDateValue) {
+            query = "SELECT distinct(prop) FROM " + propertyClass.simpleName + " as prop WHERE (dateValue >= :from and dateValue <= :to) "
+            queryParams = [from:fromDateValue, to:toDateValue]
+        } else {
+            query = "SELECT distinct(prop) FROM " + propertyClass.simpleName + " as prop WHERE dateValue >= :from "
+            queryParams = [from:fromDateValue]
+        }
         if (propertyClass.simpleName.toLowerCase().contains("private")) {
             queryParams << [myOrg:contextOrg]
             query += "and exists (select pd from PropertyDefinition as pd where prop.type = pd AND pd.tenant = :myOrg) "
@@ -62,46 +110,16 @@ class QueryService {
     }
 
     private def getDueSubscriptionsQuery(Org contextOrg, java.sql.Date endDateFrom, java.sql.Date endDateTo, java.sql.Date manualCancellationDateFrom, java.sql.Date manualCancellationDateTo) {
-        def result = [:]
-        Org institution = contextOrg
+        def queryParams = [:]
+        queryParams.endDateFrom = endDateFrom
+        queryParams.endDateTo = endDateTo
+        queryParams.manualCancellationDateFrom = manualCancellationDateFrom
+        queryParams.manualCancellationDateTo = manualCancellationDateTo
+        queryParams.validOn = ""
         def base_qry
         def qry_params
-        boolean isSubscriptionConsortia = ((OR_TYPE_CONSORTIUM?.id in institution?.getallOrgRoleTypeIds()))
-        boolean isSubscriber = ! isSubscriptionConsortia
-
-        if (isSubscriber) {
-            base_qry = "from Subscription as s where ( "+
-                    "exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :activeInst ) ) "+
-                    "AND ( s.status.value != 'Deleted' ) "+
-                    "AND ( "+
-                    "( not exists ( select o from s.orgRelations as o where o.roleType = :scRoleType ) ) "+
-                    "or "+
-                    "( ( exists ( select o from s.orgRelations as o where o.roleType = :scRoleType ) ) AND ( s.instanceOf is not null) ) "+
-                    ") "+
-                    ")"
-            qry_params = ['roleType1':OR_SUBSCRIBER, 'roleType2':OR_SUBSCRIBER_CONS, 'activeInst':institution, 'scRoleType':OR_SUBSCRIPTION_CONSORTIA]
-        }
-
-        if (isSubscriptionConsortia) {
-            base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is null AND s.status.value != 'Deleted' ) "
-            qry_params = ['roleType':OR_SUBSCRIPTION_CONSORTIA, 'activeInst':institution]
-        }
-
-        if (endDateFrom && endDateTo) {
-            base_qry += " and (endDate >= :endFrom and endDate <= :endTo)"
-            qry_params.put("endFrom", endDateFrom)
-            qry_params.put("endTo", endDateTo)
-        }
-
-        if (manualCancellationDateFrom && manualCancellationDateTo){
-            base_qry +=" or (manualCancellationDate >= :cancellFrom and manualCancellationDate <= :cancellTo) "
-            qry_params.put("cancellFrom", manualCancellationDateFrom)
-            qry_params.put("cancellTo", manualCancellationDateTo)
-        }
-
-        base_qry += " and status != :status "
-        qry_params.put("status", SUBSCRIPTION_DELETED)
-
+        (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextOrg)
+        def result = [:]
         result.query = "select s ${base_qry}"
         result.queryParams = qry_params
         result

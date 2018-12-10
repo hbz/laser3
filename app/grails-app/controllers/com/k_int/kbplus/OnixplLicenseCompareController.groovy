@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.controller.AbstractDebugController
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.util.GrailsNameUtils
@@ -8,7 +9,7 @@ import com.k_int.kbplus.onixpl.OnixPLHelperService
 import com.k_int.kbplus.onixpl.OnixPLService
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class OnixplLicenseCompareController {
+class OnixplLicenseCompareController extends AbstractDebugController {
   
   private static final String TEMPLATE_ROOT = "/templates/onix/"
   private static final String TEMPLATE_DEFAULT = "default"

@@ -1,3 +1,39 @@
+0.11.3
+
+- reworked consortia subscription message
+- fixed: cost after tax rounding
+
+0.11.2
+
+- added system profiler
+- api v1 changes
+
+0.11.1
+
+- added pagination for manage consortia view
+- fixed subscription list: view and filter
+- fixed providers list: missing editable permission
+- fixed custom properties bootstrapping
+
+0.11
+
+- added functionality for grouping and management of custom properties
+- added new subscription properties
+- merged license: open access and license: archive into license properties 
+- reworked some list views, added count of total items
+- reworked filter layouts
+- fixed property filter for date type
+- fixed deletion of tasks
+- various markup and style changes
+- minor bugfixes
+
+0.10.10
+
+- changed v1 api
+
+0.10.9
+
+- bugfix: visible private contacts
 
 0.10.8
 

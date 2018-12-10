@@ -112,7 +112,7 @@ class ApiMainClass {
             }
         } else if ('costItems'.equalsIgnoreCase(obj)) {
             if (format in [Constants.MIME_TEXT_PLAIN, Constants.MIME_APPLICATION_JSON]) {
-                    result = ApiCostItem.getCostItems(user, contextOrg)
+                result = ApiCostItem.getCostItems(user, contextOrg)
             }
             else {
                 return Constants.HTTP_NOT_ACCEPTABLE
@@ -124,6 +124,25 @@ class ApiMainClass {
 
         result
     }
+
+    static read(String obj, String query, String value, User user, Org contextOrg, String format, Date startDate, Date endDate) {
+        def result
+        log.debug("API-READ: ${obj} (${format}) @ ${query}:${value}")
+        if ('costItems'.equalsIgnoreCase(obj)) {
+            if (format in [Constants.MIME_TEXT_PLAIN, Constants.MIME_APPLICATION_JSON]) {
+                result = ApiCostItem.getCostItems(user, contextOrg, startDate, endDate)
+
+            } else {
+                return Constants.HTTP_NOT_ACCEPTABLE
+            }
+        } else {
+            result = Constants.HTTP_NOT_IMPLEMENTED
+        }
+
+        result
+    }
+
+
 
     static write(String obj, JSONObject data, User user, Org contextOrg) {
         def result
