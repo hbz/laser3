@@ -1598,8 +1598,32 @@ class AjaxController extends AbstractDebugController {
                         result = (target_object."${params.name}").format(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
                     }
                 }
-            }
-            else {
+            } else if ( params.type=='url' ) {
+
+                def backup = target_object."${params.name}"
+                try {
+                    if( params.value && params.value.size() > 0 ) {
+                        target_object."${params.name}" = new URL(params.value)
+                    }
+                    else {
+                        // delete existing url
+                        target_object."${params.name}" = null
+                    }
+                    if (target_object.hasProperty('owner')) {
+                        target_object.owner?.save() // avoid owner.xyz not processed by flush
+                    }
+                    target_object.save(failOnError: true, flush: true);
+                }
+                catch(Exception e) {
+                    target_object."${params.name}" = backup
+                    log.error(e)
+                }
+                finally {
+                    if (target_object."${params.name}") {
+                        result = target_object."${params.name}"
+                    }
+                }
+            } else {
                 def binding_properties = [:]
                 binding_properties[params.name] = params.value
                 bindData(target_object, binding_properties)
