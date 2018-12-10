@@ -122,6 +122,8 @@ class DashboardDueDatesService {
         try {
             if (userAddress == null || userAddress.isEmpty()) {
                 log.info("The following user does not have an email address and can not be informed about due dates: " + user.username);
+            } else if (dashboardEntries == null || dashboardEntries.isEmpty()) {
+                log.info("The user has no due dates, so no email will be sent (" + user.username + "/"+ org.name + ")");
             } else {
                 mailService.sendMail {
                     to userAddress

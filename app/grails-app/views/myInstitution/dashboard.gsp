@@ -107,7 +107,7 @@
         <div class="ui bottom attached active tab segment" data-tab="first" style="border-top: 1px solid #d4d4d5; ">
             <div>
                 <g:render template="/user/dueDatesView"
-                          model="[user: contextService.user,
+                          model="[user: user,
                                   dueDates: dueDates]"/>
             </div>
 

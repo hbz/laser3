@@ -448,9 +448,7 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def dueDates_updateDashboardDB(){
         flash.message = "Datenbank wird upgedatet"
-        def future = executorService.submit({
-            dashboardDueDatesService.takeCareOfDueDates(true, false)
-        } as java.util.concurrent.Callable)
+        dashboardDueDatesService.takeCareOfDueDates(true, false)
         redirect(url: request.getHeader('referer'))
     }
 

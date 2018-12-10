@@ -21,8 +21,7 @@ ${raw(dashDueDate.attribut)}
                           LAS:eR
 ----------------------------------------------------------------------------------------------------------------------------------
 
-<g:message code="profile.noDashboardReminderDates" default="In the next {0} days no dates are due!" args="${[user?.getSettingsValue(com.k_int.kbplus.UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14),x]}"/>
-<g:message code="profile.dashboardReminderEmailText2" args="${[y]}"/>
+<g:message code="profile.noDashboardReminderDates" default="In the next {0} days no dates are due!" args="${user?.getSettingsValue(com.k_int.kbplus.UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}"/>
 
 ----------------------------------------------------------------------------------------------------------------------------------
 </g:else>
