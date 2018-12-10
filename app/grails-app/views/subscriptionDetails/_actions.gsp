@@ -10,9 +10,9 @@
         </semui:exportDropdownItem>
         <g:each in="${transforms}" var="transkey,transval">
             <semui:exportDropdownItem>
-                <g:if test="${params.filter}">
+                <g:if test="${params.filter || params.asAt}">
                     <%-- TODO: ask Ingrid where to inject this code: ${message(code: '', default: 'Achtung! Sie haben zur Zeit einen Filter gesetzt! Dadurch wird nur eine Teilmenge des Bestandes exportiert! Dennoch fortfahren?')} --%>
-                    <g:link onclick="return confirm('Achtung! Sie haben zur Zeit einen Filter gesetzt! Dadurch wird nur eine Teilmenge des Bestandes exportiert! Dennoch fortfahren?')" class="item" action="index" id="${params.id}" params="${[format:'xml', transformId:transkey, mode: params.mode, filter: params.filter]}">${transval.name}</g:link>
+                    <g:link onclick="return confirm('Achtung! Sie haben zur Zeit einen Filter gesetzt! Dadurch wird nur eine Teilmenge des Bestandes exportiert! Dennoch fortfahren?')" class="item" action="index" id="${params.id}" params="${[format:'xml', transformId:transkey, mode: params.mode, filter: params.filter, asAt: params.asAt]}">${transval.name}</g:link>
                 </g:if>
                 <g:else>
                     <g:link class="item" action="index" id="${params.id}" params="${[format:'xml', transformId:transkey, mode: params.mode]}">${transval.name}</g:link>
