@@ -56,8 +56,6 @@
 
         <h1 class="ui left aligned icon header"><semui:headerIcon />${subscriptionInstance.name} : ${message(code:'subscription.details.linkPackage.heading', default:'Link Subscription to Packages')}</h1>
 
-        <g:render template="nav" contextPath="." />
-
     <semui:filter>
         <g:form name="LinkPackageForm" action="linkPackage" method="get" params="${params}" class="ui form">
             <input type="hidden" name="offset" value="${params.offset}"/>

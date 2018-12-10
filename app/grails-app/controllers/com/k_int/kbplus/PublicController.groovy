@@ -2,11 +2,12 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.RDStore
 import grails.plugin.cache.Cacheable;
 import grails.plugin.springsecurity.annotation.Secured;
 
 @Secured(['permitAll'])
-class PublicController extends AbstractDebugController {
+class PublicController {
 
     def springSecurityService
     def genericOIDService
@@ -96,11 +97,73 @@ class PublicController extends AbstractDebugController {
         result
     }
 
+//    @Secured(['permitAll'])
+//    def gascoDetails() {
+//        def result = [:]
+//
+//        result.tipps = []
+//
+//        result.idnsPreset = IdentifierNamespace.findAll {
+//            ns in ['eissn', 'issn', 'zdb', 'ezb']
+//        }
+//
+//        if (params.id) {
+//            def sp  = SubscriptionPackage.get(params.long('id'))
+//            def sub = sp?.subscription
+//            def pkg = sp?.pkg
+//            def scp = SubscriptionCustomProperty.findByOwnerAndTypeAndRefValue(
+//                    sub,
+//                    PropertyDefinition.findByDescrAndName('Subscription Property', 'GASCO Entry'),
+//                    RefdataValue.getByValueAndCategory('Yes', 'YN')
+//            )
+//
+//            if (scp) {
+//                result.subscription = sub
+//
+//                def query = "SELECT tipp FROM TitleInstancePackagePlatform as tipp WHERE tipp.pkg = :pkg and tipp.status.value != 'Deleted'"
+//                def queryParams = [pkg: pkg]
+//
+//                result.tippsCount = TitleInstancePackagePlatform.executeQuery(query, queryParams).size()
+//
+//                def q = params.q?.trim()
+//                if (q) {
+//                    query += " AND ( LOWER(tipp.title.title) LIKE :q ) "
+//
+//                    queryParams.put('q', '%' + q.toLowerCase() + '%')
+//                }
+//
+//                def idv = params.idv?.trim()
+//                if (idv) {
+//                    query += " AND ( EXISTS ( " +
+//                        " SELECT io FROM IdentifierOccurrence AS io " +
+//                        " WHERE io.ti = tipp.title AND io.identifier.value LIKE :idv "
+//
+//                    if (params.idns) {
+//                        query += " AND io.identifier.ns = :idns "
+//
+//                        queryParams.put('idns', IdentifierNamespace.get(params.idns))
+//                    }
+//
+//                    query += " ) ) "
+//
+//                    queryParams.put('idv', '%' + idv.toLowerCase() + '%')
+//                }
+//
+//                result.tipps = TitleInstancePackagePlatform.executeQuery(query, queryParams)
+//            }
+//            else {
+//                redirect controller: 'public', action: 'gasco'
+//            }
+//        }
+//
+//        result
+//    }
+
     @Secured(['permitAll'])
-    def gascoDetails() {
+    def gascoDetailsIssueEntitlements() {
         def result = [:]
 
-        result.tipps = []
+        result.issueEntitlements = []
 
         result.idnsPreset = IdentifierNamespace.findAll {
             ns in ['eissn', 'issn', 'zdb', 'ezb']
@@ -113,16 +176,19 @@ class PublicController extends AbstractDebugController {
             def scp = SubscriptionCustomProperty.findByOwnerAndTypeAndRefValue(
                     sub,
                     PropertyDefinition.findByDescrAndName('Subscription Property', 'GASCO Entry'),
-                    RefdataValue.getByValueAndCategory('Yes', 'YN')
+                    RDStore.YN_YES
             )
 
             if (scp) {
                 result.subscription = sub
 
-                def query = "SELECT tipp FROM TitleInstancePackagePlatform as tipp WHERE tipp.pkg = :pkg and tipp.status.value != 'Deleted'"
-                def queryParams = [pkg: pkg]
+                def base_query = " FROM IssueEntitlement as ie WHERE ie.subscription = :sub and (ie.status.value != 'Deleted' and ie.status.value != 'Retired')"+
+                        " and exists (SELECT tipp FROM TitleInstancePackagePlatform as tipp WHERE ie.tipp = tipp and tipp.pkg = :pkg )"
+                def queryParams = [sub: sub, pkg: pkg]
 
-                result.tippsCount = TitleInstancePackagePlatform.executeQuery(query, queryParams).size()
+                result.issueEntitlementsCount = IssueEntitlement.executeQuery("select count(ie) " + base_query, queryParams)[0]
+
+                def query = "SELECT ie " + base_query
 
                 def q = params.q?.trim()
                 if (q) {
@@ -142,19 +208,17 @@ class PublicController extends AbstractDebugController {
 
                         queryParams.put('idns', IdentifierNamespace.get(params.idns))
                     }
-
                     query += " ) ) "
 
                     queryParams.put('idv', '%' + idv.toLowerCase() + '%')
                 }
-
-                result.tipps = TitleInstancePackagePlatform.executeQuery(query, queryParams)
+                query += " order by LOWER(tipp.title.title)"
+                result.issueEntitlements = IssueEntitlement.executeQuery(query, queryParams)
             }
             else {
                 redirect controller: 'public', action: 'gasco'
             }
         }
-
         result
     }
 

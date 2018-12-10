@@ -168,13 +168,13 @@ class CostItem extends AbstractBaseDomain implements TemplateSupport {
     def getCostInLocalCurrencyAfterTax() {
         Double result = ( costInLocalCurrency ?: 0.0 ) * ( taxRate ? ((taxRate/100) + 1) : 1.0 )
 
-        finalCostRounding ? result.round(0) : result
+        finalCostRounding ? result.round(0) : result.round(2)
     }
 
     def getCostInBillingCurrencyAfterTax() {
         Double result = ( costInBillingCurrency ?: 0.0 ) * ( taxRate ? ((taxRate/100) + 1) : 1.0 )
 
-        finalCostRounding ? result.round(0) : result
+        finalCostRounding ? result.round(0) : result.round(2)
     }
 
     @Transient
