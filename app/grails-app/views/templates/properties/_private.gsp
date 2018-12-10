@@ -63,9 +63,6 @@
                         <g:elseif test="${prop.type.type == Date.toString()}">
                             <semui:xEditable owner="${prop}" type="date" field="dateValue" overwriteEditable="${overwriteEditable}" />
                         </g:elseif>
-                        <g:elseif test="${prop.type.type == RefdataValue.toString()}">
-                            <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}" />
-                        </g:elseif>
                         <g:elseif test="${prop.type.type == URL.toString()}">
                             <semui:xEditable owner="${prop}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" />
                             %{--Todo beim drüber hovern soll der link-Button erscheinen--}%
@@ -74,6 +71,9 @@
                                     <i class="share square icon"></i>
                                 </a>
                             </span>
+                        </g:elseif>
+                        <g:elseif test="${prop.type.type == RefdataValue.toString()}">
+                            <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}" />
                         </g:elseif>
                     </td>
                     <td>

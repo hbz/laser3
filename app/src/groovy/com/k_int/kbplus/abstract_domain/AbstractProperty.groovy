@@ -107,7 +107,7 @@ abstract class AbstractProperty implements Serializable {
                 result = DateUtil.toDate_NoTime(value)
                 break
             case URL.toString():
-                result = value
+                result = new URL(value)
                 break
             default:
                 result = "AbstractProperty.parseValue failed"
