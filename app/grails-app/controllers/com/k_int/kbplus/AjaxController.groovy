@@ -1566,7 +1566,6 @@ class AjaxController {
                 finally {
                     if (target_object."${params.name}") {
                         result = target_object."${params.name}"
-//                        result = (target_object."${params.name}").format(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
                     }
                 }
             } else {

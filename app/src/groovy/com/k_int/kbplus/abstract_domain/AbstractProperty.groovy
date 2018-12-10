@@ -132,14 +132,8 @@ abstract class AbstractProperty implements Serializable {
         else if (type == RefdataValue.toString()) {
             refValue = RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc(rdc), value.toString())
         }
-            //TODO Validator einfügen
         else if (type == URL.toString()) {
-//            UrlValidator validaor = new UrlValidator()
-//            if (validaor.isValid(value)) {
-                urlValue = parseValue(value, type)
-//            } else {
-//                throw new Exception("URL is invalid")
-//            }
+            urlValue = parseValue(value, type)
         }
     }
 }
