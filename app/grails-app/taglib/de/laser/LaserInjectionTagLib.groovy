@@ -12,8 +12,8 @@ class LaserInjectionTagLib {
     static namespace = "laser"
 
     def serviceInjection = { attrs, body ->
-
-        out << "<!-- serviceInjection: springSecurityService, contextService, accessService, yodaService, subscriptionsQueryService, genericOIDService -->"
+        // HTML Comment not useful in Txt Mail
+        //out << "<!-- serviceInjection: springSecurityService, contextService, accessService, yodaService, subscriptionsQueryService, genericOIDService -->"
 
         g.set( var:'springSecurityService', bean:'springSecurityService' )
         g.set( var:'contextService', bean:'contextService' )
