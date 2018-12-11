@@ -35,7 +35,6 @@
     </table>
 
     <h3 class="ui header">Kontextbezogen</h3>
-${byUriAndContext}
     <table class="ui celled la-table la-table-small table">
         <thead>
             <tr>
@@ -51,7 +50,7 @@ ${byUriAndContext}
                     <td data-uri="${bench[0]}">${bench[0]}</td>
                     <td>${(bench[2] / 1000).round(2)}</td>
                     <td>${bench[3]}</td>
-                    <td data-context="${bench[1]}">${bench[1]}</td>
+                    <td data-context="${bench[1]}">${com.k_int.kbplus.Org.get(bench[1]).getDesignation()}</td>
                 </tr>
             </g:each>
         </tbody>

@@ -1224,9 +1224,6 @@ from License as l where (
         // Set Date Restriction
         def date_restriction = null;
 
-        // TODO postgresql migration
-
-        /*
         def sdf = new DateUtil().getSimpleDateFormat_NoTime()
         if (params.validOn == null) {
             result.validOn = sdf.format(new Date(System.currentTimeMillis()))
@@ -1239,7 +1236,7 @@ from License as l where (
             date_restriction = sdf.parse(params.validOn)
             log.debug("Getting titles as of ${date_restriction} (given)")
         }
-        */
+
         // Set is_inst_admin
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
 
@@ -1295,9 +1292,8 @@ from License as l where (
 
         if (date_restriction) {
             sub_qry += " AND sub.sub_start_date <= :date_restriction AND sub.sub_end_date >= :date_restriction "
-            qry_params.date_restriction = date_restriction
+            result.date_restriction = date_restriction
         }
-        result.date_restriction = date_restriction;
 
         if ((params.filter) && (params.filter.length() > 0)) {
             log.debug("Adding title filter ${params.filter}");
@@ -2901,12 +2897,8 @@ AND EXISTS (
 
         def baseParams = [owner: result.institution, tsCheck: tsCheck, stats: ['Accepted']]
 
-        // TODO postgresql migration
-        def baseQuery1 = "select distinct pc.subscription from PendingChange as pc where pc.owner = :owner and pc.ts >= :tsCheck " +
-                " and pc.subscription is not NULL and pc.subscription.status.value != 'Deleted' and pc.status.value in (:stats)"
-
-        //def baseQuery1 = "select pc.subscription, count(*) as count from PendingChange as pc where pc.owner = :owner and pc.ts >= :tsCheck " +
-        //        " and pc.subscription is not NULL and pc.subscription.status.value != 'Deleted' and pc.status.value in (:stats) group by pc.subscription"
+        def baseQuery1 = "select distinct sub, count(sub.id) from PendingChange as pc join pc.subscription as sub where pc.owner = :owner and pc.ts >= :tsCheck " +
+                " and pc.subscription is not NULL and pc.subscription.status.value != 'Deleted' and pc.status.value in (:stats) group by sub.id"
 
         def result1 = PendingChange.executeQuery(
                 baseQuery1,
@@ -2915,12 +2907,8 @@ AND EXISTS (
         )
         result.changes.addAll(result1)
 
-        // TODO postgresql migration
-        def baseQuery2 = "select distinct pc.license from PendingChange as pc where pc.owner = :owner and pc.ts >= :tsCheck" +
-                " and pc.license is not NULL and pc.license.status.value != 'Deleted' and pc.status.value in (:stats)"
-
-        //def baseQuery2 = "select pc.license, count(*) as count from PendingChange as pc where pc.owner = :owner and pc.ts >= :tsCheck" +
-        //        " and pc.license is not NULL and pc.license.status.value != 'Deleted' and pc.status.value in (:stats) group by pc.license"
+        def baseQuery2 = "select distinct lic, count(lic.id) from PendingChange as pc join pc.license as lic where pc.owner = :owner and pc.ts >= :tsCheck" +
+                " and pc.license is not NULL and pc.license.status.value != 'Deleted' and pc.status.value in (:stats) group by lic.id"
 
         def result2 = PendingChange.executeQuery(
                 baseQuery2,

@@ -6,15 +6,12 @@
 
 ### TODO
 
-#### /yoda/appProfiler
+#### /usage/index
+FEHLER: Spalte »statstripl0_.id« muss in der GROUP-BY-Klausel erscheinen oder in einer Aggregatfunktion verwendet werden
 
 #### /myInstitution/processEmptySubscription
- Class
- java.util.ConcurrentModificationException
+java.util.ConcurrentModificationException
  
- Message
- null
-         
 #### /issueEntitlement/show
 
 @FACT
