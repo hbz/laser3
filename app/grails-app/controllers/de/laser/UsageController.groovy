@@ -103,17 +103,18 @@ class UsageController extends AbstractDebugController {
         result.user = User.get(springSecurityService.principal.id)
         def providersWithStatssid = factService.providersWithStatssid()
         def providerList = []
-
-        def joinedInstitutions = result.institutionList.id.join(',')
-        providersWithStatssid.each {
-            def hql = "select s.id from Subscription s join s.orgRelations as supplier join s.orgRelations as institution " +
-                "where supplier.org.id=:supplierId and institution.org.id in (${joinedInstitutions}) and exists (select 1 from IssueEntitlement as ie where ie.subscription=s)"
-            def subsWithIssueEntitlements = Subscription.executeQuery(hql,[supplierId:it.id])
-            def listItem = [:]
-            listItem.id = it.id
-            listItem.name = it.name
-            listItem.optionDisabled = (subsWithIssueEntitlements.size() == 0)
-            providerList.add(listItem)
+        if (!result.institutionList.isEmpty()) {
+            def joinedInstitutions = result.institutionList.id.join(',')
+            providersWithStatssid.each {
+                def hql = "select s.id from Subscription s join s.orgRelations as institution " +
+                    "where institution.org.id in (${joinedInstitutions}) and s.status.value=:status and exists (select 1 from IssueEntitlement as ie INNER JOIN ie.tipp.pkg.orgs as orgrel where ie.subscription=s and orgrel.org.id=:supplierId)"
+                def subsWithIssueEntitlements = Subscription.executeQuery(hql, [supplierId: it.id, status: 'Current'])
+                def listItem = [:]
+                listItem.id = it.id
+                listItem.name = it.name
+                listItem.optionDisabled = (subsWithIssueEntitlements.size() == 0)
+                providerList.add(listItem)
+            }
         }
         result.providerList = providerList
         result.institutionsWithFacts = factService.getFactInstitutionList()
