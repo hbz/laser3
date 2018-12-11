@@ -184,7 +184,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
             base_qry += "order by lower(ie.tipp.title.title) asc"
         }
 
-        result.num_sub_rows = IssueEntitlement.executeQuery("select count(ie) " + base_qry, qry_params)[0]
+        result.num_sub_rows = IssueEntitlement.executeQuery("select ie.id " + base_qry, qry_params).size()
 
         if (params.format == 'html' || params.format == null) {
             result.entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: result.max, offset: result.offset]);

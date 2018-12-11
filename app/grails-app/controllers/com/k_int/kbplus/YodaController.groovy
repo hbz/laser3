@@ -105,7 +105,7 @@ class YodaController {
                 //SystemProfiler.executeQuery("select sp, avg(sp.ms) as ms, count(*), sp.id from SystemProfiler sp group by sp.uri").sort{it[1]}.reverse()
                 SystemProfiler.executeQuery("select sp.uri, avg(sp.ms) as ms, count(sp.id) as count from SystemProfiler sp group by sp.uri").sort{it[1]}.reverse()
         result.byUriAndContext = []
-                SystemProfiler.executeQuery("select sp.uri, sp.context, avg(sp.ms) as ms, count(*) from SystemProfiler sp group by sp.uri, sp.context").sort{it[1]}.reverse()
+                SystemProfiler.executeQuery("select sp.uri, sp.context, avg(sp.ms) as ms, count(*) as count from SystemProfiler sp group by sp.uri, sp.context").sort{it[1]}.reverse()
         result
     }
 

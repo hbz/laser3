@@ -855,7 +855,7 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
   where ie.tipp.title = :title and o.org = :institution 
   AND (o.roleType.value = 'Subscriber' OR o.roleType.value = 'Subscriber_Consortial' OR o.roleType.value = 'Subscription Consortia') 
   AND ie.subscription.status.value != 'Deleted' 
-  AND ie.status != 'Deleted'
+  AND ie.status.value != 'Deleted'
 """
     def qry_params = ['title':this, institution:institution]
 

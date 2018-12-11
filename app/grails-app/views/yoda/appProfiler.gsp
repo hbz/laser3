@@ -35,7 +35,7 @@
     </table>
 
     <h3 class="ui header">Kontextbezogen</h3>
-
+${byUriAndContext}
     <table class="ui celled la-table la-table-small table">
         <thead>
             <tr>
