@@ -4,7 +4,7 @@ class Fact {
 
   Date factFrom
   Date factTo
-  String factValue
+  Integer factValue
   String factUid
   Long reportingYear
   Long reportingMonth
