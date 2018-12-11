@@ -3346,12 +3346,12 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             def tmpQuery                 = "select o FROM Org o WHERE o.id IN (:oids)"
             (tmpQuery, tmpQueryParams)   = propertyService.evalFilterQuery(params, tmpQuery, 'o', tmpQueryParams)
             result.consortiaMembers      = Org.executeQuery( tmpQuery, tmpQueryParams, [max: result.max, offset: result.offset] )
-            tmpQuery                     = "select count(o) " + tmpQuery.minus("select o ")
-            result.consortiaMembersCount = Org.executeQuery( tmpQuery, tmpQueryParams )[0]
+            tmpQuery                     = "select o.id " + tmpQuery.minus("select o ")
+            result.consortiaMembersCount = Org.executeQuery( tmpQuery, tmpQueryParams ).size()
         } else {
             result.consortiaMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params << [max: result.max, offset: result.offset] )
-            def tmpQuery                 = "select count(o) " + fsq.query.minus("select o ")
-            result.consortiaMembersCount = Org.executeQuery( tmpQuery, fsq.queryParams)[0]
+            def tmpQuery                 = "select o.id " + fsq.query.minus("select o ")
+            result.consortiaMembersCount = Org.executeQuery( tmpQuery, fsq.queryParams).size()
         }
 
         if ( params.exportXLS=='yes' ) {

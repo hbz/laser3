@@ -1307,7 +1307,7 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
                qry = """
 select l from License as l 
 where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ( ol.roleType = ?) ) 
-AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') order by LOWER(l.reference)
+AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.reference)
 """
            }
 

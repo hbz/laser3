@@ -536,9 +536,9 @@ select s from Subscription as s where
 
       // log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
       result.titlesList = TitleInstancePackagePlatform.executeQuery("select tipp "+base_qry, qry_params, limits);
-      result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select count(tipp) "+base_qry, qry_params )[0]
+      result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + base_qry, qry_params ).size()
       result.unfiltered_num_tipp_rows = TitleInstancePackagePlatform.executeQuery(
-              "select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = ?",[packageInstance])[0];
+              "select tipp.id from TitleInstancePackagePlatform as tipp where tipp.pkg = ?", [packageInstance]).size()
 
       result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max;
 
@@ -615,7 +615,7 @@ select s from Subscription as s where
 
     log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
     result.titlesList = TitleInstancePackagePlatform.executeQuery("select tipp "+base_qry, qry_params, limits);
-    result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select count(tipp) "+base_qry, qry_params )[0]
+    result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + base_qry, qry_params ).size()
 
     result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max;
 
@@ -696,7 +696,7 @@ select s from Subscription as s where
 
     log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
     result.titlesList = TitleInstancePackagePlatform.executeQuery("select tipp "+base_qry, qry_params, limits);
-    result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select count(tipp) "+base_qry, qry_params )[0]
+    result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + base_qry, qry_params ).size()
 
     result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max;
 

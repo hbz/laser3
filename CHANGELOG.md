@@ -1,3 +1,13 @@
+
+IN PROGRESS:
+
+- refactoring: filesystem instead of database blobs
+- fixed duplicate docstore uuids
+- upgrade to hibernate 4.3.10
+- upgrade to ehcache 2.9.0
+
+--
+
 0.11.3
 
 - reworked consortia subscription message

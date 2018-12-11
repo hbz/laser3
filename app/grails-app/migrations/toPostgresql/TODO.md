@@ -16,6 +16,13 @@ Message
 Caused by
     FEHLER: ungültige Eingabesyntax für ganze Zahl: »Deleted« Position: 1774
 
+#### /laser/myInstitution/processEmptySubscription
+ Class
+ java.util.ConcurrentModificationException
+ 
+ Message
+ null
+         
 #### /myInstitution/emptySubscription
 
 [submit] ->
@@ -26,13 +33,10 @@ Error applying layout : semanticUI
 Caused by
 FEHLER: doppelter Schlüsselwert verletzt Unique-Constraint »audit_log_pkey« Detail: Schlüssel »(id)=(16095)« existiert bereits.
 
-#### /myInstitution/emptyLicense
-
-[submit] ->
+#### /packageDetails/history
 
 Message
 Error applying layout : semanticUI
 
 Caused by
-FEHLER: doppelter Schlüsselwert verletzt Unique-Constraint »audit_log_pkey« Detail: Schlüssel »(id)=(16097)« existiert bereits.
-
+FEHLER: Operator existiert nicht: bigint = character varying Hinweis: Kein Operator stimmt mit dem angegebenen Namen und den Argumenttypen überein. Sie müssen möglicherweise ausdrückliche Typumwandlungen hinzufügen. Position: 775
