@@ -33,16 +33,14 @@ class ESSearchService{
 
    def result = [:]
 
-   Client esclient = params.esgokb ? getClient('esgokb') : getClient()
+   Client esclient = getClient()
    def index = esclient.settings.indexName
-   params = testIndexExist(esclient, params, field_map, index)
-   esclient = params.esgokb ? getClient('esgokb') : getClient()
-   index = esclient.settings.indexName
+
    result.host = esclient.settings().host
    result.es_host_url = esclient.settings().es_url
 
     try {
-      if ( (params.q && params.q.length() > 0) || params.rectype || params.esgokb) {
+      if ( (params.q && params.q.length() > 0) || params.rectype) {
   
         params.max = Math.min(params.max ? params.int('max') : 15, 100)
         params.offset = params.offset ? params.int('offset') : 0
@@ -156,11 +154,6 @@ class ESSearchService{
       sw.write(" rectype:'${params.rectype}' ")
     }
 
-    if(params?.esgokb){
-          if(sw.toString()) sw.write(" AND ");
-          sw.write(" componentType:\"${params.esgokb}\" ")
-    }
-
       field_map.each { mapping ->
 
       if ( params[mapping.key] != null ) {
@@ -218,7 +211,7 @@ class ESSearchService{
     result;
   }
 
-  def testIndexExist(esclient, params, field_map, index)
+  /*def testIndexExist(esclient, params, field_map, index)
   {
     if ( (params.q && params.q.length() > 0) || params.rectype || params.esgokb) {
 
@@ -297,7 +290,7 @@ class ESSearchService{
       }
     }
     return params
-  }
+  }*/
 
   def getClient(index) {
     def esclient = null
