@@ -35,5 +35,6 @@ DELIMITER ;
 CALL exportFiles();
 
 -- CAUTION: deleting BLOBs after export
+-- CAUTION: deleting BLOBs after export
 
-UPDATE doc set "public".doc.doc_blob_content = null;
+UPDATE doc set doc.doc_blob_content = null;

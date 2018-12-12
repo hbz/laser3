@@ -1,7 +1,12 @@
+
 # PostgreSQL Migration
 
-- bootstrap application and process table generation with GORM
+- copy current MySQL database
+- use dataCleanupMySQL.sql
+- use exportFilesMySQL.sql
+- create PostgreSQL database
 - migrate data with pgLoader using migrate2postgresql.load
+- use dataCleanupPostgreSQL.sql
 
 
 ### TODO

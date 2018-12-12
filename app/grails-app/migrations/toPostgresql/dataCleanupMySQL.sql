@@ -1,16 +1,20 @@
+-- fix data types
+-- fix data types
 
--- fixing problems
--- fixing problems
+ALTER TABLE fact MODIFY COLUMN fact_value BIGINT; -- String factValue -> Integer factValue
 
-update "public".user_folder set uf_dateCreated = MAKEDATE(1970, 01) where uf_dateCreated is null;
-update "public".user_folder set uf_lastUpdated = MAKEDATE(1970, 01) where uf_lastUpdated is null;
+-- fix missing data
+-- fix missing data
 
-update "public".folder_item set fi_dateCreated = MAKEDATE(1970, 01) where fi_dateCreated is null;
-update "public".folder_item set fi_lastUpdated = MAKEDATE(1970, 01) where fi_lastUpdated is null;
+update user_folder set uf_dateCreated = MAKEDATE(1970, 01) where uf_dateCreated is null;
+update user_folder set uf_lastUpdated = MAKEDATE(1970, 01) where uf_lastUpdated is null;
+
+update folder_item set fi_dateCreated = MAKEDATE(1970, 01) where fi_dateCreated is null;
+update folder_item set fi_lastUpdated = MAKEDATE(1970, 01) where fi_lastUpdated is null;
 
 
--- fixing duplicate doc_docstore_uuids
--- fixing duplicate doc_docstore_uuids
+-- fix duplicate doc_docstore_uuids
+-- fix duplicate doc_docstore_uuids
 
 DROP FUNCTION funky_uuid;
 
@@ -52,6 +56,3 @@ UPDATE doc set doc_docstore_uuid = funky_uuid() WHERE doc_docstore_uuid in (
        ) x
   where x.count > 1
 );
-
--- migrate string to bigint
-ALTER TABLE "public".fact ALTER COLUMN fact_value TYPE bigint USING fact_value::bigint;
