@@ -1,3 +1,9 @@
+0.11.4
+
+- improved performance at finance view
+- forced deletion of cost items before deleting subscriptions
+- fixed: excel export for subscriptions
+
 0.11.3
 
 - reworked consortia subscription message
