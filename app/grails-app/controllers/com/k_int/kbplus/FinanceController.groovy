@@ -136,8 +136,9 @@ class FinanceController extends AbstractDebugController {
             flash.error = null
             flash.message = null
 
+            // TODO: review as of ticket ERMS-761 and ERMS-823
             if (result.foundMatches || result.foundMatches_CS || result.foundMatches_SUBSCR) {
-                flash.message = "Felder mit potentiellen Treffern bleiben gesetzt."
+                flash.message = "Die aktuelle Filtereinstellung liefert potentielle Treffer. Ggfs. müssen Sie einzelne Felder noch anpassen."
             }
             else if (params.get('submit')) {
                 flash.error = "Keine Treffer. Der Filter wird zurückgesetzt."
@@ -601,6 +602,24 @@ class FinanceController extends AbstractDebugController {
             countCheck          += " AND (ci.invoiceDate <= :invoiceDateTo AND ci.invoiceDate IS NOT null) "
 
             fqResult.fqParams << [invoiceDateTo: sdf.parse(params.filterCIInvoiceTo)]
+        }
+
+        if (params.filterCIPaidFrom) {
+            // println sdf.parse(params.filterCIPaidFrom)
+
+            fqResult.qry_string += " AND (ci.datePaid >= :datePaidFrom AND ci.datePaid IS NOT null) "
+            countCheck          += " AND (ci.datePaid >= :datePaidFrom AND ci.datePaid IS NOT null) "
+
+            fqResult.fqParams << [datePaidFrom: sdf.parse(params.filterCIPaidFrom)]
+        }
+
+        if (params.filterCIPaidTo) {
+            // println sdf.parse(params.filterCIPaidTo)
+
+            fqResult.qry_string += " AND (ci.datePaid <= :datePaidTo AND ci.datePaid IS NOT null) "
+            countCheck          += " AND (ci.datePaid <= :datePaidTo AND ci.datePaid IS NOT null) "
+
+            fqResult.fqParams << [datePaidTo: sdf.parse(params.filterCIPaidTo)]
         }
 
         fqResult.filterCount = CostItem.executeQuery(countCheck, fqResult.fqParams).first() // ?
