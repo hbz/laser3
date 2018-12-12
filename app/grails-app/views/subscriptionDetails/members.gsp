@@ -47,6 +47,8 @@
     </semui:filter>
     --%>
 
+<semui:messages data="${flash}" />
+
     <g:if test="${validSubChilds}">
 
     <g:each in="${[validSubChilds]}" status="i" var="outerLoop">
