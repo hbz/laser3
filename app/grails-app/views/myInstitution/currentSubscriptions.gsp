@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription" %>
+<%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
 <!doctype html>
 
 <r:require module="annotations" />
@@ -232,6 +232,7 @@
 
             <g:if test="${params.orgRole == 'Subscription Consortia'}">
                 <th rowspan="2" >${message(code: 'subscription.numberOfLicenses.label', default: 'Number of ChildLicenses')}</th>
+                <th rowspan="2" >${message(code: 'subscription.numberOfCostItems.label', default: 'Cost Items')}</th>
             </g:if>
             <% /* <g:sortableColumn params="${params}" property="s.manualCancellationDate"
                               title="${message(code: 'default.cancellationDate.label', default: 'Cancellation Date')}"/> */ %>
@@ -329,10 +330,17 @@
                     </td>
                     <g:if test="${params.orgRole == 'Subscription Consortia'}">
                         <td>
+                            <g:link controller="subscriptionDetails" action="members" params="${[id:s.id]}">
                             ${Subscription.findAllByInstanceOfAndStatusNotEqual(
                                     s,
                                     RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
                             )?.size()}
+                            </g:link>
+                        </td>
+                        <td>
+                        <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:s.id]}">
+                            ${CostItem.findAllBySubInListAndOwner(Subscription.findAllByInstanceOfAndStatusNotEqual(s, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')), institution)?.size()}
+                        </g:link>
                         </td>
                     </g:if>
 
