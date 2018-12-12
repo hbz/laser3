@@ -33,6 +33,7 @@
     <g:form id="filterView" class="ui form" action="index" method="post">
         <input type="hidden" name="shortcode" value="${contextService.getOrg()?.shortcode}"/>
 
+        <!-- row1 -->
         <div class="three fields">
             <div class="field">
                 <label for="adv_codes">${message(code:'financials.budgetCode')}</label>
@@ -61,9 +62,9 @@
 
                 <g:hiddenField name="sub" value="${fixedSubscription?.id}"></g:hiddenField>
             </div>
+        </div>
 
-        </div><!-- row1 -->
-
+        <!-- row2 -->
         <div class="three fields">
             <div class="field required">
                 <label>${message(code:'financials.invoice_number')}</label><!-- invoice -->
@@ -85,11 +86,10 @@
                 <label>${message(code:'package.label')}</label>
                 <input type="text" name="packageFilter" class="filterUpdated la-full-width" id="packageFilter" value="${params.packageFilter}" />
             </div>
+        </div>
 
-        </div><!-- row2 -->
-
+        <!-- row3 -->
         <div class="three fields">
-
             <div class="field required">
                 <label>${message(code:'financials.order_number')}</label>
                 <input type="text" name="orderNumberFilter"
@@ -110,12 +110,14 @@
                 <label for="adv_ie">${message(code:'financials.newCosts.singleEntitlement')}</label>
                 <input id="adv_ie" name="adv_ie" class="input-large" type="text" disabled="disabled" />
             </div>
-        </div><!-- row3 -->
+        </div>
 
+        <!-- row4 -->
         <div class="three fields">
             <div class="field">
             </div>
             <div class="field">
+
             </div>
             <div class="two fields">
                 <div class="field">
@@ -137,7 +139,7 @@
                     <g:submitButton name="submitFilterMode" id="submitFilterMode" class="ui secondary button" value="${filterMode=='ON'?'reset':'search'}" title="${g.message(code: 'financials.pagination.title')}" />
                 </div>
             </div>
-        </div><!-- row4 -->
+        </div>
 
         <%-- advanced legacy filter fields here --%>
         <%-- advanced legacy filter fields here --%>
@@ -331,13 +333,13 @@
 
             <div class="three fields">
                 <div class="field">
-                    <%--
-                    <label>Genaue Suche (im Feld Bezeichnung)</label>
-                    <input type="checkbox" name="wildcard" value="off" <g:if test="${wildcard != 'on'}"> checked="checked"</g:if> />
-                    --%>
+                    <semui:datepicker label="financials.paid_from" name="filterCIPaidFrom" placeholder="filter.placeholder"
+                                      value="${params.filterCIPaidFrom}"/>
                 </div>
 
                 <div class="field">
+                    <semui:datepicker label="financials.paid_to" name="filterCIPaidTo" placeholder="filter.placeholder"
+                                      value="${params.filterCIPaidTo}"/>
                 </div>
 
                 <div class="field la-field-right-aligned ">

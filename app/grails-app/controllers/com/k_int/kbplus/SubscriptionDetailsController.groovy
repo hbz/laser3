@@ -719,10 +719,27 @@ class SubscriptionDetailsController extends AbstractDebugController {
 
             validSubChilds.each { subChild ->
 
-                subChild.getAllSubscribers().each { subscr ->
-                    orgs.add(subscr)
-                }
-            }
+               subChild.getAllSubscribers().each { subscr ->
+
+                   def org = [:]
+
+                   org.name = subscr.name
+                   org.sortname = subscr.sortname
+                   org.shortname = subscr.shortname
+                   org.libraryType = subscr.libraryType
+                   org.libraryNetwork = subscr.libraryNetwork
+                   org.funderType = subscr.funderType
+                   org.federalState = subscr.federalState
+                   org.country = subscr.country
+                   org.startDate = subChild.startDate
+                   org.endDate = subChild.endDate
+                   org.status = subChild.status
+                   org.customProperties = subscr.customProperties
+                   org.privateProperties = subscr.privateProperties
+
+                   orgs << org
+               }
+           }
 
             def message = g.message(code: 'subscriptionDetails.members.members')
 
@@ -922,11 +939,16 @@ class SubscriptionDetailsController extends AbstractDebugController {
             def derived_subs = Subscription.findByInstanceOfAndStatusNot(delSubscription, deletedStatus)
 
             if (!derived_subs) {
-                if (delSubscription.getConsortia() && delSubscription.getConsortia() != delInstitution) {
-                    OrgRole.executeUpdate("delete from OrgRole where sub = ? and org = ?", [delSubscription, delInstitution])
+
+                if(!CostItem.findAllBySub(delSubscription)) {
+                    if (delSubscription.getConsortia() && delSubscription.getConsortia() != delInstitution) {
+                        OrgRole.executeUpdate("delete from OrgRole where sub = ? and org = ?", [delSubscription, delInstitution])
+                    }
+                    delSubscription.status = deletedStatus
+                    delSubscription.save(flush: true)
+                }else {
+                    flash.error = message(code: 'myinst.actionDeleteChildSubscription.error', default: 'Unable to delete - The selected license has attached cost items')
                 }
-                delSubscription.status = deletedStatus
-                delSubscription.save(flush: true)
 
             } else {
                 flash.error = message(code: 'myinst.actionCurrentSubscriptions.error', default: 'Unable to delete - The selected license has attached subscriptions')
@@ -2569,10 +2591,10 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
                 }
 
                 cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(org.startDate ?: ' '));
+                cell.setCellValue(new HSSFRichTextString("${org.startDate ?: ''}"));
 
                 cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(org.endDate ?: ' '));
+                cell.setCellValue(new HSSFRichTextString("${org.endDate ?: ''}"));
 
                 cell = row.createCell(cellnum++);
                 cell.setCellValue(new HSSFRichTextString(org.status?.getI10n('value') ?: ' '));

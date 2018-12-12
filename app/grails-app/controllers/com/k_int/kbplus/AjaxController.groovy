@@ -814,6 +814,7 @@ class AjaxController extends AbstractDebugController {
                             params.cust_prop_name,
                             params.cust_prop_type,
                             params.cust_prop_desc,
+                            params.cust_prop_expl,
                             params.cust_prop_multiple_occurence,
                             PropertyDefinition.FALSE,
                             null
@@ -831,6 +832,7 @@ class AjaxController extends AbstractDebugController {
                         params.cust_prop_name,
                         params.cust_prop_type,
                         params.cust_prop_desc,
+                        params.cust_prop_expl,
                         params.cust_prop_multiple_occurence,
                         PropertyDefinition.FALSE,
                         null

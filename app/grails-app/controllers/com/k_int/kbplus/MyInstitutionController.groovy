@@ -17,6 +17,7 @@ import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
 import com.k_int.properties.*
 import de.laser.DashboardDueDate
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
@@ -829,8 +830,8 @@ from License as l where (
         def subType = null
         
         log.debug("found orgRoleType ${result.orgRoleType}")
-        
-        if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgRoleType)) {
+
+        if((Long.valueOf(params.asOrgRoleType) in result.orgRoleType) && (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgRoleType)) {
             orgRole = role_cons
             subType = RefdataValue.getByValueAndCategory('Consortial Licence', 'Subscription Type')
         }
@@ -3440,7 +3441,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     private addPrivatePropertyDefinition(params) {
         log.debug("adding private property definition for institution: " + params)
 
-        def tenant = contextService.getOrg()
+        def tenant = GrailsHibernateUtil.unwrapIfProxy(contextService.getOrg())
 
         def privatePropDef = PropertyDefinition.findWhere(
                 name:   params.pd_name,
@@ -3460,6 +3461,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                     params.pd_name,
                     params.pd_type,
                     params.pd_descr,
+                    params.pd_expl,
                     (params.pd_multiple_occurrence ? true : false),
                     (params.pd_mandatory ? true : false),
                     tenant
