@@ -208,6 +208,10 @@
                             name="cust_prop_type"
                             id="cust_prop_modal_select" />
                     </div>
+                    <div class="field five wide">
+                        <label class="property-label">${message(code:'propertyDefinition.expl.label', default:'Explanation')}</label>
+                        <textarea name="cust_prop_expl" id="eust_prop_expl" class="ui textarea"></textarea>
+                    </div>
 
                     <div class="field six wide hide" id="cust_prop_ref_data_name">
                         <label class="property-label"><g:message code="refdataCategory.label" /></label>
