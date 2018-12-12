@@ -3460,6 +3460,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                     params.pd_name,
                     params.pd_type,
                     params.pd_descr,
+                    params.pd_expl,
                     (params.pd_multiple_occurrence ? true : false),
                     (params.pd_mandatory ? true : false),
                     tenant
