@@ -825,14 +825,17 @@ from License as l where (
         
         def orgRole = null
         def subType = null
-        
-        log.debug("found orgRoleType ${result.orgRoleType}")
 
-        if((Long.valueOf(params.asOrgRoleType) in result.orgRoleType) && (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgRoleType)) {
-            orgRole = role_cons
-            subType = RefdataValue.getByValueAndCategory('Consortial Licence', 'Subscription Type')
+        if (params.asOrgRoleType) {
+            log.debug("asOrgRoleType ${params.asOrgRoleType} in ${result.orgRoleType} ?")
+
+            if ((Long.valueOf(params.asOrgRoleType) in result.orgRoleType)
+                    && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgRoleType)) {
+                orgRole = role_cons
+                subType = RefdataValue.getByValueAndCategory('Consortial Licence', 'Subscription Type')
+            }
         }
-        else {
+        if (! subType) {
             orgRole = role_sub
             subType = RefdataValue.getByValueAndCategory('Local Licence', 'Subscription Type')
         }
