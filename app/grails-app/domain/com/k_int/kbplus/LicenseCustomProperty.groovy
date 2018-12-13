@@ -34,7 +34,7 @@ class LicenseCustomProperty extends CustomProperty implements AuditTrait  {
     static mapping = {
         includes   AbstractProperty.mapping
         paragraph  type: 'text'
-        owner      index:'owner_idx'
+        owner      index:'lcp_owner_idx'
     }
 
     static constraints = {

@@ -143,7 +143,6 @@ grails.project.dependency.resolution = {
 
         //Sicherheitsrisko
         //compile ":file-viewer:0.3"
-
         build (':tomcat:8.0.50')
 
         runtime ":database-migration:1.4.0"

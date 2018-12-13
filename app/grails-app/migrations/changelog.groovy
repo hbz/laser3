@@ -4,6 +4,6 @@ databaseChangeLog = {
 		// TODO add changes and preconditions here
 	}
 
-	// postgreSQL migration
-    include file: 'changelog-0.groovy'
+	// postgresql migration; first diff
+	include file: 'changelog-0.groovy'
 }

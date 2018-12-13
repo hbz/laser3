@@ -3,8 +3,8 @@
 
 ALTER TABLE fact MODIFY COLUMN fact_value BIGINT; -- String factValue -> Integer factValue
 
--- fix missing data
--- fix missing data
+-- fix invalid/missing data
+-- fix invalid/missing data
 
 update user_folder set uf_dateCreated = MAKEDATE(1970, 01) where uf_dateCreated is null;
 update user_folder set uf_lastUpdated = MAKEDATE(1970, 01) where uf_lastUpdated is null;

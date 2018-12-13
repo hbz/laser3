@@ -6,6 +6,7 @@ dataSource {
 }
 
 hibernate { // to hibernate 4
+    default_schema = "public"
     cache.use_second_level_cache = true
     cache.use_query_cache = false  // LEGACY
     //cache.use_query_cache = true // hibernate 4

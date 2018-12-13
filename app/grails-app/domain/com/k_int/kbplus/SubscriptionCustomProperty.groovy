@@ -30,7 +30,7 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditTrait {
 
     static mapping = {
         includes    AbstractProperty.mapping
-        owner       index:'owner_idx'
+        owner       index:'scp_owner_idx'
     }
 
     static constraints = {
