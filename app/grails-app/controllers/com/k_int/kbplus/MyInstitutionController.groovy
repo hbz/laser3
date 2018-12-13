@@ -17,6 +17,7 @@ import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
 import com.k_int.properties.*
 import de.laser.DashboardDueDate
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
@@ -3440,7 +3441,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     private addPrivatePropertyDefinition(params) {
         log.debug("adding private property definition for institution: " + params)
 
-        def tenant = contextService.getOrg()
+        def tenant = GrailsHibernateUtil.unwrapIfProxy(contextService.getOrg())
 
         def privatePropDef = PropertyDefinition.findWhere(
                 name:   params.pd_name,
