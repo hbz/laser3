@@ -6,15 +6,13 @@
 - use exportFilesMySQL.sql
 - create PostgreSQL database
 - migrate data with pgLoader using migrate2postgresql.load
+- use dataCleanupPostgreSQL.sql
 - reset database migration state
 
 
     grails prod dbm-create-changelog --defaultSchema=public
     grails prod dbm-changelog-sync --defaultSchema=public
     grails prod dbm-gorm-diff --defaultSchema=public --add changelog-0.groovy
-
-- use dataCleanupPostgreSQL.sql
-
 
 ### TODO
 

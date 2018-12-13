@@ -1,7 +1,3 @@
--- fix data types
--- fix data types
-
-ALTER TABLE fact MODIFY COLUMN fact_value BIGINT; -- String factValue -> Integer factValue
 
 -- fix invalid/missing data
 -- fix invalid/missing data
