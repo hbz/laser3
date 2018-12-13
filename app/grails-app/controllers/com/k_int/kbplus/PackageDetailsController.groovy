@@ -146,7 +146,7 @@ class PackageDetailsController extends AbstractDebugController {
 
 
         log.debug(base_qry + ' <<< ' + qry_params)
-        result.packageInstanceTotal = Subscription.executeQuery("select count(p) " + base_qry, qry_params)[0]
+        result.packageInstanceTotal = Subscription.executeQuery("select p.id " + base_qry, qry_params).size()
 
 
         withFormat {
@@ -1092,7 +1092,7 @@ select s from Subscription as s where
       def limits = (!params.format||params.format.equals("html"))?[max:result.max, offset:result.offset]:[offset:0]
 
         // postgresql migration
-        def subQuery = 'select id from TitleInstancePackagePlatform as tipp where tipp.pkg = cast(:pkgid as int)'
+        def subQuery = 'select cast(id as string) from TitleInstancePackagePlatform as tipp where tipp.pkg = cast(:pkgid as int)'
         def subQueryResult = AuditLogEvent.executeQuery(subQuery, [pkgid: params.id])
 
         //def base_query = 'from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where ( e.className = :pkgcls and e.persistedObjectId = cast(:pkgid as string)) or ( e.className = :tippcls and e.persistedObjectId in ( select id from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkgid ) )'

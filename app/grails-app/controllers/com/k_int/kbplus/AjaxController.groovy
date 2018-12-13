@@ -306,7 +306,7 @@ class AjaxController extends AbstractDebugController {
                 }
             }
 
-            target.save(flush:true);
+            target.save(flush:false);
           
           // We should clear the session values for a user if this is a user to force reload of the,
           // parameters.

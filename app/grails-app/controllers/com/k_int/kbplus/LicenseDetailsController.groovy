@@ -570,7 +570,7 @@ from Subscription as s where
     result.offset = params.offset ?: 0;
 
         // postgresql migration
-        def subQuery = 'select lp.id from LicenseCustomProperty as lp where lp.owner = :owner'
+        def subQuery = 'select cast(lp.id as string) from LicenseCustomProperty as lp where lp.owner = :owner'
         def subQueryResult = LicenseCustomProperty.executeQuery(subQuery, [owner: result.license])
 
         //def qry_params = [licClass:result.license.class.name, prop:LicenseCustomProperty.class.name,owner:result.license, licId:"${result.license.id}"]

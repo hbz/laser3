@@ -910,15 +910,16 @@ from License as l where (
                   }
                 }
 
+
                 if (params.newEmptySubId) {
                   def sub_id_components = params.newEmptySubId.split(':');
                   if ( sub_id_components.length == 2 ) {
                     def sub_identifier = Identifier.lookupOrCreateCanonicalIdentifier(sub_id_components[0],sub_id_components[1]);
-                    new_sub.ids.add(sub_identifier);
+                      new IdentifierOccurrence(sub: new_sub, identifier: sub_identifier).save()
                   }
                   else {
-                    def sub_identifier = Identifier.lookupOrCreateCanonicalIdentifier('Unknown',params.newEmptySubId);
-                    new_sub.ids.add(sub_identifier);
+                    def sub_identifier = Identifier.lookupOrCreateCanonicalIdentifier('Unknown', params.newEmptySubId);
+                      new IdentifierOccurrence(sub: new_sub, identifier: sub_identifier).save()
                   }
                 }
 

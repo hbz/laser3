@@ -10,7 +10,7 @@ class SelectListQueryService {
         String andClause1 = "AND ( LOWER(s.status.value) != 'deleted' )"
         if(consortia) {
             existsClause = "exists ( select o from s.orgRelations as o where (o.roleType.value IN ('Subscription Consortia')) and o.org = :co) )"
-            andClause1 = "AND ( LOWER(s.status.value) != 'deleted' AND (s.instanceOf is null or s.instanceOf = '')"
+            andClause1 = "AND ( LOWER(s.status.value) != 'deleted' AND (s.instanceOf is null)"
         }
         String filter = ""
         //to deploy into general filter function
