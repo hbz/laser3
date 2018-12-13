@@ -35,7 +35,7 @@ pipeline {
                     currentBuild.displayName = "${currentBuild.number}: Deploy on ${SERVERDEPLOY}"
                     if(SERVERDEPLOY == SERVER_DEV){
                         echo "Deploying on ${SERVERDEPLOY}...."
-                        sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${TOMCAT_HOME_PATH}/default/webapps/ROOT.war'
+                        sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${TOMCAT_HOME_PATH}/default/webapps/lasermysql.war'
 
                     }else{
                         sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/ROOT.war'

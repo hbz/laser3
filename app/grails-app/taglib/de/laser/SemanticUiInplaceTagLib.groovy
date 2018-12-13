@@ -56,6 +56,9 @@ class SemanticUiInplaceTagLib {
                 case 'date':
                     data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'date', format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}"]).encodeAsHTML()
                 break
+                case 'url':
+                    data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'url']).encodeAsHTML()
+                break
                 case 'string':
                 default:
                     data_link = createLink(controller:'ajax', action: 'editableSetValue').encodeAsHTML()

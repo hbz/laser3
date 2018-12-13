@@ -203,7 +203,7 @@
                                 <%-- <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" /> --%>
 
                                 <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
-                            <semui:securedMainNavItem message="menu.institutions.financeImport" />
+                            <semui:securedMainNavItemDisabled message="menu.institutions.financeImport" />
                                 <%-- this is part one of ticket #753! --%>
                             <%--<semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />--%>
 
@@ -348,7 +348,6 @@
                                     <g:link class="item" controller="admin" action="financeImport">Bulk Load Financial Transaction</g:link>
                                 </div>
                             </div>
-
                             <div class="divider"></div>
 
                             <g:link class="item" controller="admin" action="manageNamespaces">${message(code:'menu.admin.manageIdentifierNamespaces')}</g:link>
@@ -372,6 +371,16 @@
                         <i class="dropdown icon"></i>
 
                         <div class="menu">
+                            <div class="ui dropdown item">
+                                Fällige Termine
+                                <i class="dropdown icon"></i>
+
+                                <div class="menu">
+                                    <g:link class="item" controller="yoda" action="dueDates_updateDashboardDB">${message(code:'menu.admin.updateDashboardTable')}</g:link>
+                                    <g:link class="item" controller="yoda" action="dueDates_sendAllEmails">${message(code:'menu.admin.sendEmailsForDueDates')}</g:link>
+                                </div>
+                            </div>
+                            <div class="divider"></div>
                             <g:link class="item" controller="yoda" action="settings">System Settings</g:link>
                             <g:link class="item" controller="yoda" action="manageSystemMessage">${message(code: 'menu.admin.systemMessage', default: 'System Message')}</g:link>
                             <g:link class="item" controller="yoda" action="appConfig">App Config</g:link>

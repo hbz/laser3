@@ -42,14 +42,14 @@
                             <th>Name (EN)</th>
                             <th></th>
                             <th></th>
-                            <!--<th>DE: Description</th>
-                            <th>EN: Description</th>-->
+                            <th>DE: Erklärung</th>
+                            <th>EN: Explanation</th>
                         </tr>
                         </thead>
                         <tbody>
                             <g:each in="${entry.value}" var="pd">
                                 <g:set var="pdI10nName"  value="${I10nTranslation.createI10nOnTheFly(pd, 'name')}" />
-                                <%--<g:set var="pdI10nDescr" value="${I10nTranslation.createI10nOnTheFly(pd, 'descr')}" />--%>
+                                <g:set var="pdI10nExpl" value="${I10nTranslation.createI10nOnTheFly(pd, 'expl')}" />
                                 <tr>
                                     <td>
                                         <g:if test="${! usedPdList?.contains(pd.id)}">
@@ -104,10 +104,10 @@
                                         </sec:ifAnyGranted>
 
                                     </td>
-                                    <%--
-                                    <td><semui:xEditable owner="${pdI10nDescr}" field="valueDe" /></td>
-                                    <td><semui:xEditable owner="${pdI10nDescr}" field="valueEn" /></td>
-                                    --%>
+
+                                    <td><semui:xEditable owner="${pdI10nExpl}" field="valueDe" type="textarea" /></td>
+                                    <td><semui:xEditable owner="${pdI10nExpl}" field="valueEn" type="textarea" /></td>
+
                                 </tr>
                             </g:each>
 
@@ -207,6 +207,10 @@
                             optionKey="key" optionValue="${{PropertyDefinition.getLocalizedValue(it.key)}}"
                             name="cust_prop_type"
                             id="cust_prop_modal_select" />
+                    </div>
+                    <div class="field five wide">
+                        <label class="property-label">${message(code:'propertyDefinition.expl.label', default:'Explanation')}</label>
+                        <textarea name="cust_prop_expl" id="eust_prop_expl" class="ui textarea"></textarea>
                     </div>
 
                     <div class="field six wide hide" id="cust_prop_ref_data_name">

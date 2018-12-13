@@ -44,7 +44,8 @@
     <g:if test="${editable}">
         <semui:actionsDropdown>
             <semui:actionsDropdownItem id="btnAddNewCostItem" message="financials.addNewCost" />
-            <semui:actionsDropdownItem controller="myInstitution" action="financeImport" message="financials.action.financeImport" />
+            <semui:actionsDropdownItemDisabled message="financials.action.financeImport" />
+            <%--<semui:actionsDropdownItem controller="myInstitution" action="financeImport" message="financials.action.financeImport" />--%>
         </semui:actionsDropdown>
     </g:if>
 </semui:controlButtons>
@@ -82,7 +83,6 @@
 
 <semui:messages data="${flash}" />
 
-<%-- --%>
 <g:if test="${editable}">
     <button class="ui button" value="" href="#addBudgetCodeModal" data-semui="modal">${message(code:'budgetCode.create_new.label')}</button>
 

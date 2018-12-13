@@ -39,7 +39,12 @@
             <g:if test="${prop.type.descr == prop_desc}">
                 <tr>
                     <td class="la-js-dont-hide-this-card">
-                        ${prop.type.getI10n('name')}
+                        <g:if test="${!prop.type.getI10n('expl').contains(' °')}">
+                            <span data-tooltip="${prop.type.getI10n('expl')}">${prop.type.getI10n('name')}</span>
+                        </g:if>
+                        <g:else>
+                            ${prop.type.getI10n('name')}
+                        </g:else>
                         <%
                             if (AuditConfig.getConfig(prop)) {
                                 println '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
@@ -73,6 +78,15 @@
                         <g:elseif test="${prop.type.type == Date.toString()}">
                             <semui:xEditable owner="${prop}" type="date" field="dateValue"/>
                         </g:elseif>
+                        <g:elseif test="${prop.type.type == URL.toString()}">
+                            <semui:xEditable owner="${prop}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" />
+                        %{--Todo beim drüber hovern soll der link-Button erscheinen--}%
+                            <span data-position="top right" data-tooltip="Diese URL aufrufen ..">
+                                <a href="${prop.value}" target="_blank" class="ui mini icon blue button">
+                                    <i class="share square icon"></i>
+                                </a>
+                            </span>
+                        </g:elseif>
                         <g:elseif test="${prop.type.type == RefdataValue.toString()}">
                             <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}"/>
                         </g:elseif>
@@ -95,7 +109,7 @@
                                 <g:remoteLink controller="ajax" action="togglePropertyAuditConfig"
                                               before="if(!confirm('${auditMsg}')) return false"
                                               params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]' id="${prop.id}"
-                                              onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                              onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                               update="${custom_props_div}" class="ui icon button">
                                     <i class="thumbtack icon"></i>
                                 </g:remoteLink>
@@ -107,8 +121,8 @@
 
                                 <g:remoteLink controller="ajax" action="deleteCustomProperty"
                                               before="if(!confirm('${confirmMsg}')) return false"
-                                              params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}"]' id="${prop.id}"
-                                              onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                              params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:"${showConsortiaFunctions}"]' id="${prop.id}"
+                                              onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                               update="${custom_props_div}" class="ui icon negative button">
                                     <i class="trash alternate icon"></i>
                                 </g:remoteLink>
@@ -133,11 +147,12 @@
                                   name="cust_prop_add_value"
                                   class="ui form"
                                   update="${custom_props_div}"
-                                  onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
+                                  onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
 
                         <input type="hidden" name="propIdent" data-desc="${prop_desc}" class="customPropSelect"/>
                         <input type="hidden" name="ownerId" value="${ownobj.id}"/>
                         <input type="hidden" name="editable" value="${editable}"/>
+                        <input type="hidden" name="showConsortiaFunctions" value="${showConsortiaFunctions}"/>
                         <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
 
                         <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>

@@ -1,139 +1,54 @@
 <!doctype html>
-<%@ page import="java.text.SimpleDateFormat"%>
-<%
-  def addFacet = { params, facet, val ->
-    def newparams = [:]
-    newparams.putAll(params)
-    def current = newparams[facet]
-    if ( current == null ) {
-      newparams[facet] = val
-    }
-    else if ( current instanceof String[] ) {
-      newparams.remove(current)
-      newparams[facet] = current as List
-      newparams[facet].add(val);
-    }
-    else {
-      newparams[facet] = [ current, val ]
-    }
-    newparams
-  }
-
-  def removeFacet = { params, facet, val ->
-    def newparams = [:]
-    newparams.putAll(params)
-    def current = newparams[facet]
-    if ( current == null ) {
-    }
-    else if ( current instanceof String[] ) {
-      newparams.remove(current)
-      newparams[facet] = current as List
-      newparams[facet].remove(val);
-    }
-    else if ( current?.equals(val.toString()) ) {
-      newparams.remove(facet)
-    }
-    newparams
-  }
-
-  def dateFormater = new SimpleDateFormat("yy-MM-dd'T'HH:mm:ss.SSS'Z'")
-%>
 
 <html>
-  <head>
+<head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'package.plural', default:'Packages')}</title>
-  </head>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'package.plural', default: 'Packages')}</title>
+</head>
 
-  <body>
+<body>
 
-    <semui:breadcrumbs>
-      <semui:crumb message="package.show.all" class="active"/>
-    </semui:breadcrumbs>
+<semui:breadcrumbs>
+    <semui:crumb message="package.show.all" class="active"/>
+</semui:breadcrumbs>
 
-  <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'package.show.all')}
-    <semui:totalNumber total="${resultsTotal}"/>
-  </h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon/>${message(code: 'package.show.all')}
+<semui:totalNumber total="${resultsTotal2}"/>
+</h1>
 
-  <semui:messages data="${flash}" />
+<semui:messages data="${flash}"/>
 
 
-  <semui:filter>
-      <g:form action="index" method="get" params="${params}" class="ui form">
+<semui:filter>
+    <g:form action="index" method="get" params="${params}" class="ui form">
         <input type="hidden" name="offset" value="${params.offset}"/>
-                <div class="field">
-                    <label>${message(code:'package.show.pkg_name', default:'Package Name')}</label>
-                    <input name="q" placeholder="" value="${params.q}"/>
-                </div>
-                <div class="field la-field-right-aligned">
-                    <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
-                    <button type="submit" name="search" value="yes" class="ui secondary button">${message(code:'default.button.filter.label', default:'Filter')}</button>
-                </div>
-      </g:form>
-   </semui:filter>
-    <div class="ui icon negative message">
-      <i class="exclamation triangle icon"></i>
-      <div class="content">
-          <div class="header">
-              ${message(code: 'message.attantion')}
-          </div>
-          <p>${message(code: 'message.attantion.needTime')}</p>
-      </div>
-    </div>
 
-  %{--<div class="ui grid">
-
-      <div class="sixteen wide column">
-          <g:each in="${['type','endYear','startYear','consortiaName','cpname']}" var="facet">
-            <g:each in="${params.list(facet)}" var="fv">
-              <span class="badge alert-info">${facet}:${fv} &nbsp; <g:link controller="packageDetails" action="index" params="${removeFacet(params,facet,fv)}"><i class="icon-remove icon-white"></i></g:link></span>
-            </g:each>
-          </g:each>
-      </div>
-
-
-  <div class="four wide column facetFilter">
-      <div class="ui card">
-          <div class="content">
-              <div class="header"><g:message code="default.filter.label" default="Filter"/></div>
-          </div>
-          <div class="content">
-              <div class="ui relaxed list">
-                  <g:each in="${facets}" var="facet">
-                      <g:if test="${!(facet.key in ['consortiaName'])}"><%-- hide consortia filter --%>
-                          <div class="item">
-                              <h4 class="header"><g:message code="facet.so.${facet.key}" default="${facet.key}" /></h4>
-
-                              <g:each in="${facet.value.sort{it.display}}" var="v">
-                                  <g:if test="${v.display.toString().length() > 3}">
-                                      <div class="description">
-                                          <g:set var="fname" value="facet:${facet.key+':'+v.term}"/>
-
-
-                                          <g:if test="${params.list(facet.key).contains(v.term.toString())}">
-                                              ${v.display} (${v.count})
-                                          </g:if>
-                                          <g:else>
-                                              <g:link controller="${controller}" action="linkPackage" params="${addFacet(params,facet.key,v.term)}">${v.display}</g:link> (${v.count})
-                                          </g:else>
-
-                                          <%--<div class="ui checkbox">
-                                              <g:checkBox class="hidden" name="${facet.key}" value="${params[fname]}" onchange="submit()"/>
-                                              <label>${v.display} (${v.count})</label>
-                                          </div>--%>
-                                      </div>
-                                  </g:if>
-                              </g:each>
-
-                          </div>
-                      </g:if>
-                  </g:each>
-         </div>
+        <div class="field">
+            <label>${message(code: 'package.show.pkg_name', default: 'Package Name')}</label>
+            <input name="q" placeholder="" value="${params.q}"/>
         </div>
-      </div>
-  </div>--}%
 
-  <div class="twelve wide column">
+        <div class="field la-field-right-aligned">
+            <a href="${request.forwardURI}"
+               class="ui reset primary button">${message(code: 'default.button.filterreset.label')}</a>
+            <button type="submit" name="search" value="yes"
+                    class="ui secondary button">${message(code: 'default.button.filter.label', default: 'Filter')}</button>
+        </div>
+    </g:form>
+</semui:filter>
+<div class="ui icon negative message">
+    <i class="exclamation triangle icon"></i>
+
+    <div class="content">
+        <div class="header">
+            ${message(code: 'message.attantion')}
+        </div>
+
+        <p>${message(code: 'message.attantion.needTime')}</p>
+    </div>
+</div>
+
+%{--  <div class="twelve wide column">
       <div>
              <g:if test="${hits}" >
                 <div class="paginateButtons" style="text-align:center">
@@ -225,6 +140,114 @@
             </g:else>
           </div>
     </div>
-  </div>
-  </body>
+  </div>--}%
+
+<div class="twelve wide column">
+    <div>
+        <g:if test="${records}">
+            <div class="paginateButtons" style="text-align:center">
+
+                <g:if test="${offset && params.int('offset') > 0}">
+                    ${message(code: 'default.search.offset.text', args: [(params.int('offset') + 1), (resultsTotal2 < (params.int('max') + params.int('offset')) ? resultsTotal2 : (params.int('max') + params.int('offset'))), resultsTotal])}
+                </g:if>
+                <g:elseif test="${resultsTotal2 && resultsTotal2 > params.int('max')}">
+                    ${message(code: 'default.search.no_offset.text', args: [(resultsTotal < params.int('max') ? resultsTotal2 : params.int('max')), resultsTotal2])}
+                </g:elseif>
+                <g:elseif test="${resultsTotal2 && resultsTotal2 == 1}">
+                    ${message(code: 'default.search.single.text')}
+                </g:elseif>
+                <g:else>
+                    ${message(code: 'default.search.no_pagiantion.text', args: [resultsTotal2])}
+                </g:else>
+            </div><!-- .paginateButtons -->
+
+            <div id="resultsarea">
+                <table class="ui sortable celled la-table table">
+                    <thead>
+                    <tr>
+                        <th>${message(code: 'sidewide.number')}</th>
+                        <g:sortableColumn property="name"
+                                          title="${message(code: 'package.show.pkg_name', default: 'Package Name')}"
+                                          params="${params}"/>
+                        <th>${message(code: 'package.show.status')}</th>
+                        <th>${message(code: 'package.compare.overview.tipps')}</th>
+                        <g:sortableColumn property="providerName" title="${message(code: 'package.content_provider')}"
+                                          params="${params}"/>
+                        <g:sortableColumn property="platformName" title="${message(code: 'package.nominalPlatform')}"
+                                          params="${params}"/>
+                        <th>${message(code: 'package.scope')}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <g:each in="${records}" var="record" status="jj">
+                        <tr>
+                            <td>${(params.int('offset') ?: 0) + jj + 1}</td>
+                            <td>
+                                <g:if test="${com.k_int.kbplus.Package.findByImpId(record.id)}">
+                                    <g:link controller="packageDetails" action="show"
+                                            id="${com.k_int.kbplus.Package.findByImpId(record.id).id}">${record.name}</g:link>
+                                </g:if>
+                                <g:else>
+                                    ${record.name} <a target="_blank"
+                                                      href="${record.url ? record.url + '/gokb/resource/show/' + record.id : '#'}"><i
+                                            title="GOKB Link" class="external alternate icon"></i></a>
+                                </g:else>
+                            </td>
+                            <td>${message(code: 'refdata.' + record.status)}</td>
+                            <td>
+                                <g:if test="${record.tippsCountCurrent}">
+                                    <g:if test="${record.tippsCountCurrent == 1}">
+                                        <g:if test="${com.k_int.kbplus.Package.findByImpId(record.id)}">
+                                            <g:link controller="packageDetails" action="current"
+                                                    id="${com.k_int.kbplus.Package.findByImpId(record.id).id}">${message(code: 'packageDetails.index.result.titles.single')}</g:link>
+                                        </g:if>
+                                        <g:else>
+                                            ${message(code: 'packageDetails.index.result.titles.single')}
+                                        </g:else>
+                                    </g:if>
+                                    <g:else>
+                                        <g:if test="${com.k_int.kbplus.Package.findByImpId(record.id)}">
+                                            <g:link controller="packageDetails" action="current"
+                                                    id="${com.k_int.kbplus.Package.findByImpId(record.id).id}">${message(code: 'packageDetails.index.result.titles', args: [record.tippsCountCurrent])}</g:link>
+                                        </g:if>
+                                        <g:else>
+                                            ${message(code: 'packageDetails.index.result.titles', args: [record.tippsCountCurrent])}
+                                        </g:else>
+
+                                    </g:else>
+                                </g:if>
+                                <g:else>
+                                    ${message(code: 'packageDetails.index.result.titles.unknown', default: 'Unknown number of TIPPs')}
+                                </g:else>
+                            </td>
+                            <td><g:if test="${com.k_int.kbplus.Org.findByName(record.providerName)}"><g:link
+                                    controller="organisations" action="show"
+                                    id="${com.k_int.kbplus.Org.findByName(record.providerName).id}">${record.providerName}</g:link></g:if>
+                            <g:else>${record.providerName}</g:else>
+                            </td>
+                            <td><g:if test="${com.k_int.kbplus.Platform.findByName(record.platformName)}"><g:link
+                                    controller="platform" action="show"
+                                    id="${com.k_int.kbplus.Platform.findByName(record.platformName).id}">${record.platformName}</g:link></g:if>
+                                <g:else>${record.platformName}</g:else></td>
+                            <td>${record.scope}</td>
+                        </tr>
+                    </g:each>
+                    </tbody>
+                </table>
+            </div><!-- #resultsarea -->
+
+            <semui:paginate action="index" controller="packageDetails" params="${params}"
+                            next="${message(code: 'default.paginate.next', default: 'Next')}"
+                            prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
+                            total="${resultsTotal2}"/>
+
+        </g:if>
+        <g:else>
+            <p><g:message code="default.search.empty" default="No results found"/></p>
+        </g:else>
+    </div>
+</div>
+</div>
+
+</body>
 </html>

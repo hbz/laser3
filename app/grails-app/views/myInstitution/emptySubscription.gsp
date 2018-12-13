@@ -29,7 +29,7 @@
 
                 <div class="field required">
                     <label>${message(code:'myinst.emptySubscription.name', default:'New Subscription Name')}</label>
-                    <input required type="text" name="newEmptySubName" placeholder=""/>
+                    <input type="text" name="newEmptySubName" placeholder=""/>
                  </div>
 
                 <div class="two fields">

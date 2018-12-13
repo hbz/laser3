@@ -16,6 +16,8 @@ import org.apache.poi.hssf.usermodel.*
 import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
 import com.k_int.properties.*
+import de.laser.DashboardDueDate
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
@@ -41,6 +43,7 @@ class MyInstitutionController extends AbstractDebugController {
     def filterService
     def propertyService
     def queryService
+    def dashboardDueDatesService
     def subscriptionsQueryService
 
     // copied from
@@ -200,10 +203,7 @@ class MyInstitutionController extends AbstractDebugController {
         def date_restriction = null;
         def sdf = new DateUtil().getSimpleDateFormat_NoTime()
 
-        if (params.validOn == null) {
-            result.validOn = sdf.format(new Date(System.currentTimeMillis()))
-            date_restriction = sdf.parse(result.validOn)
-        } else if (params.validOn.trim() == '') {
+        if (params.validOn == null || params.validOn.trim() == '') {
             result.validOn = ""
         } else {
             result.validOn = params.validOn
@@ -555,10 +555,7 @@ from License as l where (
         def date_restriction = null;
         def sdf = new DateUtil().getSimpleDateFormat_NoTime()
 
-        if (params.validOn == null) {
-            result.validOn = sdf.format(new Date(System.currentTimeMillis()))
-            date_restriction = sdf.parse(result.validOn)
-        } else if (params.validOn.trim() == '') {
+        if (params.validOn == null || params.validOn.trim() == '') {
             result.validOn = ""
         } else {
             result.validOn = params.validOn
@@ -567,8 +564,11 @@ from License as l where (
 
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
+        if(!params.status) {
+            params.status = RefdataValue.getByValueAndCategory('Current','Subscription Status').id
+        }
 
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.num_sub_rows = Subscription.executeQuery("select s.id " + tmpQ[0], tmpQ[1]).size()
         result.subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1], [max: result.max, offset: result.offset]);
 
@@ -827,8 +827,8 @@ from License as l where (
         def subType = null
         
         log.debug("found orgRoleType ${result.orgRoleType}")
-        
-        if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgRoleType)) {
+
+        if((Long.valueOf(params.asOrgRoleType) in result.orgRoleType) && (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgRoleType)) {
             orgRole = role_cons
             subType = RefdataValue.getByValueAndCategory('Consortial Licence', 'Subscription Type')
         }
@@ -2844,45 +2844,8 @@ AND EXISTS (
 
         def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: 10, sort: 'dateCreated', order: 'desc'])
-        result.dashboardReminderPeriod = contextService.getUser().getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14).value
-        result.dueObjects = getDueObjects(result.dashboardReminderPeriod)
-
+        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org)
         result
-    }
-    private def getDueObjects(int daysToBeInformedBeforeToday){
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DAY_OF_WEEK, daysToBeInformedBeforeToday);
-        java.sql.Date infoDate = new java.sql.Date(cal.getTime().getTime());
-        java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
-
-        ArrayList dueObjects = new ArrayList()
-
-        dueObjects.addAll(queryService.getDueSubscriptions(contextService.org, today, infoDate, today, infoDate))
-
-        dueObjects.addAll( taskService.getTasksByResponsibles(
-                contextService.getUser(),
-                contextService.getOrg(),
-                [query:" and status != ? and endDate <= ?",
-                queryParams:[RefdataValue.getByValueAndCategory('Done', 'Task Status'),
-                        infoDate]]) )
-
-        dueObjects.addAll(queryService.getDueLicenseCustomProperties(contextService.org, today, infoDate))
-        dueObjects.addAll(queryService.getDueLicensePrivateProperties(contextService.org, today, infoDate))
-
-        dueObjects.addAll(PersonPrivateProperty.findAllByDateValueBetweenForOrgAndIsNotPulbic(today, infoDate, contextService.org))
-
-        dueObjects.addAll(OrgCustomProperty.findAllByDateValueBetween(today, infoDate))
-        dueObjects.addAll(queryService.getDueOrgPrivateProperties(contextService.org, today, infoDate))
-
-        dueObjects.addAll(queryService.getDueSubscriptionCustomProperties(contextService.org, today, infoDate))
-        dueObjects.addAll(queryService.getDueSubscriptionPrivateProperties(contextService.org, today, infoDate))
-
-        dueObjects = dueObjects.sort {
-                (it instanceof AbstractProperty)?
-                        it.dateValue : (((it instanceof Subscription || it instanceof License) && it.manualCancellationDate)? it.manualCancellationDate : it.endDate)?: java.sql.Timestamp.valueOf("0001-1-1 00:00:00")
-        }
-
-        dueObjects
     }
 
     private getTodoForInst(result, Integer periodInDays){
@@ -3477,7 +3440,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     private addPrivatePropertyDefinition(params) {
         log.debug("adding private property definition for institution: " + params)
 
-        def tenant = contextService.getOrg()
+        def tenant = GrailsHibernateUtil.unwrapIfProxy(contextService.getOrg())
 
         def privatePropDef = PropertyDefinition.findWhere(
                 name:   params.pd_name,
@@ -3497,6 +3460,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                     params.pd_name,
                     params.pd_type,
                     params.pd_descr,
+                    params.pd_expl,
                     (params.pd_multiple_occurrence ? true : false),
                     (params.pd_mandatory ? true : false),
                     tenant

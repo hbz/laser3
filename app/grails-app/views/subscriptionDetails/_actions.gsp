@@ -10,7 +10,13 @@
         </semui:exportDropdownItem>
         <g:each in="${transforms}" var="transkey,transval">
             <semui:exportDropdownItem>
-                <g:link class="item" action="index" id="${params.id}" params="${[format:'xml', transformId:transkey, mode: params.mode]}">${transval.name}</g:link>
+                <g:if test="${params.filter || params.asAt}">
+                    <%-- TODO: ask Ingrid where to inject this code: ${message(code: '', default: 'Achtung! Sie haben zur Zeit einen Filter gesetzt! Dadurch wird nur eine Teilmenge des Bestandes exportiert! Dennoch fortfahren?')} --%>
+                    <g:link onclick="return confirm('Achtung! Sie haben zur Zeit einen Filter gesetzt! Dadurch wird nur eine Teilmenge des Bestandes exportiert! Dennoch fortfahren?')" class="item" action="index" id="${params.id}" params="${[format:'xml', transformId:transkey, mode: params.mode, filter: params.filter, asAt: params.asAt]}">${transval.name}</g:link>
+                </g:if>
+                <g:else>
+                    <g:link class="item" action="index" id="${params.id}" params="${[format:'xml', transformId:transkey, mode: params.mode]}">${transval.name}</g:link>
+                </g:else>
             </semui:exportDropdownItem>
         </g:each>
     </semui:exportDropdown>
@@ -32,7 +38,7 @@
             <semui:actionsDropdownItem controller="subscriptionDetails" action="addMembers" params="${[id:params.id]}" message="subscription.details.addMembers.label" />
         </g:if>
 
-        <g:if test="${subscriptionInstance?.type == com.k_int.kbplus.RefdataValue.getByValueAndCategory("Local Licence", "Subscription Type")}">
+        <g:if test="${subscriptionInstance?.type == com.k_int.kbplus.RefdataValue.getByValueAndCategory("Local Licence", "Subscription Type") && !(com.k_int.kbplus.Subscription.findAllByPreviousSubscription(subscriptionInstance))}">
             <semui:actionsDropdownItem controller="subscriptionDetails" action="launchRenewalsProcess"
                                    params="${[id: params.id]}" message="subscription.details.renewals.label"/>
             <semui:actionsDropdownItem controller="myInstitution" action="renewalsUpload"

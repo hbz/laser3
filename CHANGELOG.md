@@ -5,6 +5,10 @@ IN PROGRESS:
 - upgrade to hibernate 4.3.10
 - upgrade to ehcache 2.9.0
 
+RC-0.12
+
+- todo
+
 0.11.4
 
 - improved performance at finance view

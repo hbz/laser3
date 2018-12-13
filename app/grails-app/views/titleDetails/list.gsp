@@ -23,7 +23,7 @@
             <input id="q" type="text" name="q" placeholder="${message(code: 'title.search.ph')}" value="${params.q}"/>
           </div>
           <div class="field">
-            <label for="filter"">${message(code: 'title.search_in')}</label>
+            <label for="filter">${message(code: 'title.search_in')}</label>
             <g:select class="ui dropdown" id="filter" name="filter" from="${[[key:'title',value:"${message(code: 'title.title.label')}"],[key:'publisher',value:"${message(code:'title.publisher.label')}"],[key:'',value:"${message(code: 'title.all.label')}"]]}" optionKey="key" optionValue="value" value="${params.filter}"/>
           </div>
             <div class="field la-field-right-aligned">
