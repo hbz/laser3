@@ -4,6 +4,8 @@ LOAD DATABASE
 
     WITH truncate, data only
 
+    ALTER SCHEMA 'laser' RENAME TO 'public'
+
     CAST type bigint when (= precision 20) to bigint drop typemod,
             type date drop not null drop default using zero-dates-to-null,
             type tinyint to boolean using tinyint-to-boolean,
