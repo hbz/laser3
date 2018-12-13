@@ -23,3 +23,6 @@ FEHLER: Spalte »statstripl0_.id« muss in der GROUP-BY-Klausel erscheinen oder 
 #### /issueEntitlement/show
 
 @FACT
+
+#### CAUSE:
+org.hibernate.event.internal.DefaultFlushEventListener.onFlush() @ 28

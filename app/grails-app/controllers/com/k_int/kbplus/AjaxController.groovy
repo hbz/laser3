@@ -292,7 +292,7 @@ class AjaxController extends AbstractDebugController {
       else {
         String[] value_components = params.value.split(":");
         def value = genericOIDService.resolveOID(params.value);
-  
+
         if ( target && value ) {
 
             if (target instanceof UserSettings) {
@@ -301,19 +301,22 @@ class AjaxController extends AbstractDebugController {
             else {
                 def binding_properties = [ "${params.name}":value ]
                 bindData(target, binding_properties)
+                //if (target.hasProperty(params.name)) {
+                //    target."${params.name}" = value
+                //}
                 if (target.hasProperty('owner')) {
                     target.owner?.save()  // avoid .. not processed by flush
                 }
             }
 
-            target.save(flush:false);
-          
+            target.save();
+
           // We should clear the session values for a user if this is a user to force reload of the,
           // parameters.
           if (target instanceof User) {
             session.userPereferences = null
           }
-          
+
           if ( params.resultProp ) {
             result = value[params.resultProp]
           }
@@ -335,12 +338,8 @@ class AjaxController extends AbstractDebugController {
 
     // response.setContentType('text/plain')
     def resp = [ newValue: result ]
-    // log.debug("return ${resp as JSON}");
+    log.debug("return ${resp as JSON}");
     render resp as JSON
-    //def outs = response.outputStream
-    //outs << result
-    //outs.flush()
-    //outs.close()
   }
 
   def orgs() {
