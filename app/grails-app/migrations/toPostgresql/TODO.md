@@ -24,5 +24,16 @@ FEHLER: Spalte »statstripl0_.id« muss in der GROUP-BY-Klausel erscheinen oder 
 
 @FACT
 
-#### CAUSE:
+#### Hibernate 4:
 org.hibernate.event.internal.DefaultFlushEventListener.onFlush() @ 28
+org.hibernate.engine.internal.SessionEventListenerManagerImpl
+
+	public void flushEnd(int numberOfEntities, int numberOfCollections) { 
+		if ( listenerList == null ) { 
+			return; 
+		} 
+ 
+		for ( SessionEventListener listener : listenerList ) { 
+			listener.flushEnd( numberOfEntities, numberOfCollections ); 
+		} 
+	}

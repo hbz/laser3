@@ -60,8 +60,6 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
   Date dateCreated
   Date lastUpdated
 
-  Set ids = []
-
   static hasOne = [onixplLicense: OnixplLicense]
 
   static hasMany = [
@@ -138,7 +136,6 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
         endDate(nullable: true, blank: true)
         lastUpdated(nullable: true, blank: true)
     }
-
     @Override
     def isTemplate() {
         return (type != null) && (type == RefdataValue.getByValueAndCategory('Template', 'License Type'))
