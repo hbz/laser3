@@ -94,11 +94,9 @@ class DashboardDueDatesService {
             try {
                 DashboardDueDate.executeUpdate("DELETE from DashboardDueDate ")
                 log.info("DashboardDueDatesService DELETE from DashboardDueDate");
-                new EventLog(event:'DashboardDueDatesService DELETE from DashboardDueDate', message:'SQL Delete', tstp:new Date(System.currentTimeMillis())).save(flush:true)
                 dashboarEntriesToInsert.each {
                     it.save(flush: true)
                     log.info("DashboardDueDatesService INSERT: " + it);
-                    new EventLog(event:'DashboardDueDatesService INSERT: ' + it, message:'SQL Insert', tstp:new Date(System.currentTimeMillis())).save(flush:true)
                 }
                 log.info("DashboardDueDatesService INSERT Anzahl: " + dashboarEntriesToInsert.size);
                 new EventLog(event:'DashboardDueDatesService INSERT Anzahl: ' + dashboarEntriesToInsert.size, message:'SQL Insert', tstp:new Date(System.currentTimeMillis())).save(flush:true)
