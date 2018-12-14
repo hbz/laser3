@@ -1,6 +1,6 @@
 RC-0.12
 
-- todo
+- retrieving package list from gokb api
 
 0.11.4
 
