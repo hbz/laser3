@@ -5,6 +5,8 @@ import com.k_int.properties.*
 import de.laser.domain.StatsTripleCursor
 import groovy.json.JsonOutput
 import groovyx.net.http.*
+
+import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import static groovyx.net.http.ContentType.*
 import groovyx.gpars.GParsPool
@@ -21,6 +23,7 @@ class StatsSyncService {
     def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def queryParams = [:]
     def errors = []
+    def availableReportCache = [:]
 
 
     static int submitCount=0
@@ -54,6 +57,7 @@ class StatsSyncService {
         log.debug("Launch STATS sync at ${syncStartTime} ( ${System.currentTimeMillis()} )")
         syncElapsed=0
         activityHistogram = [:]
+        availableReportCache = [:]
     }
 
     private String getTitleInstancesForUsageQuery()
@@ -145,6 +149,59 @@ class StatsSyncService {
         }
     }
 
+    def generateMD5(String s) {
+        MessageDigest digest = MessageDigest.getInstance("MD5")
+        digest.update(s.bytes)
+        new BigInteger(1, digest.digest()).toString(16).padLeft(32, '0')
+    }
+
+    /**
+     * Query NatStat v5 reports endpoint to get the available reports for a supplier
+     * @param queryParams
+     * @return Map Available reports for supplier
+     */
+    def getAvailableReportsForPlatform(queryParams) {
+
+        def queryParamsHash = generateMD5(queryParams.apiKey.toString() + queryParams.requestor.toString() + queryParams.customer + queryParams.platform)
+        if (availableReportCache[queryParamsHash]) {
+            log.debug('Return available NatStat reports from cache')
+            return availableReportCache[queryParamsHash]
+        }
+        try {
+            def uri = new URIBuilder(grailsApplication.config.statsApiUrl)
+            def baseUrl = uri.getScheme() + "://" + uri.getHost()
+            def basePath = uri.getPath().endsWith('/') ? uri.getPath() : uri.getPath() + '/'
+            def path = basePath + 'Sushiservice/reports'
+
+            def v5Endpoint = new RESTClient(baseUrl)
+            def result = v5Endpoint.get(
+                path: path,
+                headers: ["Accept": "application/json"],
+                query: [
+                    apikey      : queryParams.apiKey,
+                    requestor_id: queryParams.requestor.toString(),
+                    customer_id : queryParams.customer,
+                    platform    : queryParams.platform,
+                ])
+            def reportList = []
+            result.getData().each {it ->
+                if (it.code) {
+                    errors.add("SUSHI Error for ${queryParams.customer}|${queryParams.requestor}|${queryParams.platform}: ${it.code}-${it.message}\n")
+                }
+                if (it.Report_ID && it.Release) {
+                    reportList.add(it.Report_ID + 'R' + it.Release)
+                }
+
+            }
+            availableReportCache[queryParamsHash] = reportList
+        } catch (Exception e) {
+            def message = "Error getting available Reports from NatStat API"
+            log.error(message)
+            errors.add(message)
+            log.error(e.message)
+        }
+    }
+
     def processListItem(listItem, mostRecentClosedPeriod) {
         def uri = new URIBuilder(grailsApplication.config.statsApiUrl)
         def baseUrl = uri.getScheme()+"://"+uri.getHost()
@@ -166,13 +223,15 @@ class StatsSyncService {
             def customer = org_inst.getIdentifierByType('wibid').value
             def apiKey = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("API Key"), org_inst)
             def requestor = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), org_inst)
-
+            def queryParams = [platform:platform, customer:customer, apiKey: apiKey, requestor:requestor]
+            def availableReports = getAvailableReportsForPlatform(queryParams)
             def reports = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('FactType'))
             reports.removeAll {
                 if (it.value.startsWith('STATS')){
                     log.warn('STATS prefix deprecated please remove Refdatavalues')
                 }
-                it.value.startsWith('STATS')
+                def reportInAvailableReport = it.value in availableReports
+                (it.value.startsWith('STATS') || !reportInAvailableReport)
             }
 
             def csr = null
@@ -284,25 +343,27 @@ class StatsSyncService {
                             csr.jerror = jsonError
                         }
                     }
-                }
-                csr.haveUpTo = mostRecentClosedPeriod
-                csr.numFacts = factCount
-                try {
-                    csr.save(flush: true)
-                } catch (Exception e) {
-                    log.error(e.message)
-                    jsonErrors.add(e.message)
-                    def jsonError = JsonOutput.toJson(jsonErrors)
-                    if (jsonError) {
-                        csr.jerror = jsonError
+                    csr.haveUpTo = mostRecentClosedPeriod
+                    csr.numFacts = factCount
+                    try {
+                        csr.save(flush: true)
+                    } catch (Exception e) {
+                        log.error(e.message)
+                        jsonErrors.add(e.message)
+                        def jsonError = JsonOutput.toJson(jsonErrors)
+                        if (jsonError) {
+                            csr.jerror = jsonError
+                        }
+                        exceptionCount++
                     }
-                    exceptionCount++
                 }
             }
             // TODO remove?
             // Exceptions are all catched, do we really want to save here when there were certain exceptions?
             // For now save the csr which should contain an error message
-            csr.save(flush:true)
+            if (csr != null) {
+                csr.save(flush: true)
+            }
             cleanUpGorm()
             def elapsed = System.currentTimeMillis() - start_time;
             totalTime+=elapsed

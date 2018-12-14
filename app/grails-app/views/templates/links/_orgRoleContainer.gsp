@@ -4,7 +4,9 @@
 
     <dl>
         <dt>
-            <h5 class="ui header">Als ${link_cat.rdv.getI10n('value')}</h5>
+            <h5 class="ui header">
+                ${message(code: ('template.orgRole.' + link_cat.rdv.value).replaceAll(' ',''), default: link_cat.rdv.getI10n('value'))}
+            </h5>
         <dd>
 
             <div class="ui list">

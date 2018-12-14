@@ -83,7 +83,6 @@
 
 <semui:messages data="${flash}" />
 
-<%-- --%>
 <g:if test="${editable}">
     <button class="ui button" value="" href="#addBudgetCodeModal" data-semui="modal">${message(code:'budgetCode.create_new.label')}</button>
 

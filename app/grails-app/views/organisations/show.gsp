@@ -401,7 +401,6 @@
 
                     </g:if><%-- incomingCombos --%>
 
-
                     <g:if test="${sorted_links}">
 
                         <g:if test="${orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADMIN')}">
