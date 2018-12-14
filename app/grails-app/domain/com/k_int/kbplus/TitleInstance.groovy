@@ -209,7 +209,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditTrait {
     def ti_candidates = []
     def canonical_ids = []
 
-    if(imp_uuid?.trim().size() == 0) {
+    if(imp_uuid?.length() == 0) {
       imp_uuid = null
     }
 

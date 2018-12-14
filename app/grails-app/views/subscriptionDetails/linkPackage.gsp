@@ -182,16 +182,16 @@
                               <td><g:link controller="packageDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().name} </g:link>(${hit.getSource()?.titleCount?:'0'} ${message(code:'title.plural', default:'Titles')})</td>
                               <%--<td>${hit.getSource().consortiaName}</td>--%>
                               <td>
-                                <g:if test="${editable && (!pkgs || !pkgs.contains(hit.getSource().dbId.toLong()))}">
+                                <g:if test="${editable && (!pkgs || (!pkgs.contains(hit.getSource().impId)))}">
                                   <g:link action="linkPackage"
                                       id="${params.id}"
-                                      params="${[addId:hit.getSource().dbId,addType:'Without']}"
+                                      params="${[addId:hit.getSource().dbId, impId: hit.getSource().impId, addType:'Without']}"
                                       style="white-space:nowrap;"
                                       onClick="return confirm('${message(code:'subscription.details.link.no_ents.confirm', default:'Are you sure you want to add without entitlements?')}');">${message(code:'subscription.details.link.no_ents', default:'Link (no Entitlements)')}</g:link>
                                   <br/>
                                   <g:link action="linkPackage"
                                       id="${params.id}"
-                                      params="${[addId:hit.getSource().dbId,addType:'With']}"
+                                      params="${[addId:hit.getSource().dbId, impId: hit.getSource().impId, addType:'With']}"
                                       style="white-space:nowrap;"
                                       onClick="return confirm('${message(code:'subscription.details.link.with_ents.confirm', default:'Are you sure you want to add with entitlements?')}');">${message(code:'subscription.details.link.with_ents', default:'Link (with Entitlements)')}</g:link>
                                 </g:if>
@@ -203,8 +203,8 @@
                           </g:if><g:else>
                           <tr>
                               <td>
-                                    <g:if test="${com.k_int.kbplus.Package.findByImpId(hit.id)}">
-                                        <g:link controller="packageDetails" target="_blank" action="show" id="${com.k_int.kbplus.Package.findByImpId(hit.id).id}">${hit.getSource().name}</g:link>
+                                    <g:if test="${com.k_int.kbplus.Package.findByImpId(hit.uuid ?: hit.getSource().uuid)}">
+                                        <g:link controller="packageDetails" target="_blank" action="show" id="${com.k_int.kbplus.Package.findByImpId(hit.uuid ?: hit.getSource().uuid).id}">${hit.getSource().name}</g:link>
                                     </g:if>
                                     <g:else>
                                       ${hit.getSource().name} <a target="_blank" href="${es_host_url ? es_host_url+'/gokb/resource/show/'+hit.id : '#'}" ><i title="GOKB Link" class="external alternate icon"></i></a>
@@ -213,16 +213,16 @@
                               </td>
 
                               <td>
-                                  <g:if test="${editable && (!pkgs || !(hit.id in pkgs))}">
+                                  <g:if test="${editable && (!pkgs || !((hit.uuid ?: hit.getSource().uuid) in pkgs))}">
                                       <g:link action="linkPackage"
                                               id="${params.id}"
-                                              params="${[addId: hit.id, addType:'Without', esgokb: 'Package']}"
+                                              params="${[addId: hit.id, impId: (hit.uuid ?: hit.getSource().uuid), addType:'Without', esgokb: 'Package']}"
                                               style="white-space:nowrap;"
                                               onClick="return confirm('${message(code:'subscription.details.link.no_ents.confirm', default:'Are you sure you want to add without entitlements?')}'); toggleAlert();">${message(code:'subscription.details.link.no_ents', default:'Link (no Entitlements)')}</g:link>
                                       <br/>
                                       <g:link action="linkPackage"
                                               id="${params.id}"
-                                              params="${[addId: hit.id, addType:'With', esgokb: 'Package']}"
+                                              params="${[addId: hit.id, impId: (hit.uuid ?: hit.getSource().uuid), addType:'With', esgokb: 'Package']}"
                                               style="white-space:nowrap;"
                                               onClick="return confirm('${message(code:'subscription.details.link.with_ents.confirm', default:'Are you sure you want to add with entitlements?')}'); toggleAlert();">${message(code:'subscription.details.link.with_ents', default:'Link (with Entitlements)')}</g:link>
                                   </g:if>
@@ -231,7 +231,7 @@
                                       <g:if test="${editable}">
                                           <br>
                                           <div class="ui mini icon buttons">
-                                              <button class="ui button la-selectable-button" onclick="unlinkPackage(${com.k_int.kbplus.Package.findByImpId(hit.id)?.id})">
+                                              <button class="ui button la-selectable-button" onclick="unlinkPackage(${com.k_int.kbplus.Package.findByImpId(hit.uuid ?: hit.getSource().uuid)?.id})">
                                                   <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
                                               </button>
                                           </div>

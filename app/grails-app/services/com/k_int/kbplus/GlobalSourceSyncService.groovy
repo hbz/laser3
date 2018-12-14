@@ -21,6 +21,9 @@ class GlobalSourceSyncService {
   public static boolean running = false;
   def genericOIDService
   def executorService
+  def sessionFactory
+  def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
+  def grailsApplication
   def changeNotificationService
   boolean parallel_jobs = false
   def messageSource
@@ -36,7 +39,7 @@ class GlobalSourceSyncService {
       return
     }
 
-    if (Holders.config.globalDataSync.replaceLocalImpIds.TitleInstance && newtitle.impId) {
+    if (grailsApplication.config.globalDataSync.replaceLocalImpIds.TitleInstance && newtitle.impId) {
       title_instance.impId = newtitle.impId
     }
 
@@ -194,7 +197,7 @@ class GlobalSourceSyncService {
         def new_history_statement = [:]
         new_history_statement.title=het.title.text()
         new_history_statement.ids = []
-        new_history_statement.uuid = hef.'@uuid'?.text() ?: null
+        new_history_statement.uuid = het.'@uuid'?.text() ?: null
         het.identifiers.identifier.each { i ->
           new_history_statement.ids.add([namespace:i.'@namespace'.text(), value:i.'@value'.text()])
         }
@@ -246,7 +249,7 @@ class GlobalSourceSyncService {
           else {
             log.warn("Record tracker ${grt.id} for ${newpkg.name} pointed to a record with another import uuid: ${grt.localOid}!")
 
-            if(Holders.config.globalDataSync.replaceLocalImpIds.Package) {
+            if(grailsApplication.config.globalDataSync.replaceLocalImpIds.Package) {
               pkg.impId = newpkg.impId
             }
           }
@@ -431,7 +434,7 @@ class GlobalSourceSyncService {
           tippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Retired', de: 'im Ruhestand'])
         }
 
-        if(Holders.config.globalDataSync.replaceLocalImpIds.TIPP && tipp.tippUuid && db_tipp.impId != tipp.tippUuid) {
+        if(grailsApplication.config.globalDataSync.replaceLocalImpIds.TIPP && tipp.tippUuid && db_tipp.impId != tipp.tippUuid) {
           db_tipp.impId = tipp.tippUuid
           db_tipp.save(flush:true, failOnError:true)
         }
@@ -846,19 +849,21 @@ class GlobalSourceSyncService {
 
       def oai_client = new OaiClient(host: sync_job.uri)
       def max_timestamp = 0
+      def ctr = 0
 
       log.debug("Collect ${cfg.name} changes since ${date}");
 
       oai_client.getChangesSince(date, sync_job.fullPrefix) { rec ->
 
-        log.debug("Got OAI Record ${rec.header.identifier} datestamp: ${rec.header.datestamp} job:${sync_job.id} url:${sync_job.uri} cfg:${cfg.name}")
+        def sync_obj = GlobalRecordSource.get(sync_job_id)
+        log.debug("Got OAI Record ${rec.header.identifier} datestamp: ${rec.header.datestamp} job:${sync_obj.id} url:${sync_obj.uri} cfg:${cfg.name}")
         def rec_uuid = rec.header.uuid?.text() ?: null
         def rec_identifier = rec.header.identifier.text()
-        def qryparams = [sync_job.id, rec_identifier, rec_uuid ?: "0"]
+        def qryparams = [sync_obj.id, rec_identifier, rec_uuid ?: "0"]
         def record_timestamp = sdf.parse(rec.header.datestamp.text())
         def existing_record_info = null
 
-        def found_record_info = GlobalRecordInfo.executeQuery('select r from GlobalRecordInfo as r where r.source.id = ? and (r.identifier = ? OR (r.uuid IS NOT NULL AND r.uuid = ?))', qryparams);
+        def found_record_info = GlobalRecordInfo.executeQuery('select r from GlobalRecordInfo as r where (r.source.id = ? and r.identifier = ?) OR (r.uuid IS NOT NULL AND r.uuid = ?)', qryparams);
 
         if (found_record_info.size() == 1) {
           existing_record_info = found_record_info[0]
@@ -881,7 +886,7 @@ class GlobalSourceSyncService {
 
         if (existing_record_info) {
           log.debug("convert xml into json - config is ${cfg} ");
-          def parsed_rec = cfg.converter.call(rec.metadata, sync_job)
+          def parsed_rec = cfg.converter.call(rec.metadata, sync_obj)
 
           // Deserialize
           def bais = new ByteArrayInputStream((byte[]) (existing_record_info.record))
@@ -924,7 +929,7 @@ class GlobalSourceSyncService {
           existing_record_info.save()
         } else {
           log.debug("First time we have seen this record - converting ${cfg.name}");
-          def parsed_rec = cfg.converter.call(rec.metadata, sync_job)
+          def parsed_rec = cfg.converter.call(rec.metadata, sync_obj)
           log.debug("Converter thinks this rec has title :: ${parsed_rec.title}");
 
           // Evaluate the incoming record to see if it meets KB+ stringent data quality standards
@@ -958,8 +963,8 @@ class GlobalSourceSyncService {
                   identifier: rec.header.identifier.text(),
                   uuid: rec_uuid,
                   desc: "${parsed_rec.title}",
-                  source: sync_job,
-                  rectype: sync_job.rectype,
+                  source: sync_obj,
+                  rectype: sync_obj.rectype,
                   record: baos.toByteArray(),
                   kbplusCompliant: kbplus_compliant,
                   globalRecordInfoStatus: status);
@@ -989,11 +994,15 @@ class GlobalSourceSyncService {
         }
 
         log.debug("Updating sync job max timestamp");
-        sync_job.haveUpTo = new Date(max_timestamp)
-        sync_job.save(flush: true);
+        sync_obj.haveUpTo = new Date(max_timestamp)
+        sync_obj.save(flush: true);
 
         if (rectype == 'Package') {
           sleep(3000);
+          cleanUpGorm()
+        }
+        else if (ctr++ % 200 == 0) {
+          cleanUpGorm()
         }
       }
     }
@@ -1002,8 +1011,9 @@ class GlobalSourceSyncService {
       log.error("Problem running job ${sync_job_id}, conf=${cfg}",e);
       new EventLog(event:'kbplus.doOAISync', message:"Problem running job ${sync_job_id}, conf=${cfg}", tstp:new Date(System.currentTimeMillis())).save(flush:true)
       log.debug("Reset sync job haveUpTo");
-      sync_job.haveUpTo = olddate
-      sync_job.save(flush: true);
+      def sync_object = GlobalRecordSource.get(sync_job_id)
+      sync_object.haveUpTo = olddate
+      sync_object.save(flush: true);
     }
     finally {
       log.debug("internalOAISync completed for job ${sync_job_id}");
@@ -1241,7 +1251,7 @@ class GlobalSourceSyncService {
     if(grt.owner.uuid) {
       record = oai.getRecord(uri, 'packages', grt.owner.uuid)
     }
-    else {
+    if (!record) {
       record = oai.getRecord(uri, 'packages', grt.owner.identifier)
     }
 
@@ -1281,6 +1291,13 @@ class GlobalSourceSyncService {
     cfg.reconciler.call(grt,oldrec,record)
   }
 
+  def cleanUpGorm() {
+      log.debug("Clean up GORM")
 
+      def session = sessionFactory.currentSession
+      session.flush()
+      session.clear()
+      propertyInstanceMap.get().clear()
+  }
 
 }

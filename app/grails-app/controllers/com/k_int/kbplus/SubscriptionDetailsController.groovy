@@ -1322,55 +1322,65 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
         if (params.addType && (params.addType != '')) {
             if(params.esgokb)
             {
-                def gri = GlobalRecordInfo.findByIdentifier(params.addId)
-                def grt = GlobalRecordTracker.findByOwner(gri)
-                if(!grt){
-                    def new_tracker_id = java.util.UUID.randomUUID().toString()
+                def gri = GlobalRecordInfo.findByUuid(params.impId)
 
-                    grt = new GlobalRecordTracker(
-                                        owner: gri,
-                                        identifier: new_tracker_id,
-                                        name: gri.name,
-                                        autoAcceptTippAddition: params.autoAcceptTippAddition == 'on' ? true : false,
-                                        autoAcceptTippDelete: params.autoAcceptTippDelete == 'on' ? true : false,
-                                        autoAcceptTippUpdate: params.autoAcceptTippUpdate == 'on' ? true : false,
-                                        autoAcceptPackageUpdate: params.autoAcceptPackageChange == 'on' ? true : false)
-                    if ( grt.save() ) {
-                         globalSourceSyncService.initialiseTracker(grt);
-                        //Update INDEX ES
-                        dataloadService.updateFTIndexes();
-                    }
-                    else {
-                          log.error(grt.errors)
-                    }
-                }
-                if (!Package.findByImpId(grt.owner.identifier)){
-                    globalSourceSyncService.initialiseTracker(grt);
-                    //Update INDEX ES
-                    dataloadService.updateFTIndexes();
+                if (!gri) {
+                  gri = GlobalRecordInfo.findByIdentifier(params.addId)
                 }
 
-                def pkg_to_link =Package.findByImpId(grt.owner.identifier)
-                def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
-                log.debug("Add package ${params.addType} to subscription ${params}");
+                if(gri) {
+                  def grt = GlobalRecordTracker.findByOwner(gri)
+                  if(!grt){
+                      def new_tracker_id = java.util.UUID.randomUUID().toString()
 
-                if (params.addType == 'With') {
-                    pkg_to_link.addToSubscription(result.subscriptionInstance, true)
+                      grt = new GlobalRecordTracker(
+                                          owner: gri,
+                                          identifier: new_tracker_id,
+                                          name: gri.name,
+                                          autoAcceptTippAddition: params.autoAcceptTippAddition == 'on' ? true : false,
+                                          autoAcceptTippDelete: params.autoAcceptTippDelete == 'on' ? true : false,
+                                          autoAcceptTippUpdate: params.autoAcceptTippUpdate == 'on' ? true : false,
+                                          autoAcceptPackageUpdate: params.autoAcceptPackageChange == 'on' ? true : false)
+                      if ( grt.save() ) {
+                          globalSourceSyncService.initialiseTracker(grt);
+                          //Update INDEX ES
+                          dataloadService.updateFTIndexes();
+                      }
+                      else {
+                            log.error(grt.errors)
+                      }
+                  }
+                  if (!Package.findByImpId(grt.owner.uuid)){
+                      globalSourceSyncService.initialiseTracker(grt);
+                      //Update INDEX ES
+                      dataloadService.updateFTIndexes();
+                  }
 
-                    sub_instances.each {
-                        pkg_to_link.addToSubscription(it, true)
-                    }
+                  def pkg_to_link =Package.findByImpId(grt.owner.uuid)
+                  def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
+                  log.debug("Add package ${params.addType} to subscription ${params}");
 
-                    redirect action:'index', id:params.id
+                  if (params.addType == 'With') {
+                      pkg_to_link.addToSubscription(result.subscriptionInstance, true)
+
+                      sub_instances.each {
+                          pkg_to_link.addToSubscription(it, true)
+                      }
+
+                      redirect action:'index', id:params.id
+                  }
+                  else if ( params.addType == 'Without' ) {
+                      pkg_to_link.addToSubscription(result.subscriptionInstance, false)
+
+                      sub_instances.each {
+                          pkg_to_link.addToSubscription(it, false)
+                      }
+
+                      redirect action: 'addEntitlements', id: params.id
+                  }
                 }
-                else if ( params.addType == 'Without' ) {
-                    pkg_to_link.addToSubscription(result.subscriptionInstance, false)
-
-                    sub_instances.each {
-                        pkg_to_link.addToSubscription(it, false)
-                    }
-
-                    redirect action: 'addEntitlements', id: params.id
+                else {
+                  log.error("Could not resolve global record info for addId: ${params.addId}, impId: ${params.impId}")
                 }
 
             }else
@@ -1404,13 +1414,17 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
             result.pkgs = []
             if(params.esgokb) {
                 result.subscriptionInstance.packages.each { sp ->
+                    log.debug("Existing package ${sp.pkg.name} (Adding ImpID: ${sp.pkg.impId})")
                     result.pkgs.add(sp.pkg.impId)
                 }
             }else {
                 result.subscriptionInstance.packages.each { sp ->
+                    log.debug("Existing package ${sp.pkg.name} (Adding ID: ${sp.pkg.id})")
                     result.pkgs.add(sp.pkg.id)
                 }
             }
+        } else {
+          log.debug("Subscription has no linked packages yet")
         }
 
     if (result.institution) {
