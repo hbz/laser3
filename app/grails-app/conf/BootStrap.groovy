@@ -4,14 +4,13 @@ import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
 import de.laser.domain.I10nTranslation
 import grails.converters.JSON
-import grails.plugin.springsecurity.SecurityFilterPosition // 2.0
-import grails.plugin.springsecurity.SpringSecurityUtils // 2.0
+import grails.plugin.springsecurity.SecurityFilterPosition
+import grails.plugin.springsecurity.SpringSecurityUtils
 
 class BootStrap {
 
     def grailsApplication
     def dataloadService
-    // def docstoreService
 
     //  indicates this object is created via current bootstrap
     final static BOOTSTRAP = true
@@ -201,18 +200,11 @@ class BootStrap {
         log.debug("setupOnixPlRefdata ..")
         setupOnixPlRefdata()
 
-        //log.debug("setupRefdataFromCode ..")
-        //setupRefdataFromCode()
-
         log.debug("setupCurrencies ..")
         setupCurrencies()
 
         log.debug("setupContentItems ..")
         setupContentItems()
-
-        // if ( grailsApplication.config.doDocstoreMigration == true ) {
-        //   docstoreService.migrateToDb()
-        // }
 
         log.debug("addDefaultJasperReports ..")
         addDefaultJasperReports()
@@ -223,8 +215,8 @@ class BootStrap {
         log.debug("createOrgConfig ..")
         createOrgConfig()
 
-        log.debug("createOrgProperties ..")
-        createOrgProperties()
+        //log.debug("createOrgProperties ..")
+        //createOrgProperties()
 
         log.debug("createLicenseProperties ..")
         createLicenseProperties()
@@ -248,7 +240,6 @@ class BootStrap {
         JSON.registerObjectMarshaller(Date) {
             return it?.format("yyyy-MM-dd'T'HH:mm:ss'Z'")
         }
-
 
         log.debug("Init completed ..")
     }
@@ -730,15 +721,6 @@ class BootStrap {
                 }
             }
         }
-
-    // Subscription.metaClass.static.methodMissing = { String methodName, args ->
-    //   if ( methodName.startsWith('setNsId') ) {
-    //     log.debug("methodMissing ${methodName}, ${args}")
-    //   }
-    //   else {
-    //     throw new groovy.lang.MissingMethodException(methodName)
-    //   }
-    // }
   }
 
     def ensurePermGrant(role, perm) {
