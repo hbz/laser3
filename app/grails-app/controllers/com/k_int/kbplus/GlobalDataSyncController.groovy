@@ -120,7 +120,7 @@ class GlobalDataSyncController {
 
   @Secured(['ROLE_GLOBAL_DATA'])
   def createTracker() {
-    log.debug("params:"+params)
+    log.debug("params: ${params}")
     def result = [:]
 
     result.item = GlobalRecordInfo.get(params.id)

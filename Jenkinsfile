@@ -35,7 +35,7 @@ pipeline {
                     currentBuild.displayName = "${currentBuild.number}: Deploy on ${SERVERDEPLOY}"
                     if(SERVERDEPLOY == SERVER_DEV){
                         echo "Deploying on ${SERVERDEPLOY}...."
-                        sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${TOMCAT_HOME_PATH}/default/webapps/ROOT.war'
+                        sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${TOMCAT_HOME_PATH}/default/webapps/lasermysql.war'
 
                     }else{
                         sh 'cp ${JENKINS_HOME}/war_files/${BRANCH_NAME}_${BUILD_NUMBER}.war ${WORKSPACE}/ROOT.war'
@@ -72,7 +72,7 @@ pipeline {
                                 }
                     }
 
-                mail to: 'moetez.djebeniani@hbz-nrw.de, david.klober@hbz-nrw.de, anja.albin@hbz-nrw.de, rupp@hbz-nrw.de',
+                mail to: 'moetez.djebeniani@hbz-nrw.de, david.klober@hbz-nrw.de, anja.albin@hbz-nrw.de, andreas.galffy@hbz-nrw.de, rupp@hbz-nrw.de',
                                                              subject: "Succeeded Deploy on Server ${SERVERDEPLOY}: ${currentBuild.fullDisplayName}",
                                                              body: "Succeeded Deploy on Server ${SERVERDEPLOY}  \nAll Right: ${env.BUILD_URL} \n\n\n${changeLog}"
                 cleanWs()

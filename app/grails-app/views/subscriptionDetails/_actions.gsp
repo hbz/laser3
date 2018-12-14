@@ -10,7 +10,13 @@
         </semui:exportDropdownItem>
         <g:each in="${transforms}" var="transkey,transval">
             <semui:exportDropdownItem>
-                <g:link class="item" action="index" id="${params.id}" params="${[format:'xml', transformId:transkey, mode: params.mode]}">${transval.name}</g:link>
+                <g:if test="${params.filter || params.asAt}">
+                    <%-- TODO: ask Ingrid where to inject this code: ${message(code: '', default: 'Achtung! Sie haben zur Zeit einen Filter gesetzt! Dadurch wird nur eine Teilmenge des Bestandes exportiert! Dennoch fortfahren?')} --%>
+                    <g:link onclick="return confirm('Achtung! Sie haben zur Zeit einen Filter gesetzt! Dadurch wird nur eine Teilmenge des Bestandes exportiert! Dennoch fortfahren?')" class="item" action="index" id="${params.id}" params="${[format:'xml', transformId:transkey, mode: params.mode, filter: params.filter, asAt: params.asAt]}">${transval.name}</g:link>
+                </g:if>
+                <g:else>
+                    <g:link class="item" action="index" id="${params.id}" params="${[format:'xml', transformId:transkey, mode: params.mode]}">${transval.name}</g:link>
+                </g:else>
             </semui:exportDropdownItem>
         </g:each>
     </semui:exportDropdown>
@@ -32,10 +38,10 @@
             <semui:actionsDropdownItem controller="subscriptionDetails" action="addMembers" params="${[id:params.id]}" message="subscription.details.addMembers.label" />
         </g:if>
 
-        <g:if test="${subscriptionInstance?.type == com.k_int.kbplus.RefdataValue.getByValueAndCategory("Local Licence", "Subscription Type")}">
-        <semui:actionsDropdownItem controller="subscriptionDetails" action="launchRenewalsProcess"
+        <g:if test="${subscriptionInstance?.type == com.k_int.kbplus.RefdataValue.getByValueAndCategory("Local Licence", "Subscription Type") && !(com.k_int.kbplus.Subscription.findAllByPreviousSubscription(subscriptionInstance))}">
+            <semui:actionsDropdownItem controller="subscriptionDetails" action="launchRenewalsProcess"
                                    params="${[id: params.id]}" message="subscription.details.renewals.label"/>
-        <semui:actionsDropdownItem controller="myInstitution" action="renewalsUpload"
+            <semui:actionsDropdownItem controller="myInstitution" action="renewalsUpload"
                                    message="menu.institutions.imp_renew"/>
         </g:if>
         <g:if test="${subscriptionInstance?.type == com.k_int.kbplus.RefdataValue.getByValueAndCategory("Consortial Licence", "Subscription Type") && (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgRoleTypeIds()) && !(com.k_int.kbplus.Subscription.findAllByPreviousSubscription(subscriptionInstance))}">
@@ -50,14 +56,17 @@
             </g:if>
         </g:if>
 
-        <g:if test="${showConsortiaFunctions}">
-            <g:if test="${actionName == 'show'}">
+        <g:if test="${actionName == 'show'}">
+            <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR")}">
+                <div class="divider"></div>
+                <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalsgruppen konfigurieren" />
+            </g:if>
+
+            <g:if test="${showConsortiaFunctions}">
                 <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
                     <div class="divider"></div>
-                    <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalsgruppen anzeigen" />
+                    <semui:actionsDropdownItem id="audit_config_opener" message="property.audit.menu"/>
                 </g:if>
-
-                <semui:actionsDropdownItem id="audit_config_opener" message="property.audit.menu"/>
             </g:if>
         </g:if>
 

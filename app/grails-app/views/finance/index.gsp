@@ -44,7 +44,8 @@
     <g:if test="${editable}">
         <semui:actionsDropdown>
             <semui:actionsDropdownItem id="btnAddNewCostItem" message="financials.addNewCost" />
-            <semui:actionsDropdownItem controller="myInstitution" action="financeImport" message="financials.action.financeImport" />
+            <semui:actionsDropdownItemDisabled message="financials.action.financeImport" />
+            <%--<semui:actionsDropdownItem controller="myInstitution" action="financeImport" message="financials.action.financeImport" />--%>
         </semui:actionsDropdown>
     </g:if>
 </semui:controlButtons>
@@ -62,19 +63,26 @@
 
 <g:if test="${fixedSubscription?.instanceOf && (contextOrg?.id == fixedSubscription?.getConsortia()?.id)}">
     <div class="ui negative message">
-        <div class="header"><g:message code="myinst.message.attention" /></div>
-        <p>
+        <div class="header">
+            <g:message code="myinst.message.attention" />:
             <g:message code="myinst.subscriptionDetails.message.ChildView" />
-            <span class="ui label">${fixedSubscription.getAllSubscribers()?.collect{itOrg -> itOrg.name}.join(',')}</span>.
-        <g:message code="myinst.subscriptionDetails.message.ConsortialView" />
-        <g:link controller="subscriptionDetails" action="show" id="${fixedSubscription.instanceOf.id}"><g:message code="myinst.subscriptionDetails.message.here" /></g:link>.
+            <span class="ui label">${fixedSubscription.getAllSubscribers()?.collect{itOrg -> itOrg.getDesignation()}.join(',')}</span>.
+        </div>
+        <p>
+            <g:message code="myinst.subscriptionDetails.message.hereLink" />
+            <g:link controller="subscriptionDetails" action="members" id="${fixedSubscription.instanceOf.id}">
+                <g:message code="myinst.subscriptionDetails.message.backToMembers" />
+            </g:link>
+            <g:message code="myinst.subscriptionDetails.message.and" />
+            <g:link controller="subscriptionDetails" action="show" id="${fixedSubscription.instanceOf.id}">
+                <g:message code="myinst.subscriptionDetails.message.consotialLicence" />
+            </g:link>.
         </p>
     </div>
 </g:if>
 
 <semui:messages data="${flash}" />
 
-<%-- --%>
 <g:if test="${editable}">
     <button class="ui button" value="" href="#addBudgetCodeModal" data-semui="modal">${message(code:'budgetCode.create_new.label')}</button>
 

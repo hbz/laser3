@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription" %>
+<%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
 <!doctype html>
 
 <r:require module="annotations" />
@@ -36,7 +36,11 @@
         <div class="three fields">
             <!-- 1-1 -->
             <div class="field">
-                <label>${message(code: 'default.search.text', default: 'Search text')} (Lizenz, Vertrag, Paket, Anbieter, Konsortium, Lieferant)</label>
+                <label>${message(code: 'default.search.text', default: 'Search text')}
+                    <span data-position="right center" data-variation="tiny" data-tooltip="${message(code:'default.search.tooltip.subscription')}">
+                        <i class="question circle icon"></i>
+                    </span>
+                </label>
 
                 <div class="ui input">
                     <input type="text" name="q"
@@ -46,8 +50,7 @@
             </div>
             <!-- 1-2 -->
             <div class="field fieldcontain">
-                <semui:datepicker label="default.valid_on.label" name="validOn" placeholder="filter.placeholder"
-                                  value="${validOn}"/>
+                <semui:datepicker label="default.valid_on.label" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
             </div>
             <% /*
             <!-- 1-3 -->
@@ -76,6 +79,8 @@
 
         <div class="four fields">
 
+            <!-- 2-1 + 2-2 -->
+            <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
 <%--
             <!-- 2-1 -->
             <div class="field disabled fieldcontain">
@@ -98,24 +103,29 @@
                               value="${params.status}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
-            <!-- 2-3 -->
-            <div class="field disabled fieldcontain la-combi-input-left">
-                <label>${message(code:'subscription.property.search')}</label>
-                <g:select class="ui dropdown" id="availablePropertyTypes" name="availablePropertyTypes"
-                          from="${custom_prop_types}" optionKey="value" optionValue="key" value="${params.propertyFilterType}"/>
-            </div>
-            <!-- 2-4 -->
-            <div class="field disabled fieldcontain la-combi-input-right">
-                <label for="propertyFilter">Wert</label>
-
-                <input id="propertyFilter" type="text" name="propertyFilter"
-                       placeholder="${message(code: 'license.search.property.ph')}" value="${params.propertyFilter ?: ''}"/>
-                <input type="hidden" id="propertyFilterType" name="propertyFilterType" value="${params.propertyFilterType}"/>
-            </div>
 
            --%>
+            <!-- 2-3 -->
+            <div class="field">
+                <label>${message(code:'subscription.form.label')}</label>
+                <laser:select class="ui dropdown" name="form"
+                              from="${RefdataCategory.getAllRefdataValues('Subscription Form')}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.form}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+            <!-- 2-4 -->
+            <div class="field">
+                <label>${message(code:'subscription.resource.label')}</label>
+                <laser:select class="ui dropdown" name="resource"
+                              from="${RefdataCategory.getAllRefdataValues('Subscription Resource')}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.resource}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
 
-            <g:render template="../templates/properties/genericFilter" model="[propList: propList]"/>
         </div>
 
         <div class="two fields">
@@ -142,9 +152,9 @@
             <div class="field">
                 <div class="two fields">
 
-                    <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgRoleTypeIds())}">
-                        <div class="field">
 
+                        <div class="field">
+                            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgRoleTypeIds())}">
                             <%--
                             <g:if test="${params.orgRole == 'Subscriber'}">
                                 <input id="radioSubscriber" type="hidden" value="Subscriber" name="orgRole" tabindex="0" class="hidden">
@@ -175,8 +185,9 @@
                                     </div>
                                 </div>
                             </div>
+                            </g:if>
                         </div>
-                    </g:if>
+
 
                     <div class="field la-field-right-aligned">
                         <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
@@ -221,6 +232,7 @@
 
             <g:if test="${params.orgRole == 'Subscription Consortia'}">
                 <th rowspan="2" >${message(code: 'subscription.numberOfLicenses.label', default: 'Number of ChildLicenses')}</th>
+                <th rowspan="2" >${message(code: 'subscription.numberOfCostItems.label', default: 'Cost Items')}</th>
             </g:if>
             <% /* <g:sortableColumn params="${params}" property="s.manualCancellationDate"
                               title="${message(code: 'default.cancellationDate.label', default: 'Cancellation Date')}"/> */ %>
@@ -318,10 +330,17 @@
                     </td>
                     <g:if test="${params.orgRole == 'Subscription Consortia'}">
                         <td>
+                            <g:link controller="subscriptionDetails" action="members" params="${[id:s.id]}">
                             ${Subscription.findAllByInstanceOfAndStatusNotEqual(
                                     s,
                                     RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
                             )?.size()}
+                            </g:link>
+                        </td>
+                        <td>
+                        <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:s.id]}">
+                            ${CostItem.findAllBySubInListAndOwner(Subscription.findAllByInstanceOfAndStatusNotEqual(s, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')), institution)?.size()}
+                        </g:link>
                         </td>
                     </g:if>
 
@@ -342,8 +361,7 @@
                             <i class="chart bar outline icon"></i>
                           </laser:statsLink>
                         </g:if>
-
-                        <g:if test="${editable && ((institution in s.allSubscribers) || s.consortia == institution)}">
+                        <g:if test="${editable && ((institution?.id in s.allSubscribers.collect{ it.id }) || s.consortia?.id == institution?.id)}">
                             <g:link controller="myInstitution" action="actionCurrentSubscriptions"
                                     class="ui icon negative button"
                                     params="${[curInst: institution.id, basesubscription: s.id]}"

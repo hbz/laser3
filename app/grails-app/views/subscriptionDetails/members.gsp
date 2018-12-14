@@ -13,6 +13,11 @@
     <g:render template="breadcrumb" model="${[ params:params ]}"/>
 
     <semui:controlButtons>
+        <semui:exportDropdown>
+            <semui:exportDropdownItem>
+                <g:link class="item" action="members" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
+            </semui:exportDropdownItem>
+        </semui:exportDropdown>
         <g:render template="actions" />
     </semui:controlButtons>
 
@@ -41,6 +46,8 @@
         </form>
     </semui:filter>
     --%>
+
+<semui:messages data="${flash}" />
 
     <g:if test="${validSubChilds}">
 

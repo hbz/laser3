@@ -14,6 +14,7 @@ class SemanticUiInplaceTagLib {
     *   owner - Object
     *   field - property
     *   type - type of input
+     *  validation - trigger js validation
     *   id [optional] -
     *   class [optional] - additional classes
     */
@@ -47,9 +48,16 @@ class SemanticUiInplaceTagLib {
             out << " data-pk=\"${oid}\""
             out << " data-name=\"${attrs.field}\""
 
+            if (attrs.validation) {
+                out << " data-validation=\"${attrs.validation}\" "
+            }
+
             switch (attrs.type) {
                 case 'date':
                     data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'date', format:"${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}"]).encodeAsHTML()
+                break
+                case 'url':
+                    data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'url']).encodeAsHTML()
                 break
                 case 'string':
                 default:

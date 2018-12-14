@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.controller.AbstractDebugController
 import net.sf.jasperreports.engine.JasperCompileManager
 import net.sf.jasperreports.engine.JasperReport
 import grails.plugin.springsecurity.annotation.Secured
@@ -17,7 +18,7 @@ import net.sf.jasperreports.engine.*
 import net.sf.jasperreports.export.Exporter
 
 @Secured(['IS_AUTHENTICATED_FULLY', 'ROLE_DATAMANAGER'])
-class JasperReportsController {
+class JasperReportsController extends AbstractDebugController {
 def dataSource
 
 	@Secured(['ROLE_DATAMANAGER'])

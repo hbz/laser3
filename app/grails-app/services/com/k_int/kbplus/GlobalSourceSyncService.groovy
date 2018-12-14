@@ -260,6 +260,8 @@ class GlobalSourceSyncService {
           pkg.checkAndAddMissingIdentifier(it.namespace, it.value);
         }
       }
+      //oldpkg is the pkg in Laser
+      oldpkg = pkg ? pkg.toComparablePackage() : oldpkg;
       pkg.save()
     }
     else {
@@ -441,6 +443,12 @@ class GlobalSourceSyncService {
 
         def changetext
         def change_doc = [:]
+
+        def contextObject = genericOIDService.resolveOID("Package:${ctx.id}");
+        def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+        def announcement_content_changeTitle = "<p>${messageSource.getMessage('announcement.title.ChangeTitle', null, "Change Title in Package ", locale)}  ${contextObject.getURL() ? "<a href=\"${contextObject.getURL()}\">${contextObject.name}</a>" : "${contextObject.name}"} ${new Date().toString()}</p><p><ul>"
+        def changeTitle = false
+
         changes.each { chg ->
 
           if ("${chg.field}" == "accessStart") {
@@ -469,8 +477,24 @@ class GlobalSourceSyncService {
             change_doc.put("hostPlatformURL", tipp.url)
 
           }
+          if ("${chg.field}" == "titleName") {
+            changeTitle = true
+            announcement_content_changeTitle += "<li>${messageSource.getMessage("announcement.title.TitleChange", [chg.oldValue, chg.newValue] as Object[],"Title was change from {0} to {1}.", locale)}</li>"
+            title_of_tipp_to_update.title = tipp?.title?.name
+            title_of_tipp_to_update.save(flush:true)
+          }
 
         }
+
+        if(changeTitle){
+          def announcement_type = RefdataValue.getByValueAndCategory('Announcement','Document Type')
+          def newAnnouncement = new Doc(title:'Automated Announcement',
+                  type:announcement_type,
+                  content:announcement_content_changeTitle+"</ul></p>",
+                  dateCreated:new Date(),
+                  user: User.findByUsername('admin')).save(flush:true);
+        }
+
         if (change_doc) {
           changeNotificationService.registerPendingChange(
                   PendingChange.PROP_PKG,
@@ -1272,7 +1296,7 @@ class GlobalSourceSyncService {
 
   }
 
-  def initialiseTrackerNew(grt) {
+/*  def initialiseTrackerNew(grt) {
 
     def newrecord = reloadAndSaveRecordofPackage(grt)
 
@@ -1289,7 +1313,7 @@ class GlobalSourceSyncService {
     def record = newrecord.parsed_rec ?: newrec
 
     cfg.reconciler.call(grt,oldrec,record)
-  }
+  }*/
 
   def cleanUpGorm() {
       log.debug("Clean up GORM")

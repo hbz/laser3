@@ -2,7 +2,7 @@
 
 <semui:modal id="addressFormModal" text="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}">
 
-    <g:form class="ui form" url="[controller: 'address', action: 'create']" method="POST">
+    <g:form  id="create_address" class="ui form" url="[controller: 'address', action: 'create']" method="POST">
         <input type="hidden" name="redirect" value="true" />
 
         <div class="field">
@@ -11,7 +11,7 @@
                     <label for="street_1">
                         <g:message code="address.street_1.label" default="Street1" />
                     </label>
-                    <g:textField name="street_1" required="" value="${addressInstance?.street_1}"/>
+                    <g:textField name="street_1"  value="${addressInstance?.street_1}"/>
                 </div>
 
                 <div class="field two wide fieldcontain ${hasErrors(bean: addressInstance, field: 'street_2', 'error')} ">
@@ -41,14 +41,14 @@
                     <label for="zipcode">
                         <g:message code="address.zipcode.label" default="Zipcode" />
                     </label>
-                    <g:textField name="zipcode" required="" value="${addressInstance?.zipcode}"/>
+                    <g:textField name="zipcode" value="${addressInstance?.zipcode}"/>
                 </div>
 
                 <div class="field six wide fieldcontain ${hasErrors(bean: addressInstance, field: 'city', 'error')} required">
                     <label for="city">
                         <g:message code="address.city.label" default="City" />
                     </label>
-                    <g:textField name="city" required="" value="${addressInstance?.city}"/>
+                    <g:textField name="city" value="${addressInstance?.city}"/>
                 </div>
 
                 <div class="field seven wide fieldcontain ${hasErrors(bean: addressInstance, field: 'country', 'error')}">
@@ -125,7 +125,7 @@
                 optionKey="id"
                 optionValue="value"
                 value="${addressInstance?.type?.id}"
-                required=""/>
+                />
         </div>
 
         <g:if test="${!orgId}">
@@ -160,3 +160,43 @@
 
     </g:form>
 </semui:modal>
+<r:script>
+        function handleRequired() {
+            $('#create_address')
+                    .form({
+
+                inline: true,
+                fields: {
+                    street_1: {
+                        identifier  : 'street_1',
+                        rules: [
+                            {
+                                type   : 'empty',
+                                prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                            }
+                        ]
+                    },
+
+                    zipcode: {
+                        identifier  : 'zipcode',
+                        rules: [
+                            {
+                                type   : 'empty',
+                                prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                            }
+                        ]
+                    },
+                    city: {
+                        identifier  : 'city',
+                        rules: [
+                            {
+                                type   : 'empty',
+                                prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                            }
+                        ]
+                    },
+                 }
+            });
+        }
+        handleRequired()
+</r:script>

@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.controller.AbstractDebugController
 import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
@@ -8,7 +9,7 @@ import groovy.xml.MarkupBuilder
 import com.k_int.kbplus.auth.*;
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class DocWidgetController {
+class DocWidgetController extends AbstractDebugController {
 
   def springSecurityService
   def docstoreService

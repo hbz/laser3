@@ -25,6 +25,7 @@
                 <g:select class="ui dropdown" name="supplier"
                               from="${providerList}"
                               optionKey="id"
+                              optionDisabled="optionDisabled"
                               optionValue="name"
                               value="${params.supplier}"
                               noSelection="${[null: message(code: 'default.select.choose.label')]}"/>

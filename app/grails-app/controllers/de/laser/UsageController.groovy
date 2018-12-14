@@ -3,15 +3,17 @@ package de.laser
 import com.k_int.kbplus.Fact
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgCustomProperty
+import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinition
+import de.laser.controller.AbstractDebugController
 import de.laser.domain.StatsTripleCursor
 import grails.plugin.springsecurity.annotation.Secured
 import grails.transaction.Transactional
 import org.hibernate.criterion.CriteriaSpecification
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class UsageController {
+class UsageController extends AbstractDebugController {
 
     def statsSyncService
     def factService
@@ -99,7 +101,22 @@ class UsageController {
         result.institution = contextService.getOrg()
         result.institutionList = factService.institutionsWithRequestorIDAndAPIKey()
         result.user = User.get(springSecurityService.principal.id)
-        result.providerList = factService.providersWithStatssid()
+        def providersWithStatssid = factService.providersWithStatssid()
+        def providerList = []
+        if (!result.institutionList.isEmpty()) {
+            def joinedInstitutions = result.institutionList.id.join(',')
+            providersWithStatssid.each {
+                def hql = "select s.id from Subscription s join s.orgRelations as institution " +
+                    "where institution.org.id in (${joinedInstitutions}) and s.status.value=:status and exists (select 1 from IssueEntitlement as ie INNER JOIN ie.tipp.pkg.orgs as orgrel where ie.subscription=s and orgrel.org.id=:supplierId)"
+                def subsWithIssueEntitlements = Subscription.executeQuery(hql, [supplierId: it.id, status: 'Current'])
+                def listItem = [:]
+                listItem.id = it.id
+                listItem.name = it.name
+                listItem.optionDisabled = (subsWithIssueEntitlements.size() == 0)
+                providerList.add(listItem)
+            }
+        }
+        result.providerList = providerList
         result.institutionsWithFacts = factService.getFactInstitutionList()
         result.providersWithFacts = factService.getFactProviderList()
         result.natstatProviders = StatsTripleCursor.withCriteria {
@@ -116,6 +133,9 @@ class UsageController {
         result.apiKey = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("API Key"), result.institution)
         result.requestor = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
 
+        if (statsSyncService.getErrors()) {
+            flash.error = statsSyncService.errors.join('</br>')
+        }
         return result
     }
 
@@ -123,6 +143,7 @@ class UsageController {
     def abort()
     {
         def result = initResult()
+        statsSyncService.setErrors([])
         statsSyncService.running = false
         redirect(view: "index", model: result)
     }
@@ -132,11 +153,12 @@ class UsageController {
     {
         // TODO when we switch to global API Key / Requestor, query SUSHI Service status endpoint here
         // Do not continue if service is not active or there is an error with the API Credentials.
+        statsSyncService.setErrors([])
         def result = initResult()
         statsSyncService.addFilters(params)
         statsSyncService.doSync()
         if (statsSyncService.getErrors()) {
-            flash.error = statsSyncService.errors.join('\n')
+            flash.error = statsSyncService.errors.join('</br>')
         }
         redirect(view: "index", model: result)
     }
@@ -145,6 +167,7 @@ class UsageController {
     @Transactional
     def deleteAll()
     {
+        statsSyncService.setErrors([])
         def result = initResult()
         Fact.executeUpdate('delete from Fact')
         StatsTripleCursor.executeUpdate('delete from StatsTripleCursor ')
@@ -156,6 +179,7 @@ class UsageController {
     @Transactional
     def deleteSelection()
     {
+        statsSyncService.setErrors([])
         def result = initResult()
         def wibid, supplier, supplierOrg, instOrg
 

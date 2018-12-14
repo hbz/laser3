@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -21,6 +22,8 @@ class YodaController {
     def dataloadService
     def globalSourceSyncService
     def contextService
+    def dashboardDueDatesService
+    def executorService
 
     static boolean ftupdate_running = false
 
@@ -92,6 +95,18 @@ class YodaController {
                 cacheService.clear(cache)
             }
         }
+
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def appProfiler() {
+        def result = [:]
+
+        result.byUri =
+                SystemProfiler.executeQuery("select sp, avg(sp.ms) as ms, count(*) from SystemProfiler sp group by sp.uri").sort{it[1]}.reverse()
+        result.byUriAndContext =
+                SystemProfiler.executeQuery("select sp, avg(sp.ms) as ms, count(*) from SystemProfiler sp group by sp.uri, sp.context").sort{it[1]}.reverse()
 
         result
     }
@@ -429,5 +444,22 @@ class YodaController {
 
         redirect(action: 'manageSystemMessage')
     }
+
+    @Secured(['ROLE_YODA'])
+    def dueDates_updateDashboardDB(){
+        flash.message = "Datenbank wird upgedatet"
+        dashboardDueDatesService.takeCareOfDueDates(true, false)
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_YODA'])
+    def dueDates_sendAllEmails() {
+        flash.message = "Emails mit fälligen Terminen werden vesandt"
+        def future = executorService.submit({
+            dashboardDueDatesService.takeCareOfDueDates(false, true)
+        } as java.util.concurrent.Callable)
+        redirect(url: request.getHeader('referer'))
+    }
+
 
 }

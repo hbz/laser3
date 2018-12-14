@@ -215,20 +215,11 @@ class Org extends AbstractBaseDomain {
 
             def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndOrg(it, this)
 
-            // TODO check !?!?!?!?
-            
-            // global groups
-            if (it.tenant == null) {
+            if (it.tenant == null || it.tenant?.id == contextService.getOrg()?.id) {
                 if (binding) {
                     result.local << [it, binding]
                 } else {
                     result.global << it
-                }
-            }
-            // locals; getting group by tenant and binding
-            if (it.tenant?.id == contextService.getOrg()?.id) {
-                if (binding) {
-                    result.local << [it, binding]
                 }
             }
         }

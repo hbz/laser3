@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import com.k_int.properties.PropertyDefinition
 import org.springframework.dao.DataIntegrityViolationException
@@ -11,7 +12,7 @@ import com.k_int.kbplus.auth.*
 import com.k_int.kbplus.OrgCustomProperty
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class IssueEntitlementController {
+class IssueEntitlementController extends AbstractDebugController {
 
   def factService
 

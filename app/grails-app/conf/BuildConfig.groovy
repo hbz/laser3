@@ -80,7 +80,7 @@ grails.project.dependency.resolution = {
         compile 'commons-codec:commons-codec:1.6'
         runtime 'xerces:xerces:2.4.0'
         runtime 'xerces:xercesImpl:2.11.0'
-        runtime 'mysql:mysql-connector-java:5.1.30'
+        compile 'mysql:mysql-connector-java:5.1.30'
 
         compile 'org.elasticsearch:elasticsearch:2.1.2'
         runtime ('org.elasticsearch:elasticsearch-groovy:2.1.2') {

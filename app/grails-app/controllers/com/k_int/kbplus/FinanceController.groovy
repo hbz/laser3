@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.*
+import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.converters.JSON;
@@ -9,7 +10,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class FinanceController {
+class FinanceController extends AbstractDebugController {
 
     def springSecurityService
     def accessService
@@ -107,7 +108,7 @@ class FinanceController {
                     result.cost_items_CS = tmp.cost_items.sort{ x, y ->
                         def xx = OrgRole.findBySubAndRoleType(x.sub, RDStore.OR_SUBSCRIBER_CONS)
                         def yy = OrgRole.findBySubAndRoleType(y.sub, RDStore.OR_SUBSCRIBER_CONS)
-                        xx.org.sortname <=> yy.org.sortname
+                        xx?.org?.sortname <=> yy?.org?.sortname
                     }
                     result.cost_item_count_CS = tmp.cost_item_count
                 }
@@ -135,8 +136,9 @@ class FinanceController {
             flash.error = null
             flash.message = null
 
+            // TODO: review as of ticket ERMS-761 and ERMS-823
             if (result.foundMatches || result.foundMatches_CS || result.foundMatches_SUBSCR) {
-                flash.message = "Felder mit potentiellen Treffern bleiben gesetzt."
+                flash.message = "Die aktuelle Filtereinstellung liefert potentielle Treffer. Ggfs. müssen Sie einzelne Felder noch anpassen."
             }
             else if (params.get('submit')) {
                 flash.error = "Keine Treffer. Der Filter wird zurückgesetzt."
@@ -147,7 +149,20 @@ class FinanceController {
           //          CostItem.findAllWhere(owner: result.institution, sub: result.fixedSubscription)
           //        : CostItem.findAllWhere(owner: result.institution)
 
+          //TODO: Nochmal überdenken
           def myCostItems = CostItem.findAllWhere(owner: result.institution)
+          switch (result.queryMode)
+          {
+              case MODE_OWNER:
+                  myCostItems = result.cost_items
+                  break
+              case MODE_CONS_AT_SUBSCR:
+                  myCostItems = result.cost_items_SUBSCR
+                  break
+              case MODE_CONS:
+                  myCostItems = result.cost_items_CS
+                  break
+          }
 
           result.allCIInvoiceNumbers = (myCostItems.collect{ it -> it?.invoice?.invoiceNumber }).findAll{ it }.unique().sort()
           result.allCIOrderNumbers   = (myCostItems.collect{ it -> it?.order?.orderNumber }).findAll{ it }.unique().sort()
@@ -600,6 +615,24 @@ class FinanceController {
             countCheck          += " AND (ci.invoiceDate <= :invoiceDateTo AND ci.invoiceDate IS NOT null) "
 
             fqResult.fqParams << [invoiceDateTo: sdf.parse(params.filterCIInvoiceTo)]
+        }
+
+        if (params.filterCIPaidFrom) {
+            // println sdf.parse(params.filterCIPaidFrom)
+
+            fqResult.qry_string += " AND (ci.datePaid >= :datePaidFrom AND ci.datePaid IS NOT null) "
+            countCheck          += " AND (ci.datePaid >= :datePaidFrom AND ci.datePaid IS NOT null) "
+
+            fqResult.fqParams << [datePaidFrom: sdf.parse(params.filterCIPaidFrom)]
+        }
+
+        if (params.filterCIPaidTo) {
+            // println sdf.parse(params.filterCIPaidTo)
+
+            fqResult.qry_string += " AND (ci.datePaid <= :datePaidTo AND ci.datePaid IS NOT null) "
+            countCheck          += " AND (ci.datePaid <= :datePaidTo AND ci.datePaid IS NOT null) "
+
+            fqResult.fqParams << [datePaidTo: sdf.parse(params.filterCIPaidTo)]
         }
 
         fqResult.filterCount = CostItem.executeQuery(countCheck, fqResult.fqParams).first() // ?

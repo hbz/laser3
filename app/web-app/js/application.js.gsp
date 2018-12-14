@@ -112,7 +112,7 @@ r2d2 = {
         // sticky table header
         $('.table').floatThead({
             position: 'fixed',
-            top: 78,
+            top: 90,
             zIndex: 1
         });
 
@@ -195,9 +195,18 @@ r2d2 = {
             ctxSel = 'body'
         }
 
+        // DEPRECATED ?? never used
         $(ctxSel + ' .xEditable').editable({
             language: gspLocale,
             format:   gspDateFormat,
+            validate: function(value) {
+                // custom validate functions via semui:xEditable validation="xy"
+                if ('notEmpty' == $(this).attr('data-validation')) {
+                    if($.trim(value) == '') {
+                        return "Das Feld darf nicht leer sein";
+                    }
+                }
+            },
             error: function (xhr, status, error) {
                 alert(xhr.status + ": " + xhr.statusText);
             }
@@ -210,6 +219,12 @@ r2d2 = {
                 if ($(this).attr('data-format') && value) {
                     if(! (value.match(/^\d{1,2}\.\d{1,2}\.\d{4}$/) || value.match(/^\d{4}-\d{1,2}-\d{1,2}$/)) ) {
                         return "Ungültiges Format";
+                    }
+                }
+                // custom validate functions via semui:xEditable validation="xy"
+                if ('notEmpty' == $(this).attr('data-validation')) {
+                    if($.trim(value) == '') {
+                        return "Das Feld darf nicht leer sein";
                     }
                 }
             },

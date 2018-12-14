@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.uni_freiburg.ub.IpRange
 import groovy.json.JsonOutput
@@ -11,7 +12,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.*
 import grails.plugin.springsecurity.annotation.Secured
 
-class AccessPointController {
+class AccessPointController extends AbstractDebugController {
 
     def springSecurityService
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: ['GET','POST']]

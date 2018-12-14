@@ -1,11 +1,12 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.controller.AbstractDebugController
 import grails.plugin.springsecurity.annotation.Secured
 import org.xml.sax.SAXException
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class LicenseImportController {
+class LicenseImportController extends AbstractDebugController {
 
   def CAT_TYPE = "UsageType",
       CAT_STATUS = "UsageStatus",
