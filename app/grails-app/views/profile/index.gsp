@@ -147,6 +147,12 @@
                     <semui:xEditableRefData owner="${US_IS_REMIND_BY_EMAIL}" field="rdValue" config="${US_IS_REMIND_BY_EMAIL.key.rdc}" />
                 </div>
 
+                <div class="field">
+                    <label>${message(code: 'profile.emailLanguage', default:'Language in E-Mails')}</label>
+                    <g:set var="US_EMAIL_LANGUAGE" value="${user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de','Language'))}" />
+                    <semui:xEditableRefData owner="${US_EMAIL_LANGUAGE}" field="rdValue" config="${US_EMAIL_LANGUAGE.key.rdc}" />
+                </div>
+
     <div class="field">
                     <label>${message(code: 'profile.editMode', default:'Show Edit Mode')}</label>
                     <g:set var="US_SHOW_EDIT_MODE" value="${user.getSetting(UserSettings.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)}" />
