@@ -488,6 +488,8 @@ class PackageDetailsController extends AbstractDebugController {
         def preCon = taskService.getPreconditions(contextOrg)
         result << preCon
 
+        result.contextOrg = contextOrg
+
         result.modalPrsLinkRole = RefdataValue.findByValue('Specific package editor')
         result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
 
