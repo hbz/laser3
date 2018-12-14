@@ -422,7 +422,19 @@ class OrganisationsController extends AbstractDebugController {
       }
       redirect action: 'users', id: params.id
     }
-    
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def deleteRole() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        UserOrg uo = UserOrg.get(params.grant)
+        if ( accessService.checkMinUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
+            uo.delete();
+        }
+        redirect action: 'users', id: params.id
+    }
+
     @Secured(['ROLE_USER'])
     def addOrgCombo(Org fromOrg, Org toOrg) {
       //def comboType = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia')
@@ -440,18 +452,6 @@ class OrganisationsController extends AbstractDebugController {
       else {
         flash.message = "This Combo already exists!"
       }
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-    def deleteRole() {
-      def result = [:]
-      result.user = User.get(springSecurityService.principal.id)
-      UserOrg uo = UserOrg.get(params.grant)
-      if ( accessService.checkMinUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
-        uo.delete();
-      }
-      redirect action: 'users', id: params.id
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')

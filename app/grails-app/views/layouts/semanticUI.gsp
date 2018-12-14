@@ -371,16 +371,7 @@
                         <i class="dropdown icon"></i>
 
                         <div class="menu">
-                            <div class="ui dropdown item">
-                                Fällige Termine
-                                <i class="dropdown icon"></i>
 
-                                <div class="menu">
-                                    <g:link class="item" controller="yoda" action="dueDates_updateDashboardDB">${message(code:'menu.admin.updateDashboardTable')}</g:link>
-                                    <g:link class="item" controller="yoda" action="dueDates_sendAllEmails">${message(code:'menu.admin.sendEmailsForDueDates')}</g:link>
-                                </div>
-                            </div>
-                            <div class="divider"></div>
                             <g:link class="item" controller="yoda" action="settings">System Settings</g:link>
                             <g:link class="item" controller="yoda" action="manageSystemMessage">${message(code: 'menu.admin.systemMessage', default: 'System Message')}</g:link>
                             <g:link class="item" controller="yoda" action="appConfig">App Config</g:link>
@@ -392,6 +383,17 @@
                             <div class="divider"></div>
 
                             <g:link class="item" controller="yoda" action="pendingChanges">Pending Changes</g:link>
+
+                            <div class="divider"></div>
+
+                            <div class="ui dropdown item">
+                                Fällige Termine
+                                <i class="dropdown icon"></i>
+                                <div class="menu">
+                                    <g:link class="item" controller="yoda" action="dueDates_updateDashboardDB">${message(code:'menu.admin.updateDashboardTable')}</g:link>
+                                    <g:link class="item" controller="yoda" action="dueDates_sendAllEmails">${message(code:'menu.admin.sendEmailsForDueDates')}</g:link>
+                                </div>
+                            </div>
 
                             <div class="divider"></div>
 
