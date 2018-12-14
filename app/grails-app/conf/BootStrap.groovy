@@ -1550,6 +1550,10 @@ class BootStrap {
     // log.debug("New gokb record source: ${gokb_record_source}")
 
         //Reminders for Cron
+        RefdataCategory.loc("Language", [en: "Language", de: "Sprache"], BOOTSTRAP)
+        RefdataValue.loc("Language", [key: 'en', en: "English", de:"Englisch"], BOOTSTRAP)
+        RefdataValue.loc("Language", [key: 'de', en: "German", de:"Deutsch"], BOOTSTRAP)
+
         RefdataCategory.loc("ReminderMethod", [en: "email"], BOOTSTRAP)
 
         RefdataCategory.loc('ReminderUnit',
