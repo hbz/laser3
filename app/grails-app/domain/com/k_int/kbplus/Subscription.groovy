@@ -534,7 +534,8 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
   }
 
   def setInstitution(inst) {
-    println("Set institution ${inst}");
+      log.debug("Set institution ${inst}")
+
     def subrole = RDStore.OR_SUBSCRIBER
     def or = new OrgRole(org:inst, roleType:subrole, sub:this)
     if ( this.orgRelations == null)
@@ -543,7 +544,8 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
   }
 
   def addNamespacedIdentifier(ns,value) {
-    println("Add Namespaced identifier ${ns}:${value}");
+      log.debug("Add Namespaced identifier ${ns}:${value}")
+
     def canonical_id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value);
     if ( this.ids == null)
       this.ids = []

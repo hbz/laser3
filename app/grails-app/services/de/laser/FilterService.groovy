@@ -67,7 +67,7 @@ class FilterService {
         result.query = query
         result.queryParams = queryParams
 
-        println result
+        log.debug(result)
         result
     }
 

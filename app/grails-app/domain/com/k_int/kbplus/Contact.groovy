@@ -67,7 +67,7 @@ class Contact implements Comparable<Contact>{
         def result = null
 
         if (! content) {
-            log.debug( info + " > ignored; empty content")
+            LogFactory.getLog(this).debug( info + " > ignored; empty content")
             return
         }
 

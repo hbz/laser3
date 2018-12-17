@@ -293,11 +293,11 @@ class GlobalSourceSyncService {
 
     def onNewTipp = { ctx, tipp, auto_accept ->
       def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-      println("new tipp: ${tipp}");
-      println("identifiers: ${tipp.title.identifiers}");
+      log.debug("new tipp: ${tipp}");
+      log.debug("identifiers: ${tipp.title.identifiers}");
 
       def title_instance = TitleInstance.lookupOrCreate(tipp.title.identifiers,tipp.title.name, tipp.title.titleType)
-      println("Result of lookup or create for ${tipp.title.name} with identifiers ${tipp.title.identifiers} is ${title_instance}");
+      log.debug("Result of lookup or create for ${tipp.title.name} with identifiers ${tipp.title.identifiers} is ${title_instance}");
       def origin_uri = null
       tipp.title.identifiers.each { i ->
         if (i.namespace.toLowerCase() == 'uri') {
@@ -347,7 +347,7 @@ class GlobalSourceSyncService {
         }
       }
       else {
-        println("Register new tipp event for user to accept or reject");
+        log.debug("Register new tipp event for user to accept or reject");
 
         def cov = tipp.coverage[0]
         def change_doc = [
@@ -382,7 +382,7 @@ class GlobalSourceSyncService {
     }
 
     def onUpdatedTipp = { ctx, tipp, oldtipp, changes, auto_accept ->
-      println("updated tipp, ctx = ${ctx.toString()}");
+      log.debug("updated tipp, ctx = ${ctx.toString()}");
 
       // Find title with ID tipp... in package ctx
       def title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers,tipp.title.name)
@@ -500,7 +500,7 @@ class GlobalSourceSyncService {
                         changeType  : PendingChangeService.EVENT_OBJECT_UPDATE,
                         changeDoc   : change_doc
                 ])
-        println("deleted tipp");
+        log.debug("deleted tipp");
       }
 
     }
@@ -516,10 +516,10 @@ class GlobalSourceSyncService {
           def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
           announcement_content = "<p>${messageSource.getMessage('announcement.package.ChangeTitle', null, "Change Package Title on ", locale)}  ${contextObject.getURL() ? "<a href=\"${contextObject.getURL()}\">${ctx.name}</a>" : "${ctx.name}"} ${new Date().toString()}</p>"
           announcement_content += "<p><ul><li>${messageSource.getMessage("announcement.package.TitleChange", [oldvalue, value] as Object[],"Package Title was change from {0} to {1}.", locale)}</li></ul></p>"
-          println("updated pkg prop");
+          log.debug("updated pkg prop");
           break;
         default:
-          println("Not updated pkg prop");
+          log.debug("Not updated pkg prop");
           break;
       }
 
@@ -1049,7 +1049,7 @@ class GlobalSourceSyncService {
     }
     def titleinfo = titleConv(titlerecord.metadata, null)
 
-    println("TitleRecord:" + titleinfo)
+    log.debug("TitleRecord:" + titleinfo)
 
     def kbplus_compliant = testTitleCompliance(titleinfo.parsed_rec)
 
