@@ -36,7 +36,7 @@
     <g:each in="${systemMessages}" var="m">
         <tr>
             <td>${m?.text}</td>
-            <td><semui:xEditable owner="${m}" field="showNow"/></td>
+            <td><semui:xEditableBoolean owner="${m}" field="showNow"/></td>
             <td>${m.org?.name}</td>
             <td><g:formatDate date="${m?.dateCreated}"
                               format="${message(code: 'default.date.format')}"/></td>

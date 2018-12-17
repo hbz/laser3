@@ -376,7 +376,15 @@ class AjaxController extends AbstractDebugController {
 
     render result as JSON
   }
-  
+
+  def generateBoolean() {
+    def result = [
+        [value: 'false', text: 'false'],
+        [value: 'true', text: 'true']
+    ]
+    render result as JSON
+  }
+
   def refdataSearch() {
 
     //log.debug("refdataSearch params: ${params}");
