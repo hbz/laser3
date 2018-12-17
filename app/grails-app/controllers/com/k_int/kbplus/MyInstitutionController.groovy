@@ -1438,24 +1438,26 @@ AND s.status !=:sub_del """
             sub_params.date_restriction = date_restriction
         }
         result.subscriptions = Subscription.executeQuery("SELECT s FROM ${sub_qry} ORDER BY s.name", sub_params);
+        result.test = Subscription.executeQuery("""
+SELECT Distinct(role.org), role.org.name FROM SubscriptionPackage sp INNER JOIN sp.pkg.orgs AS role ORDER BY role.org.name """);
 
         // Query the list of Providers
-        result.providers = Subscription.executeQuery("\
-SELECT Distinct(role.org) FROM SubscriptionPackage sp INNER JOIN sp.pkg.orgs AS role \
-WHERE EXISTS ( FROM ${sub_qry} AND sp.subscription = s ) \
-AND role.roleType=:role_cp \
-ORDER BY role.org.name", sub_params+[role_cp:cp]);
+        result.providers = Subscription.executeQuery("""
+SELECT Distinct(role.org), role.org.name FROM SubscriptionPackage sp INNER JOIN sp.pkg.orgs AS role 
+WHERE EXISTS ( FROM ${sub_qry} AND sp.subscription = s ) 
+AND role.roleType=:role_cp 
+ORDER BY role.org.name""", sub_params+[role_cp:cp]);
 
         // Query the list of Host Platforms
         result.hostplatforms = IssueEntitlement.executeQuery("""
-SELECT distinct(ie.tipp.platform)
+SELECT distinct(ie.tipp.platform), ie.tipp.platform.name
 FROM IssueEntitlement AS ie, ${sub_qry}
 AND s = ie.subscription
 ORDER BY ie.tipp.platform.name""", sub_params);
 
         // Query the list of Other Platforms
         result.otherplatforms = IssueEntitlement.executeQuery("""
-SELECT distinct(p.platform)
+SELECT distinct(p.platform), p.platform.name
 FROM IssueEntitlement AS ie
   INNER JOIN ie.tipp.additionalPlatforms as p,
   ${sub_qry}

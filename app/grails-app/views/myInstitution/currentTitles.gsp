@@ -66,8 +66,8 @@
                   <option <%= (filterPvd.contains("all")) ? 'selected' : '' %> value="all">${message(code:'myinst.currentTitles.all_providers', default:'All Content Providers')}</option>
                   <g:each in="${providers}" var="p">
                     <%
-                    def pvdId = p.id.toString()
-                    def pvdName = p.name
+                    def pvdId = p[0].id.toString()
+                    def pvdName = p[0].name
                     %>
                     <option <%= (filterPvd.contains(pvdId)) ? 'selected' : '' %> value="${pvdId}" title="${pvdName}">
                       ${pvdName}
@@ -82,24 +82,25 @@
                 <select name="filterHostPlat" <%--multiple="multiple"--%> class="ui search selection fluid dropdown">
                   <option <%= (filterHostPlat.contains("all")) ? 'selected' : '' %> value="all">${message(code:'myinst.currentTitles.all_host_platforms', default:'All Host Platforms')}</option>
                   <g:each in="${hostplatforms}" var="hp">
-                    <%
-                    def hostId = hp.id.toString()
-                    def hostName = hp.name
+                  <%
+                  def hostId = hp[0].id.toString()
+                  def hostName = hp[0].name
                     %>
-                    <option <%= (filterHostPlat.contains(hostId)) ? 'selected' : '' %> value="${hostId}" title="${hostName}">
-                      ${hostName}
-                    </option>
-                  </g:each>
-                </select>
-              </div>
-              <div class="field eight wide">
+                  <option <%= (filterHostPlat.contains(hostId)) ? 'selected' : '' %> value="${hostId}" title="${hostName}">
+                    ${hostName}
+                  </option>
+                </g:each>
+              </select>
+            </div>
+            <div class="field eight wide">
 
-                <select name="filterOtherPlat" <%--multiple="multiple"--%> class="ui search selection fluid dropdown">
+              <select name="filterOtherPlat" <%--multiple="multiple"--%> class="ui search selection fluid dropdown">
                   <option <%= (filterOtherPlat.contains("all")) ? 'selected' : '' %> value="all">${message(code:'myinst.currentTitles.all_other_platforms', default:'All Additional Platforms')}</option>
                   <g:each in="${otherplatforms}" var="op">
-                    <%
-                    def platId = op.id.toString()
-                    def platName = op.name
+
+                  <%
+                    def platId = op[0].id.toString()
+                    def platName = op[0].name
                     %>
                     <option <%= (filterOtherPlat.contains(platId)) ? 'selected' : '' %> value="${platId}" title="${platName}">
                       ${platName}
