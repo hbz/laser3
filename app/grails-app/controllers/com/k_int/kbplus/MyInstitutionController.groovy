@@ -17,6 +17,7 @@ import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
 import com.k_int.properties.*
 import de.laser.DashboardDueDate
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
@@ -202,10 +203,7 @@ class MyInstitutionController extends AbstractDebugController {
         def date_restriction = null;
         def sdf = new DateUtil().getSimpleDateFormat_NoTime()
 
-        if (params.validOn == null) {
-            result.validOn = sdf.format(new Date(System.currentTimeMillis()))
-            date_restriction = sdf.parse(result.validOn)
-        } else if (params.validOn.trim() == '') {
+        if (params.validOn == null || params.validOn.trim() == '') {
             result.validOn = ""
         } else {
             result.validOn = params.validOn
@@ -560,10 +558,7 @@ from License as l where (
         def date_restriction = null;
         def sdf = new DateUtil().getSimpleDateFormat_NoTime()
 
-        if (params.validOn == null) {
-            result.validOn = sdf.format(new Date(System.currentTimeMillis()))
-            date_restriction = sdf.parse(result.validOn)
-        } else if (params.validOn.trim() == '') {
+        if (params.validOn == null || params.validOn.trim() == '') {
             result.validOn = ""
         } else {
             result.validOn = params.validOn
@@ -571,6 +566,10 @@ from License as l where (
         }
 
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+
+        if(!params.status) {
+            params.status = RefdataValue.getByValueAndCategory('Current','Subscription Status').id
+        }
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.num_sub_rows = Subscription.executeQuery("select count(s) " + tmpQ[0], tmpQ[1])[0]
@@ -829,14 +828,17 @@ from License as l where (
         
         def orgRole = null
         def subType = null
-        
-        log.debug("found orgRoleType ${result.orgRoleType}")
-        
-        if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgRoleType)) {
-            orgRole = role_cons
-            subType = RefdataValue.getByValueAndCategory('Consortial Licence', 'Subscription Type')
+
+        if (params.asOrgRoleType) {
+            log.debug("asOrgRoleType ${params.asOrgRoleType} in ${result.orgRoleType} ?")
+
+            if ((Long.valueOf(params.asOrgRoleType) in result.orgRoleType)
+                    && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgRoleType)) {
+                orgRole = role_cons
+                subType = RefdataValue.getByValueAndCategory('Consortial Licence', 'Subscription Type')
+            }
         }
-        else {
+        if (! subType) {
             orgRole = role_sub
             subType = RefdataValue.getByValueAndCategory('Local Licence', 'Subscription Type')
         }
@@ -3442,7 +3444,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     private addPrivatePropertyDefinition(params) {
         log.debug("adding private property definition for institution: " + params)
 
-        def tenant = contextService.getOrg()
+        def tenant = GrailsHibernateUtil.unwrapIfProxy(contextService.getOrg())
 
         def privatePropDef = PropertyDefinition.findWhere(
                 name:   params.pd_name,
@@ -3462,6 +3464,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                     params.pd_name,
                     params.pd_type,
                     params.pd_descr,
+                    params.pd_expl,
                     (params.pd_multiple_occurrence ? true : false),
                     (params.pd_mandatory ? true : false),
                     tenant

@@ -376,7 +376,15 @@ class AjaxController extends AbstractDebugController {
 
     render result as JSON
   }
-  
+
+  def generateBoolean() {
+    def result = [
+        [value: 'false', text: 'false'],
+        [value: 'true', text: 'true']
+    ]
+    render result as JSON
+  }
+
   def refdataSearch() {
 
     //log.debug("refdataSearch params: ${params}");
@@ -814,6 +822,7 @@ class AjaxController extends AbstractDebugController {
                             params.cust_prop_name,
                             params.cust_prop_type,
                             params.cust_prop_desc,
+                            params.cust_prop_expl,
                             params.cust_prop_multiple_occurence,
                             PropertyDefinition.FALSE,
                             null
@@ -831,6 +840,7 @@ class AjaxController extends AbstractDebugController {
                         params.cust_prop_name,
                         params.cust_prop_type,
                         params.cust_prop_desc,
+                        params.cust_prop_expl,
                         params.cust_prop_multiple_occurence,
                         PropertyDefinition.FALSE,
                         null
@@ -874,34 +884,55 @@ class AjaxController extends AbstractDebugController {
 
   @Secured(['ROLE_USER'])
   def addCustomPropertyValue(){
-    def error
-    def newProp
-    def owner = grailsApplication.getArtefact("Domain",params.ownerClass.replace("class ",""))?.getClazz()?.get(params.ownerId)
-    def type  = PropertyDefinition.get(params.propIdent.toLong())
+    if(params.propIdent.length() > 0) {
+      def error
+      def newProp
+      def owner = grailsApplication.getArtefact("Domain", params.ownerClass.replace("class ", ""))?.getClazz()?.get(params.ownerId)
+      def type = PropertyDefinition.get(params.propIdent.toLong())
 
-    def existingProp = owner.customProperties.find{it.type.name == type.name}
+      def existingProp = owner.customProperties.find { it.type.name == type.name }
 
-    if(existingProp == null || type.multipleOccurrence){
+      if (existingProp == null || type.multipleOccurrence) {
         newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.CUSTOM_PROPERTY, owner, type)
-        if(newProp.hasErrors()){
-            log.error(newProp.errors)
-        } else{
-            log.debug("New custom property created: " + newProp.type.name)
+        if (newProp.hasErrors()) {
+          log.error(newProp.errors)
+        } else {
+          log.debug("New custom property created: " + newProp.type.name)
         }
-    } else{
-        error = message(code:'ajax.addCustomPropertyValue.error', default:'A property of this type is already added')
-    }
+      } else {
+        error = message(code: 'ajax.addCustomPropertyValue.error', default: 'A property of this type is already added')
+      }
 
       owner.refresh()
 
-    request.setAttribute("editable", params.editable == "true")
-    render(template: "/templates/properties/custom", model:[
-            ownobj:owner,
-            newProp:newProp,
-            error:error,
-            custom_props_div: "${params.custom_props_div}", // JS markup id
-            prop_desc: type.descr // form data
-    ])
+      request.setAttribute("editable", params.editable == "true")
+      boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
+      if(params.propDefGroup) {
+        render(template: "/templates/properties/group", model: [
+                ownobj          : owner,
+                newProp         : newProp,
+                error           : error,
+                showConsortiaFunctions: showConsortiaFunctions,
+                propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
+                custom_props_div: "${params.custom_props_div}", // JS markup id
+                prop_desc       : type.descr // form data
+        ])
+      }
+      else {
+        render(template: "/templates/properties/custom", model: [
+                ownobj          : owner,
+                newProp         : newProp,
+                showConortiaFunctions: showConsortiaFunctions,
+                error           : error,
+                custom_props_div: "${params.custom_props_div}", // JS markup id
+                prop_desc       : type.descr // form data
+        ])
+      }
+
+    }
+    else {
+      log.error("Form submitted with missing values")
+    }
   }
 
     @Secured(['ROLE_USER'])
@@ -966,6 +997,7 @@ class AjaxController extends AbstractDebugController {
     */
     @Secured(['ROLE_USER'])
     def addPrivatePropertyValue(){
+      if(params.propIdent.length() > 0) {
         def error
         def newProp
         def tenant = Org.get(params.tenantId)
@@ -973,25 +1005,25 @@ class AjaxController extends AbstractDebugController {
         def type   = PropertyDefinition.get(params.propIdent.toLong())
 
         if (! type) { // new property via select2; tmp deactivated
-            error = message(code:'propertyDefinition.private.deactivated')
+          error = message(code:'propertyDefinition.private.deactivated')
         }
         else {
-            def existingProps = owner.privateProperties.findAll {
-                it.owner.id == owner.id
-                it.type.name == type.name // this sucks due lazy proxy problem
-            }
-            existingProps.removeAll { it.type.name != type.name } // dubious fix
+          def existingProps = owner.privateProperties.findAll {
+            it.owner.id == owner.id
+            it.type.name == type.name // this sucks due lazy proxy problem
+          }
+          existingProps.removeAll { it.type.name != type.name } // dubious fix
 
-            if (existingProps.size() == 0 || type.multipleOccurrence) {
-                newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, type)
-                if (newProp.hasErrors()) {
-                    log.error(newProp.errors)
-                } else {
-                    log.debug("New private property created: " + newProp.type.name)
-                }
+          if (existingProps.size() == 0 || type.multipleOccurrence) {
+            newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, owner, type)
+            if (newProp.hasErrors()) {
+              log.error(newProp.errors)
             } else {
-                error = message(code: 'ajax.addCustomPropertyValue.error', default: 'A property of this type is already added')
+              log.debug("New private property created: " + newProp.type.name)
             }
+          } else {
+            error = message(code: 'ajax.addCustomPropertyValue.error', default: 'A property of this type is already added')
+          }
         }
 
         owner.refresh()
@@ -1005,6 +1037,10 @@ class AjaxController extends AbstractDebugController {
                 custom_props_div: "custom_props_div_${tenant.id}", // JS markup id
                 prop_desc: type?.descr // form data
         ])
+      }
+      else  {
+        log.error("Form submitted with mising values")
+      }
     }
 
     @Secured(['ROLE_USER'])
@@ -1155,13 +1191,25 @@ class AjaxController extends AbstractDebugController {
         }
 
         request.setAttribute("editable", params.editable == "true")
-        render(template: "/templates/properties/custom", model:[
-                ownobj:owner,
-                newProp:property,
-                showConsortiaFunctions: params.showConsortiaFunctions,
-                custom_props_div: "${params.custom_props_div}", // JS markup id
-                prop_desc: prop_desc // form data
-        ])
+        if(params.propDefGroup) {
+          render(template: "/templates/properties/group", model: [
+                  ownobj          : owner,
+                  newProp         : property,
+                  showConsortiaFunctions: params.showConsortiaFunctions,
+                  propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
+                  custom_props_div: "${params.custom_props_div}", // JS markup id
+                  prop_desc       : prop_desc // form data
+          ])
+        }
+        else {
+          render(template: "/templates/properties/custom", model: [
+                  ownobj                : owner,
+                  newProp               : property,
+                  showConsortiaFunctions: params.showConsortiaFunctions,
+                  custom_props_div      : "${params.custom_props_div}", // JS markup id
+                  prop_desc             : prop_desc // form data
+          ])
+        }
     }
 
     @Secured(['ROLE_USER'])
@@ -1190,12 +1238,26 @@ class AjaxController extends AbstractDebugController {
             log.debug("Deleted custom property: " + property.type.name)
         }
         request.setAttribute("editable", params.editable == "true")
-        render(template: "/templates/properties/custom", model:[
-                ownobj:owner,
-                newProp:property,
-                custom_props_div: "${params.custom_props_div}", // JS markup id
-                prop_desc: prop_desc // form data
-        ])
+        boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
+        if(params.propDefGroup) {
+          render(template: "/templates/properties/group", model: [
+                  ownobj          : owner,
+                  newProp         : property,
+                  showConsortiaFunctions: showConsortiaFunctions,
+                  propDefGroup    : genericOIDService.resolveOID(params.propDefGroup),
+                  custom_props_div: "${params.custom_props_div}", // JS markup id
+                  prop_desc       : prop_desc // form data
+          ])
+        }
+        else {
+          render(template: "/templates/properties/custom", model:[
+                  ownobj:owner,
+                  newProp:property,
+                  showConsortiaFunctions: showConsortiaFunctions,
+                  custom_props_div: "${params.custom_props_div}", // JS markup id
+                  prop_desc: prop_desc // form data
+          ])
+        }
     }
 
   /**
@@ -1546,8 +1608,32 @@ class AjaxController extends AbstractDebugController {
                         result = (target_object."${params.name}").format(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
                     }
                 }
-            }
-            else {
+            } else if ( params.type=='url' ) {
+
+                def backup = target_object."${params.name}"
+                try {
+                    if( params.value && params.value.size() > 0 ) {
+                        target_object."${params.name}" = new URL(params.value)
+                    }
+                    else {
+                        // delete existing url
+                        target_object."${params.name}" = null
+                    }
+                    if (target_object.hasProperty('owner')) {
+                        target_object.owner?.save() // avoid owner.xyz not processed by flush
+                    }
+                    target_object.save(failOnError: true, flush: true);
+                }
+                catch(Exception e) {
+                    target_object."${params.name}" = backup
+                    log.error(e)
+                }
+                finally {
+                    if (target_object."${params.name}") {
+                        result = target_object."${params.name}"
+                    }
+                }
+            } else {
                 def binding_properties = [:]
                 binding_properties[params.name] = params.value
                 bindData(target_object, binding_properties)

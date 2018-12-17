@@ -137,6 +137,60 @@
           </xsl:call-template>
         </xsl:otherwise>
       </xsl:choose>
+      <!-- access_start -->
+      <xsl:choose>
+        <xsl:when test="normalize-space(./CoverageStatement/AccessFrom)">
+          <xsl:call-template name="tsventry">
+            <xsl:with-param name="txt" select="./CoverageStatement/AccessFrom"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="tsventry">
+            <xsl:with-param name="txt" select="''" />
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
+      <!-- access_end -->
+     <xsl:choose>
+       <xsl:when test="normalize-space(./CoverageStatement/AccessTo)">
+         <xsl:call-template name="tsventry">
+           <xsl:with-param name="txt" select="./CoverageStatement/AccessTo"/>
+         </xsl:call-template>
+       </xsl:when>
+       <xsl:otherwise>
+         <xsl:call-template name="tsventry">
+           <xsl:with-param name="txt" select="''" />
+         </xsl:call-template>
+       </xsl:otherwise>
+     </xsl:choose>
+      <!-- ZDB IDs -->
+      <xsl:variable name="ZDBs">
+        <xsl:for-each select="./TitleIDs/ID[@namespace='ZDB' or @namespace='zdb']">
+          <xsl:call-template name="plainentry">
+            <xsl:with-param name="txt" select="text()" />
+          </xsl:call-template>
+          <xsl:if test="not(position()=last())">
+            <xsl:text>,</xsl:text>
+          </xsl:if>
+        </xsl:for-each>
+      </xsl:variable>
+      <xsl:call-template name="tsventry">
+        <xsl:with-param name="txt" select="$ZDBs" />
+      </xsl:call-template>
+      <!-- ZDB PPNs -->
+     <xsl:variable name="ZDB_PPNs">
+       <xsl:for-each select="./TitleIDs/ID[@namespace='ZDB_PPN' or @namespace='zdb_ppn']">
+         <xsl:call-template name="plainentry">
+           <xsl:with-param name="txt" select="text()" />
+         </xsl:call-template>
+         <xsl:if test="not(position()=last())">
+           <xsl:text>,</xsl:text>
+         </xsl:if>
+       </xsl:for-each>
+     </xsl:variable>
+     <xsl:call-template name="tsventry">
+       <xsl:with-param name="txt" select="$ZDB_PPNs" />
+     </xsl:call-template>
       <!-- DOIs -->
       <xsl:variable name="DOIs">
         <xsl:for-each select="./TitleIDs/ID[@namespace='DOI' or @namespace='doi']">
@@ -214,6 +268,6 @@
   <xsl:template name="tsventry"><xsl:param name="txt"/><xsl:text>"</xsl:text><xsl:value-of select="normalize-space($txt)"/><xsl:text>"</xsl:text><xsl:text>&#x9;</xsl:text></xsl:template>
   <xsl:template name="plainentry"><xsl:param name="txt"/><xsl:value-of select="$txt"/></xsl:template>
 
-  <xsl:template name="kbartii_header"><xsl:text>publication_title&#x9;print_identifier&#x9;online_identifier&#x9;date_first_issue_online&#x9;num_first_vol_online&#x9;num_first_issue_online&#x9;date_last_issue_online&#x9;num_last_vol_online&#x9;num_last_issue_online&#x9;title_url&#x9;first_author&#x9;title_id&#x9;embargo_info&#x9;coverage_depth&#x9;notes&#x9;publisher_name&#x9;publication_type&#x9;date_monograph_published_print&#x9;date_monograph_published_online&#x9;monograph_volume&#x9;monograph_edition&#x9;first_editor&#x9;parent_publication_title_id&#x9;preceding_publication_title_id&#x9;access_type&#x9;DOI&#x9;ISSNs&#x9;eISSNs&#x9;ISBNs&#x9;eISBNs&#xA;</xsl:text></xsl:template>
+  <xsl:template name="kbartii_header"><xsl:text>publication_title&#x9;print_identifier&#x9;online_identifier&#x9;date_first_issue_online&#x9;num_first_vol_online&#x9;num_first_issue_online&#x9;date_last_issue_online&#x9;num_last_vol_online&#x9;num_last_issue_online&#x9;title_url&#x9;first_author&#x9;title_id&#x9;embargo_info&#x9;coverage_depth&#x9;notes&#x9;publisher_name&#x9;publication_type&#x9;date_monograph_published_print&#x9;date_monograph_published_online&#x9;monograph_volume&#x9;monograph_edition&#x9;first_editor&#x9;parent_publication_title_id&#x9;preceding_publication_title_id&#x9;access_type&#x9;access_start&#x9;access_end&#x9;zdb_id&#x9;zdb_ppn&#x9;DOI&#x9;ISSNs&#x9;eISSNs&#x9;ISBNs&#x9;eISBNs&#xA;</xsl:text></xsl:template>
 
 </xsl:stylesheet>

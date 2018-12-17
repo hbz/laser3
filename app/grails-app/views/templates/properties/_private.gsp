@@ -2,7 +2,7 @@
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_xxx"); --}%
 
-<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition" %>
+<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; java.net.URL" %>
 <laser:serviceInjection />
 
 <!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->
@@ -38,7 +38,7 @@
             <g:if test="${prop.type?.tenant?.id == tenant?.id}">
                 <tr>
                     <td>
-                        <g:if test="${prop.type.getI10n('expl') != ' °'}">
+                        <g:if test="${!prop.type.getI10n('expl').contains(' °')}">
                             <span data-tooltip="${prop.type.getI10n('expl')}">${prop.type.getI10n('name')}</span>
                         </g:if>
                         <g:else>
@@ -67,6 +67,15 @@
                         </g:elseif>
                         <g:elseif test="${prop.type.type == Date.toString()}">
                             <semui:xEditable owner="${prop}" type="date" field="dateValue" overwriteEditable="${overwriteEditable}" />
+                        </g:elseif>
+                        <g:elseif test="${prop.type.type == URL.toString()}">
+                            <semui:xEditable owner="${prop}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" />
+                            %{--Todo beim drüber hovern soll der link-Button erscheinen--}%
+                            <span data-position="top right" data-tooltip="Diese URL aufrufen ..">
+                                <a href="${prop.value}" target="_blank" class="ui mini icon blue button">
+                                    <i class="share square icon"></i>
+                                </a>
+                            </span>
                         </g:elseif>
                         <g:elseif test="${prop.type.type == RefdataValue.toString()}">
                             <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}" />

@@ -3,6 +3,7 @@ package com.k_int.kbplus.abstract_domain
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
 import de.laser.helper.DateUtil
+import org.codehaus.groovy.grails.validation.routines.UrlValidator
 import org.codehaus.groovy.grails.web.util.StreamCharBuffer
 
 import javax.persistence.Transient
@@ -13,6 +14,7 @@ abstract class AbstractProperty implements Serializable {
     Integer          intValue
     BigDecimal       decValue
     RefdataValue     refValue
+    URL              urlValue
     String           note = ""
     Date             dateValue
 
@@ -26,6 +28,7 @@ abstract class AbstractProperty implements Serializable {
         intValue    (nullable: true)
         decValue    (nullable: true)
         refValue    (nullable: true)
+        urlValue    (nullable: true)
         note        (nullable: true)
         dateValue   (nullable: true)
     }
@@ -42,6 +45,8 @@ abstract class AbstractProperty implements Serializable {
             return "refValue"
         if(dateValue)
             return "dateValue"
+        if(urlValue)
+            return "urlValue"
     }
 
     public String getValue() {
@@ -60,6 +65,8 @@ abstract class AbstractProperty implements Serializable {
             return refValue.toString()
         if(dateValue)
             return dateValue.getDateString()
+        if(urlValue)
+            return urlValue.toString()
     }
 
     def copyInto(AbstractProperty newProp){
@@ -73,6 +80,8 @@ abstract class AbstractProperty implements Serializable {
             newProp.refValue = refValue
         else if(dateValue)
             newProp.dateValue = dateValue
+        else if(urlValue)
+            newProp.urlValue = urlValue
 
         newProp.note = note
         newProp
@@ -97,6 +106,9 @@ abstract class AbstractProperty implements Serializable {
             case Date.toString():
                 result = DateUtil.toDate_NoTime(value)
                 break
+            case URL.toString():
+                result = new URL(value)
+                break
             default:
                 result = "AbstractProperty.parseValue failed"
         }
@@ -119,6 +131,9 @@ abstract class AbstractProperty implements Serializable {
         }
         else if (type == RefdataValue.toString()) {
             refValue = RefdataValue.findByOwnerAndValue(RefdataCategory.findByDesc(rdc), value.toString())
+        }
+        else if (type == URL.toString()) {
+            urlValue = parseValue(value, type)
         }
     }
 }
