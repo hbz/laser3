@@ -10,7 +10,7 @@ class UrlMappings {
         "/lic/$action?/$id?"        (controller: 'license')
 
         "/myInstitution/tipview/$id"    (controller: 'myInstitution', action: 'tip')
-        // "/myInstitution/finance"        (controller: 'finance', action: 'index')
+        "/myInstitution/finance"        (controller: 'finance', action: 'index')
         name subfinance:        "/subscriptionDetails/$sub/finance/"   (controller: 'finance', action: 'index')
         name subfinanceEditCI:  "/subscriptionDetails/$sub/editCostItem/$id"   (controller: 'finance', action: 'editCostItem')
         name subfinanceCopyCI:  "/subscriptionDetails/$sub/copyCostItem/$id"   (controller: 'finance', action: 'copyCostItem')
