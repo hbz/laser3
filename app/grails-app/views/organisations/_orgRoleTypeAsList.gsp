@@ -11,10 +11,11 @@
                         <div class="ui mini icon buttons">
                             <g:link class="ui negative button js-open-confirm-modal"
                                     data-confirm-term-what="organisationtype"
+                                    data-confirm-term-what-detail="${type?.getI10n('value')}"
                                     data-confirm-term-where="organisation"
-                                    data-confirm-term-how="unlink"
+                                    data-confirm-term-how="delete"
                                     controller="organisations" action="deleteOrgRoleType" params="[org: org.id, removeOrgRoleType: type.id]">
-                                <i class="chain broken icon"></i>
+                                <i class="trash alternate icon"></i>
                             </g:link>
                         </div>
                     </div>
