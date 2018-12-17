@@ -465,7 +465,6 @@ r2d2 = {
                             }
                             // open confirmation modal and open a new url after conirmation
                             if (url){
-                                alert("habe eine URL")
                                 window.location.href = url;
                             }
                         },
