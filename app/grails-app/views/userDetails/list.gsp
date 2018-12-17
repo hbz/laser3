@@ -73,7 +73,7 @@
                             </td>
                             <td>
                                 <sec:ifAnyGranted roles="ROLE_YODA">
-                                    <semui:xEditable owner="${user}" field="enabled"/>
+                                    <semui:xEditableBoolean owner="${user}" field="enabled"/>
                                 </sec:ifAnyGranted>
                                 <sec:ifNotGranted roles="ROLE_YODA">
                                     ${fieldValue(bean: user, field: "enabled")}
