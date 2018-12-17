@@ -439,11 +439,12 @@ class SemanticUiTagLib {
         def msgDelete  = "Endgültig löschen"
         def msgCancel  = "Abbrechen"
 
-        out << '<div class="ui mini modal">'
+        out << '<div class="ui tiny modal">'
         out <<   '<div class="header">Wollen Sie wirklich '
         out <<      '<span id="js-confirmation-term-what"></span> '
-        out <<      '<div class="ui horizontal label"><span id="js-confirmation-term-what-detail"></span></div> '
+        out <<      '<span id="js-confirmation-term-what-detail"></span> '
         out <<      '<span id="js-confirmation-term-where"></span> '
+        out <<      '<span id="js-confirmation-term-where-detail"></span> '
         out <<      '<span id="js-confirmation-term-how"></span>'
         out <<  '?</div>'
 
