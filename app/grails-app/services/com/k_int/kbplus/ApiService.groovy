@@ -377,4 +377,17 @@ class ApiService {
         return xml
     }
 
+    GPathResult makeshiftSubscriptionImport(GPathResult xml){
+
+        // TODO: in progress - erms-746
+        def count = xml.institution.size()
+        log.debug("importing ${count} items")
+
+        xml.subscription.each { sub ->
+            def strName = sub.name.text()
+            def rdvType = RefdataValue.getByValueAndCategory(type.name.text(), 'Subscription Type')
+
+            log.debug("processing ${strName} / ${rdvType.getI10n('value')}")
+        }
+    }
 }

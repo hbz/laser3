@@ -1,3 +1,7 @@
+RC-0.12
+
+- retrieving package list from gokb api
+
 0.11.4
 
 - improved performance at finance view

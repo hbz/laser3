@@ -16,6 +16,7 @@ class UserSettings {
         DASHBOARD                    (Org),
         DASHBOARD_TAB                (RefdataValue, 'User.Settings.Dashboard.Tab'),
         DASHBOARD_REMINDER_PERIOD    (Integer),
+        LANGUAGE_OF_EMAILS           (RefdataValue, 'Language'),
         IS_REMIND_BY_EMAIL           (RefdataValue, 'YN'),
         SHOW_SIMPLE_VIEWS            (RefdataValue, 'YN'),
         SHOW_INFO_ICON               (RefdataValue, 'YN'),
