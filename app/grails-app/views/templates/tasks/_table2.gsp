@@ -60,7 +60,6 @@
                         </a>
                         <g:link class="ui icon negative button js-open-confirm-modal"
                                 data-confirm-term-what="task"
-                                data-confirm-term-where="system"
                                 data-confirm-term-how="delete"
                                 controller="myInstitution" action="tasks" params="[deleteId:taskInstance.id]" >
                             <i class="trash alternate icon"></i>
