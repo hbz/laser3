@@ -302,5 +302,6 @@ class User implements Permissions {
     @Override
     String toString() {
         yodaService.showDebugInfo() ? display + ' (' + id + ')' : display
+        //display
     }
 }
