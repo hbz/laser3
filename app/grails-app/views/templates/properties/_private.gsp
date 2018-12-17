@@ -116,7 +116,9 @@
                                   name="cust_prop_add_value"
                                   class="ui form"
                                   update="${custom_props_div}"
-                                  onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})">
+                                  onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
+                                  onComplete="c3po.loadJsAfterAjax()"
+                    >
 
                     <input type="hidden" name="propIdent"  data-desc="${prop_desc}" class="customPropSelect"/>
                     <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>
