@@ -8,7 +8,7 @@ class Order {
     Org owner
 
   static mapping = {
-             table 'kbplus_ord'
+              table 'ordering'
                 id column:'ord_id'
            version column:'ord_version'
        orderNumber column:'ord_number'

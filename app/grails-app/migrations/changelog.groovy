@@ -42,6 +42,4 @@ databaseChangeLog = {
     */
 
     // postgresql migration; first diff
-
-	//include file: 'changelog-0.groovy'
 }
