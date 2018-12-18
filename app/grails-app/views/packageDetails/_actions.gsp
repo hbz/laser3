@@ -20,11 +20,11 @@
 
 </semui:actionsDropdown>
 
-<g:if test="${editable && ['show'].contains(actionName)}">
+<g:if test="${editable && ! ['list'].contains(actionName)}">
     <g:render template="/templates/documents/modal" model="${[ownobj: packageInstance, owntp: 'pkg']}"/>
     <g:render template="/templates/notes/modal_create" model="${[ownobj: packageInstance, owntp: 'pkg']}"/>
 </g:if>
 
-<g:if test="${(editable || accessService.checkMinUserOrgRole(user, contextOrg, 'INST_EDITOR')) && ['show'].contains(actionName)}">
+<g:if test="${(editable || accessService.checkMinUserOrgRole(user, contextOrg, 'INST_EDITOR')) && ! ['list'].contains(actionName)}">
     <g:render template="/templates/tasks/modal_create" model="${[ownobj:packageInstance, owntp:'pkg']}"/>
 </g:if>
