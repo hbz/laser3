@@ -23,10 +23,6 @@
 #### /usage/index
 FEHLER: Spalte »statstripl0_.id« muss in der GROUP-BY-Klausel erscheinen oder in einer Aggregatfunktion verwendet werden
 
-#### /issueEntitlement/show
-
-@FACT
-
 #### Hibernate 4:
 org.hibernate.event.internal.DefaultFlushEventListener.onFlush() @ 28
 org.hibernate.engine.internal.SessionEventListenerManagerImpl

@@ -15,7 +15,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
 
     // AuditTrait
     static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
-    static controlledProperties = [ 'startDate', 'endDate', 'status', 'type' ]
+    static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'form', 'resource' ]
 
     @Transient
     def grailsApplication
