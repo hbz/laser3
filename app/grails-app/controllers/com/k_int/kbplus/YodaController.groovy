@@ -23,6 +23,7 @@ class YodaController {
     def globalSourceSyncService
     def contextService
     def dashboardDueDatesService
+    def cronjobUpdateService
     def executorService
 
     static boolean ftupdate_running = false
@@ -461,5 +462,11 @@ class YodaController {
         redirect(url: request.getHeader('referer'))
     }
 
+    @Secured(['ROLE_YODA'])
+    def subscriptionCheck(){
+        flash.message = "Lizenzen werden upgedatet"
+        cronjobUpdateService.subscriptionCheck()
+        redirect(url: request.getHeader('referer'))
+    }
 
 }
