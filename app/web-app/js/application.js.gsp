@@ -422,6 +422,9 @@ r2d2 = {
                         case "property":
                             messageWhat = "das Merkmal";
                             break;
+                        case "function":
+                            messageWhat = "die Funktion";
+                            break;
                         default:
                             messageWhat = what;
                     }
