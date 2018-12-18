@@ -402,23 +402,15 @@
                     </g:if><%-- incomingCombos --%>
 
                     <g:if test="${sorted_links}">
-
-                        <g:if test="${orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADMIN')}">
-                            <div class="ui card">
+                        <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                            <div class="ui card la-role-yoda">
                                 <div class="content">
                                    <g:render template="/templates/links/orgRoleContainer" model="[listOfLinks: sorted_links]" />
                                 </div>
                             </div><!--.card-->
                         </g:if>
-                        <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
-                            <div class="ui card la-role-admin">
-                                <div class="content">
-                                   <g:render template="/templates/links/orgRoleContainer" model="[listOfLinks: sorted_links]" />
-                                </div>
-                            </div><!--.card-->
-                        </g:elseif>
-                        <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                            <div class="ui card la-role-yoda">
+                        <g:elseif test="${orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADMIN')}">
+                            <div class="ui card">
                                 <div class="content">
                                    <g:render template="/templates/links/orgRoleContainer" model="[listOfLinks: sorted_links]" />
                                 </div>

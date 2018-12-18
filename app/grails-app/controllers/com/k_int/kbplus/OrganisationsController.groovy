@@ -207,35 +207,40 @@ class OrganisationsController extends AbstractDebugController {
         def result = [:]
 
         def orgInstance = Org.get(params.id)
+        def user = contextService.getUser()
 
         def link_vals = RefdataCategory.getAllRefdataValues("Organisational Role")
         def sorted_links = [:]
         def offsets = [:]
 
-        link_vals.each { lv ->
-            def param_offset = 0
+        if ( SpringSecurityUtils.ifAnyGranted("ROLE_YODA") ||
+             (orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADMIN'))
+        ) {
 
-            if(lv.id){
-                def cur_param = "rdvl_${String.valueOf(lv.id)}"
+            link_vals.each { lv ->
+                def param_offset = 0
 
-                if(params[cur_param]){
-                    param_offset = params[cur_param]
-                    result[cur_param] = param_offset
+                if (lv.id) {
+                    def cur_param = "rdvl_${String.valueOf(lv.id)}"
+
+                    if (params[cur_param]) {
+                        param_offset = params[cur_param]
+                        result[cur_param] = param_offset
+                    }
+
+                    def links = OrgRole.findAll {
+                        org == orgInstance && roleType == lv
+                    }
+                    links = links.findAll { it -> it.ownerStatus?.value != 'Deleted' }
+
+                    def link_type_results = links.drop(param_offset.toInteger()).take(10) // drop from head, take 10
+
+                    if (link_type_results) {
+                        sorted_links["${String.valueOf(lv.id)}"] = [rdv: lv, rdvl: cur_param, links: link_type_results, total: links.size()]
+                    }
+                } else {
+                    log.debug("Could not read Refdata: ${lv}")
                 }
-
-                def links = OrgRole.findAll {
-                            org == orgInstance &&
-                            roleType == lv
-                }
-                links = links.findAll{ it -> it.ownerStatus?.value != 'Deleted' }
-
-                def link_type_results = links.drop(param_offset.toInteger()).take(10) // drop from head, take 10
-
-                if(link_type_results){
-                    sorted_links["${String.valueOf(lv.id)}"] = [rdv: lv, rdvl: cur_param, links: link_type_results, total: links.size()]
-                }
-            }else{
-                log.debug("Could not read Refdata: ${lv}")
             }
         }
 
