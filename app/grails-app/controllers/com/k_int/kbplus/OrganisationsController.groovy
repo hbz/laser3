@@ -85,7 +85,7 @@ class OrganisationsController extends AbstractDebugController {
         def fsq = filterService.getOrgQuery(params)
 
         result.orgList  = Org.findAll(fsq.query, fsq.queryParams, params)
-        result.orgListTotal = Org.executeQuery("select count (o) ${fsq.query}", fsq.queryParams)[0]
+        result.orgListTotal = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams).size()
 
         if ( params.exportXLS=='yes' ) {
 
@@ -127,14 +127,14 @@ class OrganisationsController extends AbstractDebugController {
             (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, fsq2.query, 'o', [:])
             def tmpQueryParams2 = fsq2.queryParams << tmpQueryParams
             result.orgList      = Org.findAll(tmpQuery, tmpQueryParams2, params)
-            result.orgListTotal = Org.executeQuery("select count (o) ${tmpQuery}", tmpQueryParams2)[0]
+            result.orgListTotal = Org.executeQuery("select o.id ${tmpQuery}", tmpQueryParams2).size()
             fsq.query = tmpQuery
             fsq.queryParams  = tmpQueryParams2
 
         } else {
 
             result.orgList      = Org.findAll(fsq.query, fsq.queryParams, params)
-            result.orgListTotal = Org.executeQuery("select count (o) ${fsq.query}", fsq.queryParams)[0]
+            result.orgListTotal = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams).size()
         }
 
         if ( params.exportXLS=='yes' ) {

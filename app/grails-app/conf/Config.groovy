@@ -10,10 +10,10 @@ grails.project.groupId  = appName // change this to alter the default package na
 grails.config.locations = ["file:${userHome}/.grails/${appName}-config.groovy"]
 
 laserSystemId = 'local'
+documentStorageLocation = '/tmp/laser'
 
 //localauth = true
-
-// showDebugInfo = false
+//showDebugInfo = false
 
 // @NotificationsJob
 // - enable notification
@@ -385,6 +385,11 @@ grails.cache.config = {
     cache {
         name 'message'
     }
+}
+
+// postgresql sequences for primary keys
+grails.gorm.default.mapping = {
+   id generator: 'identity'
 }
 
 // URL Mapping Cache Max Size, defaults to 5000

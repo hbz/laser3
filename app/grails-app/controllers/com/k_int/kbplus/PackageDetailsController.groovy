@@ -146,7 +146,7 @@ class PackageDetailsController extends AbstractDebugController {
 
 
         log.debug(base_qry + ' <<< ' + qry_params)
-        result.packageInstanceTotal = Subscription.executeQuery("select count(p) " + base_qry, qry_params)[0]
+        result.packageInstanceTotal = Subscription.executeQuery("select p.id " + base_qry, qry_params).size()
 
 
         withFormat {
@@ -551,11 +551,11 @@ select s from Subscription as s where
 
         def base_qry = generateBasePackageQuery(params, qry_params, showDeletedTipps, date_filter);
 
-        // log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
-        result.titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + base_qry, qry_params, limits);
-        result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select count(tipp) " + base_qry, qry_params)[0]
-        result.unfiltered_num_tipp_rows = TitleInstancePackagePlatform.executeQuery(
-                "select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = ?", [packageInstance])[0];
+      // log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
+      result.titlesList = TitleInstancePackagePlatform.executeQuery("select tipp "+base_qry, qry_params, limits);
+      result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + base_qry, qry_params ).size()
+      result.unfiltered_num_tipp_rows = TitleInstancePackagePlatform.executeQuery(
+              "select tipp.id from TitleInstancePackagePlatform as tipp where tipp.pkg = ?", [packageInstance]).size()
 
         result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max;
 
@@ -630,9 +630,9 @@ select s from Subscription as s where
 
         def base_qry = generateBasePackageQuery(params, qry_params, showDeletedTipps, date_filter);
 
-        log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
-        result.titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + base_qry, qry_params, limits);
-        result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select count(tipp) " + base_qry, qry_params)[0]
+    log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
+    result.titlesList = TitleInstancePackagePlatform.executeQuery("select tipp "+base_qry, qry_params, limits);
+    result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + base_qry, qry_params ).size()
 
         result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max;
 
@@ -710,9 +710,9 @@ select s from Subscription as s where
 
         base_qry += " order by ${params.sort ?: 'tipp.title.sortTitle'} ${params.order ?: 'asc'} "
 
-        log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
-        result.titlesList = TitleInstancePackagePlatform.executeQuery("select tipp " + base_qry, qry_params, limits);
-        result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select count(tipp) " + base_qry, qry_params)[0]
+    log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
+    result.titlesList = TitleInstancePackagePlatform.executeQuery("select tipp "+base_qry, qry_params, limits);
+    result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + base_qry, qry_params ).size()
 
         result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max;
 
@@ -1088,19 +1088,34 @@ select s from Subscription as s where
             result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
         }
 
-        result.packageInstance = Package.get(params.id)
-        result.editable = isEditable()
-        def base_query = 'from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where ( e.className = :pkgcls and e.persistedObjectId = :pkgid ) or ( e.className = :tippcls and e.persistedObjectId in ( select id from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkgid ) )'
+    result.packageInstance = Package.get(params.id)
+    result.editable=isEditable()
 
-        def limits = (!params.format || params.format.equals("html")) ? [max: result.max, offset: result.offset] : [offset: 0]
+      def limits = (!params.format||params.format.equals("html"))?[max:result.max, offset:result.offset]:[offset:0]
 
-        def query_params = [pkgcls: 'com.k_int.kbplus.Package', tippcls: 'com.k_int.kbplus.TitleInstancePackagePlatform', pkgid: params.id]
+        // postgresql migration
+        def subQuery = 'select cast(id as string) from TitleInstancePackagePlatform as tipp where tipp.pkg = cast(:pkgid as int)'
+        def subQueryResult = AuditLogEvent.executeQuery(subQuery, [pkgid: params.id])
+
+        //def base_query = 'from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where ( e.className = :pkgcls and e.persistedObjectId = cast(:pkgid as string)) or ( e.className = :tippcls and e.persistedObjectId in ( select id from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkgid ) )'
+        //def query_params = [ pkgcls:'com.k_int.kbplus.Package', tippcls:'com.k_int.kbplus.TitleInstancePackagePlatform', pkgid:params.id, subQueryResult:subQueryResult]
+
+        def base_query   = 'from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where ( e.className = :pkgcls and e.persistedObjectId = cast(:pkgid as string))'
+        def query_params = [ pkgcls:'com.k_int.kbplus.Package', pkgid:params.id]
+
+      // postgresql migration
+        if (subQueryResult) {
+            base_query += ' or ( e.className = :tippcls and e.persistedObjectId in (:subQueryResult) )'
+            query_params.'tippcls' = 'com.k_int.kbplus.TitleInstancePackagePlatform'
+            query_params.'subQueryResult' = subQueryResult
+        }
+
 
         log.debug("base_query: ${base_query}, params:${query_params}, limits:${limits}");
 
-        result.historyLines = AuditLogEvent.executeQuery('select e ' + base_query + ' order by e.lastUpdated desc', query_params, limits);
-        result.num_hl = AuditLogEvent.executeQuery('select count(e) ' + base_query, query_params)[0];
-        result.formattedHistoryLines = []
+    result.historyLines = AuditLogEvent.executeQuery('select e ' + base_query + ' order by e.lastUpdated desc', query_params, limits);
+    result.num_hl = AuditLogEvent.executeQuery('select e.id '+ base_query, query_params).size()
+    result.formattedHistoryLines = []
 
 
         result.historyLines.each { hl ->

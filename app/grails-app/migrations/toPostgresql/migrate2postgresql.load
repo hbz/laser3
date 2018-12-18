@@ -1,0 +1,17 @@
+LOAD DATABASE
+    FROM mysql://admin@localhost/laser
+    INTO postgresql://laser:laser@localhost:5432/laser
+
+    WITH truncate, data only
+
+    ALTER SCHEMA 'laser' RENAME TO 'public'
+
+    CAST type bigint when (= precision 20) to bigint drop typemod,
+            type date drop not null drop default using zero-dates-to-null,
+            type tinyint to boolean using tinyint-to-boolean,
+            type year to integer
+
+    -- INCLUDING ONLY TABLE NAMES MATCHING 'dummy';
+    EXCLUDING TABLE NAMES MATCHING 'databasechangelog', 'databasechangeloglock';
+
+    -- usage: ./pgloader grails-app/migrations/toPostgresql/migrate2postgresql.load

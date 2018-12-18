@@ -25,8 +25,8 @@
         </thead>
         <tbody>
             <g:each in="${byUri}" var="bench">
-                <tr data-uri="${bench[0].uri}">
-                    <td data-uri="${bench[0].uri}">${bench[0].uri}</td>
+                <tr data-uri="${bench[0]}">
+                    <td data-uri="${bench[0]}">${bench[0]}</td>
                     <td>${(bench[1] / 1000).round(2)}</td>
                     <td>${bench[2]}</td>
                 </tr>
@@ -35,7 +35,6 @@
     </table>
 
     <h3 class="ui header">Kontextbezogen</h3>
-
     <table class="ui celled la-table la-table-small table">
         <thead>
             <tr>
@@ -47,11 +46,11 @@
         </thead>
         <tbody>
             <g:each in="${byUriAndContext}" var="bench">
-                <tr data-uri="${bench[0].uri}" data-context="${bench[0].context?.getDesignation()}">
-                    <td data-uri="${bench[0].uri}">${bench[0].uri}</td>
-                    <td>${(bench[1] / 1000).round(2)}</td>
-                    <td>${bench[2]}</td>
-                    <td data-context="${bench[0].context?.getDesignation()}">${bench[0].context?.getDesignation()}</td>
+                <tr data-uri="${bench[0]}" data-context="${bench[1]}">
+                    <td data-uri="${bench[0]}">${bench[0]}</td>
+                    <td>${(bench[2] / 1000).round(2)}</td>
+                    <td>${bench[3]}</td>
+                    <td data-context="${bench[1]}">${com.k_int.kbplus.Org.get(bench[1]).getDesignation()}</td>
                 </tr>
             </g:each>
         </tbody>

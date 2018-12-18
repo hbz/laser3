@@ -94,18 +94,36 @@ class DocWidgetController extends AbstractDebugController {
           // log.debug("Docstore uuid is ${docstore_uuid}");
     
           def doc_content = new Doc(contentType:Doc.CONTENT_TYPE_BLOB,
-                                    uuid: java.util.UUID.randomUUID().toString(),
                                     filename: original_filename,
                                     mimeType: request.getFile("upload_file")?.contentType,
                                     title: params.upload_title,
                                     type:RefdataCategory.lookupOrCreate('Document Type',params.doctype),
                                     creator: user)
-          doc_content.setBlobData(input_stream, input_file.size)
+          // erms-790
+          //doc_content.setBlobData(input_stream, input_file.size)
           doc_content.save()
 
-          def doc_context = new DocContext("${params.ownertp}":instance,
-                                           owner:doc_content,
-                                           doctype:RefdataCategory.lookupOrCreate('Document Type',params.doctype)).save(flush:true);
+          try {
+              def fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+              def fName = doc_content.uuid
+
+              File folder = new File("${fPath}")
+              if (!folder.exists()) {
+                  folder.mkdirs()
+              }
+              input_file.transferTo(new File("${fPath}/${fName}"))
+          }
+          catch(Exception e) {
+              // fallback
+              doc_content.setBlobData(input_stream, input_file.size)
+              doc_content.save()
+          }
+
+          def doc_context = new DocContext(
+                  "${params.ownertp}": instance,
+                  owner:               doc_content,
+                  doctype:             RefdataCategory.lookupOrCreate('Document Type',params.doctype)
+          ).save(flush:true)
 
           log.debug("Doc created and new doc context set on ${params.ownertp} for ${params.ownerid}");
         }

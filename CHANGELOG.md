@@ -1,3 +1,10 @@
+IN PROGRESS:
+
+- refactoring: filesystem instead of database blobs
+- fixed duplicate docstore uuids
+- upgrade to hibernate 4.3.10 ! NOT
+- upgrade to ehcache 2.9.0 ! NOT
+
 RC-0.12
 
 - retrieving package list from gokb api

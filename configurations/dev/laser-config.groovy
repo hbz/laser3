@@ -15,8 +15,15 @@ aggr_es_cluster     = 'elasticsearch'
 aggr_es_index       = 'esIndex'
 aggr_es_hostname    = 'localhost'
 
+// --- documents ---
+documentStorageLocation = '/opt/laser/documentStorageLocation'
+
 // --- statistics ---
 //statsApiUrl = 'http://statsServer'
+
+// --- dashboard and emails ---
+isUpdateDashboardTableInDatabase  = true
+isSendEmailsForDueDatesOfAllUsers = false
 
 // --- jira ---
 
@@ -29,11 +36,12 @@ feature.notifications = true
 // --- others ---
 //globalDataSyncJobActiv
 //AdminReminderJobActiv
-onix_ghost_licence= 'Jisc Collections Model Journals Licence 2015'
-publicationService.baseurl='http://knowplus.edina.ac.uk:2012/kbplus/api'
-docstore=           'http://deprecated/deprecated'
-KBPlusMaster=       false
-doDocstoreMigration=false
+onix_ghost_licence  = 'Jisc Collections Model Journals Licence 2015'
+publicationService.baseurl = 'http://knowplus.edina.ac.uk:2012/kbplus/api'
+docstore            = 'http://deprecated/deprecated'
+KBPlusMaster        = false
+doDocstoreMigration = false
+showDebugInfo       = true
 
 // --- example users ---
 sysusers = [

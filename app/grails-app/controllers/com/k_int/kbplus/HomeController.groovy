@@ -7,11 +7,10 @@ import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.*;
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class HomeController extends AbstractDebugController {
+class HomeController {
 
-  def springSecurityService
-  def ESSearchService
-  
+    def springSecurityService
+    def ESSearchService
  
     @Secured(['ROLE_USER'])
     def index() {

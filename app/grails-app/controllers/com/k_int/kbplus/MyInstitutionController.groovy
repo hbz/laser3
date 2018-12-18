@@ -308,7 +308,7 @@ from License as l where (
         //log.debug("query = ${base_qry}");
         //log.debug("params = ${qry_params}");
 
-        result.licenseCount = License.executeQuery("select count(l) ${base_qry}", qry_params)[0];
+        result.licenseCount = License.executeQuery("select l.id ${base_qry}", qry_params).size()
         result.licenses = License.executeQuery("select l ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
         def filename = "${result.institution.name}_licenses"
         withFormat {
@@ -453,7 +453,7 @@ from License as l where (
             query += " order by sortableReference asc"
         }
 
-        result.numLicenses = License.executeQuery("select count(l) ${query}", qparams)[0]
+        result.numLicenses = License.executeQuery("select l.id ${query}", qparams).size()
         result.licenses = License.executeQuery("select l ${query}", qparams,[max: result.max, offset: result.offset])
 
         //We do the following to remove any licenses the user does not have access rights
@@ -498,7 +498,6 @@ from License as l where (
         """, [subOrg: contextService.getOrg(), roleSub: role_sub, roleSubCons: role_sub_cons, roleSubConsortia: role_sub_consortia])
 
         def orgListTotal = []
-
         // new
         def providers = OrgRole.findAll("""
                 from OrgRole where sub in (:subscriptions) and (roleType = :provider or roleType = :agency)
@@ -513,23 +512,21 @@ from License as l where (
                 orgListTotal << p.org
             }
         }
-
 //        result.user = User.get(springSecurityService.principal.id)
         params.max        = params.max ?: result.user?.getDefaultPageSizeTMP()
 
         def fsq2  = filterService.getOrgQuery([constraint_orgIds: orgListTotal.collect{ it2 -> it2.id }] << params)
-
         if (params.filterPropDef) {
             def tmpQuery
             def tmpQueryParams
             (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, fsq2.query, 'o', [:])
             def tmpQueryParams2 = fsq2.queryParams << tmpQueryParams
             result.orgList      = Org.findAll(tmpQuery, tmpQueryParams2, params)
-            result.orgListTotal = Org.executeQuery("select count (o) ${tmpQuery}", tmpQueryParams2)[0]
+            result.orgListTotal = Org.executeQuery("select o.id ${tmpQuery}", tmpQueryParams2).size()
 
         } else {
             result.orgList      = Org.findAll(fsq2.query, fsq2.queryParams, params)
-            result.orgListTotal = Org.executeQuery("select count (o) ${fsq2.query}", fsq2.queryParams)[0]
+            result.orgListTotal = Org.executeQuery("select o.id ${fsq2.query}", fsq2.queryParams).size()
         }
         result
     }
@@ -572,7 +569,7 @@ from License as l where (
         }
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-        result.num_sub_rows = Subscription.executeQuery("select count(s) " + tmpQ[0], tmpQ[1])[0]
+        result.num_sub_rows = Subscription.executeQuery("select s.id " + tmpQ[0], tmpQ[1]).size()
         result.subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1], [max: result.max, offset: result.offset]);
 
         result.date_restriction = date_restriction;
@@ -916,15 +913,16 @@ from License as l where (
                   }
                 }
 
+
                 if (params.newEmptySubId) {
                   def sub_id_components = params.newEmptySubId.split(':');
                   if ( sub_id_components.length == 2 ) {
                     def sub_identifier = Identifier.lookupOrCreateCanonicalIdentifier(sub_id_components[0],sub_id_components[1]);
-                    new_sub.ids.add(sub_identifier);
+                      new IdentifierOccurrence(sub: new_sub, identifier: sub_identifier).save()
                   }
                   else {
-                    def sub_identifier = Identifier.lookupOrCreateCanonicalIdentifier('Unknown',params.newEmptySubId);
-                    new_sub.ids.add(sub_identifier);
+                    def sub_identifier = Identifier.lookupOrCreateCanonicalIdentifier('Unknown', params.newEmptySubId);
+                      new IdentifierOccurrence(sub: new_sub, identifier: sub_identifier).save()
                   }
                 }
 
@@ -1242,7 +1240,7 @@ from License as l where (
             date_restriction = sdf.parse(params.validOn)
             log.debug("Getting titles as of ${date_restriction} (given)")
         }
-        
+
         // Set is_inst_admin
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
 
@@ -1277,8 +1275,8 @@ from License as l where (
                 max:result.max,
                 offset:result.offset,
                 institution: result.institution.id,
-                del_sub:del_sub.id,
-                del_ie:del_ie.id,
+                del_sub: del_sub.id,
+                del_ie: del_ie.id,
                 role_sub: role_sub.id,
                 role_sub_cons: role_sub_cons.id,
                 role_cons: role_sub_consortia.id]
@@ -1293,14 +1291,13 @@ from License as l where (
         }
         sub_qry += "WHERE ie.ie_tipp_fk=tipp.tipp_id and tipp.tipp_ti_fk=ti2.ti_id and ( orole.or_roletype_fk = :role_sub or orole.or_roletype_fk = :role_sub_cons or orole.or_roletype_fk = :role_cons ) "
         sub_qry += "AND orole.or_org_fk = :institution "
-        sub_qry += "AND (sub.sub_status_rv_fk is null or sub.sub_status_rv_fk <> :del_sub) "
-        sub_qry += "AND (ie.ie_status_rv_fk is null or ie.ie_status_rv_fk <> :del_ie ) "
+        sub_qry += "AND (sub.sub_status_rv_fk is null or sub.sub_status_rv_fk != :del_sub) "
+        sub_qry += "AND (ie.ie_status_rv_fk is null or ie.ie_status_rv_fk != :del_ie ) "
 
         if (date_restriction) {
             sub_qry += " AND sub.sub_start_date <= :date_restriction AND sub.sub_end_date >= :date_restriction "
-            qry_params.date_restriction = date_restriction
+            result.date_restriction = date_restriction
         }
-        result.date_restriction = date_restriction;
 
         if ((params.filter) && (params.filter.length() > 0)) {
             log.debug("Adding title filter ${params.filter}");
@@ -1344,14 +1341,17 @@ from License as l where (
 
         def sql = new Sql(dataSource)
 
-        def queryStr = "tipp.tipp_ti_fk, count(ie.ie_id) ${sub_qry} group by tipp.tipp_ti_fk ${having_clause} ".toString()
+        def queryStr = "tipp.tipp_ti_fk, count(ie.ie_id) ${sub_qry} group by ti.sort_title, tipp.tipp_ti_fk ${having_clause} ".toString()
+
+        log.debug(" SELECT ${queryStr} ${order_by_clause} ${limits_clause} ")
+
         //If html return Titles and count
         if (isHtmlOutput) {
 
             result.titles = sql.rows("SELECT ${queryStr} ${order_by_clause} ${limits_clause} ".toString(),qry_params).collect{ TitleInstance.get(it.tipp_ti_fk)  }
 
-            def queryCnt = "SELECT count(*) from (SELECT ${queryStr}) as ras".toString()
-            result.num_ti_rows = sql.firstRow(queryCnt,qry_params)['count(*)']
+            def queryCnt = "SELECT count(*) as count from (SELECT ${queryStr}) as ras".toString()
+            result.num_ti_rows = sql.firstRow(queryCnt,qry_params)['count']
             result = setFiltersLists(result, date_restriction)
         }else{
             //Else return IEs
@@ -1438,24 +1438,26 @@ AND s.status !=:sub_del """
             sub_params.date_restriction = date_restriction
         }
         result.subscriptions = Subscription.executeQuery("SELECT s FROM ${sub_qry} ORDER BY s.name", sub_params);
+        result.test = Subscription.executeQuery("""
+SELECT Distinct(role.org), role.org.name FROM SubscriptionPackage sp INNER JOIN sp.pkg.orgs AS role ORDER BY role.org.name """);
 
         // Query the list of Providers
-        result.providers = Subscription.executeQuery("\
-SELECT Distinct(role.org) FROM SubscriptionPackage sp INNER JOIN sp.pkg.orgs AS role \
-WHERE EXISTS ( FROM ${sub_qry} AND sp.subscription = s ) \
-AND role.roleType=:role_cp \
-ORDER BY role.org.name", sub_params+[role_cp:cp]);
+        result.providers = Subscription.executeQuery("""
+SELECT Distinct(role.org), role.org.name FROM SubscriptionPackage sp INNER JOIN sp.pkg.orgs AS role 
+WHERE EXISTS ( FROM ${sub_qry} AND sp.subscription = s ) 
+AND role.roleType=:role_cp 
+ORDER BY role.org.name""", sub_params+[role_cp:cp]);
 
         // Query the list of Host Platforms
         result.hostplatforms = IssueEntitlement.executeQuery("""
-SELECT distinct(ie.tipp.platform)
+SELECT distinct(ie.tipp.platform), ie.tipp.platform.name
 FROM IssueEntitlement AS ie, ${sub_qry}
 AND s = ie.subscription
 ORDER BY ie.tipp.platform.name""", sub_params);
 
         // Query the list of Other Platforms
         result.otherplatforms = IssueEntitlement.executeQuery("""
-SELECT distinct(p.platform)
+SELECT distinct(p.platform), p.platform.name
 FROM IssueEntitlement AS ie
   INNER JOIN ie.tipp.additionalPlatforms as p,
   ${sub_qry}
@@ -2864,8 +2866,8 @@ AND EXISTS (
 
         def baseParams = [owner: result.institution, tsCheck: tsCheck, stats: ['Accepted']]
 
-        def baseQuery1 = "select pc.subscription, count(*) as count from PendingChange as pc where pc.owner = :owner and pc.ts >= :tsCheck " +
-                " and pc.subscription is not NULL and pc.subscription.status.value != 'Deleted' and pc.status.value in (:stats) group by pc.subscription"
+        def baseQuery1 = "select distinct sub, count(sub.id) from PendingChange as pc join pc.subscription as sub where pc.owner = :owner and pc.ts >= :tsCheck " +
+                " and pc.subscription is not NULL and pc.subscription.status.value != 'Deleted' and pc.status.value in (:stats) group by sub.id"
 
         def result1 = PendingChange.executeQuery(
                 baseQuery1,
@@ -2874,8 +2876,8 @@ AND EXISTS (
         )
         result.changes.addAll(result1)
 
-        def baseQuery2 = "select pc.license, count(*) as count from PendingChange as pc where pc.owner = :owner and pc.ts >= :tsCheck" +
-                " and pc.license is not NULL and pc.license.status.value != 'Deleted' and pc.status.value in (:stats) group by pc.license"
+        def baseQuery2 = "select distinct lic, count(lic.id) from PendingChange as pc join pc.license as lic where pc.owner = :owner and pc.ts >= :tsCheck" +
+                " and pc.license is not NULL and pc.license.status.value != 'Deleted' and pc.status.value in (:stats) group by lic.id"
 
         def result2 = PendingChange.executeQuery(
                 baseQuery2,
@@ -3301,12 +3303,12 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             def tmpQuery                 = "select o FROM Org o WHERE o.id IN (:oids)"
             (tmpQuery, tmpQueryParams)   = propertyService.evalFilterQuery(params, tmpQuery, 'o', tmpQueryParams)
             result.consortiaMembers      = Org.executeQuery( tmpQuery, tmpQueryParams, [max: result.max, offset: result.offset] )
-            tmpQuery                     = "select count(o) " + tmpQuery.minus("select o ")
-            result.consortiaMembersCount = Org.executeQuery( tmpQuery, tmpQueryParams )[0]
+            tmpQuery                     = "select o.id " + tmpQuery.minus("select o ")
+            result.consortiaMembersCount = Org.executeQuery( tmpQuery, tmpQueryParams ).size()
         } else {
             result.consortiaMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params << [max: result.max, offset: result.offset] )
-            def tmpQuery                 = "select count(o) " + fsq.query.minus("select o ")
-            result.consortiaMembersCount = Org.executeQuery( tmpQuery, fsq.queryParams)[0]
+            def tmpQuery                 = "select o.id " + fsq.query.minus("select o ")
+            result.consortiaMembersCount = Org.executeQuery( tmpQuery, fsq.queryParams).size()
         }
 
         if ( params.exportXLS=='yes' ) {

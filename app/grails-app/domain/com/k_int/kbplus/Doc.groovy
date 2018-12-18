@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import javax.persistence.Transient
 import java.sql.Blob
 
 import org.hibernate.Session
@@ -8,10 +9,13 @@ import com.k_int.kbplus.auth.User
 
 class Doc {
 
-  static final CONTENT_TYPE_STRING              = 0
-  static final CONTENT_TYPE_DOCSTORE            = 1
-  static final CONTENT_TYPE_UPDATE_NOTIFICATION = 2
-  static final CONTENT_TYPE_BLOB                = 3
+    @Transient
+    def grailsApplication
+
+    static final CONTENT_TYPE_STRING              = 0
+    static final CONTENT_TYPE_DOCSTORE            = 1
+    static final CONTENT_TYPE_UPDATE_NOTIFICATION = 2
+    static final CONTENT_TYPE_BLOB                = 3
 
   static transients = [ 'blobSize', 'blobData', 'sessionFactory' ]
   private static final MAX_SIZE = 1073741824 // 4GB 
@@ -84,7 +88,21 @@ class Doc {
   def render(def response, def filename) {
     response.setContentType(mimeType)
     response.addHeader("content-disposition", "attachment; filename=\"${filename}\"")
-    response.outputStream << getBlobData()
+
+      // erms-790
+      def output
+      try {
+          def fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+
+          def file = new File("${fPath}/${uuid}")
+          output = file.getBytes()
+
+      } catch(Exception e) {
+          // fallback
+          output = getBlobData()
+      }
+
+      response.outputStream << output
   }
     
   static fromUpload(def file) {
@@ -98,4 +116,12 @@ class Doc {
     doc.setBlobData(file.inputStream, file.size)
     return doc
   }
+
+    // erms-790
+    def beforeInsert = {
+        if (contentType in [CONTENT_TYPE_BLOB, CONTENT_TYPE_DOCSTORE]) {
+            log.info('generating new uuid')
+            uuid = java.util.UUID.randomUUID().toString()
+        }
+    }
 }

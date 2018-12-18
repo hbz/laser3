@@ -30,7 +30,7 @@ class DocstoreService {
     // Create a new identifier
     def workdir = "up-req-${java.util.UUID.randomUUID().toString()}"
     File tempdir = new File(System.getProperty("java.io.tmpdir")+System.getProperty("file.separator")+workdir);
-    println("tmpdir :${tempdir}");
+    log.debug("tmpdir :${tempdir}");
 
     File bag_dir = new File(tempdir, 'bag_dir');
 
@@ -87,7 +87,7 @@ class DocstoreService {
     // Create a new identifier
     def workdir = "ret-req-${java.util.UUID.randomUUID().toString()}"
     File tempdir = new File(System.getProperty("java.io.tmpdir")+System.getProperty("file.separator")+workdir);
-    println("tmpdir :${tempdir}");
+    log.debug("tmpdir :${tempdir}");
 
     File bag_dir = new File(tempdir, 'bag_dir');
 
@@ -113,7 +113,7 @@ class DocstoreService {
 
 
   def uploadBag(bagfile) {
-    println("uploading bagfile ${bagfile}");
+    log.debug("uploading bagfile ${bagfile}");
     // def http = new groovyx.net.http.HTTPBuilder('http://knowplus.edina.ac.uk/oledocstore/KBPlusServlet')
     def docstore_uri = grailsApplication.config.docstore
 
@@ -212,7 +212,7 @@ class DocstoreService {
   def createRequest(source_file_name, target_file, title) {
     // def writer = new StringWriter()
     def writer = new FileWriter(target_file)
-    println("Create ${target_file}");
+    log.debug("Create ${target_file}");
     def xml = new MarkupBuilder(writer)
     int seq = 1
     xml.request('xmlns:xsi':'http://www.w3.org/2001/XMLSchema-instance',
@@ -280,7 +280,7 @@ class DocstoreService {
     // Create a new identifier
     def workdir = "del-req-${java.util.UUID.randomUUID().toString()}"
     File tempdir = new File(System.getProperty("java.io.tmpdir")+System.getProperty("file.separator")+workdir);
-    println("tmpdir :${tempdir}");
+    log.debug("tmpdir :${tempdir}");
 
     File bag_dir = new File(tempdir, 'bag_dir');
 
