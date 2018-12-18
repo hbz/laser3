@@ -5460,6 +5460,10 @@ aside.ui.accordion .title:not(.ui) {
   box-shadow: none;
   border-radius: 0em;
 }
+
+#js-confirmation-button.positive.button {
+  background-color: #BB1600 !important;
+}
 /*!
  * # Semantic UI 2.3.1 - Container
  * http://github.com/semantic-org/semantic-ui/
@@ -14261,6 +14265,14 @@ i.icon.plus.square.slash {
   font-family: 'icomoon';
 }
 
+i.icon.chain.broken {
+  font-family: 'icomoon';
+}
+
+i.icon.chain {
+  font-family: 'icomoon';
+}
+
 i.icon.hand.pointer.outline.slash:before {
   content: "\e900";
 }
@@ -14275,6 +14287,14 @@ i.icon.thumbtack.slash:before {
 
 i.icon.plus.square.slash:before {
   content: "\e903";
+}
+
+i.icon.chain.broken:before {
+  content: "\e904";
+}
+
+i.icon.chain:before {
+  content: "\e905";
 }
 
 /*******************************
@@ -16703,6 +16723,46 @@ a.ui.basic.label:hover {
   height: 1.56em;
   -webkit-transition: none;
   transition: none;
+}
+
+#js-confirmation-term-what-detail {
+  margin: 0 .5em 0 0;
+  padding: .4em .833em;
+  min-width: 3em;
+  text-align: center;
+  font-size: .85714286rem;
+  display: inline-block;
+  line-height: 1;
+  vertical-align: baseline;
+  background-color: #e8e8e8;
+  background-image: none;
+  color: rgba(0, 0, 0, 0.6);
+  text-transform: none;
+  font-weight: 700;
+  border: 0 solid transparent;
+  border-radius: 0;
+  white-space: nowrap;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+#js-confirmation-term-where-detail {
+  margin: 0 .5em 0 0;
+  padding: .4em .833em;
+  min-width: 3em;
+  text-align: center;
+  font-size: .85714286rem;
+  display: inline-block;
+  line-height: 1;
+  vertical-align: baseline;
+  background-color: #e8e8e8;
+  background-image: none;
+  color: rgba(0, 0, 0, 0.6);
+  text-transform: none;
+  font-weight: 700;
+  border: 0 solid transparent;
+  border-radius: 0;
+  white-space: nowrap;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
 }
 /*!
  * # Semantic UI 2.3.1 - List

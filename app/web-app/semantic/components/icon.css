@@ -4791,6 +4791,12 @@ i.icon.thumbtack.slash {
 i.icon.plus.square.slash {
   font-family: 'icomoon';
 }
+i.icon.chain.broken {
+  font-family: 'icomoon';
+}
+i.icon.chain {
+  font-family: 'icomoon';
+}
 i.icon.hand.pointer.outline.slash:before {
   content: "\e900";
 }
@@ -4802,6 +4808,12 @@ i.icon.thumbtack.slash:before {
 }
 i.icon.plus.square.slash:before {
   content: "\e903";
+}
+i.icon.chain.broken:before {
+  content: "\e904";
+}
+i.icon.chain:before {
+  content: "\e905";
 }
 
 

@@ -61,3 +61,6 @@
   box-shadow: @verticalBoxShadow;
   border-radius: 0em;
 }
+#js-confirmation-button.positive.button {
+  background-color: @red !important;
+}

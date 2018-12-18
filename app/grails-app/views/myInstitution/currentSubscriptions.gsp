@@ -362,10 +362,12 @@
                           </laser:statsLink>
                         </g:if>
                         <g:if test="${editable && ((institution?.id in s.allSubscribers.collect{ it.id }) || s.consortia?.id == institution?.id)}">
-                            <g:link controller="myInstitution" action="actionCurrentSubscriptions"
-                                    class="ui icon negative button"
-                                    params="${[curInst: institution.id, basesubscription: s.id]}"
-                                    onclick="return confirm('${message(code: 'license.details.delete.confirm', args: [(s.name ?: 'this subscription')])}')">
+                            <g:link class="ui icon negative button js-open-confirm-modal"
+                                    data-confirm-term-what="subscription"
+                                    data-confirm-term-what-detail="${s.name}"
+                                    data-confirm-term-how="delete"
+                                    controller="myInstitution" action="actionCurrentSubscriptions"
+                                    params="${[curInst: institution.id, basesubscription: s.id]}">
                                 <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>
