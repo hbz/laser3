@@ -42,11 +42,11 @@
                             <g:link controller="myInstitution" action="announcements">${message(code: 'announcement.plural', default: 'Announcements')}</g:link>
                         </div>
                         <g:if test="${grailsApplication.config.feature_finance}">
-                            <div class="item">
-                                <%-- as placeholder for the missing finances link --%>
+                            <%--<div class="item">
+                            <!-- as placeholder for the missing finances link -->
                                 <div class="disabled" data-tooltip="Die Funktion 'Finanzen' ist zur Zeit nicht verfügbar!" data-position="bottom center">${message(code: 'menu.institutions.finance', default: 'Finances')}</div>
-                            </div>
-                            <%--<semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />--%>
+                            </div>--%>
+                            <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />
                         </g:if>
                     </div>
                 </div>

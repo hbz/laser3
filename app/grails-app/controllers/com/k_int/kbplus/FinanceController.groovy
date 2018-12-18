@@ -132,6 +132,12 @@ class FinanceController extends AbstractDebugController {
                 result.cost_item_count_SUBSCR = tmp.cost_item_count
             }
         }
+        else {
+            def tmp = financialData(result, params, user, MODE_OWNER)
+            result.foundMatches    = tmp.foundMatches
+            result.cost_items      = tmp.cost_items
+            result.cost_item_count = tmp.cost_item_count
+        }
 
             flash.error = null
             flash.message = null
@@ -193,7 +199,16 @@ class FinanceController extends AbstractDebugController {
         log.debug("finance::index returning");
       }
 
-        result.tab = params.tab ?: ( result.queryMode == MODE_CONS ? 'sc' : 'owner' )
+      result.tab = 'owner'
+      if(params.tab) {
+          result.tab = params.tab
+      }
+      else if(!params.tab) {
+          if(result.queryMode == MODE_CONS)
+              result.tab = 'sc'
+      }
+
+      //result.tab = params.tab ?: result.queryMode == MODE_CONS ? 'sc' : 'owner'
 
       result
     }
@@ -244,9 +259,15 @@ class FinanceController extends AbstractDebugController {
         }
 
         if (MODE_OWNER == queryMode) {
-            cost_item_qry_params = [sub: result.fixedSubscription, owner: result.institution]
-            cost_item_qry        = ' WHERE ci.sub = :sub AND ci.owner = :owner '
-            //orderAndSortBy       = orderAndSortBy
+            if(params.sub) {
+                cost_item_qry_params = [sub: result.fixedSubscription, owner: result.institution]
+                cost_item_qry        = ' WHERE ci.sub = :sub AND ci.owner = :owner '
+                //orderAndSortBy       = orderAndSortBy
+            }
+            else if(!params.sub){
+                cost_item_qry_params = [owner: result.institution]
+                cost_item_qry = ' WHERE ci.owner = :owner '
+            }
         }
 
         // OVERWRITE
