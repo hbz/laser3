@@ -4,10 +4,13 @@
 - copy current MySQL database
 - use dataCleanupMySQL.sql
 - use exportFilesMySQL.sql
+
+
 - create PostgreSQL database (set search_path to public)
 - init database tables (starting app)
 - migrate data with pgLoader using migrate2postgresql.load
-- use dataCleanupPostgreSQL.sql
+
+
 - init database migration
 
 

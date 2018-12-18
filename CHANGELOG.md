@@ -1,9 +1,3 @@
-IN PROGRESS:
-
-- refactoring: filesystem instead of database blobs
-- fixed duplicate docstore uuids
-- upgrade to hibernate 4.3.10 ! NOT
-- upgrade to ehcache 2.9.0 ! NOT
 
 RC-0.12
 
@@ -12,7 +6,8 @@ RC-0.12
 - addes new user profile settings
 - added new property type: url
 - show api access information at user profile
-- storing uploaded files in filesystem
+- refactoring: use filesystem instead of database blobs
+- fixed: duplicate docstore uuids
 
 0.11.4
 

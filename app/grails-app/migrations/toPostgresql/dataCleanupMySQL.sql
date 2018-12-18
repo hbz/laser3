@@ -8,6 +8,13 @@ update user_folder set uf_lastUpdated = MAKEDATE(1970, 01) where uf_lastUpdated 
 update folder_item set fi_dateCreated = MAKEDATE(1970, 01) where fi_dateCreated is null;
 update folder_item set fi_lastUpdated = MAKEDATE(1970, 01) where fi_lastUpdated is null;
 
+ALTER TABLE fact MODIFY fact_value INTEGER;
+
+-- rename tables
+-- rename tables
+
+RENAME TABLE kb_comment to `comment`;
+RENAME TABLE kbplus_ord to ordering;
 
 -- fix duplicate doc_docstore_uuids
 -- fix duplicate doc_docstore_uuids
