@@ -47,41 +47,13 @@
     <!-- OWNER -->
     <div class="ui bottom attached tab ${tabOwnerActive}" data-tab="OWNER">
 
-        <g:if test="${! costItemsOwner}">
+        <%--<g:if test="${! costItemsOwner}">
             <br />
             <g:render template="result_tab_owner" model="[editable: editable, cost_items: [], i: 'empty']"></g:render>
-        </g:if>
+        </g:if>--%>
 
-        <g:if test="${costItemsOwner.size() > 1}">
-            <br />
-            <div class="ui fluid accordion">
-        </g:if>
-
-            <g:each in="${costItemsOwner}" var="subListItem" status="i">
-
-                <g:if test="${costItemsOwner.size() > 1}">
-                    <div class="title">
-                        <i class="dropdown icon"></i>
-                        ${subListItem.key != 'clean' ? subListItem.key : 'Ohne konkrete Zuordnung'}
-                        ( ${subListItem.value?.size()} )
-                    </div>
-
-                    <div class="content">
-                </g:if>
-
-                <g:set var="cost_items" value="${subListItem.value}" />
-
-                <br />
-                <g:render template="result_tab_owner" model="[editable: editable, cost_items: cost_items, i: i]"></g:render>
-
-                <g:if test="${costItemsOwner.size() > 1}">
-                    </div><!-- .content -->
-                </g:if>
-            </g:each>
-
-        <g:if test="${costItemsOwner.size() > 1}">
-            </div><!-- .accordion -->
-        </g:if>
+        <br />
+        <g:render template="result_tab_owner" model="[forSingleSubscription: forSingleSubscription, editable: editable, cost_items: costItemsOwner, i: 'OWNER']"></g:render>
 
     </div><!-- OWNER -->
 </g:if>
@@ -90,14 +62,14 @@
 
     <div class="ui bottom attached tab ${tabSCActive}" data-tab="CONS">
         <br />
-        <g:render template="result_tab_cons" model="[editable: editable, cost_items: ciListCons, i: 'CONS']"></g:render>
+        <g:render template="result_tab_cons" model="[forSingleSubscription: forSingleSubscription, editable: editable, cost_items: ciListCons, i: 'CONS']"></g:render>
     </div>
 </g:if>
 <g:if test="${queryMode == FinanceController.MODE_CONS_AT_SUBSCR}">
 
     <div class="ui bottom attached tab ${tabOwnerActive}" data-tab="CONS_AT_SUBSCR">
         <br />
-        <g:render template="result_tab_cons" model="[editable: editable, cost_items: ciListCons, i: 'CONS_AT_SUBSCR']"></g:render>
+        <g:render template="result_tab_cons" model="[forSingleSubscription: forSingleSubscription, editable: editable, cost_items: ciListCons, i: 'CONS_AT_SUBSCR']"></g:render>
     </div>
 </g:if>
 <g:if test="${queryMode == FinanceController.MODE_SUBSCR}">
