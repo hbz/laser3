@@ -425,6 +425,9 @@ r2d2 = {
                         case "function":
                             messageWhat = "die Funktion";
                             break;
+                        case "user":
+                            messageWhat = "den Benutzer";
+                            break;
                         default:
                             messageWhat = what;
                     }
