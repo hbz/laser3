@@ -6,8 +6,8 @@ class SubscriptionUpdateJob {
   def cronjobUpdateService
 
   static triggers = {
-    cron name:'DashboardDueDatesTrigger', cronExpression: "0 1 0 * * ?" //Fire at 01:00 every day
-//        cron name:'DashboardDueDatesTrigger', cronExpression: "0 /15 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every 15th minute
+    cron name:'SubscriptionUpdateTrigger', cronExpression: "0 1 0 * * ?" //Fire at 01:00 every day
+//        cron name:'SubscriptionUpdateTrigger', cronExpression: "0 /15 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every 15th minute
 //        cron name:'SubscriptionUpdateTrigger', cronExpression: "0 /3 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every three minutes
   }
 
