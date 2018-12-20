@@ -79,7 +79,7 @@ class PublicExportController {
     if ( ( params.sort != null ) && ( params.sort.length() > 0 ) ) {
       base_qry += "order by ie.${params.sort} ${params.order} "
     }
-    result.num_sub_rows = IssueEntitlement.executeQuery("select count(ie) "+base_qry, qry_params )[0]
+    result.num_sub_rows = IssueEntitlement.executeQuery("select ie "+base_qry, qry_params ).size()
 
     result.entitlements = IssueEntitlement.executeQuery("select ie "+base_qry, qry_params, [max:result.max, offset:result.offset]);
 
@@ -219,7 +219,7 @@ class PublicExportController {
     
     log.debug("Base query for pkg export: ${base_qry}");
     
-    result.num_pkg_rows = TitleInstancePackagePlatform.executeQuery("select count(tipp) "+base_qry, qry_params )[0]
+    result.num_pkg_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id "+base_qry, qry_params ).size()
 
     result.titlesList = TitleInstancePackagePlatform.executeQuery("select tipp "+base_qry, qry_params, [max:result.max, offset:result.offset]);
     result.transforms = grailsApplication.config.packageTransforms
@@ -306,7 +306,7 @@ class PublicExportController {
     def base_qry = " from Package as p order by p.name asc"
     def qry_params = []
 
-    def num_pkg_rows = Subscription.executeQuery("select count(p) "+base_qry, qry_params )[0]
+    def num_pkg_rows = Subscription.executeQuery("select p.id "+base_qry, qry_params ).size()
     def _packages = Subscription.executeQuery("select p ${base_qry}", qry_params);
 
     withFormat {

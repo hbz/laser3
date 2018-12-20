@@ -155,8 +155,8 @@ class DataManagerController extends AbstractDebugController {
       def limits = (!params.format||params.format.equals("html"))?[max:result.max, offset:result.offset]:[max:result.max,offset:0]
       result.historyLines = AuditLogEvent.executeQuery('select e '+base_query+' order by e.lastUpdated desc', 
                                                        query_params, limits);
-      result.num_hl = AuditLogEvent.executeQuery('select count(e) '+base_query,
-                                                 query_params)[0];
+      result.num_hl = AuditLogEvent.executeQuery('select e.id '+base_query,
+                                                 query_params).size()
       result.formattedHistoryLines = []
       result.historyLines.each { hl ->
   
@@ -317,7 +317,7 @@ class DataManagerController extends AbstractDebugController {
 
     def base_qry = " from TitleInstance as t where ( t.status = ? )"
 
-    result.titleInstanceTotal = Subscription.executeQuery("select count(t) "+base_qry, qry_params )[0]
+    result.titleInstanceTotal = Subscription.executeQuery("select t.id "+base_qry, qry_params ).size()
 
     result.titleList = Subscription.executeQuery("select t ${base_qry}", qry_params, [max:result.max, offset:result.offset]);
 

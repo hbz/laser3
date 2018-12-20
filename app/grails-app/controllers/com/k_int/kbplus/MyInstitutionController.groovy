@@ -774,7 +774,7 @@ from License as l where (
             base_qry += " order by p.name asc"
         }
 
-        result.num_pkg_rows = Package.executeQuery("select count(p) " + base_qry, qry_params)[0]
+        result.num_pkg_rows = Package.executeQuery("select p.id " + base_qry, qry_params).size()
         result.packages = Package.executeQuery("select p ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
 
         result
@@ -2996,7 +2996,7 @@ AND EXISTS (
           }
         }
 
-        result.num_changes = PendingChange.executeQuery("select count(pc) "+base_query, qry_params)[0];
+        result.num_changes = PendingChange.executeQuery("select pc.id "+base_query, qry_params).size()
 
 
         withFormat {
