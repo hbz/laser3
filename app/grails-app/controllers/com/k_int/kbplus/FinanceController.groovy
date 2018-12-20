@@ -8,7 +8,6 @@ import grails.converters.JSON;
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.hibernate.Session
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class FinanceController extends AbstractDebugController {
