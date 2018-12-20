@@ -53,7 +53,7 @@
         </g:if>--%>
 
         <br />
-        <g:render template="result_tab_owner" model="[forSingleSubscription: forSingleSubscription, editable: editable, cost_items: costItemsOwner, i: 'OWNER']"></g:render>
+        <g:render template="result_tab_owner" model="[forSingleSubscription: forSingleSubscription, editable: editable, cost_items: costItemsOwner, cost_items_count: ciCountOwner, i: 'OWNER']"></g:render>
 
     </div><!-- OWNER -->
 </g:if>
@@ -62,21 +62,21 @@
 
     <div class="ui bottom attached tab ${tabSCActive}" data-tab="CONS">
         <br />
-        <g:render template="result_tab_cons" model="[forSingleSubscription: forSingleSubscription, editable: editable, cost_items: ciListCons, i: 'CONS']"></g:render>
+        <g:render template="result_tab_cons" model="[forSingleSubscription: forSingleSubscription, editable: editable, cost_items: ciListCons, cost_items_count: ciCountCons, i: 'CONS']"></g:render>
     </div>
 </g:if>
 <g:if test="${queryMode == FinanceController.MODE_CONS_AT_SUBSCR}">
 
     <div class="ui bottom attached tab ${tabOwnerActive}" data-tab="CONS_AT_SUBSCR">
         <br />
-        <g:render template="result_tab_cons" model="[forSingleSubscription: forSingleSubscription, editable: editable, cost_items: ciListCons, i: 'CONS_AT_SUBSCR']"></g:render>
+        <g:render template="result_tab_cons" model="[forSingleSubscription: forSingleSubscription, editable: editable, cost_items: ciListCons, cost_items_count: ciCountCons, i: 'CONS_AT_SUBSCR']"></g:render>
     </div>
 </g:if>
 <g:if test="${queryMode == FinanceController.MODE_SUBSCR}">
 
     <div class="ui bottom attached tab" data-tab="SUBSCR">
         <br />
-        <g:render template="result_tab_subscr" model="[editable: editable, cost_items: ciListSubscr, i: 'SUBSCR']"></g:render>
+        <g:render template="result_tab_subscr" model="[editable: editable, cost_items: ciListSubscr, cost_items_count: ciCountSub, i: 'SUBSCR']"></g:render>
     </div>
 </g:if>
 
