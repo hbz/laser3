@@ -39,7 +39,7 @@
             <g:if test="${prop.type.descr == prop_desc}">
                 <tr>
                     <td class="la-js-dont-hide-this-card">
-                        <g:if test="${prop.type.getI10n('expl') != null && prop.type.getI10n('expl') != 'null' && !prop.type.getI10n('expl').contains(' °')}">
+                        <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
                             ${prop.type.getI10n('name')}
                             <span data-position="right center" data-variation="tiny" data-tooltip="${prop.type.getI10n('expl')}">
                                 <i class="question circle icon"></i>
