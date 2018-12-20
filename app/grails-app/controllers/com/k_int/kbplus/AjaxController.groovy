@@ -23,8 +23,8 @@ class AjaxController extends AbstractDebugController {
     def refdata_config = [
     "ContentProvider" : [
       domain:'Org',
-      countQry:"select count(o) from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ?",
-      rowQry:"select o from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? order by o.name asc",
+      countQry:"select count(o) from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?)",
+      rowQry:"select o from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?) order by o.name asc",
       qryParams:[
               [
                 param:'sSearch',
@@ -62,8 +62,8 @@ class AjaxController extends AbstractDebugController {
     ],
     "allOrgs" : [
             domain:'Org',
-            countQry:"select count(o) from Org as o where lower(o.name) like ?",
-            rowQry:"select o from Org as o where lower(o.name) like ? order by o.name asc",
+            countQry:"select count(o) from Org as o where lower(o.name) like ? and (o.status is null or o.status != ?)",
+            rowQry:"select o from Org as o where lower(o.name) like ? and (o.status is null or o.status != ?) order by o.name asc",
             qryParams:[
                     [
                             param:'sSearch',
@@ -80,8 +80,8 @@ class AjaxController extends AbstractDebugController {
     ],
     "CommercialOrgs" : [
             domain:'Org',
-            countQry:"select count(o) from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like ? ",
-            rowQry:"select o from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like ?  order by o.name asc",
+            countQry:"select count(o) from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like ? and (o.status is null or o.status != ?)",
+            rowQry:"select o from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like ? and (o.status is null or o.status != ?) order by o.name asc",
             qryParams:[
                     [
                             param:'sSearch',
@@ -438,9 +438,14 @@ class AjaxController extends AbstractDebugController {
         }
       }
 
-      // log.debug("Params: ${query_params}");
-      //log.debug("Count qry: ${config.countQry}");
-      //log.debug("Row qry: ${config.rowQry}");
+        if (config.domain == 'Org') {
+            // new added param for org queries in this->refdata_config
+            query_params.add(RefdataValue.getByValueAndCategory('Deleted', 'OrgStatus'))
+        }
+
+        //log.debug("Row qry: ${config.rowQry}");
+        //log.debug("Params: ${query_params}");
+        //log.debug("Count qry: ${config.countQry}");
 
       def cq = Org.executeQuery(config.countQry,query_params);    
 
