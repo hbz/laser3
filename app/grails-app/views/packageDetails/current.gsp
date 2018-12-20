@@ -124,7 +124,7 @@
 
                       </g:form>
                   </semui:form>
-                  
+
               </g:if>
 
         <g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
