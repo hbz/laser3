@@ -13,35 +13,10 @@
     </semui:breadcrumbs>
 
     <h1 class="ui left aligned icon header"><semui:headerIcon />
-
       ${message(code:'tipp.show.label', args:[titleInstanceInstance?.title,tipp.pkg.name,tipp.platform.name])}
     </h1>
 
-    <semui:meta>
-        <div class="inline-lists">
-
-            <dl>
-                <dt><g:message code="titleInstance.globalUID.label" default="Global UID" /></dt>
-                <dd> <g:fieldValue bean="${tipp}" field="globalUID"/> </dd>
-
-                <g:if test="${titleInstanceInstance?.ids}">
-
-                    <dt><g:message code="title.identifiers.label" /></dt>
-
-                    <dd><g:each in="${titleInstanceInstance.ids.sort{it.identifier.ns.ns}}" var="i">
-                        <g:if test="${i.identifier.ns.ns != 'originediturl'}">
-                            ${i.identifier.ns.ns}: ${i.identifier.value}<br/>
-                        </g:if>
-                        <g:else>
-                            GOKb: <a href="${i.identifier.value}">${message(code:'component.originediturl.label')}</a><br/>
-                        </g:else>
-                    </g:each>
-                    </dd>
-
-                </g:if>
-            </dl>
-        </div>
-    </semui:meta>
+    <g:render template="/templates/meta/identifier" model="${[object: titleInstanceInstance, editable: editable]}" />
 
     <semui:messages data="${flash}" />
 

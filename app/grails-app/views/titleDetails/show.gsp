@@ -35,52 +35,7 @@
 
         <g:render template="nav" />
 
-        <semui:meta>
-            <div class="inline-lists">
-                <g:if test="${ti.globalUID}">
-                    <dl>
-                        <dt><g:message code="title.globalUID.label" default="Global UID" /></dt>
-                        <dd>
-                            <g:fieldValue bean="${ti}" field="globalUID"/>
-                        </dd>
-                    </dl>
-                </g:if>
-
-                <dl>
-                    <dt>${message(code: 'title.identifiers.label')}</dt>
-                    <dd>
-                    <table class="ui celled la-table la-table-small table ignore-floatThead">
-                        <thead>
-                        <tr>
-                            %{--<th>${message(code:'title.edit.component_id.label')}</th>--}%
-                            <th>${message(code:'title.edit.namespace.label')}</th>
-                            <th>${message(code:'identifier.label')}</th>
-                            <th>${message(code:'default.actions.label')}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <g:each in="${ti.ids.sort{it.identifier.ns.ns}}" var="io">
-                            <tr>
-                                %{--<td>${io.id}</td>--}%
-                                <td>${io.identifier.ns.ns}</td>
-                                <td>${io.identifier.value}</td>
-                                <td><g:if test="${editable}"><g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${ti.class.name}:${ti.id}",contextProperty:"ids",targetOid:"${io.class.name}:${io.id}"]}'>${message(code:'title.edit.identifier.delete')}</g:link></g:if></td>
-                            </tr>
-                        </g:each>
-                        </tbody>
-                    </table>
-
-                    <g:if test="${editable}">
-                        <semui:formAddIdentifier owner="${ti}" buttonText="${message(code:'title.edit.identifier.select.add')}"
-                                                 uniqueCheck="yes" uniqueWarningText="${message(code:'title.edit.duplicate.warn.list')}">
-                            ${message(code:'identifier.select.text', args:['eISSN:2190-9180'])}
-                        </semui:formAddIdentifier>
-                    </g:if>
-                    </dd>
-                </dl>
-
-            </div>
-        </semui:meta>
+        <g:render template="/templates/meta/identifier" model="${[object: ti, editable: editable]}" />
 
         <semui:messages data="${flash}" />
 

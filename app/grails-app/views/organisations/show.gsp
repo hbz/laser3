@@ -37,44 +37,7 @@
 
     <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}" />
 
-    <semui:meta>
-        <div class="inline-lists">
-
-            <dl>
-                <g:if test="${orgInstance.globalUID}">
-                    <dt><g:message code="org.globalUID.label" default="Global UID" /></dt>
-                    <dd>
-                        <g:fieldValue bean="${orgInstance}" field="globalUID"/>
-                    </dd>
-                </g:if>
-
-                <g:if test="${orgInstance.impId}">
-                    <dt><g:message code="org.impId.label" default="Import ID" /></dt>
-                    <dd>
-                        <g:fieldValue bean="${orgInstance}" field="impId"/>
-                    </dd>
-                </g:if>
-
-                <dt><g:message code="org.ids.label" default="Ids" /></dt>
-                <dd>
-                    <g:if test="${orgInstance?.ids}">
-                        <g:each in="${orgInstance.ids.sort{it.identifier.ns.ns}}" var="i">
-                            <g:link controller="identifier" action="show" id="${i.identifier.id}">${i?.identifier?.ns?.ns} : ${i?.identifier?.value}</g:link>
-                            <br />
-                        </g:each>
-                    </g:if>
-
-                    <g:if test="${editable}">
-
-                        <semui:formAddIdentifier owner="${orgInstance}">
-                            ${message(code:'identifier.select.text', args:['isil:DE-18'])}
-                        </semui:formAddIdentifier>
-
-                    </g:if>
-                </dd>
-            </dl>
-        </div>
-    </semui:meta>
+    <g:render template="/templates/meta/identifier" model="${[object: orgInstance, editable: editable]}" />
 
     <semui:messages data="${flash}" />
 
