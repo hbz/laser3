@@ -9,6 +9,8 @@ import javax.persistence.Transient
 class RefdataCategory extends AbstractI10nTranslatable {
 
     @Transient
+    public static final ORG_STATUS = 'OrgStatus'
+    @Transient
     public static final PKG_SCOPE = "Package.Scope"
     @Transient
     public static final PKG_LIST_STAT = "Package.ListStatus"

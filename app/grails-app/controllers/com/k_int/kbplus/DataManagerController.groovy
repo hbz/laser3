@@ -299,13 +299,9 @@ class DataManagerController extends AbstractDebugController {
   }
 
   @Secured(['ROLE_DATAMANAGER'])
-  def deletedTitleManagement() {
+  def deletedTitles() {
     def result = [:]
-    if(SpringSecurityUtils.ifNotGranted('ROLE_ADMIN')){
-      flash.error =  message(code:"default.access.error")
-      response.sendError(401)
-      return;
-    }
+
     result.user = User.get(springSecurityService.principal.id)
     result.max = params.max ? Integer.parseInt(params.max): result.user?.getDefaultPageSizeTMP()
 
@@ -317,12 +313,49 @@ class DataManagerController extends AbstractDebugController {
 
     def base_qry = " from TitleInstance as t where ( t.status = ? )"
 
-    result.titleInstanceTotal = Subscription.executeQuery("select t.id "+base_qry, qry_params ).size()
+      if (params.sort?.length() > 0) {
+          base_qry += " order by " + params.sort
 
+          if (params.order?.length() > 0) {
+              base_qry += " " + params.order
+          }
+      }
+
+    result.titleInstanceTotal = Subscription.executeQuery("select t.id "+base_qry, qry_params ).size()
     result.titleList = Subscription.executeQuery("select t ${base_qry}", qry_params, [max:result.max, offset:result.offset]);
 
     result
   }
+
+    @Secured(['ROLE_ORG_MANAGER', 'ROLE_ADMIN'])
+    def deletedOrgs() {
+        def result = [:]
+
+        result.user = User.get(springSecurityService.principal.id)
+        result.max = params.max ? Integer.parseInt(params.max): result.user?.getDefaultPageSizeTMP()
+        result.editable = true
+
+        def paginate_after = params.paginate_after ?: ( (2*result.max)-1);
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+
+        def delStatus =  RefdataValue.getByValueAndCategory('Deleted', 'OrgStatus')
+
+        def qry_params = [delStatus]
+        def query = " from Org as o where ( o.status = ? )"
+
+        if (params.sort?.length() > 0) {
+            query += " order by " + params.sort
+
+            if (params.order?.length() > 0) {
+                query += " " + params.order
+            }
+        }
+
+        result.orgTotal = Org.executeQuery("select o.id " + query, qry_params ).size()
+        result.orgList = Org.executeQuery("select o ${query}", qry_params, [max:result.max, offset:result.offset])
+
+        result
+    }
 
     @Secured(['ROLE_ADMIN'])
   def expungeDeletedTitles() {

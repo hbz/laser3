@@ -220,49 +220,58 @@
                     </div>
                 </g:if>
 
-                <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN,ROLE_GLOBAL_DATA">
+                <sec:ifAnyGranted roles="ROLE_ORG_MANAGER,ROLE_DATAMANAGER,ROLE_ADMIN,ROLE_GLOBAL_DATA">
                     <div class="ui simple dropdown item">
                         ${message(code:'menu.datamanager')}
                         <i class="dropdown icon"></i>
 
                         <div class="menu">
                             <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN">
-                            <g:link class="item" controller="dataManager" action="index">${message(code:'menu.datamanager.dash')}</g:link>
-                            <g:link class="item" controller="dataManager"
-                                    action="deletedTitleManagement">${message(code: 'datamanager.deletedTitleManagement.label', default: 'Deleted Title management')}</g:link>
-
-                            <div class="divider"></div>
-
-                            <g:link class="item" controller="announcement" action="index">${message(code:'menu.datamanager.ann')}</g:link>
-                            <g:link class="item" controller="packageDetails" action="list">${message(code:'menu.datamanager.searchPackages')}</g:link>
-                            <g:link class="item" controller="platform" action="list">${message(code:'menu.datamanager.searchPlatforms')}</g:link>
-
-                            <div class="divider"></div>
-
-                            <g:link class="item" controller="upload" action="reviewPackage">${message(code:'menu.datamanager.uploadPackage')}</g:link>
-                            <g:link class="item" controller="licenseImport" action="doImport">${message(code:'onix.import.license')}</g:link>
-
-                            <div class="divider"></div>
-
-                            <g:link class="item" controller="titleDetails" action="findTitleMatches">${message(code:'menu.datamanager.newTitle')}</g:link>
-                            <g:link class="item" controller="licenseDetails" action="create">${message(code:'license.template.new')}</g:link>
-                            <g:link class="item" controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link>
-
-                            <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</g:link>
-                            <g:link class="item" controller="subscriptionImport" action="generateImportWorksheet">${message(code:'menu.datamanager.sub_work')}</g:link>
-                            <g:link class="item" controller="subscriptionImport" action="importSubscriptionWorksheet" params="${[dm:'true']}">${message(code:'menu.datamanager.imp_sub_work')}</g:link>
-                            <g:link class="item" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</g:link>
-                            <g:link class="item" controller="dataManager" action="changeLog">${message(code:'menu.datamanager.changelog')}</g:link><div class="divider"></div>
+                                <g:link class="item" controller="dataManager" action="index">${message(code:'menu.datamanager.dash')}</g:link>
+                                <g:link class="item" controller="dataManager"
+                                        action="deletedTitles">${message(code: 'datamanager.deletedTitleManagement.label', default: 'Deleted Title management')}</g:link>
                             </sec:ifAnyGranted>
 
-                            <g:link class="item" controller="globalDataSync" action="index" >${message(code:'menu.datamanager.global_data_sync')}</g:link>
+                            <sec:ifAnyGranted roles="ROLE_ORG_MANAGER,ROLE_ADMIN">
+                                <g:link class="item" controller="dataManager"
+                                        action="deletedOrgs">${message(code: 'datamanager.deletedOrgManagement.label', default: 'Deleted Org management')}</g:link>
+                            </sec:ifAnyGranted>
 
                             <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN">
-                            <div class="divider"></div>
-                            <g:link class="item" controller="jasperReports" action="index">${message(code:'menu.datamanager.jasper_reports')}</g:link>
-                            <g:link class="item" controller="titleDetails" action="dmIndex">${message(code:'menu.datamanager.titles')}</g:link>
+                                <div class="divider"></div>
+
+                                <g:link class="item" controller="announcement" action="index">${message(code:'menu.datamanager.ann')}</g:link>
+                                <g:link class="item" controller="packageDetails" action="list">${message(code:'menu.datamanager.searchPackages')}</g:link>
+                                <g:link class="item" controller="platform" action="list">${message(code:'menu.datamanager.searchPlatforms')}</g:link>
+
+                                <div class="divider"></div>
+
+                                <g:link class="item" controller="upload" action="reviewPackage">${message(code:'menu.datamanager.uploadPackage')}</g:link>
+                                <g:link class="item" controller="licenseImport" action="doImport">${message(code:'onix.import.license')}</g:link>
+
+                                <div class="divider"></div>
+
+                                <g:link class="item" controller="titleDetails" action="findTitleMatches">${message(code:'menu.datamanager.newTitle')}</g:link>
+                                <g:link class="item" controller="licenseDetails" action="create">${message(code:'license.template.new')}</g:link>
+                                <g:link class="item" controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link>
+
+                                <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</g:link>
+                                <g:link class="item" controller="subscriptionImport" action="generateImportWorksheet">${message(code:'menu.datamanager.sub_work')}</g:link>
+                                <g:link class="item" controller="subscriptionImport" action="importSubscriptionWorksheet" params="${[dm:'true']}">${message(code:'menu.datamanager.imp_sub_work')}</g:link>
+                                <g:link class="item" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</g:link>
+                                <g:link class="item" controller="dataManager" action="changeLog">${message(code:'menu.datamanager.changelog')}</g:link><div class="divider"></div>
                             </sec:ifAnyGranted>
-                            </div>
+
+                            <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN,ROLE_GLOBAL_DATA">
+                                <g:link class="item" controller="globalDataSync" action="index" >${message(code:'menu.datamanager.global_data_sync')}</g:link>
+                            </sec:ifAnyGranted>
+
+                            <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN">
+                                <div class="divider"></div>
+                                <g:link class="item" controller="jasperReports" action="index">${message(code:'menu.datamanager.jasper_reports')}</g:link>
+                                <g:link class="item" controller="titleDetails" action="dmIndex">${message(code:'menu.datamanager.titles')}</g:link>
+                            </sec:ifAnyGranted>
+                        </div>
                     </div>
                 </sec:ifAnyGranted>
 
