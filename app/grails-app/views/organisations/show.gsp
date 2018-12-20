@@ -35,6 +35,8 @@
 
     <g:render template="nav" contextPath="." />
 
+    <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}" />
+
     <semui:meta>
         <div class="inline-lists">
 
@@ -136,7 +138,15 @@
                         </g:else>
                         <dl>
                             <dt>${message(code:'subscription.details.status', default:'Status')}</dt>
-                            <dd>${orgInstance.status?.getI10n('value')}</dd>
+
+                            <dd>
+                                <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                                    <semui:xEditableRefData owner="${orgInstance}" field="status" config='OrgStatus'/>
+                                </g:if>
+                                <g:else>
+                                    ${orgInstance.status?.getI10n('value')}
+                                </g:else>
+                            </dd>
                         </dl>
                     </div>
                 </div><!-- .card -->
