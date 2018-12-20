@@ -675,10 +675,10 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
 
   static def refdataFind(params) {
 
-      String INSTITUTIONAL_LICENSES_QUERY = """ 
- FROM License AS l WHERE 
-( exists ( SELECT ol FROM OrgRole AS ol WHERE ol.lic = l AND ol.org.id =(:orgId) AND ol.roleType.id IN (:orgRoles)) OR l.isPublic.id=(:publicS)) 
-AND l.status.value != 'Deleted' 
+      String INSTITUTIONAL_LICENSES_QUERY = """
+ FROM License AS l WHERE
+( exists ( SELECT ol FROM OrgRole AS ol WHERE ol.lic = l AND ol.org.id =(:orgId) AND ol.roleType.id IN (:orgRoles)) OR l.isPublic.id=(:publicS))
+AND l.status.value != 'Deleted'
 AND lower(l.reference) LIKE (:ref)
 """
       def result = []

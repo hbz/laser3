@@ -1,0 +1,5 @@
+.la-long-tooltip:after {
+  max-width: 350px;
+  min-width: 350px;
+  white-space: normal;
+}
