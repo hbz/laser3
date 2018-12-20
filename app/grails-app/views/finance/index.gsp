@@ -172,7 +172,7 @@
 
                     <g:render template="filter" model="['ciList':cost_items, 'ciListCons':cost_items_CS, 'ciListSubscr':cost_items_SUBSCR]"/>
 
-                    <g:render template="result" model="['ciList':cost_items, 'ciListCons':cost_items_CS, 'ciListSubscr':cost_items_SUBSCR]"/>
+                    <g:render template="result" model="['forSingleSubscription':fixedSubscription, 'ciList':cost_items, 'ciListCons':cost_items_CS, 'ciListSubscr':cost_items_SUBSCR]"/>
                 </div>
             </div>
 

@@ -104,7 +104,7 @@
         </a>
 
     </div>
-        <div class="ui bottom attached active tab segment" data-tab="first" style="border-top: 1px solid #d4d4d5; ">
+        <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Due Dates' ? 'active':''}" data-tab="first" style="border-top: 1px solid #d4d4d5; ">
             <div>
                 <g:render template="/user/dueDatesView"
                           model="[user: user,

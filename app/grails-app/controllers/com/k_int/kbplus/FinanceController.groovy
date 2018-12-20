@@ -61,13 +61,18 @@ class FinanceController extends AbstractDebugController {
             response.sendError(401)
         }
 
+        /*
+        this is the switch for page call: if the controller has been called with the param sub (for subscription), then this flag
+        is being set.
+         */
         result.inSubMode   = params.sub ? true : false
 
           result.queryMode = MODE_OWNER
           def orgRoleCons, orgRoleSubscr
 
-        if (result.inSubMode)
-        {
+        //this is the switch for the cost item fill
+        if (result.inSubMode) {
+            log.info("call from /subscriptionDetails/${params.sub}/finance")
             params.subscriptionFilter = "${params.sub}"
 
             result.fixedSubscription = params.int('sub')? Subscription.get(params.sub) : null
@@ -133,10 +138,41 @@ class FinanceController extends AbstractDebugController {
             }
         }
         else {
+            log.info("call from /myInstitution/finance")
             def tmp = financialData(result, params, user, MODE_OWNER)
             result.foundMatches    = tmp.foundMatches
             result.cost_items      = tmp.cost_items
             result.cost_item_count = tmp.cost_item_count
+            orgRoleCons = OrgRole.findByOrgAndRoleType(
+                    result.institution,
+                    RDStore.OR_SUBSCRIPTION_CONSORTIA
+            )
+            orgRoleSubscr = OrgRole.findByRoleType(
+                    RDStore.OR_SUBSCRIBER_CONS
+            )
+            if (orgRoleCons) {
+                // show consortial subscription, but member costs
+                    result.queryMode = MODE_CONS
+                    tmp = financialData(result, params, user, MODE_CONS)
+
+                    result.foundMatches_CS = tmp.foundMatches
+
+                    result.cost_items_CS = tmp.cost_items.sort{ x, y ->
+                        def xx = OrgRole.findBySubAndRoleType(x.sub, RDStore.OR_SUBSCRIBER_CONS)
+                        def yy = OrgRole.findBySubAndRoleType(y.sub, RDStore.OR_SUBSCRIBER_CONS)
+                        xx?.org?.sortname <=> yy?.org?.sortname
+                    }
+                    result.cost_item_count_CS = tmp.cost_item_count
+            }
+            // show subscription as a member, but viewable costs
+            else if (orgRoleSubscr) {
+                result.queryMode = MODE_SUBSCR
+                tmp = financialData(result, params, user, MODE_SUBSCR)
+
+                result.foundMatches_SUBSCR = tmp.foundMatches
+                result.cost_items_SUBSCR = tmp.cost_items
+                result.cost_item_count_SUBSCR = tmp.cost_item_count
+            }
         }
 
             flash.error = null
@@ -159,12 +195,15 @@ class FinanceController extends AbstractDebugController {
           def myCostItems = CostItem.findAllWhere(owner: result.institution)
           switch (result.queryMode)
           {
+              //own costs
               case MODE_OWNER:
                   myCostItems = result.cost_items
                   break
+              //consortium viewing the subscription from the point of view of subscriber
               case MODE_CONS_AT_SUBSCR:
                   myCostItems = result.cost_items_SUBSCR
                   break
+              //consortium vieweung the overall consortium costs
               case MODE_CONS:
                   myCostItems = result.cost_items_CS
                   break
@@ -251,7 +290,11 @@ class FinanceController extends AbstractDebugController {
         def orderAndSortBy = " ORDER BY ci.${order} ${result.sort}"
 
         if (MODE_CONS == queryMode) {
-            def memberSubs = Subscription.findAllByInstanceOf(result.fixedSubscription)
+            //ticket ERMS-802: switch for site call - consortia costs should be displayed also when not in fixed subscription mode
+            def queryParams = ['roleType':RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst':result.institution, 'status':RefdataValue.getByValueAndCategory('Current','Subscription Status')]
+            def memberSubs = Subscription.executeQuery("select s from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is not null AND s.status = :status ) ",queryParams)
+            if(result.fixedSubscription)
+               memberSubs = Subscription.findAllByInstanceOf(result.fixedSubscription)
 
             cost_item_qry_params = [subs: memberSubs, owner: result.institution]
             cost_item_qry        = ' WHERE ci.sub IN ( :subs ) AND ci.owner = :owner '
@@ -265,18 +308,36 @@ class FinanceController extends AbstractDebugController {
                 //orderAndSortBy       = orderAndSortBy
             }
             else if(!params.sub){
-                cost_item_qry_params = [owner: result.institution]
-                cost_item_qry = ' WHERE ci.owner = :owner '
+                def queryParams = ['activeInst':result.institution, 'status':RefdataValue.getByValueAndCategory('Current','Subscription Status')]
+                def instSubs = Subscription.executeQuery("select s from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where o.org = :activeInst ) ) ) AND ( s.instanceOf is null AND s.status = :status ) ",queryParams)
+                if(instSubs.size() > 0) {
+                    cost_item_qry_params = [subs: instSubs, owner: result.institution]
+                    cost_item_qry = ' WHERE ci.sub IN ( :subs ) AND ci.owner = :owner '
+                }
+                else {
+                    //continue here: foreign costs are visible!
+                    cost_item_qry_params = [owner: result.institution]
+                    cost_item_qry = ' WHERE ci.owner = :owner '
+                }
             }
         }
 
         // OVERWRITE
         if (MODE_SUBSCR == queryMode) {
 
-            // TODO FLAG isVisibleForSubscriber
-            cost_item_qry_params =  [sub: result.fixedSubscription, owner: result.institution]
-            cost_item_qry        = ' , OrgRole as ogr WHERE ci.sub = :sub AND ogr.org = :owner AND ci.isVisibleForSubscriber is true ' // (join)? "LEFT OUTER JOIN ${join} AS j WHERE ci.owner = :owner " :"  where ci.owner = :owner "
-            //orderAndSortBy       = orderAndSortBy
+            if(result.fixedSubscription) {
+                // TODO FLAG isVisibleForSubscriber
+                cost_item_qry_params =  [sub: result.fixedSubscription, owner: result.institution]
+                cost_item_qry        = ' , OrgRole as ogr WHERE ci.sub = :sub AND ogr.org = :owner AND ci.isVisibleForSubscriber is true ' // (join)? "LEFT OUTER JOIN ${join} AS j WHERE ci.owner = :owner " :"  where ci.owner = :owner "
+                //orderAndSortBy       = orderAndSortBy
+            }
+            else if (!result.fixedSubscription) {
+                def queryParams = ['activeInst':result.institution, 'status':RefdataValue.getByValueAndCategory('Current','Subscription Status')]
+                def instSubs = Subscription.executeQuery("select s from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where o.org = :activeInst ) ) ) AND s.status = :status ",queryParams)
+                cost_item_qry_params =  [subs: instSubs, owner: result.institution]
+                cost_item_qry        = ' , OrgRole as ogr WHERE ci.sub IN ( :subs ) AND ogr.org = :owner AND ci.isVisibleForSubscriber is true '
+            }
+
        }
 
         //Filter processing...
