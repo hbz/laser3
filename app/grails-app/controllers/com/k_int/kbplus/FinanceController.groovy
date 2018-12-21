@@ -45,6 +45,7 @@ class FinanceController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def index() {
+
         log.debug("FinanceController::index() ${params}");
 
         def user =  User.get(springSecurityService.principal.id)
@@ -273,11 +274,18 @@ class FinanceController extends AbstractDebugController {
         //result.max         =  params.max
         //result.offset      =  params.int('offset',0)?: 0
 
-        // WORKAROUND: erms-517
-        params.max = 5000
+        // WORKAROUND: erms-517 (deactivated as erms-802)
+
+        params.max = params.max ? params.max : user.getDefaultPageSizeTMP()
+        params.offset = params.offset ? params.offset : 0
+        /*
         result.max = 5000
         result.offset = 0
-
+        */
+        /*
+        result.max = params.max ? Integer.parseInt(params.max) : ;
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        */
         //Query setup options, ordering, joins, param query data....
         def order = "id"
         def gspOrder = "Cost Item#"
@@ -292,9 +300,11 @@ class FinanceController extends AbstractDebugController {
         if (MODE_CONS == queryMode) {
             //ticket ERMS-802: switch for site call - consortia costs should be displayed also when not in fixed subscription mode
             def queryParams = ['roleType':RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst':result.institution, 'status':RefdataValue.getByValueAndCategory('Current','Subscription Status')]
-            def memberSubs = Subscription.executeQuery("select s from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is not null AND s.status = :status ) ",queryParams)
+            def memberSubs
             if(result.fixedSubscription)
-               memberSubs = Subscription.findAllByInstanceOf(result.fixedSubscription)
+                memberSubs = Subscription.findAllByInstanceOf(result.fixedSubscription)
+            else
+                memberSubs = Subscription.executeQuery("select s from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is not null AND s.status = :status ) ",queryParams)
 
             cost_item_qry_params = [subs: memberSubs, owner: result.institution]
             cost_item_qry        = ' WHERE ci.sub IN ( :subs ) AND ci.owner = :owner '
@@ -653,22 +663,50 @@ class FinanceController extends AbstractDebugController {
         filterBy( 'filterCIBudgetCode', 'budgetCode', 'budgetCode' )
 
         if (params.filterCISub) {
-            def fSub = genericOIDService.resolveOID(params.filterCISub)
-            if (fSub) {
+            if(params.filterCISub instanceof String) {
+              def fSub = genericOIDService.resolveOID(params.filterCISub)
+              if (fSub) {
                 fqResult.qry_string += " AND ci.sub.id = :subId "
                 countCheck          += " AND ci.sub.id = :subId "
 
                 fqResult.fqParams << [subId: fSub.id]
+              }
+            }
+            else if(params.filterCISub.getClass().isArray()) {
+                ArrayList fSubs = new ArrayList()
+                for(int i = 0;i < params.filterCISub.length; i++){
+                    def fSub = genericOIDService.resolveOID(params.filterCISub[i])
+                    if (fSub) {
+                         fSubs.add(fSub.id)
+                    }
+                }
+                fqResult.qry_string += " AND ci.sub.id IN :subIds "
+                countCheck          += " AND ci.sub.id IN :subIds "
+                fqResult.fqParams << [subIds: fSubs]
             }
         }
 
         if (params.filterCISPkg) {
-            def fSPkg = genericOIDService.resolveOID(params.filterCISPkg)
-            if (fSPkg) {
-                fqResult.qry_string += " AND ci.subPkg.pkg.id = :pkgId"
-                countCheck          += " AND ci.subPkg.pkg.id = :pkgId"
+            if(params.filterCISPkg instanceof String) {
+                def fSPkg = genericOIDService.resolveOID(params.filterCISPkg)
+                if (fSPkg) {
+                    fqResult.qry_string += " AND ci.subPkg.pkg.id = :pkgId"
+                    countCheck          += " AND ci.subPkg.pkg.id = :pkgId"
 
-                fqResult.fqParams << [pkgId: fSPkg.pkg.id]
+                    fqResult.fqParams << [pkgId: fSPkg.pkg.id]
+                }
+            }
+            else if(params.filterCISPkg.getClass.isArray()) {
+                ArrayList fSPkgs = new ArrayList()
+                for(int i = 0;i < params.filterCISPkg.length; i++) {
+                    def fSPkg = genericOIDService.resolveOID(params.filterCISPkg[i])
+                    if (fSPkg) {
+                        fSPkgs.add(fSPkg.pkg.id)
+                    }
+                }
+                fqResult.qry_string += " AND ci.subPkg.pkg.id IN :pkgIds "
+                countCheck          += " AND ci.subPkg.pkg.id IN :pkgIds "
+                fqResult.fqParams << [pkgIds:fSPkgs]
             }
         }
 
