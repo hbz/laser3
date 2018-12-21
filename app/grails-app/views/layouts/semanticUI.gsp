@@ -200,7 +200,7 @@
                             <semui:securedMainNavItem affiliation="INST_EDITOR"  controller="myInstitution" action="managePropertyGroups" message="menu.institutions.manage_prop_groups" />
 
                             <g:if test="${grailsApplication.config.feature_finance}">
-                                <%-- <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" /> --%>
+                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />
 
                                 <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
                             <semui:securedMainNavItemDisabled message="menu.institutions.financeImport" />
@@ -394,6 +394,10 @@
                                     <g:link class="item" controller="yoda" action="dueDates_sendAllEmails">${message(code:'menu.admin.sendEmailsForDueDates')}</g:link>
                                 </div>
                             </div>
+
+                            <div class="divider"></div>
+
+                            <g:link class="item" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</g:link>
 
                             <div class="divider"></div>
 

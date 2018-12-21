@@ -32,7 +32,7 @@
   font-weight: normal;
   font-style: normal;
   color: rgba(0, 0, 0, 0.87);
-  border-radius: 0.28571429rem;
+  border-radius: 0;
   -webkit-box-shadow: 0px 2px 4px 0px rgba(34, 36, 38, 0.12), 0px 2px 10px 0px rgba(34, 36, 38, 0.15);
           box-shadow: 0px 2px 4px 0px rgba(34, 36, 38, 0.12), 0px 2px 10px 0px rgba(34, 36, 38, 0.15);
 }
@@ -108,7 +108,7 @@
   font-weight: normal;
   font-style: normal;
   color: rgba(0, 0, 0, 0.87);
-  border-radius: 0.28571429rem;
+  border-radius: 0;
   -webkit-box-shadow: 0px 2px 4px 0px rgba(34, 36, 38, 0.12), 0px 2px 10px 0px rgba(34, 36, 38, 0.15);
           box-shadow: 0px 2px 4px 0px rgba(34, 36, 38, 0.12), 0px 2px 10px 0px rgba(34, 36, 38, 0.15);
   z-index: 1;
@@ -738,9 +738,8 @@
 .ui.huge.popup {
   font-size: 1.42857143rem;
 }
-
-
-/*******************************
-         Theme Overrides
-*******************************/
-
+.la-long-tooltip:after {
+  max-width: 350px;
+  min-width: 350px;
+  white-space: normal;
+}

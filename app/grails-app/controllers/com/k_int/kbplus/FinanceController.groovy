@@ -45,6 +45,7 @@ class FinanceController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def index() {
+
         log.debug("FinanceController::index() ${params}");
 
         def user =  User.get(springSecurityService.principal.id)
@@ -61,13 +62,18 @@ class FinanceController extends AbstractDebugController {
             response.sendError(401)
         }
 
+        /*
+        this is the switch for page call: if the controller has been called with the param sub (for subscription), then this flag
+        is being set.
+         */
         result.inSubMode   = params.sub ? true : false
 
           result.queryMode = MODE_OWNER
           def orgRoleCons, orgRoleSubscr
 
-        if (result.inSubMode)
-        {
+        //this is the switch for the cost item fill
+        if (result.inSubMode) {
+            log.info("call from /subscriptionDetails/${params.sub}/finance")
             params.subscriptionFilter = "${params.sub}"
 
             result.fixedSubscription = params.int('sub')? Subscription.get(params.sub) : null
@@ -132,6 +138,43 @@ class FinanceController extends AbstractDebugController {
                 result.cost_item_count_SUBSCR = tmp.cost_item_count
             }
         }
+        else {
+            log.info("call from /myInstitution/finance")
+            def tmp = financialData(result, params, user, MODE_OWNER)
+            result.foundMatches    = tmp.foundMatches
+            result.cost_items      = tmp.cost_items
+            result.cost_item_count = tmp.cost_item_count
+            orgRoleCons = OrgRole.findByOrgAndRoleType(
+                    result.institution,
+                    RDStore.OR_SUBSCRIPTION_CONSORTIA
+            )
+            orgRoleSubscr = OrgRole.findByRoleType(
+                    RDStore.OR_SUBSCRIBER_CONS
+            )
+            if (orgRoleCons) {
+                // show consortial subscription, but member costs
+                    result.queryMode = MODE_CONS
+                    tmp = financialData(result, params, user, MODE_CONS)
+
+                    result.foundMatches_CS = tmp.foundMatches
+
+                    result.cost_items_CS = tmp.cost_items.sort{ x, y ->
+                        def xx = OrgRole.findBySubAndRoleType(x.sub, RDStore.OR_SUBSCRIBER_CONS)
+                        def yy = OrgRole.findBySubAndRoleType(y.sub, RDStore.OR_SUBSCRIBER_CONS)
+                        xx?.org?.sortname <=> yy?.org?.sortname
+                    }
+                    result.cost_item_count_CS = tmp.cost_item_count
+            }
+            // show subscription as a member, but viewable costs
+            else if (orgRoleSubscr) {
+                result.queryMode = MODE_SUBSCR
+                tmp = financialData(result, params, user, MODE_SUBSCR)
+
+                result.foundMatches_SUBSCR = tmp.foundMatches
+                result.cost_items_SUBSCR = tmp.cost_items
+                result.cost_item_count_SUBSCR = tmp.cost_item_count
+            }
+        }
 
             flash.error = null
             flash.message = null
@@ -153,12 +196,15 @@ class FinanceController extends AbstractDebugController {
           def myCostItems = CostItem.findAllWhere(owner: result.institution)
           switch (result.queryMode)
           {
+              //own costs
               case MODE_OWNER:
                   myCostItems = result.cost_items
                   break
+              //consortium viewing the subscription from the point of view of subscriber
               case MODE_CONS_AT_SUBSCR:
                   myCostItems = result.cost_items_SUBSCR
                   break
+              //consortium vieweung the overall consortium costs
               case MODE_CONS:
                   myCostItems = result.cost_items_CS
                   break
@@ -193,7 +239,16 @@ class FinanceController extends AbstractDebugController {
         log.debug("finance::index returning");
       }
 
-        result.tab = params.tab ?: ( result.queryMode == MODE_CONS ? 'sc' : 'owner' )
+      result.tab = 'owner'
+      if(params.tab) {
+          result.tab = params.tab
+      }
+      else if(!params.tab) {
+          if(result.queryMode == MODE_CONS)
+              result.tab = 'sc'
+      }
+
+      //result.tab = params.tab ?: result.queryMode == MODE_CONS ? 'sc' : 'owner'
 
       result
     }
@@ -219,11 +274,18 @@ class FinanceController extends AbstractDebugController {
         //result.max         =  params.max
         //result.offset      =  params.int('offset',0)?: 0
 
-        // WORKAROUND: erms-517
-        params.max = 5000
+        // WORKAROUND: erms-517 (deactivated as erms-802)
+
+        params.max = params.max ? params.max : user.getDefaultPageSizeTMP()
+        params.offset = params.offset ? params.offset : 0
+        /*
         result.max = 5000
         result.offset = 0
-
+        */
+        /*
+        result.max = params.max ? Integer.parseInt(params.max) : ;
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        */
         //Query setup options, ordering, joins, param query data....
         def order = "id"
         def gspOrder = "Cost Item#"
@@ -236,7 +298,13 @@ class FinanceController extends AbstractDebugController {
         def orderAndSortBy = " ORDER BY ci.${order} ${result.sort}"
 
         if (MODE_CONS == queryMode) {
-            def memberSubs = Subscription.findAllByInstanceOf(result.fixedSubscription)
+            //ticket ERMS-802: switch for site call - consortia costs should be displayed also when not in fixed subscription mode
+            def queryParams = ['roleType':RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst':result.institution, 'status':RefdataValue.getByValueAndCategory('Current','Subscription Status')]
+            def memberSubs
+            if(result.fixedSubscription)
+                memberSubs = Subscription.findAllByInstanceOf(result.fixedSubscription)
+            else
+                memberSubs = Subscription.executeQuery("select s from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is not null AND s.status = :status ) ",queryParams)
 
             cost_item_qry_params = [subs: memberSubs, owner: result.institution]
             cost_item_qry        = ' WHERE ci.sub IN ( :subs ) AND ci.owner = :owner '
@@ -244,18 +312,42 @@ class FinanceController extends AbstractDebugController {
         }
 
         if (MODE_OWNER == queryMode) {
-            cost_item_qry_params = [sub: result.fixedSubscription, owner: result.institution]
-            cost_item_qry        = ' WHERE ci.sub = :sub AND ci.owner = :owner '
-            //orderAndSortBy       = orderAndSortBy
+            if(params.sub) {
+                cost_item_qry_params = [sub: result.fixedSubscription, owner: result.institution]
+                cost_item_qry        = ' WHERE ci.sub = :sub AND ci.owner = :owner '
+                //orderAndSortBy       = orderAndSortBy
+            }
+            else if(!params.sub){
+                def queryParams = ['activeInst':result.institution, 'status':RefdataValue.getByValueAndCategory('Current','Subscription Status')]
+                def instSubs = Subscription.executeQuery("select s from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where o.org = :activeInst ) ) ) AND ( s.instanceOf is null AND s.status = :status ) ",queryParams)
+                if(instSubs.size() > 0) {
+                    cost_item_qry_params = [subs: instSubs, owner: result.institution]
+                    cost_item_qry = ' WHERE ci.sub IN ( :subs ) AND ci.owner = :owner '
+                }
+                else {
+                    //continue here: foreign costs are visible!
+                    cost_item_qry_params = [owner: result.institution]
+                    cost_item_qry = ' WHERE ci.owner = :owner '
+                }
+            }
         }
 
         // OVERWRITE
         if (MODE_SUBSCR == queryMode) {
 
-            // TODO FLAG isVisibleForSubscriber
-            cost_item_qry_params =  [sub: result.fixedSubscription, owner: result.institution]
-            cost_item_qry        = ' , OrgRole as ogr WHERE ci.sub = :sub AND ogr.org = :owner AND ci.isVisibleForSubscriber is true ' // (join)? "LEFT OUTER JOIN ${join} AS j WHERE ci.owner = :owner " :"  where ci.owner = :owner "
-            //orderAndSortBy       = orderAndSortBy
+            if(result.fixedSubscription) {
+                // TODO FLAG isVisibleForSubscriber
+                cost_item_qry_params =  [sub: result.fixedSubscription, owner: result.institution]
+                cost_item_qry        = ' , OrgRole as ogr WHERE ci.sub = :sub AND ogr.org = :owner AND ci.isVisibleForSubscriber is true ' // (join)? "LEFT OUTER JOIN ${join} AS j WHERE ci.owner = :owner " :"  where ci.owner = :owner "
+                //orderAndSortBy       = orderAndSortBy
+            }
+            else if (!result.fixedSubscription) {
+                def queryParams = ['activeInst':result.institution, 'status':RefdataValue.getByValueAndCategory('Current','Subscription Status')]
+                def instSubs = Subscription.executeQuery("select s from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where o.org = :activeInst ) ) ) AND s.status = :status ",queryParams)
+                cost_item_qry_params =  [subs: instSubs, owner: result.institution]
+                cost_item_qry        = ' , OrgRole as ogr WHERE ci.sub IN ( :subs ) AND ogr.org = :owner AND ci.isVisibleForSubscriber is true '
+            }
+
        }
 
         //Filter processing...
@@ -571,22 +663,50 @@ class FinanceController extends AbstractDebugController {
         filterBy( 'filterCIBudgetCode', 'budgetCode', 'budgetCode' )
 
         if (params.filterCISub) {
-            def fSub = genericOIDService.resolveOID(params.filterCISub)
-            if (fSub) {
+            if(params.filterCISub instanceof String) {
+              def fSub = genericOIDService.resolveOID(params.filterCISub)
+              if (fSub) {
                 fqResult.qry_string += " AND ci.sub.id = :subId "
                 countCheck          += " AND ci.sub.id = :subId "
 
                 fqResult.fqParams << [subId: fSub.id]
+              }
+            }
+            else if(params.filterCISub.getClass().isArray()) {
+                ArrayList fSubs = new ArrayList()
+                for(int i = 0;i < params.filterCISub.length; i++){
+                    def fSub = genericOIDService.resolveOID(params.filterCISub[i])
+                    if (fSub) {
+                         fSubs.add(fSub.id)
+                    }
+                }
+                fqResult.qry_string += " AND ci.sub.id IN :subIds "
+                countCheck          += " AND ci.sub.id IN :subIds "
+                fqResult.fqParams << [subIds: fSubs]
             }
         }
 
         if (params.filterCISPkg) {
-            def fSPkg = genericOIDService.resolveOID(params.filterCISPkg)
-            if (fSPkg) {
-                fqResult.qry_string += " AND ci.subPkg.pkg.id = :pkgId"
-                countCheck          += " AND ci.subPkg.pkg.id = :pkgId"
+            if(params.filterCISPkg instanceof String) {
+                def fSPkg = genericOIDService.resolveOID(params.filterCISPkg)
+                if (fSPkg) {
+                    fqResult.qry_string += " AND ci.subPkg.pkg.id = :pkgId"
+                    countCheck          += " AND ci.subPkg.pkg.id = :pkgId"
 
-                fqResult.fqParams << [pkgId: fSPkg.pkg.id]
+                    fqResult.fqParams << [pkgId: fSPkg.pkg.id]
+                }
+            }
+            else if(params.filterCISPkg.getClass.isArray()) {
+                ArrayList fSPkgs = new ArrayList()
+                for(int i = 0;i < params.filterCISPkg.length; i++) {
+                    def fSPkg = genericOIDService.resolveOID(params.filterCISPkg[i])
+                    if (fSPkg) {
+                        fSPkgs.add(fSPkg.pkg.id)
+                    }
+                }
+                fqResult.qry_string += " AND ci.subPkg.pkg.id IN :pkgIds "
+                countCheck          += " AND ci.subPkg.pkg.id IN :pkgIds "
+                fqResult.fqParams << [pkgIds:fSPkgs]
             }
         }
 

@@ -20,34 +20,32 @@
 
 	<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.comp_lic')}</h1>
 
-	<div>
-		<div class="row">
-			<div class="span8">
-				<g:form id="compare" name="compare" action="compare" method="get">
+
+				<g:form class="ui form" id="compare" name="compare" action="compare" method="get">
 					<input type="hidden" name="institution" value="${institution?.id}"/>
-					<div>
+
+					<div class="field">
 						<label for="addIdentifierSelect">${message(code:'onixplLicense.compare.add_id.label', default:'Search license for comparison:')}</label>
 
 						<input type="hidden" name="selectedIdentifier" id="addIdentifierSelect"/>
 						<button type="button" style="margin-top:10px" class="ui positive button" id="addToList" >${message(code:'default.button.add.label', default:'Add')}</button>
 					</div>
-					
-					<label for="selectedLicenses">${message(code:'onixplLicense.compare.selected.label', default:'Licenses selected for comparison:')}</label>
-					
-					<g:select style="width:90%; word-wrap: break-word;" id="selectedLicenses" name="selectedLicenses" class="compare-license" from="${[]}" multiple="true" />
 
-				<div class="fields">
 					<div class="field">
-                  		<a href="${request.forwardURI}" class="ui button">${message(code:'default.button.comparereset.label')}</a>
-                    </div>
-					<div class="field">
-					  <input id="submitButton" disabled='true' type="submit" value="${message(code:'default.button.compare.label', default:'Compare')}"  name="Compare" class="ui button" />
+						<label for="selectedLicenses">${message(code:'onixplLicense.compare.selected.label', default:'Licenses selected for comparison:')}</label>
+					
+						<g:select style="width:90%; word-wrap: break-word;" id="selectedLicenses" name="selectedLicenses" class="compare-license" from="${[]}" multiple="true" />
 					</div>
-				</div>
+
+					<div class="fields">
+						<div class="field">
+							<a href="${request.forwardURI}" class="ui button">${message(code:'default.button.comparereset.label')}</a>
+							&nbsp;
+						  	<input id="submitButton" disabled='true' type="submit" value="${message(code:'default.button.compare.label', default:'Compare')}"  name="Compare" class="ui button" />
+						</div>
+					</div>
 				</g:form>
-			</div>
-		</div>
-	</div>
+
 	  <r:script language="JavaScript">
 
 
@@ -84,10 +82,9 @@
 	          dataType: 'json',
 	          data: function (term, page) {
 	              return {
-	                  q: "%"+term+"%", // search term
+	                  q: "%"+term+"%",
 	                  inst:"${institution?.id}",
-	                  //roleType: ${licensee_role?.id},
-	                  roleTypes: [${licensee_role?.id}, ${licensee_cons_role?.id}],
+	                  roleTypes: [${licensee_role?.id}, ${licensee_cons_role?.id}, ${licensing_cons_role?.id}],
 	                  isPublic:"${isPublic?.id}",
 	                  page_limit: 10,
 	                  baseClass:'com.k_int.kbplus.License'

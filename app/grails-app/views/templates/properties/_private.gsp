@@ -38,8 +38,11 @@
             <g:if test="${prop.type?.tenant?.id == tenant?.id}">
                 <tr>
                     <td>
-                        <g:if test="${!prop.type.getI10n('expl').contains(' °')}">
-                            <span data-tooltip="${prop.type.getI10n('expl')}">${prop.type.getI10n('name')}</span>
+                        <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
+                            ${prop.type.getI10n('name')}
+                            <span data-position="right center" data-variation="tiny" data-tooltip="${prop.type.getI10n('expl')}">
+                                <i class="question circle icon"></i>
+                            </span>
                         </g:if>
                         <g:else>
                             ${prop.type.getI10n('name')}
@@ -70,12 +73,6 @@
                         </g:elseif>
                         <g:elseif test="${prop.type.type == URL.toString()}">
                             <semui:xEditable owner="${prop}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" />
-                            %{--Todo beim drüber hovern soll der link-Button erscheinen--}%
-                            <span data-position="top right" data-tooltip="Diese URL aufrufen ..">
-                                <a href="${prop.value}" target="_blank" class="ui mini icon blue button">
-                                    <i class="share square icon"></i>
-                                </a>
-                            </span>
                         </g:elseif>
                         <g:elseif test="${prop.type.type == RefdataValue.toString()}">
                             <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}" />
@@ -85,7 +82,13 @@
                         <semui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}" />
                     </td>
                     <td class="x">
-
+                        <g:if test="${prop.type.type == URL.toString()}">
+                            <span data-position="top right" data-tooltip="Diese URL aufrufen ..">
+                                <a href="${prop.value}" target="_blank" class="ui icon blue button">
+                                    <i class="share square icon"></i>
+                                </a>
+                            </span>
+                        </g:if>
                         <g:if test="${overwriteEditable == true}">
                             <button class="ui icon negative button js-open-confirm-modal-copycat">
                                 <i class="trash alternate icon"></i>

@@ -172,7 +172,7 @@
 
                     <g:render template="filter" model="['ciList':cost_items, 'ciListCons':cost_items_CS, 'ciListSubscr':cost_items_SUBSCR]"/>
 
-                    <g:render template="result" model="['ciList':cost_items, 'ciListCons':cost_items_CS, 'ciListSubscr':cost_items_SUBSCR]"/>
+                    <g:render template="result" model="['forSingleSubscription':fixedSubscription, 'ciList':cost_items, 'ciCountOwner':cost_item_count, 'ciListCons':cost_items_CS, 'ciCountCons':cost_item_count_CS, 'ciListSubscr':cost_items_SUBSCR, 'ciCountSub':cost_item_count_SUBSCR]"/>
                 </div>
             </div>
 

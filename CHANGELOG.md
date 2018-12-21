@@ -1,6 +1,11 @@
 RC-0.12
 
 - retrieving package list from gokb api
+- added cronjob and email reminder for dashboard due dates
+- addes new user profile settings
+- added new property type: url
+- show api access information at user profile
+- storing uploaded files in filesystem
 
 0.11.4
 

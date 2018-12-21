@@ -173,10 +173,7 @@
             </div>
         </div><!-- .segment -->
     </div><!-- .column -->
-
-
-    <sec:ifAnyGranted roles="ROLE_YODA">
-
+    
         <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | user.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
             <div class="column wide eight">
                 <div class="ui segment">
@@ -215,9 +212,6 @@
                 </div><!-- .segment -->
             </div><!-- .column -->
         </g:if>
-
-    </sec:ifAnyGranted>
-
 
 </div><!-- .grid -->
 

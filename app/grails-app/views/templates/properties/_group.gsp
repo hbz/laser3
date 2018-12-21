@@ -37,8 +37,11 @@
 
                 <tr>
                     <td class="la-column-nowrap">
-                        <g:if test="${!prop.type.getI10n('expl').contains(' °')}">
-                            <span data-tooltip="${prop.type.getI10n('expl')}">${prop.type.getI10n('name')}</span>
+                        <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
+                            ${prop.type.getI10n('name')}
+                            <span data-position="right center" data-variation="tiny" data-tooltip="${prop.type.getI10n('expl')}">
+                                <i class="question circle icon"></i>
+                            </span>
                         </g:if>
                         <g:else>
                             ${prop.type.getI10n('name')}
@@ -79,6 +82,9 @@
                         <g:elseif test="${prop.type.type == RefdataValue.toString()}">
                             <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}"/>
                         </g:elseif>
+                        <g:elseif test="${prop.type.type == URL.toString()}">
+                            <semui:xEditable owner="${prop}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" />
+                        </g:elseif>
                     </td>
                     <g:if test="${propDefGroup.ownerType == License.class.name}">
                         <td>
@@ -89,6 +95,13 @@
                         <semui:xEditable owner="${prop}" type="textarea" field="note"/>
                     </td>
                     <td class="x">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
+                        <g:if test="${prop.type.type == URL.toString()}">
+                            <span data-position="top right" data-tooltip="Diese URL aufrufen ..">
+                                <a href="${prop.value}" target="_blank" class="ui icon blue button">
+                                    <i class="share square icon"></i>
+                                </a>
+                            </span>
+                        </g:if>
                         <g:if test="${editable == true}">
                             <g:if test="${ownobj.hasProperty('instanceOf') && showConsortiaFunctions}">
                                 <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />

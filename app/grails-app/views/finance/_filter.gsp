@@ -217,7 +217,7 @@
 
                 <div class="field fieldcontain"><!--NEW -->
                     <label for="filterCISub">${message(code:'subscription.label')}</label>
-                    <g:select id="filterCISub" class="ui dropdown selection"
+                    <g:select id="filterCISub" class="ui fluid search dropdown" multiple=""
                               name="filterCISub"
                               from="${allCISubs}"
                               optionValue="${{it.name ?: 'Keine Verknüpfung'}}"
@@ -228,7 +228,7 @@
 
                 <div class="field fieldcontain"><!--NEW -->
                     <label for="filterCISPkg">${message(code:'package.label')}</label>
-                    <g:select id="filterCISPkg" class="ui dropdown selection"
+                    <g:select id="filterCISPkg" class="ui fluid search dropdown" multiple=""
                               name="filterCISPkg"
                               from="${allCISPkgs}"
                               optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"

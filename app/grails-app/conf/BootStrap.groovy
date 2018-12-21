@@ -417,34 +417,25 @@ class BootStrap {
 
         def requiredProps = [
                 [name: [en: "Agreement Date", de: "Abschlussdatum"],                            descr:allDescr, type: OT.Date],
-                //[name: [en: "Authorized Users", de: "Autorisierte Nutzer"],                     descr:allDescr, type: OT.String],
                 [name: [en: "Alumni Access"],                                                   descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                //[name: [en: "Cancellation Allowance", de: "Außerordentliche Kündigung"],        descr:allDescr, type: OT.String],
                 [name: [en: "Change to licensed material", de: "Änderung am Vertragsgegenstand"], descr:allDescr, type: OT.String],
                 [name: [en: "Concurrent Access", de: "Concurrent Access"],                      descr:allDescr, type: OT.Rdv, cat:'ConcurrentAccess'],
                 [name: [en: "Concurrent Users", de: "Concurrent Users"],                        descr:allDescr, type: OT.Int],
-                //[name: [en: "Correction Time", de: "Korrekturfrist bei Vertragsverletzungen"],  descr:allDescr, type: OT.String],
                 [name: [en: "Enterprise Access"],                                               descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                //[name: [en: "ILL - InterLibraryLoans", de: "Fernleihe"],                        descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                //[name: [en: "Include In Coursepacks", de: "Semesterapparat"],                   descr:allDescr, type: OT.Rdv, cat:'YNO'],
                 [name: [en: "Include in VLE"],                                                  descr:allDescr, type: OT.Rdv, cat:'YNO'],
                 [name: [en: "Invoicing", de: "Rechnungsstellung"],                              descr:allDescr, type: OT.Date],
                 [name: [en: "Metadata delivery"],                                               descr:allDescr, type: OT.String],
                 [name: [en: "Method of Authentication", de: "Authentifizierungsverfahren"],     descr:allDescr, type: OT.String],
                 [name: [en: "Multi Site Access"],                                               descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                //[name: [en: "Notice Period"],                                                   descr:allDescr, type: OT.Date],
                 [name: [en: "New Underwriter", de: "Aufnahme neuer Teilnehmer"],                descr:allDescr, type: OT.Rdv, cat:'YNO'],
                 [name: [en: "Payment target", de: "Zahlungsziel"],                              descr:allDescr, type: OT.Date],
-                // [name: [en: "Place of jurisdiction", de: "Gerichtsstand"],                      descr:allDescr, type: OT.String],
                 [name: [en: "Partners Access"],                                                 descr:allDescr, type: OT.Rdv, cat:'YNO'],
                 [name: [en: "Permitted Uses"],                                                  descr:allDescr, type: OT.String],
                 [name: [en: "Post Cancellation Access Entitlement"],                            descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                //[name: [en: "Remote Access", de: "Remote-Zugriff"],                             descr:allDescr, type: OT.Rdv, cat:'YNO'],
                 [name: [en: "Regional Restriction", de: "Regionale Einschränkung"],             descr:allDescr, type: OT.Rdv, cat:'YNO'],
                 [name: [en: "Service regulations", de: "Servicestandards"],                     descr:allDescr, type: OT.String],
                 [name: [en: "Signed"],                                                          descr:allDescr, type: OT.Rdv, cat:'YN'],
                 [name: [en: "Usage Statistics", de: "Lieferung von Statistiken"],               descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                //[name: [en: "Walk In Access", de: "Walk-In User"],                              descr:allDescr, type: OT.Rdv, cat:'YNO'],
                 [name: [en: "Wifi Access", de: "WLAN-Zugriff"],                                 descr:allDescr, type: OT.Rdv, cat:'YNO'],
 
                 // New Properties by FAK / Verde Review
@@ -456,30 +447,21 @@ class BootStrap {
                 [name: [en: "ILL secure electronic transmission", de: "Fernleihe über sichere elektonische Übermittlung"], descr:allDescr, type: OT.Rdv, cat:'Permissions'],
                 [name: [en: "ILL electronic", de: "Fernleihe elektronisch"],                    descr:allDescr, type: OT.Rdv, cat:'Permissions'],
                 [name: [en: "ILL record keeping required", de: "Fernleihdatensatz muss gespeichert werden"], descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                //[name: [en: "ILL term note", de: "Fernleihbedingungen"],                        descr:allDescr, type: OT.String],
                 [name: [en: "Fair use clause indicator", de: "Hinweis auf Klausel über die 'faire Nutzung'"], descr:allDescr, type: OT.Rdv, cat:'YNO'],
                 [name: [en: "All rights reserved indicator", de: "Hinweis auf 'Alle Rechte vorbehalten'"], descr:allDescr, type: OT.Rdv, cat:'YNO'],
                 [name: [en: "Data protection override", de: "Datenschutz aufgehoben"],          descr:allDescr, type: OT.Rdv, cat:'YNO'],
                 [name: [en: "Citation requirement detail", de: "Details der Zitier-Regeln"],    descr:allDescr, type: OT.String],
                 [name: [en: "Digitial copy", de: "Digitalkopie"],                               descr:allDescr, type: OT.Rdv, cat:'Permissions'],
-                //[name: [en: "Digitial copy term note", de: "Digitalkopie Bedingungen"],         descr:allDescr, type: OT.String],
                 [name: [en: "Print copy", de: "Druckkopie"],                                    descr:allDescr, type: OT.Rdv, cat:'Permissions'],
-                //[name: [en: "Print copy term note", de: "Druckkopie Bedingungen"],              descr:allDescr, type: OT.String],
                 [name: [en: "Scholarly sharing", de: "Weitergabe im Rahmen der Lehre"],         descr:allDescr, type: OT.Rdv, cat:'Permissions'],
-                //[name: [en: "Scholarly sharing term note", de: "Weitergabe im Rahmen der Lehre Bedingungen"], descr:allDescr, type: OT.String],
                 [name: [en: "Distance Education", de: "Fernstudium"],                           descr:allDescr, type: OT.Rdv, cat:'Permissions'],
-                //[name: [en: "Distance Education term note", de: "Fernstudium Bedingungen"],     descr:allDescr, type: OT.String],
                 [name: [en: "Course reserve print", de: "Seminarapparat gedruckt"],             descr:allDescr, type: OT.Rdv, cat:'Permissions'],
                 [name: [en: "Course reserve electronic/cached", de: "Seminarapparat elektronisch"], descr:allDescr, type: OT.Rdv, cat:'Permissions'],
-                //[name: [en: "Course reserve term note", de: "Seminarapparat Bedingungen"],      descr:allDescr, type: OT.String],
                 [name: [en: "Electronic link", de: "Elektronischer Link"],                      descr:allDescr, type: OT.Rdv, cat:'Permissions'],
-                //[name: [en: "Electronic link term note", de: "Elektronischer Link Bedingungen"], descr:allDescr, type: OT.String],
                 [name: [en: "Course pack print", de: "Skripte gedruckt"],                       descr:allDescr, type: OT.Rdv, cat:'Permissions'],
                 [name: [en: "Course pack electronic", de: "Skripte elektronisch"],              descr:allDescr, type: OT.Rdv, cat:'Permissions'],
-                //[name: [en: "Course pack term note", de: "Skripte Bedingungen"],                descr:allDescr, type: OT.String],
                 [name: [en: "Remote Access", de: "Remote-Zugriff"],                             descr:allDescr, type: OT.Rdv, cat:'YNO'],
                 [name: [en: "Walk-in Access", de: "Vor-Ort-Nutzung"],                           descr:allDescr, type: OT.Rdv, cat:'Permissions'],
-                //[name: [en: "Walk-in term note", de: "Vor-Ort-Nutzung Bedingungen"],            descr:allDescr, type: OT.String],
                 [name: [en: "Completeness of content clause", de: "Klausel zur Vollständigkeit der Inhalte"], descr:allDescr, type: OT.Rdv, cat:'Existence'],
                 [name: [en: "Concurrency with print version", de: "Gleichzeitigkeit mit Druckversion"], descr:allDescr, type: OT.Rdv, cat:'Existence'],
                 [name: [en: "User information confidentiality", de: "Vertraulichkeit der Nutzerdaten"], descr:allDescr, type: OT.Rdv, cat:'YNO'],
@@ -487,7 +469,6 @@ class BootStrap {
                 [name: [en: "Indemnification by licensor", de: "Entschädigung durch den Lizenzgeber"], descr:allDescr, type: OT.Rdv, cat:'Indemnification'],
                 [name: [en: "Indemnification by licensor indicator", de: "Entschädigung durch den Lizenzgeber Anzeiger"], descr:allDescr, type: OT.Rdv, cat:'YNO'],
                 [name: [en: "Confidentiality of agreement", de: "Vertraulichkeit der Vereinbarung"], descr:allDescr, type: OT.Rdv, cat:'Confidentiality'],
-                //[name: [en: "Confidentiality note", de: "Vertraulichkeit der Vereinbarung Anmerkung"], descr:allDescr, type: OT.String],
                 [name: [en: "Governing law", de: "Anzuwendendes Recht"],                        descr:allDescr, type: OT.String],
                 [name: [en: "Governing jurisdiction", de: "Gerichtsstand"],                     descr:allDescr, type: OT.String],
                 [name: [en: "Applicable copyright law", de: "Maßgebliches Urheberrechtsgesetz"], descr:allDescr, type: OT.String],
@@ -502,7 +483,6 @@ class BootStrap {
                 [name: [en: "Licensor termination right", de: "Kündigungsrecht des Lizenzgebers"], descr:allDescr, type: OT.Rdv, cat:'YNO'],
                 [name: [en: "Licensor termination condition", de: "Kündigungsrecht des Lizenzgebers Voraussetzung"], descr:allDescr, type: OT.Rdv, cat:'Termination Condition'],
                 [name: [en: "Licensor termination notice period", de: "Kündigungsfrist des Lizenzgebers"], descr:allDescr, type: OT.String],
-                //[name: [en: "Termination right note", de: "Kündigungsrecht Hinweise"], descr:allDescr, type: OT.String],
                 [name: [en: "Termination requirement note", de: "Kündigungsrecht besondere Anforderung"], descr:allDescr, type: OT.String]
 
         ]
@@ -810,9 +790,9 @@ class BootStrap {
         RefdataCategory.loc('Person Contact Type',  	                    [en: 'Person: Contact Type', de: 'Kontaktart'], BOOTSTRAP)
         RefdataCategory.loc('Person Position',      	                    [en: 'Person Position', de: 'Position'], BOOTSTRAP)
         RefdataCategory.loc('Person Responsibility',	                    [en: 'Person Responsibility', de: 'Verantwortlich'], BOOTSTRAP)
-        RefdataCategory.loc('Subscription Form',          	            [en: 'Subscription Form', de: 'Lizenzform'], BOOTSTRAP)
-        RefdataCategory.loc('Subscription Resource',          	        [en: 'Resource type', de: 'Ressourcentyp'], BOOTSTRAP)
-        RefdataCategory.loc('Subscription Status',          	        [en: 'Subscription Status', de: 'Lizenzstatus'], BOOTSTRAP)
+        RefdataCategory.loc('Subscription Form',          	                [en: 'Subscription Form', de: 'Lizenzform'], BOOTSTRAP)
+        RefdataCategory.loc('Subscription Resource',          	            [en: 'Resource type', de: 'Ressourcentyp'], BOOTSTRAP)
+        RefdataCategory.loc('Subscription Status',          	            [en: 'Subscription Status', de: 'Lizenzstatus'], BOOTSTRAP)
         RefdataCategory.loc('Task Priority',                	            [en: 'Task Priority', de: 'Aufgabenpriorität'], BOOTSTRAP)
         RefdataCategory.loc('Task Status',          	                    [en: 'Task Status', de: 'Aufgabenstatus'], BOOTSTRAP)
         RefdataCategory.loc('Ticket.Category',          	                  [en: 'Ticket Category', de: 'Kategorie'], BOOTSTRAP)
@@ -1073,8 +1053,6 @@ class BootStrap {
         RefdataValue.loc('Subscription Status',      [en: 'No longer usable', de: 'Nicht mehr nutzbar'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [en: 'Publication discontinued', de: 'Erscheinen eingestellt'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [en: 'Rejected', de: 'Abgelehnt'], BOOTSTRAP)
-        //RefdataValue.loc('Subscription Status',      [en: 'Test',   de: 'Test'], BOOTSTRAP)
-        //RefdataValue.loc('Subscription Status',      [en: 'Intended', de: 'Geplant'], BOOTSTRAP)
 
 		RefdataValue.loc('Subscription Type',      [en: 'Alliance Licence', de: 'Allianzlizenz'], BOOTSTRAP)
 		RefdataValue.loc('Subscription Type',      [en: 'National Licence', de: 'Nationallizenz'], BOOTSTRAP)
@@ -1264,11 +1242,6 @@ class BootStrap {
         RefdataCategory.loc('CostItemElement',
                 [en: 'CostItemElement', de: 'CostItemElement'], BOOTSTRAP)
 
-        //RefdataValue.loc('CostItemElement', [en: 'Admin Fee', de: 'Admin Fee'], BOOTSTRAP)
-        //RefdataValue.loc('CostItemElement', [en: 'Content', de: 'Content'], BOOTSTRAP)
-        //RefdataValue.loc('CostItemElement', [en: 'Platform', de: 'Platform'], BOOTSTRAP)
-        //RefdataValue.loc('CostItemElement', [en: 'Other', de: 'Andere'], BOOTSTRAP)
-
         RefdataValue.loc('CostItemElement', [key: 'price: list price', en: 'price: list price', de: 'Preis: Listenpreis'], BOOTSTRAP)
         RefdataValue.loc('CostItemElement', [key: 'price: provider price', en: 'price: provider price', de: 'Preis: Anbieterpreis'], BOOTSTRAP)
         RefdataValue.loc('CostItemElement', [key: 'price: consortial price', en: 'price: consortial price', de: 'Preis: Konsortialpreis'], BOOTSTRAP)
@@ -1433,9 +1406,6 @@ class BootStrap {
         RefdataCategory.loc('TaxType',
                 [en: 'TaxType', de: 'TaxType'], BOOTSTRAP)
 
-        //RefdataValue.loc('TaxType', [en: 'On Invoice', de: 'Auf Rechnung'], BOOTSTRAP)
-        //RefdataValue.loc('TaxType', [en: 'Self Declared', de: 'Überweisung'], BOOTSTRAP)
-        //RefdataValue.loc('TaxType', [en: 'Other', de: 'Andere'], BOOTSTRAP)
         RefdataValue.loc('TaxType', [en: 'taxable', de: 'steuerbar'], BOOTSTRAP)
         RefdataValue.loc('TaxType', [en: 'not taxable', de: 'nicht steuerbar'], BOOTSTRAP)
         RefdataValue.loc('TaxType', [en: 'taxable tax-exempt', de: 'steuerbar steuerbefreit'], BOOTSTRAP)
