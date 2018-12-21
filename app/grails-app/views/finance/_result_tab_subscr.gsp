@@ -62,14 +62,20 @@
     </g:else>
 </tbody>
     <tfoot>
-    <tr>
-        <td colspan="7">
-            <strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}</strong>
-            <br/>
-            <span class="sumOfCosts_${i}"></span>
-        </td>
-    </tr>
+        <tr>
+            <td colspan="7">
+                <strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}</strong>
+                <br/>
+                <span class="sumOfCosts_${i}"></span>
+            </td>
+        </tr>
     </tfoot>
 </table>
+    <g:if test="${cost_items}">
+        <semui:paginate action="finance" controller="myInstitution" params="${params}"
+                        next="${message(code: 'default.paginate.next', default: 'Next')}"
+                        prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
+                        total="${cost_items_count}"/>
+    </g:if>
 
 <!-- _result_tab_subscr.gsp -->
