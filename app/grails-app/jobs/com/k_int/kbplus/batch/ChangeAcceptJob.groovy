@@ -2,10 +2,10 @@ package com.k_int.kbplus.batch
 
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.PendingChange
+import de.laser.quartz.AbstractJob
 
-class ChangeAcceptJob {
+class ChangeAcceptJob extends AbstractJob {
 
   def pendingChangeService
   static triggers = {

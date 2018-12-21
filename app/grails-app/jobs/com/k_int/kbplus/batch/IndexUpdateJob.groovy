@@ -1,6 +1,8 @@
 package com.k_int.kbplus.batch
 
-class IndexUpdateJob {
+import de.laser.quartz.AbstractJob
+
+class IndexUpdateJob extends AbstractJob {
 
   def dataloadService
 

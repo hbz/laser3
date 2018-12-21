@@ -1,14 +1,15 @@
 package com.k_int.kbplus.batch
+
 import com.k_int.kbplus.TitleInstance
 import com.k_int.kbplus.Package
-import groovy.time.TimeCategory
+import de.laser.quartz.AbstractJob
 import org.hibernate.ScrollMode
 
 /*
 * This job is only run once on system startup, and is responsible for initializing various fields
 * First run on unpopulated data takes up to 45min, then only few seconds if run again
 */
-class BatchTouchJob {
+class BatchTouchJob extends AbstractJob {
 
 
   static triggers = {

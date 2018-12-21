@@ -1,8 +1,10 @@
 package de.Laser.batch
 
 import com.k_int.kbplus.EventLog
+import de.laser.quartz.AbstractJob
 
-class DashboardDueDatesJob {
+class DashboardDueDatesJob extends AbstractJob {
+
     def dashboardDueDatesService
     def grailsApplication
 

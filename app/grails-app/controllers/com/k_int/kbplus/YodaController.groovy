@@ -7,6 +7,9 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import grails.web.Action
 import org.hibernate.SessionFactory
+import org.quartz.JobKey
+import org.quartz.TriggerKey
+import org.quartz.impl.matchers.GroupMatcher
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -25,6 +28,7 @@ class YodaController {
     def dashboardDueDatesService
     def cronjobUpdateService
     def executorService
+    def quartzScheduler
 
     static boolean ftupdate_running = false
 
@@ -70,6 +74,32 @@ class YodaController {
             result.adminObj.refresh()
         }
         result.currentconf = grails.util.Holders.config
+
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def quartzInfo() {
+        def result = [:]
+
+        result.triggers = [:]
+        result.jobs = [:]
+
+        for (String groupName : quartzScheduler.getTriggerGroupNames()) {
+            result.triggers."${groupName}" = [:]
+
+            for (TriggerKey key : quartzScheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(groupName))) {
+                result.triggers."${groupName}"."${key.getName()}" = quartzScheduler.getTrigger(key)
+            }
+        }
+
+        for (String groupName : quartzScheduler.getJobGroupNames()) {
+            result.jobs."${groupName}" = [:]
+
+            for (JobKey key : quartzScheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
+                result.jobs."${groupName}"."${key.getName()}" = quartzScheduler.getJobDetail(key)
+            }
+        }
 
         result
     }

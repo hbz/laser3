@@ -1,8 +1,8 @@
 package com.k_int.kbplus.batch
 
+import de.laser.quartz.AbstractJob
 
-
-class AdminJob {
+class AdminJob extends AbstractJob {
     def grailsApplication
     def AdminReminderService
 

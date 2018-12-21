@@ -1,6 +1,8 @@
 package com.k_int.kbplus.batch
 
-class GlobalDataSyncJob {
+import de.laser.quartz.AbstractJob
+
+class GlobalDataSyncJob extends AbstractJob {
 
   def globalSourceSyncService
   def grailsApplication

@@ -1,6 +1,9 @@
 package de.Laser.batch
 
-class StatsSyncJob {
+import de.laser.quartz.AbstractJob
+
+class StatsSyncJob extends AbstractJob {
+
     def statsSyncService
     def grailsApplication
 

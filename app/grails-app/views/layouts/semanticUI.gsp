@@ -387,6 +387,7 @@
                             <g:link class="item" controller="yoda" action="appSecurity">App Security</g:link>
                             <g:link class="item" controller="yoda" action="appProfiler">App Profiler</g:link>
                             <g:link class="item" controller="yoda" action="cacheInfo">App Cache Info</g:link>
+                            <g:link class="item" controller="yoda" action="quartzInfo">Quartz Info</g:link>
                             <%--<a class="item" href="${g.createLink(uri:'/monitoring')}">App Monitoring</a>--%>
 
                             <div class="divider"></div>

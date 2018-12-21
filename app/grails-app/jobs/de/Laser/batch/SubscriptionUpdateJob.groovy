@@ -1,8 +1,10 @@
 package de.Laser.batch
 
 import com.k_int.kbplus.EventLog
+import de.laser.quartz.AbstractJob
 
-class SubscriptionUpdateJob {
+class SubscriptionUpdateJob extends AbstractJob {
+
   def cronjobUpdateService
 
   static triggers = {
