@@ -242,6 +242,9 @@ r2d2 = {
         }).on('shown', function() {
             if ($(this).attr('data-format')) {
                 $(ctxSel + ' .xEditable-datepicker').calendar(r2d2.configs.datepicker);
+                $(ctxSel + ' .editable-clear-x').click(function() {
+                    $('.calendar').calendar('clear');
+                });
             }
             $(".table").trigger('reflow')
         }).on('hidden', function() {
