@@ -13,6 +13,8 @@ class SubscriptionUpdateJob extends AbstractJob {
 //        cron name:'SubscriptionUpdateTrigger', cronExpression: "0 /3 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every three minutes
   }
 
+    static configFlags = []
+
  def execute() {
    log.info("Execute::SubscriptionUpdateJob - Start");
    new EventLog(event:'Execute::SubscriptionUpdateJob', message:'Start', tstp:new Date(System.currentTimeMillis())).save(flush:true)

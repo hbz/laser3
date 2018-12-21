@@ -16,6 +16,8 @@ class NotificationsJob extends AbstractJob {
     cron name:'notificationsTrigger', startDelay:180000, cronExpression: "* 35 * * * ?"
   }
 
+    static configFlags = ['KBPlusMaster', 'hbzMaster']
+
   def execute() {
     log.debug("NotificationsJob");
     if ( grailsApplication.config.KBPlusMaster == true ) {

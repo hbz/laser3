@@ -22,6 +22,8 @@ class AdminJob extends AbstractJob {
         //                  `- Second, 0-59
     }
 
+    static configFlags = ['hbzMaster', 'AdminReminderJobActiv']
+
     def execute() {
         log.debug("Execute::AdminJob");
         if ( grailsApplication.config.hbzMaster == true  && grailsApplication.config.AdminReminderJobActiv == true) {

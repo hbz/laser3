@@ -23,6 +23,9 @@ class GlobalDataSyncJob extends AbstractJob {
     //                  `- Second, 0-59
   }
 
+  static configFlags = ['KBPlusMaster', 'hbzMaster', 'globalDataSyncJobActiv']
+
+
   def execute() {
     log.debug("GlobalDataSyncJob");
     if ( grailsApplication.config.KBPlusMaster == true ) {

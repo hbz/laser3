@@ -23,6 +23,8 @@ class ChangeAcceptJob extends AbstractJob {
    //                  | `- Minute, 0-59
    //                  `- Second, 0-59
  }
+    static configFlags = []
+
 /**
 * Accept pending chnages from master subscriptions on slave subscriptions 
 **/

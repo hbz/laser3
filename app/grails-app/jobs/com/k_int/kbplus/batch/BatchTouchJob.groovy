@@ -11,10 +11,12 @@ import org.hibernate.ScrollMode
 */
 class BatchTouchJob extends AbstractJob {
 
+    static triggers = {
+        simple name:'BatchTouchJob', startDelay:50000, repeatInterval:30000, repeatCount:0
+    }
 
-  static triggers = {
-    simple name:'BatchTouchJob', startDelay:50000, repeatInterval:30000, repeatCount:0  
-  }
+    static configFlags = []
+
 
   def execute() {
     log.debug("BatchTouchJob::execute");
