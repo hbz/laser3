@@ -40,7 +40,7 @@
                     <td>
                         <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
                             ${prop.type.getI10n('name')}
-                            <span data-position="right center" data-variation="tiny" data-tooltip="${prop.type.getI10n('expl')}">
+                            <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${prop.type.getI10n('expl')}">
                                 <i class="question circle icon"></i>
                             </span>
                         </g:if>
