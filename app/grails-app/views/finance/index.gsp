@@ -49,16 +49,25 @@
         </semui:actionsDropdown>
     </g:if>
 </semui:controlButtons>
+<g:if test="${cost_item_count_CS}">
+    <g:set var="totalString" value="${cost_item_count} ${message(code:'financials.header.ownCosts')} / ${cost_item_count_CS} ${message(code:'financials.header.consortialCosts')}"/>
+</g:if>
+<g:elseif test="${cost_item_count_SUBSCR}">
+    <g:set var="totalString" value="${cost_item_count} ${message(code:'financials.header.ownCosts')} / ${cost_item_count_SUBSCR} ${message(code:'financials.header.subscriptionCosts')}"/>
+</g:elseif>
+<g:else>
+    <g:set var="totalString" value="${cost_item_count} ${message(code:'financials.header.ownCosts')}"/>
+</g:else>
 
 <g:if test="${fixedSubscription}">
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'subscription.details.financials.label')} für ${fixedSubscription}
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'subscription.details.financials.label')} für ${fixedSubscription} <semui:totalNumber total="${totalString}"/>
         <semui:anualRings mapping="subfinance" object="${fixedSubscription}" controller="finance" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
     </h1>
 
-    <g:render template="../subscriptionDetails/nav" model="${[subscriptionInstance:fixedSubscription, params:(params << [id:fixedSubscription.id])]}"/> <%-- mapping="subfinance" params="${[sub:params.id]} --%>
+    <g:render template="../subscriptionDetails/nav" model="${[subscriptionInstance:fixedSubscription, params:(params << [id:fixedSubscription.id])]}"/>
 </g:if>
 <g:else>
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'subscription.details.financials.label')} für ${institution.name}</h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'subscription.details.financials.label')} für ${institution.name} <semui:totalNumber total="${totalString}"/></h1>
 </g:else>
 
 <g:if test="${fixedSubscription?.instanceOf && (contextOrg?.id == fixedSubscription?.getConsortia()?.id)}">
@@ -129,7 +138,8 @@
                         $.ajax({
                             url: "<g:createLink controller='finance' action='editCostItem'/>",
                             data: {
-                                sub: "${fixedSubscription?.id}",
+                                fixedSub: "${fixedSubscription?.id}",
+                                currSub: "${currentSubscription?.id}",
                                 tab: "${params.tab}"
                             }
                         }).done(function (data) {

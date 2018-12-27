@@ -119,9 +119,9 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
 
     static mapping = {
                       id column: 'pd_id'
-                   descr column: 'pd_description', index: 'td_new_idx'
+                   descr column: 'pd_description', index: 'td_new_idx', type: 'text'
                     name column: 'pd_name',        index: 'td_new_idx'
-                    expl column: 'pd_explanation', index: 'td_new_idx'
+                    expl column: 'pd_explanation', index: 'td_new_idx', type: 'text'
                     type column: 'pd_type',        index: 'td_type_idx'
          refdataCategory column: 'pd_rdc',         index: 'td_type_idx'
                   tenant column: 'pd_tenant_fk'
