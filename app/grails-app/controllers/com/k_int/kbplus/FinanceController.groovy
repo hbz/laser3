@@ -325,8 +325,9 @@ class FinanceController extends AbstractDebugController {
                 def orgRoleCheck = OrgRole.countByOrgAndRoleType(result.institution,RDStore.OR_SUBSCRIPTION_CONSORTIA)
                 //there are consortial subscriptions for the given institution
                 if(orgRoleCheck > 0) {
-                    def queryParams = ['activeInst':result.institution, 'roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'status':RefdataValue.getByValueAndCategory('Current','Subscription Status')]
-                    def instSubs = Subscription.executeQuery("select s from Subscription as s where exists ( select o from s.orgRelations as o where o.org = :activeInst and o.roleType = :roleType ) AND s.instanceOf IS NULL AND s.status = :status",queryParams)
+                    def queryParams = ['activeInst':result.institution, 'roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'consortialSubscription':RefdataValue.getByValueAndCategory('Consortial Licence','Subscription Type'), 'status':RefdataValue.getByValueAndCategory('Current','Subscription Status')]
+                    //it may be that the condition whether only not-consortial subscriptions are considered when not as subscription consortia has to be reconsidered! Expect Daniel/Micha about that!
+                    def instSubs = Subscription.executeQuery("select s from Subscription as s where ( (exists ( select o from s.orgRelations as o where o.org = :activeInst and o.roleType = :roleType ) AND s.instanceOf IS NULL) OR (exists (select o from s.orgRelations as o where o.org = :activeInst) AND s.type != :consortialSubscription ) ) AND s.status = :status",queryParams)
                     if(instSubs.size() > 0) {
                         cost_item_qry_params = [subs: instSubs, owner: result.institution]
                         cost_item_qry = ' WHERE (ci.sub IS NULL OR ci.sub IN ( :subs )) AND ci.owner = :owner '
