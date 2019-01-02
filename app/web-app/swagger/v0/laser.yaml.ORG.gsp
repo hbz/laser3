@@ -816,7 +816,7 @@ definitions:
           organisations: # mapping attr orgRelations
             type: array
             items:
-              $ref: "#/definitions/OrganisationRole(onlyOrgRelation)" # resolved OrgRole
+              $ref: "#/definitions/OrganisationRole(relation)" # resolved OrgRole
     #      packages:
     #        type: array
     #        items:
@@ -1129,7 +1129,7 @@ definitions:
           organisations: # mapping attr orgs
             type: array
             items:
-              $ref: "#/definitions/OrganisationRole(onlyOrgRelation)"
+              $ref: "#/definitions/OrganisationRole(relation)"
           packageListStatus:
             type: string
             description: Mapping RefdataCategory
@@ -1436,7 +1436,7 @@ definitions:
           organisations: # mapping attr orgRelations
             type: array
             items:
-              $ref: "#/definitions/OrganisationRole(onlyOrgRelation)"
+              $ref: "#/definitions/OrganisationRole(relation)"
           packages:
             type: array
             readOnly: true

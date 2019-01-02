@@ -1,6 +1,7 @@
 
   ### stubs ###
 
+<%--
   ClusterStub:
     type: object
     properties:
@@ -9,6 +10,7 @@
         readOnly: true
       name:
         type: string
+--%>
 
   LicenseStub:
     type: object
@@ -29,12 +31,13 @@
         type: string
       sortableReference:
         type: string
-
+<%--
   LicenseStub(inLicense):
     allOf:
       - $ref: "#/definitions/LicenseStub"
       - type: object
         readOnly: true
+--%>
 
   OrganisationStub:
     type: object
@@ -50,10 +53,6 @@
         type: array
         items:
           $ref: "#/definitions/Identifier"
-      shortcode:
-        type: string
-        readOnly: true
-        example: "Hochschulbibliothekszentrum_des_Landes_NRW"
 
   PackageStub:
     type: object

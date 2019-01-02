@@ -1,7 +1,7 @@
 ---
 swagger: "2.0"
 info:
-  version: "0 - 0.12"
+  version: "0.13 - Version 0"
   title: LAS:eR - API
   description: >
     Known Issues:
@@ -59,3 +59,5 @@ definitions:
 <g:render template="/swagger/v0/definitions-stubs" />
 
 <g:render template="/swagger/v0/definitions-full" />
+
+<g:render template="/swagger/v0/definitions-nested" />

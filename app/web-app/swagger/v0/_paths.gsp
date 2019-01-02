@@ -30,7 +30,7 @@ paths:
           description: Valid request, but document not found
         406:
           $ref: "#/responses/notAcceptable"
-
+<%--
   /issueEntitlements:
     get:
       tags:
@@ -59,6 +59,7 @@ paths:
           description: Valid request, but no issue entitlements found
         406:
           $ref: "#/responses/notAcceptable"
+--%>
 
   /license:
     get:
@@ -91,6 +92,7 @@ paths:
           $ref: "#/responses/notAcceptable"
         412:
           $ref: "#/responses/preconditionFailed"
+<%--
     post:
       tags:
         - Licenses
@@ -156,7 +158,7 @@ paths:
         - Organisations
       summary: Find organisation by identifier
       description: >
-        Supported are queries by following identifiers: *globalUID*, *impId*, *ns:identifier* and *shortcode*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
+        Supported are queries by following identifiers: *globalUID*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
       parameters:
         - $ref: "#/parameters/q"
         - $ref: "#/parameters/v"
@@ -242,6 +244,7 @@ paths:
           $ref: "#/responses/notAcceptable"
         412:
           $ref: "#/responses/preconditionFailed"
+--%>
 
   /subscription:
     get:
@@ -274,6 +277,7 @@ paths:
           $ref: "#/responses/notAcceptable"
         412:
           $ref: "#/responses/preconditionFailed"
+<%--
     post:
       tags:
         - Subscriptions
@@ -304,3 +308,4 @@ paths:
           $ref: "#/responses/conflict"
         500:
           $ref: "#/responses/internalServerError"
+--%>
