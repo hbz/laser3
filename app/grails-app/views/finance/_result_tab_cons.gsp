@@ -62,7 +62,8 @@
 
             <tr id="bulkdelete-b${ci.id}">
                 <td>
-                    ${ jj + 1 }
+                    <% int offset = params.offset ? Integer.parseInt(params.offset) : 0 %>
+                    ${ jj + 1 + offset }
                 </td>
                 <td>
                     <g:each in="${orgRoles}" var="or">
@@ -125,14 +126,26 @@
 
                 <td class="x">
                     <g:if test="${editable}">
-                        <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", tab:"sc"]' class="ui icon button trigger-modal">
-                            <i class="write icon"></i>
-                        </g:link>
-                        <span data-position="top right" data-tooltip="${message(code:'financials.costItem.copy.tooltip')}">
-                            <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", tab:"sc"]' class="ui icon button trigger-modal">
-                                <i class="copy icon"></i>
+                        <g:if test="${forSingleSubscription}">
+                            <g:link mapping="subfinanceEditCI" params='[fixedSub:"${fixedSubscription.id}", id:"${ci.id}", tab:"sc"]' class="ui icon button trigger-modal">
+                                <i class="write icon"></i>
                             </g:link>
-                        </span>
+                            <span data-position="top right" data-tooltip="${message(code:'financials.costItem.copy.tooltip')}">
+                                <g:link mapping="subfinanceCopyCI" params='[fixedSub:"${fixedSubscription.id}", id:"${ci.id}", tab:"sc"]' class="ui icon button trigger-modal">
+                                    <i class="copy icon"></i>
+                                </g:link>
+                            </span>
+                        </g:if>
+                        <g:else>
+                            <g:link controller="finance" action="editCostItem" params='[currSub:"${ci.sub?.id}", id:"${ci.id}", tab:"sc"]' class="ui icon button trigger-modal">
+                                <i class="write icon"></i>
+                            </g:link>
+                            <span data-position="top right" data-tooltip="${message(code:'financials.costItem.copy.tooltip')}">
+                                <g:link controller="finance" action="copyCostItem" params='[currSub:"${ci.sub?.id}", id:"${ci.id}", tab:"sc"]' class="ui icon button trigger-modal">
+                                    <i class="copy icon"></i>
+                                </g:link>
+                            </span>
+                        </g:else>
                         <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ tab:'sc']" class="ui icon negative button" onclick="return confirm('${message(code: 'default.button.confirm.delete')}')">
                             <i class="trash alternate icon"></i>
                         </g:link>
@@ -155,10 +168,18 @@
     </tfoot>
 </table>
     <g:if test="${cost_items}">
-                <semui:paginate action="finance" controller="myInstitution" params="${params}"
-                                next="${message(code: 'default.paginate.next', default: 'Next')}"
-                                prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
-                                total="${cost_items_count}"/>
+         <g:if test="${inSubMode}">
+             <semui:paginate mapping="subfinance" action="index" controller="finance" params="${params}"
+                             next="${message(code: 'default.paginate.next', default: 'Next')}"
+                             prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
+                             total="${cost_items_count}"/>
+         </g:if>
+        <g:else>
+            <semui:paginate action="finance" controller="myInstitution" params="${params}"
+                            next="${message(code: 'default.paginate.next', default: 'Next')}"
+                            prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
+                            total="${cost_items_count}"/>
+        </g:else>
     </g:if>
 
 <!-- _result_tab_cons.gsp -->

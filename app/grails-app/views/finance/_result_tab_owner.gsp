@@ -31,7 +31,7 @@
         </tr>
     </g:if>
     <g:else>
-        <% int counterHelper = 0 %>
+        <% int counterHelper = params.offset ? Integer.parseInt(params.offset) : 0 %>
         <g:each in="${cost_items}" var="subListItem">
             <g:render template="result_tab_owner_table" model="[cost_items: subListItem.value, forSingleSubscription: forSingleSubscription, counterHelper: counterHelper]" />
             <% counterHelper += subListItem.value.size() %>
@@ -49,10 +49,19 @@
     </tfoot>
 </table>
     <g:if test="${cost_items}">
-                <semui:paginate action="finance" controller="myInstitution" params="${params}"
-                                next="${message(code: 'default.paginate.next', default: 'Next')}"
-                                prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
-                                total="${cost_items_count}"/>
+        <g:if test="${inSubMode}">
+            <semui:paginate mapping="subfinance" action="index" controller="finance" params="${params}"
+                            next="${message(code: 'default.paginate.next', default: 'Next')}"
+                            prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
+                            total="${cost_items_count}"/>
+        </g:if>
+        <g:else>
+            <semui:paginate action="finance" controller="myInstitution" params="${params}"
+                            next="${message(code: 'default.paginate.next', default: 'Next')}"
+                            prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
+                            total="${cost_items_count}"/>
+        </g:else>
+
     </g:if>
 
 <!-- _result_tab_owner.gsp -->

@@ -32,7 +32,8 @@
         <g:each in="${cost_items}" var="ci" status="jj">
             <tr id="bulkdelete-b${ci.id}">
                 <td>
-                    ${ jj + 1 }
+                    <% int offset = params.offset ? Integer.parseInt(params.offset) : 0 %>
+                    ${ jj + 1 + offset }
                 </td>
                 <td>
                     <span class="costData"
@@ -72,10 +73,18 @@
     </tfoot>
 </table>
     <g:if test="${cost_items}">
-        <semui:paginate action="finance" controller="myInstitution" params="${params}"
-                        next="${message(code: 'default.paginate.next', default: 'Next')}"
-                        prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
-                        total="${cost_items_count}"/>
+        <g:if test="${inSubMode}">
+            <semui:paginate mapping="subfinance" action="index" controller="finance" params="${params}"
+                            next="${message(code: 'default.paginate.next', default: 'Next')}"
+                            prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
+                            total="${cost_items_count}"/>
+        </g:if>
+        <g:else>
+            <semui:paginate action="finance" controller="myInstitution" params="${params}"
+                            next="${message(code: 'default.paginate.next', default: 'Next')}"
+                            prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
+                            total="${cost_items_count}"/>
+        </g:else>
     </g:if>
 
 <!-- _result_tab_subscr.gsp -->

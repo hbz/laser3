@@ -220,7 +220,7 @@
                     <g:select id="filterCISub" class="ui fluid search dropdown" multiple=""
                               name="filterCISub"
                               from="${allCISubs}"
-                              optionValue="${{it.name ?: 'Keine Verknüpfung'}}"
+                              optionValue="${{it.name+' ('+formatDate(date:it.startDate,format:message(code: 'default.date.format.notime'))+' - '+formatDate(date: it.endDate, format: message(code: 'default.date.format.notime'))+')' ?: 'Keine Verknüpfung'}}"
                               optionKey="${{"com.k_int.kbplus.Subscription:" + it.id}}"
                               noSelection="['':'']"
                               value="${params.filterCISub}" />

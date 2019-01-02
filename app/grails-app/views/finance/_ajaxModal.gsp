@@ -46,7 +46,7 @@
 
         <div class="fields">
             <div class="nine wide field">
-                <g:if test="${OrgRole.findBySubAndOrgAndRoleType(fixedSubscription, contextService.getOrg(), RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role'))}">
+                <g:if test="${OrgRole.findBySubAndOrgAndRoleType(fixedSubscription, contextService.getOrg(), RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role')) || OrgRole.findBySubAndOrgAndRoleType(currentSubscription, contextService.getOrg(), RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role')) }">
                     <div class="two fields la-fields-no-margin-button">
                         <div class="field">
                             <label>${message(code:'financials.newCosts.costTitle')}</label>
@@ -54,9 +54,7 @@
                         </div><!-- .field -->
                         <div class="field">
                             <label>${message(code:'financials.isVisibleForSubscriber')}</label>
-                            <g:set var="newIsVisibleForSubscriberValue" value="${
-                                costItem?.isVisibleForSubscriber ? RefdataValue.getByValueAndCategory('Yes', 'YN').id : RefdataValue.getByValueAndCategory('No', 'YN').id
-                            }" />
+                            <g:set var="newIsVisibleForSubscriberValue" value="${costItem?.isVisibleForSubscriber ? RefdataValue.getByValueAndCategory('Yes', 'YN').id : RefdataValue.getByValueAndCategory('No', 'YN').id}" />
                             <laser:select name="newIsVisibleForSubscriber" class="ui dropdown"
                                       id="newIsVisibleForSubscriber"
                                       from="${RefdataValue.findAllByOwner(RefdataCategory.findByDesc('YN'))}"

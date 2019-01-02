@@ -204,7 +204,7 @@ class FinanceController extends AbstractDebugController {
               case MODE_CONS_AT_SUBSCR:
                   myCostItems = result.cost_items_SUBSCR
                   break
-              //consortium vieweung the overall consortium costs
+              //consortium viewing the overall consortium costs
               case MODE_CONS:
                   myCostItems = result.cost_items_CS
                   break
@@ -215,7 +215,10 @@ class FinanceController extends AbstractDebugController {
           result.allCIBudgetCodes    = (myCostItems.collect{ it -> it?.getBudgetcodes()?.value }).flatten().unique().sort()
 
           result.allCISPkgs = (myCostItems.collect{ it -> it?.subPkg }).findAll{ it }.unique().sort()
-          result.allCISubs  = (myCostItems.collect{ it -> it?.sub }).findAll{ it }.unique().sort()
+          if(result.queryMode == MODE_CONS)
+              result.allCISubs  = (myCostItems.findAll{it?.sub?.status == RefdataValue.getByValueAndCategory('Current','Subscription Status')}.collect{ it -> it?.sub?.instanceOf }).findAll{ it }.unique().sort()
+          else
+              result.allCISubs  = (myCostItems.findAll{it?.sub?.status == RefdataValue.getByValueAndCategory('Current','Subscription Status')}.collect{ it -> it?.sub }).findAll{ it }.unique().sort()
 
           result.isXHR = request.isXhr()
         //Other than first run, request will always be AJAX...
@@ -318,16 +321,34 @@ class FinanceController extends AbstractDebugController {
                 //orderAndSortBy       = orderAndSortBy
             }
             else if(! params.sub){
-                def queryParams = ['activeInst':result.institution, 'status':RefdataValue.getByValueAndCategory('Current','Subscription Status')]
-                def instSubs = Subscription.executeQuery("select s from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where o.org = :activeInst ) ) ) AND ( s.instanceOf is null AND s.status = :status ) ",queryParams)
-                if(instSubs.size() > 0) {
-                    cost_item_qry_params = [subs: instSubs, owner: result.institution]
-                    cost_item_qry = ' WHERE (ci.sub IS NULL OR ci.sub IN ( :subs )) AND ci.owner = :owner '
+                //check if active institution has consortial subscriptions
+                def orgRoleCheck = OrgRole.countByOrgAndRoleType(result.institution,RDStore.OR_SUBSCRIPTION_CONSORTIA)
+                //there are consortial subscriptions for the given institution
+                if(orgRoleCheck > 0) {
+                    def queryParams = ['activeInst':result.institution, 'roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'consortialSubscription':RefdataValue.getByValueAndCategory('Consortial Licence','Subscription Type'), 'status':RefdataValue.getByValueAndCategory('Current','Subscription Status')]
+                    //it may be that the condition whether only not-consortial subscriptions are considered when not as subscription consortia has to be reconsidered! Expect Daniel/Micha about that!
+                    def instSubs = Subscription.executeQuery("select s from Subscription as s where ( (exists ( select o from s.orgRelations as o where o.org = :activeInst and o.roleType = :roleType ) AND s.instanceOf IS NULL) OR (exists (select o from s.orgRelations as o where o.org = :activeInst) AND s.type != :consortialSubscription ) ) AND s.status = :status",queryParams)
+                    if(instSubs.size() > 0) {
+                        cost_item_qry_params = [subs: instSubs, owner: result.institution]
+                        cost_item_qry = ' WHERE (ci.sub IS NULL OR ci.sub IN ( :subs )) AND ci.owner = :owner '
+                    }
+                    else {
+                        cost_item_qry_params = [owner: result.institution]
+                        cost_item_qry = ' WHERE ci.sub IS NULL AND ci.owner = :owner '
+                    }
                 }
+                //we are without consortial subscriptions e.g. the institution is not a consortium whose cost items are going to be checked
                 else {
-                    //continue here: foreign costs are visible!
-                    cost_item_qry_params = [owner: result.institution]
-                    cost_item_qry = ' WHERE ci.owner = :owner '
+                    def queryParams = ['activeInst':result.institution, 'status':RefdataValue.getByValueAndCategory('Current','Subscription Status')]
+                    def instSubs = Subscription.executeQuery("select s from Subscription as s where exists ( select o from s.orgRelations as o where o.org = :activeInst ) AND s.status = :status",queryParams)
+                    if(instSubs.size() > 0) {
+                        cost_item_qry_params = [subs: instSubs, owner: result.institution]
+                        cost_item_qry = ' WHERE (ci.sub IS NULL OR ci.sub IN ( :subs )) AND ci.owner = :owner '
+                    }
+                    else {
+                        cost_item_qry_params = [owner: result.institution]
+                        cost_item_qry = ' WHERE ci.sub IS NULL AND ci.owner = :owner '
+                    }
                 }
             }
         }
@@ -344,8 +365,10 @@ class FinanceController extends AbstractDebugController {
             else if (!result.fixedSubscription) {
                 def queryParams = ['activeInst':result.institution, 'status':RefdataValue.getByValueAndCategory('Current','Subscription Status')]
                 def instSubs = Subscription.executeQuery("select s from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where o.org = :activeInst ) ) ) AND s.status = :status ",queryParams)
-                cost_item_qry_params =  [subs: instSubs, owner: result.institution]
-                cost_item_qry        = ' , OrgRole as ogr WHERE ci.sub IN ( :subs ) AND ogr.org = :owner AND ci.isVisibleForSubscriber is true '
+                if(instSubs.size() > 0) {
+                  cost_item_qry_params = [subs: instSubs, owner: result.institution]
+                  cost_item_qry = ' , OrgRole as ogr WHERE ci.sub IN ( :subs ) AND ogr.org = :owner AND ci.isVisibleForSubscriber is true '
+                }
             }
 
        }
@@ -362,7 +385,7 @@ class FinanceController extends AbstractDebugController {
 
         tmp.foundMatches    =  cost_item_qry_params.size() > 1 // [owner:default] ; used for flash
         tmp.cost_items      =  CostItem.executeQuery(ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy, cost_item_qry_params, params);
-        tmp.cost_item_count =  CostItem.executeQuery(ci_count + cost_item_qry + qryOutput.qry_string, cost_item_qry_params).first();
+        tmp.cost_item_count =  CostItem.executeQuery(ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy, cost_item_qry_params).size()
 
         log.debug("index(${queryMode})  -- Performed filtering process ${tmp.cost_item_count} result(s) found")
 
@@ -666,8 +689,14 @@ class FinanceController extends AbstractDebugController {
             if(params.filterCISub instanceof String) {
               def fSub = genericOIDService.resolveOID(params.filterCISub)
               if (fSub) {
-                fqResult.qry_string += " AND ci.sub.id = :subId "
-                countCheck          += " AND ci.sub.id = :subId "
+                  if(queryMode == MODE_CONS) {
+                      fqResult.qry_string += " AND ci.sub.id = :subId OR ci.sub.instanceOf = :subId "
+                      countCheck          += " AND ci.sub.id = :subId OR ci.sub.instanceOf = :subId "
+                  }
+                  else {
+                      fqResult.qry_string += " AND ci.sub.id = :subId "
+                      countCheck          += " AND ci.sub.id = :subId "
+                  }
 
                 fqResult.fqParams << [subId: fSub.id]
               }
@@ -680,8 +709,15 @@ class FinanceController extends AbstractDebugController {
                          fSubs.add(fSub.id)
                     }
                 }
-                fqResult.qry_string += " AND ci.sub.id IN :subIds "
-                countCheck          += " AND ci.sub.id IN :subIds "
+                if(queryMode == MODE_CONS) {
+                    fqResult.qry_string += " AND ci.sub.id IN :subIds OR ci.sub.instanceOf IN :subIds "
+                    countCheck          += " AND ci.sub.id IN :subIds OR ci.sub.instanceOf IN :subIds "
+                }
+                else {
+                    fqResult.qry_string += " AND ci.sub.id IN :subIds "
+                    countCheck          += " AND ci.sub.id IN :subIds "
+                }
+
                 fqResult.fqParams << [subIds: fSubs]
             }
         }
@@ -767,9 +803,12 @@ class FinanceController extends AbstractDebugController {
         def result = [:]
         result.tab = params.tab
 
-        result.inSubMode = params.sub ? true : false
+        result.inSubMode = params.fixedSub ? true : false
         if (result.inSubMode) {
-            result.fixedSubscription = params.int('sub') ? Subscription.get(params.sub) : null
+            result.fixedSubscription = params.int('fixedSub') ? Subscription.get(params.fixedSub) : null
+        }
+        else {
+            result.currentSubscription = params.int('currSub') ? Subscription.get(params.currSub) : null
         }
         result.costItem = CostItem.findById(params.id)
 
@@ -784,13 +823,17 @@ class FinanceController extends AbstractDebugController {
         def result = [:]
 
         result.id = params.id
-        result.sub = params.sub
-        result.inSubMode = params.sub ? true : false
+        result.fixedSub = params.fixedSub
+        result.currSub = params.currSub
+        result.inSubMode = params.fixedSub ? true : false
 
         result.tab = params.tab
 
         if (result.inSubMode) {
-            result.fixedSubscription = params.int('sub') ? Subscription.get(params.sub) : null
+            result.fixedSubscription = params.int('fixedSub') ? Subscription.get(params.fixedSub) : null
+        }
+        else {
+            result.currentSubscription = params.int('currSub') ? Subscription.get(params.currSub) : null
         }
 
         def ci = CostItem.findById(params.id)
