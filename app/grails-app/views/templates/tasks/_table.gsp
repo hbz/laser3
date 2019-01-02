@@ -73,7 +73,10 @@
                             </a>
                         </g:if>
                         <g:if test="${(user == taskInstance.creator) || contextService.getUser().hasAffiliation("INST_ADM")}">
-                            <g:link action="tasks" params="[deleteId:taskInstance.id, id: params.id]" class="ui icon negative button">
+                            <g:link class="ui icon negative button js-open-confirm-modal"
+                                    data-confirm-term-what="task"
+                                    data-confirm-term-how="delete"
+                                    action="tasks" params="[deleteId:taskInstance.id, id: params.id]" >
                                 <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>

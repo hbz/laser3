@@ -1721,13 +1721,23 @@ i.icon.thumbtack.slash {
 i.icon.plus.square.slash {
   font-family: 'icomoon';
 }
+i.icon.chain.broken {
+  font-family: 'icomoon';
+}
+i.icon.chain {
+  font-family: 'icomoon';
+}
 // to turn off all the buttons on a side
 // the other part of the button is the SEMANTIC UI Icon: 'hand pointer outline'
+
 
 i.icon.hand.pointer.outline.slash:before { content: "\e900"; }
 i.icon.pencil.alternate.slash:before { content: "\e901"; }
 i.icon.thumbtack.slash:before { content: "\e902"; }
 i.icon.plus.square.slash:before { content: "\e903"; }
+i.icon.chain.broken:before { content: "\e904"; }
+i.icon.chain:before { content: "\e905"; }
+
 
 /*******************************
            Laser Icons

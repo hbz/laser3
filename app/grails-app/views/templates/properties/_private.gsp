@@ -90,14 +90,19 @@
                             </span>
                         </g:if>
                         <g:if test="${overwriteEditable == true}">
-                            <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
-                            <g:remoteLink controller="ajax" action="deletePrivateProperty"
-                                before="if(!confirm('${confirmMsg}')) return false"
-                                params='[propClass: prop.getClass(),ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", editable:"${editable}"]' id="${prop.id}"
-                                onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
-                                update="${custom_props_div}" class="ui icon negative button">
+                            <button class="ui icon negative button js-open-confirm-modal-copycat">
                                 <i class="trash alternate icon"></i>
-                                    <!--${message(code:'default.button.delete.label', default:'Delete')}-->
+                            </button>
+                            <%--<g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" /> --%>
+                            <g:remoteLink class="js-gost"
+                                style="visibility: hidden"
+                                data-confirm-term-what="property"
+                                data-confirm-term-what-detail="${prop.type.name}"
+                                data-confirm-term-how="delete"
+                                controller="ajax" action="deletePrivateProperty"
+                                params='[propClass: prop.getClass(),ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", editable:"${editable}"]' id="${prop.id}"
+                                onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id}), c3po.loadJsAfterAjax()"
+                                update="${custom_props_div}" >
                             </g:remoteLink>
                         </g:if>
                     </td>
@@ -114,19 +119,21 @@
                                   name="cust_prop_add_value"
                                   class="ui form"
                                   update="${custom_props_div}"
-                                  onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})">
+                                  onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
+                                  onComplete="c3po.loadJsAfterAjax()"
+                    >
 
-                        <input type="hidden" name="propIdent"  data-desc="${prop_desc}" class="customPropSelect"/>
-                        <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>
-                        <input type="hidden" name="tenantId"   value="${tenant?.id}"/>
-                        <input type="hidden" name="editable"   value="${editable}"/>
-                        <input type="hidden" name="ownerClass" value="${ownobj?.class}"/>
+                    <input type="hidden" name="propIdent"  data-desc="${prop_desc}" class="customPropSelect"/>
+                    <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>
+                    <input type="hidden" name="tenantId"   value="${tenant?.id}"/>
+                    <input type="hidden" name="editable"   value="${editable}"/>
+                    <input type="hidden" name="ownerClass" value="${ownobj?.class}"/>
 
-                        <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button"/>
-                    </g:formRemote>
+                    <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button"/>
+                </g:formRemote>
 
-                </td>
-            </tr>
-        </tfoot>
-    </g:if>
+            </td>
+        </tr>
+    </tfoot>
+</g:if>
 </table>

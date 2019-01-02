@@ -183,8 +183,12 @@
                         </g:link>
                         </span>
                         <g:if test="${! l.subscriptions}">
-                            <g:link controller="myInstitution" action="actionLicenses" onclick="return confirm('${message(code:'license.delete.confirm', default:'Are you sure you want to delete')} ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}?')"
-                                params="${[baselicense:l.id,'delete-license':'Y']}" class="ui icon negative button">
+                            <g:link class="ui icon negative button js-open-confirm-modal"
+                                    data-confirm-term-what="license"
+                                    data-confirm-term-what-detail="${l.reference}"
+                                    data-confirm-term-how="delete"
+                                    controller="myInstitution" action="actionLicenses"
+                                    params="${[baselicense:l.id,'delete-license':'Y']}">
                                 <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>

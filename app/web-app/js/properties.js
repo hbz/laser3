@@ -1,5 +1,8 @@
 
 c3po = {
+    loadJsAfterAjax: function () {
+        r2d2.go();
+    },
 
     PROP_SEARCH_NATIVE: 'PROP_SEARCH_NATIVE',
     PROP_SEARCH_GROUPED: 'PROP_SEARCH_GROUPED',

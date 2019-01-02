@@ -431,16 +431,23 @@ class SemanticUiTagLib {
     // called by the specific delete button
     //  - to send a form or
     //        <g:form data-confirm-id="${person?.id.toString()+ '_form'}">
-    //        <div class="....... js-open-confirm-modal" data-confirm-term="diese Person" data-confirm-id="${person?.id}" >
+    //        <div class="....... js-open-confirm-modal" data-confirm-term-what="diese Person" data-confirm-id="${person?.id}" >
     //  - to call a link
-    //        <g:link class="..... js-open-confirm-modal" data-confirm-term="diese Kontaktdresse" ...... >
+    //        <g:link class="..... js-open-confirm-modal" data-confirm-term-what="diese Kontaktdresse" ...... >
     def confirmationModal = { attrs, body ->
 
         def msgDelete  = "Endgültig löschen"
         def msgCancel  = "Abbrechen"
 
-        out << '<div class="ui mini modal">'
-        out <<   '<div class="header">Wollen Sie <span id="js-confirmation-term"></span> wirklich aus Ihrem Adressbuch löschen?</div>'
+        out << '<div class="ui tiny modal">'
+        out <<   '<div class="header">Wollen Sie wirklich '
+        out <<      '<span id="js-confirmation-term-what"></span> '
+        out <<      '<span id="js-confirmation-term-what-detail"></span> '
+        out <<      '<span id="js-confirmation-term-where"></span> '
+        out <<      '<span id="js-confirmation-term-where-detail"></span> '
+        out <<      '<span id="js-confirmation-term-how"></span>'
+        out <<  '?</div>'
+
         if (body) {
             out <<   '<div class="content">'
             out << body()
@@ -448,7 +455,7 @@ class SemanticUiTagLib {
         }
         out <<   '<div class="actions">'
         out <<     '<div class="ui deny button">'+ msgCancel+ '</div>'
-        out <<     '<button class="ui positive right labeled icon button">'+ msgDelete
+        out <<     '<button id="js-confirmation-button" class="ui positive right labeled icon button">'+ msgDelete
         out <<     '    <i class="trash alternate icon"></i>'
         out <<     '</button>'
         out <<   '</div>'

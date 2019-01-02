@@ -137,31 +137,10 @@ r2d2 = {
             }).modal('show')
         });
 
-        // confirmation modal
-        $(".js-open-confirm-modal").click(function(event){
-            var dataAttr = this.getAttribute("data-confirm-id")? this.getAttribute("data-confirm-id")+'_form':false;
-            var tmpTerm = this.getAttribute("data-confirm-term")? this.getAttribute("data-confirm-term"):"dieses Element";
-            var url = this.getAttribute('href')? this.getAttribute('href'): false;
 
-            event.preventDefault();
-            $('#js-confirmation-term').text(tmpTerm);
-            $('.mini.modal')
-                .modal({
 
-                    closable  : false,
-                    onApprove : function() {
-                        if (dataAttr){
-                            $('[data-confirm-id='+dataAttr+']').submit();
-                        }
-                        if (url){
-                            window.location.href = url;
-                        }
-                    }
-                })
-                .modal('show')
-            ;
-        });
     },
+
 
     initGlobalXEditableStuff : function() {
         console.log("r2d2.initGlobalXEditableStuff()");
@@ -376,7 +355,141 @@ r2d2 = {
             $(this).data("lastClicked", e.timeStamp);
 
         });
+        // confirmation modal
+        var buildConfirmationModal =
+            function(event,that){
+                var dataAttr = that.getAttribute("data-confirm-id")? that.getAttribute("data-confirm-id")+'_form':false;
+                var what = that.getAttribute("data-confirm-term-what")? that.getAttribute("data-confirm-term-what"):"dieses Element";
+                var whatDetail = that.getAttribute("data-confirm-term-what-detail")? that.getAttribute("data-confirm-term-what-detail"):false;
+                var where = that.getAttribute("data-confirm-term-where")? that.getAttribute("data-confirm-term-where"):false;
+                var whereDetail = that.getAttribute("data-confirm-term-where-detail")? that.getAttribute("data-confirm-term-where-detail"):false;
+                var how = that.getAttribute("data-confirm-term-how") ? that.getAttribute("data-confirm-term-how"):"delete";
+                var messageHow = how == "delete" ? "löschen" :"aufheben";
+                var url = that.getAttribute('href') && (that.getAttribute('class') != 'js-gost') ? that.getAttribute('href'): false; // use url only if not remote link
 
+                event.preventDefault();
+
+                // UNLINK BUTTON
+                if (how == "unlink"){
+                    switch (what) {
+                        case "organisationtype":
+                            messageWhat = "die Verknüpfung des Organisationstyps";
+                            break;
+                        case "contact":
+                            messageWhat = "die Verknüpfung des Kontakts";
+                            break;
+                        case "membershipSubscription" :
+                            messageWhat = "die Teilnahme der";
+                            break;
+                        default:
+                            messageWhat = "die Verknüpfung des Objektes";
+                    }
+                    switch (where) {
+                        case "organisation":
+                            messageWhere = "mit der Organisation";
+                            break;
+                        default:
+                            messageWhere = where;
+                    }
+                }
+                // DELETE BUTTON
+                if (how == "delete"){
+                    switch (what) {
+                        case "organisationtype":
+                            messageWhat = "den Organisationstyp";
+                            break;
+                        case "task":
+                            messageWhat = "die Aufgabe";
+                            break;
+                        case "person":
+                            messageWhat = "die Person";
+                            break;
+                        case "contactItems":
+                            messageWhat = "die Kontaktdaten";
+                            break;
+                        case "contact":
+                            messageWhat = "den Kontakt";
+                            break;
+                        case "address":
+                            messageWhat = "die Adresse";
+                            break;
+                        case "subscription":
+                            messageWhat = "die Lizenz";
+                            break;
+                        case "license":
+                            messageWhat = "den Vertrag";
+                            break;
+                        case "property":
+                            messageWhat = "das Merkmal";
+                            break;
+                        case "function":
+                            messageWhat = "die Funktion";
+                            break;
+                        case "user":
+                            messageWhat = "den Benutzer";
+                            break;
+                        default:
+                            messageWhat = what;
+                    }
+                    switch (where) {
+                        case "organisation":
+                            messageWhere = "aus der Organisation";
+                            break;
+                        case "addressbook":
+                            messageWhere = "aus dem Adressbuch";
+                            break;
+                        case "system":
+                            messageWhere = "aus dem System";
+                            break;
+                        default:
+                            messageWhere = "aus dem System";
+                    }
+                }
+                $('#js-confirmation-term-what').text(messageWhat); // Should be always set - otherwise "dieses Element"
+                whatDetail ? $('#js-confirmation-term-what-detail').text(whatDetail) : $("#js-confirmation-term-what-detail").remove();
+                whereDetail ? $('#js-confirmation-term-where-detail').text(whereDetail) : $("#js-confirmation-term-where-detail").remove();
+                where ? $('#js-confirmation-term-where').text(messageWhere) : $("#js-confirmation-term-where").remove();
+                $('#js-confirmation-term-how').text(messageHow); // Should be always set - otherwise "delete"
+                switch (how) {
+                    case "delete":
+                        $('#js-confirmation-button').html('Löschen<i class="trash alternate icon"></i>');
+                        break;
+                    case "unlink":
+                        $('#js-confirmation-button').html('Aufheben<i class="chain broken icon"></i>');
+                        break;
+                    default:
+                        $('').html('Entfernen<i class="x icon"></i>');
+                }
+
+                $('.tiny.modal')
+                    .modal({
+                        closable  : false,
+                        onApprove : function() {
+                            // open confirmation modal from inside a form
+                            if (dataAttr){
+                                $('[data-confirm-id='+dataAttr+']').submit();
+                            }
+                            // open confirmation modal and open a new url after conirmation
+                            if (url){
+                                window.location.href = url;
+                            }
+                        },
+                    })
+                    .modal('show')
+                ;
+            }
+        // for links and submit buttons
+        $(ctxSel + ' .js-open-confirm-modal').click(function(e) {
+            e.preventDefault();
+            buildConfirmationModal(event,this);
+        });
+        // for remote links = ajax calls
+        $(ctxSel + ' .js-open-confirm-modal-copycat').click(function(e) {
+            var onclickString = $(this).next('.js-gost').attr("onclick");
+            $('#js-confirmation-button').attr("onclick", onclickString);
+            var gostObject = $(this).next('.js-gost');
+            buildConfirmationModal(event,gostObject[0] );
+        });
     }
 }
 

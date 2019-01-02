@@ -61,18 +61,32 @@
             <td class="x">
               <g:if test="${editable}">
                 <g:if test="${((userOrg[0].status==1 ) || (userOrg[0].status==3)) }">
-                  <g:link controller="organisations" action="revokeRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui icon negative button">
-                    <i class="times icon"></i>
-                  </g:link>
+                  <span data-tooltip="${message(code:'profile.membership.cancel.button')}" data-position="right center">
+                    <g:link controller="organisations" action="revokeRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui icon negative button">
+                      <i class="times icon"></i>
+                    </g:link>
+                  </span>
                 </g:if>
                 <g:else>
-                  <g:link controller="organisations" action="enableRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui icon positive button">
-                    <i class="checkmark icon"></i>
-                  </g:link>
+                  <span data-tooltip="${message(code:'profile.membership.accept.button')}" data-position="right center">
+                    <g:link controller="organisations" action="enableRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui icon positive button">
+                      <i class="checkmark icon"></i>
+                    </g:link>
+                  </span>
                 </g:else>
-                <g:link controller="organisations" action="deleteRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui icon negative button">
-                  <i class="trash alternate icon"></i>
-                </g:link>
+                <span data-tooltip="${message(code:'profile.membership.delete.button')}" data-position="right center">
+                  <g:link class="ui icon negative button js-open-confirm-modal"
+                          data-confirm-term-what="user"
+                          data-confirm-term-what-detail="${userOrg[0].user.displayName}"
+                          data-confirm-term-where="organisation"
+                          data-confirm-term-where-detail="${userOrg[0].user.getSettingsValue(UserSettings.KEYS.DASHBOARD).name}"
+                          data-confirm-term-how="delete"
+                          controller="organisations"
+                          action="deleteRole"
+                          params="${[grant:userOrg[0].id, id:params.id]}">
+                    <i class="trash alternate icon"></i>
+                  </g:link>
+                </span>
               </g:if>
             </td>
           </tr>
