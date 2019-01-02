@@ -1,3 +1,4 @@
+<%@ page import="com.k_int.kbplus.Org" %>
 <g:if test="${editmode}">
     <a class="ui button" data-semui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
 </g:if>
@@ -15,6 +16,7 @@
                     <tr>
                         <th>${message(code:'template.orgLinksModal.name.label')}</th>
                         <th>${message(code:'template.orgLinksModal.select')}</th>
+                        <th>${message(code:'template.orgLinksModal.privateContactAvailable')}</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -55,7 +57,7 @@
         oOrTable = $('#org_role_tab_${tmplModalID}').dataTable( {
             'bAutoWidth':  true,
             "sScrollY":    "240px",
-            "sAjaxSource": "<g:createLink controller="ajax" action="refdataSearch" id="${ajaxID}" params="${[format:'json']}"/>",
+            "sAjaxSource": "<g:createLink controller="ajax" action="getProvidersWithPrivateContacts" id="${ajaxID}" params="${[oid:"${contextOrg.class.name}:${contextOrg.id}"]}"/>",
             "bServerSide": true,
             "bProcessing": true,
             "bDestroy":    true,
@@ -70,7 +72,16 @@
                     "mRender": function ( data, type, full ) {
                         return '<input type="checkbox" name="orm_orgoid" value="' + data + '"/>';
                     }
-                } ],
+                },
+                {
+                    "aTargets": [ 2 ],
+                    "mData": "contacts",
+                    "mRender": function ( data, type, full ) {
+                        if(data.length > 0)
+                            return '<span data-tooltip="Persönlicher Kontakt vorhanden"><i class="address book icon"></i></span>'
+                        return ''
+                    }
+            } ],
             "language": {
                 "decimal":        "<g:message code='datatables.decimal' />",
                 "emptyTable":     "<g:message code='datatables.emptyTable' />",

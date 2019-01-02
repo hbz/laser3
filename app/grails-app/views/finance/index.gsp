@@ -102,12 +102,12 @@
             <input type="hidden" name="redirect" value="redirect"/>
 
             <div class="field">
-                <label>Beschreibung</label>
+                <label>${message(code:'financials.budgetCode.description')}</label>
                 <input type="text" name="bc"/>
             </div>
 
             <div class="field">
-                <label>Verwendung</label>
+                <label>${message(code:'financials.budgetCode.usage')}</label>
                 <textarea name="descr"></textarea>
             </div>
 

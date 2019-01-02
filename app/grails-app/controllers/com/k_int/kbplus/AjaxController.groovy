@@ -1384,7 +1384,45 @@ class AjaxController extends AbstractDebugController {
     if(date) date.delete(flush:true)
     redirect(action:'getTipCoreDates',controller:'ajax',params:params)
   }
-    
+
+  def getProvidersWithPrivateContacts() {
+    def result = [:]
+    def query_params = []
+    String fuzzyString = '%'
+    if(params.sSearch) {
+      fuzzyString+params.sSearch.trim().toLowerCase()+'%'
+    }
+    query_params.add(fuzzyString)
+    query_params.add(RefdataValue.getByValueAndCategory('Deleted', 'OrgStatus'))
+    String countQry = "select count(o) from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?)"
+    String rowQry = "select o from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?) order by o.name asc"
+    def cq = Org.executeQuery(countQry,query_params);
+
+    def rq = Org.executeQuery(rowQry,
+            query_params,
+            [max:params.iDisplayLength?:10,offset:params.iDisplayStart?:0]);
+
+      result.aaData = []
+      result.sEcho = params.sEcho
+      result.iTotalRecords = cq[0]
+      result.iTotalDisplayRecords = cq[0]
+
+    def currOrg = genericOIDService.resolveOID(params.oid)
+      rq.each { it ->
+        def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
+        def cQueryParams = [RefdataValue.getByValueAndCategory('Personal contact','Person Contact Type'),currOrg,rowobj]
+        def contacts = PersonRole.executeQuery(" select p from Person as p where p.contactType = ? and p.tenant = ? and ? in (select pr.org from PersonRole as pr where pr.prs = p) ",cQueryParams)
+        int ctr = 0;
+        def row = [:]
+        row["${ctr++}"] = rowobj["name"]
+        row["DT_RowId"] = "${rowobj.class.name}:${rowobj.id}"
+        row["contacts"] = contacts
+        result.aaData.add(row)
+      }
+
+    render result as JSON
+  }
+
   def lookup() {
       // fallback for static refdataFind calls
       params.shortcode  = contextService.getOrg()?.shortcode

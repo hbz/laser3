@@ -3200,9 +3200,29 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
         def sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
         def query = filterService.getTaskQuery(params, sdFormat)
-        result.taskInstanceList   = taskService.getTasksByResponsibles(result.user, result.institution, query)
+        int offset = params.offset ? Integer.parseInt(params.offset) : 0
+        result.taskInstanceList = taskService.getTasksByResponsibles(result.user, result.institution, query)
+        result.taskInstanceCount = result.taskInstanceList.size()
+        //chop everything off beyond the user's pagination limit
+        if (result.taskInstanceCount > result.user.getDefaultPageSizeTMP()) {
+            try {
+                result.taskInstanceList = result.taskInstanceList.subList(offset, offset + Math.toIntExact(result.user.getDefaultPageSizeTMP()))
+            }
+            catch (IndexOutOfBoundsException e) {
+                result.taskInstanceList = result.taskInstanceList.subList(offset, result.taskInstanceCount)
+            }
+        }
         result.myTaskInstanceList = taskService.getTasksByCreator(result.user, null)
-
+        result.myTaskInstanceCount = result.myTaskInstanceList.size()
+        //chop everything off beyond the user's pagination limit
+        if (result.myTaskInstanceCount > result.user.getDefaultPageSizeTMP()) {
+            try {
+                result.myTaskInstanceList = result.myTaskInstanceList.subList(offset, offset + Math.toIntExact(result.user.getDefaultPageSizeTMP()))
+            }
+            catch (IndexOutOfBoundsException e) {
+                result.myTaskInstanceList = result.myTaskInstanceList.subList(offset, result.myTaskInstanceCount)
+            }
+        }
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         def preCon = taskService.getPreconditions(contextService.getOrg())
