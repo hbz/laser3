@@ -7,12 +7,6 @@
         </td>
         <td>
             <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" />
-
-            <g:if test="${ci.isVisibleForSubscriber}">
-                <span data-position="top right" data-tooltip="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
-                    <i class="ui icon eye orange"></i>
-                </span>
-            </g:if>
         </td>
         <g:if test="${!forSingleSubscription}">
             <td>
@@ -54,12 +48,12 @@
 
         <td class="x">
             <g:if test="${editable}">
-                <g:if test="${inSubMode}">
-                    <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", tab:"owner"]' class="ui icon button trigger-modal">
+                <g:if test="${forSingleSubcription}">
+                    <g:link mapping="subfinanceEditCI" params='[fixedSub:"${fixedSubscription?.id}", id:"${ci.id}", tab:"owner"]' class="ui icon button trigger-modal">
                         <i class="write icon"></i>
                     </g:link>
                     <span data-position="top right" data-tooltip="${message(code:'financials.costItem.copy.tooltip')}">
-                        <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", tab:"owner"]' class="ui icon button trigger-modal">
+                        <g:link mapping="subfinanceCopyCI" params='[fixedSub:"${fixedSubscription?.id}", id:"${ci.id}", tab:"owner"]' class="ui icon button trigger-modal">
                             <i class="copy icon"></i>
                         </g:link>
                     </span>
