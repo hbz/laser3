@@ -1,13 +1,16 @@
 
-RC-0.12
+0.12
 
 - retrieving package list from gokb api
 - added cronjob and email reminder for dashboard due dates
 - addes new user profile settings
 - added new property type: url
+- added cronjob overview 
 - show api access information at user profile
 - refactoring: use filesystem instead of database blobs
-- fixed: duplicate docstore uuids
+- cleaned up duplicate docstore uuids
+- various markup and style changes
+- minor bugfixes
 
 0.11.4
 
