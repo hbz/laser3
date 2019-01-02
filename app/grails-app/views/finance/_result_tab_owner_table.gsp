@@ -3,7 +3,7 @@
 <g:each in="${cost_items}" var="ci" status="jj">
     <tr id="bulkdelete-b${ci.id}">
         <td>
-            ${ jj + 1 }
+            ${ jj + 1 + counterHelper}
         </td>
         <td>
             <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" />

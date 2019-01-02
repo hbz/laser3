@@ -89,7 +89,7 @@ class PublicController {
 */
 
             if (q || consortia || subTypes) {
-                result.subscriptionsCount = Subscription.executeQuery("select count(s) " + query, queryParams)[0]
+                result.subscriptionsCount = Subscription.executeQuery("select s.id " + query, queryParams).size()
                 result.subscriptions = Subscription.executeQuery("select s ${query} order by lower(s.name) asc", queryParams)
             }
         }
@@ -186,7 +186,7 @@ class PublicController {
                         " and exists (SELECT tipp FROM TitleInstancePackagePlatform as tipp WHERE ie.tipp = tipp and tipp.pkg = :pkg )"
                 def queryParams = [sub: sub, pkg: pkg]
 
-                result.issueEntitlementsCount = IssueEntitlement.executeQuery("select count(ie) " + base_query, queryParams)[0]
+                result.issueEntitlementsCount = IssueEntitlement.executeQuery("select ie.id " + base_query, queryParams).size()
 
                 def query = "SELECT ie " + base_query
 

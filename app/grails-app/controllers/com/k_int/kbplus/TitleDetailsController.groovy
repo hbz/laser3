@@ -268,7 +268,7 @@ class TitleDetailsController extends AbstractDebugController {
     log.debug("base_query: ${base_query}, params:${query_params}, limits:${limits}");
 
     result.historyLines = org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent.executeQuery('select e '+base_query+' order by e.lastUpdated desc', query_params, limits);
-    result.num_hl = org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent.executeQuery('select count(e) '+base_query, query_params)[0];
+    result.num_hl = org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent.executeQuery('select e.id '+base_query, query_params).size()
     result.formattedHistoryLines = []
 
 

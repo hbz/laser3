@@ -5,7 +5,7 @@ import grails.util.Holders
 class DebugUtil {
 
     def cacheService = Holders.grailsApplication.mainContext.getBean('cacheService')
-    def benchCache   = cacheService.getTTL300Cache('DebugUtil:benchCache_')
+    def benchCache   = cacheService.getTTL300Cache('DebugUtil:benchCache - ')
 
     def startBench(String key) {
         benchCache.put(key, new Date())

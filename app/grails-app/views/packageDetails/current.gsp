@@ -98,6 +98,35 @@
             </g:form>
         </semui:filter>
 
+              <g:if test="${editable}">
+
+                  <semui:form>
+                      <g:form class="ui form" controller="ajax" action="addToCollection">
+
+                          <legend><h3 class="ui header">${message(code:'package.show.title.add', default:'Add A Title To This Package')}</h3></legend>
+                          <input type="hidden" name="__context" value="${packageInstance.class.name}:${packageInstance.id}"/>
+                          <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.TitleInstancePackagePlatform"/>
+                          <input type="hidden" name="__recip" value="pkg"/>
+
+                          <!-- N.B. this should really be looked up in the controller and set, not hard coded here -->
+                          <input type="hidden" name="status" value="com.k_int.kbplus.RefdataValue:29"/>
+                          <div class="two fluid fields">
+                              <div class="field">
+                                  <label>${message(code:'package.show.title.add.title', default:'Title To Add')}</label>
+                                  <g:simpleReferenceTypedown class="input-xxlarge" style="width:350px;" name="title" baseClass="com.k_int.kbplus.TitleInstance"/>
+                              </div>
+                              <div class="field">
+                                  <label>${message(code:'package.show.title.add.platform', default:'Platform For Added Title')}</label>
+                                  <g:simpleReferenceTypedown class="input-large" style="width:350px;" name="platform" baseClass="com.k_int.kbplus.Platform"/>
+                              </div>
+                          </div>
+                          <button type="submit" class="ui button">${message(code:'package.show.title.add.submit', default:'Add Title...')}</button>
+
+                      </g:form>
+                  </semui:form>
+
+              </g:if>
+
         <g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
             <g:if test="${editable}">
           <table class="ui celled la-table table ignore-floatThead la-bulk-header">
@@ -243,36 +272,6 @@
           <g:if test="${titlesList}" >
             <semui:paginate action="current" controller="packageDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
           </g:if>
-
-        <g:if test="${editable}">
-
-            <semui:form>
-                <g:form class="ui form" controller="ajax" action="addToCollection">
-
-                    <legend><h3 class="ui header">${message(code:'package.show.title.add', default:'Add A Title To This Package')}</h3></legend>
-                    <input type="hidden" name="__context" value="${packageInstance.class.name}:${packageInstance.id}"/>
-                    <input type="hidden" name="__newObjectClass" value="com.k_int.kbplus.TitleInstancePackagePlatform"/>
-                    <input type="hidden" name="__recip" value="pkg"/>
-
-                    <!-- N.B. this should really be looked up in the controller and set, not hard coded here -->
-                    <input type="hidden" name="status" value="com.k_int.kbplus.RefdataValue:29"/>
-                      <div class="two fluid fields">
-                          <div class="field">
-                            <label>${message(code:'package.show.title.add.title', default:'Title To Add')}</label>
-                            <g:simpleReferenceTypedown class="input-xxlarge" style="width:350px;" name="title" baseClass="com.k_int.kbplus.TitleInstance"/>
-                          </div>
-                          <div class="field">
-                            <label>${message(code:'package.show.title.add.platform', default:'Platform For Added Title')}</label>
-                            <g:simpleReferenceTypedown class="input-large" style="width:350px;" name="platform" baseClass="com.k_int.kbplus.Platform"/>
-                          </div>
-                      </div>
-                    <button type="submit" class="ui button">${message(code:'package.show.title.add.submit', default:'Add Title...')}</button>
-
-                </g:form>
-            </semui:form>
-
-
-        </g:if>
 
       </div>
 

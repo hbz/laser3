@@ -31,8 +31,10 @@
         </tr>
     </g:if>
     <g:else>
+        <% int counterHelper = 0 %>
         <g:each in="${cost_items}" var="subListItem">
-            <g:render template="result_tab_owner_table" model="[cost_items: subListItem.value, forSingleSubscription: forSingleSubscription]" />
+            <g:render template="result_tab_owner_table" model="[cost_items: subListItem.value, forSingleSubscription: forSingleSubscription, counterHelper: counterHelper]" />
+            <% counterHelper += subListItem.value.size() %>
         </g:each>
     </g:else>
 </tbody>

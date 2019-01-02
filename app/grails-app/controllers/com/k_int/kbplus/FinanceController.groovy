@@ -317,12 +317,12 @@ class FinanceController extends AbstractDebugController {
                 cost_item_qry        = ' WHERE ci.sub = :sub AND ci.owner = :owner '
                 //orderAndSortBy       = orderAndSortBy
             }
-            else if(!params.sub){
+            else if(! params.sub){
                 def queryParams = ['activeInst':result.institution, 'status':RefdataValue.getByValueAndCategory('Current','Subscription Status')]
                 def instSubs = Subscription.executeQuery("select s from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where o.org = :activeInst ) ) ) AND ( s.instanceOf is null AND s.status = :status ) ",queryParams)
                 if(instSubs.size() > 0) {
                     cost_item_qry_params = [subs: instSubs, owner: result.institution]
-                    cost_item_qry = ' WHERE ci.sub IN ( :subs ) AND ci.owner = :owner '
+                    cost_item_qry = ' WHERE (ci.sub IS NULL OR ci.sub IN ( :subs )) AND ci.owner = :owner '
                 }
                 else {
                     //continue here: foreign costs are visible!

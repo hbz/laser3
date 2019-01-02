@@ -7,6 +7,9 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.util.Holders
 import grails.web.Action
 import org.hibernate.SessionFactory
+import org.quartz.JobKey
+import org.quartz.TriggerKey
+import org.quartz.impl.matchers.GroupMatcher
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -25,6 +28,7 @@ class YodaController {
     def dashboardDueDatesService
     def cronjobUpdateService
     def executorService
+    def quartzScheduler
 
     static boolean ftupdate_running = false
 
@@ -75,6 +79,38 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    def quartzInfo() {
+        def result = [:]
+
+        result.quartzScheduler = quartzScheduler
+
+        def groups = [:]
+        for (String groupName : quartzScheduler.getJobGroupNames()) {
+            def group = []
+
+            for (JobKey key : quartzScheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
+                def clazz = Class.forName(key.getName())
+                def cf  = clazz.configFlags
+
+                def triggers = quartzScheduler.getTriggersOfJob(key)
+                def crx = triggers.collect{ it.cronEx ?: null }
+                def nft = triggers.collect{ it.nextFireTime ?: null }
+
+                group << [
+                        name: key.getName(),
+                        configFlags: cf.join(', '),
+                        cronEx: crx ? crx.get(0) : '',
+                        nextFireTime: nft ? nft.get(0).toTimestamp() : ''
+                ]
+            }
+
+            groups << ["${groupName}" : group.sort{ it.nextFireTime }]
+        }
+        result.quartz = groups
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
     def cacheInfo() {
         def result = [:]
 
@@ -105,9 +141,10 @@ class YodaController {
         def result = [:]
 
         result.byUri =
-                SystemProfiler.executeQuery("select sp, avg(sp.ms) as ms, count(*) from SystemProfiler sp group by sp.uri").sort{it[1]}.reverse()
+                //SystemProfiler.executeQuery("select sp, avg(sp.ms) as ms, count(*), sp.id from SystemProfiler sp group by sp.uri").sort{it[1]}.reverse()
+                SystemProfiler.executeQuery("select sp.uri, avg(sp.ms) as ms, count(sp.id) as count from SystemProfiler sp group by sp.uri").sort{it[1]}.reverse()
         result.byUriAndContext =
-                SystemProfiler.executeQuery("select sp, avg(sp.ms) as ms, count(*) from SystemProfiler sp group by sp.uri, sp.context").sort{it[1]}.reverse()
+                SystemProfiler.executeQuery("select sp.uri, org.id, avg(sp.ms) as ms, count(org.id) as count from SystemProfiler sp join sp.context as org group by sp.uri, org.id").sort{it[2]}.reverse()
 
         result
     }

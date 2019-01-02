@@ -1,8 +1,8 @@
 package com.k_int.kbplus.batch
 
- 
+import de.laser.quartz.AbstractJob
 
-class HeartbeatJob {
+class HeartbeatJob extends AbstractJob {
 
   def grailsApplication
 
@@ -21,6 +21,8 @@ class HeartbeatJob {
     //                  | `- Minute, 0-59
     //                  `- Second, 0-59
   }
+
+  static configFlags = ['quartzHeartbeat']
 
   def execute() {
     log.debug("Heartbeat Job");

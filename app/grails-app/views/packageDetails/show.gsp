@@ -59,67 +59,13 @@
         <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges, 'flash':flash, 'model':packageInstance]}"/>
     </sec:ifAnyGranted>
 
-    <semui:meta>
-        <div class="inline-lists">
-
-            <dl>
-                <dt><g:message code="package.globalUID.label" default="Global UID" /></dt>
-                <dd> <g:fieldValue bean="${packageInstance}" field="globalUID"/> </dd>
-
-                %{--<dt>${message(code: 'package.show.persistent_id')}</dt>
-                <dd>uri://laser/${grailsApplication.config.laserSystemId}/package/${packageInstance?.id}</dd>--}%
-
-                <dt>${message(code: 'package.show.other_ids')}</dt>
-                <dd>
-                    <table class="ui celled la-table la-table-small table ignore-floatThead">
-                        <thead>
-                        <tr>
-                            %{--<th>${message(code: 'component.id.label')}</th>--}%
-                            <th>${message(code: 'identifier.namespace.label')}</th>
-                            <th>${message(code: 'identifier.label')}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <g:each in="${packageInstance.ids.sort{it.identifier.ns.ns}}" var="io">
-                            <tr>
-                                %{--<td>${io.id}</td>--}%
-                                <td>${io.identifier.ns.ns}</td>
-                                <g:if test="${io.identifier.value =~ /^http/}">
-                                    <td><a href="${io.identifier.value}" target="_blank">${message(code:'component.originediturl.label', default:"${io.identifier.value}")}</a></td>
-                                </g:if>
-                                <g:else>
-                                    <td>${io.identifier.value}</td>
-                                </g:else>
-                            </tr>
-                        </g:each>
-
-                        </tbody>
-                    </table>
-
-                    <g:if test="${editable}">
-                        <semui:formAddIdentifier owner="${packageInstance}" />
-                    </g:if>
-
-                </dd>
-            </dl>
-
-        </div>
-    </semui:meta>
+    <g:render template="/templates/meta/identifier" model="${[object: packageInstance, editable: editable]}" />
 
     <semui:messages data="${flash}" />
 
     <semui:errors bean="${packageInstance}" />
 
     <div class="ui grid">
-
-
-
-            <% /*
-            <g:if test="${forum_url != null}">
-                <a href="${forum_url}"> | Discuss this package in forums</a> <a href="${forum_url}" title="Discuss this package in forums (new Window)" target="_blank"><i class="icon-share-alt"></i></a>
-            </g:if>
-            */ %>
-
 
         <div class="twelve wide column">
             <g:hiddenField name="version" value="${packageInstance?.version}" />

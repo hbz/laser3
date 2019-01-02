@@ -23,8 +23,8 @@ class AjaxController extends AbstractDebugController {
     def refdata_config = [
     "ContentProvider" : [
       domain:'Org',
-      countQry:"select count(o) from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ?",
-      rowQry:"select o from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? order by o.name asc",
+      countQry:"select count(o) from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?)",
+      rowQry:"select o from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?) order by o.name asc",
       qryParams:[
               [
                 param:'sSearch',
@@ -62,8 +62,8 @@ class AjaxController extends AbstractDebugController {
     ],
     "allOrgs" : [
             domain:'Org',
-            countQry:"select count(o) from Org as o where lower(o.name) like ?",
-            rowQry:"select o from Org as o where lower(o.name) like ? order by o.name asc",
+            countQry:"select count(o) from Org as o where lower(o.name) like ? and (o.status is null or o.status != ?)",
+            rowQry:"select o from Org as o where lower(o.name) like ? and (o.status is null or o.status != ?) order by o.name asc",
             qryParams:[
                     [
                             param:'sSearch',
@@ -80,8 +80,8 @@ class AjaxController extends AbstractDebugController {
     ],
     "CommercialOrgs" : [
             domain:'Org',
-            countQry:"select count(o) from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like ? ",
-            rowQry:"select o from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like ?  order by o.name asc",
+            countQry:"select count(o) from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like ? and (o.status is null or o.status != ?)",
+            rowQry:"select o from Org as o where (o.sector.value = 'Publisher') and lower(o.name) like ? and (o.status is null or o.status != ?) order by o.name asc",
             qryParams:[
                     [
                             param:'sSearch',
@@ -98,6 +98,7 @@ class AjaxController extends AbstractDebugController {
     ]
   ]
 
+    /* --- TODO: NOT USED ???
   @Secured(['ROLE_USER'])
   def setValue() {
     // [id:1, value:JISC_Collections_NESLi2_Lic_IOP_Institute_of_Physics_NESLi2_2011-2012_01012011-31122012.., type:License, action:inPlaceSave, controller:ajax
@@ -130,8 +131,9 @@ class AjaxController extends AbstractDebugController {
     outs << params.value
     outs.flush()
     outs.close()
-  }
+  }*/
 
+    /* --- TODO: NOT USED ???
   @Secured(['ROLE_USER'])
   def setRef() {
     def rdv = RefdataCategory.lookupOrCreate(params.cat, params.value)
@@ -165,7 +167,7 @@ class AjaxController extends AbstractDebugController {
     outs.flush()
     outs.close()
 
-  }
+  }*/
 
   @Secured(['ROLE_USER'])
   def setFieldNote() {
@@ -219,17 +221,20 @@ class AjaxController extends AbstractDebugController {
     outs.close()
   }
 
-  @Secured(['ROLE_USER'])
-  def genericSetValue() {
+    @Secured(['ROLE_USER'])
+    def genericSetValue() {
     // [id:1, value:JISC_Collections_NESLi2_Lic_IOP_Institute_of_Physics_NESLi2_2011-2012_01012011-31122012.., type:License, action:inPlaceSave, controller:ajax
     // def clazz=grailsApplication.domainClasses.findByFullName(params.type)
     // log.debug("genericSetValue:${params}");
+        def result = params.value
+
+        try {
+
 
     // params.elementid (The id from the html element)  must be formed as domain:pk:property:otherstuff
     String[] oid_components = params.elementid.split(":");
 
     def domain_class=grailsApplication.getArtefact('Domain',"com.k_int.kbplus.${oid_components[0]}")
-    def result = params.value
 
     if ( domain_class ) {
       def instance = domain_class.getClazz().get(oid_components[1])
@@ -260,7 +265,7 @@ class AjaxController extends AbstractDebugController {
         // log.debug("Merge: ${binding_properties}");
         // see http://grails.org/doc/latest/ref/Controllers/bindData.html
         bindData(instance, binding_properties)
-        instance.save(flush:true);
+        instance.save()
       }
       else {
         log.debug("no instance");
@@ -270,17 +275,27 @@ class AjaxController extends AbstractDebugController {
       log.debug("no type");
     }
 
-    response.setContentType('text/plain')
-    def outs = response.outputStream
-    outs << result
-    outs.flush()
-    outs.close()
-  }
+        } catch (Exception e) {
+            log.error("@ genericSetValue()")
+            log.error(e)
+        }
 
-  @Secured(['ROLE_USER'])
-  def genericSetRel() {
+        log.debug("genericSetValue() returns ${result}")
+        response.setContentType('text/plain')
+
+        def outs = response.outputStream
+        outs << result
+        outs.flush()
+        outs.close()
+    }
+
+    @Secured(['ROLE_USER'])
+    def genericSetRel() {
+        def result = ''
+
+        try {
+
     String[] target_components = params.pk.split(":");
-    def result = ''
 
     def target = genericOIDService.resolveOID(params.pk);
     if ( target ) {
@@ -292,7 +307,7 @@ class AjaxController extends AbstractDebugController {
       else {
         String[] value_components = params.value.split(":");
         def value = genericOIDService.resolveOID(params.value);
-  
+
         if ( target && value ) {
 
             if (target instanceof UserSettings) {
@@ -301,19 +316,22 @@ class AjaxController extends AbstractDebugController {
             else {
                 def binding_properties = [ "${params.name}":value ]
                 bindData(target, binding_properties)
-                if (target.hasProperty('owner')) {
-                    target.owner?.save()  // avoid .. not processed by flush
-                }
+                //if (target.hasProperty(params.name)) {
+                //    target."${params.name}" = value
+                //}
+                //if (target.hasProperty('owner')) {
+                //    target.owner?.save()  // avoid .. not processed by flush
+                //}
             }
 
-            target.save(flush:true);
-          
+            target.save();
+
           // We should clear the session values for a user if this is a user to force reload of the,
           // parameters.
           if (target instanceof User) {
             session.userPereferences = null
           }
-          
+
           if ( params.resultProp ) {
             result = value[params.resultProp]
           }
@@ -333,15 +351,15 @@ class AjaxController extends AbstractDebugController {
       log.error("no target (target=${target_components}");
     }
 
-    // response.setContentType('text/plain')
-    def resp = [ newValue: result ]
-    // log.debug("return ${resp as JSON}");
-    render resp as JSON
-    //def outs = response.outputStream
-    //outs << result
-    //outs.flush()
-    //outs.close()
-  }
+        } catch (Exception e) {
+            log.error("@ genericSetRel()")
+            log.error(e)
+        }
+
+        def resp = [ newValue: result ]
+        log.debug("genericSetRel() returns ${resp as JSON}")
+        render resp as JSON
+    }
 
   def orgs() {
     // log.debug("Orgs: ${params}");
@@ -420,9 +438,14 @@ class AjaxController extends AbstractDebugController {
         }
       }
 
-      // log.debug("Params: ${query_params}");
-      //log.debug("Count qry: ${config.countQry}");
-      //log.debug("Row qry: ${config.rowQry}");
+        if (config.domain == 'Org') {
+            // new added param for org queries in this->refdata_config
+            query_params.add(RefdataValue.getByValueAndCategory('Deleted', 'OrgStatus'))
+        }
+
+        //log.debug("Row qry: ${config.rowQry}");
+        //log.debug("Params: ${query_params}");
+        //log.debug("Count qry: ${config.countQry}");
 
       def cq = Org.executeQuery(config.countQry,query_params);    
 
@@ -1576,81 +1599,85 @@ class AjaxController extends AbstractDebugController {
     @Secured(['ROLE_USER'])
     def editableSetValue() {
         log.debug("editableSetValue ${params}");
-        def target_object = resolveOID2(params.pk)
         def result = null
 
-        if ( target_object ) {
-            if ( params.type=='date' ) {
-                def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        try {
 
-                def backup = target_object."${params.name}"
-                try {
-                    if( params.value && params.value.size() > 0 ) {
-                        // parse new date
-                        def parsed_date = sdf.parse(params.value)
-                        target_object."${params.name}" = parsed_date
-                    }
-                    else {
-                        // delete existing date
-                        target_object."${params.name}" = null
-                    }
-                    if (target_object.hasProperty('owner')) {
-                        target_object.owner?.save() // avoid owner.xyz not processed by flush
-                    }
-                    target_object.save(failOnError: true, flush: true);
-                }
-                catch(Exception e) {
-                    target_object."${params.name}" = backup
-                    log.error(e)
-                }
-                finally {
-                    if (target_object."${params.name}") {
-                        result = (target_object."${params.name}").format(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
-                    }
-                }
-            } else if ( params.type=='url' ) {
+            def target_object = resolveOID2(params.pk)
 
-                def backup = target_object."${params.name}"
-                try {
-                    if( params.value && params.value.size() > 0 ) {
-                        target_object."${params.name}" = new URL(params.value)
-                    }
-                    else {
-                        // delete existing url
-                        target_object."${params.name}" = null
-                    }
-                    if (target_object.hasProperty('owner')) {
-                        target_object.owner?.save() // avoid owner.xyz not processed by flush
-                    }
-                    target_object.save(failOnError: true, flush: true);
-                }
-                catch(Exception e) {
-                    target_object."${params.name}" = backup
-                    log.error(e)
-                }
-                finally {
-                    if (target_object."${params.name}") {
-                        result = target_object."${params.name}"
-                    }
-                }
-            } else {
-                def binding_properties = [:]
-                binding_properties[params.name] = params.value
-                bindData(target_object, binding_properties)
+            if (target_object) {
+                if (params.type == 'date') {
+                    def sdf = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
 
-                if (target_object.hasProperty('owner')) {
-                    target_object.owner?.save() // avoid owner.xyz not processed by flush
-                }
-                target_object.save(failOnError: true, flush: true);
+                    def backup = target_object."${params.name}"
+                    try {
+                        if (params.value && params.value.size() > 0) {
+                            // parse new date
+                            def parsed_date = sdf.parse(params.value)
+                            target_object."${params.name}" = parsed_date
+                        } else {
+                            // delete existing date
+                            target_object."${params.name}" = null
+                        }
+                        //if (target_object.hasProperty('owner')) {
+                        //    target_object.owner?.save() // avoid owner.xyz not processed by flush
+                        //}
+                        target_object.save(failOnError: true);
+                    }
+                    catch (Exception e) {
+                        target_object."${params.name}" = backup
+                        log.error(e)
+                    }
+                    finally {
+                        if (target_object."${params.name}") {
+                            result = (target_object."${params.name}").format(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+                        }
+                    }
+                } else if (params.type == 'url') {
 
-                result = target_object."${params.name}"
+                    def backup = target_object."${params.name}"
+                    try {
+                        if (params.value && params.value.size() > 0) {
+                            target_object."${params.name}" = new URL(params.value)
+                        } else {
+                            // delete existing url
+                            target_object."${params.name}" = null
+                        }
+                        //if (target_object.hasProperty('owner')) {
+                        //    target_object.owner?.save() // avoid owner.xyz not processed by flush
+                        //}
+                        target_object.save(failOnError: true)
+                    }
+                    catch (Exception e) {
+                        target_object."${params.name}" = backup
+                        log.error(e)
+                    }
+                    finally {
+                        if (target_object."${params.name}") {
+                            result = target_object."${params.name}"
+                        }
+                    }
+                } else {
+                    def binding_properties = [:]
+                    binding_properties[params.name] = params.value
+                    bindData(target_object, binding_properties)
+
+                    target_object.save(failOnError: true)
+
+                    result = target_object."${params.name}"
+                }
             }
+
+        } catch(Exception e) {
+            log.error("@ editableSetValue()")
+            log.error(e)
         }
+
+        log.debug("editableSetValue() returns ${result}")
 
         response.setContentType('text/plain')
 
         def outs = response.outputStream
-
         outs << result
         outs.flush()
         outs.close()

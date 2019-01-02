@@ -4,7 +4,7 @@ import com.k_int.kbplus.Org
 
 class SystemProfiler {
 
-    final static THRESHOLD_MS = 1500;
+    final static THRESHOLD_MS = 1000;
 
     String  uri
     String  params

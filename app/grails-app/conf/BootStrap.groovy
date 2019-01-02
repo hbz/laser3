@@ -781,9 +781,10 @@ class BootStrap {
         RefdataCategory.loc('Federal State',        	                    [en: 'Federal State', de: 'Bundesland'], BOOTSTRAP)
         RefdataCategory.loc('Funder Type',          	                    [en: 'Funder Type', de: 'Trägerschaft'], BOOTSTRAP)
         RefdataCategory.loc('Gender',               	                    [en: 'Gender', de: 'Geschlecht'], BOOTSTRAP)
-        RefdataCategory.loc('OrgSector',            	                    [en: 'OrgSector', de: 'Bereich'], BOOTSTRAP)
         RefdataCategory.loc('Library Network',      	                    [en: 'Library Network', de: 'Verbundzugehörigkeit'], BOOTSTRAP)
         RefdataCategory.loc('Library Type',         	                    [en: 'Library Type', de: 'Bibliothekstyp'], BOOTSTRAP)
+        RefdataCategory.loc('OrgSector',            	                    [en: 'OrgSector', de: 'Bereich'], BOOTSTRAP)
+        RefdataCategory.loc('OrgStatus',                	                [en: 'Status', de: 'Status'], BOOTSTRAP)
         RefdataCategory.loc('OrgType',              	                    [en: 'Organisation Type', de: 'Organisationstyp'], BOOTSTRAP)
         RefdataCategory.loc('OrgRoleType',              	                    [en: 'Organisation Type', de: 'Organisationstyp'], BOOTSTRAP)
         RefdataCategory.loc('Person Function',      	                    [en: 'Person Function', de: 'Funktion'], BOOTSTRAP)
@@ -956,6 +957,9 @@ class BootStrap {
         RefdataValue.loc('Library Type',   [en: 'Wissenschafltiche Spezialbibliothek', de: 'Wissenschafltiche Spezialbibliothek'], BOOTSTRAP)
         RefdataValue.loc('Library Type',   [en: 'Sonstige', de: 'Sonstige'], BOOTSTRAP)
         RefdataValue.loc('Library Type',   [en: 'keine Angabe', de: 'keine Angabe'], BOOTSTRAP)
+
+        RefdataValue.loc('OrgStatus',      [en: 'Current', de: 'Aktuell'], BOOTSTRAP)
+        RefdataValue.loc('OrgStatus',      [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
 
         RefdataValue.loc('OrgSector',    [en: 'Higher Education', de: 'Akademisch'], BOOTSTRAP)
         RefdataValue.loc('OrgSector',    [key: 'Publisher', en: 'Commercial', de: 'Kommerziell'], BOOTSTRAP)

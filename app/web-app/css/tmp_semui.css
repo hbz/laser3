@@ -321,3 +321,9 @@ aside.metaboxContent + .metaboxContent-spacer {
     pointer-events: auto !important;
     color: rgba(0,0,0,0.3)
 }
+
+/* auditable icon for object names and titles */
+h1 .icon.h1-icon-overwrite {
+    margin-right: 5px !important;
+    font-size: 0.8em !important;
+}

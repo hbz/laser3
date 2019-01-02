@@ -1,8 +1,8 @@
 package com.k_int.kbplus.batch
 
+import de.laser.quartz.AbstractJob
 
-
-class AdminJob {
+class AdminJob extends AbstractJob {
     def grailsApplication
     def AdminReminderService
 
@@ -21,6 +21,8 @@ class AdminJob {
         //                  | `- Minute, 0-59
         //                  `- Second, 0-59
     }
+
+    static configFlags = ['hbzMaster', 'AdminReminderJobActiv']
 
     def execute() {
         log.debug("Execute::AdminJob");

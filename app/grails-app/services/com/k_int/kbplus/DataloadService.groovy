@@ -577,7 +577,7 @@ class DataloadService {
         }
       }
       
-      println("Rows_updated:: ${rows_updated} ${num_rows_updated}");
+      log.debug("Rows_updated:: ${rows_updated} ${num_rows_updated}");
 
       cleanUpGorm()
     }

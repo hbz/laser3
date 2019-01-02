@@ -1,8 +1,10 @@
 package de.Laser.batch
 
 import com.k_int.kbplus.EventLog
+import de.laser.quartz.AbstractJob
 
-class DashboardDueDatesJob {
+class DashboardDueDatesJob extends AbstractJob {
+
     def dashboardDueDatesService
     def grailsApplication
 
@@ -11,6 +13,8 @@ class DashboardDueDatesJob {
 //        cron name:'DashboardDueDatesTrigger', cronExpression: "0 /15 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every 15th minute
 //        cron name:'DashboardDueDatesTrigger', cronExpression: "0 /5 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every 5th minute
     }
+
+    static configFlags = ['isUpdateDashboardTableInDatabase', 'isSendEmailsForDueDatesOfAllUsers']
 
     def execute() {
         if (grailsApplication.config.isUpdateDashboardTableInDatabase || grailsApplication.config.isSendEmailsForDueDatesOfAllUsers) {

@@ -19,7 +19,8 @@ import net.sf.jasperreports.export.Exporter
 
 @Secured(['IS_AUTHENTICATED_FULLY', 'ROLE_DATAMANAGER'])
 class JasperReportsController extends AbstractDebugController {
-def dataSource
+	def dataSource
+	def contextService
 
 	@Secured(['ROLE_DATAMANAGER'])
 	def index(){

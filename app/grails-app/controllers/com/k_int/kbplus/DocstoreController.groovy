@@ -36,6 +36,7 @@ class DocstoreController extends AbstractDebugController {
                     docstoreService.retrieve(params.id, response, doc.mimeType, filename)
                     break
                 case Doc.CONTENT_TYPE_BLOB:
+                    // erms-790
                     doc.render(response, filename)
                     break
             }

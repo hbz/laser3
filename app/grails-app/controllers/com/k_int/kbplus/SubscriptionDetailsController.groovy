@@ -186,7 +186,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
             base_qry += "order by lower(ie.tipp.title.title) asc"
         }
 
-        result.num_sub_rows = IssueEntitlement.executeQuery("select count(ie) " + base_qry, qry_params)[0]
+        result.num_sub_rows = IssueEntitlement.executeQuery("select ie.id " + base_qry, qry_params).size()
 
         if (params.format == 'html' || params.format == null) {
             result.entitlements = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: result.max, offset: result.offset]);
@@ -288,7 +288,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
             } else {
                 def numOfPCs = removePackagePendingChanges(result.package.id, result.subscription.id, params.confirmed)
 
-                def numOfIEs = IssueEntitlement.executeQuery("select count(ie) ${query}", queryParams)[0]
+                def numOfIEs = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams).size()
                 def conflict_item_pkg = [name: "${g.message(code: "subscription.details.unlink.linkedPackage")}", details: [['link': createLink(controller: 'packageDetails', action: 'show', id: result.package.id), 'text': result.package.name]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.linkedPackage.action")}"]]
                 def conflicts_list = [conflict_item_pkg]
 
@@ -659,7 +659,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
 
             log.debug("Query ${basequery} ${qry_params}");
 
-            result.num_tipp_rows = IssueEntitlement.executeQuery("select count(tipp) " + basequery, qry_params)[0]
+            result.num_tipp_rows = IssueEntitlement.executeQuery("select tipp.id " + basequery, qry_params).size()
             result.tipps = IssueEntitlement.executeQuery("select tipp ${basequery}", qry_params, [max: result.max, offset: result.offset]);
         } else {
             result.num_sub_rows = 0;
@@ -1045,7 +1045,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
 
         log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
         result.titlesList = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, limits);
-        result.num_ie_rows = IssueEntitlement.executeQuery("select count(ie) " + base_qry, qry_params)[0]
+        result.num_ie_rows = IssueEntitlement.executeQuery("select ie.id " + base_qry, qry_params).size()
 
         result.lastie = result.offset + result.max > result.num_ie_rows ? result.num_ie_rows : result.offset + result.max;
 
@@ -1321,7 +1321,7 @@ AND l.status.value != 'Deleted' order by LOWER(l.reference)
                 qry = """
 select l from License as l 
 where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ( ol.roleType = ?) ) 
-AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') order by LOWER(l.reference)
+AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.reference)
 """
             }
 
@@ -1554,7 +1554,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null or l.instanceOf = '') 
 
         def qry_params = [result.subscription.class.name, "${result.subscription.id}"]
         result.historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where className=? and persistedObjectId=? order by id desc", qry_params, [max: result.max, offset: result.offset]);
-        result.historyLinesTotal = AuditLogEvent.executeQuery("select count(e.id) from AuditLogEvent as e where className=? and persistedObjectId=?", qry_params)[0];
+        result.historyLinesTotal = AuditLogEvent.executeQuery("select e.id from AuditLogEvent as e where className=? and persistedObjectId=?", qry_params).size()
 
         result.navPrevSubscription = result.subscriptionInstance.previousSubscription
         result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))

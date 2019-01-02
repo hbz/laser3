@@ -1,3 +1,4 @@
+
 RC-0.12
 
 - retrieving package list from gokb api
@@ -5,7 +6,8 @@ RC-0.12
 - addes new user profile settings
 - added new property type: url
 - show api access information at user profile
-- storing uploaded files in filesystem
+- refactoring: use filesystem instead of database blobs
+- fixed: duplicate docstore uuids
 
 0.11.4
 

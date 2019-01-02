@@ -1,6 +1,8 @@
 package com.k_int.kbplus.batch
 
-class GlobalDataSyncJob {
+import de.laser.quartz.AbstractJob
+
+class GlobalDataSyncJob extends AbstractJob {
 
   def globalSourceSyncService
   def grailsApplication
@@ -20,6 +22,9 @@ class GlobalDataSyncJob {
     //                  | `- Minute, 0-59
     //                  `- Second, 0-59
   }
+
+  static configFlags = ['KBPlusMaster', 'hbzMaster', 'globalDataSyncJobActiv']
+
 
   def execute() {
     log.debug("GlobalDataSyncJob");

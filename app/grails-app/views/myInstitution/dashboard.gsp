@@ -82,7 +82,7 @@
             ${message(code:'myinst.dash.due_dates.label')}
         </a>
         <a class="${US_DASHBOARD_TAB.getValue().value == 'Changes' ? 'active item':'item'}" data-tab="second">
-            <i class="clock outline icon large"></i>
+            <i class="history icon large"></i>
             <%
                 def countChanges = 0
                 changes.collect { c ->

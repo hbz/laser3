@@ -330,7 +330,7 @@ class SemanticUiTagLib {
     def meta = { attrs, body ->
 
         out << '<aside class="ui segment metaboxContent accordion">'
-        out <<   '<div class="title"> <i class="dropdown icon la-dropdown-accordion"></i>Identifikatoren anzeigen</div>'
+        out <<   '<div class="title"> <i class="dropdown icon la-dropdown-accordion"></i>FREE TO USE</div>'
         out <<   '<div class="content">'
         out <<      body()
         out <<   '</div>'

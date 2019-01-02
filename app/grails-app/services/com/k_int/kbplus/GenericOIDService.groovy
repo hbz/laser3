@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+
 class GenericOIDService {
 
   def grailsApplication
@@ -31,7 +33,7 @@ class GenericOIDService {
         log.error("resolve OID failed to identify a domain class. Input was ${oid_components}");
       }
     }
-    result
+    GrailsHibernateUtil.unwrapIfProxy(result)
   }
 
   def getOID(def object) {

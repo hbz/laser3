@@ -9,8 +9,8 @@ class FilterService {
 
     def getOrgQuery(params) {
         def result = [:]
-        def query = []
-        def queryParams = [:]
+        def query = ["(o.status is null or o.status != :orgStatus)"]
+        def queryParams = ["orgStatus" : RefdataValue.getByValueAndCategory('Deleted', 'OrgStatus')]
 
         if (params.orgNameContains?.length() > 0) {
             query << "(lower(o.name) like :orgNameContains1 or lower(o.shortname) like :orgNameContains2 or lower(o.sortname) like :orgNameContains3)"
@@ -67,14 +67,14 @@ class FilterService {
         result.query = query
         result.queryParams = queryParams
 
-        println result
+        log.debug(result)
         result
     }
 
     def getOrgComboQuery(params, org) {
         def result = [:]
-        def query = []
-        def queryParams = []
+        def query = ["(o.status is null or o.status != ?)"]
+        def queryParams = [RefdataValue.getByValueAndCategory('Deleted', 'OrgStatus')]
 
         if (params.orgNameContains?.length() > 0) {
             query << "(lower(o.name) like ? or lower(o.shortname) like ? or lower(o.sortname) like ?)"
