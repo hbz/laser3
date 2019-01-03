@@ -50,7 +50,7 @@
     </g:if>
 </semui:controlButtons>
 <g:if test="${cost_item_count_CS}">
-    <g:if test="${queryMode == 'MODE_SUBSCR'}">
+    <g:if test="${queryMode == 'MODE_CONS'}">
         <g:set var="totalString" value="${cost_item_count} ${message(code:'financials.header.ownCosts')} / ${cost_item_count_CS} ${message(code:'financials.header.consortialCosts')}"/>
     </g:if>
     <g:elseif test="${queryMode == 'MODE_CONS_AT_SUBSCR'}">

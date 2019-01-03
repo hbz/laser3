@@ -1,13 +1,20 @@
 
-RC-0.12
+0.12
 
-- retrieving package list from gokb api
+- reintroduction and improvement of finance overview page
+- added cronjob for status change
 - added cronjob and email reminder for dashboard due dates
+- added cronjob overview 
 - addes new user profile settings
 - added new property type: url
+- added explanations to properties 
+- retrieving package list from gokb api
 - show api access information at user profile
+- cleaned up duplicate docstore uuids
 - refactoring: use filesystem instead of database blobs
-- fixed: duplicate docstore uuids
+- migration to postgresql
+- various markup and style changes
+- various bugfixes
 
 0.11.4
 

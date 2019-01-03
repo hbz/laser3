@@ -2,6 +2,9 @@
 # PostgreSQL Migration
 
 - copy current MySQL database
+- apply lastest dbm changes
+
+
 - use dataCleanupMySQL.sql
 - use exportFilesMySQL.sql
 
@@ -17,11 +20,9 @@
     //grails prod dbm-create-changelog --defaultSchema=public
     grails prod dbm-changelog-sync --defaultSchema=public
     grails prod dbm-gorm-diff --defaultSchema=public --add changelog-0.groovy
+    grails prod dbm-update
 
 ### TODO
-
-#### /usage/index
-FEHLER: Spalte »statstripl0_.id« muss in der GROUP-BY-Klausel erscheinen oder in einer Aggregatfunktion verwendet werden
 
 #### Hibernate 4:
 org.hibernate.event.internal.DefaultFlushEventListener.onFlush() @ 28
