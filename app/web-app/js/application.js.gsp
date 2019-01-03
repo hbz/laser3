@@ -367,11 +367,33 @@ r2d2 = {
                 var where = that.getAttribute("data-confirm-term-where")? that.getAttribute("data-confirm-term-where"):false;
                 var whereDetail = that.getAttribute("data-confirm-term-where-detail")? that.getAttribute("data-confirm-term-where-detail"):false;
                 var how = that.getAttribute("data-confirm-term-how") ? that.getAttribute("data-confirm-term-how"):"delete";
-                var messageHow = how == "delete" ? "löschen" :"aufheben";
+                var messageHow;
+                switch (how) {
+                    case "delete":
+                        messageHow = "löschen";
+                        break;
+                    case "unlink":
+                        messageHow = "aufheben";
+                        break;
+                    case "inherit":
+                        messageHow = "ändern";
+                        break;
+                    default:
+                        messageHow = "löschen";
+                }
                 var url = that.getAttribute('href') && (that.getAttribute('class') != 'js-gost') ? that.getAttribute('href'): false; // use url only if not remote link
 
                 event.preventDefault();
-
+                // INHERIT BUTTON
+                if (how == "inherit"){
+                    switch (what) {
+                        case "property":
+                            messageWhat = "die Vererbung des Merkmals";
+                            break;
+                        default:
+                            messageWhat = "die Vererbung des Merkmals";
+                    }
+                }
                 // UNLINK BUTTON
                 if (how == "unlink"){
                     switch (what) {
@@ -459,6 +481,9 @@ r2d2 = {
                         break;
                     case "unlink":
                         $('#js-confirmation-button').html('Aufheben<i class="chain broken icon"></i>');
+                        break;
+                    case "inherit":
+                        $('#js-confirmation-button').html('Vererbung ändern<i class="thumbtack icon"></i>');
                         break;
                     default:
                         $('').html('Entfernen<i class="x icon"></i>');
