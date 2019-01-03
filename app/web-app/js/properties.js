@@ -2,7 +2,6 @@
 c3po = {
     loadJsAfterAjax: function () {
         r2d2.go();
-        $("html").css("cursor", "auto");
     },
 
     PROP_SEARCH_NATIVE: 'PROP_SEARCH_NATIVE',
