@@ -595,6 +595,7 @@ class AdminController extends AbstractDebugController {
   }
 
   @Secured(['ROLE_ADMIN'])
+  @Deprecated
   def docstoreMigrate() {
     docstoreService.migrateToDb()
     redirect(controller:'home')

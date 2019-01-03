@@ -104,18 +104,6 @@
                 context: 'context - Concrete globalUID, if user has memberships in multiple organisations'
             }
 
-            var reactAccess = function(element) {
-                for (var key in element) {
-                    if (key.startsWith("__reactInternalInstance$")) {
-                        var compInternals = element[key]._currentElement
-                        var compWrapper = compInternals._owner
-                        var comp = compWrapper._instance
-                        return comp
-                    }
-                }
-                return null
-            }
-
             var jabba = SwaggerUIBundle({
                 url: "${grailsApplication.config.grails.serverURL}/api/${apiVersion}/spec",
                 dom_id: '#swagger-ui',
@@ -150,6 +138,17 @@
             }, 1200)
 
             /*
+            var reactAccess = function(element) {
+                for (var key in element) {
+                    if (key.startsWith("__reactInternalInstance$")) {
+                        var compInternals = element[key]._currentElement
+                        var compWrapper = compInternals._owner
+                        var comp = compWrapper._instance
+                        return comp
+                    }
+                }
+                return null
+            }
             function setContext(div) {
                 var context = jQuery('.topbar-wrapper input[name=apiContext]').val()
                 var elem    = jQuery(div).find('input[placeholder="' + placeholders.context + '"]')
@@ -191,6 +190,16 @@
                 var algorithm     = "hmac-sha256"
                 var digest        = CryptoJS.HmacSHA256(method + path + timestamp + nounce + query + body, key)
                 var authorization = "hmac " + id + ":" + timestamp + ":" + nounce + ":" + digest + "," + algorithm
+
+                if (false) {
+                    console.log('id: ' + id)
+                    console.log('key: ' + key)
+                    console.log('method: ' + method)
+                    console.log('path: ' + path)
+                    console.log('context: ' + context)
+                    console.log('query: ' + query)
+                    console.log('body: ' + body)
+                }
 
                 return authorization
             }
