@@ -50,14 +50,13 @@ r2d2 = {
         r2d2.initDynamicSemuiStuff('body');
         r2d2.initDynamicXEditableStuff('body');
 
+        $("html").css("cursor", "auto");
+
         console.log("r2d2 @ locale: " + gspLocale + " > " + gspDateFormat);
     },
 
     initGlobalSemuiStuff : function() {
         console.log("r2d2.initGlobalSemuiStuff()")
-
-
-
 
         // spotlight
         $('.ui.search').search({
@@ -139,9 +138,6 @@ r2d2 = {
                 }
             }).modal('show')
         });
-
-
-
     },
 
 
@@ -339,8 +335,6 @@ r2d2 = {
             ?  currentDropdown.removeClass('la-filter-dropdown-selected')
             : currentDropdown.addClass('la-filter-dropdown-selected');
 
-
-
         // FILTER SELECT FUNCTION - INPUT LOADING
         $(ctxSel + ' .la-filter input[type=text]').each(function() {
             $(this).val().length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
@@ -504,6 +498,5 @@ r2d2 = {
 
 $(document).ready(function() {
     r2d2.go();
-    $("html").css("cursor", "auto");
 })
 
