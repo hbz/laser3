@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
+    static final NOT_SUPPORTED = false
+
     /**
      * @return Object
      * @return BAD_REQUEST: if invalid/missing (unsupported) identifier
@@ -39,7 +41,7 @@ class ApiManager {
                 }
             //}
         }
-        else if ('issueEntitlements'.equalsIgnoreCase(obj)) {
+        else if (NOT_SUPPORTED && 'issueEntitlements'.equalsIgnoreCase(obj)) {
             if (format in ApiReader.SUPPORTED_FORMATS.issueEntitlements) {
                 def subPkg = ApiIssueEntitlement.findSubscriptionPackageBy(query, value)
                 if (subPkg && !(subPkg in failureCodes) ) {
@@ -55,7 +57,7 @@ class ApiManager {
                 return Constants.HTTP_NOT_ACCEPTABLE
             }
         }
-        else if ('license'.equalsIgnoreCase(obj)) {
+        else if (NOT_SUPPORTED && 'license'.equalsIgnoreCase(obj)) {
             if (format in ApiReader.SUPPORTED_FORMATS.license) {
                 result = ApiLicense.findLicenseBy(query, value)
 
@@ -67,7 +69,7 @@ class ApiManager {
                 return Constants.HTTP_NOT_ACCEPTABLE
             }
         }
-        else if ('onixpl'.equalsIgnoreCase(obj)) {
+        else if (NOT_SUPPORTED && 'onixpl'.equalsIgnoreCase(obj)) {
             if (format in ApiReader.SUPPORTED_FORMATS.onixpl) {
                 def lic = ApiLicense.findLicenseBy(query, value)
 
@@ -79,7 +81,7 @@ class ApiManager {
                 return Constants.HTTP_NOT_ACCEPTABLE
             }
         }
-        else if ('organisation'.equalsIgnoreCase(obj)) {
+        else if (NOT_SUPPORTED && 'organisation'.equalsIgnoreCase(obj)) {
             if (format in ApiReader.SUPPORTED_FORMATS.organisation) {
                 result = ApiOrg.findOrganisationBy(query, value)
 
@@ -91,7 +93,7 @@ class ApiManager {
                 return Constants.HTTP_NOT_ACCEPTABLE
             }
         }
-        else if ('package'.equalsIgnoreCase(obj)) {
+        else if (NOT_SUPPORTED && 'package'.equalsIgnoreCase(obj)) {
             if (format in ApiReader.SUPPORTED_FORMATS.package) {
                 result = ApiPkg.findPackageBy(query, value)
 
@@ -128,7 +130,7 @@ class ApiManager {
         // check existing resources
         def conflict = false
 
-        if ('organisation'.equalsIgnoreCase(obj)) {
+        if (NOT_SUPPORTED && 'organisation'.equalsIgnoreCase(obj)) {
 
             data.identifiers?.each { ident ->
                 def hits = ApiOrg.findOrganisationBy('ns:identifier', ident.namespace + ":" + ident.value)
@@ -147,11 +149,11 @@ class ApiManager {
 
             result = ApiWriter.importOrganisation(data, contextOrg)
         }
-        else if ('license'.equalsIgnoreCase(obj)) {
+        else if (NOT_SUPPORTED && 'license'.equalsIgnoreCase(obj)) {
 
             result = ApiWriter.importLicense(data, contextOrg)
         }
-        else if ('subscription'.equalsIgnoreCase(obj)) {
+        else if (NOT_SUPPORTED && 'subscription'.equalsIgnoreCase(obj)) {
 
             data.identifiers?.each { ident ->
                 def hits = ApiSubscription.findSubscriptionBy('ns:identifier', ident.namespace + ":" + ident.value)

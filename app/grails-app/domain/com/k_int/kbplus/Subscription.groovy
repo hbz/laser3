@@ -30,7 +30,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
     @Transient
     def springSecurityService
 
-  RefdataValue status
+  RefdataValue status       // RefdataCatagory 'Subscription Status'
   RefdataValue type         // RefdataCatagory 'Subscription Type'
   RefdataValue form         // RefdataCatagory 'Subscription Form'
   RefdataValue resource     // RefdataCatagory 'Subscription Resource'

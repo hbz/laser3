@@ -157,7 +157,6 @@ class ApiReaderHelper {
         if (hasAccess) {
             result.globalUID    = org.globalUID
             result.name         = org.name
-            result.shortcode    = org.shortcode
 
             // References
             result.identifiers = resolveIdentifiers(org.ids) // com.k_int.kbplus.IdentifierOccurrence
@@ -407,7 +406,8 @@ class ApiReaderHelper {
             def tmp             = [:]
             tmp.name            = it.type?.name     // com.k_int.kbplus.PropertyDefinition.String
             tmp.description     = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
-            tmp.value           = (it.stringValue ? it.stringValue : (it.intValue ? it.intValue : (it.decValue ? it.decValue : (it.refValue?.value ? it.refValue?.value : null)))) // RefdataValue
+            tmp.explanation     = it.type?.expl     // com.k_int.kbplus.PropertyDefinition.String
+            tmp.value           = (it.stringValue ?: (it.intValue ?: (it.decValue ?: (it.refValue?.value ?: (it.urlValue ?: (it.dateValue ?: null)))))) // RefdataValue
             tmp.note            = it.note
             tmp.isPublic        = "Yes" // derived to substitute private properties tentant
 
@@ -794,10 +794,11 @@ class ApiReaderHelper {
 
         list.each { it ->       // com.k_int.kbplus.<x>PrivateProperty
             def tmp             = [:]
-            tmp.name            = it.type?.name  // com.k_int.kbplus.PropertyDefinition.String
-            tmp.description     = it.type?.descr // com.k_int.kbplus.PropertyDefinition.String
+            tmp.name            = it.type?.name     // com.k_int.kbplus.PropertyDefinition.String
+            tmp.description     = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
+            tmp.explanation     = it.type?.expl     // com.k_int.kbplus.PropertyDefinition.String
             //tmp.tenant          = resolveOrganisationStub(it.tenant, context) // com.k_int.kbplus.Org
-            tmp.value           = (it.stringValue ? it.stringValue : (it.intValue ? it.intValue : (it.decValue ? it.decValue : (it.refValue?.value ? it.refValue?.value : null)))) // RefdataValue
+            tmp.value           = (it.stringValue ?: (it.intValue ?: (it.decValue ?: (it.refValue?.value ?: (it.urlValue ?: (it.dateValue ?: null)))))) // RefdataValue
             tmp.note            = it.note
 
             if(it.type.tenant?.id == context.id) {
