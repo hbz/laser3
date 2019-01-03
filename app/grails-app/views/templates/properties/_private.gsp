@@ -129,7 +129,7 @@
                     <input type="hidden" name="editable"   value="${editable}"/>
                     <input type="hidden" name="ownerClass" value="${ownobj?.class}"/>
 
-                    <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button"/>
+                    <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
                 </g:formRemote>
 
             </td>
