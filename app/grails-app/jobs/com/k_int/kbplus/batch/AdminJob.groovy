@@ -11,7 +11,7 @@ class AdminJob extends AbstractJob {
         // Cron:: Min Hour DayOfMonth Month DayOfWeek Year
         // Example - every 10 mins 0 0/10 * * * ?
         // At 5 past 2am on the first of every month - Sync stats
-        cron name:'AdminTrigger', cronExpression: "30 0 7 * * ?"
+        cron name:'AdminTrigger', cronExpression: "0 0 7 * * ?"
         // cronExpression: "s m h D M W Y"
         //                  | | | | | | `- Year [optional]
         //                  | | | | | `- Day of Week, 1-7 or SUN-SAT, ?
