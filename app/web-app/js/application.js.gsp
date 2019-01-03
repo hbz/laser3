@@ -50,6 +50,8 @@ r2d2 = {
         r2d2.initDynamicSemuiStuff('body');
         r2d2.initDynamicXEditableStuff('body');
 
+        $("html").css("cursor", "auto");
+
         console.log("r2d2 @ locale: " + gspLocale + " > " + gspDateFormat);
     },
 
@@ -136,9 +138,6 @@ r2d2 = {
                 }
             }).modal('show')
         });
-
-
-
     },
 
 
@@ -277,6 +276,9 @@ r2d2 = {
             ctxSel = 'body'
         }
 
+        $("a[href], input.js-wait-wheel").not("a[href^='#'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-tooltip], a.la-ctrls , .close").click(function() {
+            $("html").css("cursor", "wait");
+        });
         // selectable table to avoid button is showing when focus after modal closed
         $(ctxSel + ' .la-selectable').hover(function() {
             $( ".button" ).blur();
@@ -332,8 +334,6 @@ r2d2 = {
         currentDropdown.find("div.text").hasClass("default")
             ?  currentDropdown.removeClass('la-filter-dropdown-selected')
             : currentDropdown.addClass('la-filter-dropdown-selected');
-
-
 
         // FILTER SELECT FUNCTION - INPUT LOADING
         $(ctxSel + ' .la-filter input[type=text]').each(function() {
@@ -497,6 +497,6 @@ r2d2 = {
 }
 
 $(document).ready(function() {
-    r2d2.go()
+    r2d2.go();
 })
 
