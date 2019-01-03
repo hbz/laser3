@@ -38,14 +38,14 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
     // If a license is slaved then any changes to instanceOf will automatically be applied to this license
     RefdataValue isSlaved // RefdataCategory 'YN'
 
-  RefdataValue status
-  RefdataValue type
+    RefdataValue status           // RefdataCategory 'License Status'
+    RefdataValue type             // RefdataCategory 'License Type'
 
   String reference
   String sortableReference
 
-  RefdataValue licenseCategory
-  RefdataValue isPublic
+    RefdataValue licenseCategory  // RefdataCategory 'LicenseCategory'
+    RefdataValue isPublic         // RefdataCategory 'YN'
 
   String noticePeriod
   String licenseUrl

@@ -211,9 +211,9 @@
             $ref: "#/definitions/LicenseStub"
           isPublic:
             type: string
-            description: Mapping RefdataCategory
+            description: Mapping RefdataCategory "YN"
             enum:
-              [""]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
           lastmod:
             type: string
             format: date
@@ -224,9 +224,9 @@
             readOnly: true
           licenseCategory:
             type: string
-            description: Mapping RefdataCategory
+            description: Mapping RefdataCategory "LicenseCategory"
             enum:
-              [""]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('LicenseCategory').collect{ it.value }.join(', ') }]
           licenseUrl:
             type: string
           licensorRef:
@@ -264,9 +264,9 @@
             example: "2010-01-01 00:00:00"
           status:
             type: string
-            description: Mapping RefdataCategory
+            description: Mapping RefdataCategory "License Status"
             enum:
-              [""]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('License Status').collect{ it.value }.join(', ') }]
           subscriptions:
             type: array
             readOnly: true # TODO support
@@ -274,9 +274,9 @@
               $ref: "#/definitions/SubscriptionStub"
           type:
             type: string
-            description: Mapping RefdataCategory
+            description: Mapping RefdataCategory "License Type"
             enum:
-              [""]
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('License Type').collect{ it.value }.join(', ') }]
 
   OnixplLicense:
     type: object
@@ -650,8 +650,8 @@
             enum:
               [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Subscription Form').collect{ it.value }.join(', ') }]
           instanceOf:
-            readOnly: true # bug fixed due #/definitions/SubscriptionStub(inSubscription).readOnly:true
-            $ref: "#/definitions/SubscriptionStub(inSubscription)"
+            readOnly: true # bug fixed due #/definitions/SubscriptionStub.readOnly:true
+            $ref: "#/definitions/SubscriptionStub"
           isPublic:
             type: string
             description: Mapping RefdataCategory "YN"
@@ -696,8 +696,8 @@
     #        items:
     #          $ref: "#/definitions/Person" # resolved PersonRole
           previousSubscription:
-            readOnly: true # bug fixed due #/definitions/SubscriptionStub(inSubscription).readOnly:true
-            $ref: "#/definitions/SubscriptionStub(inSubscription)"
+            readOnly: true # bug fixed due #/definitions/SubscriptionStub.readOnly:true
+            $ref: "#/definitions/SubscriptionStub"
           properties: # mapping attr customProperties
             type: array
             items:

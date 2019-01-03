@@ -112,11 +112,13 @@
       name:
         type: string
 
+<%--
   SubscriptionStub(inSubscription):
     allOf:
       - $ref: "#/definitions/SubscriptionStub"
       - type: object
         readOnly: true
+--%>
 
   TitleInstancePackagePlatformStub:
     type: object

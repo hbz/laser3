@@ -60,7 +60,7 @@ paths:
         406:
           $ref: "#/responses/notAcceptable"
 --%>
-
+<%--
   /license:
     get:
       tags:
@@ -92,7 +92,7 @@ paths:
           $ref: "#/responses/notAcceptable"
         412:
           $ref: "#/responses/preconditionFailed"
-<%--
+--%><%--
     post:
       tags:
         - Licenses
