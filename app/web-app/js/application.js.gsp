@@ -56,6 +56,9 @@ r2d2 = {
     initGlobalSemuiStuff : function() {
         console.log("r2d2.initGlobalSemuiStuff()")
 
+
+
+
         // spotlight
         $('.ui.search').search({
             type: 'category',
@@ -277,6 +280,9 @@ r2d2 = {
             ctxSel = 'body'
         }
 
+        $("a[href], input.js-wait-wheel").not("a[href^='#'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-tooltip], a.la-ctrls , .close").click(function() {
+            $("html").css("cursor", "wait");
+        });
         // selectable table to avoid button is showing when focus after modal closed
         $(ctxSel + ' .la-selectable').hover(function() {
             $( ".button" ).blur();
@@ -497,6 +503,7 @@ r2d2 = {
 }
 
 $(document).ready(function() {
-    r2d2.go()
+    r2d2.go();
+    $("html").css("cursor", "auto");
 })
 

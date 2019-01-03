@@ -174,7 +174,7 @@
 
                         <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
 
-                        <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button"/>
+                        <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
                     </g:formRemote>
 
                 </td>
