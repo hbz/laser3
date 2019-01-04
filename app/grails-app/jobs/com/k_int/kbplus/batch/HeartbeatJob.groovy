@@ -22,6 +22,8 @@ class HeartbeatJob extends AbstractJob {
     //                  `- Second, 0-59
   }
 
+  static configFlags = ['quartzHeartbeat']
+
   def execute() {
     log.debug("Heartbeat Job");
     grailsApplication.config.quartzHeartbeat = new Date()

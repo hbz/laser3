@@ -8,10 +8,11 @@ import org.hibernate.ScrollMode
 */
 class BatchImpIdJob extends AbstractJob {
 
+    static triggers = {
+        simple name:'BatchImpIdJob', startDelay:40000, repeatInterval:30000, repeatCount:0
+    }
 
-  static triggers = {
-    simple name:'BatchImpIdJob', startDelay:40000, repeatInterval:30000, repeatCount:0  
-  }
+    static configFlags = []
 
   def execute() {
     log.debug("BatchImpIdJob::execute()");

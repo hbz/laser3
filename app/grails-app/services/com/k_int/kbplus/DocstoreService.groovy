@@ -384,6 +384,7 @@ class DocstoreService {
     }
   }
 
+  @Deprecated
   def migrateToDb() {
     def docstore_docs = Doc.executeQuery("select id from Doc where contentType=1");
 

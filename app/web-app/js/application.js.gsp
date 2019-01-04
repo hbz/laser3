@@ -50,6 +50,8 @@ r2d2 = {
         r2d2.initDynamicSemuiStuff('body');
         r2d2.initDynamicXEditableStuff('body');
 
+        $("html").css("cursor", "auto");
+
         console.log("r2d2 @ locale: " + gspLocale + " > " + gspDateFormat);
     },
 
@@ -136,9 +138,6 @@ r2d2 = {
                 }
             }).modal('show')
         });
-
-
-
     },
 
 
@@ -221,6 +220,9 @@ r2d2 = {
         }).on('shown', function() {
             if ($(this).attr('data-format')) {
                 $(ctxSel + ' .xEditable-datepicker').calendar(r2d2.configs.datepicker);
+                $(ctxSel + ' .editable-clear-x').click(function() {
+                    $('.calendar').calendar('clear');
+                });
             }
             $(".table").trigger('reflow')
         }).on('hidden', function() {
@@ -274,6 +276,9 @@ r2d2 = {
             ctxSel = 'body'
         }
 
+        $("a[href], input.js-wait-wheel").not("a[href^='#'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-tooltip], a.la-ctrls , .close, .js-no-wait-wheel").click(function() {
+            $("html").css("cursor", "wait");
+        });
         // selectable table to avoid button is showing when focus after modal closed
         $(ctxSel + ' .la-selectable').hover(function() {
             $( ".button" ).blur();
@@ -330,8 +335,6 @@ r2d2 = {
             ?  currentDropdown.removeClass('la-filter-dropdown-selected')
             : currentDropdown.addClass('la-filter-dropdown-selected');
 
-
-
         // FILTER SELECT FUNCTION - INPUT LOADING
         $(ctxSel + ' .la-filter input[type=text]').each(function() {
             $(this).val().length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
@@ -364,11 +367,33 @@ r2d2 = {
                 var where = that.getAttribute("data-confirm-term-where")? that.getAttribute("data-confirm-term-where"):false;
                 var whereDetail = that.getAttribute("data-confirm-term-where-detail")? that.getAttribute("data-confirm-term-where-detail"):false;
                 var how = that.getAttribute("data-confirm-term-how") ? that.getAttribute("data-confirm-term-how"):"delete";
-                var messageHow = how == "delete" ? "löschen" :"aufheben";
+                var messageHow;
+                switch (how) {
+                    case "delete":
+                        messageHow = "löschen";
+                        break;
+                    case "unlink":
+                        messageHow = "aufheben";
+                        break;
+                    case "inherit":
+                        messageHow = "ändern";
+                        break;
+                    default:
+                        messageHow = "löschen";
+                }
                 var url = that.getAttribute('href') && (that.getAttribute('class') != 'js-gost') ? that.getAttribute('href'): false; // use url only if not remote link
 
                 event.preventDefault();
-
+                // INHERIT BUTTON
+                if (how == "inherit"){
+                    switch (what) {
+                        case "property":
+                            messageWhat = "die Vererbung des Merkmals";
+                            break;
+                        default:
+                            messageWhat = "die Vererbung des Merkmals";
+                    }
+                }
                 // UNLINK BUTTON
                 if (how == "unlink"){
                     switch (what) {
@@ -457,6 +482,9 @@ r2d2 = {
                     case "unlink":
                         $('#js-confirmation-button').html('Aufheben<i class="chain broken icon"></i>');
                         break;
+                    case "inherit":
+                        $('#js-confirmation-button').html('Vererbung ändern<i class="thumbtack icon"></i>');
+                        break;
                     default:
                         $('').html('Entfernen<i class="x icon"></i>');
                 }
@@ -494,6 +522,6 @@ r2d2 = {
 }
 
 $(document).ready(function() {
-    r2d2.go()
+    r2d2.go();
 })
 

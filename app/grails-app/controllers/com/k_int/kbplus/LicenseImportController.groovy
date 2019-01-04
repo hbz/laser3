@@ -251,9 +251,6 @@ class LicenseImportController extends AbstractDebugController {
       log.debug("Created template KB+ license ${license}")
     }
 
-    def onix_file_input_stream = upload.uploaded_file ? new FileInputStream(upload.uploaded_file) : upload.offered_file?.inputStream
-    def onix_file_size = upload.uploaded_file ? new File(upload.uploaded_file).size() : upload.offered_file?.size
-
     def doctype = RefdataCategory.lookupOrCreate(CAT_DOCTYPE, DOCTYPE);
     def doc_content, doc_context
 
@@ -270,8 +267,28 @@ class LicenseImportController extends AbstractDebugController {
     doc_content.title    = upload.upload_title
     doc_content.type     = doctype
     doc_content.user     = upload.user
-    doc_content.setBlobData(onix_file_input_stream, onix_file_size)
-    doc_content.save(flush:true)
+
+    // erms-790
+    def onix_file_input_stream = upload.uploaded_file ? new FileInputStream(upload.uploaded_file) : upload.offered_file?.inputStream
+    def onix_file_size = upload.uploaded_file ? new File(upload.uploaded_file).size() : upload.offered_file?.size
+    //doc_content.setBlobData(onix_file_input_stream, onix_file_size)
+    doc_content.save()
+
+    try {
+      def fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+      def fName = doc_content.uuid
+
+      File folder = new File("${fPath}")
+      if (!folder.exists()) {
+        folder.mkdirs()
+      }
+      upload.uploaded_file.transferTo(new File("${fPath}/${fName}"))
+    }
+    catch(Exception e) {
+      // fallback
+      doc_content.setBlobData(onix_file_input_stream, onix_file_size)
+      doc_content.save()
+    }
 
     log.debug("${createNewDocument?'Created new':'Updated'} document ${doc_content}")
     // Record a doc context if there is a new document or a new license.

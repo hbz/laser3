@@ -30,9 +30,6 @@ class ApiOrg {
             case 'ns:identifier':
                 result = Identifier.lookupObjectsByIdentifierString(new Org(), value)
                 break
-            case 'shortcode':
-                result = Org.findAllWhere(shortcode: value)
-                break
             default:
                 return Constants.HTTP_BAD_REQUEST
                 break

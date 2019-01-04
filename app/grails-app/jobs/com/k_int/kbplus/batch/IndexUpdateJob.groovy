@@ -11,6 +11,8 @@ class IndexUpdateJob extends AbstractJob {
     cron name:'cronTrigger', startDelay:190000, cronExpression: "0 0/10 * * * ?"
   }
 
+  static configFlags = []
+
   def execute() {
     log.debug("****Running Index Update Job****")
 

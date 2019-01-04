@@ -122,7 +122,6 @@ class ApiReader {
         result.comment      = org.comment
         result.name         = org.name
         result.scope        = org.scope
-        result.shortcode    = org.shortcode
         result.fteStudents  = org.fteStudents
         result.fteStaff     = org.fteStaff
 
@@ -226,6 +225,7 @@ class ApiReader {
         result.endDate              = sub.endDate
         result.identifier           = sub.identifier
         result.lastUpdated          = sub.lastUpdated
+        result.manualCancellationDate = sub.manualCancellationDate
         result.manualRenewalDate    = sub.manualRenewalDate
         result.name                 = sub.name
         result.noticePeriod         = sub.noticePeriod
@@ -233,20 +233,24 @@ class ApiReader {
 
         // RefdataValues
 
+        result.form         = sub.form?.value
         result.isSlaved     = sub.isSlaved?.value
         result.isPublic     = sub.isPublic?.value
+        result.resource     = sub.resource?.value
         result.status       = sub.status?.value
         result.type         = sub.type?.value
 
         // References
 
-        result.documents        = ApiReaderHelper.resolveDocuments(sub.documents) // com.k_int.kbplus.DocContext
+        result.documents            = ApiReaderHelper.resolveDocuments(sub.documents) // com.k_int.kbplus.DocContext
         result.derivedSubscriptions = ApiReaderHelper.resolveStubs(sub.derivedSubscriptions, ApiReaderHelper.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
-        result.identifiers      = ApiReaderHelper.resolveIdentifiers(sub.ids) // com.k_int.kbplus.IdentifierOccurrence
-        result.instanceOf       = ApiReaderHelper.resolveSubscriptionStub(sub.instanceOf, context) // com.k_int.kbplus.Subscription
-        result.license          = ApiReaderHelper.resolveLicense(sub.owner, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.License
-        result.organisations    = ApiReaderHelper.resolveOrgLinks(sub.orgRelations, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
-        result.properties       = ApiReaderHelper.resolveCustomProperties(sub.customProperties) // com.k_int.kbplus.SubscriptionCustomProperty
+        result.identifiers          = ApiReaderHelper.resolveIdentifiers(sub.ids) // com.k_int.kbplus.IdentifierOccurrence
+        result.instanceOf           = ApiReaderHelper.resolveSubscriptionStub(sub.instanceOf, context) // com.k_int.kbplus.Subscription
+        result.license              = ApiReaderHelper.resolveLicenseStub(sub.owner, context) // com.k_int.kbplus.License
+        //removed: result.license          = ApiReaderHelper.resolveLicense(sub.owner, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.License
+        result.organisations        = ApiReaderHelper.resolveOrgLinks(sub.orgRelations, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
+        result.previousSubscription = ApiReaderHelper.resolveSubscriptionStub(sub.previousSubscription, context) // com.k_int.kbplus.Subscription
+        result.properties           = ApiReaderHelper.resolveCustomProperties(sub.customProperties) // com.k_int.kbplus.SubscriptionCustomProperty
 
         // TODO refactoring with issueEntitlementService
         result.packages = ApiReaderHelper.resolvePackagesWithIssueEntitlements(sub.packages, context) // com.k_int.kbplus.SubscriptionPackage

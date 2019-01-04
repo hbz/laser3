@@ -82,25 +82,31 @@ class YodaController {
     def quartzInfo() {
         def result = [:]
 
-        result.triggers = [:]
-        result.jobs = [:]
+        result.quartzScheduler = quartzScheduler
 
-        for (String groupName : quartzScheduler.getTriggerGroupNames()) {
-            result.triggers."${groupName}" = [:]
-
-            for (TriggerKey key : quartzScheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(groupName))) {
-                result.triggers."${groupName}"."${key.getName()}" = quartzScheduler.getTrigger(key)
-            }
-        }
-
+        def groups = [:]
         for (String groupName : quartzScheduler.getJobGroupNames()) {
-            result.jobs."${groupName}" = [:]
+            def group = []
 
             for (JobKey key : quartzScheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
-                result.jobs."${groupName}"."${key.getName()}" = quartzScheduler.getJobDetail(key)
-            }
-        }
+                def clazz = Class.forName(key.getName())
+                def cf  = clazz.configFlags
 
+                def triggers = quartzScheduler.getTriggersOfJob(key)
+                def crx = triggers.collect{ it.cronEx ?: null }
+                def nft = triggers.collect{ it.nextFireTime ?: null }
+
+                group << [
+                        name: key.getName(),
+                        configFlags: cf.join(', '),
+                        cronEx: crx ? crx.get(0) : '',
+                        nextFireTime: nft ? nft.get(0).toTimestamp() : ''
+                ]
+            }
+
+            groups << ["${groupName}" : group.sort{ it.nextFireTime }]
+        }
+        result.quartz = groups
         result
     }
 

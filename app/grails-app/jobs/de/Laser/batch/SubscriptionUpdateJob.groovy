@@ -8,10 +8,12 @@ class SubscriptionUpdateJob extends AbstractJob {
   def cronjobUpdateService
 
   static triggers = {
-    cron name:'SubscriptionUpdateTrigger', cronExpression: "0 3 0 * * ?" //Fire at 03:00 every day
+    cron name:'SubscriptionUpdateTrigger', cronExpression: "0 0 3 * * ?" //Fire at 03:00 every day
 //        cron name:'SubscriptionUpdateTrigger', cronExpression: "0 /15 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every 15th minute
 //        cron name:'SubscriptionUpdateTrigger', cronExpression: "0 /3 * * * ?" //ONLY FOR DEVELOPMENT AND TESTS: Fire every three minutes
   }
+
+    static configFlags = []
 
  def execute() {
    log.info("Execute::SubscriptionUpdateJob - Start");

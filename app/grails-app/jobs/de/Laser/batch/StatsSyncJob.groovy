@@ -23,6 +23,8 @@ class StatsSyncJob extends AbstractJob {
         //                  `- Second, 0-59
     }
 
+    static configFlags = ['KBPlusMaster', 'hbzMaster', 'StatsSyncJobActiv']
+
     def execute() {
         log.debug("Execute::statsSyncJob");
         if ( grailsApplication.config.KBPlusMaster == true ) {
