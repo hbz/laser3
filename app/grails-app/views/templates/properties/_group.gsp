@@ -107,8 +107,8 @@
                                 <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />
 
                                 <span data-position="top right" data-tooltip="${message(code:'property.audit.tooltip')}">
-                                    <button class="ui icon negative button js-open-confirm-modal-copycat">
-                                        <i class="trash alternate icon"></i>
+                                    <button class="ui icon button js-open-confirm-modal-copycat">
+                                        <i class="thumbtack icon"></i>
                                     </button>
                                     <g:remoteLink class="js-gost"
                                                   controller="ajax" action="togglePropertyAuditConfig"
@@ -116,7 +116,7 @@
                                                   id="${prop.id}"
                                                   data-confirm-term-what="property"
                                                   data-confirm-term-what-detail="${prop.type.name}"
-                                                  data-confirm-term-how="delete"
+                                                  data-confirm-term-how="inherit"
                                                   onSuccess="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                                   onComplete="c3po.loadJsAfterAjax()"
                                                   update="${custom_props_div}">

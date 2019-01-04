@@ -6,7 +6,7 @@
                 <!--<div class="event">-->
 
                         <div class="summary">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}">
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel">
                                 <g:if test="${docctx.owner?.title}">
                                     ${docctx.owner.title}
                                 </g:if>
