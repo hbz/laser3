@@ -205,7 +205,7 @@ class Org extends AbstractBaseDomain {
         result
     }
 
-    def getCaculatedPropDefGroups() {
+    def getCaculatedPropDefGroups(Org contextOrg) {
         def result = [ 'global':[], 'local':[], fallback: true ]
 
         // ALL type depending groups without checking tenants or bindings
@@ -214,7 +214,7 @@ class Org extends AbstractBaseDomain {
 
             def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndOrg(it, this)
 
-            if (it.tenant == null || it.tenant?.id == contextService.getOrg()?.id) {
+            if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
                 if (binding) {
                     result.local << [it, binding]
                 } else {

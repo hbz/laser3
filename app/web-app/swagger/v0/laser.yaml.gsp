@@ -1,7 +1,7 @@
 ---
 swagger: "2.0"
 info:
-  version: "0.13 - Version 0"
+  version: "<% print de.laser.api.v0.ApiManager.VERSION %>"
   title: LAS:eR - API
   description: >
     Known Issues:

@@ -36,7 +36,7 @@ class ApiReader {
     static exportIssueEntitlements(SubscriptionPackage subPkg, def ignoreRelation, Org context){
         def result = []
 
-        def tipps = TitleInstancePackagePlatform.findAllBySubAndPkg(subPkg.subscription, subPkg.pkg)
+        def tipps = TitleInstancePackagePlatform.findAllByPkg(subPkg.pkg)
         tipps.each{ tipp ->
             def ie = IssueEntitlement.findBySubscriptionAndTipp(subPkg.subscription, tipp)
             if (ie) {

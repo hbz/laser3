@@ -43,31 +43,31 @@ class ApiReaderHelper {
         }
         Collection<String> values = map.values()
 
-        if(removeNullValues){
+        if (removeNullValues){
             while (values.remove(null));
             while (values.remove(""));
         }
-        if(removeEmptyLists){
+        if (removeEmptyLists){
             while (values.remove([]));
         }
         map
     }
 
     /**
-     * @param List list
+     * @param def list
      * @param removeEmptyValues
      * @param removeEmptyLists
      * @return
      */
-    static cleanUp(List list, removeNullValues, removeEmptyLists) {
+    static cleanUp(def list, removeNullValues, removeEmptyLists) {
         if (! list) {
             return null
         }
-        if(removeNullValues){
+        if (removeNullValues){
             while (list.remove(null));
             while (list.remove(""));
         }
-        if(removeEmptyLists){
+        if (removeEmptyLists){
             while (list.remove([]));
         }
         list
@@ -83,19 +83,19 @@ class ApiReaderHelper {
      */
     static resolveStubs(def list, def type, Org context) {
         def result = []
-        if(list) {
-            list.each { it ->
-                if(LICENSE_STUB == type) {
-                    result << resolveLicenseStub(it, context)
-                }
-                else if(PACKAGE_STUB == type) {
-                    result << resolvePackageStub(it, context)
-                }
-                else if(SUBSCRIPTION_STUB == type) {
-                    result << resolveSubscriptionStub(it, context)
-                }
+
+        list?.each { it ->
+            if(LICENSE_STUB == type) {
+                result << resolveLicenseStub(it, context)
+            }
+            else if(PACKAGE_STUB == type) {
+                result << resolvePackageStub(it, context)
+            }
+            else if(SUBSCRIPTION_STUB == type) {
+                result << resolveSubscriptionStub(it, context)
             }
         }
+
         result
     }
 
@@ -103,7 +103,7 @@ class ApiReaderHelper {
 
     static resolveClusterStub(Cluster cluster) {
         def result = [:]
-        if(cluster) {
+        if (cluster) {
             result.id           = cluster.id
             result.name         = cluster.name
         }
@@ -140,68 +140,50 @@ class ApiReaderHelper {
     }
 
     /**
-     * @return MAP | Constants.HTTP_FORBIDDEN
+     * @return MAP
      */
     static resolveOrganisationStub(Org org, Org context) {
-        def result = [:]
-        def hasAccess = false
-
         if (!org) {
             return null
         }
 
-        // TODO check orgRole.roleType
-        if (org.id == context?.id) {
-            hasAccess = true
-        }
-        if (hasAccess) {
-            result.globalUID    = org.globalUID
-            result.name         = org.name
+        def result = [:]
+        result.globalUID    = org.globalUID
+        result.name         = org.name
 
-            // References
-            result.identifiers = resolveIdentifiers(org.ids) // com.k_int.kbplus.IdentifierOccurrence
+        // References
+        result.identifiers = resolveIdentifiers(org.ids) // com.k_int.kbplus.IdentifierOccurrence
 
-            result = cleanUp(result, true, true)
-        }
+        result = cleanUp(result, true, true)
 
-        return (hasAccess ? result : Constants.HTTP_FORBIDDEN)
+        result
     }
 
     /**
-     * @return MAP | Constants.HTTP_FORBIDDEN
+     * @return MAP
      */
     static resolvePackageStub(Package pkg, Org context) {
-        def result = [:]
-        def hasAccess = false
-
         if (!pkg) {
             return null
         }
 
-        pkg.getOrgs().each { orgRole ->
-            // TODO check orgRole.roleType
-            if (orgRole.getOrg().id == context?.id) {
-                hasAccess = true
-            }
-        }
-        if (hasAccess) {
-            result.globalUID    = pkg.globalUID
-            result.name         = pkg.name
-            result.identifier   = pkg.identifier
-            result.impId        = pkg.impId
+        def result = [:]
+        result.globalUID    = pkg.globalUID
+        result.name         = pkg.name
+        result.identifier   = pkg.identifier
+        result.impId        = pkg.impId
 
-            // References
-            result.identifiers = resolveIdentifiers(pkg.ids) // com.k_int.kbplus.IdentifierOccurrence
+        // References
+        result.identifiers = resolveIdentifiers(pkg.ids) // com.k_int.kbplus.IdentifierOccurrence
 
-            result = cleanUp(result, true, true)
-        }
+        result = cleanUp(result, true, true)
 
-        return (hasAccess ? result : Constants.HTTP_FORBIDDEN)
+        return result
     }
 
     static resolvePlatformStub(Platform pform) {
         def result = [:]
-        if(pform) {
+        if (pform) {
             result.globalUID    = pform.globalUID
             result.impId        = pform.impId
             result.name         = pform.name
@@ -243,7 +225,7 @@ class ApiReaderHelper {
     }
 
     static resolveSubscriptionPackageStub(SubscriptionPackage subpkg, ignoreRelation, Org context) {
-        if(subpkg) {
+        if (subpkg) {
             if(IGNORE_SUBSCRIPTION == ignoreRelation) {
                 return resolvePackageStub(subpkg.pkg, context)
             }
@@ -256,11 +238,11 @@ class ApiReaderHelper {
 
     static resolveSubscriptionPackageStubs(def list, def ignoreRelation, Org context) {
         def result = []
-        if (!list) {
+        if (! list) {
             return null
         }
 
-        list.each { it -> // com.k_int.kbplus.SubscriptionPackage
+        list?.each { it -> // com.k_int.kbplus.SubscriptionPackage
             result << resolveSubscriptionPackageStub(it, ignoreRelation, context)
         }
         result
@@ -282,10 +264,10 @@ class ApiReaderHelper {
 
     // ################### FULL OBJECTS ###################
 
-    static resolveAddresses(list, allowedTypes) {
+    static resolveAddresses(def list, allowedTypes) {
         def result = []
 
-        list.each { it ->   // com.k_int.kbplus.Address
+        list?.each { it ->   // com.k_int.kbplus.Address
             def tmp         = [:]
             tmp.street1     = it.street_1
             tmp.street2     = it.street_2
@@ -335,10 +317,10 @@ class ApiReaderHelper {
         return cleanUp(result, true, true)
     }
 */
-    static resolveContacts(list, allowedTypes) {
+    static resolveContacts(def list, allowedTypes) {
         def result = []
 
-        list.each { it ->       // com.k_int.kbplus.Contact
+        list?.each { it ->       // com.k_int.kbplus.Contact
             def tmp             = [:]
             tmp.content         = it.content
 
@@ -356,10 +338,10 @@ class ApiReaderHelper {
     }
 
     @Deprecated
-    static resolveCostItems(list) {  // TODO
+    static resolveCostItems(def list) {  // TODO
         def result = []
 
-        list.each { it ->               // com.k_int.kbplus.CostItem
+        list?.each { it ->               // com.k_int.kbplus.CostItem
             def tmp                     = [:]
             tmp.id                      = it.id
             tmp.costInBillingCurrency   = it.costInBillingCurrency
@@ -399,10 +381,10 @@ class ApiReaderHelper {
         result
     }
 
-    static resolveCustomProperties(list) {
+    static resolveCustomProperties(def list) {
         def result = []
 
-        list.each { it ->       // com.k_int.kbplus.<x>CustomProperty
+        list?.each { it ->       // com.k_int.kbplus.<x>CustomProperty
             def tmp             = [:]
             tmp.name            = it.type?.name     // com.k_int.kbplus.PropertyDefinition.String
             tmp.description     = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
@@ -430,7 +412,7 @@ class ApiReaderHelper {
     static resolveDocument(Doc doc) {
         def result = [:]
 
-        if(doc) {
+        if (doc) {
             result.content  = doc.content
             result.filename = doc.filename
             result.mimeType = doc.mimeType
@@ -446,18 +428,17 @@ class ApiReaderHelper {
 
     static resolveDocuments(def list) {
         def result = []
-        list.each { it -> // com.k_int.kbplus.DocContext
+        list?.each { it -> // com.k_int.kbplus.DocContext
             result << resolveDocument(it.owner)
         }
         result
     }
 
-    static resolveIdentifiers(list) {
+    static resolveIdentifiers(def list) {
         def result = []
-        list.each { it ->   // com.k_int.kbplus.IdentifierOccurrence
-            def tmp         = [:]
-            tmp.value       = it.identifier?.value
-            tmp.namespace   = it.identifier?.ns?.ns
+        list?.each { it ->   // com.k_int.kbplus.IdentifierOccurrence
+            def tmp = [:]
+            tmp.put( it.identifier?.ns?.ns , it.identifier?.value )
 
             tmp = cleanUp(tmp, true, true)
             result << tmp
@@ -467,7 +448,7 @@ class ApiReaderHelper {
 
     static resolveInvoice(Invoice invoice) {
         def result = [:]
-        if(!invoice) {
+        if(! invoice) {
             return null
         }
         result.id                  = invoice.id
@@ -565,7 +546,7 @@ class ApiReaderHelper {
     static resolvePackagesWithIssueEntitlements(def list, Org context) {  // TODO - TODO - TODO
         def result = []
 
-        list.each { subPkg ->
+        list?.each { subPkg ->
             def pkg = resolvePackageStub(subPkg.pkg, context) // com.k_int.kbplus.Package
             result << pkg
 
@@ -684,7 +665,7 @@ class ApiReaderHelper {
     static resolveOrgLinks(def list, ignoreRelationType, Org context) { // TODO
         def result = []
 
-        list.each { it ->   // com.k_int.kbplus.OrgRole
+        list?.each { it ->   // com.k_int.kbplus.OrgRole
             def tmp         = [:]
             tmp.endDate     = it.endDate
             tmp.startDate   = it.startDate
@@ -778,7 +759,7 @@ class ApiReaderHelper {
     static resolvePlatformTipps(def list) {
         def result = []
 
-        list.each { it -> // com.k_int.kbplus.PlatformTIPP
+        list?.each { it -> // com.k_int.kbplus.PlatformTIPP
             def tmp = [:]
             tmp.titleUrl = it.titleUrl
             tmp.rel      = it.rel
@@ -792,7 +773,7 @@ class ApiReaderHelper {
     static resolvePrivateProperties(def list, Org context) { // TODO check context
         def result = []
 
-        list.each { it ->       // com.k_int.kbplus.<x>PrivateProperty
+        list?.each { it ->       // com.k_int.kbplus.<x>PrivateProperty
             def tmp             = [:]
             tmp.name            = it.type?.name     // com.k_int.kbplus.PropertyDefinition.String
             tmp.description     = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
@@ -821,7 +802,7 @@ class ApiReaderHelper {
         def result = []
         def tmp = []
 
-        list.each { it ->
+        list?.each { it ->
 
             // nested prs
             if(it.prs) {
@@ -905,7 +886,7 @@ class ApiReaderHelper {
      */
     static resolveTipp(TitleInstancePackagePlatform tipp, def ignoreRelation, Org context) {
         def result = [:]
-        if(!tipp) {
+        if (!tipp) {
             return null
         }
 
@@ -965,11 +946,11 @@ class ApiReaderHelper {
      */
     static resolveTipps(def list, def ignoreRelation, Org context) {
         def result = []
-        if(list) {
-            list.each { it -> // com.k_int.kbplus.TitleInstancePackagePlatform
-                result << resolveTipp(it, ignoreRelation, context)
-            }
+
+        list?.each { it -> // com.k_int.kbplus.TitleInstancePackagePlatform
+            result << resolveTipp(it, ignoreRelation, context)
         }
+
         result
     }
 
