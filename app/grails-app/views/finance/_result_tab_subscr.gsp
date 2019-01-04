@@ -11,15 +11,15 @@
         <th class="two wide">${message(code:'financials.invoice_total')}</th>
         <th class="two wide">${message(code:'financials.newCosts.valueInEuro')}</th>
         <th>${message(code:'financials.costItemElement')}</th>
-        <th>Lizenz</th>
-        <th>Paket</th>
+        <th>${message(code:'financials.forSubscription')}</th>
+        <th>${message(code:'financials.forPackage')}</th>
     </tr>
 </thead>
 <tbody>
     %{--Empty result set--}%
     <g:if test="${cost_items?.size() == 0}">
         <tr>
-            <td colspan="7" style="text-align:center">
+            <td colspan="6" style="text-align:center">
                 <br />
                 <g:if test="${msg}">${msg}</g:if>
                 <g:else>${message(code:'finance.result.filtered.empty')}</g:else>
@@ -30,6 +30,59 @@
     <g:else>
 
         <g:each in="${cost_items}" var="ci" status="jj">
+            <%
+                def org = contextService.getOrg()
+                def elementSign = org.costConfigurationPreset
+                def icon = ''
+                def dataTooltip = ""
+                if(elementSign == null) {
+                    elementSign = RefdataValue.getByValueAndCategory('positive', 'Cost configuration')
+                }
+                def consider = org.considerationPreset
+                if(consider == null) {
+                    consider = RefdataValue.getByValueAndCategory('Yes', 'YN')
+                }
+                if(ci.costItemElement) {
+                    def cie = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(ci.costItemElement, org)
+                    if(cie) {
+                        elementSign = cie.elementSign
+                        consider = cie.consider
+                    }
+                }
+                String cieString = "data-elementSign=${elementSign} data-consider=${consider}"
+                switch(elementSign) {
+                    case RefdataValue.getByValueAndCategory('positive','Cost configuration'):
+                        dataTooltip = message(code:'financials.costItemConfiguration.positive')
+                        icon = '<i class="check circle'
+                        break
+                    case RefdataValue.getByValueAndCategory('negative','Cost configuration'):
+                        dataTooltip = message(code:'financials.costItemConfiguration.negative')
+                        icon = '<i class="minus circle'
+                        break
+                    case RefdataValue.getByValueAndCategory('neutral','Cost configuration'):
+                        dataTooltip = message(code:'financials.costItemConfiguration.neutral')
+                        icon = '<i class="circle'
+                        break
+                    default:
+                        dataTooltip = message(code:'financials.costItemConfiguration.notSet')
+                        icon = '<i class="question circle'
+                        break
+                }
+                switch(consider) {
+                    case RefdataValue.getByValueAndCategory('Yes','YN'):
+                        dataTooltip += ', '+message(code: 'financials.costItemConfiguration.considered')
+                        icon += ' icon"></i>'
+                        break
+                    case RefdataValue.getByValueAndCategory('No','YN'):
+                        dataTooltip += ', '+message(code:'financials.costItemConfiguration.notConsidered')
+                        icon += ' outline icon"></i>'
+                        break
+                    default:
+                        dataTooltip += ', '+message(code:'financials.costItemConfiguration.considerationNotSet')
+                        icon += ' outline icon"></i><i class="question circle outline icon"></i>'
+                        break
+                }
+            %>
             <tr id="bulkdelete-b${ci.id}">
                 <td>
                     <% int offset = params.offset ? Integer.parseInt(params.offset) : 0 %>
@@ -40,6 +93,7 @@
                           data-costInLocalCurrencyAfterTax="<g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" locale="en" maxFractionDigits="2"/>"
                           data-billingCurrency="${ci.billingCurrency ?: 'EUR'}"
                           data-costInBillingCurrencyAfterTax="<g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" locale="en" maxFractionDigits="2"/>"
+                          ${cieString}
                     >
                         <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="${ci.billingCurrency ?: 'EUR'}" />
                     </span>
@@ -49,6 +103,7 @@
                 </td>
                 <td>
                     ${ci.costItemElement?.getI10n('value')}
+                    <span data-position="right center" data-tooltip="${dataTooltip}">${raw(icon)}</span>
                 </td>
                 <td>
                     <g:link controller="subscriptionDetails" action="show" id="${ci.sub?.id}">${ci.sub}</g:link>
@@ -56,7 +111,6 @@
                 <td>
                     <g:link controller="packageDetails" action="show" id="${ci.subPkg?.pkg?.id}">${ci.subPkg?.pkg}</g:link>
                 </td>
-
             </tr>
         </g:each>
 
@@ -68,6 +122,24 @@
                 <strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}</strong>
                 <br/>
                 <span class="sumOfCosts_${i}"></span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="7">
+                <div class="ui fluid accordion">
+                    <div class="title">
+                        <i class="dropdown icon"></i>
+                        <strong>${message(code: 'financials.calculationBase')}</strong>
+                    </div>
+                    <div class="content">
+                        <p>
+                            ${message(code: 'financials.calculationBase.paragraph1', args: [contextService.getOrg().costConfigurationPreset.getI10n('value'),contextService.getOrg().considerationPreset.getI10n('value')])}
+                        </p>
+                        <p>
+                            ${message(code: 'financials.calculationBase.paragraph2')}
+                        </p>
+                    </div>
+                </div>
             </td>
         </tr>
     </tfoot>

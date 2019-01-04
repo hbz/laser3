@@ -1,5 +1,5 @@
 <!-- _result_tab_cons.gsp -->
-<%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.FinanceController" %>
+<%@ page import="com.k_int.kbplus.CostItemElementConfiguration;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.FinanceController" %>
 
 <laser:serviceInjection />
 
@@ -59,7 +59,59 @@
     <g:else>
         <g:each in="${cost_items}" var="ci" status="jj">
             <g:set var="orgRoles" value="${OrgRole.findBySubAndRoleType(ci.sub, RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'))}" />
-
+            <%
+                def org = contextService.getOrg()
+                def elementSign = org.costConfigurationPreset
+                def icon = ''
+                def dataTooltip = ""
+                if(elementSign == null) {
+                    elementSign = RefdataValue.getByValueAndCategory('positive', 'Cost configuration')
+                }
+                def consider = org.considerationPreset
+                if(consider == null) {
+                    consider = RefdataValue.getByValueAndCategory('Yes', 'YN')
+                }
+                if(ci.costItemElement) {
+                    def cie = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(ci.costItemElement, org)
+                    if(cie) {
+                        elementSign = cie.elementSign
+                        consider = cie.consider
+                    }
+                }
+                String cieString = "data-elementSign=${elementSign} data-consider=${consider}"
+                switch(elementSign) {
+                    case RefdataValue.getByValueAndCategory('positive','Cost configuration'):
+                        dataTooltip = message(code:'financials.costItemConfiguration.positive')
+                        icon = '<i class="check circle'
+                        break
+                    case RefdataValue.getByValueAndCategory('negative','Cost configuration'):
+                        dataTooltip = message(code:'financials.costItemConfiguration.negative')
+                        icon = '<i class="minus circle'
+                        break
+                    case RefdataValue.getByValueAndCategory('neutral','Cost configuration'):
+                        dataTooltip = message(code:'financials.costItemConfiguration.neutral')
+                        icon = '<i class="circle'
+                        break
+                    default:
+                        dataTooltip = message(code:'financials.costItemConfiguration.notSet')
+                        icon = '<i class="question circle'
+                        break
+                }
+                switch(consider) {
+                    case RefdataValue.getByValueAndCategory('Yes','YN'):
+                        dataTooltip += ', '+message(code: 'financials.costItemConfiguration.considered')
+                        icon += ' icon"></i>'
+                        break
+                    case RefdataValue.getByValueAndCategory('No','YN'):
+                        dataTooltip += ', '+message(code:'financials.costItemConfiguration.notConsidered')
+                        icon += ' outline icon"></i>'
+                        break
+                    default:
+                        dataTooltip += ', '+message(code:'financials.costItemConfiguration.considerationNotSet')
+                        icon += ' outline icon"></i><i class="question circle outline icon"></i>'
+                        break
+                }
+            %>
             <tr id="bulkdelete-b${ci.id}">
                 <td>
                     <% int offset = params.offset ? Integer.parseInt(params.offset) : 0 %>
@@ -100,6 +152,7 @@
                           data-billingCurrency="${ci.billingCurrency ?: 'EUR'}"
                           data-costInBillingCurrency="<g:formatNumber number="${ci.costInBillingCurrency}" locale="en" maxFractionDigits="2"/>"
                           data-costInBillingCurrencyAfterTax="<g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" locale="en" maxFractionDigits="2"/>"
+                          ${cieString}
                     >
                         <g:formatNumber number="${ci.costInBillingCurrency ?: 0.0}" type="currency" currencySymbol="" />
                     </span>
@@ -122,8 +175,8 @@
                 </td>
                 <td>
                     <semui:xEditableRefData config="CostItemElement" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemElement" />
+                    <span data-position="right center" data-tooltip="${dataTooltip}">${raw(icon)}</span>
                 </td>
-
                 <td class="x">
                     <g:if test="${editable}">
                         <g:if test="${forSingleSubscription}">
@@ -163,6 +216,24 @@
             <strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}</strong>
             <br/>
             <span class="sumOfCosts_${i}"></span>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="11">
+            <div class="ui fluid accordion">
+                <div class="title">
+                    <i class="dropdown icon"></i>
+                    <strong>${message(code: 'financials.calculationBase')}</strong>
+                </div>
+                <div class="content">
+                    <p>
+                        ${message(code: 'financials.calculationBase.paragraph1', args: [contextService.getOrg().costConfigurationPreset.getI10n('value'),contextService.getOrg().considerationPreset.getI10n('value')])}
+                    </p>
+                    <p>
+                        ${message(code: 'financials.calculationBase.paragraph2')}
+                    </p>
+                </div>
+            </div>
         </td>
     </tr>
     </tfoot>
