@@ -413,7 +413,7 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
         License.where{ instanceOf == this && (status == null || status.value != 'Deleted') }
     }
 
-    def getCaculatedPropDefGroups() {
+    def getCaculatedPropDefGroups(Org contextOrg) {
         def result = [ 'global':[], 'local':[], 'member':[], fallback: true ]
 
         // ALL type depending groups without checking tenants or bindings
@@ -433,7 +433,7 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
                     }
                 }
                 // consortium @ member; getting group by tenant and instanceOf.binding
-                if (it.tenant?.id == contextService.getOrg()?.id) {
+                if (it.tenant?.id == contextOrg?.id) {
                     if (binding) {
                         result.member << [it, binding]
                     }
@@ -449,7 +449,7 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
             else {
                 def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndLic(it, this)
 
-                if (it.tenant == null || it.tenant?.id == contextService.getOrg()?.id) {
+                if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
                     if (binding) {
                         result.local << [it, binding]
                     } else {

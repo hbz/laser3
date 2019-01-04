@@ -18,7 +18,7 @@
 
 <%-- grouped custom properties --%>
 
-<g:set var="allPropDefGroups" value="${license.getCaculatedPropDefGroups()}" />
+<g:set var="allPropDefGroups" value="${license.getCaculatedPropDefGroups(contextService.getOrg())}" />
 
 <g:each in="${allPropDefGroups.global}" var="propDefGroup">
     <g:if test="${propDefGroup.visible?.value == 'Yes'}">

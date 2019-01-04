@@ -126,11 +126,11 @@ class ApiWriterHelper {
         result
     }
 
-    static getIdentifiers(def data, def owner) {
+    static getIdentifiers(HashMap data, def owner) {
         def idenfifierOccurences = []
 
         data.each { it ->
-            def identifier = Identifier.lookupOrCreateCanonicalIdentifier(it.namespace, it.value)
+            def identifier = Identifier.lookupOrCreateCanonicalIdentifier(it.key, it.value) // TODO test
             def idenfifierOccurence = new IdentifierOccurrence(
                     identifier: identifier
             )
