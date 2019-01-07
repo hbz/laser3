@@ -1,10 +1,11 @@
 <!-- _ajaxModal.gsp -->
-<%@ page import="com.k_int.kbplus.*;" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.*;" %>
 <laser:serviceInjection />
 
 <g:render template="vars" /><%-- setting vars --%>
 
 <g:set var="modalText" value="${message(code:'financials.addNewCost')}" />
+<g:set var="org" value="${contextService.getOrg()}" />
 
 <%
     if (costItem) {
@@ -113,15 +114,92 @@
                                       value="${costItem?.costItemCategory?.id}" />
                     </div><!-- .field -->
                 --%>
-                <div class="field">
-                    <label>${message(code:'financials.costItemElement')}</label>
-                    <laser:select name="newCostItemElement" class="ui dropdown"
-                                  from="${costItemElement}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  noSelection="${['':'']}"
-                                  value="${costItem?.costItemElement?.id}" />
-                </div><!-- .field -->
+                <div class="two fields">
+                    <div class="field">
+                        <label>${message(code:'financials.costItemElement')}</label>
+                        <laser:select name="newCostItemElement" class="ui dropdown"
+                                      from="${costItemElement}"
+                                      optionKey="id"
+                                      optionValue="value"
+                                      noSelection="${['':'']}"
+                                      value="${costItem?.costItemElement?.id}" />
+                    </div><!-- .field -->
+                    <%
+                        //define strings for cost item sign display
+                        String tooltipString = ''
+                        if(costItem?.costItemElement) {
+                            def elementSign = org.costConfigurationPreset
+                            if(elementSign == null)
+                                elementSign = RDStore.CIEC_POSITIVE
+                            def consider = org.considerationPreset
+                            if(consider == null)
+                                consider = RDStore.YN_YES
+                            def costItemElementConfiguration = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(costItem.costItemElement,org)
+                            if(costItemElementConfiguration) {
+                                elementSign = costItemElementConfiguration.elementSign
+                                consider = costItemElementConfiguration.consider
+                            }
+                            switch(elementSign) {
+                                case RDStore.CIEC_POSITIVE:
+                                    tooltipString = message(code:'financials.costItemConfiguration.positive')
+                                    break
+                                case RDStore.CIEC_NEGATIVE:
+                                    tooltipString = message(code:'financials.costItemConfiguration.negative')
+                                    break
+                                case RDStore.CIEC_NEUTRAL:
+                                    tooltipString = message(code:'financials.costItemConfiguration.neutral')
+                                    break
+                                default:
+                                    tooltipString = message(code:'financials.costItemConfiguration.notSet')
+                                    break
+                            }
+                            switch(consider) {
+                                case RDStore.YN_YES:
+                                    tooltipString += ', '+message(code:'financials.costItemConfiguration.considered')
+                                    break
+                                case RDStore.YN_NO:
+                                    tooltipString += ', '+message(code:'financials.costItemConfiguration.notConsidered')
+                                    break
+                                default:
+                                    tooltipString += ', '+message(code:'financials.costItemConfiguration.considerationNotSet')
+                                    break
+                            }
+                        }
+                        //this switch is for new cost items
+                        if(!costItem) {
+                            switch(org.costConfigurationPreset) {
+                                case RDStore.CIEC_POSITIVE:
+                                    tooltipString = message(code:'financials.costItemConfiguration.positive')
+                                    break
+                                case RDStore.CIEC_NEGATIVE:
+                                    tooltipString = message(code:'financials.costItemConfiguration.negative')
+                                    break
+                                case RDStore.CIEC_NEUTRAL:
+                                    tooltipString = message(code:'financials.costItemConfiguration.neutral')
+                                    break
+                                default:
+                                    tooltipString = message(code:'financials.costItemConfiguration.notSet')
+                                    break
+                            }
+                            switch(org.considerationPreset) {
+                                case RDStore.YN_YES:
+                                    tooltipString += ', '+message(code:'financials.costItemConfiguration.considered')
+                                    break
+                                case RDStore.YN_NO:
+                                    tooltipString += ', '+message(code:'financials.costItemConfiguration.notConsidered')
+                                    break
+                                default:
+                                    tooltipString += ', '+message(code:'financials.costItemConfiguration.considerationNotSet')
+                                    break
+                            }
+                        }
+                    %>
+                    <div class="field">
+                        <label>${message(code:'financials.costItemConfiguration')}</label>
+                        <span id="ciec">${tooltipString}</span>
+                    </div>
+                </div>
+
 
                 <div class="two fields la-fields-no-margin-button">
                     <div class="field">
@@ -227,7 +305,6 @@
                         <input title="Wert nach Steuer (in EUR)" type="text" readonly="readonly"
                                name="newCostInLocalCurrencyAfterTax" id="newCostInLocalCurrencyAfterTax"
                                value="${costItem?.costInLocalCurrencyAfterTax}" step="0.01"/>
-
                     </div><!-- .field -->
                 </div>
 
@@ -340,7 +417,7 @@
                     </g:else>
 
 
-                    <%--
+                    <%-- TODO for ERMS-805: this has to be reactivated
                     <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
                     <g:if test="${! inSubMode}">
                         <input name="newIe" id="newIE" disabled='disabled' data-subFilter="" data-disableReset="true" class="la-full-width" value="${params.newIe}">
@@ -398,6 +475,52 @@
             rate: "#newCostCurrencyRate",
             bc:   "#newCostInBillingCurrency"
         }*/
+        <%
+            def costItemElementConfigurations = "{"
+            StringJoiner sj = new StringJoiner(",")
+            def elementSign = org.costConfigurationPreset
+            if(elementSign == null)
+                elementSign = RDStore.CIEC_POSITIVE
+            def consider = org.considerationPreset
+            if(consider == null)
+                consider = RDStore.YN_YES
+            costItemElement.each { cie ->
+                tooltipString = ""
+                def ciec = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(cie,org)
+                if(ciec) {
+                    elementSign = ciec.elementSign
+                    consider = ciec.consider
+                }
+                switch(elementSign) {
+                    case RDStore.CIEC_POSITIVE:
+                        tooltipString = message(code:'financials.costItemConfiguration.positive')
+                        break
+                    case RDStore.CIEC_NEGATIVE:
+                        tooltipString = message(code:'financials.costItemConfiguration.negative')
+                        break
+                    case RDStore.CIEC_NEUTRAL:
+                        tooltipString = message(code:'financials.costItemConfiguration.neutral')
+                        break
+                    default:
+                        tooltipString = message(code:'financials.costItemConfiguration.notSet')
+                        break
+                }
+                switch(consider) {
+                    case RDStore.YN_YES:
+                        tooltipString += ', '+message(code:'financials.costItemConfiguration.considered')
+                        break
+                    case RDStore.YN_NO:
+                        tooltipString += ', '+message(code:'financials.costItemConfiguration.notConsidered')
+                        break
+                    default:
+                        tooltipString += ', '+message(code:'financials.costItemConfiguration.considerationNotSet')
+                        break
+                }
+                sj.add('"'+cie.id+'":"'+tooltipString+'"')
+            }
+            costItemElementConfigurations += sj.toString()+"}"
+        %>
+        var costItemElementConfigurations = ${raw(costItemElementConfigurations)}
 
         $("#costButton1").click(function() {
             if (! isError("#newCostInBillingCurrency") && ! isError("#newCostCurrencyRate")) {
@@ -428,6 +551,9 @@
                 $(".la-account-currency").find(".field").removeClass("error");
                 calcTaxResults()
             }
+        });
+        $("#newCostItemElement").change(function() {
+            $("#ciec").text(costItemElementConfigurations[$(this).val()]);
         });
         var isError = function(cssSel)  {
             if ($(cssSel).val().length <= 0 || $(cssSel).val() < 0) {

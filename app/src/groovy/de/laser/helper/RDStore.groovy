@@ -21,4 +21,8 @@ class RDStore {
     static final YN_YES = RefdataValue.getByValueAndCategory('Yes','YN')
     static final YN_NO = RefdataValue.getByValueAndCategory('No','YN')
 
+    static final CIEC_POSITIVE = RefdataValue.getByValueAndCategory('positive','Cost configuration')
+    static final CIEC_NEGATIVE = RefdataValue.getByValueAndCategory('negative','Cost congifuration')
+    static final CIEC_NEUTRAL = RefdataValue.getByValueAndCategory('neutral','Cost configuration')
+
 }

@@ -19,7 +19,7 @@ class CronjobUpdateService {
         // INTENDED -> CURRENT
 
         def intendedSubsIds1 = Subscription.where {
-            status == INTENDED && startDate < currentDate && (endDate != null && endDate > currentDate || endDate == currentDate)
+            status == INTENDED && startDate < currentDate && (endDate != null && endDate >= currentDate)
         }.collect{ it -> it.id }
 
         log.info("Intended subscriptions reached start date and are now running: " + intendedSubsIds1)

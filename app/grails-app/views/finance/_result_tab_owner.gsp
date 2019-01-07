@@ -46,6 +46,24 @@
                 <span class="sumOfCosts_${i}"></span>
             </td>
         </tr>
+        <tr>
+            <td colspan="8">
+                <div class="ui fluid accordion">
+                    <div class="title">
+                        <i class="dropdown icon"></i>
+                        <strong>${message(code: 'financials.calculationBase')}</strong>
+                    </div>
+                    <div class="content">
+                        <p>
+                            ${message(code: 'financials.calculationBase.paragraph1', args: [contextService.getOrg().costConfigurationPreset.getI10n('value'),contextService.getOrg().considerationPreset.getI10n('value')])}
+                        </p>
+                        <p>
+                            ${message(code: 'financials.calculationBase.paragraph2')}
+                        </p>
+                    </div>
+                </div>
+            </td>
+        </tr>
     </tfoot>
 </table>
     <g:if test="${cost_items}">
