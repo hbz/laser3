@@ -2,7 +2,7 @@
 
     <div class="sixteen wide column">
 
-        <h2 class="ui header">Von mir erstellte Aufgaben</h2>
+        <h2 class="ui header">${message(code:'task.tasksCreatedByMe.header')} <semui:totalNumber total="${taskInstanceCount}"/></h2>
 
         <table class="ui celled la-table table">
             <thead>
@@ -70,7 +70,7 @@
             </tbody>
         </table>
 
-        <semui:paginate total="${taskInstanceTotal}" />
+        <semui:paginate total="${taskInstanceCount}" />
 
     </div><!-- .sixteen -->
 

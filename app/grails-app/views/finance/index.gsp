@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.RDStore" %>
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/html">
 <head>
@@ -107,12 +108,12 @@
             <input type="hidden" name="redirect" value="redirect"/>
 
             <div class="field">
-                <label>Beschreibung</label>
+                <label>${message(code:'financials.budgetCode.description')}</label>
                 <input type="text" name="bc"/>
             </div>
 
             <div class="field">
-                <label>Verwendung</label>
+                <label>${message(code:'financials.budgetCode.usage')}</label>
                 <textarea name="descr"></textarea>
             </div>
 
@@ -266,44 +267,95 @@
 
     var financeHelper = {
 
+        /*
+            This function calculates the total sum of the cost items. The number of cost items is the number of elements displayed on a page; it should be considered in the medium-term to
+            deploy this onto server side for that "total" really means "total", i.e. is independent of the page the user is currently viewing.
+
+            It is not the original developer annotating this code; so this "documentation" done a posteriori reflects a stranger's understanding of it.
+        */
         calcSumOfCosts : function () {
 
+            //take all tabs - we have two at most
             $('table[id^=costTable]').each( function() {
 
+                //this is a collection box for all costs
                 var costs = {}
-                var currencies = $.unique($(this).find('.costData').map(function(){
+                //get all currencies of every considered cost item
+                var currencies = $.unique($(this).find('.costData[data-consider="Yes"]').map(function(){
                     return $(this).attr('data-billingCurrency')
                 }))
+                /*
+                    in the collection box, create for each currency the following sum counters:
+                    - local sum (means the actual value and not the amount which is going to be paid)
+                    - local sum after taxation (for Germany, VATs of 7 and 19 per cent apply)
+                    - billing sum
+                    - billing sum after taxation (see above)
+                    - neutral sum (provisoric counter to handle "neutral" costs; this is very liable to change as soon as Micha/Daniel explain what "neutral" means (=> ERMS-804))
+                    - neutral sum after taxation (see above)
+                 */
                 currencies.each(function() {
-                    costs[this] = {local: 0.0, localAfterTax: 0.0, billing: 0.0, billingAfterTax: 0.0}
+                    costs[this] = {local: 0.0, localAfterTax: 0.0, billing: 0.0, billingAfterTax: 0.0, neutral: 0.0, neutralAfterTax: 0.0}
                 })
 
-                $(this).find('tbody tr span.costData').each( function() {
+                /*
+                    the information necessary has been stuffed into a <span> element and are thus defined in the templates
+                    _result_tab_{cons|owner_table|subscr}. Again, we take only those which are marked as being considered:
+                 */
+                $(this).find('tbody tr span.costData[data-consider="Yes"]').each( function() {
 
+                    //take the correct currency map to assign
                     var ci = costs[$(this).attr('data-billingCurrency')]
 
-                    if ($(this).attr('data-costInLocalCurrency')) {
-                        ci.local += parseFloat($(this).attr('data-costInLocalCurrency'))
+                    /*
+                        as of ERMS-804, costs can have several signs: they may be positive, negative or neutral. See the RefdataCategory 'Cost configuration'.
+                        For positive and negative costs, we have to assign different operators here
+                     */
+                    var operators = {
+                        'positive': function(a,b) { return a + b },
+                        'negative': function(a,b) { return a - b }
                     }
-                    if ($(this).attr('data-costInLocalCurrencyAfterTax')) {
-                        ci.localAfterTax += parseFloat($(this).attr('data-costInLocalCurrencyAfterTax'))
+
+                    /*
+                        Here is the actual calculation being done:
+                        we have to distinct between non-neutral and neutral cost items. We defined above operators which will be applied here.
+                        As of January 4th, 2019, it is unclear what should happen with neutral costs. We shall collect them thus in separate counters for display.
+                     */
+                    if ($(this).attr('data-elementSign') !== "${RDStore.CIEC_NEUTRAL}") {
+                        if ($(this).attr('data-costInLocalCurrency')) {
+                            ci.local = operators[$(this).attr('data-elementSign')](ci.local,parseFloat($(this).attr('data-costInLocalCurrency')))
+                        }
+                        if ($(this).attr('data-costInLocalCurrencyAfterTax')) {
+                            ci.localAfterTax = operators[$(this).attr('data-elementSign')](ci.localAfterTax,parseFloat($(this).attr('data-costInLocalCurrencyAfterTax')))
+                        }
+                        if ($(this).attr('data-costInBillingCurrency')) {
+                            ci.billing = operators[$(this).attr('data-elementSign')](ci.billing,parseFloat($(this).attr('data-costInBillingCurrency')))
+                        }
+                        if ($(this).attr('data-costInBillingCurrencyAfterTax')) {
+                            ci.billingAfterTax = operators[$(this).attr('data-elementSign')](ci.billingAfterTax,parseFloat($(this).attr('data-costInBillingCurrencyAfterTax')))
+                        }
                     }
-                    if ($(this).attr('data-costInBillingCurrency')) {
-                        ci.billing += parseFloat($(this).attr('data-costInBillingCurrency'))
+                    else if ($(this).attr('data-elementSign') === "${RDStore.CIEC_NEUTRAL}") {
+                        if ($(this).attr('data-costInBillingCurrency')) {
+                            ci.neutral += parseFloat($(this).attr('data-costInBillingCurrency'))
+                        }
+                        if ($(this).attr('data-costInBillingCurrencyAfterTax')) {
+                            ci.neutralAfterTax += parseFloat($(this).attr('data-costInBillingCurrencyAfterTax'))
+                        }
                     }
-                    if ($(this).attr('data-costInBillingCurrencyAfterTax')) {
-                        ci.billingAfterTax += parseFloat($(this).attr('data-costInBillingCurrencyAfterTax'))
-                    }
+
                 })
 
+                //this is the final counter for all local costs, independently of their currency
                 var finalLocal = 0.0
                 var finalLocalAfterTax = 0.0
 
+                //add all local costs and those after taxation
                 for (ci in costs) {
                     finalLocal += costs[ci].local
                     finalLocalAfterTax += costs[ci].localAfterTax
                 }
 
+                //display the local costs
                 var info = ""
                     info += "Wert: "
                     info += Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(finalLocal)
@@ -311,6 +363,7 @@
                     info += "Endpreis nach Steuern: "
                     info += Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(finalLocalAfterTax)
 
+                //and display each currency counter
                 for (ci in costs) {
                     info += "<br /><br /><strong>" + ci + "</strong><br />"
                     info += "Rechnungssumme: "
@@ -318,8 +371,15 @@
                     info += "<br />"
                     info += "Endpreis nach Steuern: "
                     info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billingAfterTax)
+                    info += "<br />"
+                    info += "davon neutral: "
+                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].neutral)
+                    info += "<br />"
+                    info += "Endpreis der neutralen Kosten nach Steuern: "
+                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].neutralAfterTax)
                 }
 
+                //display the calculated information
                 var socClass = $(this).find('span[class^=sumOfCosts]').attr('class')
                 $('.' + socClass).html( info )
             })
