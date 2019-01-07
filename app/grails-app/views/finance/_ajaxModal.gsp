@@ -1,5 +1,5 @@
 <!-- _ajaxModal.gsp -->
-<%@ page import="com.k_int.kbplus.*;" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.*;" %>
 <laser:serviceInjection />
 
 <g:render template="vars" /><%-- setting vars --%>
@@ -130,23 +130,23 @@
                         if(costItem?.costItemElement) {
                             def elementSign = org.costConfigurationPreset
                             if(elementSign == null)
-                                elementSign = RefdataValue.getByValueAndCategory('positive','Cost configuration')
+                                elementSign = RDStore.CIEC_POSITIVE
                             def consider = org.considerationPreset
                             if(consider == null)
-                                consider = RefdataValue.getByValueAndCategory('Yes','YN')
+                                consider = RDStore.YN_YES
                             def costItemElementConfiguration = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(costItem.costItemElement,org)
                             if(costItemElementConfiguration) {
                                 elementSign = costItemElementConfiguration.elementSign
                                 consider = costItemElementConfiguration.consider
                             }
                             switch(elementSign) {
-                                case RefdataValue.getByValueAndCategory('positive','Cost configuration'):
+                                case RDStore.CIEC_POSITIVE:
                                     tooltipString = message(code:'financials.costItemConfiguration.positive')
                                     break
-                                case RefdataValue.getByValueAndCategory('negative','Cost configuration'):
+                                case RDStore.CIEC_NEGATIVE:
                                     tooltipString = message(code:'financials.costItemConfiguration.negative')
                                     break
-                                case RefdataValue.getByValueAndCategory('neutral','Cost configuration'):
+                                case RDStore.CIEC_NEUTRAL:
                                     tooltipString = message(code:'financials.costItemConfiguration.neutral')
                                     break
                                 default:
@@ -154,10 +154,10 @@
                                     break
                             }
                             switch(consider) {
-                                case RefdataValue.getByValueAndCategory('Yes','YN'):
+                                case RDStore.YN_YES:
                                     tooltipString += ', '+message(code:'financials.costItemConfiguration.considered')
                                     break
-                                case RefdataValue.getByValueAndCategory('No','YN'):
+                                case RDStore.YN_NO:
                                     tooltipString += ', '+message(code:'financials.costItemConfiguration.notConsidered')
                                     break
                                 default:
@@ -168,13 +168,13 @@
                         //this switch is for new cost items
                         if(!costItem) {
                             switch(org.costConfigurationPreset) {
-                                case RefdataValue.getByValueAndCategory('positive','Cost configuration'):
+                                case RDStore.CIEC_POSITIVE:
                                     tooltipString = message(code:'financials.costItemConfiguration.positive')
                                     break
-                                case RefdataValue.getByValueAndCategory('negative','Cost configuration'):
+                                case RDStore.CIEC_NEGATIVE:
                                     tooltipString = message(code:'financials.costItemConfiguration.negative')
                                     break
-                                case RefdataValue.getByValueAndCategory('neutral','Cost configuration'):
+                                case RDStore.CIEC_NEUTRAL:
                                     tooltipString = message(code:'financials.costItemConfiguration.neutral')
                                     break
                                 default:
@@ -182,10 +182,10 @@
                                     break
                             }
                             switch(org.considerationPreset) {
-                                case RefdataValue.getByValueAndCategory('Yes','YN'):
+                                case RDStore.YN_YES:
                                     tooltipString += ', '+message(code:'financials.costItemConfiguration.considered')
                                     break
-                                case RefdataValue.getByValueAndCategory('No','YN'):
+                                case RDStore.YN_NO:
                                     tooltipString += ', '+message(code:'financials.costItemConfiguration.notConsidered')
                                     break
                                 default:
@@ -417,7 +417,7 @@
                     </g:else>
 
 
-                    <%--
+                    <%-- TODO for ERMS-805: this has to be reactivated
                     <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
                     <g:if test="${! inSubMode}">
                         <input name="newIe" id="newIE" disabled='disabled' data-subFilter="" data-disableReset="true" class="la-full-width" value="${params.newIe}">
@@ -480,10 +480,10 @@
             StringJoiner sj = new StringJoiner(",")
             def elementSign = org.costConfigurationPreset
             if(elementSign == null)
-                elementSign = RefdataValue.getByValueAndCategory('positive','Cost configuration')
+                elementSign = RDStore.CIEC_POSITIVE
             def consider = org.considerationPreset
             if(consider == null)
-                consider = RefdataValue.getByValueAndCategory('Yes','YN')
+                consider = RDStore.YN_YES
             costItemElement.each { cie ->
                 tooltipString = ""
                 def ciec = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(cie,org)
@@ -492,13 +492,13 @@
                     consider = ciec.consider
                 }
                 switch(elementSign) {
-                    case RefdataValue.getByValueAndCategory('positive','Cost configuration'):
+                    case RDStore.CIEC_POSITIVE:
                         tooltipString = message(code:'financials.costItemConfiguration.positive')
                         break
-                    case RefdataValue.getByValueAndCategory('negative','Cost configuration'):
+                    case RDStore.CIEC_NEGATIVE:
                         tooltipString = message(code:'financials.costItemConfiguration.negative')
                         break
-                    case RefdataValue.getByValueAndCategory('neutral','Cost configuration'):
+                    case RDStore.CIEC_NEUTRAL:
                         tooltipString = message(code:'financials.costItemConfiguration.neutral')
                         break
                     default:
@@ -506,10 +506,10 @@
                         break
                 }
                 switch(consider) {
-                    case RefdataValue.getByValueAndCategory('Yes','YN'):
+                    case RDStore.YN_YES:
                         tooltipString += ', '+message(code:'financials.costItemConfiguration.considered')
                         break
-                    case RefdataValue.getByValueAndCategory('No','YN'):
+                    case RDStore.YN_NO:
                         tooltipString += ', '+message(code:'financials.costItemConfiguration.notConsidered')
                         break
                     default:

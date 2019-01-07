@@ -1,5 +1,5 @@
 <!-- _result_tab_subscr.gsp -->
-<%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.FinanceController" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.FinanceController" %>
 
 <laser:serviceInjection />
 
@@ -36,11 +36,11 @@
                 def icon = ''
                 def dataTooltip = ""
                 if(elementSign == null) {
-                    elementSign = RefdataValue.getByValueAndCategory('positive', 'Cost configuration')
+                    elementSign = RDStore.CIEC_POSITIVE
                 }
                 def consider = org.considerationPreset
                 if(consider == null) {
-                    consider = RefdataValue.getByValueAndCategory('Yes', 'YN')
+                    consider = RDStore.YN_YES
                 }
                 if(ci.costItemElement) {
                     def cie = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(ci.costItemElement, org)
@@ -51,15 +51,15 @@
                 }
                 String cieString = "data-elementSign=${elementSign} data-consider=${consider}"
                 switch(elementSign) {
-                    case RefdataValue.getByValueAndCategory('positive','Cost configuration'):
+                    case RDStore.CIEC_POSITIVE:
                         dataTooltip = message(code:'financials.costItemConfiguration.positive')
                         icon = '<i class="check circle'
                         break
-                    case RefdataValue.getByValueAndCategory('negative','Cost configuration'):
+                    case RDStore.CIEC_NEGATIVE:
                         dataTooltip = message(code:'financials.costItemConfiguration.negative')
                         icon = '<i class="minus circle'
                         break
-                    case RefdataValue.getByValueAndCategory('neutral','Cost configuration'):
+                    case RDStore.CIEC_NEUTRAL:
                         dataTooltip = message(code:'financials.costItemConfiguration.neutral')
                         icon = '<i class="circle'
                         break
@@ -69,11 +69,11 @@
                         break
                 }
                 switch(consider) {
-                    case RefdataValue.getByValueAndCategory('Yes','YN'):
+                    case RDStore.YN_YES:
                         dataTooltip += ', '+message(code: 'financials.costItemConfiguration.considered')
                         icon += ' icon"></i>'
                         break
-                    case RefdataValue.getByValueAndCategory('No','YN'):
+                    case RDStore.YN_NO:
                         dataTooltip += ', '+message(code:'financials.costItemConfiguration.notConsidered')
                         icon += ' outline icon"></i>'
                         break
