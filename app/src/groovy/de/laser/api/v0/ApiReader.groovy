@@ -250,7 +250,7 @@ class ApiReader {
         //removed: result.license          = ApiReaderHelper.resolveLicense(sub.owner, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.License
         result.organisations        = ApiReaderHelper.resolveOrgLinks(sub.orgRelations, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
         result.previousSubscription = ApiReaderHelper.resolveSubscriptionStub(sub.previousSubscription, context) // com.k_int.kbplus.Subscription
-        result.properties           = ApiReaderHelper.resolveCustomProperties(sub.customProperties) // com.k_int.kbplus.SubscriptionCustomProperty
+        result.properties           = ApiReaderHelper.resolveCustomProperties(sub, context) // com.k_int.kbplus.SubscriptionCustomProperty
 
         // TODO refactoring with issueEntitlementService
         result.packages = ApiReaderHelper.resolvePackagesWithIssueEntitlements(sub.packages, context) // com.k_int.kbplus.SubscriptionPackage

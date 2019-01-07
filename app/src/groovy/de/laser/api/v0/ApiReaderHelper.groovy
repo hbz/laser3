@@ -381,15 +381,45 @@ class ApiReaderHelper {
         result
     }
 
-    static resolveCustomProperties(def list) {
+    static resolveCustomProperties(def generic, Org context) {
         def result = []
+        def list = generic.customProperties
 
-        list?.each { it ->       // com.k_int.kbplus.<x>CustomProperty
+        if (generic.metaClass.getMetaMethod("getCaculatedPropDefGroups")) {
+            def groups = generic.getCaculatedPropDefGroups(context)
+            def tmp = []
+
+            groups.global?.each { it ->
+                if (it.visible?.value == 'Yes') {
+                    tmp.addAll(it.getCurrentProperties(generic))
+                }
+            }
+            groups.local?.each { it ->
+                if (it.visible?.value == 'Yes') {
+                    tmp.addAll(it.getCurrentProperties(generic))
+                }
+            }
+            /* TODO groups.members?.each { it ->
+
+            } TODO */
+
+            // use all custom properties as fallback if no group found
+            if (! groups.fallback) {
+                list = tmp.unique()
+            }
+        }
+
+        list.each { it ->       // com.k_int.kbplus.<x>CustomProperty
             def tmp             = [:]
             tmp.name            = it.type?.name     // com.k_int.kbplus.PropertyDefinition.String
             tmp.description     = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
             tmp.explanation     = it.type?.expl     // com.k_int.kbplus.PropertyDefinition.String
             tmp.value           = (it.stringValue ?: (it.intValue ?: (it.decValue ?: (it.refValue?.value ?: (it.urlValue ?: (it.dateValue ?: null)))))) // RefdataValue
+
+            if (it.type.type == RefdataValue.toString()) {
+                tmp.refdataCategory = it.type.refdataCategory
+            }
+
             tmp.note            = it.note
             tmp.isPublic        = "Yes" // derived to substitute private properties tentant
 
@@ -791,7 +821,7 @@ class ApiReaderHelper {
     }
 
     static resolveProperties(def generic, Org context) {
-        def cp = resolveCustomProperties(generic.customProperties)
+        def cp = resolveCustomProperties(generic, context)
         def pp = resolvePrivateProperties(generic.privateProperties, context)
 
         pp.each { cp << it }
