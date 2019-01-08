@@ -6,17 +6,14 @@
     allOf:
       - $ref: "#/definitions/LicenseStub"
       - type: object
-        readOnly: true
         properties:
           contact:
             type: string
           dateCreated:
             type: string
             format: date
-            readOnly: true
           documents:
             type: array
-            readOnly: true
             items:
               $ref: "#/definitions/Document" # resolved DocContext
           endDate:
@@ -28,7 +25,6 @@
             enum:
               [""]
           instanceOf:
-            readOnly: true # bug fixed due #/definitions/LicenseStub(inLicense).readOnly:true
             $ref: "#/definitions/LicenseStub(inLicense)"
           lastmod:
             type: string
@@ -36,7 +32,6 @@
           lastUpdated:
             type: string
             format: date
-            readOnly: true
           licenseCategory:
             type: string
             description: Mapping RefdataCategory
@@ -55,7 +50,6 @@
           noticePeriod:
             type: string
           onixplLicense:
-            readOnly: true # bug fixed due #/definitions/OnixplLicense.readOnly:true
             $ref: "#/definitions/OnixplLicense"
     #      packages:
     #        type: array
@@ -89,7 +83,6 @@
       endDate:
         type: string
         format: date
-        example: "2011-08-31 23:55:59"
       organisation:
         $ref: "#/definitions/OrganisationStub"
         description: |
@@ -102,14 +95,12 @@
       startDate:
         type: string
         format: date
-        example: "2011-03-01 08:00:00"
 
   Package(inSubscription):
     type: object
     properties:
       globalUID:
         type: string
-        readOnly: true
         example: "package:f08250fc-257e-43d6-9528-c56d841a6b00"
       identifier:
         type: string
@@ -129,11 +120,9 @@
       endDate:
         type: string
         format: date
-        example: "2016-12-31 23:00:00"
       startDate:
         type: string
         format: date
-        example: "2016-01-01 00:00:00"
 
   PersonRole(usedAsFunction):
     allOf:
@@ -147,7 +136,6 @@
               Mapping RefdataCategory "Person Function"
             enum:
               [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Person Function').collect{ it.value }.join(', ') }]
-            example: "General contact person"
 
   PersonRole(usedAsResponsibility):
     allOf:
@@ -177,7 +165,6 @@
               Mapping RefdataCategory "Person Responsibility"
             enum:
               [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Person Responsibility').collect{ it.value }.join(', ') }]
-            example: "Specific license editor"
           subscription:
             description: |
               Exclusive with cluster, license, organisation, package and title
@@ -195,7 +182,6 @@
         properties:
           paragraph:
             type: string
-            example: "This is an important license paragraph"
 
   TitleInstancePackagePlatform(inPackage):
     allOf:

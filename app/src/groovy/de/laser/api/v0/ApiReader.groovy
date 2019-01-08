@@ -59,6 +59,7 @@ class ApiReader {
      * @param com.k_int.kbplus.Org context
      * @return
      */
+    @Deprecated
     static exportLicense(License lic, def ignoreRelation, Org context){
         def result = [:]
 
@@ -120,6 +121,7 @@ class ApiReader {
      * @param com.k_int.kbplus.Org context
      * @return
      */
+    @Deprecated
     static exportOrganisation(Org org, Org context) {
         def result = [:]
 
@@ -165,6 +167,7 @@ class ApiReader {
      * @param com.k_int.kbplus.Org context
      * @return
      */
+    @Deprecated
     static exportPackage(com.k_int.kbplus.Package pkg, Org context) {
         def result = [:]
 
@@ -293,7 +296,7 @@ class ApiReader {
     // ################### CATALOGUE ###################
 
     /**
-     * @return
+     * @return []
      */
     static exportRefdatas(){
         CacheService cacheService = grails.util.Holders.applicationContext.getBean('cacheService') as CacheService
@@ -306,8 +309,8 @@ class ApiReader {
             log.debug('refdatas from cache')
         }
         else {
-            def validLabel = { value ->
-                return (value != 'null' && value != 'null °') ? value : null
+            def validLabel = { lb ->
+                return (lb != 'null' && lb != 'null °') ? lb : null
             }
 
             RefdataCategory.where {}.sort('desc').each { rdc ->
@@ -322,8 +325,8 @@ class ApiReader {
                     def tmpRdv = [:]
 
                     tmpRdv.value = rdv.value
-                    tmpRdv.label_de = validLabel(rdc.getI10n('value', 'de'))
-                    tmpRdv.label_en = validLabel(rdc.getI10n('value', 'en'))
+                    tmpRdv.label_de = validLabel(rdv.getI10n('value', 'de'))
+                    tmpRdv.label_en = validLabel(rdv.getI10n('value', 'en'))
 
                     rdcTmp.entries << ApiReaderHelper.cleanUp(tmpRdv, true, true)
                 }
