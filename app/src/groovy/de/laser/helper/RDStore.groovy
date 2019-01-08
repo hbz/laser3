@@ -16,6 +16,9 @@ class RDStore {
     static final ORT_AGENCY = RefdataValue.getByValueAndCategory('Agency', 'OrgRoleType')
 
     static final SUBSCRIPTION_DELETED = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+    static final SUBSCRIPTION_CURRENT = RefdataValue.getByValueAndCategory('Current', 'Subscription Status')
+    static final SUBSCRIPTION_INTENDED = RefdataValue.getByValueAndCategory('Intended','Subscription Status')
+    static final SUBSCRIPTION_EXPIRED =  RefdataValue.getByValueAndCategory('Expired','Subscription Status')
     static final LICENSE_DELETED = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
 
     static final YN_YES = RefdataValue.getByValueAndCategory('Yes','YN')

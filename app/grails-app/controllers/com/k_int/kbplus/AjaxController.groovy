@@ -6,6 +6,7 @@ import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AuditConfig
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.AbstractI10nTranslatable
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import com.k_int.properties.PropertyDefinition
@@ -661,6 +662,31 @@ class AjaxController extends AbstractDebugController {
         render result as JSON
       }
     }
+  }
+
+  @Secured(['ROLE_USER'])
+  def lookupIssueEntitlements() {
+    //deploy code related to issue entitlements from FinanceController::editCostItem to here
+    def issueEntitlements = [values:[]]
+    def result = [:]
+    def org = contextService.org
+    //build up set of subscriptions which are owned by the current organisation or instances of such - or filter for a given subscription
+    def subFilter = 'in ( select s from Subscription as s where s in (select o.sub from OrgRole as o where o.org = :org and o.roleType in :orgRoles ) and s.status = :current )'
+    def filterParams = ['org':org, 'orgRoles': [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER], 'current':RDStore.SUBSCRIPTION_CURRENT]
+    if(params.sub) {
+      subFilter = '= :sub'
+      filterParams = ['sub':genericOIDService.resolveOID(params.sub)]
+    }
+    filterParams.put('query',params.q)
+    result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+subFilter+' and ie.tipp.title.title like :query',filterParams)
+    if(result.size() > 0) {
+      log.debug("issue entitlements found")
+      result.each { res ->
+        issueEntitlements.values.add([id:res.class.name+":"+res.id,text:res.tipp.title.title])
+      }
+      issueEntitlements.values.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
+    }
+    render issueEntitlements as JSON
   }
 
     @Secured(['ROLE_USER'])

@@ -61,54 +61,32 @@
             <g:set var="orgRoles" value="${OrgRole.findBySubAndRoleType(ci.sub, RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'))}" />
             <%
                 def org = contextService.getOrg()
-                def elementSign = org.costConfigurationPreset
+                def elementSign = 'notSet'
                 def icon = ''
                 def dataTooltip = ""
-                if(elementSign == null) {
-                    elementSign = RDStore.CIEC_POSITIVE
-                }
-                def consider = org.considerationPreset
-                if(consider == null) {
-                    consider = RDStore.YN_YES
-                }
                 if(ci.costItemElement) {
                     def cie = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(ci.costItemElement, org)
                     if(cie) {
                         elementSign = cie.elementSign
-                        consider = cie.consider
                     }
                 }
-                String cieString = "data-elementSign=${elementSign} data-consider=${consider}"
+                String cieString = "data-elementSign=${elementSign}"
                 switch(elementSign) {
                     case RDStore.CIEC_POSITIVE:
                         dataTooltip = message(code:'financials.costItemConfiguration.positive')
-                        icon = '<i class="check circle'
+                        icon = '<i class="plus green circle icon"></i>'
                         break
                     case RDStore.CIEC_NEGATIVE:
                         dataTooltip = message(code:'financials.costItemConfiguration.negative')
-                        icon = '<i class="minus circle'
+                        icon = '<i class="minus red circle icon"></i>'
                         break
                     case RDStore.CIEC_NEUTRAL:
                         dataTooltip = message(code:'financials.costItemConfiguration.neutral')
-                        icon = '<i class="circle'
+                        icon = '<i class="circle yellow icon"></i>'
                         break
                     default:
                         dataTooltip = message(code:'financials.costItemConfiguration.notSet')
-                        icon = '<i class="question circle'
-                        break
-                }
-                switch(consider) {
-                    case RDStore.YN_YES:
-                        dataTooltip += ', '+message(code: 'financials.costItemConfiguration.considered')
-                        icon += ' icon"></i>'
-                        break
-                    case RDStore.YN_NO:
-                        dataTooltip += ', '+message(code:'financials.costItemConfiguration.notConsidered')
-                        icon += ' outline icon"></i>'
-                        break
-                    default:
-                        dataTooltip += ', '+message(code:'financials.costItemConfiguration.considerationNotSet')
-                        icon += ' outline icon"></i><i class="question circle outline icon"></i>'
+                        icon = '<i class="question circle icon"></i>'
                         break
                 }
             %>
@@ -227,7 +205,7 @@
                 </div>
                 <div class="content">
                     <p>
-                        ${message(code: 'financials.calculationBase.paragraph1', args: [contextService.getOrg().costConfigurationPreset.getI10n('value'),contextService.getOrg().considerationPreset.getI10n('value')])}
+                        ${message(code: 'financials.calculationBase.paragraph1', args: [contextService.getOrg().costConfigurationPreset.getI10n('value')])}
                     </p>
                     <p>
                         ${message(code: 'financials.calculationBase.paragraph2')}

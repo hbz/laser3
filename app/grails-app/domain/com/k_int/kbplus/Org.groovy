@@ -52,7 +52,6 @@ class Org extends AbstractBaseDomain {
     RefdataValue funderType              // RefdataCategory 'Funder Type'
     RefdataValue libraryType             // RefdataCategory 'Library Type'
     RefdataValue costConfigurationPreset // RefdataCategory 'Cost configuration'
-    RefdataValue considerationPreset     // RefdataCategory 'YN'
 
     Set ids = []
 
@@ -113,7 +112,6 @@ class Org extends AbstractBaseDomain {
       importSource          column:'org_import_source'
     lastImportDate          column:'org_last_import_date'
     costConfigurationPreset column:'org_config_preset_rv_fk'
-    considerationPreset     column:'org_consideration_preset_rv_fk'
 
         orgRoleType joinTable: [name: 'org_roletype',
                                 key: 'org_id',
@@ -151,7 +149,6 @@ class Org extends AbstractBaseDomain {
         importSource(nullable:true, blank:true)
       lastImportDate(nullable:true, blank:true)
       costConfigurationPreset(nullable:true, blank:false)
-      considerationPreset(nullable:true, blank:false)
         orgRoleType(nullable:true, blank:true)
     }
 

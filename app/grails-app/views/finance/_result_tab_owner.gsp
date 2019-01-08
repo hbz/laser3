@@ -55,7 +55,7 @@
                     </div>
                     <div class="content">
                         <p>
-                            ${message(code: 'financials.calculationBase.paragraph1', args: [contextService.getOrg().costConfigurationPreset.getI10n('value'),contextService.getOrg().considerationPreset.getI10n('value')])}
+                            ${message(code: 'financials.calculationBase.paragraph1', args: [contextService.getOrg().costConfigurationPreset.getI10n('value')])}
                         </p>
                         <p>
                             ${message(code: 'financials.calculationBase.paragraph2')}
