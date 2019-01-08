@@ -447,12 +447,9 @@ class SemanticUiTagLib {
         out <<      '<span id="js-confirmation-term-where-detail"></span> '
         out <<      '<span id="js-confirmation-term-how"></span>'
         out <<  '?</div>'
+        out <<  '<span class="content" id="js-confirmation-term-content"></span> '
 
-        if (body) {
-            out <<   '<div class="content">'
-            out << body()
-            out <<   '</div>'
-        }
+
         out <<   '<div class="actions">'
         out <<     '<div class="ui deny button">'+ msgCancel+ '</div>'
         out <<     '<button id="js-confirmation-button" class="ui positive right labeled icon button">'+ msgDelete
@@ -461,7 +458,6 @@ class SemanticUiTagLib {
         out <<   '</div>'
         out << '</div>'
     }
-
 
 
     //<semui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="true" />

@@ -45,6 +45,8 @@ data-confirm-term-how="cancel"
 ```
 #### Use in Link
 
+##### no content 
+
 ```
 <g:link class="ui icon negative button js-open-confirm-modal"
         data-confirm-term-what="subscription"
@@ -53,6 +55,16 @@ data-confirm-term-how="cancel"
         controller="myInstitution" action="actionCurrentSubscriptions"
         params="${[curInst: institution.id, basesubscription: s.id]}">
     <i class="trash alternate icon"></i>
+</g:link>
+```
+##### with content
+```
+<g:link  class="item js-open-confirm-modal"
+        data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial', default: 'Achtung!  Dennoch fortfahren?')}"
+        data-confirm-term-how="ok"
+        action="index"
+        id="${params.id}"
+        params="${[format:'xml', transformId:transkey, mode: params.mode, filter: params.filter, asAt: params.asAt]}">${transval.name}
 </g:link>
 ```
 #### Use in Form

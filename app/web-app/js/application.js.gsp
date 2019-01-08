@@ -125,8 +125,8 @@ r2d2 = {
         $("*[data-semui='modal']").click(function() {
             $($(this).attr('href') + '.ui.modal').modal({
                 onVisible: function() {
+                    console.log("test");
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
-
                 },
                 detachable: true,
                 autofocus: false,
@@ -362,12 +362,14 @@ r2d2 = {
         var buildConfirmationModal =
             function(event,that){
                 var dataAttr = that.getAttribute("data-confirm-id")? that.getAttribute("data-confirm-id")+'_form':false;
-                var what = that.getAttribute("data-confirm-term-what")? that.getAttribute("data-confirm-term-what"):"dieses Element";
+                var what = that.getAttribute("data-confirm-term-what")? that.getAttribute("data-confirm-term-what"):"";
                 var whatDetail = that.getAttribute("data-confirm-term-what-detail")? that.getAttribute("data-confirm-term-what-detail"):false;
                 var where = that.getAttribute("data-confirm-term-where")? that.getAttribute("data-confirm-term-where"):false;
                 var whereDetail = that.getAttribute("data-confirm-term-where-detail")? that.getAttribute("data-confirm-term-where-detail"):false;
                 var how = that.getAttribute("data-confirm-term-how") ? that.getAttribute("data-confirm-term-how"):"delete";
+                var content = that.getAttribute("data-confirm-term-content")? that.getAttribute("data-confirm-term-content"):false;
                 var messageHow;
+
                 switch (how) {
                     case "delete":
                         messageHow = "löschen";
@@ -378,6 +380,9 @@ r2d2 = {
                     case "inherit":
                         messageHow = "ändern";
                         break;
+                    case "ok":
+                        messageHow = "fortfahren";
+                        break;
                     default:
                         messageHow = "löschen";
                 }
@@ -385,95 +390,102 @@ r2d2 = {
 
                 event.preventDefault();
                 // INHERIT BUTTON
+
+                var messageContent = content;
+                var messageWhat = what;
+
+
                 if (how == "inherit"){
                     switch (what) {
                         case "property":
-                            messageWhat = "die Vererbung des Merkmals";
+                            var messageWhat = "die Vererbung des Merkmals";
                             break;
                         default:
-                            messageWhat = "die Vererbung des Merkmals";
+                            var messageWhat = "die Vererbung des Merkmals";
                     }
                 }
                 // UNLINK BUTTON
                 if (how == "unlink"){
                     switch (what) {
                         case "organisationtype":
-                            messageWhat = "die Verknüpfung des Organisationstyps";
+                            var messageWhat = "die Verknüpfung des Organisationstyps";
                             break;
                         case "contact":
-                            messageWhat = "die Verknüpfung des Kontakts";
+                            var messageWhat = "die Verknüpfung des Kontakts";
                             break;
                         case "membershipSubscription" :
-                            messageWhat = "die Teilnahme der";
+                            var messageWhat = "die Teilnahme der";
                             break;
                         default:
-                            messageWhat = "die Verknüpfung des Objektes";
+                            var messageWhat = "die Verknüpfung des Objektes";
                     }
                     switch (where) {
                         case "organisation":
-                            messageWhere = "mit der Organisation";
+                            var messageWhere = "mit der Organisation";
                             break;
                         default:
-                            messageWhere = where;
+                            var messageWhere = where;
                     }
                 }
                 // DELETE BUTTON
                 if (how == "delete"){
                     switch (what) {
                         case "organisationtype":
-                            messageWhat = "den Organisationstyp";
+                            var messageWhat = "den Organisationstyp";
                             break;
                         case "task":
-                            messageWhat = "die Aufgabe";
+                            var messageWhat = "die Aufgabe";
                             break;
                         case "person":
-                            messageWhat = "die Person";
+                            var messageWhat = "die Person";
                             break;
                         case "contactItems":
-                            messageWhat = "die Kontaktdaten";
+                            var messageWhat = "die Kontaktdaten";
                             break;
                         case "contact":
-                            messageWhat = "den Kontakt";
+                            var messageWhat = "den Kontakt";
                             break;
                         case "address":
-                            messageWhat = "die Adresse";
+                            var messageWhat = "die Adresse";
                             break;
                         case "subscription":
-                            messageWhat = "die Lizenz";
+                            var messageWhat = "die Lizenz";
                             break;
                         case "license":
-                            messageWhat = "den Vertrag";
+                            var messageWhat = "den Vertrag";
                             break;
                         case "property":
-                            messageWhat = "das Merkmal";
+                            var messageWhat = "das Merkmal";
                             break;
                         case "function":
-                            messageWhat = "die Funktion";
+                            var messageWhat = "die Funktion";
                             break;
                         case "user":
-                            messageWhat = "den Benutzer";
+                            var messageWhat = "den Benutzer";
                             break;
                         default:
-                            messageWhat = what;
+                            var messageWhat = what;
                     }
                     switch (where) {
                         case "organisation":
-                            messageWhere = "aus der Organisation";
+                            var messageWhere = "aus der Organisation";
                             break;
                         case "addressbook":
-                            messageWhere = "aus dem Adressbuch";
+                            var messageWhere = "aus dem Adressbuch";
                             break;
                         case "system":
-                            messageWhere = "aus dem System";
+                            var messageWhere = "aus dem System";
                             break;
                         default:
-                            messageWhere = "aus dem System";
+                            var messageWhere = "aus dem System";
                     }
                 }
                 $('#js-confirmation-term-what').text(messageWhat); // Should be always set - otherwise "dieses Element"
+                //whatDetail ? $('#js-confirmation-term-what').text(messageWhat) : $("#js-confirmation-term-what").remove();
                 whatDetail ? $('#js-confirmation-term-what-detail').text(whatDetail) : $("#js-confirmation-term-what-detail").remove();
                 whereDetail ? $('#js-confirmation-term-where-detail').text(whereDetail) : $("#js-confirmation-term-where-detail").remove();
                 where ? $('#js-confirmation-term-where').text(messageWhere) : $("#js-confirmation-term-where").remove();
+                content ? $('#js-confirmation-term-content').text(messageContent) : $("#js-confirmation-term-content").remove();
                 $('#js-confirmation-term-how').text(messageHow); // Should be always set - otherwise "delete"
                 switch (how) {
                     case "delete":
@@ -484,6 +496,9 @@ r2d2 = {
                         break;
                     case "inherit":
                         $('#js-confirmation-button').html('Vererbung ändern<i class="thumbtack icon"></i>');
+                        break;
+                    case "ok":
+                        $('#js-confirmation-button').html('OK<i class="check icon"></i>');
                         break;
                     default:
                         $('').html('Entfernen<i class="x icon"></i>');

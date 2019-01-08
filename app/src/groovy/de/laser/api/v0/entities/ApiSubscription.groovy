@@ -2,10 +2,12 @@ package de.laser.api.v0.entities
 
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.User
 import de.laser.helper.Constants
 import de.laser.api.v0.ApiReader
+import de.laser.helper.RDStore
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 
@@ -51,15 +53,24 @@ class ApiSubscription {
         def result = []
 
         if (! hasAccess) {
-            sub.orgRelations.each { orgRole ->
+            if (OrgRole.findBySubAndRoleType(sub, RDStore.OR_SUBSCRIPTION_CONSORTIA)) {
+                hasAccess = true
+            }
+            else if (OrgRole.findBySubAndRoleType(sub, RDStore.OR_SUBSCRIBER)) {
+                hasAccess = true
+            }
+            else if (OrgRole.findBySubAndRoleType(sub, RDStore.OR_SUBSCRIBER_CONS)) {
+                hasAccess = true
+            }
+            /* sub.orgRelations.each { orgRole ->
                 if (orgRole.getOrg().id == context?.id) {
                     hasAccess = true
                 }
-            }
+            } */
         }
 
         if (hasAccess) {
-            result = ApiReader.exportSubscription(sub, context) // TODO check orgRole.roleType
+            result = ApiReader.exportSubscription(sub, context)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)

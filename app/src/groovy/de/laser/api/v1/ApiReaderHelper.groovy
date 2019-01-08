@@ -435,6 +435,8 @@ class ApiReaderHelper {
             tmp.description     = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
             tmp.value           = (it.stringValue ? it.stringValue : (it.intValue ? it.intValue : (it.decValue ? it.decValue : (it.refValue?.value ? it.refValue?.value : null)))) // RefdataValue
             tmp.note            = it.note
+            tmp.type            = it.type?.type
+            tmp.refdataCategory = it.type?.refdataCategory ?: null
             tmp.isPublic        = "Yes" // derived to substitute private properties tentant
 
             if (it instanceof LicenseCustomProperty) {
@@ -822,6 +824,8 @@ class ApiReaderHelper {
             //tmp.tenant          = resolveOrganisationStub(it.tenant, context) // com.k_int.kbplus.Org
             tmp.value           = (it.stringValue ? it.stringValue : (it.intValue ? it.intValue : (it.decValue ? it.decValue : (it.refValue?.value ? it.refValue?.value : null)))) // RefdataValue
             tmp.note            = it.note
+            tmp.type            = it.type?.type
+            tmp.refdataCategory = it.type?.refdataCategory ?: null
 
             if(it.type.tenant?.id == context.id) {
                 tmp.isPublic    = "No" // derived to substitute tentant

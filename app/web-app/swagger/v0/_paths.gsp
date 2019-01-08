@@ -2,6 +2,29 @@
 ### endpoints ###
 
 paths:
+
+  /refdatas:
+    get:
+      tags:
+      - Catalogues
+      summary: Catalogue of refdatas
+      description: >
+        An Overview for RefdataCategories and RefdataValues
+      parameters:
+        - $ref: "#/parameters/q"
+        - $ref: "#/parameters/v"
+        - $ref: "#/parameters/context"
+        - $ref: "#/parameters/authorization"
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Refdatas"
+        401:
+          $ref: "#/responses/notAuthorized"
+
   /document:
     get:
       tags:

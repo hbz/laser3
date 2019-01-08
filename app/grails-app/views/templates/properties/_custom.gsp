@@ -98,12 +98,13 @@
                     </td>
                     <td class="x">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
                         <g:if test="${prop.type.type == URL.toString()}">
-                            <semui:xEditable owner="${prop}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" />
-                            <span data-position="top right" data-tooltip="Diese URL aufrufen ..">
-                                <a href="${prop.value}" target="_blank" class="ui icon blue button">
-                                    <i class="share square icon"></i>
-                                </a>
-                            </span>
+                            <g:if test="${prop.value}">
+                                <span data-position="top right" data-tooltip="Diese URL aufrufen ..">
+                                    <a href="${prop.value}" target="_blank" class="ui icon blue button">
+                                        <i class="share square icon"></i>
+                                    </a>
+                                </span>
+                            </g:if>
                         </g:if>
                         <g:if test="${editable == true}">
                             <g:if test="${ownobj.hasProperty('instanceOf') && showConsortiaFunctions}">

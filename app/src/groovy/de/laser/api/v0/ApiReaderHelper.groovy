@@ -101,6 +101,7 @@ class ApiReaderHelper {
 
     // ################### STUBS ###################
 
+    @Deprecated
     static resolveClusterStub(Cluster cluster) {
         def result = [:]
         if (cluster) {
@@ -381,15 +382,45 @@ class ApiReaderHelper {
         result
     }
 
-    static resolveCustomProperties(def list) {
+    static resolveCustomProperties(def generic, Org context) {
         def result = []
+        def list = generic.customProperties
 
-        list?.each { it ->       // com.k_int.kbplus.<x>CustomProperty
+        if (generic.metaClass.getMetaMethod("getCaculatedPropDefGroups")) {
+            def groups = generic.getCaculatedPropDefGroups(context)
+            def tmp = []
+
+            groups.global?.each { it ->
+                if (it.visible?.value == 'Yes') {
+                    tmp.addAll(it.getCurrentProperties(generic))
+                }
+            }
+            groups.local?.each { it ->
+                if (it.visible?.value == 'Yes') {
+                    tmp.addAll(it.getCurrentProperties(generic))
+                }
+            }
+            /* TODO groups.members?.each { it ->
+
+            } TODO */
+
+            // use all custom properties as fallback if no group found
+            if (! groups.fallback) {
+                list = tmp.unique()
+            }
+        }
+
+        list.each { it ->       // com.k_int.kbplus.<x>CustomProperty
             def tmp             = [:]
             tmp.name            = it.type?.name     // com.k_int.kbplus.PropertyDefinition.String
             tmp.description     = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
             tmp.explanation     = it.type?.expl     // com.k_int.kbplus.PropertyDefinition.String
             tmp.value           = (it.stringValue ?: (it.intValue ?: (it.decValue ?: (it.refValue?.value ?: (it.urlValue ?: (it.dateValue ?: null)))))) // RefdataValue
+
+            if (it.type.type == RefdataValue.toString()) {
+                tmp.refdataCategory = it.type.refdataCategory
+            }
+
             tmp.note            = it.note
             tmp.isPublic        = "Yes" // derived to substitute private properties tentant
 
@@ -438,7 +469,8 @@ class ApiReaderHelper {
         def result = []
         list?.each { it ->   // com.k_int.kbplus.IdentifierOccurrence
             def tmp = [:]
-            tmp.put( it.identifier?.ns?.ns , it.identifier?.value )
+            tmp.put( 'namespace', it.identifier?.ns?.ns )
+            tmp.put( 'value', it.identifier?.value )
 
             tmp = cleanUp(tmp, true, true)
             result << tmp
@@ -791,7 +823,7 @@ class ApiReaderHelper {
     }
 
     static resolveProperties(def generic, Org context) {
-        def cp = resolveCustomProperties(generic.customProperties)
+        def cp = resolveCustomProperties(generic, context)
         def pp = resolvePrivateProperties(generic.privateProperties, context)
 
         pp.each { cp << it }
@@ -891,22 +923,22 @@ class ApiReaderHelper {
         }
 
         result.globalUID        = tipp.globalUID
-        result.accessStartDate  = tipp.accessStartDate
-        result.accessEndDate    = tipp.accessEndDate
-        result.coreStatusStart  = tipp.coreStatusStart
-        result.coreStatusEnd    = tipp.coreStatusEnd
-        result.coverageDepth    = tipp.coverageDepth
-        result.coverageNote     = tipp.coverageNote
-        result.embargo          = tipp.embargo
-        result.endDate          = tipp.endDate
-        result.endVolume        = tipp.endVolume
-        result.endIssue         = tipp.endIssue
+        //result.accessStartDate  = tipp.accessStartDate     // duplicate information in IE
+        //result.accessEndDate    = tipp.accessEndDate       // duplicate information in IE
+        //result.coreStatusStart  = tipp.coreStatusStart     // duplicate information in IE
+        //result.coreStatusEnd    = tipp.coreStatusEnd       // duplicate information in IE
+        //result.coverageDepth    = tipp.coverageDepth       // duplicate information in IE
+        //result.coverageNote     = tipp.coverageNote        // duplicate information in IE
+        //result.embargo          = tipp.embargo             // duplicate information in IE
+        //result.endDate          = tipp.endDate             // duplicate information in IE
+        //result.endVolume        = tipp.endVolume           // duplicate information in IE
+        //result.endIssue         = tipp.endIssue            // duplicate information in IE
         result.hostPlatformURL  = tipp.hostPlatformURL
         result.impId            = tipp.impId
         result.rectype          = tipp.rectype
-        result.startDate        = tipp.startDate
-        result.startIssue       = tipp.startIssue
-        result.startVolume      = tipp.startVolume
+        //result.startDate        = tipp.startDate           // duplicate information in IE
+        //result.startIssue       = tipp.startIssue          // duplicate information in IE
+        //result.startVolume      = tipp.startVolume          // duplicate information in IE
 
         // RefdataValues
         result.status           = tipp.status?.value
@@ -917,10 +949,10 @@ class ApiReaderHelper {
         result.payment          = tipp.payment?.value
 
         // References
-        result.additionalPlatforms = resolvePlatformTipps(tipp.additionalPlatforms) // com.k_int.kbplus.PlatformTIPP
-        result.identifiers      = resolveIdentifiers(tipp.ids)       // com.k_int.kbplus.IdentifierOccurrence
-        result.platform         = resolvePlatformStub(tipp.platform) // com.k_int.kbplus.Platform
-        result.title            = resolveTitleStub(tipp.title)       // com.k_int.kbplus.TitleInstance
+        result.additionalPlatforms  = resolvePlatformTipps(tipp.additionalPlatforms) // com.k_int.kbplus.PlatformTIPP
+        result.identifiers          = resolveIdentifiers(tipp.ids)       // com.k_int.kbplus.IdentifierOccurrence
+        result.platform             = resolvePlatformStub(tipp.platform) // com.k_int.kbplus.Platform
+        result.title                = resolveTitleStub(tipp.title)       // com.k_int.kbplus.TitleInstance
 
         if (ignoreRelation != IGNORE_ALL) {
             if (ignoreRelation != IGNORE_PACKAGE) {

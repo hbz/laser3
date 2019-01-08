@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.*
 import de.laser.ContextService
 import de.laser.api.v0.ApiManager
+import de.laser.api.v0.ApiReader
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.Constants
 import grails.converters.JSON
@@ -371,7 +372,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
         if (! result) {
             if ('GET' == request.method) {
-                if (!query || !value) {
+                if ((!query || !value) /*&& ! ApiReader.SUPPORTED_SIMPLE_QUERIES.contains(obj)*/) {
                     result = Constants.HTTP_BAD_REQUEST
                 }
                 else {
