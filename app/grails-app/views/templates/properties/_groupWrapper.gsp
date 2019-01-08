@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Subscription; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.*" %>
 <laser:serviceInjection />
-<!-- _propertiesParts -->
+<!-- _groupWrapper -->
 
 <%-- SHOW --%>
 <div class="ui card la-dl-no-table">
@@ -37,4 +37,4 @@
         });
 </r:script>
 
-<!-- _propertiesParts -->
+<!-- _groupWrapper -->

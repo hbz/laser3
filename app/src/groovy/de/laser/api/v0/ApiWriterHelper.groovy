@@ -33,7 +33,7 @@ class ApiWriterHelper {
     static getAddresses(def data, Org ownerOrg, Person ownerPerson) {
         def addresses = []
 
-        data.each { it ->
+        data?.each { it ->
             def address = new Address(
                     street_1: it.street1,
                     street_2: it.street2,
@@ -59,7 +59,7 @@ class ApiWriterHelper {
     static getContacts(def data, Org ownerOrg, Person ownerPerson) {
         def contacts = []
 
-        data.each { it ->
+        data?.each { it ->
             def contact = new Contact(
                     content: it.content
             )
@@ -83,7 +83,7 @@ class ApiWriterHelper {
                 'personRoles': []
         ]
 
-        data.each { it ->
+        data?.each { it ->
             def person = new Person(
                     first_name:  it.firstName,
                     middle_name: it.middleName,
@@ -129,7 +129,7 @@ class ApiWriterHelper {
     static getIdentifiers(HashMap data, def owner) {
         def idenfifierOccurences = []
 
-        data.each { it ->
+        data?.each { it ->
             def identifier = Identifier.lookupOrCreateCanonicalIdentifier(it.key, it.value) // TODO test
             def idenfifierOccurence = new IdentifierOccurrence(
                     identifier: identifier
@@ -144,7 +144,7 @@ class ApiWriterHelper {
     static getOrgLinks(def data, def owner, Org context) {
         def result = []
 
-        data.each { it ->   // com.k_int.kbplus.OrgRole
+        data?.each { it ->   // com.k_int.kbplus.OrgRole
 
             // check existing resources
             def check = []
@@ -197,7 +197,7 @@ class ApiWriterHelper {
                 'private': []
         ]
 
-        data.each { it ->
+        data?.each { it ->
             def property
             def isPublic = getRefdataValue(it.isPublic?.value,"YN")
 

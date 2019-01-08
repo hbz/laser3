@@ -1,12 +1,13 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserRole
+import de.laser.api.v0.catalogue.ApiRefdatas
 import de.laser.api.v0.entities.*
 import de.laser.helper.Constants
 import grails.converters.JSON
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.springframework.http.HttpStatus
@@ -16,7 +17,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = 'Variant 0 :: Version 0.14'
+    static final VERSION = 'Variant 0 :: Version 0.15'
     static final NOT_SUPPORTED = false
 
     /**
@@ -101,6 +102,14 @@ class ApiManager {
                 if (result && !(result in failureCodes)) {
                     result = ApiPkg.getPackage((Package) result, contextOrg, hasAccess)
                 }
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
+            }
+        }
+        else if ('refdatas'.equalsIgnoreCase(obj)) {
+            if (format in ApiReader.SUPPORTED_FORMATS.refdatas) {
+                result = ApiRefdatas.getAllRefdatas()
             }
             else {
                 return Constants.HTTP_NOT_ACCEPTABLE
@@ -237,7 +246,12 @@ class ApiManager {
             response << HttpStatus.NOT_FOUND.value()
         }
         else {
-            response << result
+            if (result instanceof List) {
+                response << new JSON(result)
+            }
+            else {
+                response << result
+            }
             response << HttpStatus.OK.value()
         }
 

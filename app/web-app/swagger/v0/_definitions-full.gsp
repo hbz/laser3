@@ -636,6 +636,10 @@
             type: string
             format: date
             readOnly: true
+    #      derivedSubscriptions:
+    #        type: array
+    #        items:
+    #          $ref: "#/definitions/SubscriptionStub"
           documents:
             type: array
             readOnly: true
@@ -755,18 +759,18 @@
       - type: object
         description: TODO
         properties:
-          accessStartDate:
-            type: string
-          accessEndDate:
-            type: string
-          coreStatusStart:
-            type: string
-          coreStatusEnd:
-            type: string
-          coverageDepth:
-            type: string
-          coverageNote:
-            type: string
+  #        accessStartDate:
+  #          type: string
+  #        accessEndDate:
+  #          type: string
+  #        coreStatusStart:
+  #          type: string
+  #        coreStatusEnd:
+  #          type: string
+  #        coverageDepth:
+  #          type: string
+  #        coverageNote:
+  #          type: string
           delayedOA:
             type: string
             description: Mapping RefdataCategory
@@ -774,14 +778,14 @@
               [""]
     #      derivedFrom:
     #        $ref: "#/definitions/TitleInstancePackagePlatformStub"
-          embargo:
-            type: string
-          endDate:
-            type: string
-          endVolume:
-            type: string
-          endIssue:
-            type: string
+  #        embargo:
+  #          type: string
+  #        endDate:
+  #          type: string
+  #        endVolume:
+  #          type: string
+  #        endIssue:
+  #          type: string
           hostPlatformURL:
             type: string
           hybridOA:
@@ -807,12 +811,12 @@
             $ref: "#/definitions/PlatformStub"
           rectype:
             type: string
-          startDate:
-            type: string
-          startIssue:
-            type: string
-          startVolume:
-            type: string
+  #        startDate:
+  #          type: string
+  #        startIssue:
+  #          type: string
+  #        startVolume:
+  #          type: string
           status:
             type: string
             description: Mapping RefdataCategory
