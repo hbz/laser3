@@ -4,6 +4,7 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserRole
+import de.laser.CacheService
 import de.laser.api.v0.entities.ApiDoc
 import de.laser.api.v0.entities.ApiIssueEntitlement
 import de.laser.api.v0.entities.ApiLicense
@@ -24,7 +25,13 @@ class ApiReader {
             'onixpl':               [Constants.MIME_APPLICATION_XML],
             'organisation':         [Constants.MIME_APPLICATION_JSON],
             'package':              [Constants.MIME_APPLICATION_JSON],
+            'refdatas':             [Constants.MIME_APPLICATION_JSON],
             'subscription':         [Constants.MIME_APPLICATION_JSON]
+    ]
+
+    static SUPPORTED_SIMPLE_QUERIES = [
+            "refdataCategories",
+            "refdataValues"
     ]
 
     /**
@@ -243,14 +250,27 @@ class ApiReader {
         // References
 
         result.documents            = ApiReaderHelper.resolveDocuments(sub.documents) // com.k_int.kbplus.DocContext
-        result.derivedSubscriptions = ApiReaderHelper.resolveStubs(sub.derivedSubscriptions, ApiReaderHelper.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
+        //result.derivedSubscriptions = ApiReaderHelper.resolveStubs(sub.derivedSubscriptions, ApiReaderHelper.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
         result.identifiers          = ApiReaderHelper.resolveIdentifiers(sub.ids) // com.k_int.kbplus.IdentifierOccurrence
         result.instanceOf           = ApiReaderHelper.resolveSubscriptionStub(sub.instanceOf, context) // com.k_int.kbplus.Subscription
         result.license              = ApiReaderHelper.resolveLicenseStub(sub.owner, context) // com.k_int.kbplus.License
         //removed: result.license          = ApiReaderHelper.resolveLicense(sub.owner, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.License
-        result.organisations        = ApiReaderHelper.resolveOrgLinks(sub.orgRelations, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
+
+        //result.organisations        = ApiReaderHelper.resolveOrgLinks(sub.orgRelations, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
         result.previousSubscription = ApiReaderHelper.resolveSubscriptionStub(sub.previousSubscription, context) // com.k_int.kbplus.Subscription
         result.properties           = ApiReaderHelper.resolveCustomProperties(sub, context) // com.k_int.kbplus.SubscriptionCustomProperty
+
+        def allOrgRoles = []
+        sub.derivedSubscriptions.each { member ->
+            allOrgRoles.addAll(
+                OrgRole.findAllBySubAndRoleType(member, RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'))
+            )
+            allOrgRoles.addAll(
+                OrgRole.findAllBySubAndRoleType(member, RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role'))
+            )
+        }
+        allOrgRoles.addAll(sub.orgRelations)
+        result.organisations = ApiReaderHelper.resolveOrgLinks(allOrgRoles, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
 
         // TODO refactoring with issueEntitlementService
         result.packages = ApiReaderHelper.resolvePackagesWithIssueEntitlements(sub.packages, context) // com.k_int.kbplus.SubscriptionPackage
@@ -268,6 +288,50 @@ class ApiReader {
         // result.costItems    = exportHelperService.resolveCostItems(sub.costItems) // com.k_int.kbplus.CostItem
 
         return ApiReaderHelper.cleanUp(result, true, true)
+    }
+
+    // ################### CATALOGUE ###################
+
+    /**
+     * @return
+     */
+    static exportRefdatas(){
+        CacheService cacheService = grails.util.Holders.applicationContext.getBean('cacheService') as CacheService
+
+        def cache = cacheService.getTTL1800Cache('ApiReader/exportRefdatas/')
+        def result = []
+
+        if (cache.get('refdatas')) {
+            result = cache.get('refdatas')
+            log.debug('refdatas from cache')
+        }
+        else {
+            def validLabel = { value ->
+                return (value != 'null' && value != 'null °') ? value : null
+            }
+
+            RefdataCategory.where {}.sort('desc').each { rdc ->
+                def rdcTmp = [:]
+
+                rdcTmp.desc = rdc.desc
+                rdcTmp.label_de = validLabel(rdc.getI10n('desc', 'de'))
+                rdcTmp.label_en = validLabel(rdc.getI10n('desc', 'en'))
+                rdcTmp.entries = []
+
+                RefdataCategory.getAllRefdataValues(rdc.desc).each { rdv ->
+                    def tmpRdv = [:]
+
+                    tmpRdv.value = rdv.value
+                    tmpRdv.label_de = validLabel(rdc.getI10n('value', 'de'))
+                    tmpRdv.label_en = validLabel(rdc.getI10n('value', 'en'))
+
+                    rdcTmp.entries << ApiReaderHelper.cleanUp(tmpRdv, true, true)
+                }
+                result << ApiReaderHelper.cleanUp(rdcTmp, true, true)
+            }
+            cache.put('refdatas', result)
+        }
+        result
     }
 
     // ################### HELPER ###################

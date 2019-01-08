@@ -59,6 +59,8 @@ tags:
 
 definitions:
 
+<g:render template="/swagger/v0/definitions-catalogues" />
+
 <g:render template="/swagger/v0/definitions-stubs" />
 
 <g:render template="/swagger/v0/definitions-full" />

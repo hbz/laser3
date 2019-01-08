@@ -921,22 +921,22 @@ class ApiReaderHelper {
         }
 
         result.globalUID        = tipp.globalUID
-        result.accessStartDate  = tipp.accessStartDate
-        result.accessEndDate    = tipp.accessEndDate
-        result.coreStatusStart  = tipp.coreStatusStart
-        result.coreStatusEnd    = tipp.coreStatusEnd
-        result.coverageDepth    = tipp.coverageDepth
-        result.coverageNote     = tipp.coverageNote
-        result.embargo          = tipp.embargo
-        result.endDate          = tipp.endDate
-        result.endVolume        = tipp.endVolume
-        result.endIssue         = tipp.endIssue
+        //result.accessStartDate  = tipp.accessStartDate     // duplicate information in IE
+        //result.accessEndDate    = tipp.accessEndDate       // duplicate information in IE
+        //result.coreStatusStart  = tipp.coreStatusStart     // duplicate information in IE
+        //result.coreStatusEnd    = tipp.coreStatusEnd       // duplicate information in IE
+        //result.coverageDepth    = tipp.coverageDepth       // duplicate information in IE
+        //result.coverageNote     = tipp.coverageNote        // duplicate information in IE
+        //result.embargo          = tipp.embargo             // duplicate information in IE
+        //result.endDate          = tipp.endDate             // duplicate information in IE
+        //result.endVolume        = tipp.endVolume           // duplicate information in IE
+        //result.endIssue         = tipp.endIssue            // duplicate information in IE
         result.hostPlatformURL  = tipp.hostPlatformURL
         result.impId            = tipp.impId
         result.rectype          = tipp.rectype
-        result.startDate        = tipp.startDate
-        result.startIssue       = tipp.startIssue
-        result.startVolume      = tipp.startVolume
+        //result.startDate        = tipp.startDate           // duplicate information in IE
+        //result.startIssue       = tipp.startIssue          // duplicate information in IE
+        //result.startVolume      = tipp.startVolume          // duplicate information in IE
 
         // RefdataValues
         result.status           = tipp.status?.value
@@ -947,10 +947,10 @@ class ApiReaderHelper {
         result.payment          = tipp.payment?.value
 
         // References
-        result.additionalPlatforms = resolvePlatformTipps(tipp.additionalPlatforms) // com.k_int.kbplus.PlatformTIPP
-        result.identifiers      = resolveIdentifiers(tipp.ids)       // com.k_int.kbplus.IdentifierOccurrence
-        result.platform         = resolvePlatformStub(tipp.platform) // com.k_int.kbplus.Platform
-        result.title            = resolveTitleStub(tipp.title)       // com.k_int.kbplus.TitleInstance
+        result.additionalPlatforms  = resolvePlatformTipps(tipp.additionalPlatforms) // com.k_int.kbplus.PlatformTIPP
+        result.identifiers          = resolveIdentifiers(tipp.ids)       // com.k_int.kbplus.IdentifierOccurrence
+        result.platform             = resolvePlatformStub(tipp.platform) // com.k_int.kbplus.Platform
+        result.title                = resolveTitleStub(tipp.title)       // com.k_int.kbplus.TitleInstance
 
         if (ignoreRelation != IGNORE_ALL) {
             if (ignoreRelation != IGNORE_PACKAGE) {

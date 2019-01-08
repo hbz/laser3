@@ -196,7 +196,7 @@
                 var digest        = CryptoJS.HmacSHA256(method + path + timestamp + nounce + query + body, key)
                 var authorization = "hmac " + id + ":" + timestamp + ":" + nounce + ":" + digest + "," + algorithm
 
-                if (false) {
+                if (true) {
                     console.log('id: ' + id)
                     console.log('key: ' + key)
                     console.log('method: ' + method)
