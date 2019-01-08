@@ -83,11 +83,13 @@
                     </td>
                     <td class="x">
                         <g:if test="${prop.type.type == URL.toString()}">
-                            <span data-position="top right" data-tooltip="Diese URL aufrufen ..">
-                                <a href="${prop.value}" target="_blank" class="ui icon blue button">
-                                    <i class="share square icon"></i>
-                                </a>
-                            </span>
+                            <g:if test="${prop.value}">
+                                <span data-position="top right" data-tooltip="Diese URL aufrufen ..">
+                                    <a href="${prop.value}" target="_blank" class="ui icon blue button">
+                                        <i class="share square icon"></i>
+                                    </a>
+                                </span>
+                            </g:if>
                         </g:if>
                         <g:if test="${overwriteEditable == true}">
                             <button class="ui icon negative button js-open-confirm-modal-copycat">
