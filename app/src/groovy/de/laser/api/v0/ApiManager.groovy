@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = 'Variant 0 :: Version 0.15'
+    static final VERSION = 'Variant 0 :: Version 0.16'
     static final NOT_SUPPORTED = false
 
     /**
@@ -30,8 +30,8 @@ class ApiManager {
     static read(String obj, String query, String value, User user, Org contextOrg, String format) {
         def result
 
-        def failureCodes = [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED]
-        def hasAccess    = ApiReader.isDataManager(user)
+        def failureCodes  = [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED]
+        def accessDueDatamanager = ApiReader.isDataManager(user)
 
         log.debug("API-READ: ${obj} (${format}) @ ${query}:${value}")
 
@@ -39,7 +39,7 @@ class ApiManager {
             //if (format in ApiReader.SUPPORTED_FORMATS.document) {
                 result = ApiDoc.findDocumentBy(query, value)
                 if (result && !(result in failureCodes)) {
-                    result = ApiDoc.getDocument((Doc) result, contextOrg, hasAccess)
+                    result = ApiDoc.getDocument((Doc) result, contextOrg, accessDueDatamanager)
                 }
             //}
         }
@@ -47,7 +47,7 @@ class ApiManager {
             if (format in ApiReader.SUPPORTED_FORMATS.issueEntitlements) {
                 def subPkg = ApiIssueEntitlement.findSubscriptionPackageBy(query, value)
                 if (subPkg && !(subPkg in failureCodes) ) {
-                    result = ApiIssueEntitlement.getIssueEntitlements(subPkg, contextOrg, hasAccess)
+                    result = ApiIssueEntitlement.getIssueEntitlements(subPkg, contextOrg, accessDueDatamanager)
 
                     if (result && format == Constants.MIME_TEXT_PLAIN) {
                         def kbart = ApiKbartConverter.convertIssueEntitlements(result)
@@ -64,7 +64,7 @@ class ApiManager {
                 result = ApiLicense.findLicenseBy(query, value)
 
                 if (result && !(result in failureCodes)) {
-                    result = ApiLicense.getLicense((License) result, contextOrg, hasAccess)
+                    result = ApiLicense.getLicense((License) result, contextOrg, accessDueDatamanager)
                 }
             }
             else {
@@ -76,7 +76,7 @@ class ApiManager {
                 def lic = ApiLicense.findLicenseBy(query, value)
 
                 if (lic && !(lic in failureCodes)) {
-                    result = ApiDoc.getOnixPlDocument((License) lic, contextOrg, hasAccess)
+                    result = ApiDoc.getOnixPlDocument((License) lic, contextOrg, accessDueDatamanager)
                 }
             }
             else {
@@ -88,7 +88,7 @@ class ApiManager {
                 result = ApiOrg.findOrganisationBy(query, value)
 
                 if (result && !(result in failureCodes)) {
-                    result = ApiOrg.getOrganisation((Org) result, contextOrg, hasAccess)
+                    result = ApiOrg.getOrganisation((Org) result, contextOrg, accessDueDatamanager)
                 }
             }
             else {
@@ -100,7 +100,7 @@ class ApiManager {
                 result = ApiPkg.findPackageBy(query, value)
 
                 if (result && !(result in failureCodes)) {
-                    result = ApiPkg.getPackage((Package) result, contextOrg, hasAccess)
+                    result = ApiPkg.getPackage((Package) result, contextOrg, accessDueDatamanager)
                 }
             }
             else {
@@ -120,7 +120,7 @@ class ApiManager {
                 result = ApiSubscription.findSubscriptionBy(query, value)
 
                 if (result && !(result in failureCodes)) {
-                    result = ApiSubscription.getSubscription((Subscription) result, contextOrg, hasAccess)
+                    result = ApiSubscription.getSubscription((Subscription) result, contextOrg, accessDueDatamanager)
                 }
             }
             else {
@@ -134,6 +134,7 @@ class ApiManager {
         result
     }
 
+    @Deprecated
     static write(String obj, JSONObject data, User user, Org contextOrg) {
         def result
 
