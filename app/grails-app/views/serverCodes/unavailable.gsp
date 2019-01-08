@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} - ${message(code: 'serverCode.forbidden.message2')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} - Service Unavailable</title>
 </head>
 
 <body>
@@ -10,13 +10,14 @@
 <semui:card>
     <div class="content">
         <h3 class="ui header">
-            ${message(code: 'serverCode.forbidden.message2')}
+            <i class="icon meh outline"></i>
+            Service Unavailable
         </h3>
 
         <g:if test="${!flash.error}">
             <div>
-                <p>${message(code: 'serverCode.forbidden.message')}</p>
-                <br/>
+                <p>Die angefragte Funktion steht zur Zeit nicht zur Verfügung. Bitte versuchen Sie es später erneut.</p>
+                    <br/>
 
                 <p>
                     <button class="ui button"
@@ -28,3 +29,4 @@
 </semui:card>
 </body>
 </html>
+
