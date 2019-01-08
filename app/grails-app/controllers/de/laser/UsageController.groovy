@@ -24,7 +24,16 @@ class UsageController extends AbstractDebugController {
 
     @Secured(['ROLE_STATISTICS_EDITOR','ROLE_ADMIN'])
     def index() {
+
+        render(view: '/serverCodes/unavailable')
+        return null
+
+        // TODO ---> DEACTIVATED
+        // TODO ---> DEACTIVATED
+        // TODO ---> DEACTIVATED
+
         def result = initResult()
+
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 

@@ -1,4 +1,8 @@
 
+0.12.1
+
+- temporary deactivated usage and statistics
+
 0.12
 
 - reintroduction and improvement of finance overview page
