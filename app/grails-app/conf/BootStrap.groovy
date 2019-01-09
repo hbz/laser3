@@ -21,6 +21,7 @@ class BootStrap {
             RdC:    RefdataCategory.toString(),
             Rdv:    RefdataValue.toString(),
             String: String.toString(),
+            URL:    URL.toString()
     ]
 
     def init = { servletContext ->
@@ -589,7 +590,8 @@ class BootStrap {
                 [name: [en: "Eingeschränkter Benutzerkreis", de: "Eingeschränkter Benutzerkreis"],      descr:allDescr, type: OT.String],
                 [name: [en: "SFX-Eintrag", de: "SFX-Eintrag"],                      descr:allDescr, type: OT.Rdv, cat:'YN'],
                 [name: [en: "GASCO-Anzeigename", de: "GASCO-Anzeigename"],          descr:allDescr, type: OT.String],
-                [name: [en: "GASCO-Verhandlername", de: "GASCO-Verhandlername"],    descr:allDescr, type: OT.String]
+                [name: [en: "GASCO-Verhandlername", de: "GASCO-Verhandlername"],    descr:allDescr, type: OT.String],
+                [name: [en: "GASCO-Information-Link", de: "GASCO-Informations-Link"],    descr:allDescr, type: OT.URL]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
     }
@@ -776,6 +778,7 @@ class BootStrap {
         RefdataCategory.loc('ContactContentType',   	                    [en: 'Type of Contact', de: 'Kontakttyp'], BOOTSTRAP)
         RefdataCategory.loc('ContactType',          	                    [en: 'Contact Type', de: 'Art des Kontaktes'], BOOTSTRAP)
         RefdataCategory.loc('CoreStatus',           	                    [en: 'Core Status', de: 'Kerntitel-Status'], BOOTSTRAP)
+        RefdataCategory.loc('Cost configuration',                        [en: 'Cost configuration', de: 'Kostenkonfiguration'], BOOTSTRAP)
         RefdataCategory.loc('Country',              	                    [en: 'Country', de: 'Land'], BOOTSTRAP)
         RefdataCategory.loc('FactType',             	                    [en: 'FactType', de: 'FactType'], BOOTSTRAP)
         RefdataCategory.loc('Federal State',        	                    [en: 'Federal State', de: 'Bundesland'], BOOTSTRAP)
@@ -882,6 +885,10 @@ class BootStrap {
         RefdataValue.loc('CoreStatus',   [en: 'Print', de: 'Print'], BOOTSTRAP)
         RefdataValue.loc('CoreStatus',   [en: 'Electronic', de: 'Elektronisch'], BOOTSTRAP)
         RefdataValue.loc('CoreStatus',   [en: 'Print+Electronic', de: 'Print & Elektronisch'], BOOTSTRAP)
+
+        RefdataValue.loc('Cost configuration',[en:'positive',de:'positiv'],BOOTSTRAP)
+        RefdataValue.loc('Cost configuration',[en:'negative',de:'negativ'],BOOTSTRAP)
+        RefdataValue.loc('Cost configuration',[en:'neutral',de:'neutral'],BOOTSTRAP)
 
         RefdataValue.loc('Country',   [en: 'Germany', de: 'Deutschland'], BOOTSTRAP)
         RefdataValue.loc('Country',   [en: 'Switzerland', de: 'Schweiz'], BOOTSTRAP)

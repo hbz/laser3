@@ -280,8 +280,8 @@
 
                 //this is a collection box for all costs
                 var costs = {}
-                //get all currencies of every considered cost item
-                var currencies = $.unique($(this).find('.costData[data-consider="Yes"]').map(function(){
+                //get all currencies of cost items
+                var currencies = $.unique($(this).find('.costData').map(function(){
                     return $(this).attr('data-billingCurrency')
                 }))
                 /*
@@ -301,7 +301,7 @@
                     the information necessary has been stuffed into a <span> element and are thus defined in the templates
                     _result_tab_{cons|owner_table|subscr}. Again, we take only those which are marked as being considered:
                  */
-                $(this).find('tbody tr span.costData[data-consider="Yes"]').each( function() {
+                $(this).find('tbody tr span.costData').each( function() {
 
                     //take the correct currency map to assign
                     var ci = costs[$(this).attr('data-billingCurrency')]
@@ -320,7 +320,7 @@
                         we have to distinct between non-neutral and neutral cost items. We defined above operators which will be applied here.
                         As of January 4th, 2019, it is unclear what should happen with neutral costs. We shall collect them thus in separate counters for display.
                      */
-                    if ($(this).attr('data-elementSign') !== "${RDStore.CIEC_NEUTRAL}") {
+                    if ($.inArray($(this).attr('data-elementSign'),["${RDStore.CIEC_NEUTRAL}","notSet"]) < 0) {
                         if ($(this).attr('data-costInLocalCurrency')) {
                             ci.local = operators[$(this).attr('data-elementSign')](ci.local,parseFloat($(this).attr('data-costInLocalCurrency')))
                         }
@@ -334,7 +334,7 @@
                             ci.billingAfterTax = operators[$(this).attr('data-elementSign')](ci.billingAfterTax,parseFloat($(this).attr('data-costInBillingCurrencyAfterTax')))
                         }
                     }
-                    else if ($(this).attr('data-elementSign') === "${RDStore.CIEC_NEUTRAL}") {
+                    else if ($.inArray($(this).attr('data-elementSign'),["${RDStore.CIEC_NEUTRAL}","notSet"]) >= 0) {
                         if ($(this).attr('data-costInBillingCurrency')) {
                             ci.neutral += parseFloat($(this).attr('data-costInBillingCurrency'))
                         }
@@ -372,10 +372,10 @@
                     info += "Endpreis nach Steuern: "
                     info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billingAfterTax)
                     info += "<br />"
-                    info += "davon neutral: "
+                    info += "davon neutral oder Vorzeichen nicht gesetzt: "
                     info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].neutral)
                     info += "<br />"
-                    info += "Endpreis der neutralen Kosten nach Steuern: "
+                    info += "Endpreis der neutralen bzw. nicht definierten Kosten nach Steuern: "
                     info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].neutralAfterTax)
                 }
 

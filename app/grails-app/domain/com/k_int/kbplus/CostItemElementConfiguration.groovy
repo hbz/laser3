@@ -10,7 +10,6 @@ class CostItemElementConfiguration extends AbstractBaseDomain {
 
     RefdataValue costItemElement    //RefdataCategory 'CostItemElement'
     RefdataValue elementSign        //RefdataCategory 'Cost configuration'
-    RefdataValue consider           //RefdataCategory 'YN'
     Org forOrganisation
 
     Date dateCreated
@@ -29,7 +28,6 @@ class CostItemElementConfiguration extends AbstractBaseDomain {
         globalUID           column: 'ciec_guid'
         costItemElement     column: 'ciec_cie_rv_fk'
         elementSign         column: 'ciec_cc_rv_fk'
-        consider            column: 'ciec_cip_rv_fk'
         forOrganisation     column: 'ciec_org_fk'
         autoTimestamp true
     }
@@ -38,7 +36,6 @@ class CostItemElementConfiguration extends AbstractBaseDomain {
         globalUID           (nullable: true, blank: false, unique: true, maxSize: 255)
         costItemElement     (nullable: false, blank: false)
         elementSign         (nullable: false, blank: false)
-        consider            (nullable: false, blank: false)
         forOrganisation     (nullable: false, blank: false)
         lastUpdatedBy       (nullable: true)
         createdBy           (nullable: true)

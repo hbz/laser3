@@ -95,6 +95,8 @@
                     $('#js-consotial-authority .dropdown').addClass('disabled')
                     $('#js-consotial-authority select').attr('disabled', 'disabled')
                 }
+            }
+            function toggleTableHeading() {
                 if ($('.js-nationallicence input').prop('checked') || $('.js-alliancelicence input').prop('checked')) {
                     $('#js-negotiator-header').show()
                     $('#js-consortium-header').hide()
@@ -107,6 +109,8 @@
             $('.js-nationallicence').on('click', toggleFilterPart)
             $('.js-alliancelicence').on('click', toggleFilterPart)
             $('.js-consortiallicence').on('click', toggleFilterPart)
+            toggleTableHeading()
+            $('.ui secondary button').on('click', toggleTableHeading)
         });
     </r:script>
     <g:if test="${subscriptions}">
@@ -134,7 +138,7 @@
                         ${i + 1}
                     </td>
                     <td>
-                        <g:set var="anzeigeName" value="${sub.customProperties.find{ it.type == com.k_int.properties.PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Anzeigename')}?.stringValue}" />
+                        <g:set var="anzeigeName" value="${sub.customProperties.find{ it.type == PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Anzeigename')}?.stringValue}" />
                             ${anzeigeName ?: sub}
 
                         <g:each in="${sub.packages}" var="subPkg" status="j">
@@ -156,8 +160,18 @@
                     %{--</td>--}%
                     <td class="la-break-all">
 
-                    <g:set var="verhandlername" value="${sub.customProperties.find{ it.type == com.k_int.properties.PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Verhandlername')}?.stringValue}" />
+                    <g:set var="verhandlername" value="${sub.customProperties.find{ it.type == PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Verhandlername')}?.stringValue}" />
                     ${verhandlername ?: sub.getConsortia()?.name}
+                    <br>
+                    <g:set var="gascoInfoLink" value="${sub.customProperties.find{ it.type == PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Information-Link')}?.urlValue}" />
+                    <g:if test="${gascoInfoLink}">
+                        <div class="description">
+                            <i class="icon globe"></i>
+                            <span data-position="right center" data-tooltip="Diese URL aufrufen:  ${gascoInfoLink}">
+                                <a href="${gascoInfoLink}" target="_blank">${gascoInfoLink}</a>
+                            </span>
+                        </div>
+                    </g:if>
                         <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RefdataValue.getByValueAndCategory('GASCO-Contact', 'Person Function'), sub.getConsortia())}" var="person">
                             <div class="ui list">
                                 <div class="item">
