@@ -8,6 +8,7 @@ import grails.converters.JSON;
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.springframework.orm.hibernate3.HibernateQueryException
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class FinanceController extends AbstractDebugController {
@@ -384,8 +385,15 @@ class FinanceController extends AbstractDebugController {
         //println cost_item_qry_params
 
         tmp.foundMatches    =  cost_item_qry_params.size() > 1 // [owner:default] ; used for flash
-        tmp.cost_items      =  CostItem.executeQuery(ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy, cost_item_qry_params, params);
-        tmp.cost_item_count =  CostItem.executeQuery(ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy, cost_item_qry_params).size()
+        try{
+            tmp.cost_items      =  CostItem.executeQuery(ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy, cost_item_qry_params, params)
+            tmp.cost_item_count =  CostItem.executeQuery(ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy, cost_item_qry_params).size()
+        }
+        catch (HibernateQueryException e) {
+            tmp.cost_items = [:]
+            tmp.cost_item_count = 0
+        }
+
 
         log.debug("index(${queryMode})  -- Performed filtering process ${tmp.cost_item_count} result(s) found")
 
@@ -801,16 +809,19 @@ class FinanceController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def editCostItem() {
         def result = [:]
+        def issueEntitlement
         result.tab = params.tab
 
         result.inSubMode = params.fixedSub ? true : false
         if (result.inSubMode) {
             result.fixedSubscription = params.int('fixedSub') ? Subscription.get(params.fixedSub) : null
         }
-        else {
+        else if(params.currSub) {
             result.currentSubscription = params.int('currSub') ? Subscription.get(params.currSub) : null
         }
         result.costItem = CostItem.findById(params.id)
+        if(result.costItem)
+          result.issueEntitlement = result.costItem.issueEntitlement
 
         result.formUrl = g.createLink(controller:'finance', action:'newCostItem', params:[tab:result.tab])
 

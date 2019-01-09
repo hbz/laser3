@@ -19,7 +19,6 @@ class CostConfigurationController {
             CostItemElementConfiguration ciec = new CostItemElementConfiguration()
             ciec.costItemElement = genericOIDService.resolveOID(params.cie)
             ciec.elementSign = genericOIDService.resolveOID(params.sign)
-            ciec.consider = genericOIDService.resolveOID(params.consider)
             ciec.forOrganisation = (Org) contextService.getOrg()
             ciec.save(true)
         }
@@ -70,7 +69,6 @@ class CostConfigurationController {
         result.formUrl = g.createLink([controller:'costConfiguration',action:'index'])
         result.costItemElements = costItemElements
         result.elementSigns = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Cost configuration'))
-        result.yn = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('YN'))
         result.institution = org
 
         render template: '/templates/newCostItemElementConfiguration', model: result

@@ -3326,7 +3326,16 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             tmpQuery                     = "select o.id " + tmpQuery.minus("select o ")
             result.consortiaMembersCount = Org.executeQuery( tmpQuery, tmpQueryParams ).size()
         } else {
-            result.consortiaMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params << [max: result.max, offset: result.offset] )
+            //very ugly hotfix for ERMS-875 as it is not general at all ...
+            def limit = [:]
+            if(!params.exportXLS) {
+                limit = [max: result.max, offset: result.offset]
+            }
+            else if(params.exportXLS) {
+                params.remove("max")
+                params.remove("offset")
+            }
+            result.consortiaMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params << limit )
             def tmpQuery                 = "select o.id " + fsq.query.minus("select o ")
             result.consortiaMembersCount = Org.executeQuery( tmpQuery, fsq.queryParams).size()
         }

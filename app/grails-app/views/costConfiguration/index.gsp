@@ -26,19 +26,6 @@
                     </g:else>
                 </div>
             </div>
-            <div class="two fields wide">
-                <div class="field">
-                    <g:message code="consideration.preset"/>
-                </div>
-                <div class="field">
-                    <g:if test="${editable}">
-                        <semui:xEditableRefData owner="${institution}" field="considerationPreset" emptytext="${message(code:'financials.consider.notSet')}" config="YN"/>
-                    </g:if>
-                    <g:else>
-                        ${institution.considerationPreset ? institution.considerationPreset : message(code:'financials.consider.notSet')}
-                    </g:else>
-                </div>
-            </div>
         </div>
         <semui:messages data="${flash}" />
         <g:if test="${editable}">
@@ -59,7 +46,7 @@
                         <th>ID</th>
                         <th>${message(code:'financials.costItemElement')}</th>
                         <th>${message(code:'financials.costItemConfiguration')}</th>
-                        <th>${message(code:'financials.consider')}</th>
+                        <th>${message(code:'financials.setAll')}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -71,7 +58,7 @@
                                 <semui:xEditableRefData owner="${ciec}" field="elementSign" emptytext="${message(code:'financials.costItemConfiguration.notSet')}" config="Cost configuration"/>
                             </td>
                             <td>
-                                <semui:xEditableRefData owner="${ciec}" field="consider" emptytext="${message(code:'financials.consider.notSet')}" config="YN"/>
+
                             </td>
                         </tr>
                     </g:each>
