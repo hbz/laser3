@@ -5,8 +5,7 @@
 
         <div class="ui grid">
             <%
-                def signPreset = institution.costConfigurationPreset ? institution.costConfigurationPreset : RDStore.CIEC_POSITIVE
-                def considerationPreset = institution.considerationPreset ? institution.considerationPreset : RDStore.YN_YES
+                def signPreset = institution.costConfigurationPreset ? institution.costConfigurationPreset : null
             %>
             <div class="twelve wide column">
                 <label>${message(code:'financials.costItemElement')}</label>

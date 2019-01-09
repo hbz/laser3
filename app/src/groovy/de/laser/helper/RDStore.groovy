@@ -27,7 +27,7 @@ class RDStore {
     static final YN_NO  = getRefdataValue('No','YN')
 
     static final CIEC_POSITIVE  = getRefdataValue('positive','Cost configuration')
-    static final CIEC_NEGATIVE  = getRefdataValue('negative','Cost congifuration')
+    static final CIEC_NEGATIVE  = getRefdataValue('negative','Cost configuration')
     static final CIEC_NEUTRAL   = getRefdataValue('neutral','Cost configuration')
 
     static getRefdataValue(String value, String category) {

@@ -809,7 +809,8 @@ class FinanceController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def editCostItem() {
         def result = [:]
-        def issueEntitlement
+        def costItemElementConfigurations = []
+        def orgConfigurations = []
         result.tab = params.tab
 
         result.inSubMode = params.fixedSub ? true : false
@@ -823,6 +824,18 @@ class FinanceController extends AbstractDebugController {
         if(result.costItem)
           result.issueEntitlement = result.costItem.issueEntitlement
 
+        //format for dropdown: (o)id:value
+        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Cost configuration'))
+        ciecs.each { ciec ->
+            costItemElementConfigurations.add([id:ciec.class.name+":"+ciec.id,value:ciec.getI10n('value')])
+        }
+        def orgConf = CostItemElementConfiguration.findAllByForOrganisation(contextService.org)
+        orgConf.each { oc ->
+            orgConfigurations.add([id:oc.class.name+":"+oc.id,value:oc.elementSign.getI10n('value')])
+        }
+
+        result.costItemElementConfigurations = costItemElementConfigurations
+        result.orgConfigurations = orgConfigurations
         result.formUrl = g.createLink(controller:'finance', action:'newCostItem', params:[tab:result.tab])
 
         render(template: "/finance/ajaxModal", model: result)
@@ -1034,6 +1047,7 @@ class FinanceController extends AbstractDebugController {
           def cost_billing_currency_after_tax   = params.newCostInBillingCurrencyAfterTax ? params.double( 'newCostInBillingCurrencyAfterTax') : cost_billing_currency
           def cost_local_currency_after_tax     = params.newCostInLocalCurrencyAfterTax ? params.double( 'newCostInLocalCurrencyAfterTax') : cost_local_currency
           def new_tax_rate                      = params.newTaxRate ? params.int( 'newTaxRate' ) : 0
+          def cost_item_element_configuration   = params.ciec ? genericOIDService.resolveOID(params.ciec) : null
 
           def cost_item_isVisibleForSubscriber = (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber)?.value == 'Yes') : false)
 
@@ -1071,6 +1085,7 @@ class FinanceController extends AbstractDebugController {
               newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double
               newCostItem.currencyRate = cost_currency_rate as Double
               newCostItem.taxRate = new_tax_rate as Integer
+              newCostItem.costItemElementConfiguration = cost_item_element_configuration
 
               newCostItem.datePaid = datePaid
               newCostItem.startDate = startDate
