@@ -21,6 +21,7 @@ class BootStrap {
             RdC:    RefdataCategory.toString(),
             Rdv:    RefdataValue.toString(),
             String: String.toString(),
+            URL:    URL.toString()
     ]
 
     def init = { servletContext ->
@@ -589,7 +590,8 @@ class BootStrap {
                 [name: [en: "Eingeschränkter Benutzerkreis", de: "Eingeschränkter Benutzerkreis"],      descr:allDescr, type: OT.String],
                 [name: [en: "SFX-Eintrag", de: "SFX-Eintrag"],                      descr:allDescr, type: OT.Rdv, cat:'YN'],
                 [name: [en: "GASCO-Anzeigename", de: "GASCO-Anzeigename"],          descr:allDescr, type: OT.String],
-                [name: [en: "GASCO-Verhandlername", de: "GASCO-Verhandlername"],    descr:allDescr, type: OT.String]
+                [name: [en: "GASCO-Verhandlername", de: "GASCO-Verhandlername"],    descr:allDescr, type: OT.String],
+                [name: [en: "GASCO-Information-Link", de: "GASCO-Informations-Link"],    descr:allDescr, type: OT.URL]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
     }
