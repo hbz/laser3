@@ -1,4 +1,8 @@
 
+0.12.2
+
+- fixed xeditable double values
+
 0.12.1
 
 - temporary deactivated usage and statistics
