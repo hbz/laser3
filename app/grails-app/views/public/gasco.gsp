@@ -95,6 +95,8 @@
                     $('#js-consotial-authority .dropdown').addClass('disabled')
                     $('#js-consotial-authority select').attr('disabled', 'disabled')
                 }
+            }
+            function toggleTableHeading() {
                 if ($('.js-nationallicence input').prop('checked') || $('.js-alliancelicence input').prop('checked')) {
                     $('#js-negotiator-header').show()
                     $('#js-consortium-header').hide()
@@ -107,6 +109,8 @@
             $('.js-nationallicence').on('click', toggleFilterPart)
             $('.js-alliancelicence').on('click', toggleFilterPart)
             $('.js-consortiallicence').on('click', toggleFilterPart)
+            toggleTableHeading()
+            $('.ui secondary button').on('click', toggleTableHeading)
         });
     </r:script>
     <g:if test="${subscriptions}">
