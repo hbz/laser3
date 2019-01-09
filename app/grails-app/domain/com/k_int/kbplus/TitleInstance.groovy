@@ -516,9 +516,9 @@ class TitleInstance extends AbstractBaseDomain implements AuditTrait {
 
     def result = input_title.replaceAll('&',' and ');
     result = result.trim();
-    result = result.replaceAll("\\s+", " ");
     result = result.toLowerCase();
     result = alphanum.matcher(result).replaceAll("");
+    result = result.replaceAll("\\s+", " ");
    
     return asciify(result)
   }
@@ -528,9 +528,9 @@ class TitleInstance extends AbstractBaseDomain implements AuditTrait {
     if ( s != null ) {
         s = s.replaceAll('&',' and ');
         s = s.trim(); // first off, remove whitespace around the string
-        s = s.replaceAll("\\s+", " ");
         s = s.toLowerCase(); // then lowercase it
         s = alphanum.matcher(s)?.replaceAll(''); // then remove all punctuation and control chars
+        s = s.replaceAll("\\s+", " ");
         String[] frags = StringUtils.split(s); // split by whitespace
         TreeSet<String> set = new TreeSet<String>();
         for (String ss : frags) {
