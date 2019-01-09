@@ -134,7 +134,7 @@
                         ${i + 1}
                     </td>
                     <td>
-                        <g:set var="anzeigeName" value="${sub.customProperties.find{ it.type == com.k_int.properties.PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Anzeigename')}?.stringValue}" />
+                        <g:set var="anzeigeName" value="${sub.customProperties.find{ it.type == PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Anzeigename')}?.stringValue}" />
                             ${anzeigeName ?: sub}
 
                         <g:each in="${sub.packages}" var="subPkg" status="j">
@@ -156,8 +156,18 @@
                     %{--</td>--}%
                     <td class="la-break-all">
 
-                    <g:set var="verhandlername" value="${sub.customProperties.find{ it.type == com.k_int.properties.PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Verhandlername')}?.stringValue}" />
+                    <g:set var="verhandlername" value="${sub.customProperties.find{ it.type == PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Verhandlername')}?.stringValue}" />
                     ${verhandlername ?: sub.getConsortia()?.name}
+                    <br>
+                    <g:set var="gascoInfoLink" value="${sub.customProperties.find{ it.type == PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Information-Link')}?.urlValue}" />
+                    <g:if test="${gascoInfoLink}">
+                        <div class="description">
+                            <i class="icon globe"></i>
+                            <span data-position="right center" data-tooltip="Diese URL aufrufen:  ${gascoInfoLink}">
+                                <a href="${gascoInfoLink}" target="_blank">${gascoInfoLink}</a>
+                            </span>
+                        </div>
+                    </g:if>
                         <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RefdataValue.getByValueAndCategory('GASCO-Contact', 'Person Function'), sub.getConsortia())}" var="person">
                             <div class="ui list">
                                 <div class="item">
