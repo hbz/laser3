@@ -124,51 +124,24 @@
                                       noSelection="${['':'']}"
                                       value="${costItem?.costItemElement?.id}" />
                     </div><!-- .field -->
-                    <%
-                        //define strings for cost item sign display
-                        String tooltipString = ''
-                        if(costItem?.costItemElement) {
-                            def elementSign = 'notSet'
-                            def costItemElementConfiguration = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(costItem.costItemElement,org)
-                            if(costItemElementConfiguration) {
-                                elementSign = costItemElementConfiguration.elementSign
-                            }
-                            switch(elementSign) {
-                                case RDStore.CIEC_POSITIVE:
-                                    tooltipString = message(code:'financials.costItemConfiguration.positive')
-                                    break
-                                case RDStore.CIEC_NEGATIVE:
-                                    tooltipString = message(code:'financials.costItemConfiguration.negative')
-                                    break
-                                case RDStore.CIEC_NEUTRAL:
-                                    tooltipString = message(code:'financials.costItemConfiguration.neutral')
-                                    break
-                                default:
-                                    tooltipString = message(code:'financials.costItemConfiguration.notSet')
-                                    break
-                            }
-                        }
-                        //this switch is for new cost items
-                        if(!costItem) {
-                            switch(org.costConfigurationPreset) {
-                                case RDStore.CIEC_POSITIVE:
-                                    tooltipString = message(code:'financials.costItemConfiguration.positive')
-                                    break
-                                case RDStore.CIEC_NEGATIVE:
-                                    tooltipString = message(code:'financials.costItemConfiguration.negative')
-                                    break
-                                case RDStore.CIEC_NEUTRAL:
-                                    tooltipString = message(code:'financials.costItemConfiguration.neutral')
-                                    break
-                                default:
-                                    tooltipString = message(code:'financials.costItemConfiguration.notSet')
-                                    break
-                            }
-                        }
-                    %>
                     <div class="field">
                         <label>${message(code:'financials.costItemConfiguration')}</label>
-                        <span id="ciec">${tooltipString}</span>
+                        <% //continue here: overridable!
+                        //<span id="ciec">${tooltipString}</span>
+                            def ciec = null
+                            if(costItem) {
+                                if(costItem.costItemElementConfiguration)
+                                    ciec = costItem.costItemElementConfiguration.class.name+":"+costItem.costItemElementConfiguration.id
+                                else if(!costItem.costItemElementConfiguration && costItem.costItemElement) {
+                                    def config = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(costItem.costItemElement,contextService.getOrg())
+                                    if(config)
+                                        ciec = config.elementSign.class.name+":"+config.elementSign.id
+                                }
+                            }
+                        %>
+                        <g:select name="ciec" class="ui dropdown" from="${costItemElementConfigurations}"
+                        optionKey="id" optionValue="value" value="${ciec}"
+                        noSelection="${[null:message(code:'financials.costItemConfiguration.notSet')]}"/>
                     </div>
                 </div>
 
@@ -448,6 +421,9 @@
             bc:   "#newCostInBillingCurrency"
         }*/
         <%
+            /*
+                continue here, too: will become much easier as the string will be changed into a dropdown menu
+
             def costItemElementConfigurations = "{"
             StringJoiner sj = new StringJoiner(",")
             def elementSign = 'notSet'
@@ -473,9 +449,9 @@
                 }
                 sj.add('"'+cie.id+'":"'+tooltipString+'"')
             }
-            costItemElementConfigurations += sj.toString()+"}"
+            costItemElementConfigurations += sj.toString()+"}"*/
         %>
-        var costItemElementConfigurations = ${raw(costItemElementConfigurations)}
+        <%--var costItemElementConfigurations = "${orgConfigurations}"--%>
 
         $("#costButton1").click(function() {
             if (! isError("#newCostInBillingCurrency") && ! isError("#newCostCurrencyRate")) {
@@ -507,9 +483,9 @@
                 calcTaxResults()
             }
         });
-        $("#newCostItemElement").change(function() {
+        /*$("#newCostItemElement").change(function() {
             $("#ciec").text(costItemElementConfigurations[$(this).val()]);
-        });
+        });*/
         var isError = function(cssSel)  {
             if ($(cssSel).val().length <= 0 || $(cssSel).val() < 0) {
                 $(".la-account-currency").children(".field").removeClass("error");

@@ -294,7 +294,7 @@
                     - neutral sum after taxation (see above)
                  */
                 currencies.each(function() {
-                    costs[this] = {local: 0.0, localAfterTax: 0.0, billing: 0.0, billingAfterTax: 0.0, neutral: 0.0, neutralAfterTax: 0.0}
+                    costs[this] = {local: 0.0, localAfterTax: 0.0, localNeutral: 0.0, localNeutralAfterTax: 0.0, billing: 0.0, billingAfterTax: 0.0, neutral: 0.0, neutralAfterTax: 0.0}
                 })
 
                 /*
@@ -341,18 +341,28 @@
                         if ($(this).attr('data-costInBillingCurrencyAfterTax')) {
                             ci.neutralAfterTax += parseFloat($(this).attr('data-costInBillingCurrencyAfterTax'))
                         }
+                        if ($(this).attr('data-costInLocalCurrency')) {
+                            ci.localNeutral += parseFloat($(this).attr('data-costInLocalCurrency'))
+                        }
+                        if ($(this).attr('data-costInLocalCurrencyAfterTax')) {
+                            ci.localNeutralAfterTax += parseFloat($(this).attr('data-costInLocalCurrencyAfterTax'))
+                        }
                     }
 
                 })
 
                 //this is the final counter for all local costs, independently of their currency
                 var finalLocal = 0.0
+                var finalLocalNeutral = 0.0
                 var finalLocalAfterTax = 0.0
+                var finalLocalNeutralAfterTax = 0.0
 
                 //add all local costs and those after taxation
                 for (ci in costs) {
                     finalLocal += costs[ci].local
                     finalLocalAfterTax += costs[ci].localAfterTax
+                    finalLocalNeutral += costs[ci].localNeutral
+                    finalLocalNeutralAfterTax += costs[ci].localNeutralAfterTax
                 }
 
                 //display the local costs
@@ -362,6 +372,12 @@
                     info += "<br />"
                     info += "Endpreis nach Steuern: "
                     info += Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(finalLocalAfterTax)
+                    info += "<br />"
+                    info += "neutrale Kosten oder Vorzeichen nicht gesetzt: "
+                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(finalLocalNeutral)
+                    info += "<br />"
+                    info += "Endpreis der neutralen bzw. nicht definierten Kosten nach Steuern: "
+                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(finalLocalNeutralAfterTax)
 
                 //and display each currency counter
                 for (ci in costs) {
@@ -372,7 +388,7 @@
                     info += "Endpreis nach Steuern: "
                     info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billingAfterTax)
                     info += "<br />"
-                    info += "davon neutral oder Vorzeichen nicht gesetzt: "
+                    info += "neutrale Kosten oder Vorzeichen nicht gesetzt: "
                     info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].neutral)
                     info += "<br />"
                     info += "Endpreis der neutralen bzw. nicht definierten Kosten nach Steuern: "
