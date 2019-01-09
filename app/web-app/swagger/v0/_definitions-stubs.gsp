@@ -54,9 +54,9 @@
       globalUID:
         type: string
         example: "package:f08250fc-257e-43d6-9528-c56d841a6b00"
-      identifier:
-        type: string
-        example: "5d83bbbe-2a26-4eef-8708-6d6b86fd8453"
+    #  identifier:
+    #    type: string
+    #    example: "5d83bbbe-2a26-4eef-8708-6d6b86fd8453"
       identifiers: # mapping attr ids
         type: array
         items:
@@ -80,6 +80,8 @@
         type: string
       normname:
         type: string
+      primaryUrl:
+        type: string
 
   SubscriptionStub:
     type: object
@@ -87,9 +89,9 @@
       globalUID:
         type: string
         example: "subscription:3026078c-bdf1-4309-ba51-a9ea5f7fb234"
-      identifier:
-        type: string
-        example: "1038ac38-eb21-4bf0-ab7e-fe8b8ba34b6c"
+    #  identifier:
+    #    type: string
+    #    example: "1038ac38-eb21-4bf0-ab7e-fe8b8ba34b6c"
       identifiers: # mapping attr ids
         type: array
         items:
