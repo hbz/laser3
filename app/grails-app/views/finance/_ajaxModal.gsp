@@ -128,16 +128,10 @@
                         //define strings for cost item sign display
                         String tooltipString = ''
                         if(costItem?.costItemElement) {
-                            def elementSign = org.costConfigurationPreset
-                            if(elementSign == null)
-                                elementSign = RDStore.CIEC_POSITIVE
-                            def consider = org.considerationPreset
-                            if(consider == null)
-                                consider = RDStore.YN_YES
+                            def elementSign = 'notSet'
                             def costItemElementConfiguration = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(costItem.costItemElement,org)
                             if(costItemElementConfiguration) {
                                 elementSign = costItemElementConfiguration.elementSign
-                                consider = costItemElementConfiguration.consider
                             }
                             switch(elementSign) {
                                 case RDStore.CIEC_POSITIVE:
@@ -151,17 +145,6 @@
                                     break
                                 default:
                                     tooltipString = message(code:'financials.costItemConfiguration.notSet')
-                                    break
-                            }
-                            switch(consider) {
-                                case RDStore.YN_YES:
-                                    tooltipString += ', '+message(code:'financials.costItemConfiguration.considered')
-                                    break
-                                case RDStore.YN_NO:
-                                    tooltipString += ', '+message(code:'financials.costItemConfiguration.notConsidered')
-                                    break
-                                default:
-                                    tooltipString += ', '+message(code:'financials.costItemConfiguration.considerationNotSet')
                                     break
                             }
                         }
@@ -179,17 +162,6 @@
                                     break
                                 default:
                                     tooltipString = message(code:'financials.costItemConfiguration.notSet')
-                                    break
-                            }
-                            switch(org.considerationPreset) {
-                                case RDStore.YN_YES:
-                                    tooltipString += ', '+message(code:'financials.costItemConfiguration.considered')
-                                    break
-                                case RDStore.YN_NO:
-                                    tooltipString += ', '+message(code:'financials.costItemConfiguration.notConsidered')
-                                    break
-                                default:
-                                    tooltipString += ', '+message(code:'financials.costItemConfiguration.considerationNotSet')
                                     break
                             }
                         }
@@ -328,7 +300,7 @@
                         <input class="la-full-width la-select2-fixed-width"
                                readonly='readonly'
                                value="${costItem.sub.getName()}" />
-                        <input name="newSubscription"
+                        <input name="newSubscription" id="pickedSubscription"
                                type="hidden"
                                value="${'com.k_int.kbplus.Subscription:' + costItem.sub.id}" />
                     </g:if>
@@ -337,7 +309,7 @@
                             <input class="la-full-width la-select2-fixed-width"
                                    readonly='readonly'
                                    value="${fixedSubscription?.getName()}" />
-                            <input name="newSubscription"
+                            <input name="newSubscription" id="pickedSubscription"
                                    type="hidden"
                                    value="${'com.k_int.kbplus.Subscription:' + fixedSubscription?.id}" />
                         </g:if>
@@ -394,8 +366,8 @@
 
                 <div class="field" id="newPackageWrapper">
 
+                    <label>${message(code:'package.label')}</label>
                     <g:if test="${costItem?.sub}">
-                        <label>${message(code:'package.label')}</label>
                         <g:select name="newPackage" id="newPackage" class="ui dropdown"
                                   from="${[{}] + costItem?.sub?.packages}"
                                   optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
@@ -404,7 +376,6 @@
                                   value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}" />
                     </g:if>
                     <g:elseif test="${inSubMode}">
-                        <label>${message(code:'package.label')}</label>
                         <g:select name="newPackage" id="newPackage" class="ui dropdown"
                                   from="${[{}] + fixedSubscription?.packages}"
                                   optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
@@ -413,19 +384,20 @@
                                   value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}" />
                     </g:elseif>
                     <g:else>
-                        <input name="newPackage" id="newPackage" class="la-full-width" disabled="disabled" data-subFilter="" data-disableReset="true" />
+                        <input name="newPackage" id="newPackage" class="ui" disabled="disabled" data-subFilter="" data-disableReset="true" />
                     </g:else>
 
 
-                    <%-- TODO for ERMS-805: this has to be reactivated
+                    <%-- the distinction between subMode (= fixedSubscription) and general view is done already in the controller! --%>
                     <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
-                    <g:if test="${! inSubMode}">
-                        <input name="newIe" id="newIE" disabled='disabled' data-subFilter="" data-disableReset="true" class="la-full-width" value="${params.newIe}">
+                    <input name="newIe" id="newIE" class="select2 la-select2-fixed-width" />
+                    <%--<g:if test="${! inSubMode}">
+                        <input name="newIe" id="newIE" data-subFilter="" data-disableReset="true" class="la-full-width" value="${params.newIe}">
                     </g:if>
                     <g:else>
-                        <input name="newIe" id="newIE" disabled="disabled" data-subFilter="${fixedSubscription?.id}" data-disableReset="true" class="select2 la-full-width" value="${params.newIe}">
-                    </g:else>
-                    --%>
+                        <input name="newIe" id="newIE" data-subFilter="${fixedSubscription?.id}" data-disableReset="true" class="select2 la-full-width" value="${params.newIe}">
+                    </g:else>--%>
+
                 </div><!-- .field -->
             </fieldset> <!-- 2/2 field -->
 
@@ -478,18 +450,12 @@
         <%
             def costItemElementConfigurations = "{"
             StringJoiner sj = new StringJoiner(",")
-            def elementSign = org.costConfigurationPreset
-            if(elementSign == null)
-                elementSign = RDStore.CIEC_POSITIVE
-            def consider = org.considerationPreset
-            if(consider == null)
-                consider = RDStore.YN_YES
+            def elementSign = 'notSet'
             costItemElement.each { cie ->
                 tooltipString = ""
                 def ciec = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(cie,org)
                 if(ciec) {
                     elementSign = ciec.elementSign
-                    consider = ciec.consider
                 }
                 switch(elementSign) {
                     case RDStore.CIEC_POSITIVE:
@@ -503,17 +469,6 @@
                         break
                     default:
                         tooltipString = message(code:'financials.costItemConfiguration.notSet')
-                        break
-                }
-                switch(consider) {
-                    case RDStore.YN_YES:
-                        tooltipString += ', '+message(code:'financials.costItemConfiguration.considered')
-                        break
-                    case RDStore.YN_NO:
-                        tooltipString += ', '+message(code:'financials.costItemConfiguration.notConsidered')
-                        break
-                    default:
-                        tooltipString += ', '+message(code:'financials.costItemConfiguration.considerationNotSet')
                         break
                 }
                 sj.add('"'+cie.id+'":"'+tooltipString+'"')
@@ -629,6 +584,44 @@
             });
 
             </g:if>
+
+            <g:if test="${issueEntitlement}">
+                var data = {id : "${issueEntitlement.class.name}:${issueEntitlement.id}",
+                            text : "${issueEntitlement.tipp.title.title}"};
+            </g:if>
+
+            $('#newIE').select2({
+                placeholder: "${message(code:'financials.newCosts.singleEntitlement')}",
+                <%--minimumInputLength: 1,
+                formatInputTooShort: function () {
+                    return "${message(code:'select2.minChars.note')}";
+                },--%>
+                global: false,
+                ajax: {
+                    url: "<g:createLink controller='ajax' action='lookupIssueEntitlements' params='${params}'/>",
+                    data: function (term, page) {
+                        return {
+                            hideDeleted: 'true',
+                            hideIdent: 'false',
+                            inclSubStartDate: 'false',
+                            q: '%' + term + '%',
+                            page_limit: 20,
+                            baseClass: 'com.k_int.kbplus.IssueEntitlement',
+                            sub: $("#pickedSubscription,#newSubscription").val()
+                        };
+                    },
+                    results: function (data, page) {
+                        return {results: data.values};
+                    },
+                    allowClear: true,
+                    formatSelection: function(data) {
+                        return data.text;
+                    }
+                }
+            });
+            //duplicated call needed to preselect data
+            if(typeof(data) !== 'undefined')
+                $('#newIE').select2('data',data);
         }
     </script>
 
