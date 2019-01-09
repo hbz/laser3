@@ -1,10 +1,8 @@
 package com.k_int.kbplus
 
-class CronjobUpdateService {
+import de.laser.helper.RDStore
 
-    final INTENDED = RefdataValue.getByValueAndCategory('Intended','Subscription Status')
-    final CURRENT =  RefdataValue.getByValueAndCategory('Current','Subscription Status')
-    final EXPIRED =  RefdataValue.getByValueAndCategory('Expired','Subscription Status')
+class CronjobUpdateService {
 
     /**
      * Cronjob-triggered.
@@ -19,7 +17,7 @@ class CronjobUpdateService {
         // INTENDED -> CURRENT
 
         def intendedSubsIds1 = Subscription.where {
-            status == INTENDED && startDate < currentDate && (endDate != null && endDate >= currentDate)
+            status == RDStore.SUBSCRIPTION_INTENDED && startDate < currentDate && (endDate != null && endDate >= currentDate)
         }.collect{ it -> it.id }
 
         log.info("Intended subscriptions reached start date and are now running: " + intendedSubsIds1)
@@ -27,7 +25,7 @@ class CronjobUpdateService {
         if (intendedSubsIds1) {
             Subscription.executeUpdate(
                     'UPDATE Subscription sub SET sub.status =:status WHERE sub.id in (:ids)',
-                    [status: CURRENT, ids: intendedSubsIds1]
+                    [status: RDStore.SUBSCRIPTION_CURRENT, ids: intendedSubsIds1]
             )
 
             log.debug("Writing events")
@@ -43,7 +41,7 @@ class CronjobUpdateService {
         // INTENDED -> EXPIRED
 
         def intendedSubsIds2 = Subscription.where {
-            status == INTENDED && startDate < currentDate && (endDate != null && endDate < currentDate)
+            status == RDStore.SUBSCRIPTION_INTENDED && startDate < currentDate && (endDate != null && endDate < currentDate)
         }.collect{ it -> it.id }
 
         log.info("Intended subscriptions reached start date and end date are now expired: " + intendedSubsIds2)
@@ -51,7 +49,7 @@ class CronjobUpdateService {
         if (intendedSubsIds2) {
             Subscription.executeUpdate(
                     'UPDATE Subscription sub SET sub.status =:status WHERE sub.id in (:ids)',
-                    [status: EXPIRED, ids: intendedSubsIds2]
+                    [status: RDStore.SUBSCRIPTION_EXPIRED, ids: intendedSubsIds2]
             )
 
             log.debug("Writing events")
@@ -67,7 +65,7 @@ class CronjobUpdateService {
         // CURRENT -> EXPIRED
 
         def currentSubsIds = Subscription.where {
-            status == CURRENT && startDate < currentDate && (endDate != null && endDate < currentDate)
+            status == RDStore.SUBSCRIPTION_CURRENT && startDate < currentDate && (endDate != null && endDate < currentDate)
         }.collect{ it -> it.id }
 
         log.info("Current subscriptions reached end date and are now expired: " + currentSubsIds)
@@ -75,7 +73,7 @@ class CronjobUpdateService {
         if (currentSubsIds) {
             Subscription.executeUpdate(
                     'UPDATE Subscription sub SET sub.status =:status WHERE sub.id in (:ids)',
-                    [status: EXPIRED, ids: currentSubsIds]
+                    [status: RDStore.SUBSCRIPTION_EXPIRED, ids: currentSubsIds]
             )
 
             log.debug("Writing events")

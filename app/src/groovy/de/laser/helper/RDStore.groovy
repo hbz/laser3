@@ -16,8 +16,12 @@ class RDStore {
     static final ORT_PROVIDER   = getRefdataValue('Provider', 'OrgRoleType')
     static final ORT_AGENCY     = getRefdataValue('Agency', 'OrgRoleType')
 
-    static final SUBSCRIPTION_DELETED   = getRefdataValue('Deleted', 'Subscription Status')
-    static final LICENSE_DELETED        = getRefdataValue('Deleted', 'License Status')
+    static final SUBSCRIPTION_DELETED  = getRefdataValue('Deleted', 'Subscription Status')
+    static final SUBSCRIPTION_CURRENT  = getRefdataValue('Current', 'Subscription Status')
+    static final SUBSCRIPTION_INTENDED = getRefdataValue('Intended', 'Subscription Status')
+    static final SUBSCRIPTION_EXPIRED  = getRefdataValue('Expired', 'Subscription Status')
+  
+    static final LICENSE_DELETED = getRefdataValue('Deleted', 'License Status')
 
     static final YN_YES = getRefdataValue('Yes','YN')
     static final YN_NO  = getRefdataValue('No','YN')
