@@ -101,6 +101,7 @@ class ApiReaderHelper {
 
     // ################### STUBS ###################
 
+    @Deprecated
     static resolveClusterStub(Cluster cluster) {
         def result = [:]
         if (cluster) {
@@ -468,7 +469,8 @@ class ApiReaderHelper {
         def result = []
         list?.each { it ->   // com.k_int.kbplus.IdentifierOccurrence
             def tmp = [:]
-            tmp.put( it.identifier?.ns?.ns , it.identifier?.value )
+            tmp.put( 'namespace', it.identifier?.ns?.ns )
+            tmp.put( 'value', it.identifier?.value )
 
             tmp = cleanUp(tmp, true, true)
             result << tmp

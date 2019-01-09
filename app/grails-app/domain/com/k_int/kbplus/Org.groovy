@@ -446,7 +446,7 @@ class Org extends AbstractBaseDomain {
         def sqlQuery = hibernateSession.createSQLQuery(query)
         sqlQuery.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP)
         def result = sqlQuery.list()?.collect{ it.refdata_value_id as Long }
-        log.debug('getallOrgRoleTypeIds(): ' + result)
+        //log.debug('getallOrgRoleTypeIds(): ' + result)
         result
     }
 }

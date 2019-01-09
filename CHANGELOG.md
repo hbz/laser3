@@ -1,4 +1,9 @@
 
+0.12.1
+
+- temporary deactivated usage and statistics
+- modified api 1 property export
+
 0.12
 
 - reintroduction and improvement of finance overview page

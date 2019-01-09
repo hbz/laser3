@@ -11,6 +11,7 @@ class ApiWriterHelper {
 
     // ##### HELPER #####
 
+    @Deprecated
     static getValidDateFormat(def value) {
         // TODO: check and format date
 
@@ -19,6 +20,7 @@ class ApiWriterHelper {
         date
     }
 
+    @Deprecated
     static getRefdataValue(def value, String category) {
         if (value && category) {
             def rdCategory = RefdataCategory.findByDesc(category)
@@ -30,6 +32,7 @@ class ApiWriterHelper {
 
     // #####
 
+    @Deprecated
     static getAddresses(def data, Org ownerOrg, Person ownerPerson) {
         def addresses = []
 
@@ -56,6 +59,7 @@ class ApiWriterHelper {
         addresses
     }
 
+    @Deprecated
     static getContacts(def data, Org ownerOrg, Person ownerPerson) {
         def contacts = []
 
@@ -77,6 +81,7 @@ class ApiWriterHelper {
         contacts
     }
 
+    @Deprecated
     static getPersonsAndRoles(def data, Org owner, Org contextOrg) {
         def result = [
                 'persons'    : [],
@@ -126,6 +131,7 @@ class ApiWriterHelper {
         result
     }
 
+    @Deprecated
     static getIdentifiers(HashMap data, def owner) {
         def idenfifierOccurences = []
 
@@ -141,6 +147,7 @@ class ApiWriterHelper {
         idenfifierOccurences
     }
 
+    @Deprecated
     static getOrgLinks(def data, def owner, Org context) {
         def result = []
 
@@ -191,6 +198,7 @@ class ApiWriterHelper {
         result
     }
 
+    @Deprecated
     static getProperties(def data, def owner, Org contextOrg) {
         def properties = [
                 'custom': [],

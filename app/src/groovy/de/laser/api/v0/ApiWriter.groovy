@@ -18,6 +18,7 @@ class ApiWriter {
      * @param com.k_int.kbplus.Org context
      * @return
      */
+    @Deprecated
     static importLicense(JSONObject data, Org context) {
         def result = []
 
@@ -82,6 +83,7 @@ class ApiWriter {
      * @param com.k_int.kbplus.Org context
      * @return
      */
+    @Deprecated
     static importOrganisation(JSONObject data, Org context) {
         def result = []
 
@@ -137,6 +139,7 @@ class ApiWriter {
      * @param com.k_int.kbplus.Org context
      * @return
      */
+    @Deprecated
     static importSubscription(JSONObject data, Org context) {
         def result = []
 
