@@ -102,9 +102,9 @@
       globalUID:
         type: string
         example: "package:f08250fc-257e-43d6-9528-c56d841a6b00"
-      identifier:
-        type: string
-        example: "04bf5766-bf45-4b9e-afe1-d89de46f6c66"
+    #  identifier:
+    #    type: string
+    #    example: "04bf5766-bf45-4b9e-afe1-d89de46f6c66"
       issueEntitlements:
         type: array
         items:

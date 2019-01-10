@@ -171,7 +171,7 @@ class ApiReaderHelper {
         def result = [:]
         result.globalUID    = pkg.globalUID
         result.name         = pkg.name
-        result.identifier   = pkg.identifier
+        //result.identifier   = pkg.identifier // TODO refactor legacy
         result.impId        = pkg.impId
 
         // References
@@ -189,6 +189,7 @@ class ApiReaderHelper {
             result.impId        = pform.impId
             result.name         = pform.name
             result.normname     = pform.normname
+            result.primaryUrl   = pform.primaryUrl
         }
         return cleanUp(result, true, true)
     }
@@ -213,7 +214,7 @@ class ApiReaderHelper {
         if (hasAccess) {
             result.globalUID    = sub.globalUID
             result.name         = sub.name
-            result.identifier   = sub.identifier
+            //result.identifier   = sub.identifier // TODO refactor identifier
             result.impId        = sub.impId
 
             // References
@@ -400,9 +401,11 @@ class ApiReaderHelper {
                     tmp.addAll(it.getCurrentProperties(generic))
                 }
             }
-            /* TODO groups.members?.each { it ->
-
-            } TODO */
+            groups.members?.each { it ->
+                if (it.visibleForConsortiaMembers?.value == 'Yes') {
+                    tmp.addAll(it.getCurrentProperties(generic))
+                }
+            }
 
             // use all custom properties as fallback if no group found
             if (! groups.fallback) {
@@ -531,7 +534,7 @@ class ApiReaderHelper {
         // RefdataValues
         result.coreStatus       = ie.coreStatus?.value
         result.medium           = ie.medium?.value
-        result.status           = ie.status?.value
+        //result.status           = ie.status?.value // legacy; not needed ?
 
         // References
         if (ignoreRelation != IGNORE_ALL) {
@@ -935,7 +938,7 @@ class ApiReaderHelper {
         //result.endIssue         = tipp.endIssue            // duplicate information in IE
         result.hostPlatformURL  = tipp.hostPlatformURL
         result.impId            = tipp.impId
-        result.rectype          = tipp.rectype
+        //result.rectype          = tipp.rectype    // legacy; not needed ?
         //result.startDate        = tipp.startDate           // duplicate information in IE
         //result.startIssue       = tipp.startIssue          // duplicate information in IE
         //result.startVolume      = tipp.startVolume          // duplicate information in IE

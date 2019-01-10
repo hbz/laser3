@@ -4,7 +4,6 @@ import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Subscription
-import com.k_int.kbplus.auth.User
 import de.laser.helper.Constants
 import de.laser.api.v0.ApiReader
 import de.laser.helper.RDStore
@@ -26,9 +25,6 @@ class ApiSubscription {
                 break
             case 'globalUID':
                 result = Subscription.findAllWhere(globalUID: value)
-                break
-            case 'identifier':
-                result = Subscription.findAllWhere(identifier: value)
                 break
             case 'impId':
                 result = Subscription.findAllWhere(impId: value)

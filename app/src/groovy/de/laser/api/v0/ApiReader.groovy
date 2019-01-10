@@ -5,20 +5,15 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserRole
 import de.laser.CacheService
-import de.laser.api.v0.entities.ApiDoc
-import de.laser.api.v0.entities.ApiIssueEntitlement
-import de.laser.api.v0.entities.ApiLicense
-import de.laser.api.v0.entities.ApiOrg
-import de.laser.api.v0.entities.ApiPkg
 import de.laser.helper.Constants
 import groovy.util.logging.Log4j
-//import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Log4j
 class ApiReader {
 
     static SUPPORTED_FORMATS = [
+            'costItems':            [Constants.MIME_APPLICATION_JSON],
             'document':             [],
             'issueEntitlements':    [Constants.MIME_TEXT_PLAIN, Constants.MIME_APPLICATION_JSON],
             'license':              [Constants.MIME_APPLICATION_JSON],
@@ -29,10 +24,64 @@ class ApiReader {
             'subscription':         [Constants.MIME_APPLICATION_JSON]
     ]
 
-    static SUPPORTED_SIMPLE_QUERIES = [
-            "refdataCategories",
-            "refdataValues"
-    ]
+    /**
+     * @param com.k_int.kbplus.CostItem costItem
+     * @param com.k_int.kbplus.Org context
+     * @return
+     */
+    static exportCostItem(CostItem costItem, Org context){
+        def result = [:]
+
+        costItem = GrailsHibernateUtil.unwrapIfProxy(costItem)
+
+        result.globalUID           = costItem.globalUID
+
+        result.costInBillingCurrency            = costItem.costInBillingCurrency
+        result.costInBillingCurrencyAfterTax    = costItem.costInBillingCurrencyAfterTax
+        result.costInLocalCurrency              = costItem.costInLocalCurrency
+        result.costInLocalCurrencyAfterTax      = costItem.costInLocalCurrencyAfterTax
+
+        result.costTitle           = costItem.costTitle
+        result.costDescription     = costItem.costDescription
+        result.currencyRate        = costItem.currencyRate
+        result.dateCreated         = costItem.dateCreated
+        result.datePaid            = costItem.datePaid
+        result.endDate             = costItem.endDate
+        result.finalCostRounding   = costItem.finalCostRounding
+        result.invoiceDate         = costItem.invoiceDate
+        result.lastUpdated         = costItem.lastUpdated
+
+        result.reference           = costItem.reference
+        result.startDate           = costItem.startDate
+        result.taxRate             = costItem.taxRate
+
+        // RefdataValues
+
+        result.costItemStatus      = costItem.costItemStatus?.value
+        result.costItemCategory    = costItem.costItemCategory?.value
+        result.billingCurrency     = costItem.billingCurrency?.value
+        result.costItemElement     = costItem.costItemElement?.value
+        result.taxCode             = costItem.taxCode?.value
+
+        // References
+
+        result.owner    = ApiReaderHelper.resolveOrganisationStub(costItem.owner, context) // com.k_int.kbplus.Org
+        result.sub      = ApiReaderHelper.resolveSubscriptionStub(costItem.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
+        result.subPkg   = ApiReaderHelper.resolveSubscriptionPackageStub(costItem.subPkg, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
+        result.issueEntitlement = ApiReaderHelper.resolveIssueEntitlement(costItem.issueEntitlement, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
+        result.order    = ApiReaderHelper.resolveOrder(costItem.order) // com.k_int.kbplus.Order
+        result.invoice  = ApiReaderHelper.resolveInvoice(costItem.invoice)
+
+        return ApiReaderHelper.cleanUp(result, true, true)
+    }
+
+    static exportCostItems(Org owner, Org context){
+        def result = []
+
+        result = CostItem.findAllByOwner(owner).globalUID
+
+        return ApiReaderHelper.cleanUp(result, true, true)
+    }
 
     /**
      * @param com.k_int.kbplus.SubscriptionPackage subPkg
@@ -179,11 +228,10 @@ class ApiReader {
         result.dateCreated      = pkg.dateCreated
         result.endDate          = pkg.endDate
         result.forumId          = pkg.forumId
-        result.identifier       = pkg.identifier
+        //result.identifier       = pkg.identifier - TODO refactoring legacy
         result.impId            = pkg.impId
         result.lastUpdated      = pkg.lastUpdated
         result.name             = pkg.name
-        result.identifier       = pkg.identifier
         result.vendorURL        = pkg.vendorURL
         result.sortName         = pkg.sortName
         result.startDate        = pkg.startDate
@@ -233,7 +281,7 @@ class ApiReader {
         result.cancellationAllowances = sub.cancellationAllowances
         result.dateCreated          = sub.dateCreated
         result.endDate              = sub.endDate
-        result.identifier           = sub.identifier
+        //result.identifier           = sub.identifier // TODO: refactor legacy
         result.lastUpdated          = sub.lastUpdated
         result.manualCancellationDate = sub.manualCancellationDate
         result.manualRenewalDate    = sub.manualRenewalDate
@@ -245,7 +293,7 @@ class ApiReader {
 
         result.form         = sub.form?.value
         result.isSlaved     = sub.isSlaved?.value
-        result.isPublic     = sub.isPublic?.value
+        //result.isPublic     = sub.isPublic?.value // legacy
         result.resource     = sub.resource?.value
         result.status       = sub.status?.value
         result.type         = sub.type?.value

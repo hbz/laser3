@@ -64,7 +64,10 @@
                 def elementSign = 'notSet'
                 def icon = ''
                 def dataTooltip = ""
-                if(ci.costItemElement) {
+                if(ci.costItemElementConfiguration) {
+                    elementSign = ci.costItemElementConfiguration
+                }
+                else if(!ci.costItemElementConfiguration && ci.costItemElement) {
                     def cie = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(ci.costItemElement, org)
                     if(cie) {
                         elementSign = cie.elementSign
@@ -205,7 +208,10 @@
                 </div>
                 <div class="content">
                     <p>
-                        ${message(code: 'financials.calculationBase.paragraph1', args: [contextService.getOrg().costConfigurationPreset.getI10n('value')])}
+                        <%
+                            def argv0 = contextService.getOrg().costConfigurationPreset ? contextService.getOrg().costConfigurationPreset.getI10n('value') : message(code:'financials.costItemConfiguration.notSet')
+                        %>
+                        ${message(code: 'financials.calculationBase.paragraph1', args: [argv0])}
                     </p>
                     <p>
                         ${message(code: 'financials.calculationBase.paragraph2')}
