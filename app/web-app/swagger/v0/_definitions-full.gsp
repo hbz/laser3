@@ -91,20 +91,23 @@
   Document:
     type: object
     properties:
-      filename:
+      placeholder:
         type: string
-      mimetype:
-        type: string
-      title:
-        type: string
-      type:
-        type: string
-        description: Mapping RefdataCategory
-        enum:
-          [""]
-      uuid:
-        type: string
-        example: "70d4ef8a-71b9-4b39-b339-9f3773c29b26"
+
+  #    filename:
+  #      type: string
+  #    mimetype:
+  #      type: string
+  #    title:
+  #      type: string
+  #    type:
+  #      type: string
+  #      description: Mapping RefdataCategory
+  #      enum:
+  #        [""]
+  #    uuid:
+  #      type: string
+  #      example: "70d4ef8a-71b9-4b39-b339-9f3773c29b26"
 
   Identifier:
     type: object
@@ -181,6 +184,11 @@
         properties:
           contact:
             type: string
+          calculatedType:
+            type: string
+            description: Calculated object type
+            enum:
+              ["Template", "Local", "Consortial", "Participation", "Unkown"]
           dateCreated:
             type: string
             format: date
@@ -583,6 +591,11 @@
         properties:
           cancellationAllowances:
             type: string
+          calculatedType:
+            type: string
+            description: Calculated object type
+            enum:
+              ["Template", "Local", "Consortial", "Participation", "Unkown"]
           dateCreated:
             type: string
             format: date

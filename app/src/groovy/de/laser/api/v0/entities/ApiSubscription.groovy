@@ -49,20 +49,15 @@ class ApiSubscription {
         def result = []
 
         if (! hasAccess) {
-            if (OrgRole.findBySubAndRoleType(sub, RDStore.OR_SUBSCRIPTION_CONSORTIA)) {
+            if (OrgRole.findBySubAndRoleTypeAndOrg(sub, RDStore.OR_SUBSCRIPTION_CONSORTIA, context)) {
                 hasAccess = true
             }
-            else if (OrgRole.findBySubAndRoleType(sub, RDStore.OR_SUBSCRIBER)) {
+            else if (OrgRole.findBySubAndRoleTypeAndOrg(sub, RDStore.OR_SUBSCRIBER, context)) {
                 hasAccess = true
             }
-            else if (OrgRole.findBySubAndRoleType(sub, RDStore.OR_SUBSCRIBER_CONS)) {
+            else if (OrgRole.findBySubAndRoleTypeAndOrg(sub, RDStore.OR_SUBSCRIBER_CONS, context)) {
                 hasAccess = true
             }
-            /* sub.orgRelations.each { orgRole ->
-                if (orgRole.getOrg().id == context?.id) {
-                    hasAccess = true
-                }
-            } */
         }
 
         if (hasAccess) {

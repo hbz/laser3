@@ -3,9 +3,11 @@ package de.laser.api.v0.entities
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgRole
 import de.laser.helper.Constants
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiReaderHelper
+import de.laser.helper.RDStore
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 
@@ -52,6 +54,17 @@ class ApiLicense {
                 if (orgRole.getOrg().id == context?.id) {
                     hasAccess = true
                 }
+            }
+        }
+        if (! hasAccess) {
+            if (OrgRole.findByLicAndRoleTypeAndOrg(lic, RDStore.OR_LICENSING_CONSORTIUM, context)) {
+                hasAccess = true
+            }
+            else if (OrgRole.findByLicAndRoleTypeAndOrg(lic, RDStore.OR_LICENSEE, context)) {
+                hasAccess = true
+            }
+            else if (OrgRole.findByLicAndRoleTypeAndOrg(lic, RDStore.OR_LICENSEE_CONS, context)) {
+                hasAccess = true
             }
         }
 

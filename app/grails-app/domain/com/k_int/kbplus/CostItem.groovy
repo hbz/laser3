@@ -154,13 +154,24 @@ class CostItem extends AbstractBaseDomain implements TemplateSupport {
     @Deprecated
     @Override
     def isTemplate() {
-        return (type != null) && (type == RefdataValue.getByValueAndCategory('Template', 'License Type'))
+        false
     }
 
     @Deprecated
     @Override
     def hasTemplate() {
-        return instanceOf ? instanceOf.isTemplate() : false
+        false
+    }
+
+    @Override
+    def getCalculatedType() {
+        def result = TemplateSupport.CALCULATED_TYPE_UNKOWN
+
+        if (isTemplate()) {
+            result = TemplateSupport.CALCULATED_TYPE_TEMPLATE
+        }
+
+        result
     }
 
     def getBudgetcodes() {

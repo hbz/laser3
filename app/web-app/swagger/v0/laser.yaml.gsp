@@ -41,6 +41,10 @@ tags:
     description: ""
     externalDocs:
       url: http://wiki1.hbz-nrw.de/display/ERM/Home
+  - name: Objects
+    description: ""
+    externalDocs:
+      url: http://wiki1.hbz-nrw.de/display/ERM/Home
   - name: Organisations
     description: ""
     externalDocs:

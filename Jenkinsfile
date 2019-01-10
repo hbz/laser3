@@ -23,7 +23,7 @@ pipeline {
             steps {
 
             script{
-                    env.SERVERDEPLOY = input message: '¯\\_(ツ)_/¯ On which Server you want to deploy?  ', ok: 'Deploy!',
+                    env.SERVERDEPLOY = input message: '¯\\_(ツ)_/¯ Choose your Server to deploy..', ok: 'Deploy!',
                                             parameters: [choice(name: 'Server to deploy', choices: "${SERVER_DEV}\n${SERVER_QA}\n${SERVER_PROD}", description: '')]
                     echo "Server set to: ${SERVERDEPLOY}"
 
@@ -73,8 +73,8 @@ pipeline {
                     }
 
                 mail to: 'moetez.djebeniani@hbz-nrw.de, david.klober@hbz-nrw.de, anja.albin@hbz-nrw.de, andreas.galffy@hbz-nrw.de, rupp@hbz-nrw.de',
-                                                             subject: "(¬‿¬) SUCCESS: ${currentBuild.fullDisplayName}",
-                                                             body: "(¬‿¬) Successfully deployed ${env.BUILD_URL} on Server ${SERVERDEPLOY} \n\n\n${changeLog}"
+                                                             subject: "SUCCESS: ${currentBuild.fullDisplayName}",
+                                                             body: "(¬‿¬) \n\n Successfully deployed ${env.BUILD_URL} on Server ${SERVERDEPLOY} \n\n\n${changeLog}"
                 cleanWs()
             }
             unstable {
@@ -83,8 +83,8 @@ pipeline {
             failure {
                 echo 'I failed :('
                 mail to: 'moetez.djebeniani@hbz-nrw.de, david.klober@hbz-nrw.de ',
-                             subject: "(ಠ_ಠ) FAIL: ${currentBuild.fullDisplayName}",
-                             body: "(ಠ_ಠ) Failed Deploy on Server ${SERVERDEPLOY} \n\n Something is wrong with ${env.BUILD_URL}"
+                             subject: "FAILED: ${currentBuild.fullDisplayName}",
+                             body: "(ಠ_ಠ) \n\n Failed Deploy on Server ${SERVERDEPLOY} \n\n Something is wrong with ${env.BUILD_URL}"
             }
             changed {
                 echo 'Things were different before...'

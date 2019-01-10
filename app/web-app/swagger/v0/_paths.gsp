@@ -85,7 +85,7 @@ paths:
     get:
       tags:
         - Documents
-      summary: Find document by identifier
+      summary: Find or download document by identifier
       description: >
         Supported are queries by following identifiers: *uuid*
       parameters:
@@ -93,9 +93,9 @@ paths:
         - $ref: "#/parameters/v"
         - $ref: "#/parameters/context"
         - $ref: "#/parameters/authorization"
-      produces:
-        - application/*
-        - text/*
+  #    produces:
+  #      - application/*
+  #      - text/*
       responses:
         200:
           description: OK
@@ -139,11 +139,11 @@ paths:
         406:
           $ref: "#/responses/notAcceptable"
 --%>
-<%--
+
   /license:
     get:
       tags:
-        - Licenses
+        - Objects
       summary: Find license by identifier
       description: >
         Supported are queries by following identifiers: *globalUID*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
@@ -171,7 +171,7 @@ paths:
           $ref: "#/responses/notAcceptable"
         412:
           $ref: "#/responses/preconditionFailed"
---%><%--
+<%--
     post:
       tags:
         - Licenses
@@ -328,7 +328,7 @@ paths:
   /subscription:
     get:
       tags:
-      - Subscriptions
+      - Objects
       summary: Find subscription by identifier
       description: >
         Supported are queries by following identifiers: *globalUID*, *identifier*, *impId* and *ns:identifier*. Ns:identifier value has to be defined like this: _xyz:4711_
