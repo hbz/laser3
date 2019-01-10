@@ -73,7 +73,7 @@ pipeline {
                     }
 
                 mail to: 'moetez.djebeniani@hbz-nrw.de, david.klober@hbz-nrw.de, anja.albin@hbz-nrw.de, andreas.galffy@hbz-nrw.de, rupp@hbz-nrw.de',
-                                                             subject: "(¬‿¬) Succeeded Deploy on Server ${SERVERDEPLOY}: ${currentBuild.fullDisplayName}",
+                                                             subject: "(¬‿¬) SUCCESS: ${currentBuild.fullDisplayName}",
                                                              body: "(¬‿¬) Successfully deployed ${env.BUILD_URL} on Server ${SERVERDEPLOY} \n\n\n${changeLog}"
                 cleanWs()
             }
@@ -83,7 +83,7 @@ pipeline {
             failure {
                 echo 'I failed :('
                 mail to: 'moetez.djebeniani@hbz-nrw.de, david.klober@hbz-nrw.de ',
-                             subject: "(ಠ_ಠ) Failed Deploy on Server ${SERVERDEPLOY}: ${currentBuild.fullDisplayName}",
+                             subject: "(ಠ_ಠ) FAIL: ${currentBuild.fullDisplayName}",
                              body: "(ಠ_ಠ) Failed Deploy on Server ${SERVERDEPLOY} \n\n Something is wrong with ${env.BUILD_URL}"
             }
             changed {
