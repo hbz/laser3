@@ -76,6 +76,18 @@
           [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('ContactType').collect{ it.value }.join(', ') }]"
 --%>
 
+  CostItem:
+    type: object
+    properties:
+      placeholder:
+        type: string
+
+  CostItems:
+    type: object
+    properties:
+      placeholder:
+        type: string
+
   Document:
     type: object
     properties:

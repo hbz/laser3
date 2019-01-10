@@ -3,7 +3,6 @@ package de.laser.api.v0.entities
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.Package
-import com.k_int.kbplus.auth.User
 import de.laser.helper.Constants
 import de.laser.api.v0.ApiReader
 import grails.converters.JSON

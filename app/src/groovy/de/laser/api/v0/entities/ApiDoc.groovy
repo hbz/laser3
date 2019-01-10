@@ -4,9 +4,7 @@ import com.k_int.kbplus.Doc
 import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.auth.User
 import de.laser.helper.Constants
-import de.laser.api.v0.ApiReader
 import groovy.util.logging.Log4j
 
 @Log4j

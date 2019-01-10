@@ -25,6 +25,62 @@ paths:
         401:
           $ref: "#/responses/notAuthorized"
 
+  /costItem:
+    get:
+      tags:
+        - Finance
+      summary: Find cost item by identifier
+      description: >
+        Supported are queries by following identifiers: *uuid*
+      parameters:
+        - $ref: "#/parameters/q"
+        - $ref: "#/parameters/v"
+        - $ref: "#/parameters/context"
+        - $ref: "#/parameters/authorization"
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/responses/badRequest"
+        401:
+          $ref: "#/responses/notAuthorized"
+        403:
+          $ref: "#/responses/forbidden"
+        404:
+          description: Valid request, but document not found
+        406:
+          $ref: "#/responses/notAcceptable"
+
+  /costItems:
+    get:
+      tags:
+        - Finance
+      summary: Find owner related cost items by identifier
+      description: >
+        Supported are queries by following identifiers: *uuid*
+      parameters:
+        - $ref: "#/parameters/q"
+        - $ref: "#/parameters/v"
+        - $ref: "#/parameters/context"
+        - $ref: "#/parameters/authorization"
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+        400:
+          $ref: "#/responses/badRequest"
+        401:
+          $ref: "#/responses/notAuthorized"
+        403:
+          $ref: "#/responses/forbidden"
+        404:
+          description: Valid request, but document not found
+        406:
+          $ref: "#/responses/notAcceptable"
+
   /document:
     get:
       tags:
