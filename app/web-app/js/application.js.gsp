@@ -360,7 +360,7 @@ r2d2 = {
         });
         // confirmation modal
         var buildConfirmationModal =
-            function(event,that){
+            function(that){
                 var dataAttr = that.getAttribute("data-confirm-id")? that.getAttribute("data-confirm-id")+'_form':false;
                 var what = that.getAttribute("data-confirm-term-what")? that.getAttribute("data-confirm-term-what"):"";
                 var whatDetail = that.getAttribute("data-confirm-term-what-detail")? that.getAttribute("data-confirm-term-what-detail"):false;
@@ -388,7 +388,7 @@ r2d2 = {
                 }
                 var url = that.getAttribute('href') && (that.getAttribute('class') != 'js-gost') ? that.getAttribute('href'): false; // use url only if not remote link
 
-                event.preventDefault();
+
                 // INHERIT BUTTON
 
                 var messageContent = content;
@@ -524,14 +524,14 @@ r2d2 = {
         // for links and submit buttons
         $(ctxSel + ' .js-open-confirm-modal').click(function(e) {
             e.preventDefault();
-            buildConfirmationModal(event,this);
+            buildConfirmationModal(this);
         });
         // for remote links = ajax calls
         $(ctxSel + ' .js-open-confirm-modal-copycat').click(function(e) {
             var onclickString = $(this).next('.js-gost').attr("onclick");
             $('#js-confirmation-button').attr("onclick", onclickString);
             var gostObject = $(this).next('.js-gost');
-            buildConfirmationModal(event,gostObject[0] );
+            buildConfirmationModal(gostObject[0] );
         });
     }
 }
