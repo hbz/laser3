@@ -28509,7 +28509,11 @@ Floated Menu / Item
   text-align: justify;
 }
 
-.ui.la-table.table tr td.la-td-exposed {
+.ui.la-table.table tr.la-exposed-bg td {
+  background-color: #fffaf5;
+}
+
+.ui.la-table.table tr td.la-exposed-bg {
   background-color: #fffaf5;
 }
 /*!
