@@ -2,12 +2,10 @@ package de.laser.api.v0
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
-import de.laser.api.v0.catalogue.ApiRefdatas
+import de.laser.api.v0.catalogue.ApiCatalogue
 import de.laser.api.v0.entities.*
 import de.laser.helper.Constants
 import grails.converters.JSON
-import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.springframework.http.HttpStatus
@@ -17,7 +15,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = 'Variant 0 :: Version 0.16'
+    static final VERSION = '0 @ 0.18'
     static final NOT_SUPPORTED = false
 
     /**
@@ -33,9 +31,31 @@ class ApiManager {
         def failureCodes  = [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED]
         def accessDueDatamanager = ApiReader.isDataManager(user)
 
-        log.debug("API-READ: ${obj} (${format}) @ ${query}:${value}")
+        log.debug("API-READ (" + VERSION + "): ${obj} (${format}) -> ${query}:${value}")
 
-        if ('document'.equalsIgnoreCase(obj)) {
+        if ('costItem'.equalsIgnoreCase(obj)) {
+            if (format in ApiReader.SUPPORTED_FORMATS.costItems) {
+                def costItem = ApiCostItem.findCostItemBy(query, value)
+                if (costItem && !(costItem in failureCodes)) {
+                    result = ApiCostItem.getCostItem((CostItem) costItem, contextOrg, accessDueDatamanager)
+                }
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
+            }
+        }
+        else if ('costItems'.equalsIgnoreCase(obj)) {
+            if (format in ApiReader.SUPPORTED_FORMATS.costItems) {
+                result = ApiOrg.findOrganisationBy(query, value) // use of http status code
+                if (result && !(result in failureCodes)) {
+                    result = ApiCostItem.getCostItems(result, contextOrg, accessDueDatamanager)
+                }
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
+            }
+        }
+        else if ('document'.equalsIgnoreCase(obj)) {
             //if (format in ApiReader.SUPPORTED_FORMATS.document) {
                 result = ApiDoc.findDocumentBy(query, value)
                 if (result && !(result in failureCodes)) {
@@ -109,7 +129,7 @@ class ApiManager {
         }
         else if ('refdatas'.equalsIgnoreCase(obj)) {
             if (format in ApiReader.SUPPORTED_FORMATS.refdatas) {
-                result = ApiRefdatas.getAllRefdatas()
+                result = ApiCatalogue.getAllRefdatas()
             }
             else {
                 return Constants.HTTP_NOT_ACCEPTABLE

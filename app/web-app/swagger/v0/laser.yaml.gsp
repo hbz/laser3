@@ -33,6 +33,10 @@ tags:
     description: ""
     externalDocs:
       url: http://wiki1.hbz-nrw.de/display/ERM/Home
+  - name: Finance
+    description: ""
+    externalDocs:
+      url: http://wiki1.hbz-nrw.de/display/ERM/Home
   - name: Licenses
     description: ""
     externalDocs:

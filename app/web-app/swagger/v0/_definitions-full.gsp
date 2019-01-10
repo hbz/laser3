@@ -76,6 +76,18 @@
           [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('ContactType').collect{ it.value }.join(', ') }]"
 --%>
 
+  CostItem:
+    type: object
+    properties:
+      placeholder:
+        type: string
+
+  CostItems:
+    type: object
+    properties:
+      placeholder:
+        type: string
+
   Document:
     type: object
     properties:
@@ -152,11 +164,11 @@
       startDate:
         type: string
         format: date
-      status:
-        type: string
-        description: Mapping RefdataCategory
-        enum:
-          [""]
+    #  status:
+    #    type: string
+    #    description: Mapping RefdataCategory
+    #    enum:
+    #      [""]
       subscription:
         $ref: "#/definitions/SubscriptionStub"
       tipp:
@@ -592,11 +604,11 @@
               [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Subscription Form').collect{ it.value }.join(', ') }]
           instanceOf:
             $ref: "#/definitions/SubscriptionStub"
-          isPublic:
-            type: string
-            description: Mapping RefdataCategory "YN"
-            enum:
-              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
+    #      isPublic:
+    #        type: string
+    #        description: Mapping RefdataCategory "YN"
+    #        enum:
+    #          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
     #      issueEntitlements:
     #        type: array
     #        items:
@@ -738,8 +750,8 @@
               [""]
           platform:
             $ref: "#/definitions/PlatformStub"
-          rectype:
-            type: string
+  #        rectype:
+  #          type: string
   #        startDate:
   #          type: string
   #        startIssue:
