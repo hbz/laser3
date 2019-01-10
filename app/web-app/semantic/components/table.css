@@ -1317,3 +1317,6 @@
 .ui.sortable.table thead th.la-hyphenation {
   text-align: justify;
 }
+.ui.la-table.table tr td.la-td-exposed {
+  background-color: #fffaf5;
+}

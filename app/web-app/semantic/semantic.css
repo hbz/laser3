@@ -28508,6 +28508,10 @@ Floated Menu / Item
 .ui.sortable.table thead th.la-hyphenation {
   text-align: justify;
 }
+
+.ui.la-table.table tr td.la-td-exposed {
+  background-color: #fffaf5;
+}
 /*!
  * # Semantic UI 2.3.1 - Ad
  * http://github.com/semantic-org/semantic-ui/
