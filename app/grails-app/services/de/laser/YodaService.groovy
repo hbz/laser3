@@ -12,7 +12,7 @@ class YodaService {
     // <g:set var="yodaService" bean="yodaService"/>
 
     def showDebugInfo() {
-        //ROLE_ADMIN,
-        return ( SpringSecurityUtils.ifAnyGranted('ROLE_YODA') || grailsApplication.config.showDebugInfo )
+        //enhanced as of ERMS-829
+        return ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA,ROLE_DATAMANAGER') || grailsApplication.config.showDebugInfo )
     }
 }

@@ -54,9 +54,10 @@
                         <strong>${message(code: 'financials.calculationBase')}</strong>
                     </div>
                     <div class="content">
-                        <p>
-                            ${message(code: 'financials.calculationBase.paragraph1', args: [contextService.getOrg().costConfigurationPreset.getI10n('value')])}
-                        </p>
+                        <%
+                            def argv0 = contextService.getOrg().costConfigurationPreset ? contextService.getOrg().costConfigurationPreset.getI10n('value') : message(code:'financials.costItemConfiguration.notSet')
+                        %>
+                        ${message(code: 'financials.calculationBase.paragraph1', args: [argv0])}
                         <p>
                             ${message(code: 'financials.calculationBase.paragraph2')}
                         </p>

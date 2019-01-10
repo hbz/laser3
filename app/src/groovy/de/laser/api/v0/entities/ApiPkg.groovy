@@ -25,9 +25,6 @@ class ApiPkg {
             case 'globalUID':
                 result = Package.findAllWhere(globalUID: value)
                 break
-            case 'identifier':
-                result = Package.findAllWhere(identifier: value)
-                break
             case 'impId':
                 result = Package.findAllWhere(impId: value)
                 break

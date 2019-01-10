@@ -7,7 +7,10 @@
             def elementSign = 'notSet'
             def icon = ''
             def dataTooltip = ""
-            if(ci.costItemElement) {
+            if(ci.costItemElementConfiguration) {
+                elementSign = ci.costItemElementConfiguration
+            }
+            else if(!ci.costItemElementConfiguration && ci.costItemElement) {
                 def cie = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(ci.costItemElement, org)
                 if(cie) {
                     elementSign = cie.elementSign

@@ -27,9 +27,6 @@ class ApiSubscription {
             case 'globalUID':
                 result = Subscription.findAllWhere(globalUID: value)
                 break
-            case 'identifier':
-                result = Subscription.findAllWhere(identifier: value)
-                break
             case 'impId':
                 result = Subscription.findAllWhere(impId: value)
                 break

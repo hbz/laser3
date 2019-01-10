@@ -1,5 +1,5 @@
 <!-- _result_tab_subscr.gsp -->
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.FinanceController" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.*" %>
 
 <laser:serviceInjection />
 
@@ -35,13 +35,34 @@
                 def elementSign = 'notSet'
                 def icon = ''
                 def dataTooltip = ""
-                if(ci.costItemElement) {
+                if(ci.costItemElementConfiguration) {
+                    elementSign = ci.costItemElementConfiguration
+                }
+                else if(!ci.costItemElementConfiguration && ci.costItemElement) {
                     def cie = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(ci.costItemElement, org)
                     if(cie) {
                         elementSign = cie.elementSign
                     }
                 }
                 String cieString = "data-elementSign=${elementSign}"
+                switch(elementSign) {
+                    case RDStore.CIEC_POSITIVE:
+                        dataTooltip = message(code:'financials.costItemConfiguration.positive')
+                        icon = '<i class="plus green circle icon"></i>'
+                        break
+                    case RDStore.CIEC_NEGATIVE:
+                        dataTooltip = message(code:'financials.costItemConfiguration.negative')
+                        icon = '<i class="minus red circle icon"></i>'
+                        break
+                    case RDStore.CIEC_NEUTRAL:
+                        dataTooltip = message(code:'financials.costItemConfiguration.neutral')
+                        icon = '<i class="circle yellow icon"></i>'
+                        break
+                    default:
+                        dataTooltip = message(code:'financials.costItemConfiguration.notSet')
+                        icon = '<i class="question circle icon"></i>'
+                        break
+                }
             %>
             <tr id="bulkdelete-b${ci.id}">
                 <td>
@@ -50,8 +71,10 @@
                 </td>
                 <td>
                     <span class="costData"
+                          data-costInLocalCurrency="<g:formatNumber number="${ci.costInLocalCurrency}" locale="en" maxFractionDigits="2"/>"
                           data-costInLocalCurrencyAfterTax="<g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" locale="en" maxFractionDigits="2"/>"
                           data-billingCurrency="${ci.billingCurrency ?: 'EUR'}"
+                          data-costInBillingCurrency="<g:formatNumber number="${ci.costInBillingCurrency}" locale="en" maxFractionDigits="2"/>"
                           data-costInBillingCurrencyAfterTax="<g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" locale="en" maxFractionDigits="2"/>"
                           ${cieString}
                     >
@@ -92,9 +115,10 @@
                         <strong>${message(code: 'financials.calculationBase')}</strong>
                     </div>
                     <div class="content">
-                        <p>
-                            ${message(code: 'financials.calculationBase.paragraph1', args: [contextService.getOrg().costConfigurationPreset.getI10n('value')])}
-                        </p>
+                        <%
+                            def argv0 = contextService.getOrg().costConfigurationPreset ? contextService.getOrg().costConfigurationPreset.getI10n('value') : message(code:'financials.costItemConfiguration.notSet')
+                        %>
+                        ${message(code: 'financials.calculationBase.paragraph1', args: [argv0])}
                         <p>
                             ${message(code: 'financials.calculationBase.paragraph2')}
                         </p>

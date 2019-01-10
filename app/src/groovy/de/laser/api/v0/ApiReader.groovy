@@ -179,11 +179,10 @@ class ApiReader {
         result.dateCreated      = pkg.dateCreated
         result.endDate          = pkg.endDate
         result.forumId          = pkg.forumId
-        result.identifier       = pkg.identifier
+        //result.identifier       = pkg.identifier - TODO refactoring legacy
         result.impId            = pkg.impId
         result.lastUpdated      = pkg.lastUpdated
         result.name             = pkg.name
-        result.identifier       = pkg.identifier
         result.vendorURL        = pkg.vendorURL
         result.sortName         = pkg.sortName
         result.startDate        = pkg.startDate
@@ -233,7 +232,7 @@ class ApiReader {
         result.cancellationAllowances = sub.cancellationAllowances
         result.dateCreated          = sub.dateCreated
         result.endDate              = sub.endDate
-        result.identifier           = sub.identifier
+        //result.identifier           = sub.identifier // TODO: refactor legacy
         result.lastUpdated          = sub.lastUpdated
         result.manualCancellationDate = sub.manualCancellationDate
         result.manualRenewalDate    = sub.manualRenewalDate
@@ -245,7 +244,7 @@ class ApiReader {
 
         result.form         = sub.form?.value
         result.isSlaved     = sub.isSlaved?.value
-        result.isPublic     = sub.isPublic?.value
+        //result.isPublic     = sub.isPublic?.value // legacy
         result.resource     = sub.resource?.value
         result.status       = sub.status?.value
         result.type         = sub.type?.value
