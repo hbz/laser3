@@ -10,12 +10,6 @@
             if(ci.costItemElementConfiguration) {
                 elementSign = ci.costItemElementConfiguration
             }
-            else if(!ci.costItemElementConfiguration && ci.costItemElement) {
-                def cie = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(ci.costItemElement, org)
-                if(cie) {
-                    elementSign = cie.elementSign
-                }
-            }
             String cieString = "data-elementSign=${elementSign}"
             switch(elementSign) {
                 case RDStore.CIEC_POSITIVE:
@@ -50,6 +44,9 @@
             </td>
         </g:if>
         <td>
+            <span data-position="right center" data-tooltip="${dataTooltip}">${raw(icon)}</span>
+        </td>
+        <td>
             <span class="costData"
                   data-costInLocalCurrency="<g:formatNumber number="${ci.costInLocalCurrency}" locale="en" maxFractionDigits="2"/>"
                   data-costInLocalCurrencyAfterTax="<g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" locale="en" maxFractionDigits="2"/>"
@@ -68,7 +65,6 @@
             <br />
             <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="EUR" />  (${ci.taxRate ?: 0}%)
         </td>
-
         <td>
             <semui:xEditableRefData config="CostItemStatus" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemStatus" />
         </td>
@@ -79,7 +75,6 @@
         </td>
         <td>
             <semui:xEditableRefData config="CostItemElement" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemElement" />
-            <span data-position="right center" data-tooltip="${dataTooltip}">${raw(icon)}</span>
         </td>
         <td class="x">
             <g:if test="${editable}">

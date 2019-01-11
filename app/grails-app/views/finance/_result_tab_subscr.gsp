@@ -3,11 +3,12 @@
 
 <laser:serviceInjection />
 
-<table id="costTable_${i}" class="ui celled sortable table table-tworow la-table ignore-floatThead">
+<table id="costTable_${i}" data-queryMode="${i}" class="ui celled sortable table table-tworow la-table ignore-floatThead">
 
 <thead>
     <tr>
         <th>${message(code:'sidewide.number')}</th>
+        <th><span data-tooltip="${message(code:'financials.costItemConfiguration')}" data-position="top center"><i class="money bill alternate icon"></i></span></th>
         <th class="two wide">${message(code:'financials.invoice_total')}</th>
         <th class="two wide">${message(code:'financials.newCosts.valueInEuro')}</th>
         <th>${message(code:'financials.costItemElement')}</th>
@@ -19,7 +20,7 @@
     %{--Empty result set--}%
     <g:if test="${cost_items?.size() == 0}">
         <tr>
-            <td colspan="6" style="text-align:center">
+            <td colspan="7" style="text-align:center">
                 <br />
                 <g:if test="${msg}">${msg}</g:if>
                 <g:else>${message(code:'finance.result.filtered.empty')}</g:else>
@@ -37,12 +38,6 @@
                 def dataTooltip = ""
                 if(ci.costItemElementConfiguration) {
                     elementSign = ci.costItemElementConfiguration
-                }
-                else if(!ci.costItemElementConfiguration && ci.costItemElement) {
-                    def cie = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(ci.costItemElement, org)
-                    if(cie) {
-                        elementSign = cie.elementSign
-                    }
                 }
                 String cieString = "data-elementSign=${elementSign}"
                 switch(elementSign) {
@@ -70,6 +65,9 @@
                     ${ jj + 1 + offset }
                 </td>
                 <td>
+                    <span data-position="right center" data-tooltip="${dataTooltip}">${raw(icon)}</span>
+                </td>
+                <td>
                     <span class="costData"
                           data-costInLocalCurrency="<g:formatNumber number="${ci.costInLocalCurrency}" locale="en" maxFractionDigits="2"/>"
                           data-costInLocalCurrencyAfterTax="<g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" locale="en" maxFractionDigits="2"/>"
@@ -86,7 +84,6 @@
                 </td>
                 <td>
                     ${ci.costItemElement?.getI10n('value')}
-                    <span data-position="right center" data-tooltip="${dataTooltip}">${raw(icon)}</span>
                 </td>
                 <td>
                     <g:link controller="subscriptionDetails" action="show" id="${ci.sub?.id}">${ci.sub}</g:link>
@@ -100,11 +97,26 @@
     </g:else>
 </tbody>
     <tfoot>
+        <tr id="sumOfCosts_${i}">
+            <th colspan="3">
+
+            </th>
+            <th>
+                ${message(code:'financials.sum.local')}
+            </th>
+            <th colspan="3">
+
+            </th>
+        </tr>
         <tr>
-            <td colspan="7">
-                <strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}</strong>
-                <br/>
-                <span class="sumOfCosts_${i}"></span>
+            <td colspan="3">
+
+            </td>
+            <td class="la-exposed-bg" id="localSumAfterTax_${i}">
+
+            </td>
+            <td colspan="3">
+
             </td>
         </tr>
         <tr>
@@ -130,16 +142,16 @@
 </table>
     <g:if test="${cost_items}">
         <g:if test="${inSubMode}">
-            <semui:paginate mapping="subfinance" action="index" controller="finance" params="${params}"
+            <semui:paginate mapping="subfinance" action="index" controller="finance" params="${params+[view:'subscr']}"
                             next="${message(code: 'default.paginate.next', default: 'Next')}"
-                            prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
-                            total="${cost_items_count}"/>
+                            prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
+                            max="${max}" offset="${subscrOffset ? subscrOffset : 1}" total="${cost_items_count}"/>
         </g:if>
         <g:else>
-            <semui:paginate action="finance" controller="myInstitution" params="${params}"
+            <semui:paginate action="finance" controller="myInstitution" params="${params+[view:'subscr']}"
                             next="${message(code: 'default.paginate.next', default: 'Next')}"
-                            prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
-                            total="${cost_items_count}"/>
+                            prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
+                            max="${max}" offset="${subscrOffset ? subscrOffset : 1}" total="${cost_items_count}"/>
         </g:else>
     </g:if>
 

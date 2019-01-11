@@ -52,7 +52,7 @@ class FinanceController extends AbstractDebugController {
         def user =  User.get(springSecurityService.principal.id)
         def dateTimeFormat  = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
         def result = [:]
-
+        def tmp
       try {
         result.contextOrg = contextService.getOrg()
         result.institution = contextService.getOrg()
@@ -72,6 +72,7 @@ class FinanceController extends AbstractDebugController {
           result.queryMode = MODE_OWNER
           def orgRoleCons, orgRoleSubscr
 
+
         //this is the switch for the cost item fill
         if (result.inSubMode) {
             log.info("call from /subscriptionDetails/${params.sub}/finance")
@@ -88,7 +89,7 @@ class FinanceController extends AbstractDebugController {
             }
 
             // own costs
-            def tmp = financialData(result, params, user, MODE_OWNER)
+            tmp = financialData(result, params, user, MODE_OWNER)
             result.foundMatches    = tmp.foundMatches
             result.cost_items      = tmp.cost_items
             result.cost_item_count = tmp.cost_item_count
@@ -141,7 +142,7 @@ class FinanceController extends AbstractDebugController {
         }
         else {
             log.info("call from /myInstitution/finance")
-            def tmp = financialData(result, params, user, MODE_OWNER)
+            tmp = financialData(result, params, user, MODE_OWNER)
             result.foundMatches    = tmp.foundMatches
             result.cost_items      = tmp.cost_items
             result.cost_item_count = tmp.cost_item_count
@@ -253,7 +254,9 @@ class FinanceController extends AbstractDebugController {
       }
 
       //result.tab = params.tab ?: result.queryMode == MODE_CONS ? 'sc' : 'owner'
-
+        result.consOffset = tmp.consOffset
+        result.subscrOffset = tmp.subscrOffset
+        result.ownerOffset = tmp.ownerOffset
       result
     }
 
@@ -267,7 +270,7 @@ class FinanceController extends AbstractDebugController {
      * Note - Requests DB requests are cached ONLY if non-hardcoded values are used
      */
     private def financialData(result, params, user, queryMode) {
-        def tmp = [:]
+        def tmp = [ownerOffset:0, subscrOffset:0, consOffset:0]
 
         result.editable    =  accessService.checkMinUserOrgRole(user, result.institution, user_role)
         params.orgId       =  result.institution.id
@@ -279,9 +282,18 @@ class FinanceController extends AbstractDebugController {
         //result.offset      =  params.int('offset',0)?: 0
 
         // WORKAROUND: erms-517 (deactivated as erms-802)
-
         params.max = params.max ? params.max : user.getDefaultPageSizeTMP()
-        params.offset = params.offset ? params.offset : 0
+        switch(params.view) {
+            case "cons": tmp.consOffset = params.offset
+            break
+            case "owner": tmp.ownerOffset = params.offset
+            break
+            case "subscr": tmp.subscrOffset = params.offset
+            break
+            default: log.info("unhandled view: ${params.view}")
+            break
+        }
+
         /*
         result.max = 5000
         result.offset = 0
@@ -313,6 +325,7 @@ class FinanceController extends AbstractDebugController {
             cost_item_qry_params = [subs: memberSubs, owner: result.institution]
             cost_item_qry        = ' WHERE ci.sub IN ( :subs ) AND ci.owner = :owner '
             //orderAndSortBy       = orderAndSortBy
+            params.offset = tmp.consOffset
         }
 
         if (MODE_OWNER == queryMode) {
@@ -352,6 +365,7 @@ class FinanceController extends AbstractDebugController {
                     }
                 }
             }
+            params.offset = tmp.ownerOffset
         }
 
         // OVERWRITE
@@ -371,6 +385,7 @@ class FinanceController extends AbstractDebugController {
                   cost_item_qry = ' , OrgRole as ogr WHERE ci.sub IN ( :subs ) AND ogr.org = :owner AND ci.isVisibleForSubscriber is true '
                 }
             }
+            params.offset = tmp.subscrOffset
 
        }
 
@@ -396,6 +411,18 @@ class FinanceController extends AbstractDebugController {
 
 
         log.debug("index(${queryMode})  -- Performed filtering process ${tmp.cost_item_count} result(s) found")
+
+        //very ugly ... but cleanup needs enormous refactoring
+        switch(params.view) {
+            case "cons": params.offset = tmp.consOffset
+                break
+            case "owner": params.offset = tmp.ownerOffset
+                break
+            case "subscr": params.offset = tmp.subscrOffset
+                break
+            default: log.info("unhandled view: ${params.view}")
+                break
+        }
 
         tmp
     }
@@ -831,7 +858,7 @@ class FinanceController extends AbstractDebugController {
         }
         def orgConf = CostItemElementConfiguration.findAllByForOrganisation(contextService.org)
         orgConf.each { oc ->
-            orgConfigurations.add([id:oc.class.name+":"+oc.id,value:oc.elementSign.getI10n('value')])
+            orgConfigurations.add([id:oc.costItemElement.id,value:oc.elementSign.class.name+":"+oc.elementSign.id])
         }
 
         result.costItemElementConfigurations = costItemElementConfigurations
