@@ -65,11 +65,14 @@ class AdminReminderService {
     def mailReminder(userAddress, subjectTrigger, content, overrideReplyTo, overrideFrom) {
 
         try {
+            def currentServer = grailsApplication.config?.getCurrentServer()
+            def subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config?.laserSystemId + " - ")
+
             mailService.sendMail {
                 to userAddress
                 from overrideFrom != null ? overrideFrom : from
                 replyTo overrideReplyTo != null ? overrideReplyTo : replyTo
-                subject subjectTrigger
+                subject subjectSystemPraefix + subjectTrigger
                 body(view: "/admin/_emailReminderView", model: [pendingRequests: content.pendingRequests])
             }
         } catch (Exception e) {

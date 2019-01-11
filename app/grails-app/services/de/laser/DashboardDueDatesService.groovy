@@ -142,11 +142,14 @@ class DashboardDueDatesService {
             } else if (dashboardEntries == null || dashboardEntries.isEmpty()) {
                 log.info("The user has no due dates, so no email will be sent (" + user.username + "/"+ org.name + ")");
             } else {
+                def currentServer = grailsApplication.config.getCurrentServer()
+                def subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
+
                 mailService.sendMail {
                     to userAddress
                     from overrideFrom != null ? overrideFrom : from
                     replyTo overrideReplyTo != null ? overrideReplyTo : replyTo
-                    subject subjectTrigger
+                    subject subjectSystemPraefix + subjectTrigger
                     body(view: "/user/_emailDueDatesView", model: [user: user, org: org, dueDates: dashboardEntries])
                 }
                 log.info("DashboardDueDatesService - sendEmail() finished to "+ user.getDisplayName() + " (" + user.email + ") " + org.name);
