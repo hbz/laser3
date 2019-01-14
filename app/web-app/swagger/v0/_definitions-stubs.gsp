@@ -26,8 +26,13 @@
           $ref: "#/definitions/Identifier"
       reference:
         type: string
-      sortableReference:
+      normReference:
         type: string
+      calculatedType:
+        type: string
+        description: Calculated object type
+        enum:
+          ["Template", "Local", "Consortial", "Participation", "Unkown"]
 <%--
   LicenseStub(inLicense):
     allOf:
@@ -78,7 +83,7 @@
         example: "9d5c918a-851f-4639-a6a1-e2dd124c2e02"
       name:
         type: string
-      normname:
+      normName:
         type: string
       primaryUrl:
         type: string
@@ -101,6 +106,12 @@
         example: "ff74dd15-e27f-48a2-b2d7-f02389e62639"
       name:
         type: string
+      calculatedType:
+        type: string
+        description: Calculated object type
+        enum:
+          ["Template", "Local", "Consortial", "Participation", "Unkown"]
+
 
 <%--
   SubscriptionStub(inSubscription):
@@ -139,5 +150,5 @@
         example: "daccb411-e7c6-4048-addf-1d2ccf35817f"
       title:
         type: string
-      normtitle:
+      normTitle:
         type: string
