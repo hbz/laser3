@@ -249,7 +249,7 @@ class FinanceController extends AbstractDebugController {
           result.tab = params.tab
       }
       else if(!params.tab) {
-          if(result.queryMode == MODE_CONS)
+          if(result.queryMode == MODE_CONS && params.view == "cons")
               result.tab = 'sc'
       }
 

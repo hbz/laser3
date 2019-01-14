@@ -69,15 +69,23 @@
                    args="${user.getSettingsValue(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}"/>
         </div>
 
-    <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', 'User.Settings.Dashboard.Tab'))}" />
-
+    <%-- should be made overridable by pagination setting --%>
+    <%
+        def US_DASHBOARD_TAB
+        switch(params.view) {
+            case "announcementsView": US_DASHBOARD_TAB = RefdataValue.getByValueAndCategory('Announcements','User.Settings.Dashboard.Tab')
+            break
+            default: US_DASHBOARD_TAB = user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', 'User.Settings.Dashboard.Tab'))
+            break
+        }
+    %>
     <div class="ui secondary pointing tabular menu">
-        <a class="${US_DASHBOARD_TAB.getValue().value=='Due Dates' ? 'active item':'item'}" data-tab="first">
+        <a class="${US_DASHBOARD_TAB.getValue().value=='Due Dates' || US_DASHBOARD_TAB.getValue()=='Due Dates' ? 'active item':'item'}" data-tab="first">
             <i class="checked alarm end icon large"></i>
             ${dueDatesCount}
             ${message(code:'myinst.dash.due_dates.label')}
         </a>
-        <a class="${US_DASHBOARD_TAB.getValue().value == 'Changes' ? 'active item':'item'}" data-tab="second">
+        <a class="${US_DASHBOARD_TAB.getValue().value == 'Changes' || US_DASHBOARD_TAB.getValue() == 'Changes' ? 'active item':'item'}" data-tab="second">
             <i class="history icon large"></i>
             <%
                 def countChanges = 0
@@ -88,19 +96,19 @@
             ${countChanges}
             ${message(code:'myinst.todo.label', default:'To Do')}
         </a>
-        <a class="${US_DASHBOARD_TAB.getValue().value=='Announcements' ? 'active item':'item'}" data-tab="third" id="jsFallbackAnnouncements">
+        <a class="${US_DASHBOARD_TAB.getValue().value=='Announcements' || US_DASHBOARD_TAB.getValue() == 'Announcements' ? 'active item':'item'}" data-tab="third" id="jsFallbackAnnouncements">
             <i class="warning circle icon large"></i>
             ${recentAnnouncementsCount}
             ${message(code:'announcement.plural', default:'Announcements')}
         </a>
-        <a class="${US_DASHBOARD_TAB.getValue().value=='Tasks' ? 'active item':'item'}" data-tab="forth">
+        <a class="${US_DASHBOARD_TAB.getValue().value=='Tasks' || US_DASHBOARD_TAB.getValue()=='Tasks' ? 'active item':'item'}" data-tab="forth">
             <i class="checked calendar icon large"></i>
             ${tasksCount}
             ${message(code:'myinst.dash.task.label')}
         </a>
 
     </div>
-        <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Due Dates' ? 'active':''}" data-tab="first" style="border-top: 1px solid #d4d4d5; ">
+        <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Due Dates' || US_DASHBOARD_TAB.getValue()=='Due Dates' ? 'active':''}" data-tab="first" style="border-top: 1px solid #d4d4d5; ">
             <div>
                 <g:render template="/user/dueDatesView"
                           model="[user: user,
@@ -109,7 +117,7 @@
 
         </div>
 
-        <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Changes' ? 'active':''}" data-tab="second" style="border-top: 1px solid #d4d4d5; ">
+        <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Changes' || US_DASHBOARD_TAB.getValue() == 'Changes' ? 'active':''}" data-tab="second" style="border-top: 1px solid #d4d4d5; ">
             <g:if test="${editable}">
                 <div class="pull-right">
                     <g:link action="changes" class="ui button">${message(code:'myinst.todo.submit.label', default:'View To Do List')}</g:link>
@@ -171,7 +179,7 @@
             </div>
         </div>
 
-        <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value=='Announcements' ? 'active':''}" data-tab="third" style="border-top: 1px solid #d4d4d5; ">
+        <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value=='Announcements' || US_DASHBOARD_TAB.getValue() == 'Announcements' ? 'active':''}" data-tab="third" style="border-top: 1px solid #d4d4d5; ">
             <g:if test="${editable}">
                 <div class="pull-right">
                     <g:link action="announcements" class="ui button">${message(code:'myinst.ann.view.label', default:'View All Announcements')}</g:link>
@@ -214,7 +222,7 @@
             </div>
         </div>
 
-        <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value=='Tasks' ? 'active':''}" data-tab="forth">
+        <div class="ui bottom attached tab ${US_DASHBOARD_TAB.getValue().value=='Tasks' || US_DASHBOARD_TAB.getValue() == 'Tasks' ? 'active':''}" data-tab="forth">
 
             <g:if test="${editable}">
                 <div class="ui right aligned grid">
@@ -307,15 +315,12 @@
         <r:script>
             $(document).ready( function(){
                 $('.tabular.menu .item').tab()
-
-                $('#jsFallbackAnnouncements').click( function(){
-                    $('.item .widget-content').readmore({
-                        speed: 250,
-                        collapsedHeight: 21,
-                        startOpen: false,
-                        moreLink: '<a href="#">[ ${message(code:'default.button.show.label')} ]</a>',
-                        lessLink: '<a href="#">[ ${message(code:'default.button.hide.label')} ]</a>'
-                    })
+                $('.item .widget-content').readmore({
+                    speed: 250,
+                    collapsedHeight: 21,
+                    startOpen: false,
+                    moreLink: '<a href="#">[ ${message(code:'default.button.show.label')} ]</a>',
+                    lessLink: '<a href="#">[ ${message(code:'default.button.hide.label')} ]</a>'
                 });
                 $('.xEditableManyToOne').editable({
                 }).on('hidden', function() {

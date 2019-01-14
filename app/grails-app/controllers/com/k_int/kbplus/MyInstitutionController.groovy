@@ -2839,6 +2839,7 @@ AND EXISTS (
 
         def dcCheck = (new Date()).minus(periodInDays)
 
+        /*
         result.recentAnnouncements = Doc.executeQuery(
                 "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
                 [type: 'Announcement', dcCheck: dcCheck],
@@ -2847,6 +2848,7 @@ AND EXISTS (
         result.recentAnnouncementsCount = Doc.executeQuery(
                 "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
                 [type: 'Announcement', dcCheck: dcCheck]).size()
+        */
 
         // tasks
 
