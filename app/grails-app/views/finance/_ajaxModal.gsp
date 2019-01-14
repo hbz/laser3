@@ -421,37 +421,14 @@
             bc:   "#newCostInBillingCurrency"
         }*/
         <%
-            /*
-                continue here, too: will become much easier as the string will be changed into a dropdown menu
-
             def costItemElementConfigurations = "{"
             StringJoiner sj = new StringJoiner(",")
-            def elementSign = 'notSet'
-            costItemElement.each { cie ->
-                tooltipString = ""
-                def ciec = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(cie,org)
-                if(ciec) {
-                    elementSign = ciec.elementSign
-                }
-                switch(elementSign) {
-                    case RDStore.CIEC_POSITIVE:
-                        tooltipString = message(code:'financials.costItemConfiguration.positive')
-                        break
-                    case RDStore.CIEC_NEGATIVE:
-                        tooltipString = message(code:'financials.costItemConfiguration.negative')
-                        break
-                    case RDStore.CIEC_NEUTRAL:
-                        tooltipString = message(code:'financials.costItemConfiguration.neutral')
-                        break
-                    default:
-                        tooltipString = message(code:'financials.costItemConfiguration.notSet')
-                        break
-                }
-                sj.add('"'+cie.id+'":"'+tooltipString+'"')
+            orgConfigurations.each { orgConf ->
+                sj.add('"'+orgConf.id+'":"'+orgConf.value+'"')
             }
-            costItemElementConfigurations += sj.toString()+"}"*/
+            costItemElementConfigurations += sj.toString()+"}"
         %>
-        <%--var costItemElementConfigurations = "${orgConfigurations}"--%>
+        var costItemElementConfigurations = ${raw(costItemElementConfigurations)}
 
         $("#costButton1").click(function() {
             if (! isError("#newCostInBillingCurrency") && ! isError("#newCostCurrencyRate")) {
@@ -483,9 +460,12 @@
                 calcTaxResults()
             }
         });
-        /*$("#newCostItemElement").change(function() {
-            $("#ciec").text(costItemElementConfigurations[$(this).val()]);
-        });*/
+        $("#newCostItemElement").change(function() {
+            if(typeof(costItemElementConfigurations[$(this).val()]) !== 'undefined')
+                $("[name='ciec']").dropdown('set selected',costItemElementConfigurations[$(this).val()]);
+            else
+                $("[name='ciec']").dropdown('set selected','null');
+        });
         var isError = function(cssSel)  {
             if ($(cssSel).val().length <= 0 || $(cssSel).val() < 0) {
                 $(".la-account-currency").children(".field").removeClass("error");

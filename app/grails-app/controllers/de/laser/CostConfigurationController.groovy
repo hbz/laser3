@@ -20,7 +20,12 @@ class CostConfigurationController {
             ciec.costItemElement = genericOIDService.resolveOID(params.cie)
             ciec.elementSign = genericOIDService.resolveOID(params.sign)
             ciec.forOrganisation = (Org) contextService.getOrg()
-            ciec.save(true)
+            if(!ciec.validate()) {
+                ciec.errors.allErrors.collect {
+                    log.error("Error occurred: ${it.properties.field} has erroneous value ${it.properties.rejectedValue}, error code: ${it.properties.code}")
+                }
+            }
+            else ciec.save(flush:true)
         }
         getCurrentConfigurations()
     }
@@ -73,6 +78,21 @@ class CostConfigurationController {
 
         render template: '/templates/newCostItemElementConfiguration', model: result
         return
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def setAllCostItems() {
+        def cie = genericOIDService.resolveOID(params.cie)
+        def org = contextService.org
+        def concernedCostItems = CostItem.findAllByOwnerAndCostItemElementAndCostItemElementConfiguration(org,cie,null).collect {it -> it.id}
+        def ciec = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(cie,org)
+        if(concernedCostItems) {
+            CostItem.executeUpdate('UPDATE CostItem ci SET ci.costItemElementConfiguration = :ciec WHERE ci.id IN (:cci)',[ciec:ciec.elementSign,cci:concernedCostItems])
+            flash.message = message(code:'costConfiguration.configureAllCostItems.done')
+        }
+        else flash.message = message(code:'costConfiguration.configureAllCostItems.nothingToDo')
+        redirect(url: request.getHeader('referer'))
     }
 
 }

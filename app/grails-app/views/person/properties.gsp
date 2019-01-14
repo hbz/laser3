@@ -1,4 +1,5 @@
 <%@ page import="com.k_int.kbplus.Org; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.RefdataValue" %>
+<laser:serviceInjection/>
 
 <!doctype html>
 <html>
@@ -37,31 +38,24 @@
 
             <div class="la-inline-lists">
 
-                <g:each in="${authorizedOrgs}" var="authOrg">
-
-                    <div class="ui card">
-                        <div class="content">
-
-                            <div id="custom_props_div_${authOrg.id}">
-                                <h5 class="ui header">${message(code:'org.properties.private')} ${authOrg.name}</h5>
-
+                <div class="ui card">
+                      <div class="content">
+                           <% def org = contextService.getOrg() %>
+                           <div id="custom_props_div_${org.id}">
+                                <h5 class="ui header">${message(code:'org.properties.private')} ${org.name}</h5>
                                 <g:render template="/templates/properties/private" model="${[
                                         prop_desc: PropertyDefinition.PRS_PROP,
                                         ownobj: personInstance,
-                                        custom_props_div: "custom_props_div_${authOrg.id}",
-                                        tenant: authOrg]}"/>
-
+                                        custom_props_div: "custom_props_div_${org.id}",
+                                        tenant: org]}"/>
                                 <r:script language="JavaScript">
                                         $(document).ready(function(){
-                                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${authOrg.id}", ${authOrg.id});
+                                            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_${org.id}", ${org.id});
                                         });
                                 </r:script>
-                            </div>
-
-                        </div>
-                    </div><!-- .card -->
-
-                </g:each>
+                           </div>
+                      </div>
+                </div><!-- .card -->
 
             </div>
 
