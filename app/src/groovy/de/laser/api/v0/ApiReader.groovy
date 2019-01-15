@@ -126,12 +126,12 @@ class ApiReader {
         result.impId            = lic.impId
         // result.lastmod          = lic.lastmod // legacy ?
         result.lastUpdated      = lic.lastUpdated
-        result.licenseUrl       = lic.licenseUrl
+        // result.licenseUrl       = lic.licenseUrl
         // removed - result.licensorRef      = lic.licensorRef
         // removed - result.licenseeRef      = lic.licenseeRef
         result.licenseType      = lic.licenseType
         result.licenseStatus    = lic.licenseStatus
-        result.noticePeriod     = lic.noticePeriod
+        //result.noticePeriod     = lic.noticePeriod
         result.reference        = lic.reference
         result.startDate        = lic.startDate
         result.normReference= lic.sortableReference
@@ -144,7 +144,7 @@ class ApiReader {
         result.isPublic         = lic.isPublic?.value
         // result.licenseCategory  = lic.licenseCategory?.value // legacy
         result.status           = lic.status?.value
-        result.type             = lic.type?.value
+        // result.type             = lic.type?.value
 
         // References
 

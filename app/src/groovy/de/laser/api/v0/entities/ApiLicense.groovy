@@ -69,7 +69,7 @@ class ApiLicense {
         }
 
         if (hasAccess) {
-            result = ApiReader.exportLicense(lic, ApiReaderHelper.IGNORE_NONE, context) // TODO check orgRole.roleType
+            result = ApiReader.exportLicense(lic, ApiReaderHelper.IGNORE_NONE, context)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
