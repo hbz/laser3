@@ -30,7 +30,7 @@
 <semui:controlButtons>
     <semui:exportDropdown>
         <semui:exportDropdownItem>
-            <g:link class="item" action="financialsExport">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
+            <g:link class="item" action="financialsExport" params="${params}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
         </semui:exportDropdownItem>
         <%--
         <semui:exportDropdownItem>
