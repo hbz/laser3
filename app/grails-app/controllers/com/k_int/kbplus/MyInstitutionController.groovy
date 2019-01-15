@@ -3498,24 +3498,23 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 tenant: tenant,
         )
 
-        if(!privatePropDef){
+        if(! privatePropDef){
             def rdc
 
             if (params.refdatacategory) {
                 rdc = RefdataCategory.findById( Long.parseLong(params.refdatacategory) )
-                rdc = rdc?.desc
             }
-            privatePropDef = PropertyDefinition.lookupOrCreate(
+            privatePropDef = PropertyDefinition.loc(
                     params.pd_name,
-                    params.pd_type,
                     params.pd_descr,
+                    params.pd_type,
+                    rdc,
                     params.pd_expl,
                     (params.pd_multiple_occurrence ? true : false),
                     (params.pd_mandatory ? true : false),
                     tenant
             )
             privatePropDef.softData = PropertyDefinition.TRUE
-            privatePropDef.refdataCategory = rdc
 
             if (privatePropDef.save(flush: true)) {
                 return message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.name])

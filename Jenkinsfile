@@ -23,7 +23,7 @@ pipeline {
             steps {
 
             script{
-                    env.SERVERDEPLOY = input message: '¯\\_(ツ)_/¯ Choose your Server to deploy..  ', ok: 'Deploy!',
+                    env.SERVERDEPLOY = input message: 'Choose your Server to deploy..  ', ok: 'Deploy!',
                                             parameters: [choice(name: 'Server to deploy', choices: "${SERVER_DEV}\n${SERVER_QA}\n${SERVER_PROD}", description: '')]
                     echo "Server set to: ${SERVERDEPLOY}"
 

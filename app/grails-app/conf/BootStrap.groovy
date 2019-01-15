@@ -2,6 +2,7 @@ import com.k_int.kbplus.*
 
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
+import com.k_int.properties.PropertyDefinitionGroup
 import de.laser.domain.I10nTranslation
 import grails.converters.JSON
 import grails.plugin.springsecurity.SecurityFilterPosition
@@ -36,10 +37,11 @@ class BootStrap {
         def so_filetype   = DataloadFileType.findByName('Subscription Offered File') ?: new DataloadFileType(name: 'Subscription Offered File')
         def plat_filetype = DataloadFileType.findByName('Platforms File') ?: new DataloadFileType(name: 'Platforms File')
 
-        // Reset harddata flag for given refdata
+        // Reset harddata flag for given refdata and properties
 
         RefdataValue.executeUpdate('UPDATE RefdataValue rdv SET rdv.hardData =:reset', [reset: false])
         RefdataCategory.executeUpdate('UPDATE RefdataCategory rdc SET rdc.hardData =:reset', [reset: false])
+        PropertyDefinition.executeUpdate('UPDATE PropertyDefinition pd SET pd.hardData =:reset', [reset: false])
 
         // Here we go ..
 
@@ -383,7 +385,8 @@ class BootStrap {
 
             pd.type  = prop.type
             pd.descr = prop.descr['en']
-            pd.softData = false
+            //pd.softData = false
+            pd.hardData = BOOTSTRAP
             pd.save(failOnError: true)
 
             if (! SystemAdminCustomProperty.findByType(pd)) {
@@ -659,7 +662,8 @@ class BootStrap {
 
             prop.type  = default_prop.type
             prop.descr = default_prop.descr['en']
-            prop.softData = false
+            //prop.softData = false
+            prop.hardData = BOOTSTRAP
             prop.save(failOnError: true)
 
             I10nTranslation.createOrUpdateI10n(prop, 'name', default_prop.name)
