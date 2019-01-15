@@ -1,4 +1,9 @@
 
+0.12.2
+
+- fixed xeditable double values
+- fixed xls export for consortia members
+
 0.12.1
 
 - temporary deactivated usage and statistics
