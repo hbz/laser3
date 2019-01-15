@@ -59,6 +59,7 @@ module.exports = {
     'label',
     'list',
     'loader',
+    'placeholder',
     'rail',
     'reveal',
     'segment',
@@ -82,7 +83,6 @@ module.exports = {
 
     // modules
     'accordion',
-    'calendar',
     'checkbox',
     'dimmer',
     'dropdown',
