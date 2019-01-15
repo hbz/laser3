@@ -6,8 +6,14 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.converters.JSON;
 import grails.plugin.springsecurity.annotation.Secured
+import org.apache.poi.hssf.usermodel.HSSFSheet
+import org.apache.poi.hssf.usermodel.HSSFWorkbook
+import org.apache.poi.ss.usermodel.Row
+import org.apache.poi.ss.usermodel.Cell
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.springframework.context.i18n.LocaleContextHolder
+import java.text.SimpleDateFormat
 import org.springframework.orm.hibernate3.HibernateQueryException
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -432,9 +438,9 @@ class FinanceController extends AbstractDebugController {
     def financialsExport()  {
         log.debug("Financial Export :: ${params}")
 
-        if (request.isPost() && params.format == "csv") {
             def result = [:]
             result.institution =  contextService.getOrg()
+            result.fixedSubscription = params.int('sub')? Subscription.get(params.sub) : null
             def user           =  User.get(springSecurityService.principal.id)
 
             if (!isFinanceAuthorised(result.institution, user)) {
@@ -442,206 +448,226 @@ class FinanceController extends AbstractDebugController {
                 response.sendError(403)
                 return
             }
+            //may kill the server, but I must override the pagination ... is very ugly! And hotfix!
+            params.max = 5000
+            params.offset = 0
 
-            financialData(result, params, user, MODE_OWNER) //Grab the financials!
+            def tmp = financialData(result, params, user, MODE_OWNER) //Grab the financials!
+            result.cost_item_tabs = [owner:tmp.cost_items]
+            // I need the consortial data as well ...
+            def orgRoleCons = OrgRole.findByOrgAndRoleType(
+                    result.institution,
+                    RDStore.OR_SUBSCRIPTION_CONSORTIA
+            )
+            def orgRoleSubscr = OrgRole.findByRoleType(
+                    RDStore.OR_SUBSCRIBER_CONS
+            )
+            boolean afterTaxHeader = true
+            if(orgRoleCons) {
+                tmp = financialData(result,params,user,MODE_CONS)
+                result.cost_item_tabs["cons"] = tmp.cost_items
+            }
+            else if(orgRoleSubscr) {
+                tmp = financialData(result,params,user,MODE_SUBSCR)
+                result.cost_item_tabs["subscr"] = tmp.cost_items
+                afterTaxHeader = false
+            }
+            def workbook = processFinancialXLS(result,afterTaxHeader) //use always header, no batch processing intended
+
             def filename = result.institution.name
-            response.setHeader("Content-disposition", "attachment; filename=\"${filename}_financialExport.csv\"")
-            response.contentType = "text/csv"
-            def out = response.outputStream
-            def useHeader = params.header? true : false //For batch processing...
-            processFinancialCSV(out,result,useHeader)
-            out.close()
-        }
-        else
-        {
-            response.sendError(400)
-        }
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}_financialExport.xls\"")
+            response.contentType = "application/vnd.ms-excel"
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
     }
 
     /**
-     * Make a CSV export of cost item results
+     * Make a XLS export of cost item results
      * @param out    - Output stream
      * @param result - passed from index
      * @param header - true or false
      * @return
      */
     //todo change for batch processing... don't want to kill the server, defaulting to all results presently!
-    def private processFinancialCSV(out, result, header) {
-        def dateFormat      = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
-
-        def generation_start = new Date()
-        def processedCounter = 0
-
-        switch (params.csvMode)
-        {
-            case "code":
-                log.debug("Processing code mode... Estimated total ${params.estTotal?: 'Unknown'}")
-
-                def categories = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('CostItemStatus')).collect {it.value.toString()} << "Unknown"
-
-                def codeResult = [:].withDefault {
-                    categories.collectEntries {
-                        [(it): 0 as Double]
-                    }
-                }
-
-                result.cost_items.each { c -> // TODO: CostItemGroup -> BudgetCode
-                    if (!c.getBudgetcodes().isEmpty())
-                    {
-                        log.debug("${c.getBudgetcodes().size()} codes for Cost Item: ${c.id}")
-
-                        def status = c?.costItemStatus?.value? c.costItemStatus.value.toString() : "Unknown"
-
-                        c.getBudgetcodes().each {bc ->
-                            if (! codeResult.containsKey(bc.value))
-                                codeResult[bc.value] //sets up with default values
-
-                            if (! codeResult.get(bc.value).containsKey(status))
-                            {
-                                log.warn("Status should exist in list already, unless additions have been made? Code:${bc} Status:${status}")
-                                codeResult.get(bc.value).put(status, c?.costInLocalCurrency? c.costInLocalCurrency : 0.0)
-                            }
-                            else
-                            {
-                                codeResult[bc.value][status] += c?.costInLocalCurrency?: 0.0
-                            }
-                        }
-                    }
-                    else
-                    {
-                        log.debug("skipped cost item ${c.id} NO codes are present")
-                    }
-                }
-
-                def catSize = categories.size()-1
-                out.withWriter { writer ->
-                    writer.write("\t" + categories.join("\t") + "\n") //Header
-
-                    StringBuilder sb = new StringBuilder() //join map vals e.g. estimate : 123
-
-                    codeResult.each {code, cat_statuses ->
-                        sb.append(code).append("\t")
-                        cat_statuses.eachWithIndex { status, amount, idx->
-                            sb.append(amount)
-                            if (idx < catSize)
-                                sb.append("\t")
-                        }
-                        sb.append("\n")
-                    }
-                    writer.write(sb.toString())
-                    writer.flush()
-                    writer.close()
-                }
-
-                processedCounter = codeResult.size()
+    def private processFinancialXLS(result,afterTaxHeader) {
+        def dateFormat = new SimpleDateFormat(message(code: 'default.date.format.notime', default: 'dd.MM.yyyy'))
+        HSSFWorkbook wb = new HSSFWorkbook()
+        result.cost_item_tabs.entrySet().each { cit ->
+            def sheettitle
+            switch(cit.getKey()) {
+                case "owner": sheettitle = message(code:'financials.header.ownCosts')
                 break
-
-            case "sub":
-                log.debug("Processing subscription data mode... calculation of costs Estimated total ${params.estTotal?: 'Unknown'}")
-
-                def categories = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('CostItemStatus')).collect {it.value} << "Unknown"
-
-                def subResult = [:].withDefault {
-                    categories.collectEntries {
-                        [(it): 0 as Double]
-                    }
-                }
-
-                def skipped = []
-
-                result.cost_items.each { c ->
-                    if (c?.sub)
-                    {
-                        def status = c?.costItemStatus?.value? c.costItemStatus.value.toString() : "Unknown"
-                        def subID  = c.sub.name
-
-                        if (!subResult.containsKey(subID))
-                            subResult[subID] //1st time around for subscription, could 1..* cost items linked...
-
-                        if (!subResult.get(subID).containsKey(status)) //This is here as a safety precaution, you're welcome :P
-                        {
-                            log.warn("Status should exist in list already, unless additions have been made? Sub:${subID} Status:${status}")
-                            subResult.get(subID).put(status, c?.costInLocalCurrency? c.costInLocalCurrency : 0.0)
-                        }
-                        else
-                        {
-                            subResult[subID][status] += c?.costInLocalCurrency?: 0.0
-                        }
-                    }
-                    else
-                    {
-                        skipped.add("${c.id}")
-                    }
-                }
-
-                log.debug("Skipped ${skipped.size()} out of ${result.cost_items.size()} Cost Item's (NO subscription present) IDs : ${skipped} ")
-
-                def catSize = categories.size()-1
-                out.withWriter { writer ->
-                    writer.write("\t" + categories.join("\t") + "\n") //Header
-
-                    StringBuilder sb = new StringBuilder() //join map vals e.g. estimate : 123
-
-                    subResult.each {sub, cat_statuses ->
-                        sb.append(sub).append("\t")
-                        cat_statuses.eachWithIndex { status, amount, idx->
-                            sb.append(amount)
-                            if (idx < catSize)
-                                sb.append("\t")
-                        }
-                        sb.append("\n")
-                    }
-                    writer.write(sb.toString())
-                    writer.flush()
-                    writer.close()
-                }
-
-                processedCounter = subResult.size()
+                case "cons": sheettitle = message(code:'financials.header.consortialCosts')
                 break
-
-            case "all":
-            default:
-                log.debug("Processing all mode... Estimated total ${params.estTotal?: 'Unknown'}")
-
-                out.withWriter { writer ->
-
-                    if ( header ) {
-                        writer.write("Institution\tGenerated Date\tCost Item Count\n")
-                        writer.write("${result.institution.name?:''}\t${dateFormat.format(generation_start)}\t${result.cost_item_count}\n")
-                    }
-
-                    // Output the body text
-                    writer.write("cost_item_id\towner\tinvoice_no\torder_no\tsubscription_name\tsubscription_package\tissueEntitlement\tdate_paid\tdate_valid_from\t" +
-                            "date_valid_to\tcost_Item_Category\tcost_Item_Status\tbilling_Currency\tcost_In_Billing_Currency\tcost_In_Local_Currency\ttax_Code\t" +
-                            "cost_Item_Element\tcost_Description\treference\tcodes\tcreated_by\tdate_created\tedited_by\tdate_last_edited\n");
-
-                    result.cost_items.each { ci ->
-
-                        def codes = CostItemGroup.findAllByCostItem(ci).collect { it?.budgetCode?.value+'\t' }
-                        // TODO budgetcodes
-
-                        def start_date   = ci.startDate ? dateFormat.format(ci?.startDate) : ''
-                        def end_date     = ci.endDate ? dateFormat.format(ci?.endDate) : ''
-                        def paid_date    = ci.datePaid ? dateFormat.format(ci?.datePaid) : ''
-                        def created_date = ci.dateCreated ? dateFormat.format(ci?.dateCreated) : ''
-                        def edited_date  = ci.lastUpdated ? dateFormat.format(ci?.lastUpdated) : ''
-
-                        writer.write("\"${ci.id}\"\t\"${ci?.owner?.name}\"\t\"${ci?.invoice?ci.invoice.invoiceNumber:''}\"\t${ci?.order? ci.order.orderNumber:''}\t" +
-                                "${ci?.sub? ci.sub.name:''}\t${ci?.subPkg?ci.subPkg.pkg.name:''}\t${ci?.issueEntitlement?ci.issueEntitlement?.tipp?.title?.title:''}\t" +
-                                "${paid_date}\t${start_date}\t\"${end_date}\"\t\"${ci?.costItemCategory?ci.costItemCategory.value:''}\"\t\"${ci?.costItemStatus?ci.costItemStatus.value:''}\"\t" +
-                                "\"${ci?.billingCurrency.value?:''}\"\t\"${ci?.costInBillingCurrency?:''}\"\t\"${ci?.costInLocalCurrency?:''}\"\t\"${ci?.taxCode?ci.taxCode.value:''}\"\t" +
-                                "\"${ci?.costItemElement?ci.costItemElement.value:''}\"\t\"${ci?.costDescription?:''}\"\t\"${ci?.reference?:''}\"\t\"${codes?codes.toString():''}\"\t" +
-                                "\"${ci.createdBy.username}\"\t\"${created_date}\"\t\"${ci.lastUpdatedBy.username}\"\t\"${edited_date}\"\n")
-                    }
-                    writer.flush()
-                    writer.close()
-                }
-
-                processedCounter = result.cost_items.size()
+                case "subscr": sheettitle = message(code:'financials.header.subscriptionCosts')
                 break
+            }
+            HSSFSheet sheet = wb.createSheet(sheettitle)
+            sheet.setAutobreaks(true)
+            Row headerRow = sheet.createRow(0)
+            headerRow.setHeightInPoints(16.75f)
+            ArrayList titles = [message(code: 'sidewide.number'), message(code: 'financials.invoice_number'), message(code: 'financials.order_number'), message(code: 'financials.newCosts.subscriptionHeader'),
+                                message(code: 'package'), message(code: 'issueEntitlement.label'), message(code: 'financials.datePaid'), message(code: 'financials.dateFrom'),
+                                message(code: 'financials.dateTo'), message(code: 'financials.addNew.costCategory'), message(code: 'financials.costItemStatus'),
+                                message(code:'financials.billingCurrency'),message(code: 'financials.costInBillingCurrency'),"EUR",message(code: 'financials.costInLocalCurrency')]
+            if(afterTaxHeader)
+                titles.addAll([message(code:'financials.billingCurrency'),message(code: 'financials.costInBillingCurrencyAfterTax'),"EUR",message(code: 'financials.costInLocalCurrencyAfterTax')])
+            titles.addAll([message(code: 'financials.costItemElement'),message(code: 'financials.newCosts.description'),
+                           message(code: 'financials.newCosts.constsReferenceOn'), message(code: 'financials.budgetCode')])
+            titles.eachWithIndex { titleName, int i ->
+                Cell cell = headerRow.createCell(i)
+                cell.setCellValue(titleName)
+            }
+            sheet.createFreezePane(0, 1)
+            Row row
+            Cell cell
+            int rownum = 1
+            int sumcell = -1
+            int sumcellAfterTax = -1
+            int sumTitleCell = -1
+            int sumCurrencyCell = -1
+            int sumCurrencyAfterTaxCell = -1
+            double localSum = 0.0
+            double localSumAfterTax = 0.0
+            def sumCounters = [:]
+            def sumAfterTaxCounters = [:]
+            HashSet<String> currencies = new HashSet<String>()
+            if(cit.getValue().size() > 0) {
+                cit.getValue().each { ci ->
+                    def codes = CostItemGroup.findAllByCostItem(ci).collect { it?.budgetCode?.value }
+                    def start_date   = ci.startDate ? dateFormat.format(ci?.startDate) : ''
+                    def end_date     = ci.endDate ? dateFormat.format(ci?.endDate) : ''
+                    def paid_date    = ci.datePaid ? dateFormat.format(ci?.datePaid) : ''
+                    int cellnum = 0
+                    row = sheet.createRow(rownum)
+                    //sidewide number
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(rownum)
+                    //invoice number
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.invoice ? ci.invoice.invoiceNumber : "")
+                    //order number
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.order ? ci.order.orderNumber : "")
+                    //subscription with running time
+                    cell = row.createCell(cellnum++)
+                    String dateString = ""
+                    if(ci.sub) {
+                        dateString = "${ci.sub.name} (${dateFormat.format(ci.sub.startDate)}"
+                        if(ci.sub.endDate)
+                            dateString += " - ${dateFormat.format(ci.sub.endDate)})"
+                    }
+                    cell.setCellValue(dateString)
+                    //subscription package
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.subPkg ? ci.subPkg.pkg.name:'')
+                    //issue entitlement
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.issueEntitlement ? ci.issueEntitlement?.tipp?.title?.title:'')
+                    //date paid
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(paid_date)
+                    //date from
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(start_date)
+                    //date to
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(end_date)
+                    //cost item category
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.costItemCategory ? ci.costItemCategory.value:'')
+                    //for the sum title
+                    sumTitleCell = cellnum
+                    //cost item status
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.costItemStatus ? ci.costItemStatus.value:'')
+                    if(afterTaxHeader) {
+                        //billing currency and value
+                        cell = row.createCell(cellnum++)
+                        cell.setCellValue(ci?.billingCurrency ? ci.billingCurrency.value : '')
+                        if(currencies.add(ci?.billingCurrency?.value)) {
+                            sumCounters[ci.billingCurrency.value] = 0.0
+                            sumAfterTaxCounters[ci.billingCurrency.value] = 0.0
+                        }
+                        sumCurrencyCell = cellnum
+                        cell = row.createCell(cellnum++)
+                        cell.setCellValue(ci?.costInBillingCurrency ? ci.costInBillingCurrency : 0.0)
+                        sumCounters[ci.billingCurrency.value] += ci.costInBillingCurrency
+                        //local currency and value
+                        cell = row.createCell(cellnum++)
+                        cell.setCellValue("EUR")
+                        sumcell = cellnum
+                        cell = row.createCell(cellnum++)
+                        cell.setCellValue(ci?.costInLocalCurrency ? ci.costInLocalCurrency : 0.0)
+                        localSum += ci.costInLocalCurrency
+                    }
+                    //billing currency and value
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.billingCurrency ? ci.billingCurrency.value : '')
+                    if(currencies.add(ci?.billingCurrency?.value))
+                        sumAfterTaxCounters[ci.billingCurrency.value] = 0.0
+                    sumCurrencyAfterTaxCell = cellnum
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.costInBillingCurrencyAfterTax ? ci.costInBillingCurrencyAfterTax : 0.0)
+                    sumAfterTaxCounters[ci.billingCurrency.value] += ci.costInBillingCurrencyAfterTax
+                    //local currency and value
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue("EUR")
+                    sumcellAfterTax = cellnum
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.costInLocalCurrencyAfterTax ? ci.costInLocalCurrencyAfterTax : 0.0)
+                    localSumAfterTax += ci.costInLocalCurrencyAfterTax
+                    //cost item element
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.costItemElement?ci.costItemElement.getI10n("value") : '')
+                    //cost item description
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.costDescription?: '')
+                    //reference
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.reference?:'')
+                    //budget codes
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(codes ? codes.toString() : '')
+                    rownum++
+                }
+                rownum++
+                sheet.createRow(rownum)
+                Row sumRow = sheet.createRow(rownum)
+                cell = sumRow.createCell(sumTitleCell)
+                cell.setCellValue("Summen:")
+                if(sumcell > 0) {
+                    cell = sumRow.createCell(sumcell)
+                    cell.setCellValue(localSum)
+                }
+                cell = sumRow.createCell(sumcellAfterTax)
+                cell.setCellValue(localSumAfterTax)
+                rownum++
+                currencies.each { currency ->
+                    sumRow = sheet.createRow(rownum)
+                    cell = sumRow.createCell(sumTitleCell)
+                    cell.setCellValue(currency)
+                    if(sumCurrencyCell > 0) {
+                        cell = sumRow.createCell(sumCurrencyCell)
+                        cell.setCellValue(sumCounters.get(currency))
+                    }
+                    cell = sumRow.createCell(sumCurrencyAfterTaxCell)
+                    cell.setCellValue(sumAfterTaxCounters.get(currency))
+                    rownum++
+                }
+            }
+            else {
+                row = sheet.createRow(rownum)
+                cell = row.createCell(0)
+                cell.setCellValue(message(code:"finance.export.empty"))
+            }
+
+            for(int i = 0; i < titles.size(); i++) {
+                sheet.autoSizeColumn(i)
+            }
         }
-        groovy.time.TimeDuration duration = groovy.time.TimeCategory.minus(new Date(), generation_start)
-        log.debug("CSV export operation for ${params.csvMode} mode -- Duration took to complete (${processedCounter} Rows of data) was: ${duration} --")
+
+        wb
     }
 
     /**
@@ -1192,7 +1218,7 @@ class FinanceController extends AbstractDebugController {
                 if (bc != null) {
                     // WORKAROUND ERMS-337: only support ONE budgetcode per costitem
                     def existing = CostItemGroup.executeQuery(
-                            "SELECT DISTINCT cig.id FROM CostItemGroup AS cig JOIN cig.costItem AS ci JOIN cig.budgetCode AS bc WHERE ci = ? AND bc.owner = ? AND bc IS NOT ?",
+                            "SELECT DISTINCT cig.id FROM CostItemGroup AS cig JOIN cig.costItem AS ci JOIN cig.budgetCode AS bc WHERE ci = ? AND bc.owner = ? AND bc != ?",
                             [costItem, budgetOwner, bc] );
                     existing.each { id ->
                         CostItemGroup.get(id).delete()
