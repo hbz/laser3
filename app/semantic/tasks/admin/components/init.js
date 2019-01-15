@@ -74,7 +74,7 @@ module.exports = function(callback) {
       pullOptions          = { args: '-q', cwd: outputDirectory, quiet: true },
       resetOptions         = { args: '-q --hard', cwd: outputDirectory, quiet: true },
 
-      gitURL               = 'git@github.com:' + release.org + '/' + repoName + '.git',
+      gitURL               = 'https://github.com/' + release.org + '/' + repoName + '.git',
       repoURL              = 'https://github.com/' + release.org + '/' + repoName + '/',
       localRepoSetup       = fs.existsSync(path.join(outputDirectory, '.git'))
     ;
