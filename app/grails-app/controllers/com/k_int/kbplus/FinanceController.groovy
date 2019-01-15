@@ -406,6 +406,7 @@ class FinanceController extends AbstractDebugController {
 
             def result = [:]
             result.institution =  contextService.getOrg()
+            result.fixedSubscription = params.int('sub')? Subscription.get(params.sub) : null
             def user           =  User.get(springSecurityService.principal.id)
 
             if (!isFinanceAuthorised(result.institution, user)) {
@@ -497,121 +498,134 @@ class FinanceController extends AbstractDebugController {
             def sumCounters = [:]
             def sumAfterTaxCounters = [:]
             HashSet<String> currencies = new HashSet<String>()
-            cit.getValue().each { ci ->
-                def codes = CostItemGroup.findAllByCostItem(ci).collect { it?.budgetCode?.value }
-                def start_date   = ci.startDate ? dateFormat.format(ci?.startDate) : ''
-                def end_date     = ci.endDate ? dateFormat.format(ci?.endDate) : ''
-                def paid_date    = ci.datePaid ? dateFormat.format(ci?.datePaid) : ''
-                int cellnum = 0
-                row = sheet.createRow(rownum)
-                //sidewide number
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(rownum)
-                //invoice number
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(ci?.invoice ? ci.invoice.invoiceNumber : "")
-                //order number
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(ci?.order ? ci.order.orderNumber : "")
-                //subscription with running time
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(ci?.sub ? "${ci.sub.name} (${dateFormat.format(ci.sub.startDate)} - ${dateFormat.format(ci.sub.endDate)})" : "")
-                //subscription package
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(ci?.subPkg ? ci.subPkg.pkg.name:'')
-                //issue entitlement
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(ci?.issueEntitlement ? ci.issueEntitlement?.tipp?.title?.title:'')
-                //date paid
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(paid_date)
-                //date from
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(start_date)
-                //date to
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(end_date)
-                //cost item category
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(ci?.costItemCategory ? ci.costItemCategory.value:'')
-                //for the sum title
-                sumTitleCell = cellnum
-                //cost item status
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(ci?.costItemStatus ? ci.costItemStatus.value:'')
-                if(afterTaxHeader) {
+            if(cit.getValue().size() > 0) {
+                cit.getValue().each { ci ->
+                    def codes = CostItemGroup.findAllByCostItem(ci).collect { it?.budgetCode?.value }
+                    def start_date   = ci.startDate ? dateFormat.format(ci?.startDate) : ''
+                    def end_date     = ci.endDate ? dateFormat.format(ci?.endDate) : ''
+                    def paid_date    = ci.datePaid ? dateFormat.format(ci?.datePaid) : ''
+                    int cellnum = 0
+                    row = sheet.createRow(rownum)
+                    //sidewide number
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(rownum)
+                    //invoice number
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.invoice ? ci.invoice.invoiceNumber : "")
+                    //order number
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.order ? ci.order.orderNumber : "")
+                    //subscription with running time
+                    cell = row.createCell(cellnum++)
+                    String dateString = ""
+                    if(ci.sub) {
+                        dateString = "${ci.sub.name} (${dateFormat.format(ci.sub.startDate)}"
+                        if(ci.sub.endDate)
+                            dateString += " - ${dateFormat.format(ci.sub.endDate)})"
+                    }
+                    cell.setCellValue(dateString)
+                    //subscription package
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.subPkg ? ci.subPkg.pkg.name:'')
+                    //issue entitlement
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.issueEntitlement ? ci.issueEntitlement?.tipp?.title?.title:'')
+                    //date paid
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(paid_date)
+                    //date from
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(start_date)
+                    //date to
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(end_date)
+                    //cost item category
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.costItemCategory ? ci.costItemCategory.value:'')
+                    //for the sum title
+                    sumTitleCell = cellnum
+                    //cost item status
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.costItemStatus ? ci.costItemStatus.value:'')
+                    if(afterTaxHeader) {
+                        //billing currency and value
+                        cell = row.createCell(cellnum++)
+                        cell.setCellValue(ci?.billingCurrency ? ci.billingCurrency.value : '')
+                        if(currencies.add(ci?.billingCurrency?.value)) {
+                            sumCounters[ci.billingCurrency.value] = 0.0
+                            sumAfterTaxCounters[ci.billingCurrency.value] = 0.0
+                        }
+                        sumCurrencyCell = cellnum
+                        cell = row.createCell(cellnum++)
+                        cell.setCellValue(ci?.costInBillingCurrency ? ci.costInBillingCurrency : 0.0)
+                        sumCounters[ci.billingCurrency.value] += ci.costInBillingCurrency
+                        //local currency and value
+                        cell = row.createCell(cellnum++)
+                        cell.setCellValue("EUR")
+                        sumcell = cellnum
+                        cell = row.createCell(cellnum++)
+                        cell.setCellValue(ci?.costInLocalCurrency ? ci.costInLocalCurrency : 0.0)
+                        localSum += ci.costInLocalCurrency
+                    }
                     //billing currency and value
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci?.billingCurrency ? ci.billingCurrency.value : '')
-                    if(currencies.add(ci?.billingCurrency?.value)) {
-                        sumCounters[ci.billingCurrency.value] = 0.0
+                    if(currencies.add(ci?.billingCurrency?.value))
                         sumAfterTaxCounters[ci.billingCurrency.value] = 0.0
-                    }
-                    sumCurrencyCell = cellnum
+                    sumCurrencyAfterTaxCell = cellnum
                     cell = row.createCell(cellnum++)
-                    cell.setCellValue(ci?.costInBillingCurrency ? ci.costInBillingCurrency : 0.0)
-                    sumCounters[ci.billingCurrency.value] += ci.costInBillingCurrency
+                    cell.setCellValue(ci?.costInBillingCurrencyAfterTax ? ci.costInBillingCurrencyAfterTax : 0.0)
+                    sumAfterTaxCounters[ci.billingCurrency.value] += ci.costInBillingCurrencyAfterTax
                     //local currency and value
                     cell = row.createCell(cellnum++)
                     cell.setCellValue("EUR")
-                    sumcell = cellnum
+                    sumcellAfterTax = cellnum
                     cell = row.createCell(cellnum++)
-                    cell.setCellValue(ci?.costInLocalCurrency ? ci.costInLocalCurrency : 0.0)
-                    localSum += ci.costInLocalCurrency
+                    cell.setCellValue(ci?.costInLocalCurrencyAfterTax ? ci.costInLocalCurrencyAfterTax : 0.0)
+                    localSumAfterTax += ci.costInLocalCurrencyAfterTax
+                    //cost item element
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.costItemElement?ci.costItemElement.getI10n("value") : '')
+                    //cost item description
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.costDescription?: '')
+                    //reference
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.reference?:'')
+                    //budget codes
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(codes ? codes.toString() : '')
+                    rownum++
                 }
-                //billing currency and value
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(ci?.billingCurrency ? ci.billingCurrency.value : '')
-                if(currencies.add(ci?.billingCurrency?.value))
-                    sumAfterTaxCounters[ci.billingCurrency.value] = 0.0
-                sumCurrencyAfterTaxCell = cellnum
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(ci?.costInBillingCurrencyAfterTax ? ci.costInBillingCurrencyAfterTax : 0.0)
-                sumAfterTaxCounters[ci.billingCurrency.value] += ci.costInBillingCurrencyAfterTax
-                //local currency and value
-                cell = row.createCell(cellnum++)
-                cell.setCellValue("EUR")
-                sumcellAfterTax = cellnum
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(ci?.costInLocalCurrencyAfterTax ? ci.costInLocalCurrencyAfterTax : 0.0)
-                localSumAfterTax += ci.costInLocalCurrencyAfterTax
-                //cost item element
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(ci?.costItemElement?ci.costItemElement.getI10n("value") : '')
-                //cost item description
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(ci?.costDescription?: '')
-                //reference
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(ci?.reference?:'')
-                //budget codes
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(codes ? codes.toString() : '')
                 rownum++
-            }
-            rownum++
-            sheet.createRow(rownum)
-            Row sumRow = sheet.createRow(rownum)
-            cell = sumRow.createCell(sumTitleCell)
-            cell.setCellValue("Summen:")
-            if(sumcell > 0) {
-                cell = sumRow.createCell(sumcell)
-                cell.setCellValue(localSum)
-            }
-            cell = sumRow.createCell(sumcellAfterTax)
-            cell.setCellValue(localSumAfterTax)
-            rownum++
-            currencies.each { currency ->
-                sumRow = sheet.createRow(rownum)
+                sheet.createRow(rownum)
+                Row sumRow = sheet.createRow(rownum)
                 cell = sumRow.createCell(sumTitleCell)
-                cell.setCellValue(currency)
-                if(sumCurrencyCell > 0) {
-                    cell = sumRow.createCell(sumCurrencyCell)
-                    cell.setCellValue(sumCounters.get(currency))
+                cell.setCellValue("Summen:")
+                if(sumcell > 0) {
+                    cell = sumRow.createCell(sumcell)
+                    cell.setCellValue(localSum)
                 }
-                cell = sumRow.createCell(sumCurrencyAfterTaxCell)
-                cell.setCellValue(sumAfterTaxCounters.get(currency))
+                cell = sumRow.createCell(sumcellAfterTax)
+                cell.setCellValue(localSumAfterTax)
                 rownum++
+                currencies.each { currency ->
+                    sumRow = sheet.createRow(rownum)
+                    cell = sumRow.createCell(sumTitleCell)
+                    cell.setCellValue(currency)
+                    if(sumCurrencyCell > 0) {
+                        cell = sumRow.createCell(sumCurrencyCell)
+                        cell.setCellValue(sumCounters.get(currency))
+                    }
+                    cell = sumRow.createCell(sumCurrencyAfterTaxCell)
+                    cell.setCellValue(sumAfterTaxCounters.get(currency))
+                    rownum++
+                }
+            }
+            else {
+                row = sheet.createRow(rownum)
+                cell = row.createCell(0)
+                cell.setCellValue(message(code:"finance.export.empty"))
             }
 
             for(int i = 0; i < titles.size(); i++) {
