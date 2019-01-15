@@ -28,9 +28,9 @@
 
 <semui:controlButtons>
     <semui:exportDropdown>
-        %{--<semui:exportDropdownItem>--}%
-            %{--<a class="item" data-mode="all" class="export" style="cursor: pointer">CSV Cost Items</a>--}%
-    %{--</semui:exportDropdownItem>--}%
+        <semui:exportDropdownItem>
+            <g:link class="item" action="financialsExport">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
+        </semui:exportDropdownItem>
         <%--
         <semui:exportDropdownItem>
             <a data-mode="sub" class="disabled export" style="cursor: pointer">CSV Costs by Subscription</a>
