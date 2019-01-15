@@ -184,11 +184,6 @@
         properties:
           contact:
             type: string
-          calculatedType:
-            type: string
-            description: Calculated object type
-            enum:
-              ["Template", "Local", "Consortial", "Participation", "Unkown"]
           dateCreated:
             type: string
             format: date
@@ -591,11 +586,6 @@
         properties:
           cancellationAllowances:
             type: string
-          calculatedType:
-            type: string
-            description: Calculated object type
-            enum:
-              ["Template", "Local", "Consortial", "Participation", "Unkown"]
           dateCreated:
             type: string
             format: date

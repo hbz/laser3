@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0 @ 0.19'
+    static final VERSION = '0 @ 0.20'
     static final NOT_SUPPORTED = false
 
     /**

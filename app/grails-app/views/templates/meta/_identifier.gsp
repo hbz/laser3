@@ -6,19 +6,10 @@
     <div class="content">
         <div class="inline-lists">
             <dl>
-                <dt>
-                    <g:message code="org.globalUID.label" default="Global UID" />
-                </dt>
-                <dd>
-                    <g:fieldValue bean="${object}" field="globalUID" />
-                </dd>
-
-                <dt>
-                    <g:message code="org.impId.label" />
-                </dt>
-                <dd>
-                    <g:fieldValue bean="${object}" field="impId" />
-                </dd>
+                <dt><g:message code="org.globalUID.label" default="Global UID" /></dt>
+                <dd><g:fieldValue bean="${object}" field="globalUID" /></dd>
+                <dt><g:message code="org.impId.label" /></dt>
+                <dd><g:fieldValue bean="${object}" field="impId" /></dd>
 
                 <dt>
                     <g:message code="org.ids.label" />
