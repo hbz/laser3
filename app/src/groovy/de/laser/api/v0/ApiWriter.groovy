@@ -34,7 +34,7 @@ class ApiWriter {
                         licenseStatus:      data.licenseStatus,
                         noticePeriod:       data.noticePeriod,
                         reference:          data.reference,
-                        sortableReference:  data.sortableReference,
+                        sortableReference:  data.normReference,
                 )
 
                 license.startDate   = ApiWriterHelper.getValidDateFormat(data.startDate)
