@@ -1659,6 +1659,9 @@ class AjaxController extends AbstractDebugController {
                     }
                 } else {
                     def binding_properties = [:]
+                    if (target_object."${params.name}" instanceof Double) {
+                        params.value = Double.parseDouble(params.value)
+                    }
                     binding_properties[params.name] = params.value
                     bindData(target_object, binding_properties)
 
