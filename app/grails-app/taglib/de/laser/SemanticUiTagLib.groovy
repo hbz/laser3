@@ -330,7 +330,7 @@ class SemanticUiTagLib {
     def meta = { attrs, body ->
 
         out << '<aside class="ui segment metaboxContent accordion">'
-        out <<   '<div class="title"> <i class="dropdown icon la-dropdown-accordion"></i>Identifikatoren anzeigen</div>'
+        out <<   '<div class="title"> <i class="dropdown icon la-dropdown-accordion"></i>FREE TO USE</div>'
         out <<   '<div class="content">'
         out <<      body()
         out <<   '</div>'
@@ -431,30 +431,33 @@ class SemanticUiTagLib {
     // called by the specific delete button
     //  - to send a form or
     //        <g:form data-confirm-id="${person?.id.toString()+ '_form'}">
-    //        <div class="....... js-open-confirm-modal" data-confirm-term="diese Person" data-confirm-id="${person?.id}" >
+    //        <div class="....... js-open-confirm-modal" data-confirm-term-what="diese Person" data-confirm-id="${person?.id}" >
     //  - to call a link
-    //        <g:link class="..... js-open-confirm-modal" data-confirm-term="diese Kontaktdresse" ...... >
+    //        <g:link class="..... js-open-confirm-modal" data-confirm-term-what="diese Kontaktdresse" ...... >
     def confirmationModal = { attrs, body ->
 
         def msgDelete  = "Endgültig löschen"
         def msgCancel  = "Abbrechen"
 
-        out << '<div class="ui mini modal">'
-        out <<   '<div class="header">Wollen Sie <span id="js-confirmation-term"></span> wirklich aus Ihrem Adressbuch löschen?</div>'
-        if (body) {
-            out <<   '<div class="content">'
-            out << body()
-            out <<   '</div>'
-        }
+        out << '<div class="ui tiny modal">'
+        out <<   '<div class="header">Wollen Sie wirklich '
+        out <<      '<span id="js-confirmation-term-what"></span> '
+        out <<      '<span id="js-confirmation-term-what-detail"></span> '
+        out <<      '<span id="js-confirmation-term-where"></span> '
+        out <<      '<span id="js-confirmation-term-where-detail"></span> '
+        out <<      '<span id="js-confirmation-term-how"></span>'
+        out <<  '?</div>'
+        out <<  '<span class="content" id="js-confirmation-term-content"></span> '
+
+
         out <<   '<div class="actions">'
         out <<     '<div class="ui deny button">'+ msgCancel+ '</div>'
-        out <<     '<button class="ui positive right labeled icon button">'+ msgDelete
+        out <<     '<button id="js-confirmation-button" class="ui positive right labeled icon button">'+ msgDelete
         out <<     '    <i class="trash alternate icon"></i>'
         out <<     '</button>'
         out <<   '</div>'
         out << '</div>'
     }
-
 
 
     //<semui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="true" />

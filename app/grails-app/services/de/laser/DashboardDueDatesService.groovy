@@ -47,6 +47,7 @@ class DashboardDueDatesService {
                 try {
                     update_running = true;
                     log.info("Start DashboardDueDatesService takeCareOfDueDates");
+                    new EventLog(event:'DashboardDueDatesService takeCareOfDueDates', message:'Start', tstp:new Date(System.currentTimeMillis())).save(flush:true)
                     if (isUpdateDashboardTableInDatabase) {
                         updateDashboardTableInDatabase()
                     }
@@ -54,8 +55,10 @@ class DashboardDueDatesService {
                         sendEmailsForDueDatesOfAllUsers()
                     }
                     log.info("Finished DashboardDueDatesService takeCareOfDueDates");
+                    new EventLog(event:'DashboardDueDatesService takeCareOfDueDates', message:'Finished', tstp:new Date(System.currentTimeMillis())).save(flush:true)
                 } catch (Throwable t) {
-                    log.error("DashboardDueDatesService - takeCareOfDueDates() :: Unable to perform email due to exception ${t.message}")
+                    log.error("DashboardDueDatesService takeCareOfDueDates :: Unable to perform email due to exception ${t.message}")
+                    new EventLog(event:'DashboardDueDatesService takeCareOfDueDates', message:'Unable to perform email due to exception '+ t.message, tstp:new Date(System.currentTimeMillis())).save(flush:true)
                     update_running = false
                 } finally {
                     update_running = false
@@ -64,6 +67,8 @@ class DashboardDueDatesService {
 //        }
     }
     private void updateDashboardTableInDatabase(){
+        log.info("Start DashboardDueDatesService updateDashboardTableInDatabase");
+        new EventLog(event:'DashboardDueDatesService.updateDashboardTableInDatabase', message:'Start', tstp:new Date(System.currentTimeMillis())).save(flush:true)
         List<DashboardDueDate> dashboarEntriesToInsert = []
         def users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
         users.each { user ->
@@ -88,15 +93,25 @@ class DashboardDueDatesService {
         DashboardDueDate.withTransaction { status ->
             try {
                 DashboardDueDate.executeUpdate("DELETE from DashboardDueDate ")
-                dashboarEntriesToInsert.each { it.save(flush: true) }
+                log.info("DashboardDueDatesService DELETE from DashboardDueDate");
+                dashboarEntriesToInsert.each {
+                    it.save(flush: true)
+                    log.info("DashboardDueDatesService INSERT: " + it);
+                }
+                log.info("DashboardDueDatesService INSERT Anzahl: " + dashboarEntriesToInsert.size);
+                new EventLog(event:'DashboardDueDatesService INSERT Anzahl: ' + dashboarEntriesToInsert.size, message:'SQL Insert', tstp:new Date(System.currentTimeMillis())).save(flush:true)
             } catch (Throwable t) {
                 log.error("DashboardDueDatesService - updateDashboardTableInDatabase() :: Rollback for reason: ${t.message}")
+                new EventLog(event:'DashboardDueDatesService.updateDashboardTableInDatabase', message:'Rollback for reason: ' + t.message, tstp:new Date(System.currentTimeMillis())).save(flush:true)
                 status.setRollbackOnly()
             }
         }
+        log.info("Finished DashboardDueDatesService updateDashboardTableInDatabase");
+        new EventLog(event:'DashboardDueDatesService updateDashboardTableInDatabase', message:'Finished', tstp:new Date(System.currentTimeMillis())).save(flush:true)
     }
 
     private void sendEmailsForDueDatesOfAllUsers() {
+        new EventLog(event:'DashboardDueDatesService.sendEmailsForDueDatesOfAllUsers', message:'Start', tstp:new Date(System.currentTimeMillis())).save(flush:true)
         def users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
         users.each { user ->
             boolean userWantsEmailReminder = RDStore.YN_YES.equals(user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO).rdValue)
@@ -108,6 +123,8 @@ class DashboardDueDatesService {
                 }
             }
         }
+        new EventLog(event:'DashboardDueDatesService.sendEmailsForDueDatesOfAllUsers', message:'Finished', tstp:new Date(System.currentTimeMillis())).save(flush:true)
+
     }
 
     private void sendEmailWithDashboardToUser(User user, Org org, List<DashboardDueDate> dashboardEntries) {
@@ -125,17 +142,21 @@ class DashboardDueDatesService {
             } else if (dashboardEntries == null || dashboardEntries.isEmpty()) {
                 log.info("The user has no due dates, so no email will be sent (" + user.username + "/"+ org.name + ")");
             } else {
+                def currentServer = grailsApplication.config.getCurrentServer()
+                def subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config.laserSystemId + " - ")
+
                 mailService.sendMail {
                     to userAddress
                     from overrideFrom != null ? overrideFrom : from
                     replyTo overrideReplyTo != null ? overrideReplyTo : replyTo
-                    subject subjectTrigger
+                    subject subjectSystemPraefix + subjectTrigger
                     body(view: "/user/_emailDueDatesView", model: [user: user, org: org, dueDates: dashboardEntries])
                 }
                 log.info("DashboardDueDatesService - sendEmail() finished to "+ user.getDisplayName() + " (" + user.email + ") " + org.name);
             }
         } catch (Exception e) {
             log.error("DashboardDueDatesService - sendEmail() :: Unable to perform email due to exception ${e.message}")
+            new EventLog(event:'DashboardDueDatesService.sendEmail', message:'Unable to perform email due to exception ' + e.message, tstp:new Date(System.currentTimeMillis())).save(flush:true)
         }
     }
 }

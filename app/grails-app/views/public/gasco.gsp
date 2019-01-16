@@ -26,9 +26,7 @@
                                    value="${params.q}"/>
                         </div>
                     </div>
-                    %{--Task ERMS-587: Vorübergehende Auswahl der Konsortiallizenz und Ausblenden der Auswahlckeckboxen --}%
-                    %{--TODO: Display none wieder entfernen--}%
-                    <div class="field" style="display: none">
+                    <div class="field">
                         <label for="subscritionType">${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
                         <fieldset id="subscritionType">
                             <div class="inline fields la-filter-inline">
@@ -36,8 +34,14 @@
                                 <g:each in="${RefdataCategory.getAllRefdataValues('Subscription Type')}" var="subType">
                                     <g:if test="${subType.value != 'Local Licence'}">
                                         <g:if test="${subType.value == 'National Licence'}">
-                                            <div class="inline field js-consortiallicence">
+                                            <div class="inline field js-nationallicence">
                                         </g:if>
+                                        <g:elseif test="${subType.value == 'Alliance Licence'}">
+                                            <div class="inline field js-alliancelicence">
+                                        </g:elseif>
+                                        <g:elseif test="${subType.value == 'Consortial Licence'}">
+                                            <div class="inline field js-consortiallicence">
+                                        </g:elseif>
                                         <g:else>
                                             <div class="inline field">
                                         </g:else>
@@ -45,13 +49,8 @@
                                             <div class="ui checkbox">
                                                 <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
                                                 <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
-                                                %{--TODO: Wieder einkommentieren: Original-Code Beginn--}%
-                                                    %{--<g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>--}%
-                                                    %{--<g:if test="${initQuery}"> checked="" </g:if>--}%
-                                                %{--TODO Original-Code Ende--}%
-                                                %{--TODO Diese Vorauswahl muss wieder entfernt werden--}%
-                                                    <g:if test="${subType.value == 'Consortial Licence'}"> checked="" </g:if>
-                                                %{--TODO Vorauswahl-Ende--}%
+                                                    <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
+                                                    <g:if test="${initQuery}"> checked="" </g:if>
                                                        tabindex="0">
 
                                             </div>
@@ -85,24 +84,35 @@
             <img class="ui fluid image" alt="Logo GASCO" class="ui fluid image" src="images/gasco/GASCO-Logo-2_klein.jpg"/>
         </div>
     </div>
-    <%--
     <r:script>
         $(document).ready(function() {
 
             function toggleFilterPart() {
                 if ($('.js-consortiallicence input').prop('checked')) {
-                    $('#js-consotial-authority .dropdown').addClass('disabled')
-                    $('#js-consotial-authority select').attr('disabled', 'disabled')
-                } else {
                     $('#js-consotial-authority .dropdown').removeClass('disabled')
                     $('#js-consotial-authority select').removeAttr('disabled')
+                } else {
+                    $('#js-consotial-authority .dropdown').addClass('disabled')
+                    $('#js-consotial-authority select').attr('disabled', 'disabled')
+                }
+            }
+            function toggleTableHeading() {
+                if ($('.js-nationallicence input').prop('checked') || $('.js-alliancelicence input').prop('checked')) {
+                    $('#js-negotiator-header').show()
+                    $('#js-consortium-header').hide()
+                } else {
+                    $('#js-negotiator-header').hide()
+                    $('#js-consortium-header').show()
                 }
             }
             toggleFilterPart()
+            $('.js-nationallicence').on('click', toggleFilterPart)
+            $('.js-alliancelicence').on('click', toggleFilterPart)
             $('.js-consortiallicence').on('click', toggleFilterPart)
+            toggleTableHeading()
+            $('.ui secondary button').on('click', toggleTableHeading)
         });
     </r:script>
-    --%>
     <g:if test="${subscriptions}">
 
     <table class="ui celled la-table table">
@@ -110,10 +120,15 @@
         <tr>
             <th>${message(code:'sidewide.number')}</th>
             <th>${message(code:'gasco.table.product')}</th>
-            <th>${message(code:'gasco.table.Ppovider')}</th>
+            <th>${message(code:'gasco.table.provider')}</th>
             %{--Task ERMS-587: Temporäres Ausblenden dieser Spalte--}%
             %{--<th>${message(code:'gasco.licenceType')}</th>--}%
-            <th>${message(code:'gasco.table.consortium')}</th>
+            <th>
+                <div id="js-consortium-header">
+                    ${message(code:'gasco.table.consortium')}</div>
+                <div id="js-negotiator-header">
+                    ${message(code:'gasco.table.negotiator')}</div>
+            </th>
         </tr>
         </thead>
         <tbody>
@@ -123,7 +138,7 @@
                         ${i + 1}
                     </td>
                     <td>
-                        <g:set var="anzeigeName" value="${sub.customProperties.find{ it.type == com.k_int.properties.PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Anzeigename')}?.stringValue}" />
+                        <g:set var="anzeigeName" value="${sub.customProperties.find{ it.type == PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Anzeigename')}?.stringValue}" />
                             ${anzeigeName ?: sub}
 
                         <g:each in="${sub.packages}" var="subPkg" status="j">
@@ -145,8 +160,18 @@
                     %{--</td>--}%
                     <td class="la-break-all">
 
-                    <g:set var="verhandlername" value="${sub.customProperties.find{ it.type == com.k_int.properties.PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Verhandlername')}?.stringValue}" />
+                    <g:set var="verhandlername" value="${sub.customProperties.find{ it.type == PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Verhandlername')}?.stringValue}" />
                     ${verhandlername ?: sub.getConsortia()?.name}
+                    <br>
+                    <g:set var="gascoInfoLink" value="${sub.customProperties.find{ it.type == PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Information-Link')}?.urlValue}" />
+                    <g:if test="${gascoInfoLink}">
+                        <div class="description">
+                            <i class="icon globe"></i>
+                            <span data-position="right center" data-tooltip="Diese URL aufrufen:  ${gascoInfoLink}">
+                                <a href="${gascoInfoLink}" target="_blank">${gascoInfoLink}</a>
+                            </span>
+                        </div>
+                    </g:if>
                         <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RefdataValue.getByValueAndCategory('GASCO-Contact', 'Person Function'), sub.getConsortia())}" var="person">
                             <div class="ui list">
                                 <div class="item">

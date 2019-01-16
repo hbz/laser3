@@ -1,3 +1,32 @@
+
+0.12.2
+
+- fixed xeditable double values
+- fixed xls export for consortia members
+- fixed and improved finance xls export
+
+0.12.1
+
+- temporary deactivated usage and statistics
+- modified api 1 property export
+
+0.12
+
+- reintroduction and improvement of finance overview page
+- added cronjob for status change
+- added cronjob and email reminder for dashboard due dates
+- added cronjob overview 
+- addes new user profile settings
+- added new property type: url
+- added explanations to properties 
+- retrieving package list from gokb api
+- show api access information at user profile
+- cleaned up duplicate docstore uuids
+- refactoring: use filesystem instead of database blobs
+- migration to postgresql
+- various markup and style changes
+- various bugfixes
+
 0.11.4
 
 - improved performance at finance view

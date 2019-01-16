@@ -200,10 +200,10 @@
                             <semui:securedMainNavItem affiliation="INST_EDITOR"  controller="myInstitution" action="managePropertyGroups" message="menu.institutions.manage_prop_groups" />
 
                             <g:if test="${grailsApplication.config.feature_finance}">
-                                <%-- <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" /> --%>
-
+                                <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />
                                 <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
-                            <semui:securedMainNavItemDisabled message="menu.institutions.financeImport" />
+                                <semui:securedMainNavItem affiliation="INST_ADM" controller="costConfiguration" action="index" message="menu.institutions.costConfiguration" />
+                                <semui:securedMainNavItemDisabled message="menu.institutions.financeImport" />
                                 <%-- this is part one of ticket #753! --%>
                             <%--<semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />--%>
 
@@ -220,49 +220,58 @@
                     </div>
                 </g:if>
 
-                <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN,ROLE_GLOBAL_DATA">
+                <sec:ifAnyGranted roles="ROLE_ORG_MANAGER,ROLE_DATAMANAGER,ROLE_ADMIN,ROLE_GLOBAL_DATA">
                     <div class="ui simple dropdown item">
                         ${message(code:'menu.datamanager')}
                         <i class="dropdown icon"></i>
 
                         <div class="menu">
                             <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN">
-                            <g:link class="item" controller="dataManager" action="index">${message(code:'menu.datamanager.dash')}</g:link>
-                            <g:link class="item" controller="dataManager"
-                                    action="deletedTitleManagement">${message(code: 'datamanager.deletedTitleManagement.label', default: 'Deleted Title management')}</g:link>
-
-                            <div class="divider"></div>
-
-                            <g:link class="item" controller="announcement" action="index">${message(code:'menu.datamanager.ann')}</g:link>
-                            <g:link class="item" controller="packageDetails" action="list">${message(code:'menu.datamanager.searchPackages')}</g:link>
-                            <g:link class="item" controller="platform" action="list">${message(code:'menu.datamanager.searchPlatforms')}</g:link>
-
-                            <div class="divider"></div>
-
-                            <g:link class="item" controller="upload" action="reviewPackage">${message(code:'menu.datamanager.uploadPackage')}</g:link>
-                            <g:link class="item" controller="licenseImport" action="doImport">${message(code:'onix.import.license')}</g:link>
-
-                            <div class="divider"></div>
-
-                            <g:link class="item" controller="titleDetails" action="findTitleMatches">${message(code:'menu.datamanager.newTitle')}</g:link>
-                            <g:link class="item" controller="licenseDetails" action="create">${message(code:'license.template.new')}</g:link>
-                            <g:link class="item" controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link>
-
-                            <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</g:link>
-                            <g:link class="item" controller="subscriptionImport" action="generateImportWorksheet">${message(code:'menu.datamanager.sub_work')}</g:link>
-                            <g:link class="item" controller="subscriptionImport" action="importSubscriptionWorksheet" params="${[dm:'true']}">${message(code:'menu.datamanager.imp_sub_work')}</g:link>
-                            <g:link class="item" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</g:link>
-                            <g:link class="item" controller="dataManager" action="changeLog">${message(code:'menu.datamanager.changelog')}</g:link><div class="divider"></div>
+                                <g:link class="item" controller="dataManager" action="index">${message(code:'menu.datamanager.dash')}</g:link>
+                                <g:link class="item" controller="dataManager"
+                                        action="deletedTitles">${message(code: 'datamanager.deletedTitleManagement.label', default: 'Deleted Title management')}</g:link>
                             </sec:ifAnyGranted>
 
-                            <g:link class="item" controller="globalDataSync" action="index" >${message(code:'menu.datamanager.global_data_sync')}</g:link>
+                            <sec:ifAnyGranted roles="ROLE_ORG_MANAGER,ROLE_ADMIN">
+                                <g:link class="item" controller="dataManager"
+                                        action="deletedOrgs">${message(code: 'datamanager.deletedOrgManagement.label', default: 'Deleted Org management')}</g:link>
+                            </sec:ifAnyGranted>
 
                             <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN">
-                            <div class="divider"></div>
-                            <g:link class="item" controller="jasperReports" action="index">${message(code:'menu.datamanager.jasper_reports')}</g:link>
-                            <g:link class="item" controller="titleDetails" action="dmIndex">${message(code:'menu.datamanager.titles')}</g:link>
+                                <div class="divider"></div>
+
+                                <g:link class="item" controller="announcement" action="index">${message(code:'menu.datamanager.ann')}</g:link>
+                                <g:link class="item" controller="packageDetails" action="list">${message(code:'menu.datamanager.searchPackages')}</g:link>
+                                <g:link class="item" controller="platform" action="list">${message(code:'menu.datamanager.searchPlatforms')}</g:link>
+
+                                <div class="divider"></div>
+
+                                <g:link class="item" controller="upload" action="reviewPackage">${message(code:'menu.datamanager.uploadPackage')}</g:link>
+                                <g:link class="item" controller="licenseImport" action="doImport">${message(code:'onix.import.license')}</g:link>
+
+                                <div class="divider"></div>
+
+                                <g:link class="item" controller="titleDetails" action="findTitleMatches">${message(code:'menu.datamanager.newTitle')}</g:link>
+                                <g:link class="item" controller="licenseDetails" action="create">${message(code:'license.template.new')}</g:link>
+                                <g:link class="item" controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link>
+
+                                <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</g:link>
+                                <g:link class="item" controller="subscriptionImport" action="generateImportWorksheet">${message(code:'menu.datamanager.sub_work')}</g:link>
+                                <g:link class="item" controller="subscriptionImport" action="importSubscriptionWorksheet" params="${[dm:'true']}">${message(code:'menu.datamanager.imp_sub_work')}</g:link>
+                                <g:link class="item" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</g:link>
+                                <g:link class="item" controller="dataManager" action="changeLog">${message(code:'menu.datamanager.changelog')}</g:link><div class="divider"></div>
                             </sec:ifAnyGranted>
-                            </div>
+
+                            <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN,ROLE_GLOBAL_DATA">
+                                <g:link class="item" controller="globalDataSync" action="index" >${message(code:'menu.datamanager.global_data_sync')}</g:link>
+                            </sec:ifAnyGranted>
+
+                            <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN">
+                                <div class="divider"></div>
+                                <g:link class="item" controller="jasperReports" action="index">${message(code:'menu.datamanager.jasper_reports')}</g:link>
+                                <g:link class="item" controller="titleDetails" action="dmIndex">${message(code:'menu.datamanager.titles')}</g:link>
+                            </sec:ifAnyGranted>
+                        </div>
                     </div>
                 </sec:ifAnyGranted>
 
@@ -371,27 +380,34 @@
                         <i class="dropdown icon"></i>
 
                         <div class="menu">
-                            <div class="ui dropdown item">
-                                Fällige Termine
-                                <i class="dropdown icon"></i>
 
-                                <div class="menu">
-                                    <g:link class="item" controller="yoda" action="dueDates_updateDashboardDB">${message(code:'menu.admin.updateDashboardTable')}</g:link>
-                                    <g:link class="item" controller="yoda" action="dueDates_sendAllEmails">${message(code:'menu.admin.sendEmailsForDueDates')}</g:link>
-                                </div>
-                            </div>
-                            <div class="divider"></div>
                             <g:link class="item" controller="yoda" action="settings">System Settings</g:link>
                             <g:link class="item" controller="yoda" action="manageSystemMessage">${message(code: 'menu.admin.systemMessage', default: 'System Message')}</g:link>
                             <g:link class="item" controller="yoda" action="appConfig">App Config</g:link>
                             <g:link class="item" controller="yoda" action="appSecurity">App Security</g:link>
                             <g:link class="item" controller="yoda" action="appProfiler">App Profiler</g:link>
                             <g:link class="item" controller="yoda" action="cacheInfo">App Cache Info</g:link>
+                            <g:link class="item" controller="yoda" action="quartzInfo">Quartz Info</g:link>
                             <%--<a class="item" href="${g.createLink(uri:'/monitoring')}">App Monitoring</a>--%>
 
                             <div class="divider"></div>
 
                             <g:link class="item" controller="yoda" action="pendingChanges">Pending Changes</g:link>
+
+                            <div class="divider"></div>
+
+                            <div class="ui dropdown item">
+                                Fällige Termine
+                                <i class="dropdown icon"></i>
+                                <div class="menu">
+                                    <g:link class="item" controller="yoda" action="dueDates_updateDashboardDB">${message(code:'menu.admin.updateDashboardTable')}</g:link>
+                                    <g:link class="item" controller="yoda" action="dueDates_sendAllEmails">${message(code:'menu.admin.sendEmailsForDueDates')}</g:link>
+                                </div>
+                            </div>
+
+                            <div class="divider"></div>
+
+                            <g:link class="item" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</g:link>
 
                             <div class="divider"></div>
 

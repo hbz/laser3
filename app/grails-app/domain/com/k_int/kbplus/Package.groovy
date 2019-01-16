@@ -304,7 +304,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
  @Transient
   def onSave = {
-
     log.debug("onSave")
     def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
 

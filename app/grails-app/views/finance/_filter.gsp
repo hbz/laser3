@@ -217,10 +217,10 @@
 
                 <div class="field fieldcontain"><!--NEW -->
                     <label for="filterCISub">${message(code:'subscription.label')}</label>
-                    <g:select id="filterCISub" class="ui dropdown selection"
+                    <g:select id="filterCISub" class="ui fluid search dropdown" multiple=""
                               name="filterCISub"
                               from="${allCISubs}"
-                              optionValue="${{it.name ?: 'Keine Verknüpfung'}}"
+                              optionValue="${{it.name+' ('+formatDate(date:it.startDate,format:message(code: 'default.date.format.notime'))+' - '+formatDate(date: it.endDate, format: message(code: 'default.date.format.notime'))+')' ?: 'Keine Verknüpfung'}}"
                               optionKey="${{"com.k_int.kbplus.Subscription:" + it.id}}"
                               noSelection="['':'']"
                               value="${params.filterCISub}" />
@@ -228,7 +228,7 @@
 
                 <div class="field fieldcontain"><!--NEW -->
                     <label for="filterCISPkg">${message(code:'package.label')}</label>
-                    <g:select id="filterCISPkg" class="ui dropdown selection"
+                    <g:select id="filterCISPkg" class="ui fluid search dropdown" multiple=""
                               name="filterCISPkg"
                               from="${allCISPkgs}"
                               optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"

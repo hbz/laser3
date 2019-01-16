@@ -205,8 +205,8 @@
             <g:if test="${tmplConfigShow?.contains('numberOfSubscriptions')}">
                 <td>
                     <div class="la-flexbox">
-                        <% (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName], contextService.org)
-                            def numberOfSubscriptions = Subscription.executeQuery("select count(s) " + base_qry, qry_params)[0]
+                        <% (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: org, actionName: actionName,status: RDStore.SUBSCRIPTION_CURRENT.id], contextService.org)
+                            def numberOfSubscriptions = Subscription.executeQuery("select s.id " + base_qry, qry_params).size()
                         %>
                         <g:if test="${actionName == 'manageConsortia'}">
                             ${numberOfSubscriptions}

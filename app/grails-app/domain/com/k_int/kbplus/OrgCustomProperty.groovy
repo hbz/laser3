@@ -13,7 +13,7 @@ class OrgCustomProperty extends CustomProperty {
 
     static mapping = {
         includes    AbstractProperty.mapping
-        owner       index:'owner_idx'
+        owner       index:'ocp_owner_idx'
     }
 
     static belongsTo = [

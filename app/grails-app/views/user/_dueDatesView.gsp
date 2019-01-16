@@ -47,7 +47,7 @@
                                     <span data-position="top right" data-tooltip="Aufgabe">
                                         <i class="icon tasks la-list-icon"></i>
                                     </span>
-                                    <a class="header" onclick="taskedit(${obj?.id});">${obj?.title}</a>
+                                    <a href="#" class="header" onclick="taskedit(${obj?.id});">${obj?.title}</a>
                                     &nbsp(Status: ${obj.status?.getI10n("value")})
                                 </g:elseif>
                                 <g:elseif test="${obj instanceof AbstractProperty}">
@@ -79,6 +79,13 @@
                     </tr>
                 </g:each>
             </tbody>
+            <tfoot>
+                <tr>
+                    <td>
+                        <semui:paginate offset="${dashboardDueDatesOffset ? dashboardDueDatesOffset : '1'}" max="${contextService.getUser().getDefaultPageSizeTMP()}" params="${[view:'dueDatesView']}" total="${dueDatesCount}"/>
+                    </td>
+                </tr>
+            </tfoot>
         </table>
     </g:if>
     <g:else>

@@ -42,11 +42,7 @@
                             <g:link controller="myInstitution" action="announcements">${message(code: 'announcement.plural', default: 'Announcements')}</g:link>
                         </div>
                         <g:if test="${grailsApplication.config.feature_finance}">
-                            <div class="item">
-                                <%-- as placeholder for the missing finances link --%>
-                                <div class="disabled" data-tooltip="Die Funktion 'Finanzen' ist zur Zeit nicht verfügbar!" data-position="bottom center">${message(code: 'menu.institutions.finance', default: 'Finances')}</div>
-                            </div>
-                            <%--<semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />--%>
+                            <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="finance" message="menu.institutions.finance" />
                         </g:if>
                     </div>
                 </div>
@@ -78,11 +74,11 @@
     <div class="ui secondary pointing tabular menu">
         <a class="${US_DASHBOARD_TAB.getValue().value=='Due Dates' ? 'active item':'item'}" data-tab="first">
             <i class="checked alarm end icon large"></i>
-            ${dueDates.size}
+            ${dueDatesCount}
             ${message(code:'myinst.dash.due_dates.label')}
         </a>
         <a class="${US_DASHBOARD_TAB.getValue().value == 'Changes' ? 'active item':'item'}" data-tab="second">
-            <i class="clock outline icon large"></i>
+            <i class="history icon large"></i>
             <%
                 def countChanges = 0
                 changes.collect { c ->
@@ -94,21 +90,21 @@
         </a>
         <a class="${US_DASHBOARD_TAB.getValue().value=='Announcements' ? 'active item':'item'}" data-tab="third" id="jsFallbackAnnouncements">
             <i class="warning circle icon large"></i>
-            ${recentAnnouncements.size()}
+            ${recentAnnouncementsCount}
             ${message(code:'announcement.plural', default:'Announcements')}
         </a>
         <a class="${US_DASHBOARD_TAB.getValue().value=='Tasks' ? 'active item':'item'}" data-tab="forth">
             <i class="checked calendar icon large"></i>
-            ${tasks.size()}
+            ${tasksCount}
             ${message(code:'myinst.dash.task.label')}
         </a>
 
     </div>
-        <div class="ui bottom attached active tab segment" data-tab="first" style="border-top: 1px solid #d4d4d5; ">
+        <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Due Dates' ? 'active':''}" data-tab="first" style="border-top: 1px solid #d4d4d5; ">
             <div>
                 <g:render template="/user/dueDatesView"
                           model="[user: user,
-                                  dueDates: dueDates]"/>
+                                  dueDates: dueDates, dueDatesCount: dueDatesCount]"/>
             </div>
 
         </div>
@@ -212,6 +208,9 @@
 
                     </div>
                 </g:each>
+            </div>
+            <div>
+                <semui:paginate offset="${announcementOffset ? announcementOffset : '1'}" max="${contextService.getUser().getDefaultPageSizeTMP()}" params="${[view:'announcementsView']}" total="${recentAnnouncementsCount}"/>
             </div>
         </div>
 

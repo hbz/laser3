@@ -64,7 +64,7 @@ class OnixplLicenseDetailsController extends AbstractDebugController {
 
         def qry_params = [onixplLicense.class.name, "${onixplLicense.id}"]
         def historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where className=? and persistedObjectId=? order by id desc", qry_params, [max:max, offset:offset]);
-        def historyLinesTotal = AuditLogEvent.executeQuery("select count(e.id) from AuditLogEvent as e where className=? and persistedObjectId=?",qry_params)[0];
+        def historyLinesTotal = AuditLogEvent.executeQuery("select e.id from AuditLogEvent as e where className=? and persistedObjectId=?",qry_params).size()
         [onixplLicense: onixplLicense, user: user, max: max, offset: offset, historyLines: historyLines, historyLinesTotal: historyLinesTotal]
     }
 

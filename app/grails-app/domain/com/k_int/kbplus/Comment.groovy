@@ -18,7 +18,7 @@ class Comment implements Comparable {
   User by
 
   static mapping = {
-    table 'kb_comment'
+    table (name: '`comment`')
     id column: 'comm_id'
     alert column:'comm_alert_fk'
     commentDate column:'comm_date'

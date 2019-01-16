@@ -1,6 +1,9 @@
 package de.Laser.batch
 
-class StatsSyncJob {
+import de.laser.quartz.AbstractJob
+
+class StatsSyncJob extends AbstractJob {
+
     def statsSyncService
     def grailsApplication
 
@@ -19,6 +22,8 @@ class StatsSyncJob {
         //                  | `- Minute, 0-59
         //                  `- Second, 0-59
     }
+
+    static configFlags = ['KBPlusMaster', 'hbzMaster', 'StatsSyncJobActiv']
 
     def execute() {
         log.debug("Execute::statsSyncJob");

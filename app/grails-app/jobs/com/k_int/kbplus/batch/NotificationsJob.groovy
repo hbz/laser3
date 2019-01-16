@@ -1,10 +1,13 @@
 package com.k_int.kbplus.batch
 
-class NotificationsJob {
+import de.laser.quartz.AbstractJob
+
+class NotificationsJob extends AbstractJob {
 
   def changeNotificationService
   def grailsApplication
   def reminderService
+
   static triggers = {
     // Delay 20 seconds, run every 10 mins.
     // Cron:: Min Hour DayOfMonth Month DayOfWeek Year
@@ -12,6 +15,8 @@ class NotificationsJob {
     // At zero seconds, 5 mins past 2am every day...
     cron name:'notificationsTrigger', startDelay:180000, cronExpression: "* 35 * * * ?"
   }
+
+    static configFlags = ['KBPlusMaster', 'hbzMaster']
 
   def execute() {
     log.debug("NotificationsJob");

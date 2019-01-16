@@ -9,7 +9,9 @@
 <semui:messages data="${flash}"/>
 <semui:card>
     <div class="content">
-        <h3 class="ui header">${message(code: 'serverCode.forbidden.message2')}</h3>
+        <h3 class="ui header">
+            ${message(code: 'serverCode.forbidden.message2')}
+        </h3>
 
         <g:if test="${!flash.error}">
             <div>

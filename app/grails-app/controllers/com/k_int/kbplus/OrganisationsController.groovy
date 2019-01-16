@@ -85,7 +85,7 @@ class OrganisationsController extends AbstractDebugController {
         def fsq = filterService.getOrgQuery(params)
 
         result.orgList  = Org.findAll(fsq.query, fsq.queryParams, params)
-        result.orgListTotal = Org.executeQuery("select count (o) ${fsq.query}", fsq.queryParams)[0]
+        result.orgListTotal = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams).size()
 
         if ( params.exportXLS=='yes' ) {
 
@@ -127,14 +127,14 @@ class OrganisationsController extends AbstractDebugController {
             (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, fsq2.query, 'o', [:])
             def tmpQueryParams2 = fsq2.queryParams << tmpQueryParams
             result.orgList      = Org.findAll(tmpQuery, tmpQueryParams2, params)
-            result.orgListTotal = Org.executeQuery("select count (o) ${tmpQuery}", tmpQueryParams2)[0]
+            result.orgListTotal = Org.executeQuery("select o.id ${tmpQuery}", tmpQueryParams2).size()
             fsq.query = tmpQuery
             fsq.queryParams  = tmpQueryParams2
 
         } else {
 
             result.orgList      = Org.findAll(fsq.query, fsq.queryParams, params)
-            result.orgListTotal = Org.executeQuery("select count (o) ${fsq.query}", fsq.queryParams)[0]
+            result.orgListTotal = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams).size()
         }
 
         if ( params.exportXLS=='yes' ) {
@@ -207,35 +207,40 @@ class OrganisationsController extends AbstractDebugController {
         def result = [:]
 
         def orgInstance = Org.get(params.id)
+        def user = contextService.getUser()
 
         def link_vals = RefdataCategory.getAllRefdataValues("Organisational Role")
         def sorted_links = [:]
         def offsets = [:]
 
-        link_vals.each { lv ->
-            def param_offset = 0
+        if ( SpringSecurityUtils.ifAnyGranted("ROLE_YODA") ||
+             (orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADMIN'))
+        ) {
 
-            if(lv.id){
-                def cur_param = "rdvl_${String.valueOf(lv.id)}"
+            link_vals.each { lv ->
+                def param_offset = 0
 
-                if(params[cur_param]){
-                    param_offset = params[cur_param]
-                    result[cur_param] = param_offset
+                if (lv.id) {
+                    def cur_param = "rdvl_${String.valueOf(lv.id)}"
+
+                    if (params[cur_param]) {
+                        param_offset = params[cur_param]
+                        result[cur_param] = param_offset
+                    }
+
+                    def links = OrgRole.findAll {
+                        org == orgInstance && roleType == lv
+                    }
+                    links = links.findAll { it -> it.ownerStatus?.value != 'Deleted' }
+
+                    def link_type_results = links.drop(param_offset.toInteger()).take(10) // drop from head, take 10
+
+                    if (link_type_results) {
+                        sorted_links["${String.valueOf(lv.id)}"] = [rdv: lv, rdvl: cur_param, links: link_type_results, total: links.size()]
+                    }
+                } else {
+                    log.debug("Could not read Refdata: ${lv}")
                 }
-
-                def links = OrgRole.findAll {
-                            org == orgInstance &&
-                            roleType == lv
-                }
-                links = links.findAll{ it -> it.ownerStatus?.value != 'Deleted' }
-
-                def link_type_results = links.drop(param_offset.toInteger()).take(10) // drop from head, take 10
-
-                if(link_type_results){
-                    sorted_links["${String.valueOf(lv.id)}"] = [rdv: lv, rdvl: cur_param, links: link_type_results, total: links.size()]
-                }
-            }else{
-                log.debug("Could not read Refdata: ${lv}")
             }
         }
 
@@ -422,7 +427,19 @@ class OrganisationsController extends AbstractDebugController {
       }
       redirect action: 'users', id: params.id
     }
-    
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def deleteRole() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        UserOrg uo = UserOrg.get(params.grant)
+        if ( accessService.checkMinUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
+            uo.delete();
+        }
+        redirect action: 'users', id: params.id
+    }
+
     @Secured(['ROLE_USER'])
     def addOrgCombo(Org fromOrg, Org toOrg) {
       //def comboType = RefdataCategory.lookupOrCreate('Organisational Role', 'Package Consortia')
@@ -440,18 +457,6 @@ class OrganisationsController extends AbstractDebugController {
       else {
         flash.message = "This Combo already exists!"
       }
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-    def deleteRole() {
-      def result = [:]
-      result.user = User.get(springSecurityService.principal.id)
-      UserOrg uo = UserOrg.get(params.grant)
-      if ( accessService.checkMinUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
-        uo.delete();
-      }
-      redirect action: 'users', id: params.id
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')

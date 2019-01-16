@@ -38,14 +38,14 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
     // If a license is slaved then any changes to instanceOf will automatically be applied to this license
     RefdataValue isSlaved // RefdataCategory 'YN'
 
-  RefdataValue status
-  RefdataValue type
+    RefdataValue status           // RefdataCategory 'License Status'
+    RefdataValue type             // RefdataCategory 'License Type'
 
   String reference
   String sortableReference
 
-  RefdataValue licenseCategory
-  RefdataValue isPublic
+    RefdataValue licenseCategory  // RefdataCategory 'LicenseCategory'
+    RefdataValue isPublic         // RefdataCategory 'YN'
 
   String noticePeriod
   String licenseUrl
@@ -59,8 +59,6 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
 
   Date dateCreated
   Date lastUpdated
-
-  Set ids = []
 
   static hasOne = [onixplLicense: OnixplLicense]
 
@@ -138,7 +136,6 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
         endDate(nullable: true, blank: true)
         lastUpdated(nullable: true, blank: true)
     }
-
     @Override
     def isTemplate() {
         return (type != null) && (type == RefdataValue.getByValueAndCategory('Template', 'License Type'))
@@ -147,6 +144,40 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
     @Override
     def hasTemplate() {
         return instanceOf ? instanceOf.isTemplate() : false
+    }
+
+    // TODO: implement
+    @Override
+    def getCalculatedType() {
+        def result = TemplateSupport.CALCULATED_TYPE_UNKOWN
+
+        if (isTemplate()) {
+            result = TemplateSupport.CALCULATED_TYPE_TEMPLATE
+        }
+        else if(getLicensingConsortium() && ! getAllLicensee() && ! isTemplate()) {
+            result = TemplateSupport.CALCULATED_TYPE_CONSORTIAL
+        }
+        else if(getLicensingConsortium() && getAllLicensee() && instanceOf && ! hasTemplate()) {
+            result = TemplateSupport.CALCULATED_TYPE_PARTICIPATION
+        }
+        else if(! getLicensingConsortium() && getAllLicensee() && ! hasTemplate() && ! isTemplate()) {
+            result = TemplateSupport.CALCULATED_TYPE_LOCAL
+        }
+        result
+    }
+
+    def getDerivedLicensees() {
+        def result = []
+
+        License.findAllByInstanceOf(this).each { l ->
+            def ors = OrgRole.findAllWhere( lic: l )
+            ors.each { or ->
+                if (or.roleType?.value in ['Licensee', 'Licensee_Consortial']) {
+                    result << or.org
+                }
+            }
+        }
+        result = result.sort {it.name}
     }
 
     // used for views and dropdowns
@@ -416,7 +447,7 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
         License.where{ instanceOf == this && (status == null || status.value != 'Deleted') }
     }
 
-    def getCaculatedPropDefGroups() {
+    def getCaculatedPropDefGroups(Org contextOrg) {
         def result = [ 'global':[], 'local':[], 'member':[], fallback: true ]
 
         // ALL type depending groups without checking tenants or bindings
@@ -436,7 +467,7 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
                     }
                 }
                 // consortium @ member; getting group by tenant and instanceOf.binding
-                if (it.tenant?.id == contextService.getOrg()?.id) {
+                if (it.tenant?.id == contextOrg?.id) {
                     if (binding) {
                         result.member << [it, binding]
                     }
@@ -452,7 +483,7 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
             else {
                 def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndLic(it, this)
 
-                if (it.tenant == null || it.tenant?.id == contextService.getOrg()?.id) {
+                if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
                     if (binding) {
                         result.local << [it, binding]
                     } else {
@@ -675,10 +706,10 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
 
   static def refdataFind(params) {
 
-      String INSTITUTIONAL_LICENSES_QUERY = """ 
- FROM License AS l WHERE 
-( exists ( SELECT ol FROM OrgRole AS ol WHERE ol.lic = l AND ol.org.id =(:orgId) AND ol.roleType.id IN (:orgRoles)) OR l.isPublic.id=(:publicS)) 
-AND l.status.value != 'Deleted' 
+      String INSTITUTIONAL_LICENSES_QUERY = """
+ FROM License AS l WHERE
+( exists ( SELECT ol FROM OrgRole AS ol WHERE ol.lic = l AND ol.org.id =(:orgId) AND ol.roleType.id IN (:orgRoles)) OR l.isPublic.id=(:publicS))
+AND l.status.value != 'Deleted'
 AND lower(l.reference) LIKE (:ref)
 """
       def result = []

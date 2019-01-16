@@ -36,7 +36,7 @@
 			$('.onix-icons span i').popover(
 			  {placement: 'left', trigger:'hover', html: true, container: 'body'}
 			);
-	  	    });
+	  	    //});
 
 	  </r:script>
 </body>

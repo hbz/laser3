@@ -35,44 +35,9 @@
 
     <g:render template="nav" contextPath="." />
 
-    <semui:meta>
-        <div class="inline-lists">
+    <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}" />
 
-            <dl>
-                <g:if test="${orgInstance.globalUID}">
-                    <dt><g:message code="org.globalUID.label" default="Global UID" /></dt>
-                    <dd>
-                        <g:fieldValue bean="${orgInstance}" field="globalUID"/>
-                    </dd>
-                </g:if>
-
-                <g:if test="${orgInstance.impId}">
-                    <dt><g:message code="org.impId.label" default="Import ID" /></dt>
-                    <dd>
-                        <g:fieldValue bean="${orgInstance}" field="impId"/>
-                    </dd>
-                </g:if>
-
-                <dt><g:message code="org.ids.label" default="Ids" /></dt>
-                <dd>
-                    <g:if test="${orgInstance?.ids}">
-                        <g:each in="${orgInstance.ids.sort{it.identifier.ns.ns}}" var="i">
-                            <g:link controller="identifier" action="show" id="${i.identifier.id}">${i?.identifier?.ns?.ns} : ${i?.identifier?.value}</g:link>
-                            <br />
-                        </g:each>
-                    </g:if>
-
-                    <g:if test="${editable}">
-
-                        <semui:formAddIdentifier owner="${orgInstance}">
-                            ${message(code:'identifier.select.text', args:['isil:DE-18'])}
-                        </semui:formAddIdentifier>
-
-                    </g:if>
-                </dd>
-            </dl>
-        </div>
-    </semui:meta>
+    <g:render template="/templates/meta/identifier" model="${[object: orgInstance, editable: editable]}" />
 
     <semui:messages data="${flash}" />
 
@@ -136,7 +101,15 @@
                         </g:else>
                         <dl>
                             <dt>${message(code:'subscription.details.status', default:'Status')}</dt>
-                            <dd>${orgInstance.status?.getI10n('value')}</dd>
+
+                            <dd>
+                                <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                                    <semui:xEditableRefData owner="${orgInstance}" field="status" config='OrgStatus'/>
+                                </g:if>
+                                <g:else>
+                                    ${orgInstance.status?.getI10n('value')}
+                                </g:else>
+                            </dd>
                         </dl>
                     </div>
                 </div><!-- .card -->
@@ -401,25 +374,16 @@
 
                     </g:if><%-- incomingCombos --%>
 
-
                     <g:if test="${sorted_links}">
-
-                        <g:if test="${orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADMIN')}">
-                            <div class="ui card">
+                        <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                            <div class="ui card la-role-yoda">
                                 <div class="content">
                                    <g:render template="/templates/links/orgRoleContainer" model="[listOfLinks: sorted_links]" />
                                 </div>
                             </div><!--.card-->
                         </g:if>
-                        <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
-                            <div class="ui card la-role-admin">
-                                <div class="content">
-                                   <g:render template="/templates/links/orgRoleContainer" model="[listOfLinks: sorted_links]" />
-                                </div>
-                            </div><!--.card-->
-                        </g:elseif>
-                        <g:elseif test="${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                            <div class="ui card la-role-yoda">
+                        <g:elseif test="${orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADMIN')}">
+                            <div class="ui card">
                                 <div class="content">
                                    <g:render template="/templates/links/orgRoleContainer" model="[listOfLinks: sorted_links]" />
                                 </div>

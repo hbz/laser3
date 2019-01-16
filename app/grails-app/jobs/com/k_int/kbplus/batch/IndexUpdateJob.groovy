@@ -1,6 +1,8 @@
 package com.k_int.kbplus.batch
 
-class IndexUpdateJob {
+import de.laser.quartz.AbstractJob
+
+class IndexUpdateJob extends AbstractJob {
 
   def dataloadService
 
@@ -8,6 +10,8 @@ class IndexUpdateJob {
     // Delay 120 seconds, run every 10 mins.
     cron name:'cronTrigger', startDelay:190000, cronExpression: "0 0/10 * * * ?"
   }
+
+  static configFlags = []
 
   def execute() {
     log.debug("****Running Index Update Job****")

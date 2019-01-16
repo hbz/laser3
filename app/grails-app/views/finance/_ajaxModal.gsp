@@ -1,10 +1,11 @@
 <!-- _ajaxModal.gsp -->
-<%@ page import="com.k_int.kbplus.*;" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.*;" %>
 <laser:serviceInjection />
 
 <g:render template="vars" /><%-- setting vars --%>
 
 <g:set var="modalText" value="${message(code:'financials.addNewCost')}" />
+<g:set var="org" value="${contextService.getOrg()}" />
 
 <%
     if (costItem) {
@@ -46,7 +47,7 @@
 
         <div class="fields">
             <div class="nine wide field">
-                <g:if test="${OrgRole.findBySubAndOrgAndRoleType(fixedSubscription, contextService.getOrg(), RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role'))}">
+                <g:if test="${OrgRole.findBySubAndOrgAndRoleType(fixedSubscription, contextService.getOrg(), RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role')) || OrgRole.findBySubAndOrgAndRoleType(currentSubscription, contextService.getOrg(), RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role')) }">
                     <div class="two fields la-fields-no-margin-button">
                         <div class="field">
                             <label>${message(code:'financials.newCosts.costTitle')}</label>
@@ -54,9 +55,7 @@
                         </div><!-- .field -->
                         <div class="field">
                             <label>${message(code:'financials.isVisibleForSubscriber')}</label>
-                            <g:set var="newIsVisibleForSubscriberValue" value="${
-                                costItem?.isVisibleForSubscriber ? RefdataValue.getByValueAndCategory('Yes', 'YN').id : RefdataValue.getByValueAndCategory('No', 'YN').id
-                            }" />
+                            <g:set var="newIsVisibleForSubscriberValue" value="${costItem?.isVisibleForSubscriber ? RefdataValue.getByValueAndCategory('Yes', 'YN').id : RefdataValue.getByValueAndCategory('No', 'YN').id}" />
                             <laser:select name="newIsVisibleForSubscriber" class="ui dropdown"
                                       id="newIsVisibleForSubscriber"
                                       from="${RefdataValue.findAllByOwner(RefdataCategory.findByDesc('YN'))}"
@@ -115,15 +114,37 @@
                                       value="${costItem?.costItemCategory?.id}" />
                     </div><!-- .field -->
                 --%>
-                <div class="field">
-                    <label>${message(code:'financials.costItemElement')}</label>
-                    <laser:select name="newCostItemElement" class="ui dropdown"
-                                  from="${costItemElement}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  noSelection="${['':'']}"
-                                  value="${costItem?.costItemElement?.id}" />
-                </div><!-- .field -->
+                <div class="two fields">
+                    <div class="field">
+                        <label>${message(code:'financials.costItemElement')}</label>
+                        <laser:select name="newCostItemElement" class="ui dropdown"
+                                      from="${costItemElement}"
+                                      optionKey="id"
+                                      optionValue="value"
+                                      noSelection="${['':'']}"
+                                      value="${costItem?.costItemElement?.id}" />
+                    </div><!-- .field -->
+                    <div class="field">
+                        <label>${message(code:'financials.costItemConfiguration')}</label>
+                        <% //continue here: overridable!
+                        //<span id="ciec">${tooltipString}</span>
+                            def ciec = null
+                            if(costItem) {
+                                if(costItem.costItemElementConfiguration)
+                                    ciec = costItem.costItemElementConfiguration.class.name+":"+costItem.costItemElementConfiguration.id
+                                else if(!costItem.costItemElementConfiguration && costItem.costItemElement) {
+                                    def config = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(costItem.costItemElement,contextService.getOrg())
+                                    if(config)
+                                        ciec = config.elementSign.class.name+":"+config.elementSign.id
+                                }
+                            }
+                        %>
+                        <g:select name="ciec" class="ui dropdown" from="${costItemElementConfigurations}"
+                        optionKey="id" optionValue="value" value="${ciec}"
+                        noSelection="${[null:message(code:'financials.costItemConfiguration.notSet')]}"/>
+                    </div>
+                </div>
+
 
                 <div class="two fields la-fields-no-margin-button">
                     <div class="field">
@@ -229,7 +250,6 @@
                         <input title="Wert nach Steuer (in EUR)" type="text" readonly="readonly"
                                name="newCostInLocalCurrencyAfterTax" id="newCostInLocalCurrencyAfterTax"
                                value="${costItem?.costInLocalCurrencyAfterTax}" step="0.01"/>
-
                     </div><!-- .field -->
                 </div>
 
@@ -253,7 +273,7 @@
                         <input class="la-full-width la-select2-fixed-width"
                                readonly='readonly'
                                value="${costItem.sub.getName()}" />
-                        <input name="newSubscription"
+                        <input name="newSubscription" id="pickedSubscription"
                                type="hidden"
                                value="${'com.k_int.kbplus.Subscription:' + costItem.sub.id}" />
                     </g:if>
@@ -262,7 +282,7 @@
                             <input class="la-full-width la-select2-fixed-width"
                                    readonly='readonly'
                                    value="${fixedSubscription?.getName()}" />
-                            <input name="newSubscription"
+                            <input name="newSubscription" id="pickedSubscription"
                                    type="hidden"
                                    value="${'com.k_int.kbplus.Subscription:' + fixedSubscription?.id}" />
                         </g:if>
@@ -319,8 +339,8 @@
 
                 <div class="field" id="newPackageWrapper">
 
+                    <label>${message(code:'package.label')}</label>
                     <g:if test="${costItem?.sub}">
-                        <label>${message(code:'package.label')}</label>
                         <g:select name="newPackage" id="newPackage" class="ui dropdown"
                                   from="${[{}] + costItem?.sub?.packages}"
                                   optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
@@ -329,7 +349,6 @@
                                   value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}" />
                     </g:if>
                     <g:elseif test="${inSubMode}">
-                        <label>${message(code:'package.label')}</label>
                         <g:select name="newPackage" id="newPackage" class="ui dropdown"
                                   from="${[{}] + fixedSubscription?.packages}"
                                   optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
@@ -338,19 +357,20 @@
                                   value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}" />
                     </g:elseif>
                     <g:else>
-                        <input name="newPackage" id="newPackage" class="la-full-width" disabled="disabled" data-subFilter="" data-disableReset="true" />
+                        <input name="newPackage" id="newPackage" class="ui" disabled="disabled" data-subFilter="" data-disableReset="true" />
                     </g:else>
 
 
-                    <%--
+                    <%-- the distinction between subMode (= fixedSubscription) and general view is done already in the controller! --%>
                     <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
-                    <g:if test="${! inSubMode}">
-                        <input name="newIe" id="newIE" disabled='disabled' data-subFilter="" data-disableReset="true" class="la-full-width" value="${params.newIe}">
+                    <input name="newIe" id="newIE" class="select2 la-select2-fixed-width" />
+                    <%--<g:if test="${! inSubMode}">
+                        <input name="newIe" id="newIE" data-subFilter="" data-disableReset="true" class="la-full-width" value="${params.newIe}">
                     </g:if>
                     <g:else>
-                        <input name="newIe" id="newIE" disabled="disabled" data-subFilter="${fixedSubscription?.id}" data-disableReset="true" class="select2 la-full-width" value="${params.newIe}">
-                    </g:else>
-                    --%>
+                        <input name="newIe" id="newIE" data-subFilter="${fixedSubscription?.id}" data-disableReset="true" class="select2 la-full-width" value="${params.newIe}">
+                    </g:else>--%>
+
                 </div><!-- .field -->
             </fieldset> <!-- 2/2 field -->
 
@@ -400,6 +420,15 @@
             rate: "#newCostCurrencyRate",
             bc:   "#newCostInBillingCurrency"
         }*/
+        <%
+            def costItemElementConfigurations = "{"
+            StringJoiner sj = new StringJoiner(",")
+            orgConfigurations.each { orgConf ->
+                sj.add('"'+orgConf.id+'":"'+orgConf.value+'"')
+            }
+            costItemElementConfigurations += sj.toString()+"}"
+        %>
+        var costItemElementConfigurations = ${raw(costItemElementConfigurations)}
 
         $("#costButton1").click(function() {
             if (! isError("#newCostInBillingCurrency") && ! isError("#newCostCurrencyRate")) {
@@ -430,6 +459,12 @@
                 $(".la-account-currency").find(".field").removeClass("error");
                 calcTaxResults()
             }
+        });
+        $("#newCostItemElement").change(function() {
+            if(typeof(costItemElementConfigurations[$(this).val()]) !== 'undefined')
+                $("[name='ciec']").dropdown('set selected',costItemElementConfigurations[$(this).val()]);
+            else
+                $("[name='ciec']").dropdown('set selected','null');
         });
         var isError = function(cssSel)  {
             if ($(cssSel).val().length <= 0 || $(cssSel).val() < 0) {
@@ -505,6 +540,44 @@
             });
 
             </g:if>
+
+            <g:if test="${issueEntitlement}">
+                var data = {id : "${issueEntitlement.class.name}:${issueEntitlement.id}",
+                            text : "${issueEntitlement.tipp.title.title}"};
+            </g:if>
+
+            $('#newIE').select2({
+                placeholder: "${message(code:'financials.newCosts.singleEntitlement')}",
+                <%--minimumInputLength: 1,
+                formatInputTooShort: function () {
+                    return "${message(code:'select2.minChars.note')}";
+                },--%>
+                global: false,
+                ajax: {
+                    url: "<g:createLink controller='ajax' action='lookupIssueEntitlements' params='${params}'/>",
+                    data: function (term, page) {
+                        return {
+                            hideDeleted: 'true',
+                            hideIdent: 'false',
+                            inclSubStartDate: 'false',
+                            q: '%' + term + '%',
+                            page_limit: 20,
+                            baseClass: 'com.k_int.kbplus.IssueEntitlement',
+                            sub: $("#pickedSubscription,#newSubscription").val()
+                        };
+                    },
+                    results: function (data, page) {
+                        return {results: data.values};
+                    },
+                    allowClear: true,
+                    formatSelection: function(data) {
+                        return data.text;
+                    }
+                }
+            });
+            //duplicated call needed to preselect data
+            if(typeof(data) !== 'undefined')
+                $('#newIE').select2('data',data);
         }
     </script>
 

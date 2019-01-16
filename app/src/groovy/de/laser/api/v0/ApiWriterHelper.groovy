@@ -11,6 +11,7 @@ class ApiWriterHelper {
 
     // ##### HELPER #####
 
+    @Deprecated
     static getValidDateFormat(def value) {
         // TODO: check and format date
 
@@ -19,6 +20,7 @@ class ApiWriterHelper {
         date
     }
 
+    @Deprecated
     static getRefdataValue(def value, String category) {
         if (value && category) {
             def rdCategory = RefdataCategory.findByDesc(category)
@@ -30,10 +32,11 @@ class ApiWriterHelper {
 
     // #####
 
+    @Deprecated
     static getAddresses(def data, Org ownerOrg, Person ownerPerson) {
         def addresses = []
 
-        data.each { it ->
+        data?.each { it ->
             def address = new Address(
                     street_1: it.street1,
                     street_2: it.street2,
@@ -56,10 +59,11 @@ class ApiWriterHelper {
         addresses
     }
 
+    @Deprecated
     static getContacts(def data, Org ownerOrg, Person ownerPerson) {
         def contacts = []
 
-        data.each { it ->
+        data?.each { it ->
             def contact = new Contact(
                     content: it.content
             )
@@ -77,13 +81,14 @@ class ApiWriterHelper {
         contacts
     }
 
+    @Deprecated
     static getPersonsAndRoles(def data, Org owner, Org contextOrg) {
         def result = [
                 'persons'    : [],
                 'personRoles': []
         ]
 
-        data.each { it ->
+        data?.each { it ->
             def person = new Person(
                     first_name:  it.firstName,
                     middle_name: it.middleName,
@@ -126,11 +131,12 @@ class ApiWriterHelper {
         result
     }
 
-    static getIdentifiers(def data, def owner) {
+    @Deprecated
+    static getIdentifiers(HashMap data, def owner) {
         def idenfifierOccurences = []
 
-        data.each { it ->
-            def identifier = Identifier.lookupOrCreateCanonicalIdentifier(it.namespace, it.value)
+        data?.each { it ->
+            def identifier = Identifier.lookupOrCreateCanonicalIdentifier(it.key, it.value) // TODO test
             def idenfifierOccurence = new IdentifierOccurrence(
                     identifier: identifier
             )
@@ -141,10 +147,11 @@ class ApiWriterHelper {
         idenfifierOccurences
     }
 
+    @Deprecated
     static getOrgLinks(def data, def owner, Org context) {
         def result = []
 
-        data.each { it ->   // com.k_int.kbplus.OrgRole
+        data?.each { it ->   // com.k_int.kbplus.OrgRole
 
             // check existing resources
             def check = []
@@ -191,13 +198,14 @@ class ApiWriterHelper {
         result
     }
 
+    @Deprecated
     static getProperties(def data, def owner, Org contextOrg) {
         def properties = [
                 'custom': [],
                 'private': []
         ]
 
-        data.each { it ->
+        data?.each { it ->
             def property
             def isPublic = getRefdataValue(it.isPublic?.value,"YN")
 

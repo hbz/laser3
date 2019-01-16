@@ -24,6 +24,7 @@ class CostItem extends AbstractBaseDomain implements TemplateSupport {
     RefdataValue costItemCategory   // RefdataCategory 'CostItemCategory'
     RefdataValue billingCurrency    // GDP,USD,etc
     RefdataValue costItemElement    // RefdataCategory 'CostItemElement'
+    RefdataValue costItemElementConfiguration // RefdataCategory 'Cost configuration'
     RefdataValue taxCode            // RefdataCategory 'TaxType'
     Boolean includeInSubscription //include in sub details page
 
@@ -89,6 +90,7 @@ class CostItem extends AbstractBaseDomain implements TemplateSupport {
         includeInSubscription column: 'ci_include_in_subscr'
         costItemCategory    column: 'ci_cat_rv_fk'
         costItemElement     column: 'ci_element_rv_fk'
+        costItemElementConfiguration column: 'ci_element_configuration_rv_fk'
         endDate         column: 'ci_end_date'
         startDate       column: 'ci_start_date'
         reference       column: 'ci_reference'
@@ -120,6 +122,7 @@ class CostItem extends AbstractBaseDomain implements TemplateSupport {
         costItemCategory(nullable: true, blank: false)
         costItemStatus  (nullable: true, blank: false)
         costItemElement (nullable: true, blank: false)
+        costItemElementConfiguration (nullable: true, blank: false)
         reference       (nullable: true, blank: false)
         startDate       (nullable: true, blank: false)
         endDate         (nullable: true, blank: false)
@@ -151,13 +154,24 @@ class CostItem extends AbstractBaseDomain implements TemplateSupport {
     @Deprecated
     @Override
     def isTemplate() {
-        return (type != null) && (type == RefdataValue.getByValueAndCategory('Template', 'License Type'))
+        false
     }
 
     @Deprecated
     @Override
     def hasTemplate() {
-        return instanceOf ? instanceOf.isTemplate() : false
+        false
+    }
+
+    @Override
+    def getCalculatedType() {
+        def result = TemplateSupport.CALCULATED_TYPE_UNKOWN
+
+        if (isTemplate()) {
+            result = TemplateSupport.CALCULATED_TYPE_TEMPLATE
+        }
+
+        result
     }
 
     def getBudgetcodes() {

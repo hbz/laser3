@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import javax.persistence.Transient
 import java.sql.Blob
 
 import org.hibernate.Session
@@ -8,10 +9,13 @@ import com.k_int.kbplus.auth.User
 
 class Doc {
 
-  static final CONTENT_TYPE_STRING              = 0
-  static final CONTENT_TYPE_DOCSTORE            = 1
-  static final CONTENT_TYPE_UPDATE_NOTIFICATION = 2
-  static final CONTENT_TYPE_BLOB                = 3
+    @Transient
+    def grailsApplication
+
+    static final CONTENT_TYPE_STRING              = 0
+    static final CONTENT_TYPE_DOCSTORE            = 1
+    static final CONTENT_TYPE_UPDATE_NOTIFICATION = 2
+    static final CONTENT_TYPE_BLOB                = 3
 
   static transients = [ 'blobSize', 'blobData', 'sessionFactory' ]
   private static final MAX_SIZE = 1073741824 // 4GB 
@@ -67,25 +71,44 @@ class Doc {
     migrated  (nullable:true, blank:false, maxSize:1)
   }
 
+    @Deprecated
   def setBlobData(InputStream is, long length) {
     Session hib_ses = sessionFactory.getCurrentSession()
     blobContent = hib_ses.getLobHelper().createBlob(is, length)
   }
-    
+
+    @Deprecated
   def getBlobData() {
     return blobContent?.binaryStream
   }
 
-
+    @Deprecated
   Long getBlobSize() {
     return blobContent?.length() ?: 0
   }
-    
-  def render(def response, def filename) {
-    response.setContentType(mimeType)
-    response.addHeader("content-disposition", "attachment; filename=\"${filename}\"")
-    response.outputStream << getBlobData()
-  }
+
+    def render(def response, def filename) {
+        // erms-790
+        def output
+        def contentLength
+
+        try {
+            def fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+            def file = new File("${fPath}/${uuid}")
+            output = file.getBytes()
+            contentLength = output.length
+        } catch(Exception e) {
+            // fallback
+            output = getBlobData()
+            contentLength = getBlobSize()
+        }
+
+        response.setContentType(mimeType)
+        response.addHeader("Content-Disposition", "attachment; filename=\"${filename}\"")
+        response.setHeader('Content-Length', "${contentLength}")
+
+        response.outputStream << output
+    }
     
   static fromUpload(def file) {
     if(!file) return new Doc()
@@ -98,4 +121,12 @@ class Doc {
     doc.setBlobData(file.inputStream, file.size)
     return doc
   }
+
+    // erms-790
+    def beforeInsert = {
+        if (contentType in [CONTENT_TYPE_BLOB, CONTENT_TYPE_DOCSTORE]) {
+            log.info('generating new uuid')
+            uuid = java.util.UUID.randomUUID().toString()
+        }
+    }
 }

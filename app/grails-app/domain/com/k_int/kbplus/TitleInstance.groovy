@@ -97,7 +97,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditTrait {
 
   static def lookupByIdentifierString(idstr) {
 
-    println("lookupByIdentifierString(${idstr})");
+      static_logger.debug("lookupByIdentifierString(${idstr})")
 
     def result = null;
     def qr = null;
@@ -111,16 +111,16 @@ class TitleInstance extends AbstractBaseDomain implements AuditTrait {
         qr = TitleInstance.executeQuery('select t from TitleInstance as t join t.ids as io where io.identifier.value = ? and lower(io.identifier.ns.ns) = ?',[idstr_components[1],idstr_components[0]?.toLowerCase()])
         break;
       default:
-        // println("Unable to split");
+        // static_logger.debug("Unable to split");
         break;
     }
 
-    // println("components: ${idstr_components} : ${qr}");
+    // static_logger.debug("components: ${idstr_components} : ${qr}");
 
     if ( qr ) {
       switch ( qr.size() ) {
         case 0:
-          log.debug("No matches - trying to locate via identifier group");
+            static_logger.debug("No matches - trying to locate via identifier group");
           switch ( idstr_components.size() ) {
             case 1:
               qr = TitleInstance.executeQuery('select t from TitleInstance as t join t.ids as io where exists ( select i from Identifier where i.value = ? and i.ig = io.identifier.ig )',[idstr_components[0]])
@@ -129,7 +129,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditTrait {
               qr = TitleInstance.executeQuery('select t from TitleInstance as t join t.ids as io where exists ( select i from Identifier where i.value = ? and i.ns.ns = ? and i.ig = io.identifier.ig )',[idstr_components[1],idstr_components[0]?.toLowerCase()])
               break;
             default:
-              // println("Unable to split");
+              // static_logger.debug("Unable to split");
               break;
           }
 
@@ -138,7 +138,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditTrait {
           result = qr.get(0);
           break;
         default:
-          log.error("WARNING:: Identifier '${idstr}' matched multiple rows");
+            static_logger.error("WARNING:: Identifier '${idstr}' matched multiple rows");
           break;
       }
     }
@@ -378,7 +378,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditTrait {
 
     if ( enrich && valid_match ) {
       static_logger.debug("enrich... current ids = ${result.ids}, import-ids = ${canonical_ids}");
-      // println("Checking that all identifiers are already present in title");
+      // static_logger.debug("Checking that all identifiers are already present in title");
       boolean modified = false;
       // Check that all the identifiers listed are present
       canonical_ids.each { cid ->
@@ -460,7 +460,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditTrait {
       }
     }
     else {
-      //println("Checking that all identifiers are already present in title (${ids})");
+      //static_logger.debug("Checking that all identifiers are already present in title (${ids})");
       boolean modified = false;
       // Check that all the identifiers listed are present
       ids.each { identifier ->
@@ -470,12 +470,12 @@ class TitleInstance extends AbstractBaseDomain implements AuditTrait {
         def existing_id = IdentifierOccurrence.findByIdentifierAndTi(identifier,result)
 
         if ( existing_id == null ) {
-          //println("Adding additional identifier ${identifier}");
+          //static_logger.debug("Adding additional identifier ${identifier}");
           result.ids.add(new IdentifierOccurrence(identifier:identifier, ti:result).save(flush: true));
           modified=true;
         }
         else {
-          //println("Identifier ${identifier} already present in existing title ${result}");
+          //static_logger.debug("Identifier ${identifier} already present in existing title ${result}");
         }
       }
 
@@ -531,9 +531,9 @@ class TitleInstance extends AbstractBaseDomain implements AuditTrait {
 
     def result = input_title.replaceAll('&',' and ');
     result = result.trim();
-    result = result.replaceAll("\\s+", " ");
     result = result.toLowerCase();
     result = alphanum.matcher(result).replaceAll("");
+    result = result.replaceAll("\\s+", " ");
    
     return asciify(result)
   }
@@ -543,9 +543,9 @@ class TitleInstance extends AbstractBaseDomain implements AuditTrait {
     if ( s != null ) {
         s = s.replaceAll('&',' and ');
         s = s.trim(); // first off, remove whitespace around the string
-        s = s.replaceAll("\\s+", " ");
         s = s.toLowerCase(); // then lowercase it
         s = alphanum.matcher(s)?.replaceAll(''); // then remove all punctuation and control chars
+        s = s.replaceAll("\\s+", " ");
         String[] frags = StringUtils.split(s); // split by whitespace
         TreeSet<String> set = new TreeSet<String>();
         for (String ss : frags) {
@@ -870,7 +870,7 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
   where ie.tipp.title = :title and o.org = :institution 
   AND (o.roleType.value = 'Subscriber' OR o.roleType.value = 'Subscriber_Consortial' OR o.roleType.value = 'Subscription Consortia') 
   AND ie.subscription.status.value != 'Deleted' 
-  AND ie.status != 'Deleted'
+  AND ie.status.value != 'Deleted'
 """
     def qry_params = ['title':this, institution:institution]
 

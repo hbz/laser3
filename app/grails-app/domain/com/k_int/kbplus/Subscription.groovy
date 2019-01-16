@@ -15,7 +15,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
 
     // AuditTrait
     static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
-    static controlledProperties = [ 'startDate', 'endDate', 'status', 'type' ]
+    static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'form', 'resource' ]
 
     @Transient
     def grailsApplication
@@ -30,7 +30,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
     @Transient
     def springSecurityService
 
-  RefdataValue status
+  RefdataValue status       // RefdataCatagory 'Subscription Status'
   RefdataValue type         // RefdataCatagory 'Subscription Type'
   RefdataValue form         // RefdataCatagory 'Subscription Form'
   RefdataValue resource     // RefdataCatagory 'Subscription Resource'
@@ -58,7 +58,6 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
   License owner
   SortedSet issueEntitlements
   RefdataValue isPublic     // RefdataCategory 'YN'
-  Set ids = []
 
   static transients = [ 'subscriber', 'provider', 'consortia' ]
 
@@ -87,6 +86,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
                       derivedSubscriptions: 'instanceOf',
                       pendingChanges: 'subscription',
                       costItems: 'sub',
+                      customProperties: 'owner',
                       privateProperties: 'owner',
                       oapl: 'subscription'
                       ]
@@ -133,11 +133,8 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
         isSlaved(nullable:true, blank:false)
         noticePeriod(nullable:true, blank:true)
         isPublic(nullable:true, blank:true)
-        customProperties(nullable:true)
-        privateProperties(nullable:true)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true, blank: true)
-        // vendor(nullable:true, blank:false)
     }
 
     // TODO: implement
@@ -150,6 +147,25 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
     @Override
     def hasTemplate() {
         return false
+    }
+
+    @Override
+    def getCalculatedType() {
+        def result = TemplateSupport.CALCULATED_TYPE_UNKOWN
+
+        if (isTemplate()) {
+            result = TemplateSupport.CALCULATED_TYPE_TEMPLATE
+        }
+        else if(getConsortia() && ! getAllSubscribers() && ! instanceOf) {
+            result = TemplateSupport.CALCULATED_TYPE_CONSORTIAL
+        }
+        else if(getConsortia() && getAllSubscribers() && instanceOf) {
+            result = TemplateSupport.CALCULATED_TYPE_PARTICIPATION
+        }
+        else if(! getConsortia() && getAllSubscribers() && ! instanceOf) {
+            result = TemplateSupport.CALCULATED_TYPE_LOCAL
+        }
+        result
     }
 
     // used for views and dropdowns
@@ -386,7 +402,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
         Subscription.where{ instanceOf == this && (status == null || status.value != 'Deleted') }
     }
 
-    def getCaculatedPropDefGroups() {
+    def getCaculatedPropDefGroups(Org contextOrg) {
         def result = [ 'global':[], 'local':[], 'member':[], fallback: true ]
 
         // ALL type depending groups without checking tenants or bindings
@@ -406,7 +422,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
                     }
                 }
                 // consortium @ member; getting group by tenant and instanceOf.binding
-                if (it.tenant?.id == contextService.getOrg()?.id) {
+                if (it.tenant?.id == contextOrg?.id) {
                     if (binding) {
                         result.member << [it, binding]
                     }
@@ -422,7 +438,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
             else {
                 def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, this)
 
-                if (it.tenant == null || it.tenant?.id == contextService.getOrg()?.id) {
+                if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
                     if (binding) {
                         result.local << [it, binding]
                     } else {
@@ -534,7 +550,8 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
   }
 
   def setInstitution(inst) {
-    println("Set institution ${inst}");
+      log.debug("Set institution ${inst}")
+
     def subrole = RDStore.OR_SUBSCRIBER
     def or = new OrgRole(org:inst, roleType:subrole, sub:this)
     if ( this.orgRelations == null)
@@ -543,7 +560,8 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
   }
 
   def addNamespacedIdentifier(ns,value) {
-    println("Add Namespaced identifier ${ns}:${value}");
+      log.debug("Add Namespaced identifier ${ns}:${value}")
+
     def canonical_id = Identifier.lookupOrCreateCanonicalIdentifier(ns, value);
     if ( this.ids == null)
       this.ids = []

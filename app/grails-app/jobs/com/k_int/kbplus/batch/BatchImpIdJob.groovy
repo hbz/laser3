@@ -1,18 +1,18 @@
 package com.k_int.kbplus.batch
 
-import com.k_int.kbplus.Package
-import groovy.time.TimeCategory
+import de.laser.quartz.AbstractJob
 import org.hibernate.ScrollMode
 
 /*
 * This job is only run once on system startup, and is responsible for generating sort names on Package
 */
-class BatchImpIdJob {
+class BatchImpIdJob extends AbstractJob {
 
+    static triggers = {
+        simple name:'BatchImpIdJob', startDelay:40000, repeatInterval:30000, repeatCount:0
+    }
 
-  static triggers = {
-    simple name:'BatchImpIdJob', startDelay:40000, repeatInterval:30000, repeatCount:0  
-  }
+    static configFlags = []
 
   def execute() {
     log.debug("BatchImpIdJob::execute()");

@@ -37,6 +37,8 @@ class LicenseCompareController extends AbstractDebugController {
 
         result.licensee_role = RDStore.OR_LICENSEE
         result.licensee_cons_role = RDStore.OR_LICENSEE_CONS
+        result.licensing_cons_role = RDStore.OR_LICENSING_CONSORTIUM
+
         result
   }
 

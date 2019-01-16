@@ -1,4 +1,5 @@
 <%@ page import="de.laser.domain.I10nTranslation; com.k_int.properties.PropertyDefinition" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <!doctype html>
 <html>
 	<head>
@@ -16,7 +17,6 @@
         <h3 class="ui header">Custom Properties</h3>
 
 		<semui:messages data="${flash}" />
-
 
             <div class="content ui form">
                 <div class="fields">
@@ -52,20 +52,46 @@
                                 <g:set var="pdI10nExpl" value="${I10nTranslation.createI10nOnTheFly(pd, 'expl')}" />
                                 <tr>
                                     <td>
+                                        <g:if test="${pd.hardData}">
+                                            <span data-position="top left" data-tooltip="${message(code:'default.hardData.tooltip')}">
+                                                <i class="check circle icon green"></i>
+                                            </span>
+                                        </g:if>
+
                                         <g:if test="${! usedPdList?.contains(pd.id)}">
                                             <span data-position="top left" data-tooltip="Dieser Wert wird bisher nicht verwendet (ID:${pd.id})">
                                                 <i class="info circle icon blue"></i>
                                             </span>
                                         </g:if>
+                                        <g:if test="${pd.isUsedForLogic}">
+                                            <span data-position="top left" data-tooltip="${message(code:'default.isUsedForLogic.tooltip')}">
+                                                <i class="ui icon orange cube"></i>
+                                            </span>
+                                        </g:if>
                                     </td>
                                     <td>
-                                        ${fieldValue(bean: pd, field: "name")}
+                                        <g:if test="${pd.isUsedForLogic}">
+                                            <span style="color:orange">${fieldValue(bean: pd, field: "name")}</span>
+                                        </g:if>
+                                        <g:else>
+                                            ${fieldValue(bean: pd, field: "name")}
+                                        </g:else>
                                     </td>
                                     <td>
-                                        <semui:xEditable owner="${pdI10nName}" field="valueDe" />
+                                        <g:if test="${!pd.isUsedForLogic || SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                            <semui:xEditable owner="${pdI10nName}" field="valueDe" />
+                                        </g:if>
+                                        <g:else>
+                                            ${pdI10nName?.valueDe}
+                                        </g:else>
                                     </td>
                                     <td>
-                                        <semui:xEditable owner="${pdI10nName}" field="valueEn" />
+                                        <g:if test="${!pd.isUsedForLogic || SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                            <semui:xEditable owner="${pdI10nName}" field="valueEn" />
+                                        </g:if>
+                                        <g:else>
+                                            ${pdI10nName?.valueEn}
+                                        </g:else>
                                     </td>
                                     <td>
                                         <g:set var="pdRdc" value="${pd.type?.split('\\.').last()}"/>
@@ -105,8 +131,22 @@
 
                                     </td>
 
-                                    <td><semui:xEditable owner="${pdI10nExpl}" field="valueDe" type="textarea" /></td>
-                                    <td><semui:xEditable owner="${pdI10nExpl}" field="valueEn" type="textarea" /></td>
+                                    <td>
+                                        <g:if test="${!pd.isUsedForLogic || SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                            <semui:xEditable owner="${pdI10nExpl}" field="valueDe" type="textarea" />
+                                        </g:if>
+                                        <g:else>
+                                            ${pdI10nExpl?.valueDe}
+                                        </g:else>
+                                    </td>
+                                    <td>
+                                        <g:if test="${!pd.isUsedForLogic || SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                            <semui:xEditable owner="${pdI10nExpl}" field="valueEn" type="textarea" />
+                                        </g:if>
+                                        <g:else>
+                                            ${pdI10nExpl?.valueEn}
+                                        </g:else>
+                                    </td>
 
                                 </tr>
                             </g:each>

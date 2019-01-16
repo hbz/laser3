@@ -43,15 +43,16 @@ class Org extends AbstractBaseDomain {
     int fteStudents
     int fteStaff
 
-    RefdataValue orgType        // RefdataCategory 'OrgType' OLD -> NEW: orgRoleType
+    RefdataValue orgType                 // RefdataCategory 'OrgType' OLD -> NEW: orgRoleType
     RefdataValue sector
     RefdataValue status
     RefdataValue membership
-    RefdataValue country        // RefdataCategory 'Country'
-    RefdataValue federalState   // RefdataCategory 'Federal State'
-    RefdataValue libraryNetwork // RefdataCategory 'Library Network'
-    RefdataValue funderType     // RefdataCategory 'Funder Type'
-    RefdataValue libraryType    // RefdataCategory 'Library Type'
+    RefdataValue country                 // RefdataCategory 'Country'
+    RefdataValue federalState            // RefdataCategory 'Federal State'
+    RefdataValue libraryNetwork          // RefdataCategory 'Library Network'
+    RefdataValue funderType              // RefdataCategory 'Funder Type'
+    RefdataValue libraryType             // RefdataCategory 'Library Type'
+    RefdataValue costConfigurationPreset // RefdataCategory 'Cost configuration'
 
     Set ids = []
 
@@ -84,33 +85,34 @@ class Org extends AbstractBaseDomain {
 
     static mapping = {
                 sort 'sortname'
-                id column:'org_id'
-           version column:'org_version'
-         globalUID column:'org_guid'
-             impId column:'org_imp_id', index:'org_imp_id_idx'
-              name column:'org_name', index:'org_name_idx'
-         shortname column:'org_shortname', index:'org_shortname_idx'
-          sortname column:'org_sortname', index:'org_sortname_idx'
-               url column:'org_url'
-            urlGov column:'org_url_gov'
-       fteStudents column:'org_fte_students'
-          fteStaff column:'org_fte_staff'
-           comment column:'org_comment'
-           ipRange column:'org_ip_range'
-         shortcode column:'org_shortcode', index:'org_shortcode_idx'
-             scope column:'org_scope'
-        categoryId column:'org_cat'
-           orgType column:'org_type_rv_fk'
-            sector column:'org_sector_rv_fk'
-            status column:'org_status_rv_fk'
-        membership column:'org_membership'
-           country column:'org_country_rv_fk'
-      federalState column:'org_federal_state_rv_fk'
-    libraryNetwork column:'org_library_network_rv_fk'
-        funderType column:'org_funder_type_rv_fk'
-       libraryType column:'org_library_type_rv_fk'
-      importSource column:'org_import_source'
-    lastImportDate column:'org_last_import_date'
+                id          column:'org_id'
+           version          column:'org_version'
+         globalUID          column:'org_guid'
+             impId          column:'org_imp_id', index:'org_imp_id_idx'
+              name          column:'org_name', index:'org_name_idx'
+         shortname          column:'org_shortname', index:'org_shortname_idx'
+          sortname          column:'org_sortname', index:'org_sortname_idx'
+               url          column:'org_url'
+            urlGov          column:'org_url_gov'
+       fteStudents          column:'org_fte_students'
+          fteStaff          column:'org_fte_staff'
+           comment          column:'org_comment'
+           ipRange          column:'org_ip_range'
+         shortcode          column:'org_shortcode', index:'org_shortcode_idx'
+             scope          column:'org_scope'
+        categoryId          column:'org_cat'
+           orgType          column:'org_type_rv_fk'
+            sector          column:'org_sector_rv_fk'
+            status          column:'org_status_rv_fk'
+        membership          column:'org_membership'
+           country          column:'org_country_rv_fk'
+      federalState          column:'org_federal_state_rv_fk'
+    libraryNetwork          column:'org_library_network_rv_fk'
+        funderType          column:'org_funder_type_rv_fk'
+       libraryType          column:'org_library_type_rv_fk'
+      importSource          column:'org_import_source'
+    lastImportDate          column:'org_last_import_date'
+    costConfigurationPreset column:'org_config_preset_rv_fk'
 
         orgRoleType joinTable: [name: 'org_roletype',
                                 key: 'org_id',
@@ -147,6 +149,7 @@ class Org extends AbstractBaseDomain {
          libraryType(nullable:true, blank:true)
         importSource(nullable:true, blank:true)
       lastImportDate(nullable:true, blank:true)
+      costConfigurationPreset(nullable:true, blank:false)
         orgRoleType(nullable:true, blank:true)
     }
 
@@ -206,7 +209,7 @@ class Org extends AbstractBaseDomain {
         result
     }
 
-    def getCaculatedPropDefGroups() {
+    def getCaculatedPropDefGroups(Org contextOrg) {
         def result = [ 'global':[], 'local':[], fallback: true ]
 
         // ALL type depending groups without checking tenants or bindings
@@ -215,7 +218,7 @@ class Org extends AbstractBaseDomain {
 
             def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndOrg(it, this)
 
-            if (it.tenant == null || it.tenant?.id == contextService.getOrg()?.id) {
+            if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
                 if (binding) {
                     result.local << [it, binding]
                 } else {
@@ -460,7 +463,7 @@ class Org extends AbstractBaseDomain {
         def sqlQuery = hibernateSession.createSQLQuery(query)
         sqlQuery.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP)
         def result = sqlQuery.list()?.collect{ it.refdata_value_id as Long }
-        log.debug('getallOrgRoleTypeIds(): ' + result)
+        //log.debug('getallOrgRoleTypeIds(): ' + result)
         result
     }
 }

@@ -16,7 +16,6 @@ class PublicController {
     @Secured(['permitAll'])
     def index() {
     }
-
     @Secured(['permitAll'])
     def gasco() {
         def result = [:]
@@ -32,23 +31,37 @@ class PublicController {
         }
         else {
 
-            def query = "from Subscription as s where ("
+            def q = params.q?.trim()
+            def queryParams = [:]
+
+            String query = "from Subscription as s where ("
             query += "      lower(s.status.value) = 'current'"
             query += "      and lower(s.type.value) != 'local licence'"
-            query += "      and exists (select scp from s.customProperties as scp where scp.type = :gasco and lower(scp.refValue.value) = 'yes')"
-            query += " )"
+            query += "      and exists "
+            query += "          ( select scp from s.customProperties as scp where "
+            query += "               scp.type = :gasco and lower(scp.refValue.value) = 'yes'"
+            query += "           )"
+            queryParams.put('gasco', PropertyDefinition.findByName('GASCO Entry'))
+            query += "        ) "
 
-            def queryParams = [gasco: PropertyDefinition.findByName('GASCO Entry')]
-
-            def q = params.q?.trim()
             if (q) {
-                query += " and ((lower(s.name) like :q) or exists ("
+                query += " and ("
+                query += "    exists "
+                query += "          ( select scp1 from s.customProperties as scp1 where "
+                query += "               scp1.type = :gascoAnzeigenname and lower(scp1.stringValue) like :q"
+                query += "           )"
+
+                query += " or "
+                query += "    ((lower(s.name) like :q) "
+
+                query += " or exists ("
                 query += "    select ogr from s.orgRelations as ogr where ("
                 query += "          lower(ogr.org.name) like :q or lower(ogr.org.shortname) like :q or lower(ogr.org.sortname) like :q"
                 query += "      ) and ogr.roleType.value = 'Provider'"
                 query += "    )"
-                query += " )"
+                query += " ))"
 
+                queryParams.put('gascoAnzeigenname', PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Anzeigename'))
                 queryParams.put('q', '%' + q.toLowerCase() + '%')
             }
 
@@ -89,7 +102,7 @@ class PublicController {
 */
 
             if (q || consortia || subTypes) {
-                result.subscriptionsCount = Subscription.executeQuery("select count(s) " + query, queryParams)[0]
+                result.subscriptionsCount = Subscription.executeQuery("select s.id " + query, queryParams).size()
                 result.subscriptions = Subscription.executeQuery("select s ${query} order by lower(s.name) asc", queryParams)
             }
         }
@@ -186,7 +199,7 @@ class PublicController {
                         " and exists (SELECT tipp FROM TitleInstancePackagePlatform as tipp WHERE ie.tipp = tipp and tipp.pkg = :pkg )"
                 def queryParams = [sub: sub, pkg: pkg]
 
-                result.issueEntitlementsCount = IssueEntitlement.executeQuery("select count(ie) " + base_query, queryParams)[0]
+                result.issueEntitlementsCount = IssueEntitlement.executeQuery("select ie.id " + base_query, queryParams).size()
 
                 def query = "SELECT ie " + base_query
 

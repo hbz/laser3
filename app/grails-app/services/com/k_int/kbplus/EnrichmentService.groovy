@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.*
+import de.laser.ContextService
 import org.hibernate.ScrollMode
 import java.nio.charset.Charset
 import java.util.GregorianCalendar
@@ -78,10 +79,13 @@ class EnrichmentService implements ApplicationContextAware {
     def content = tmpl.toString()
     def systemEmail = grailsApplication.config?.systemEmail ?: null
     if (systemEmail){
+      def currentServer = grailsApplication.config?.getCurrentServer()
+      def subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config?.laserSystemId + " - ")
+
       mailService.sendMail {
         to systemEmail
         from systemEmail
-        subject 'LAS:eR Housekeeping Results'
+        subject subjectSystemPraefix + 'LAS:eR Housekeeping Results'
         html content
       }
     }else{

@@ -6,7 +6,7 @@
 
 <%-- modal --%>
 
-<semui:modal id="propDefGroupBindings" text="Merkmalsgruppen konfigurieren" hideSubmitButton="hideSubmitButton">
+<semui:modal id="propDefGroupBindings" text="Merkmalgruppen konfigurieren" hideSubmitButton="hideSubmitButton">
 
     <g:render template="/templates/properties/groupBindings" model="${[
             propDefGroup: propDefGroup,
@@ -18,7 +18,7 @@
 
 <%-- grouped custom properties --%>
 
-<g:set var="allPropDefGroups" value="${license.getCaculatedPropDefGroups()}" />
+<g:set var="allPropDefGroups" value="${license.getCaculatedPropDefGroups(contextService.getOrg())}" />
 
 <g:each in="${allPropDefGroups.global}" var="propDefGroup">
     <g:if test="${propDefGroup.visible?.value == 'Yes'}">

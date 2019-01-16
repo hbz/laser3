@@ -64,7 +64,7 @@ class User implements Permissions {
   }
 
   static mapping = {
-      //table(name:'`user_profile`')
+      table (name: '`user`')
       password column: '`password`'
   }
 
@@ -302,5 +302,6 @@ class User implements Permissions {
     @Override
     String toString() {
         yodaService.showDebugInfo() ? display + ' (' + id + ')' : display
+        //display
     }
 }

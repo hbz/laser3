@@ -55,6 +55,8 @@ ${session.id}
 
     <g:link class="ui button negative"
             controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', cache: cacheName, type: 'ehcache']">Cache löschen</g:link>
+
+    <hr />
 </g:each>
 
 <% /* --------------------------------------------------------------------------------- */ %>
@@ -76,9 +78,10 @@ ${session.id}
 
     <g:link class="ui button negative"
             controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', cache: cacheName, type: 'cache']">Cache löschen</g:link>
+
+    <hr />
 </g:each>
 
-<hr />
 
 </body>
 </html>

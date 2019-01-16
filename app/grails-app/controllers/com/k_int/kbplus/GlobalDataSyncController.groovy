@@ -55,7 +55,7 @@ class GlobalDataSyncController {
       }
     }
 
-    result.globalItemTotal = Subscription.executeQuery("select count(r) " + base_qry, qry_params)[0]
+    result.globalItemTotal = Subscription.executeQuery("select r.id " + base_qry, qry_params).size()
     result.items = Subscription.executeQuery("select r ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
 
     result.tippcount = []

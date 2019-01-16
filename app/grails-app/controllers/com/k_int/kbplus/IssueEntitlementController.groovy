@@ -73,7 +73,11 @@ class IssueEntitlementController extends AbstractDebugController {
       def supplier = result.issueEntitlementInstance.tipp.pkg.contentProvider
       def supplier_id = supplier?.id
 
-      if ( title_id != null &&
+        // TODO ---> DEACTIVATED
+        // TODO ---> DEACTIVATED
+        // TODO ---> DEACTIVATED
+
+      if ( false && title_id != null &&
            org != null &&
            supplier_id != null ) {
           result.natStatSupplierId = supplier.getIdentifierByType('statssid')?.value
@@ -135,7 +139,7 @@ class IssueEntitlementController extends AbstractDebugController {
       // result.tippList = TitleInstancePackagePlatform.executeQuery("select tipp "+base_qry, qry_params, [max:result.max, offset:result.offset]);
       // DMs report that this list is limited to 10
       result.tippList = TitleInstancePackagePlatform.executeQuery("select tipp "+base_qry, qry_params, [max:300, offset:0]);
-      result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select count(tipp) "+base_qry, qry_params )[0]
+      result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id "+base_qry, qry_params ).size()
 
       result
 

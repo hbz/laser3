@@ -11,8 +11,14 @@
         <g:each in="${transforms}" var="transkey,transval">
             <semui:exportDropdownItem>
                 <g:if test="${params.filter || params.asAt}">
-                    <%-- TODO: ask Ingrid where to inject this code: ${message(code: '', default: 'Achtung! Sie haben zur Zeit einen Filter gesetzt! Dadurch wird nur eine Teilmenge des Bestandes exportiert! Dennoch fortfahren?')} --%>
-                    <g:link onclick="return confirm('Achtung! Sie haben zur Zeit einen Filter gesetzt! Dadurch wird nur eine Teilmenge des Bestandes exportiert! Dennoch fortfahren?')" class="item" action="index" id="${params.id}" params="${[format:'xml', transformId:transkey, mode: params.mode, filter: params.filter, asAt: params.asAt]}">${transval.name}</g:link>
+                    <g:link  class="item js-open-confirm-modal"
+                            data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial', default: 'Achtung!  Dennoch fortfahren?')}"
+                            data-confirm-term-how="ok"
+                            action="index"
+                            id="${params.id}"
+                            params="${[format:'xml', transformId:transkey, mode: params.mode, filter: params.filter, asAt: params.asAt]}">${transval.name}
+                    </g:link>
+
                 </g:if>
                 <g:else>
                     <g:link class="item" action="index" id="${params.id}" params="${[format:'xml', transformId:transkey, mode: params.mode]}">${transval.name}</g:link>
@@ -59,7 +65,7 @@
         <g:if test="${actionName == 'show'}">
             <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR")}">
                 <div class="divider"></div>
-                <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalsgruppen konfigurieren" />
+                <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalgruppen konfigurieren" />
             </g:if>
 
             <g:if test="${showConsortiaFunctions}">
@@ -72,9 +78,12 @@
 
     </semui:actionsDropdown>
 
-    <g:render template="/templates/tasks/modal_create" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
     <g:render template="/templates/documents/modal" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
     <g:render template="/templates/notes/modal_create" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
 
     <g:render template="/templates/audit/modal_script" model="${[ownobj: subscriptionInstance]}" />
+</g:if>
+
+<g:if test="${editable || accessService.checkMinUserOrgRole(user, contextOrg, 'INST_EDITOR')}">
+    <g:render template="/templates/tasks/modal_create" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
 </g:if>

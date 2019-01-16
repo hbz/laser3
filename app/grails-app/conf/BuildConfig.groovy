@@ -62,13 +62,12 @@ grails.project.dependency.resolution = {
     }
 
     dependencies {
+        // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
         compile "net.sf.ehcache:ehcache:2.7.0" // LEGACY
+        //compile "net.sf.ehcache:ehcache:2.9.0"                     // to hibernate 4
+        //compile "org.hibernate:hibernate-ehcache:4.3.10.Final"     // to hibernate 4
 
-        //compile "net.sf.ehcache:ehcache:2.9.0" // to hibernate 4
-        //compile "org.hibernate:hibernate-ehcache:4.3.10.Final"
-
-        // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
         runtime 'javax.servlet:jstl:1.1.2'
         runtime 'taglibs:standard:1.1.2'
         build('org.grails:grails-docs:2.5.6') {
@@ -80,7 +79,8 @@ grails.project.dependency.resolution = {
         compile 'commons-codec:commons-codec:1.6'
         runtime 'xerces:xerces:2.4.0'
         runtime 'xerces:xercesImpl:2.11.0'
-        compile 'mysql:mysql-connector-java:5.1.30'
+
+        runtime 'org.postgresql:postgresql:9.4.1212.jre6'
 
         compile 'org.elasticsearch:elasticsearch:2.1.2'
         runtime ('org.elasticsearch:elasticsearch-groovy:2.1.2') {
@@ -120,8 +120,7 @@ grails.project.dependency.resolution = {
         compile ("net.sf.jasperreports:jasperreports:5.6.1"){
             excludes "eclipse:jdtcore:3.1.0"
         }
-  
-        // II Commented out..
+
         // compile 'cglib:cglib:2.2.2'
         compile "com.lowagie:itext:2.1.7"
 
@@ -133,16 +132,15 @@ grails.project.dependency.resolution = {
     plugins {
 
         runtime ':hibernate:3.6.10.19' // LEGACY
-        // runtime ':hibernate4:4.3.10' // hibernate 4
+        //runtime ':hibernate4:4.3.10' // hibernate 4
 
         runtime ":gsp-resources:0.4.4"
         runtime ":resources:1.2.8" // 1.2.14 won't work @ application.js.gsp
         compile ":scaffolding:2.1.2"
         runtime ':fields:1.5.1'
 
-        //Sicherheitsrisko
+        //security issue
         //compile ":file-viewer:0.3"
-
         build (':tomcat:8.0.50')
 
         runtime ":database-migration:1.4.0"

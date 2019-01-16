@@ -234,7 +234,7 @@ class OaiController extends AbstractDebugController {
 
     def clazz = Class.forName(result.className)
 
-    def rec_count = clazz.executeQuery("select count(o) ${query}",query_params)[0];
+    def rec_count = clazz.executeQuery("select o.id ${query}",query_params).size()
     def records = clazz.executeQuery("select o ${query}",query_params,[offset:offset,max:3])
 
     log.debug("rec_count is ${rec_count}, records_size=${records.size()}");
@@ -378,7 +378,7 @@ class OaiController extends AbstractDebugController {
       log.debug("prefix handler for ${metadataPrefix} is ${prefixHandler}");
       log.debug("Count query is select count(o) ${query} ${query_params}");
 
-      def rec_count = clazz.executeQuery("select count(o) ${query}",query_params)[0];
+      def rec_count = clazz.executeQuery("select o.id ${query}",query_params).size()
       def records = clazz.executeQuery("select o ${query}",query_params,[offset:offset,max:max])
 
       log.debug("rec_count is ${rec_count}, records_size=${records.size()}");

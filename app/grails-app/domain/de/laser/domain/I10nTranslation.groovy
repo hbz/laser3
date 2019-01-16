@@ -23,9 +23,9 @@ class I10nTranslation {
         referenceId column:'i10n_reference_id',       index: 'i10n_ref_idx'
         referenceClass column:'i10n_reference_class', index: 'i10n_ref_idx'
         referenceField column:'i10n_reference_field'
-        valueDe     column:'i10n_value_de'
-        valueEn     column:'i10n_value_en'
-        valueFr     column:'i10n_value_fr'
+        valueDe     column:'i10n_value_de', type: 'text'
+        valueEn     column:'i10n_value_en', type: 'text'
+        valueFr     column:'i10n_value_fr', type: 'text'
     }
 
     static constraints = {

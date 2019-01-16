@@ -569,22 +569,40 @@ from Subscription as s where
     result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
     result.offset = params.offset ?: 0;
 
+        // postgresql migration
+        def subQuery = 'select cast(lp.id as string) from LicenseCustomProperty as lp where lp.owner = :owner'
+        def subQueryResult = LicenseCustomProperty.executeQuery(subQuery, [owner: result.license])
 
-    def qry_params = [licClass:result.license.class.name, prop:LicenseCustomProperty.class.name,owner:result.license, licId:"${result.license.id}"]
+        //def qry_params = [licClass:result.license.class.name, prop:LicenseCustomProperty.class.name,owner:result.license, licId:"${result.license.id}"]
+        //result.historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where (( className=:licClass and persistedObjectId=:licId ) or (className = :prop and persistedObjectId in (select lp.id from LicenseCustomProperty as lp where lp.owner=:owner))) order by e.dateCreated desc", qry_params, [max:result.max, offset:result.offset]);
 
-    result.historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where (( className=:licClass and persistedObjectId=:licId ) or (className = :prop and persistedObjectId in (select lp.id from LicenseCustomProperty as lp where lp.owner=:owner))) order by e.dateCreated desc", qry_params, [max:result.max, offset:result.offset]);
-    
+        def base_query = "select e from AuditLogEvent as e where ( (className=:licClass and persistedObjectId = cast(:licId as string))"
+        def query_params = [licClass:result.license.class.name, licId:"${result.license.id}"]
+
+        // postgresql migration
+        if (subQueryResult) {
+            base_query += ' or (className = :prop and persistedObjectId in (:subQueryResult)) ) order by e.dateCreated desc'
+            query_params.'prop' = LicenseCustomProperty.class.name
+            query_params.'subQueryResult' = subQueryResult
+        }
+        else {
+            base_query += ') order by e.dateCreated desc'
+        }
+
+        result.historyLines = AuditLogEvent.executeQuery(
+                base_query, query_params, [max:result.max, offset:result.offset]
+        )
+
     def propertyNameHql = "select pd.name from LicenseCustomProperty as licP, PropertyDefinition as pd where licP.id= ? and licP.type = pd"
     
     result.historyLines?.each{
-      if(it.className == qry_params.prop ){
+      if(it.className == query_params.prop ){
         def propertyName = LicenseCustomProperty.executeQuery(propertyNameHql,[it.persistedObjectId.toLong()])[0]
         it.propertyName = propertyName
       }
     }
 
-    result.historyLinesTotal = AuditLogEvent.executeQuery("select count(e.id) from AuditLogEvent as e where ( (className=:licClass and persistedObjectId=:licId) or (className = :prop and persistedObjectId in (select lp.id from LicenseCustomProperty as lp where lp.owner=:owner))) ",qry_params)[0];
-
+    result.historyLinesTotal = AuditLogEvent.executeQuery(base_query, query_params).size()
     result
 
   }

@@ -59,6 +59,7 @@ class CacheService implements ApplicationContextAware {
             def cache = getCache(cacheManager, cacheName)
 
             cache?.configuration?.setTimeToLiveSeconds(300)
+            cache?.configuration?.setTimeToIdleSeconds(300)
             cache_ttl_300 = cache
         }
 
@@ -74,6 +75,7 @@ class CacheService implements ApplicationContextAware {
             def cache = getCache(cacheManager, cacheName)
 
             cache?.configuration?.setTimeToLiveSeconds(1800)
+            cache?.configuration?.setTimeToIdleSeconds(1800)
             cache_ttl_1800 = cache
         }
 

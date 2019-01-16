@@ -38,8 +38,11 @@
             <g:if test="${prop.type?.tenant?.id == tenant?.id}">
                 <tr>
                     <td>
-                        <g:if test="${!prop.type.getI10n('expl').contains(' °')}">
-                            <span data-tooltip="${prop.type.getI10n('expl')}">${prop.type.getI10n('name')}</span>
+                        <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
+                            ${prop.type.getI10n('name')}
+                            <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${prop.type.getI10n('expl')}">
+                                <i class="question circle icon"></i>
+                            </span>
                         </g:if>
                         <g:else>
                             ${prop.type.getI10n('name')}
@@ -70,12 +73,6 @@
                         </g:elseif>
                         <g:elseif test="${prop.type.type == URL.toString()}">
                             <semui:xEditable owner="${prop}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" />
-                            %{--Todo beim drüber hovern soll der link-Button erscheinen--}%
-                            <span data-position="top right" data-tooltip="Diese URL aufrufen ..">
-                                <a href="${prop.value}" target="_blank" class="ui mini icon blue button">
-                                    <i class="share square icon"></i>
-                                </a>
-                            </span>
                         </g:elseif>
                         <g:elseif test="${prop.type.type == RefdataValue.toString()}">
                             <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}" />
@@ -85,15 +82,29 @@
                         <semui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}" />
                     </td>
                     <td class="x">
+                        <g:if test="${prop.type.type == URL.toString()}">
+                            <g:if test="${prop.value}">
+                                <span data-position="top right" data-tooltip="Diese URL aufrufen ..">
+                                    <a href="${prop.value}" target="_blank" class="ui icon blue button">
+                                        <i class="share square icon"></i>
+                                    </a>
+                                </span>
+                            </g:if>
+                        </g:if>
                         <g:if test="${overwriteEditable == true}">
-                            <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
-                            <g:remoteLink controller="ajax" action="deletePrivateProperty"
-                                before="if(!confirm('${confirmMsg}')) return false"
-                                params='[propClass: prop.getClass(),ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", editable:"${editable}"]' id="${prop.id}"
-                                onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
-                                update="${custom_props_div}" class="ui icon negative button">
+                            <button class="ui icon negative button js-open-confirm-modal-copycat">
                                 <i class="trash alternate icon"></i>
-                                    <!--${message(code:'default.button.delete.label', default:'Delete')}-->
+                            </button>
+                            <%--<g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" /> --%>
+                            <g:remoteLink class="js-gost"
+                                style="visibility: hidden"
+                                data-confirm-term-what="property"
+                                data-confirm-term-what-detail="${prop.type.name}"
+                                data-confirm-term-how="delete"
+                                controller="ajax" action="deletePrivateProperty"
+                                params='[propClass: prop.getClass(),ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", editable:"${editable}"]' id="${prop.id}"
+                                onComplete="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id}), c3po.loadJsAfterAjax()"
+                                update="${custom_props_div}" >
                             </g:remoteLink>
                         </g:if>
                     </td>
@@ -110,19 +121,21 @@
                                   name="cust_prop_add_value"
                                   class="ui form"
                                   update="${custom_props_div}"
-                                  onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})">
+                                  onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
+                                  onComplete="c3po.loadJsAfterAjax()"
+                    >
 
-                        <input type="hidden" name="propIdent"  data-desc="${prop_desc}" class="customPropSelect"/>
-                        <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>
-                        <input type="hidden" name="tenantId"   value="${tenant?.id}"/>
-                        <input type="hidden" name="editable"   value="${editable}"/>
-                        <input type="hidden" name="ownerClass" value="${ownobj?.class}"/>
+                    <input type="hidden" name="propIdent"  data-desc="${prop_desc}" class="customPropSelect"/>
+                    <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>
+                    <input type="hidden" name="tenantId"   value="${tenant?.id}"/>
+                    <input type="hidden" name="editable"   value="${editable}"/>
+                    <input type="hidden" name="ownerClass" value="${ownobj?.class}"/>
 
-                        <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button"/>
-                    </g:formRemote>
+                    <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
+                </g:formRemote>
 
-                </td>
-            </tr>
-        </tfoot>
-    </g:if>
+            </td>
+        </tr>
+    </tfoot>
+</g:if>
 </table>

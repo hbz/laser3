@@ -114,7 +114,7 @@ from Subscription as s where (
         }
 
         if (date_restriction) {
-            base_qry += " and s.startDate <= :date_restr and (s.endDate >= :date_restr or s.endDate is null or s.endDate ='' )"
+            base_qry += " and s.startDate <= :date_restr and (s.endDate >= :date_restr or s.endDate is null)"
             qry_params.put('date_restr', date_restriction)
         }
 
