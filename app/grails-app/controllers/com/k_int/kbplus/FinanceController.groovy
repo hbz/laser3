@@ -452,8 +452,7 @@ class FinanceController extends AbstractDebugController {
             params.max = 5000
             params.offset = 0
 
-            def tmp = financialData(result, params, user, MODE_OWNER) //Grab the financials!
-            result.cost_item_tabs = [owner:tmp.cost_items]
+
             // I need the consortial data as well ...
             def orgRoleCons = OrgRole.findByOrgAndRoleType(
                     result.institution,
@@ -462,7 +461,8 @@ class FinanceController extends AbstractDebugController {
             def orgRoleSubscr = OrgRole.findByRoleType(
                     RDStore.OR_SUBSCRIBER_CONS
             )
-            boolean afterTaxHeader = true
+            def tmp = financialData(result, params, user, MODE_OWNER) //Grab the financials!
+            result.cost_item_tabs = [owner:tmp.cost_items]
             if(orgRoleCons) {
                 tmp = financialData(result,params,user,MODE_CONS)
                 result.cost_item_tabs["cons"] = tmp.cost_items
@@ -470,9 +470,8 @@ class FinanceController extends AbstractDebugController {
             else if(orgRoleSubscr) {
                 tmp = financialData(result,params,user,MODE_SUBSCR)
                 result.cost_item_tabs["subscr"] = tmp.cost_items
-                afterTaxHeader = false
             }
-            def workbook = processFinancialXLS(result,afterTaxHeader) //use always header, no batch processing intended
+            def workbook = processFinancialXLS(result) //use always header, no batch processing intended
 
             def filename = result.institution.name
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}_financialExport.xls\"")
@@ -483,18 +482,16 @@ class FinanceController extends AbstractDebugController {
 
     /**
      * Make a XLS export of cost item results
-     * @param out    - Output stream
      * @param result - passed from index
-     * @param header - true or false
      * @return
      */
-    //todo change for batch processing... don't want to kill the server, defaulting to all results presently!
-    def private processFinancialXLS(result,afterTaxHeader) {
-        def dateFormat = new SimpleDateFormat(message(code: 'default.date.format.notime', default: 'dd.MM.yyyy'))
+    def private processFinancialXLS(result) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(message(code: 'default.date.format.notime', default: 'dd.MM.yyyy'))
         HSSFWorkbook wb = new HSSFWorkbook()
         result.cost_item_tabs.entrySet().each { cit ->
-            def sheettitle
-            switch(cit.getKey()) {
+            String sheettitle
+            String viewMode = cit.getKey()
+            switch(viewMode) {
                 case "owner": sheettitle = message(code:'financials.header.ownCosts')
                 break
                 case "cons": sheettitle = message(code:'financials.header.consortialCosts')
@@ -506,11 +503,15 @@ class FinanceController extends AbstractDebugController {
             sheet.setAutobreaks(true)
             Row headerRow = sheet.createRow(0)
             headerRow.setHeightInPoints(16.75f)
-            ArrayList titles = [message(code: 'sidewide.number'), message(code: 'financials.invoice_number'), message(code: 'financials.order_number'), message(code: 'financials.newCosts.subscriptionHeader'),
-                                message(code: 'package'), message(code: 'issueEntitlement.label'), message(code: 'financials.datePaid'), message(code: 'financials.dateFrom'),
-                                message(code: 'financials.dateTo'), message(code: 'financials.addNew.costCategory'), message(code: 'financials.costItemStatus'),
-                                message(code:'financials.billingCurrency'),message(code: 'financials.costInBillingCurrency'),"EUR",message(code: 'financials.costInLocalCurrency')]
-            if(afterTaxHeader)
+            ArrayList titles = [message(code: 'sidewide.number'), message(code: 'financials.invoice_number'), message(code: 'financials.order_number')]
+            if(viewMode == "cons")
+                titles.addAll(["${message(code:'financials.newCosts.costParticipants')} (${message(code:'financials.isVisibleForSubscriber')})"])
+            titles.addAll([message(code: 'financials.newCosts.costTitle'), message(code: 'financials.newCosts.subscriptionHeader'),
+                           message(code: 'package'), message(code: 'issueEntitlement.label'), message(code: 'financials.datePaid'), message(code: 'financials.dateFrom'),
+                           message(code: 'financials.dateTo'), message(code: 'financials.addNew.costCategory'), message(code: 'financials.costItemStatus'),
+                           message(code: 'financials.billingCurrency'),message(code: 'financials.costInBillingCurrency'),"EUR",message(code: 'financials.costInLocalCurrency'),
+                           message(code: 'financials.taxRate')])
+            if(["owner","cons"].indexOf(viewMode) > -1)
                 titles.addAll([message(code:'financials.billingCurrency'),message(code: 'financials.costInBillingCurrencyAfterTax'),"EUR",message(code: 'financials.costInLocalCurrencyAfterTax')])
             titles.addAll([message(code: 'financials.costItemElement'),message(code: 'financials.newCosts.description'),
                            message(code: 'financials.newCosts.constsReferenceOn'), message(code: 'financials.budgetCode')])
@@ -549,6 +550,22 @@ class FinanceController extends AbstractDebugController {
                     //order number
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci?.order ? ci.order.orderNumber : "")
+                    if(viewMode == "cons") {
+                        if(ci.sub) {
+                            def orgRoles = OrgRole.findBySubAndRoleType(ci.sub,RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role'))
+                            //participants (visible?)
+                            cell = row.createCell(cellnum++)
+                            orgRoles.each { or ->
+                                String cellValue = or.org.getDesignation()
+                                if(ci.isVisibleForSubscriber)
+                                    cellValue += " (sichtbar)"
+                                cell.setCellValue(cellValue)
+                            }
+                        }
+                    }
+                    //cost title
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci.costTitle)
                     //subscription with running time
                     cell = row.createCell(cellnum++)
                     String dateString = ""
@@ -580,8 +597,8 @@ class FinanceController extends AbstractDebugController {
                     sumTitleCell = cellnum
                     //cost item status
                     cell = row.createCell(cellnum++)
-                    cell.setCellValue(ci?.costItemStatus ? ci.costItemStatus.value:'')
-                    if(afterTaxHeader) {
+                    cell.setCellValue(ci?.costItemStatus ? ci.costItemStatus.getI10n("value"):'')
+                    if(["owner","cons"].indexOf(viewMode) > -1) {
                         //billing currency and value
                         cell = row.createCell(cellnum++)
                         cell.setCellValue(ci?.billingCurrency ? ci.billingCurrency.value : '')
@@ -601,6 +618,9 @@ class FinanceController extends AbstractDebugController {
                         cell.setCellValue(ci?.costInLocalCurrency ? ci.costInLocalCurrency : 0.0)
                         localSum += ci.costInLocalCurrency
                     }
+                    //tax rate
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue("${ci.taxRate ?: 0} %")
                     //billing currency and value
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci?.billingCurrency ? ci.billingCurrency.value : '')
