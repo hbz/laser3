@@ -23,6 +23,9 @@ class RDStore {
   
     static final LICENSE_DELETED = getRefdataValue('Deleted', 'License Status')
 
+    static final LINKTYPE_PRECEDES = getRefdataValue('precedes','Link Type')
+    static final LINKTYPE_FOLLOWS = getRefdataValue('follows','Link Type')
+
     static final YN_YES = getRefdataValue('Yes','YN')
     static final YN_NO  = getRefdataValue('No','YN')
 

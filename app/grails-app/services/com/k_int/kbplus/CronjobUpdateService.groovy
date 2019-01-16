@@ -120,4 +120,23 @@ class CronjobUpdateService {
         }*/
 
     }
+
+    /**
+     * Triggered from the Yoda menu
+     * Refactors the preceding/following subscriptions to the new link model - to reset, delete the database table
+     */
+    void updateLinks() {
+        def subsWithPrevious = Subscription.findAllByPreviousSubscriptionIsNotNull().collect { it -> [source:it.id,destination:it.previousSubscription.id] }
+        subsWithPrevious.each { sub ->
+            log.debug(sub.source+" follows "+sub.destination)
+            Links link = new Links()
+            link.source = sub.source
+            link.destination = sub.destination
+            link.owner = Org.executeQuery('select o.org from OrgRole as o where o.roleType in :ownerRoles and o.sub = :source',[ownerRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER],source: Subscription.get(sub.source)]).get(0)
+            link.objectType = Subscription.class.name
+            link.linkType = RDStore.LINKTYPE_FOLLOWS
+            link.save(true)
+        }
+    }
+
 }

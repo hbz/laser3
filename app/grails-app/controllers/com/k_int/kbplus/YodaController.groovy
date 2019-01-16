@@ -514,4 +514,11 @@ class YodaController {
         redirect(url: request.getHeader('referer'))
     }
 
+    @Secured(['ROLE_YODA'])
+    def updateLinks(){
+        flash.message = "Vor-/Nachfolgebeziehungen werden neu verknüpft"
+        cronjobUpdateService.updateLinks()
+        redirect(url: request.getHeader('referer'))
+    }
+
 }

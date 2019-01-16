@@ -408,6 +408,7 @@
                             <div class="divider"></div>
 
                             <g:link class="item" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</g:link>
+                            <g:link class="item" controller="yoda" action="updateLinks">${message(code:'menu.admin.updateLinks')}</g:link>
 
                             <div class="divider"></div>
 

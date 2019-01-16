@@ -1683,8 +1683,38 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
         }
 
+        //to be refactored as of ERMS-800
         result.navPrevSubscription = result.subscriptionInstance.previousSubscription
         result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+
+        // links
+        Long key = Long.parseLong(params.id)
+        def sources = Links.executeQuery('select l from Links as l where l.source = :source and l.objectType = :objectType',[source: key, objectType: Subscription.class.name])
+        def destinations = Links.executeQuery('select l from Links as l where l.destination = :destination and l.objectType = :objectType',[destination: key,objectType: Subscription.class.name])
+        //IN is from the point of view of the context subscription (= params.id)
+        result.links = [:]
+
+        sources.each { link ->
+          Subscription destination = Subscription.get(link.destination)
+          if (destination.isVisibleBy(result.user)) {
+            def index = link.linkType.getI10n("value")
+            if (result.links[index] == null) {
+              result.links[index] = [link]
+            }
+            else result.links[index].add(link)
+          }
+        }
+        destinations.each { link ->
+          Subscription source = Subscription.get(link.source)
+          if (source.isVisibleBy(result.user)) {
+            def index = link.linkType.getI10n("value")
+            if(result.links[index] == null) {
+              result.links[index] = [link]
+            }
+            else result.links[index].add(link)
+          }
+        }
+
 
         // ---- pendingChanges : start
 
