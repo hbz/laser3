@@ -73,7 +73,7 @@ class ApiReader {
 
         result.owner    = ApiReaderHelper.resolveOrganisationStub(costItem.owner, context) // com.k_int.kbplus.Org
         result.sub      = ApiReaderHelper.resolveSubscriptionStub(costItem.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
-        result.subPkg   = ApiReaderHelper.resolveSubscriptionPackageStub(costItem.subPkg, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
+        //result.subPkg   = ApiReaderHelper.resolveSubscriptionPackageStub(costItem.subPkg, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
         result.issueEntitlement = ApiReaderHelper.resolveIssueEntitlement(costItem.issueEntitlement, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
         result.order    = ApiReaderHelper.resolveOrder(costItem.order) // com.k_int.kbplus.Order
         result.invoice  = ApiReaderHelper.resolveInvoice(costItem.invoice)

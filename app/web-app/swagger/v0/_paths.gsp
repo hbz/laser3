@@ -5,7 +5,7 @@
     get:
       tags:
         - Catalogues
-      summary: Catalogue of refdatas
+      summary: Retrieving catalogue of combined refdatas
       description: >
         Retrieving an overview for RefdataCategories and RefdataValues
 
@@ -26,12 +26,80 @@
           $ref: "#/components/responses/notAuthorized"
 
 
+  /costItem:
+
+    get:
+      tags:
+        - Objects
+      summary: Retrieving a single cost item
+      description: >
+        Supported are queries by following identifiers: *uuid*
+
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/context"
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/*:
+              schema:
+                $ref: "#/components/schemas/CostItem"
+        400:
+          $ref: "#/components/responses/badRequest"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+        403:
+          $ref: "#/components/responses/forbidden"
+        404:
+          description: Valid request, but cost item not found
+        406:
+          $ref: "#/components/responses/notAcceptable"
+
+
+  /costItems:
+
+    get:
+      tags:
+        - Objects
+      summary: Retrieving owner related cost items
+      description: >
+        Supported are queries by following identifiers: *globalUID*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
+
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/context"
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/*:
+              schema:
+                $ref: "#/components/schemas/PlaceholderList"
+        400:
+          $ref: "#/components/responses/badRequest"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+        403:
+          $ref: "#/components/responses/forbidden"
+        404:
+          description: Valid request, but no cost items found
+        406:
+          $ref: "#/components/responses/notAcceptable"
+
+
   /document:
 
     get:
       tags:
         - Objects
-      summary: Downloading a document
+      summary: Documents download
       description: >
         Supported are queries by following identifiers: *uuid*
 
@@ -65,7 +133,7 @@
     get:
       tags:
         - Objects
-      summary: Retrieving a license
+      summary: Retrieving a single license
       description: >
         Supported are queries by following identifiers: *globalUID*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
 
@@ -101,7 +169,7 @@
     get:
       tags:
       - Objects
-      summary: Retrieving a subscription
+      summary: Retrieving a single subscription
       description: >
         Supported are queries by following identifiers: *globalUID*, *identifier*, *impId* and *ns:identifier*. Ns:identifier value has to be defined like this: _xyz:4711_
 

@@ -6,7 +6,8 @@
 
     PlaceholderList:
       type: array
-      format: string
+      items:
+        $ref: "#/components/schemas/PlaceholderObject"
 
     PlaceholderBinary:
       type: object
@@ -14,6 +15,95 @@
 
 
 <%-- objects --%>
+
+
+    CostItem:
+      type: object
+      properties:
+        globalUID:
+          type: string
+          example: "costitem:ab1360cc-147b-d632-2dc8-1a6c56d84b00"
+        calculatedType:
+          type: string
+          description: Calculated object type
+          enum:
+            ["Template", "Local", "Consortial", "Participation", "Unkown"]
+        billingCurrency:
+          type: string
+          description: Mapping RefdataCategory "Currency"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Currency').collect{ it.value }.join(', ') }]
+        costInBillingCurrency:
+          type: string
+        costInBillingCurrencyAfterTax:
+          type: string
+        costInLocalCurrency:
+          type: string
+        costInLocalCurrencyAfterTax:
+          type: string
+        costItemElement:
+          type: string
+          description: Mapping RefdataCategory "CostItemElement"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('CostItemElement').collect{ it.value }.join(', ') }]
+        costItemStatus:
+          type: string
+          description: Mapping RefdataCategory "CostItemStatus"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('CostItemStatus').collect{ it.value }.join(', ') }]
+      #  costItemCategory:
+      #    type: string
+      #    description: Mapping RefdataCategory "CostItemCategory"
+      #    enum:
+      #      [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('CostItemCategory').collect{ it.value }.join(', ') }]
+        costTitle:
+          type: string
+        costDescription:
+          type: string
+        currencyRate:
+          type: string
+        dateCreated:
+          type: string
+          format: date
+        datePaid:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        finalCostRounding:
+          type: string
+        invoiceDate:
+          type: string
+          format: date
+        invoice:
+          $ref: "#/components/schemas/Invoice"
+        issueEntitlement:
+          $ref: "#/components/schemas/IssueEntitlement_in_Subscription"
+        lastUpdated:
+          type: string
+          format: date
+        order:
+          $ref: "#/components/schemas/Order"
+        owner:
+          $ref: "#/components/schemas/OrganisationStub"
+        reference:
+          type: string
+        startDate:
+          type: string
+          format: date
+        sub:
+          $ref: "#/components/schemas/SubscriptionStub"
+      #  subPkg:
+      #    $ref: "#/components/schemas/PackageStub"
+        taxCode:
+          type: string
+          description: Mapping RefdataCategory "TaxType"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('TaxType').collect{ it.value }.join(', ') }]
+        taxRate:
+          type: string
+
 
 
     Document:
@@ -29,9 +119,9 @@
           type: string
         type:
           type: string
-          description: Mapping RefdataCategory
+          description: Mapping RefdataCategory "Document Type"
           enum:
-            [""]
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Document Type').collect{ it.value }.join(', ') }]
         uuid:
           type: string
           example: "70d4ef8a-71b9-4b39-b339-9f3773c29b26"
@@ -45,7 +135,33 @@
         value:
           type: string
 
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: string
+        dateOfPayment:
+          type: string
+          format: date
+        dateOfInvoice:
+          type: string
+          format: date
+        datePassedToFinance:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        invoiceNumber:
+          type: string
+        startDate:
+          type: string
+          format: date
+        owner:
+          $ref: "#/components/schemas/OrganisationStub"
 
+
+<%--
     IssueEntitlement:
       type: object
       properties:
@@ -100,7 +216,7 @@
           $ref: "#/components/schemas/SubscriptionStub"
         tipp:
           $ref: "#/components/schemas/TitleInstancePackagePlatform"
-
+--%>
 
     License:
       allOf:
@@ -164,6 +280,17 @@
           format: date
         title:
           type: string
+
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+        orderNumber:
+          type: string
+        owner:
+          $ref: "#/components/schemas/OrganisationStub"
 
 
     Property:
@@ -234,7 +361,7 @@
         packages:
           type: array
           items:
-            $ref: "#/components/schemas/Package_in_Subscription_Virtual"
+            $ref: "#/components/schemas/Package_in_Subscription"
         previousSubscription:
           $ref: "#/components/schemas/SubscriptionStub"
         properties: # mapping customProperties and privateProperties
@@ -263,51 +390,74 @@
 
     TitleInstancePackagePlatform:
       allOf:
-        - $ref: "#/components/schemas/TitleInstancePackagePlatformStub"
+        - $ref: "#/components/schemas/TitleInstancePackagePlatform_in_Subscription"
       properties:
-        delayedOA:
-          type: string
-          description: Mapping RefdataCategory
-          enum:
-            [""]
-        hostPlatformURL:
-          type: string
-        hybridOA:
-          type: string
-          description: Mapping RefdataCategory
-          enum:
-            [""]
-        option:
-          type: string
-          description: Mapping RefdataCategory
-          enum:
-            [""]
         package:
           $ref: "#/components/schemas/PackageStub"
-        payment:
-          type: string
-          description: Mapping RefdataCategory
-          enum:
-            [""]
-        platform:
-          $ref: "#/components/schemas/PlatformStub"
-        status:
-          type: string
-          description: Mapping RefdataCategory
-          enum:
-            [""]
-        statusReason:
-          type: string
-          description: Mapping RefdataCategory
-          enum:
-            [""]
         subscription:
           $ref: "#/components/schemas/SubscriptionStub"
-        title:
-          $ref: "#/components/schemas/TitleStub"
 
 
 <%-- virtual objects --%>
+
+    IssueEntitlement_in_CostItem:
+      type: object
+      properties:
+        globalUID:
+          type: string
+          example: "issueentitlement:af045a3c-0e32-a681-c21d-3cf17f581d2c"
+        accessStartDate:
+          type: string
+          format: date
+        accessEndDate:
+          type: string
+          format: date
+        coreStatusStart:
+          type: string
+          format: date
+        coreStatusEnd:
+          type: string
+          format: date
+        coreStatus:
+          type: string
+          description: Mapping RefdataCategory
+          enum:
+            [""]
+        coverageDepth:
+          type: string
+        coverageNote:
+          type: string
+        endDate:
+          type: string
+          format: date
+        endVolume:
+          type: string
+        endIssue:
+          type: string
+        embargo:
+          type: string
+        ieReason:
+          type: string
+        medium:
+          type: string
+          description: Mapping RefdataCategory
+          enum:
+            [""]
+        startVolume:
+          type: string
+        startIssue:
+          type: string
+        startDate:
+          type: string
+          format: date
+
+
+    IssueEntitlement_in_Subscription:
+      allOf:
+        - $ref: "#/components/schemas/IssueEntitlement_in_CostItem"
+      properties:
+        tipp:
+          $ref: "#/components/schemas/TitleInstancePackagePlatform_in_Subscription"
 
 
     OrganisationRole_Virtual:
@@ -329,7 +479,7 @@
           format: date
 
 
-    Package_in_Subscription_Virtual:
+    Package_in_Subscription:
       type: object
       properties:
         globalUID:
@@ -338,7 +488,7 @@
         issueEntitlements:
           type: array
           items:
-            $ref: "#/components/schemas/IssueEntitlement"
+            $ref: "#/components/schemas/IssueEntitlement_in_Subscription"
         name:
           type: string
         vendorURL:
@@ -367,6 +517,49 @@
                   type: string
                 label_en:
                   type: string
+
+
+    TitleInstancePackagePlatform_in_Subscription:
+      allOf:
+        - $ref: "#/components/schemas/TitleInstancePackagePlatformStub"
+      properties:
+        delayedOA:
+          type: string
+          description: Mapping RefdataCategory
+          enum:
+            [""]
+        hostPlatformURL:
+          type: string
+        hybridOA:
+          type: string
+          description: Mapping RefdataCategory
+          enum:
+            [""]
+        option:
+          type: string
+          description: Mapping RefdataCategory
+          enum:
+            [""]
+        payment:
+          type: string
+          description: Mapping RefdataCategory
+          enum:
+            [""]
+        platform:
+          $ref: "#/components/schemas/PlatformStub"
+        status:
+          type: string
+          description: Mapping RefdataCategory
+          enum:
+            [""]
+        statusReason:
+          type: string
+          description: Mapping RefdataCategory
+          enum:
+            [""]
+        title:
+          $ref: "#/components/schemas/TitleStub"
+
 
 <%-- stubs --%>
 
