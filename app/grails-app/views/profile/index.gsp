@@ -119,62 +119,6 @@
     </div><!-- .column -->
 
     <div class="column wide eight">
-        <div class="ui segment">
-            <div class="ui form">
-                <h4 class="ui dividing header">
-                    ${message(code: 'profile.preferences', default:'Preferences')}
-                </h4>
-                <%-- TODO: check this
-                <div class="field">
-                    <label>${message(code: 'profile.info_icon', default:'Show Info Icon')}</label>
-                    <semui:xEditableRefData owner="${user}" field="showInfoIcon" config="YN" />
-                </div>
-                --%>
-                <div class="field">
-                    <label>${message(code: 'profile.dashboardTab', default:'Dashboard Tab')}</label>
-                    <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', 'User.Settings.Dashboard.Tab'))}" />
-                    <semui:xEditableRefData owner="${US_DASHBOARD_TAB}" field="rdValue" config="${US_DASHBOARD_TAB.key.rdc}" />
-                </div>
-                <div class="field">
-                    <label>${message(code: 'profile.reminderPeriod', default:'Reminder period')}</label>
-                    <g:set var="US_DASHBOARD_REMINDER_PERIOD" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}" />
-                    <semui:xEditable owner="${US_DASHBOARD_REMINDER_PERIOD}" field="strValue" />&nbspTage vor dem Termin
-                </div>
-
-                <div class="field">
-                    <label>${message(code: 'profile.isRemindByEmail', default:'Remind by E-Mail?')}</label>
-                    <g:set var="US_IS_REMIND_BY_EMAIL" value="${user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO)}" />
-                    <semui:xEditableRefData owner="${US_IS_REMIND_BY_EMAIL}" field="rdValue" config="${US_IS_REMIND_BY_EMAIL.key.rdc}" />
-                </div>
-
-                <div class="field">
-                    <label>${message(code: 'profile.emailLanguage', default:'Language in E-Mails')}</label>
-                    <g:set var="US_EMAIL_LANGUAGE" value="${user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de','Language'))}" />
-                    <semui:xEditableRefData owner="${US_EMAIL_LANGUAGE}" field="rdValue" config="${US_EMAIL_LANGUAGE.key.rdc}" />
-                </div>
-
-                <div class="field">
-                    <label>${message(code: 'profile.editMode', default:'Show Edit Mode')}</label>
-                    <g:set var="US_SHOW_EDIT_MODE" value="${user.getSetting(UserSettings.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)}" />
-                    <semui:xEditableRefData owner="${US_SHOW_EDIT_MODE}" field="rdValue" config="${US_SHOW_EDIT_MODE.key.rdc}" />
-                </div>
-
-                <div class="field">
-                    <label>${message(code: 'profile.simpleViews', default:'Show simple Views')}</label>
-                    <g:set var="US_SHOW_SIMPLE_VIEWS" value="${user.getSetting(UserSettings.KEYS.SHOW_SIMPLE_VIEWS, null)}" />
-                    <semui:xEditableRefData owner="${US_SHOW_SIMPLE_VIEWS}" field="rdValue" config="${US_SHOW_SIMPLE_VIEWS.key.rdc}" />
-                </div>
-
-                <div class="field">
-                    <label>${message(code: 'profile.pagesize', default:'Default Page Size')}</label>
-                    <semui:xEditable owner="${user.getSetting(UserSettings.KEYS.PAGE_SIZE, 10)}" field="strValue" />
-                </div>
-
-            </div>
-        </div><!-- .segment -->
-    </div><!-- .column -->
-
-    <div class="column wide eight">
 
         <div class="ui segment">
 
@@ -278,6 +222,51 @@
             </g:form>
         </div><!-- .segment -->
     </div><!-- .column -->
+
+    <div class="column wide eight">
+        <div class="ui segment">
+            <div class="ui form">
+                <h4 class="ui dividing header">
+                    ${message(code: 'profile.preferences', default:'Preferences')}
+                </h4>
+                <%-- TODO: check this
+                <div class="field">
+                    <label>${message(code: 'profile.info_icon', default:'Show Info Icon')}</label>
+                    <semui:xEditableRefData owner="${user}" field="showInfoIcon" config="YN" />
+                </div>
+                --%>
+                <div class="field">
+                    <label>${message(code: 'profile.dashboardTab', default:'Dashboard Tab')}</label>
+                    <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', 'User.Settings.Dashboard.Tab'))}" />
+                    <semui:xEditableRefData owner="${US_DASHBOARD_TAB}" field="rdValue" config="${US_DASHBOARD_TAB.key.rdc}" />
+                </div>
+                <div class="field">
+                    <label>${message(code: 'profile.emailLanguage', default:'Language in E-Mails')}</label>
+                    <g:set var="US_EMAIL_LANGUAGE" value="${user.getSetting(UserSettings.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de','Language'))}" />
+                    <semui:xEditableRefData owner="${US_EMAIL_LANGUAGE}" field="rdValue" config="${US_EMAIL_LANGUAGE.key.rdc}" />
+                </div>
+
+                <div class="field">
+                    <label>${message(code: 'profile.editMode', default:'Show Edit Mode')}</label>
+                    <g:set var="US_SHOW_EDIT_MODE" value="${user.getSetting(UserSettings.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)}" />
+                    <semui:xEditableRefData owner="${US_SHOW_EDIT_MODE}" field="rdValue" config="${US_SHOW_EDIT_MODE.key.rdc}" />
+                </div>
+
+                <div class="field">
+                    <label>${message(code: 'profile.simpleViews', default:'Show simple Views')}</label>
+                    <g:set var="US_SHOW_SIMPLE_VIEWS" value="${user.getSetting(UserSettings.KEYS.SHOW_SIMPLE_VIEWS, null)}" />
+                    <semui:xEditableRefData owner="${US_SHOW_SIMPLE_VIEWS}" field="rdValue" config="${US_SHOW_SIMPLE_VIEWS.key.rdc}" />
+                </div>
+
+                <div class="field">
+                    <label>${message(code: 'profile.pagesize', default:'Default Page Size')}</label>
+                    <semui:xEditable owner="${user.getSetting(UserSettings.KEYS.PAGE_SIZE, 10)}" field="strValue" />
+                </div>
+
+            </div>
+        </div><!-- .segment -->
+    </div><!-- .column -->
+
 
         <g:if test="${user.getAuthorities().contains(Role.findByAuthority('ROLE_API_READER')) | user.getAuthorities().contains(Role.findByAuthority('ROLE_API_WRITER'))}">
             <div class="column wide eight">

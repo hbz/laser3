@@ -39,7 +39,7 @@ class DashboardDueDatesService {
         replyTo = grailsApplication.config.notifications.email.replyTo
         messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
-        log.info("Initialised DashboardDueDatesService...")
+        log.debug("Initialised DashboardDueDatesService...")
     }
 
     def takeCareOfDueDates(boolean isUpdateDashboardTableInDatabase, boolean isSendEmailsForDueDatesOfAllUsers, def flash) {
@@ -52,7 +52,7 @@ class DashboardDueDatesService {
             } else {
                 try {
                     update_running = true;
-                    log.info("Start DashboardDueDatesService takeCareOfDueDates");
+                    log.debug("Start DashboardDueDatesService takeCareOfDueDates");
                     new EventLog(event:'DashboardDueDatesService takeCareOfDueDates', message:'Start', tstp:new Date(System.currentTimeMillis())).save(flush:true)
                     if (isUpdateDashboardTableInDatabase) {
                         flash= updateDashboardTableInDatabase(flash)
@@ -60,7 +60,7 @@ class DashboardDueDatesService {
                     if (isSendEmailsForDueDatesOfAllUsers) {
                         flash = sendEmailsForDueDatesOfAllUsers(flash)
                     }
-                    log.info("Finished DashboardDueDatesService takeCareOfDueDates");
+                    log.debug("Finished DashboardDueDatesService takeCareOfDueDates");
                     new EventLog(event:'DashboardDueDatesService takeCareOfDueDates', message:'Finished', tstp:new Date(System.currentTimeMillis())).save(flush:true)
                 } catch (Throwable t) {
                     log.error("DashboardDueDatesService takeCareOfDueDates :: Unable to perform email due to exception ${t.message}")
@@ -71,10 +71,9 @@ class DashboardDueDatesService {
                     update_running = false
                 }
             }
-        flash
     }
-    private String updateDashboardTableInDatabase(def flash){
-        log.info("Start DashboardDueDatesService updateDashboardTableInDatabase");
+    private updateDashboardTableInDatabase(def flash){
+        log.debug("Start DashboardDueDatesService updateDashboardTableInDatabase");
         new EventLog(event:'DashboardDueDatesService.updateDashboardTableInDatabase', message:'Start', tstp:new Date(System.currentTimeMillis())).save(flush:true)
         List<DashboardDueDate> dashboarEntriesToInsert = []
         def users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
@@ -115,9 +114,8 @@ class DashboardDueDatesService {
                 flash.error += messageSource.getMessage('menu.admin.updateDashboardTable.error', null, locale)
             }
         }
-        log.info("Finished DashboardDueDatesService updateDashboardTableInDatabase");
+        log.debug("Finished DashboardDueDatesService updateDashboardTableInDatabase");
         new EventLog(event:'DashboardDueDatesService updateDashboardTableInDatabase', message:'Finished', tstp:new Date(System.currentTimeMillis())).save(flush:true)
-        flash
     }
 
     private sendEmailsForDueDatesOfAllUsers(def flash) {
@@ -139,7 +137,6 @@ class DashboardDueDatesService {
         } catch (Exception e) {
             flash.error += messageSource.getMessage('menu.admin.sendEmailsForDueDates.error', null, locale)
         }
-        flash
     }
 
     private void sendEmail(User user, Org org, List<DashboardDueDate> dashboardEntries) {
@@ -149,9 +146,9 @@ class DashboardDueDatesService {
         String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.dueDates', null, locale) + " (" + org.name + ")"
         try {
             if (emailReceiver == null || emailReceiver.isEmpty()) {
-                log.info("The following user does not have an email address and can not be informed about due dates: " + user.username);
+                log.debug("The following user does not have an email address and can not be informed about due dates: " + user.username);
             } else if (dashboardEntries == null || dashboardEntries.isEmpty()) {
-                log.info("The user has no due dates, so no email will be sent (" + user.username + "/"+ org.name + ")");
+                log.debug("The user has no due dates, so no email will be sent (" + user.username + "/"+ org.name + ")");
             } else {
 
                 mailService.sendMail {
