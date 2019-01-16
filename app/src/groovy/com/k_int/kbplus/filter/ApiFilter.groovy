@@ -38,7 +38,12 @@ class ApiFilter extends GenericFilterBean {
                 def query = request.getQueryString()
                 def body = IOUtils.toString(request.getInputStream())
 
-                String authorization = request.getHeader('Authorization')
+                String authorization = request.getHeader('X-Authorization')
+
+                if (! authorization) {
+                    authorization = request.getHeader('Authorization') // tmp fallback v1
+                }
+
                 try {
                     if (authorization) {
                         def p1 = authorization.split(' ')
@@ -60,13 +65,13 @@ class ApiFilter extends GenericFilterBean {
                             def apiSecret = apiUser.apisecret
 
                             checksum = hmac(
-                                    method +    // http-method
-                                            path +      // uri
-                                            timestamp + // timestamp
-                                            nounce +    // nounce
-                                            (query ? URLDecoder.decode(query) : '') + // parameter
-                                            body,         // body
-                                    apiSecret)
+                                        method +    // http-method
+                                        path +      // uri
+                                        timestamp + // timestamp
+                                        nounce +    // nounce
+                                        (query ? URLDecoder.decode(query) : '') + // parameter
+                                        body,         // body
+                                        apiSecret)
 
                             isAuthorized = (checksum == digest)
                             if (isAuthorized) {
