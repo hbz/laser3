@@ -85,7 +85,7 @@ paths:
     get:
       tags:
         - Documents
-      summary: Find or download document by identifier
+      summary: Find note or download document by identifier
       description: >
         Supported are queries by following identifiers: *uuid*
       parameters:

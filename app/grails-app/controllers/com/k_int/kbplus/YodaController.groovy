@@ -366,6 +366,14 @@ class YodaController {
                 else
                     s.value = 'true'
             }
+
+            if (s.name == "MailSentDisabled") {
+                if (s.value == 'true')
+                    grails.mail.disabled = false
+                else
+                    grails.mail.disabled = true
+            }
+
             s.save(flush:true)
         }
 
