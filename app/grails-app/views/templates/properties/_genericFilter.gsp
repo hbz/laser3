@@ -12,8 +12,9 @@
                     it.refdataCategory ?
                               "com.k_int.properties.PropertyDefinition:${it.id}\" data-rdc=\"com.k_int.kbplus.RefdataCategory:${RefdataCategory.findByDesc(it.refdataCategory)?.id}"
                             : "com.k_int.properties.PropertyDefinition:${it.id}" }}" optionValue="${{ it.getI10n('name') }}"
-                  noSelection="['':'']"
+                  noSelection="['':message(code:'default.select.choose.label', default:'Please Choose...')]"
         />
+
     </div>
 
     <div class="field">
@@ -31,7 +32,7 @@
         var propertyFilterController = {
 
             updateProp: function (selOpt) {
-                
+
                 //If we are working with RefdataValue, grab the values and create select box
                 if (selOpt.attr('data-rdc')) {
                     $.ajax({
