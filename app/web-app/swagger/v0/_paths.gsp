@@ -21,7 +21,7 @@
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PlaceholderList"
+                $ref: "#/components/schemas/Refdatas_Virtual"
         401:
           $ref: "#/components/responses/notAuthorized"
 
@@ -30,7 +30,7 @@
 
     get:
       tags:
-        - Documents
+        - Objects
       summary: Downloading a document
       description: >
         Supported are queries by following identifiers: *uuid*
@@ -81,7 +81,7 @@
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PlaceholderObject"
+                $ref: "#/components/schemas/License"
         400:
           $ref: "#/components/responses/badRequest"
         401:
@@ -117,7 +117,7 @@
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PlaceholderObject"
+                $ref: "#/components/schemas/Subscription"
         400:
           $ref: "#/components/responses/badRequest"
         401:
