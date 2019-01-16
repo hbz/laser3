@@ -3,6 +3,7 @@
 
 - fixed xeditable double values
 - fixed xls export for consortia members
+- fixed and improved finance xls export
 
 0.12.1
 
