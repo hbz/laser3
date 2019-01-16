@@ -76,6 +76,7 @@ class DataloadService {
             //result._id = org.impId
             result._id = org.globalUID
             result.dbId = org.id
+            result.impId = org.impId
             result.guid = org.globalUID ?:''
 
             result.name = org.name
@@ -104,6 +105,7 @@ class DataloadService {
                 //result._id = ti.impId
                 result._id = ti.globalUID
                 result.dbId = ti.id
+                result.impId = ti.impId
                 result.guid = ti.globalUID ?:''
 
                 result.identifiers = []
@@ -135,6 +137,7 @@ class DataloadService {
             //result._id = pkg.impId
             result._id = pkg.globalUID
             result.dbId = pkg.id
+            result.impId = pkg.impId
             result.guid = pkg.globalUID ?:''
 
             result.consortiaId = pkg.getConsortia()?.id
@@ -206,6 +209,7 @@ class DataloadService {
             //result._id = plat.impId
             result._id = plat.globalUID
             result.dbId = plat.id
+            result.impId = plat.impId
             result.guid = plat.globalUID ?:''
 
             result.name = plat.name

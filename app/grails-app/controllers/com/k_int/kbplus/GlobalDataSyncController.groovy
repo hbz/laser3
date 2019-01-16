@@ -1,11 +1,10 @@
 package com.k_int.kbplus
 
-import de.laser.controller.AbstractDebugController
 import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.*;
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class GlobalDataSyncController extends AbstractDebugController {
+class GlobalDataSyncController {
 
   def springSecurityService
   def globalSourceSyncService
@@ -121,7 +120,7 @@ class GlobalDataSyncController extends AbstractDebugController {
 
   @Secured(['ROLE_GLOBAL_DATA'])
   def createTracker() {
-    log.debug("params:"+params)
+    log.debug("params: ${params}")
     def result = [:]
 
     result.item = GlobalRecordInfo.get(params.id)
