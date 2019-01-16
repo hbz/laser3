@@ -10,6 +10,9 @@ class Setting {
     String defvalue
     String value
 
+    Date dateCreated
+    Date lastUpdated
+
     static mapping = {
              id column:'set_id'
            name column:'set_name'
