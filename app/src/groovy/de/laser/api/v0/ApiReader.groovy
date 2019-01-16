@@ -6,6 +6,9 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserRole
 import de.laser.CacheService
 import de.laser.helper.Constants
+import de.laser.helper.RDStore
+import de.laser.interfaces.TemplateSupport
+import groovy.text.Template
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -54,6 +57,9 @@ class ApiReader {
         result.reference           = costItem.reference
         result.startDate           = costItem.startDate
         result.taxRate             = costItem.taxRate
+
+        // erms-888
+        result.calculatedType      = costItem.getCalculatedType()
 
         // RefdataValues
 
@@ -108,7 +114,6 @@ class ApiReader {
      * @param com.k_int.kbplus.Org context
      * @return
      */
-    @Deprecated
     static exportLicense(License lic, def ignoreRelation, Org context){
         def result = [:]
 
@@ -119,24 +124,27 @@ class ApiReader {
         result.dateCreated      = lic.dateCreated
         result.endDate          = lic.endDate
         result.impId            = lic.impId
-        result.lastmod          = lic.lastmod
+        // result.lastmod          = lic.lastmod // legacy ?
         result.lastUpdated      = lic.lastUpdated
-        result.licenseUrl       = lic.licenseUrl
+        // result.licenseUrl       = lic.licenseUrl
         // removed - result.licensorRef      = lic.licensorRef
         // removed - result.licenseeRef      = lic.licenseeRef
         result.licenseType      = lic.licenseType
         result.licenseStatus    = lic.licenseStatus
-        result.noticePeriod     = lic.noticePeriod
+        //result.noticePeriod     = lic.noticePeriod
         result.reference        = lic.reference
         result.startDate        = lic.startDate
-        result.sortableReference= lic.sortableReference
+        result.normReference= lic.sortableReference
+
+        // erms-888
+        result.calculatedType   = lic.getCalculatedType()
 
         // RefdataValues
 
         result.isPublic         = lic.isPublic?.value
-        result.licenseCategory  = lic.licenseCategory?.value
+        // result.licenseCategory  = lic.licenseCategory?.value // legacy
         result.status           = lic.status?.value
-        result.type             = lic.type?.value
+        // result.type             = lic.type?.value
 
         // References
 
@@ -151,7 +159,34 @@ class ApiReader {
                 result.subscriptions = ApiReaderHelper.resolveStubs(lic.subscriptions, ApiReaderHelper.SUBSCRIPTION_STUB, context) // com.k_int.kbplus.Subscription
             }
             if (ignoreRelation != ApiReaderHelper.IGNORE_LICENSE) {
-                result.organisations = ApiReaderHelper.resolveOrgLinks(lic.orgLinks, ApiReaderHelper.IGNORE_LICENSE, context) // com.k_int.kbplus.OrgRole
+                def allOrgRoles = []
+
+                def licenseeConsortial = OrgRole.findByOrgAndLicAndRoleType(context, lic, RDStore.OR_LICENSEE_CONS)
+                // restrict, if context is OR_LICENSEE_CONS for current license
+                if (licenseeConsortial) {
+                    allOrgRoles.add(licenseeConsortial)
+                    allOrgRoles.addAll(
+                            OrgRole.executeQuery(
+                                    "select oo from OrgRole oo where oo.lic = :lic and oo.roleType not in (:roles)",
+                                    [lic: lic, roles: [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]]
+                            )
+                    )
+                }
+                else {
+                    allOrgRoles.addAll(lic.orgLinks)
+
+                    // add derived licenses org roles
+                    allOrgRoles.addAll(
+                            OrgRole.executeQuery(
+                                "select oo from OrgRole oo where oo.lic in (:derived) and oo.roleType in (:roles)",
+                                [derived: lic.derivedLicenses, roles: [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]]
+                            )
+                    )
+
+                }
+                allOrgRoles = allOrgRoles.unique()
+
+                result.organisations = ApiReaderHelper.resolveOrgLinks(allOrgRoles, ApiReaderHelper.IGNORE_LICENSE, context) // com.k_int.kbplus.OrgRole
             }
         }
 
@@ -289,6 +324,9 @@ class ApiReader {
         result.noticePeriod         = sub.noticePeriod
         result.startDate            = sub.startDate
 
+        // erms-888
+        result.calculatedType       = sub.getCalculatedType()
+
         // RefdataValues
 
         result.form         = sub.form?.value
@@ -309,18 +347,15 @@ class ApiReader {
 
         //result.organisations        = ApiReaderHelper.resolveOrgLinks(sub.orgRelations, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
         result.previousSubscription = ApiReaderHelper.resolveSubscriptionStub(sub.previousSubscription, context) // com.k_int.kbplus.Subscription
-        result.properties           = ApiReaderHelper.resolveCustomProperties(sub, context) // com.k_int.kbplus.SubscriptionCustomProperty
+        result.properties           = ApiReaderHelper.resolveProperties(sub, context) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
 
-        def allOrgRoles = []
-        sub.derivedSubscriptions.each { member ->
-            allOrgRoles.addAll(
-                OrgRole.findAllBySubAndRoleType(member, RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'))
-            )
-            allOrgRoles.addAll(
-                OrgRole.findAllBySubAndRoleType(member, RefdataValue.getByValueAndCategory('Subscriber', 'Organisational Role'))
-            )
-        }
+        // add derived subscriptions org roles
+        def allOrgRoles = OrgRole.executeQuery(
+                "select oo from OrgRole oo where oo.sub in (:derived) and oo.roleType in (:roles)",
+                [derived: sub.derivedSubscriptions, roles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
+        )
         allOrgRoles.addAll(sub.orgRelations)
+
         result.organisations = ApiReaderHelper.resolveOrgLinks(allOrgRoles, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
 
         // TODO refactoring with issueEntitlementService

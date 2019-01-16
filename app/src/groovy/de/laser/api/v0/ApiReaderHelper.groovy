@@ -129,7 +129,9 @@ class ApiReaderHelper {
             result.globalUID    = lic.globalUID
             result.impId        = lic.impId
             result.reference    = lic.reference
-            result.sortableReference = lic.sortableReference
+            result.normReference    = lic.sortableReference
+            // erms-888
+            result.calculatedType   = lic.getCalculatedType()
 
             // References
             result.identifiers = resolveIdentifiers(lic.ids) // com.k_int.kbplus.IdentifierOccurrence
@@ -216,6 +218,8 @@ class ApiReaderHelper {
             result.name         = sub.name
             //result.identifier   = sub.identifier // TODO refactor identifier
             result.impId        = sub.impId
+            // erms-888
+            result.calculatedType = sub.getCalculatedType()
 
             // References
             result.identifiers = resolveIdentifiers(sub.ids) // com.k_int.kbplus.IdentifierOccurrence
@@ -383,9 +387,8 @@ class ApiReaderHelper {
         result
     }
 
-    static resolveCustomProperties(def generic, Org context) {
+    static resolveCustomProperties(def list, def generic, Org context) {
         def result = []
-        def list = generic.customProperties
 
         if (generic.metaClass.getMetaMethod("getCaculatedPropDefGroups")) {
             def groups = generic.getCaculatedPropDefGroups(context)
@@ -413,7 +416,7 @@ class ApiReaderHelper {
             }
         }
 
-        list.each { it ->       // com.k_int.kbplus.<x>CustomProperty
+        list?.each { it ->       // com.k_int.kbplus.<x>CustomProperty
             def tmp             = [:]
             tmp.name            = it.type?.name     // com.k_int.kbplus.PropertyDefinition.String
             tmp.description     = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
@@ -770,7 +773,7 @@ class ApiReaderHelper {
             result.globalUID        = pform.globalUID
             result.impId            = pform.impId
             result.name             = pform.name
-            result.normname         = pform.normname
+            result.normName         = pform.normname
             result.primaryUrl       = pform.primaryUrl
             result.provenance       = pform.provenance
             result.dateCreated      = pform.dateCreated
@@ -805,10 +808,10 @@ class ApiReaderHelper {
         return cleanUp(result, true, true)
     }
 
-    static resolvePrivateProperties(def list, Org context) { // TODO check context
+    static resolvePrivateProperties(def list, Org context) {
         def result = []
 
-        list?.each { it ->       // com.k_int.kbplus.<x>PrivateProperty
+        list?.findAll{ it.owner.id == context.id }?.each { it ->       // com.k_int.kbplus.<x>PrivateProperty
             def tmp             = [:]
             tmp.name            = it.type?.name     // com.k_int.kbplus.PropertyDefinition.String
             tmp.description     = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
@@ -826,7 +829,7 @@ class ApiReaderHelper {
     }
 
     static resolveProperties(def generic, Org context) {
-        def cp = resolveCustomProperties(generic, context)
+        def cp = resolveCustomProperties(generic.customProperties, generic, context)
         def pp = resolvePrivateProperties(generic.privateProperties, context)
 
         pp.each { cp << it }

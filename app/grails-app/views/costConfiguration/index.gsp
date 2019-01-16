@@ -27,7 +27,6 @@
                 </div>
             </div>
         </div>
-        <semui:messages data="${flash}" />
         <g:if test="${editable}">
             <div class="content ui form">
                 <div class="fields">
@@ -58,7 +57,12 @@
                                 <semui:xEditableRefData owner="${ciec}" field="elementSign" emptytext="${message(code:'financials.costItemConfiguration.notSet')}" config="Cost configuration"/>
                             </td>
                             <td>
-
+                                <g:link class="button js-open-confirm-modal"
+                                            data-confirm-term-content="${message(code:'confirmation.content.bulkCostConfiguration')}"
+                                            data-confirm-term-how="ok"
+                                            action="setAllCostItems" params="${[cie:ciec.costItemElement.class.name+":"+ciec.costItemElement.id]}">
+                                        ${message(code:'costConfiguration.configureAllCostItems')}
+                                </g:link>
                             </td>
                         </tr>
                     </g:each>

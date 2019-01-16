@@ -505,10 +505,19 @@ class AjaxController extends AbstractDebugController {
 
         queryResult.each { it ->
             def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
-            result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n('name')}"])
+            if (pd.isUsedForLogic) {
+                if (it.isUsedForLogic) {
+                    result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n('name')}"])
+                }
+            }
+            else {
+                if (! it.isUsedForLogic) {
+                    result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n('name')}"])
+                }
+            }
         }
 
-        if (result) {
+        if (result.size() > 1) {
            result.sort{ x,y -> x.text.compareToIgnoreCase y.text }
         }
 
@@ -867,17 +876,16 @@ class AjaxController extends AbstractDebugController {
         else {
             if (params.cust_prop_type.equals(RefdataValue.toString())) {
                 if (params.refdatacategory) {
-                    newProp = PropertyDefinition.lookupOrCreate(
+                    newProp = PropertyDefinition.loc(
                             params.cust_prop_name,
-                            params.cust_prop_type,
                             params.cust_prop_desc,
+                            params.cust_prop_type,
+                            RefdataCategory.get(params.refdatacategory),
                             params.cust_prop_expl,
                             params.cust_prop_multiple_occurence,
                             PropertyDefinition.FALSE,
                             null
                     )
-                    def cat = RefdataCategory.get(params.refdatacategory)
-                    newProp.setRefdataCategory(cat.desc)
                     newProp.save(flush: true)
                 }
                 else {
@@ -885,10 +893,11 @@ class AjaxController extends AbstractDebugController {
                 }
             }
             else {
-                newProp = PropertyDefinition.lookupOrCreate(
+                newProp = PropertyDefinition.loc(
                         params.cust_prop_name,
-                        params.cust_prop_type,
                         params.cust_prop_desc,
+                        params.cust_prop_type,
+                        null,
                         params.cust_prop_expl,
                         params.cust_prop_multiple_occurence,
                         PropertyDefinition.FALSE,
@@ -1723,6 +1732,9 @@ class AjaxController extends AbstractDebugController {
                     }
                 } else {
                     def binding_properties = [:]
+                    if (target_object."${params.name}" instanceof Double) {
+                        params.value = Double.parseDouble(params.value)
+                    }
                     binding_properties[params.name] = params.value
                     bindData(target_object, binding_properties)
 

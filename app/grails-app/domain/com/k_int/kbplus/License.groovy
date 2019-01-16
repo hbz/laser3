@@ -146,6 +146,40 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
         return instanceOf ? instanceOf.isTemplate() : false
     }
 
+    // TODO: implement
+    @Override
+    def getCalculatedType() {
+        def result = TemplateSupport.CALCULATED_TYPE_UNKOWN
+
+        if (isTemplate()) {
+            result = TemplateSupport.CALCULATED_TYPE_TEMPLATE
+        }
+        else if(getLicensingConsortium() && ! getAllLicensee() && ! isTemplate()) {
+            result = TemplateSupport.CALCULATED_TYPE_CONSORTIAL
+        }
+        else if(getLicensingConsortium() && getAllLicensee() && instanceOf && ! hasTemplate()) {
+            result = TemplateSupport.CALCULATED_TYPE_PARTICIPATION
+        }
+        else if(! getLicensingConsortium() && getAllLicensee() && ! hasTemplate() && ! isTemplate()) {
+            result = TemplateSupport.CALCULATED_TYPE_LOCAL
+        }
+        result
+    }
+
+    def getDerivedLicensees() {
+        def result = []
+
+        License.findAllByInstanceOf(this).each { l ->
+            def ors = OrgRole.findAllWhere( lic: l )
+            ors.each { or ->
+                if (or.roleType?.value in ['Licensee', 'Licensee_Consortial']) {
+                    result << or.org
+                }
+            }
+        }
+        result = result.sort {it.name}
+    }
+
     // used for views and dropdowns
     def getReferenceConcatenated() {
         def cons = getLicensingConsortium()

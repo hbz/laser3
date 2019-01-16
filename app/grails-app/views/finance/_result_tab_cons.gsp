@@ -24,7 +24,7 @@
     println jb.toPrettyString()
 --%>
 
-<table id="costTable_${i}" class="ui celled sortable table table-tworow la-table ignore-floatThead">
+<table id="costTable_${i}" data-queryMode="${i}" class="ui celled sortable table table-tworow la-table ignore-floatThead">
 
 <thead>
     <tr>
@@ -34,6 +34,7 @@
         <g:if test="${!forSingleSubscription}">
             <th>${message(code:'financials.newCosts.subscriptionHeader')}</th>
         </g:if>
+        <th><span data-tooltip="${message(code:'financials.costItemConfiguration')}" data-position="top center"><i class="money bill alternate icon"></i></span></th>
         <th>${message(code:'financials.currency')}</th>
         <th>${message(code:'financials.invoice_total')}</th>
         <th>${message(code:'financials.taxRate')}</th>
@@ -48,7 +49,7 @@
     %{--Empty result set--}%
     <g:if test="${cost_items?.size() == 0}">
         <tr>
-            <td colspan="11" style="text-align:center">
+            <td colspan="12" style="text-align:center">
                 <br />
                 <g:if test="${msg}">${msg}</g:if>
                 <g:else>${message(code:'finance.result.filtered.empty')}</g:else>
@@ -66,12 +67,6 @@
                 def dataTooltip = ""
                 if(ci.costItemElementConfiguration) {
                     elementSign = ci.costItemElementConfiguration
-                }
-                else if(!ci.costItemElementConfiguration && ci.costItemElement) {
-                    def cie = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(ci.costItemElement, org)
-                    if(cie) {
-                        elementSign = cie.elementSign
-                    }
                 }
                 String cieString = "data-elementSign=${elementSign}"
                 switch(elementSign) {
@@ -124,6 +119,9 @@
                     </td>
                 </g:if>
                 <td>
+                    <span data-position="right center" data-tooltip="${dataTooltip}">${raw(icon)}</span>
+                </td>
+                <td>
                     ${ci.billingCurrency ?: 'EUR'}
                 </td>
                 <td>
@@ -156,7 +154,6 @@
                 </td>
                 <td>
                     <semui:xEditableRefData config="CostItemElement" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemElement" />
-                    <span data-position="right center" data-tooltip="${dataTooltip}">${raw(icon)}</span>
                 </td>
                 <td class="x">
                     <g:if test="${editable}">
@@ -192,48 +189,65 @@
     </g:else>
 </tbody>
     <tfoot>
-    <tr>
-        <td colspan="11">
-            <strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}</strong>
-            <br/>
-            <span class="sumOfCosts_${i}"></span>
-        </td>
-    </tr>
-    <tr>
-        <td colspan="11">
-            <div class="ui fluid accordion">
-                <div class="title">
-                    <i class="dropdown icon"></i>
-                    <strong>${message(code: 'financials.calculationBase')}</strong>
+        <tr id="sumOfCosts_${i}">
+            <th colspan="9">
+
+            </th>
+            <th>
+                ${message(code:'financials.sum.local')}<br>
+                ${message(code:'financials.sum.localAfterTax')}
+            </th>
+            <th colspan="3">
+
+            </th>
+        </tr>
+        <tr>
+            <td colspan="9">
+
+            </td>
+            <td class="la-exposed-bg">
+                <span id="localSum_${i}"></span><br>
+                <span id="localSumAfterTax_${i}"></span>
+            </td>
+            <td colspan="4">
+
+            </td>
+        </tr>
+        <tr>
+            <td colspan="13">
+                <div class="ui fluid accordion">
+                    <div class="title">
+                        <i class="dropdown icon"></i>
+                        <strong>${message(code: 'financials.calculationBase')}</strong>
+                    </div>
+                    <div class="content">
+                        <p>
+                            <%
+                                def argv0 = contextService.getOrg().costConfigurationPreset ? contextService.getOrg().costConfigurationPreset.getI10n('value') : message(code:'financials.costItemConfiguration.notSet')
+                            %>
+                            ${message(code: 'financials.calculationBase.paragraph1', args: [argv0])}
+                        </p>
+                        <p>
+                            ${message(code: 'financials.calculationBase.paragraph2')}
+                        </p>
+                    </div>
                 </div>
-                <div class="content">
-                    <p>
-                        <%
-                            def argv0 = contextService.getOrg().costConfigurationPreset ? contextService.getOrg().costConfigurationPreset.getI10n('value') : message(code:'financials.costItemConfiguration.notSet')
-                        %>
-                        ${message(code: 'financials.calculationBase.paragraph1', args: [argv0])}
-                    </p>
-                    <p>
-                        ${message(code: 'financials.calculationBase.paragraph2')}
-                    </p>
-                </div>
-            </div>
-        </td>
-    </tr>
+            </td>
+        </tr>
     </tfoot>
 </table>
     <g:if test="${cost_items}">
          <g:if test="${inSubMode}">
-             <semui:paginate mapping="subfinance" action="index" controller="finance" params="${params}"
+             <semui:paginate mapping="subfinance" action="index" controller="finance" params="${params+[view:'cons']}"
                              next="${message(code: 'default.paginate.next', default: 'Next')}"
-                             prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
-                             total="${cost_items_count}"/>
+                             prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
+                             max="${max}" offset="${consOffset ? consOffset : '1'}" total="${cost_items_count}"/>
          </g:if>
         <g:else>
-            <semui:paginate action="finance" controller="myInstitution" params="${params}"
+            <semui:paginate action="finance" controller="myInstitution" params="${params+[view:'cons']}"
                             next="${message(code: 'default.paginate.next', default: 'Next')}"
-                            prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
-                            total="${cost_items_count}"/>
+                            prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
+                            max="${max}" offset="${consOffset ? consOffset : '1'}" total="${cost_items_count}"/>
         </g:else>
     </g:if>
 

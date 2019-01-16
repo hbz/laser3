@@ -29,9 +29,9 @@
 
 <semui:controlButtons>
     <semui:exportDropdown>
-        %{--<semui:exportDropdownItem>--}%
-            %{--<a class="item" data-mode="all" class="export" style="cursor: pointer">CSV Cost Items</a>--}%
-    %{--</semui:exportDropdownItem>--}%
+        <semui:exportDropdownItem>
+            <g:link class="item" action="financialsExport" params="${params}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
+        </semui:exportDropdownItem>
         <%--
         <semui:exportDropdownItem>
             <a data-mode="sub" class="disabled export" style="cursor: pointer">CSV Costs by Subscription</a>
@@ -188,7 +188,7 @@
 
                     <g:render template="filter" model="['ciList':cost_items, 'ciListCons':cost_items_CS, 'ciListSubscr':cost_items_SUBSCR]"/>
 
-                    <g:render template="result" model="['forSingleSubscription':fixedSubscription, 'ciList':cost_items, 'ciCountOwner':cost_item_count, 'ciListCons':cost_items_CS, 'ciCountCons':cost_item_count_CS, 'ciListSubscr':cost_items_SUBSCR, 'ciCountSub':cost_item_count_SUBSCR]"/>
+                    <g:render template="result" model="['forSingleSubscription':fixedSubscription, 'ciList':cost_items, 'ciCountOwner':cost_item_count, 'ciListCons':cost_items_CS, 'ciCountCons':cost_item_count_CS, 'ciListSubscr':cost_items_SUBSCR, 'ciCountSub':cost_item_count_SUBSCR, 'ownerOffset': ownerOffset, 'subscrOffset': subscrOffset, 'consOffset': consOffset]"/>
                 </div>
             </div>
 
@@ -281,7 +281,7 @@
                 //this is a collection box for all costs
                 var costs = {}
                 //get all currencies of cost items
-                var currencies = $.unique($(this).find('.costData').map(function(){
+                var currencies = $.unique($(this).find('.costData').filter('[data-elementSign="positive"],[data-elementSign="negative"]').map(function(){
                     return $(this).attr('data-billingCurrency')
                 }))
                 /*
@@ -290,18 +290,16 @@
                     - local sum after taxation (for Germany, VATs of 7 and 19 per cent apply)
                     - billing sum
                     - billing sum after taxation (see above)
-                    - neutral sum (provisoric counter to handle "neutral" costs; this is very liable to change as soon as Micha/Daniel explain what "neutral" means (=> ERMS-804))
-                    - neutral sum after taxation (see above)
                  */
                 currencies.each(function() {
-                    costs[this] = {local: 0.0, localAfterTax: 0.0, localNeutral: 0.0, localNeutralAfterTax: 0.0, billing: 0.0, billingAfterTax: 0.0, neutral: 0.0, neutralAfterTax: 0.0}
+                    costs[this] = {local: 0.0, localAfterTax: 0.0, billing: 0.0, billingAfterTax: 0.0}
                 })
 
                 /*
                     the information necessary has been stuffed into a <span> element and are thus defined in the templates
                     _result_tab_{cons|owner_table|subscr}. Again, we take only those which are marked as being considered:
                  */
-                $(this).find('tbody tr span.costData').each( function() {
+                $(this).find('tbody tr span.costData').filter('[data-elementSign="positive"],[data-elementSign="negative"]').each( function() {
 
                     //take the correct currency map to assign
                     var ci = costs[$(this).attr('data-billingCurrency')]
@@ -309,7 +307,7 @@
                     /*
                         as of ERMS-804, costs can have several signs: they may be positive, negative or neutral. See the RefdataCategory 'Cost configuration'.
                         For positive and negative costs, we have to assign different operators here
-                     */
+                    */
                     var operators = {
                         'positive': function(a,b) { return a + b },
                         'negative': function(a,b) { return a - b }
@@ -320,84 +318,83 @@
                         we have to distinct between non-neutral and neutral cost items. We defined above operators which will be applied here.
                         As of January 4th, 2019, it is unclear what should happen with neutral costs. We shall collect them thus in separate counters for display.
                      */
-                    if ($.inArray($(this).attr('data-elementSign'),["${RDStore.CIEC_NEUTRAL}","notSet"]) < 0) {
-                        if ($(this).attr('data-costInLocalCurrency')) {
-                            ci.local = operators[$(this).attr('data-elementSign')](ci.local,parseFloat($(this).attr('data-costInLocalCurrency')))
-                        }
-                        if ($(this).attr('data-costInLocalCurrencyAfterTax')) {
-                            ci.localAfterTax = operators[$(this).attr('data-elementSign')](ci.localAfterTax,parseFloat($(this).attr('data-costInLocalCurrencyAfterTax')))
-                        }
-                        if ($(this).attr('data-costInBillingCurrency')) {
-                            ci.billing = operators[$(this).attr('data-elementSign')](ci.billing,parseFloat($(this).attr('data-costInBillingCurrency')))
-                        }
-                        if ($(this).attr('data-costInBillingCurrencyAfterTax')) {
-                            ci.billingAfterTax = operators[$(this).attr('data-elementSign')](ci.billingAfterTax,parseFloat($(this).attr('data-costInBillingCurrencyAfterTax')))
-                        }
+                    if ($(this).attr('data-costInLocalCurrency')) {
+                        ci.local = operators[$(this).attr('data-elementSign')](ci.local,parseFloat($(this).attr('data-costInLocalCurrency')))
                     }
-                    else if ($.inArray($(this).attr('data-elementSign'),["${RDStore.CIEC_NEUTRAL}","notSet"]) >= 0) {
-                        if ($(this).attr('data-costInBillingCurrency')) {
-                            ci.neutral += parseFloat($(this).attr('data-costInBillingCurrency'))
-                        }
-                        if ($(this).attr('data-costInBillingCurrencyAfterTax')) {
-                            ci.neutralAfterTax += parseFloat($(this).attr('data-costInBillingCurrencyAfterTax'))
-                        }
-                        if ($(this).attr('data-costInLocalCurrency')) {
-                            ci.localNeutral += parseFloat($(this).attr('data-costInLocalCurrency'))
-                        }
-                        if ($(this).attr('data-costInLocalCurrencyAfterTax')) {
-                            ci.localNeutralAfterTax += parseFloat($(this).attr('data-costInLocalCurrencyAfterTax'))
-                        }
+                    if ($(this).attr('data-costInLocalCurrencyAfterTax')) {
+                        ci.localAfterTax = operators[$(this).attr('data-elementSign')](ci.localAfterTax,parseFloat($(this).attr('data-costInLocalCurrencyAfterTax')))
+                    }
+                    if ($(this).attr('data-costInBillingCurrency')) {
+                        ci.billing = operators[$(this).attr('data-elementSign')](ci.billing,parseFloat($(this).attr('data-costInBillingCurrency')))
+                    }
+                    if ($(this).attr('data-costInBillingCurrencyAfterTax')) {
+                        ci.billingAfterTax = operators[$(this).attr('data-elementSign')](ci.billingAfterTax,parseFloat($(this).attr('data-costInBillingCurrencyAfterTax')))
                     }
 
                 })
 
                 //this is the final counter for all local costs, independently of their currency
                 var finalLocal = 0.0
-                var finalLocalNeutral = 0.0
                 var finalLocalAfterTax = 0.0
-                var finalLocalNeutralAfterTax = 0.0
 
-                //add all local costs and those after taxation
+                //add all local costs and those after taxation (if there are costs at all)
                 for (ci in costs) {
                     finalLocal += costs[ci].local
                     finalLocalAfterTax += costs[ci].localAfterTax
-                    finalLocalNeutral += costs[ci].localNeutral
-                    finalLocalNeutralAfterTax += costs[ci].localNeutralAfterTax
+                }
+
+                //get the current tab
+                var currentTab = $(this).attr("data-queryMode");
+                var colspan1;
+                var colspan2;
+                switch(currentTab) {
+                    case 'OWNER':
+                        colspan1 = 4;
+                        colspan2 = 5;
+                    break;
+                    case 'CONS':
+                    case 'CONS_AT_SUBSCR':
+                        colspan1 = 6;
+                        colspan2 = 4;
+                    break;
+                    case 'SUBSCR':
+                        colspan1 = 2;
+                        colspan2 = 4;
+                    break;
+                    default: console.log("unhandled tab mode: "+currentTab);
+                    break;
                 }
 
                 //display the local costs
-                var info = ""
-                    info += "Wert: "
-                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(finalLocal)
-                    info += "<br />"
-                    info += "Endpreis nach Steuern: "
-                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(finalLocalAfterTax)
-                    info += "<br />"
-                    info += "neutrale Kosten oder Vorzeichen nicht gesetzt: "
-                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(finalLocalNeutral)
-                    info += "<br />"
-                    info += "Endpreis der neutralen bzw. nicht definierten Kosten nach Steuern: "
-                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(finalLocalNeutralAfterTax)
+                $("#localSum_"+currentTab).html('<strong>'+Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(finalLocal)+'</strong>');
+                $("#localSumAfterTax_"+currentTab).html('<strong>'+Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(finalLocalAfterTax)+'</strong>');
 
+                var row = ""
                 //and display each currency counter
                 for (ci in costs) {
-                    info += "<br /><br /><strong>" + ci + "</strong><br />"
-                    info += "Rechnungssumme: "
-                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billing)
-                    info += "<br />"
-                    info += "Endpreis nach Steuern: "
-                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billingAfterTax)
-                    info += "<br />"
-                    info += "neutrale Kosten oder Vorzeichen nicht gesetzt: "
-                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].neutral)
-                    info += "<br />"
-                    info += "Endpreis der neutralen bzw. nicht definierten Kosten nach Steuern: "
-                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].neutralAfterTax)
+                    switch(currentTab) {
+                        case 'OWNER':
+                            row = '<tr><th colspan="'+colspan1+'"><strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}</strong></th><th>${message(code:'financials.sum.billing')} ' + ci + '<br>${message(code:'financials.sum.billingAfterTax')}</th><th colspan="'+colspan2+'"></th></tr>';
+                            row += '<tr><td colspan="'+colspan1+'"></td><td class="la-exposed-bg"><strong>'+Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billing)+'</strong><br><strong>'+Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billingAfterTax)+'</strong></td><td colspan="'+colspan2+'"></td></tr>';
+                        break;
+                        case 'CONS':
+                        case 'CONS_AT_SUBSCR':
+                            row = '<tr><th colspan="'+colspan1+'"><strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}</strong></th><th>${message(code:'financials.sum.billing')} ' + ci + '</th><th></th><th>${message(code:'financials.sum.billingAfterTax')}</th><th colspan="'+colspan2+'"></th></tr>';
+                            row += '<tr><td colspan="'+colspan1+'"></td><td class="la-exposed-bg"><strong>'+Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billing)+'</strong></td>';
+                            row += '<td></td>';
+                            row += '<td class="la-exposed-bg"><strong>'+Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billingAfterTax)+'</strong></td><td colspan="'+colspan2+'"></td></tr>';
+                        break;
+                        case 'SUBSCR':
+                            row = '<tr><th colspan="'+colspan1+'"><strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}</strong></th><th>${message(code:'financials.sum.billing')} ' + ci + '</th><th colspan="'+colspan2+'"></th></tr>';
+                            row += '<tr><td colspan="'+colspan1+'"></td><td class="la-exposed-bg"><strong>'+Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billingAfterTax)+'</strong></td><td colspan="'+colspan2+'"></td></tr>';
+                        break;
+                        default: console.log("unhandled tab mode: "+currentTab);
+                        break;
+                    }
                 }
-
-                //display the calculated information
-                var socClass = $(this).find('span[class^=sumOfCosts]').attr('class')
-                $('.' + socClass).html( info )
+                if(typeof(ci) === 'undefined')
+                    row = '<tr><td colspan="13">${message(code:'financials.noCostsConsidered')}</td></tr>';
+                $("#sumOfCosts_"+currentTab).before(row);
             })
         }
     }

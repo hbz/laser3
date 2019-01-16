@@ -81,11 +81,11 @@ class SemanticUiNavigationTagLib {
         def total = attrs.int('total') ?: 0
         def action = (attrs.action ? attrs.action : (params.action ? params.action : "list"))
 
-        def offset = params.int('offset') ?: 0
-        if (! offset) offset = (attrs.int('offset') ?: 0)
+        def offset = attrs.int('offset') ?: 0
+        if (! offset) offset = (params.int('offset') ?: 0)
 
-        def max = params.int('max')
-        if (! max) max = (attrs.int('max') ?: 10)
+        def max = attrs.int('max')
+        if (! max) max = (params.int('max') ?: 10)
 
         def maxsteps = (attrs.int('maxsteps') ?: 10)
 

@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0 @ 0.18'
+    static final VERSION = '0.3'
     static final NOT_SUPPORTED = false
 
     /**
@@ -79,7 +79,7 @@ class ApiManager {
                 return Constants.HTTP_NOT_ACCEPTABLE
             }
         }
-        else if (NOT_SUPPORTED && 'license'.equalsIgnoreCase(obj)) {
+        else if ('license'.equalsIgnoreCase(obj)) {
             if (format in ApiReader.SUPPORTED_FORMATS.license) {
                 result = ApiLicense.findLicenseBy(query, value)
 

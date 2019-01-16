@@ -133,11 +133,8 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
         isSlaved(nullable:true, blank:false)
         noticePeriod(nullable:true, blank:true)
         isPublic(nullable:true, blank:true)
-        //customProperties(nullable:true)
-        //privateProperties(nullable:true)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true, blank: true)
-        // vendor(nullable:true, blank:false)
     }
 
     // TODO: implement
@@ -150,6 +147,25 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
     @Override
     def hasTemplate() {
         return false
+    }
+
+    @Override
+    def getCalculatedType() {
+        def result = TemplateSupport.CALCULATED_TYPE_UNKOWN
+
+        if (isTemplate()) {
+            result = TemplateSupport.CALCULATED_TYPE_TEMPLATE
+        }
+        else if(getConsortia() && ! getAllSubscribers() && ! instanceOf) {
+            result = TemplateSupport.CALCULATED_TYPE_CONSORTIAL
+        }
+        else if(getConsortia() && getAllSubscribers() && instanceOf) {
+            result = TemplateSupport.CALCULATED_TYPE_PARTICIPATION
+        }
+        else if(! getConsortia() && getAllSubscribers() && ! instanceOf) {
+            result = TemplateSupport.CALCULATED_TYPE_LOCAL
+        }
+        result
     }
 
     // used for views and dropdowns

@@ -2820,6 +2820,14 @@ AND EXISTS (
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        result.announcementOffset = 0
+        result.dashboardDueDatesOffset = 0
+        switch(params.view) {
+            case 'announcementsView': result.announcementOffset = Integer.parseInt(params.offset)
+            break
+            case 'dueDatesView': result.dashboardDueDatesOffset = Integer.parseInt(params.offset)
+            break
+        }
 
         // changes
 
@@ -2834,8 +2842,11 @@ AND EXISTS (
         result.recentAnnouncements = Doc.executeQuery(
                 "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
                 [type: 'Announcement', dcCheck: dcCheck],
-                [max: 10, sort: 'dateCreated', order: 'asc']
+                [max: result.max,offset: result.announcementOffset, sort: 'dateCreated', order: 'asc']
         )
+        result.recentAnnouncementsCount = Doc.executeQuery(
+                "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
+                [type: 'Announcement', dcCheck: dcCheck]).size()
 
         // tasks
 
@@ -2844,13 +2855,16 @@ AND EXISTS (
         def query       = filterService.getTaskQuery(params, sdFormat)
         def contextOrg  = contextService.getOrg()
         result.tasks    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg, query)
+        result.tasksCount    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg, query).size()
         def preCon      = taskService.getPreconditions(contextOrg)
         result.enableMyInstFormFields = true // enable special form fields
         result << preCon
 
         def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
-        result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: 10, sort: 'dateCreated', order: 'desc'])
-        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org)
+        result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max,offset:result.announcementOffset, sort: 'dateCreated', order: 'desc'])
+        result.recentAnnouncementsCount = Doc.findAllByType(announcement_type).size()
+        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org, [max: result.max, offset: result.dashboardDueDatesOffset])
+        result.dueDatesCount = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org).size()
         result
     }
 
@@ -3484,24 +3498,23 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 tenant: tenant,
         )
 
-        if(!privatePropDef){
+        if(! privatePropDef){
             def rdc
 
             if (params.refdatacategory) {
                 rdc = RefdataCategory.findById( Long.parseLong(params.refdatacategory) )
-                rdc = rdc?.desc
             }
-            privatePropDef = PropertyDefinition.lookupOrCreate(
+            privatePropDef = PropertyDefinition.loc(
                     params.pd_name,
-                    params.pd_type,
                     params.pd_descr,
+                    params.pd_type,
+                    rdc,
                     params.pd_expl,
                     (params.pd_multiple_occurrence ? true : false),
                     (params.pd_mandatory ? true : false),
                     tenant
             )
             privatePropDef.softData = PropertyDefinition.TRUE
-            privatePropDef.refdataCategory = rdc
 
             if (privatePropDef.save(flush: true)) {
                 return message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.name])

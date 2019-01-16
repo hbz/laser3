@@ -14,6 +14,7 @@ class PersonController extends AbstractDebugController {
     def springSecurityService
     def addressbookService
     def genericOIDService
+    def contextService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -184,11 +185,10 @@ class PersonController extends AbstractDebugController {
         // create mandatory PersonPrivateProperties if not existing
 
         def mandatories = []
-        user?.authorizedOrgs?.each{ org ->
-            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Person Property", true, org)
-            if(ppd){
-                mandatories << ppd
-            }
+        def org = contextService.getOrg()
+        def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Person Property", true, org)
+        if(ppd){
+            mandatories << ppd
         }
         mandatories.flatten().each{ pd ->
             if (! PersonPrivateProperty.findWhere(owner: personInstance, type: pd)) {
@@ -202,7 +202,7 @@ class PersonController extends AbstractDebugController {
             }
         }
 
-        [personInstance: personInstance, authorizedOrgs: user?.authorizedOrgs, editable: editable]
+        [personInstance: personInstance, editable: editable]
     }
 
     @Deprecated

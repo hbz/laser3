@@ -109,9 +109,9 @@ class CostItem extends AbstractBaseDomain implements TemplateSupport {
         billingCurrency (nullable: true, blank: false)
         costDescription (nullable: true, blank: false)
         costTitle       (nullable: true, blank: false)
-        costInBillingCurrency           (nullable: true, blank: false, type: 'decimal')
+        costInBillingCurrency           (nullable: true, blank: false)
         datePaid        (nullable: true, blank: false)
-        costInLocalCurrency             (nullable: true, blank: false, type: 'decimal')
+        costInLocalCurrency             (nullable: true, blank: false)
         currencyRate    (nullable: true, blank: false, scale: 9)
         finalCostRounding               (nullable: true, blank: false)
         taxCode         (nullable: true, blank: false)
@@ -154,13 +154,24 @@ class CostItem extends AbstractBaseDomain implements TemplateSupport {
     @Deprecated
     @Override
     def isTemplate() {
-        return (type != null) && (type == RefdataValue.getByValueAndCategory('Template', 'License Type'))
+        false
     }
 
     @Deprecated
     @Override
     def hasTemplate() {
-        return instanceOf ? instanceOf.isTemplate() : false
+        false
+    }
+
+    @Override
+    def getCalculatedType() {
+        def result = TemplateSupport.CALCULATED_TYPE_UNKOWN
+
+        if (isTemplate()) {
+            result = TemplateSupport.CALCULATED_TYPE_TEMPLATE
+        }
+
+        result
     }
 
     def getBudgetcodes() {

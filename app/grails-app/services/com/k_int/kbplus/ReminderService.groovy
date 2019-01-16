@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.ContextService
 import grails.transaction.Transactional
 import groovy.text.SimpleTemplateEngine
 import org.apache.commons.lang3.time.DateUtils
@@ -110,12 +111,15 @@ select s from Subscription as s where
 
     def mailReminder(userAddress, subjectTrigger, content, overrideReplyTo, overrideFrom) {
        try {
+           def currentServer = grailsApplication.config?.getCurrentServer()
+           def subjectSystemPraefix = (currentServer == ContextService.SERVER_PROD)? "LAS:eR - " : (grailsApplication.config?.laserSystemId + " - ")
+
            mailService.sendMail {
                //async true //todo unable to send async method?
                to userAddress
                from overrideFrom != null? overrideFrom : from
                replyTo overrideReplyTo != null? overrideReplyTo : replyTo
-               subject subjectTrigger
+               subject subjectSystemPraefix + subjectTrigger
                html content
            }
        } catch (Exception e)

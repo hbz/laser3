@@ -6,6 +6,7 @@ class GlobalRecordInfo {
 
   GlobalRecordSource source
   String identifier
+  String uuid
   String desc
   String name
   Long rectype
@@ -25,6 +26,7 @@ class GlobalRecordInfo {
                source column:'gri_source_fk'
                    ts column:'gri_timestamp'
            identifier column:'gri_identifier'
+                 uuid column:'gri_uuid'
                  name column:'gri_name', type:'text'
                  desc column:'gri_desc', type:'text'
               rectype column:'gri_rectype'
@@ -37,6 +39,7 @@ class GlobalRecordInfo {
                   name(nullable:true, blank:false, maxSize:2048)
                   desc(nullable:true, blank:false)
                rectype(nullable:true, blank:false)
+                  uuid(nullable:true, blank:false)
                     ts(nullable:true, blank:false)
        kbplusCompliant(nullable:true, blank:false)
       globalRecordInfoStatus(nullable: true, blank: false)
