@@ -15,6 +15,8 @@ import com.k_int.kbplus.Org
 import net.sf.ehcache.Cache
 import net.sf.ehcache.CacheManager
 import net.sf.ehcache.Element
+import static com.k_int.kbplus.UserSettings.KEYS.*
+import static de.laser.helper.RDStore.*
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ProfileController {
@@ -197,17 +199,67 @@ class ProfileController {
 
     redirect(action: "index")
   }
+  @Secured(['ROLE_USER'])
+  def updateReminderSettings() {
+    def user = User.get(springSecurityService.principal.id)
+
+    flash.message=""
+    changeValue(user.getSetting(DASHBOARD_REMINDER_PERIOD, 14),    params.dashboardReminderPeriod,     'profile.updateProfile.updated.dashboardReminderPeriod')
+
+      if ( (! user.email) && user.getSetting(IS_REMIND_BY_EMAIL, YN_NO).equals(YN_NO)) {
+          flash.error = message(code:'profile.updateProfile.updated.isRemindByEmail.error', default:"Please enter the email address<br/>")
+      } else {
+          changeValue(user.getSetting(IS_REMIND_BY_EMAIL, YN_NO),                     params.isRemindByEmail?:"N",                 'profile.updateProfile.updated.isRemindByEmail')
+      }
+
+
+    changeValue(user.getSetting(IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD, YN_NO),    params.isSubscriptionsNoticePeriod?:"N",     'profile.updateProfile.updated.subscriptions.noticePeriod')
+    changeValue(user.getSetting(IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE, YN_NO),         params.isSubscriptionsEnddate?:"N",          'profile.updateProfile.updated.subscriptions.enddate')
+    changeValue(user.getSetting(IS_REMIND_FOR_SUBSCRIPTIONS_CUSTOM_PROP, YN_NO),     params.isSubscriptionsCustomProp?:"N",       'profile.updateProfile.updated.subscriptions.customProperty')
+    changeValue(user.getSetting(IS_REMIND_FOR_SUBSCRIPTIONS_PRIVATE_PROP, YN_NO),    params.isSubscriptionsPrivateProp?:"N",      'profile.updateProfile.updated.subscriptions.privateProperty')
+    changeValue(user.getSetting(IS_REMIND_FOR_LICENSE_CUSTOM_PROP, YN_NO),           params.isLicenseCustomProp?:"N",             'profile.updateProfile.updated.license.customProperty')
+    changeValue(user.getSetting(IS_REMIND_FOR_LIZENSE_PRIVATE_PROP, YN_NO),          params.isLicensePrivateProp?:"N",            'profile.updateProfile.updated.license.privateProperty')
+    changeValue(user.getSetting(IS_REMIND_FOR_ORG_CUSTOM_PROP, YN_NO),               params.isOrgCustomProp?:"N",                 'profile.updateProfile.updated.org.customProperty')
+    changeValue(user.getSetting(IS_REMIND_FOR_ORG_PRIVATE_PROP, YN_NO),              params.isOrgPrivateProp?:"N",                'profile.updateProfile.updated.org.privateProperty')
+    changeValue(user.getSetting(IS_REMIND_FOR_PERSON_PRIVATE_PROP, YN_NO),           params.isPersonPrivateProp?:"N",             'profile.updateProfile.updated.person.privateProperty')
+    changeValue(user.getSetting(IS_REMIND_FOR_TASKS, YN_NO),                         params.isTasks?:"N",                         'profile.updateProfile.updated.tasks')
+
+    user.save();
+
+    redirect(action: "index")
+  }
+    private void changeValue(UserSettings userSetting, def newValue, String messageSuccessfull) {
+        def oldValue = userSetting.value
+        if (oldValue instanceof RefdataValue){//} && ((RefdataValue)oldValue).belongsTo.owner. == com.k_int.kbplus.RefdataCategory.{
+            def owner = ((RefdataValue)oldValue).belongsTo.owner
+            print owner
+            if (newValue == 'Y') {
+                newValue = YN_YES
+            } else {
+                newValue = YN_NO
+            }
+        }
+        if (oldValue instanceof Integer){
+            newValue = Integer.parseInt(newValue)
+        }
+        boolean valueHasChanged = newValue && (userSetting.value != newValue)
+        if ( valueHasChanged ) {
+            userSetting.setValue(newValue)
+            flash.message += (message(code: messageSuccessfull) +"<br/>")
+        }
+    }
+
     @Secured(['ROLE_USER'])
-    def updateIsEmailReminder() {
+    def updateIsRemindByEmail() {
         def user1 = User.get(springSecurityService.principal.id)
 
         flash.message=""
-        def was_isEmailReminder = user1.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO)
-        if ( was_isEmailReminder != params.isEmailReminder ) {
-            was_isEmailReminder = params.isEmailReminder
-            flash.message += message(code:'profile.updateProfile.updated.isEmailReminder', default:"isEmailReminder updated<br/>")
-            if ( ! user1.email && was_isEmailReminder.equals(RDStore.YN_YES)) {
-                flash.error = message(code:'profile.updateProfile.updated.isEmailReminder.error', default:"Please enter the email address<br/>")
+        def was_isRemindByEmail = user1.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO)
+        if ( was_isRemindByEmail != params.isRemindByEmail ) {
+            was_isRemindByEmail = params.isRemindByEmail
+            flash.message += message(code:'profile.updateProfile.updated.isRemindByEmail', default:"isRemindByEmail updated<br/>")
+            if ( ! user1.email && was_isRemindByEmail.equals(RDStore.YN_YES)) {
+                flash.error = message(code:'profile.updateProfile.updated.isRemindByEmail.error', default:"Please enter the email address<br/>")
             }
         }
         user.save();

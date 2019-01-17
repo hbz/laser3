@@ -94,7 +94,6 @@
                     <td>
                         <semui:xEditable owner="${prop}" type="textarea" field="note"/>
                     </td>
-                    hier
                     <td class="x">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
                         <g:if test="${prop.type.type == URL.toString()}">
                             <g:if test="${prop.value}">
