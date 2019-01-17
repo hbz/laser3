@@ -8,7 +8,6 @@ import grails.util.Holders
 import grails.web.Action
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
-import org.quartz.TriggerKey
 import org.quartz.impl.matchers.GroupMatcher
 
 import java.lang.reflect.Method
@@ -26,7 +25,7 @@ class YodaController {
     def globalSourceSyncService
     def contextService
     def dashboardDueDatesService
-    def cronjobUpdateService
+    def subscriptionUpdateService
     def executorService
     def quartzScheduler
 
@@ -510,14 +509,14 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def subscriptionCheck(){
         flash.message = "Lizenzen werden upgedatet"
-        cronjobUpdateService.subscriptionCheck()
+        subscriptionUpdateService.subscriptionCheck()
         redirect(url: request.getHeader('referer'))
     }
 
     @Secured(['ROLE_YODA'])
     def updateLinks(){
         flash.message = "Vor-/Nachfolgebeziehungen werden neu verknüpft"
-        cronjobUpdateService.updateLinks()
+        subscriptionUpdateService.updateLinks()
         redirect(url: request.getHeader('referer'))
     }
 

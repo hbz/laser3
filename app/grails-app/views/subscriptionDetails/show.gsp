@@ -166,6 +166,18 @@
                                             <g:set var="sdf" value="${new SimpleDateFormat('dd.MM.yyyy')}"/>
                                             <g:link controller="subscriptionDetails" action="show" id="${pair.id}">#${pair.id}</g:link>: ${pair.name} (${sdf.format(pair.startDate)} - ${sdf.format(pair.endDate)})
                                         </dd>
+                                        <dd>
+                                            <%-- BEWARE and continue here: the CONTEXT SUB does not need necessairly be the SOURCE!!!!! --%>
+                                            <g:render template="/templates/links/subLinksModal"
+                                                      model="${[tmplText:message(code:'subscription.details.editLink'),
+                                                                tmplID:'addLink',
+                                                                tmplButtonText:message(code:'subscription.details.editLink'),
+                                                                tmplModalID:"sub_edit_link_${link.id}",
+                                                                editmode: editable,
+                                                                context: "${subscriptionInstance.class.name}:${subscriptionInstance.id}",
+                                                                link: link
+                                                      ]}" />
+                                        </dd>
                                     </g:each>
                                 </dl>
                             </g:if>
@@ -176,7 +188,8 @@
                                                 tmplID:'addLink',
                                                 tmplButtonText:message(code:'subscription.details.addLink'),
                                                 tmplModalID:'sub_add_link',
-                                                editmode: editable
+                                                editmode: editable,
+                                                context: "${subscriptionInstance.class.name}:${subscriptionInstance.id}"
                                       ]}" />
                         </div>
                     </div>

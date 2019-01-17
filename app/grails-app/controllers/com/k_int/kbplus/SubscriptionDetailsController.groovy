@@ -211,8 +211,10 @@ class SubscriptionDetailsController extends AbstractDebugController {
             result.processingpc = true
         }
 
-        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        ArrayList<Links> prevLink = Links.findAllBySourceAndLinkTypeAndObjectType(result.subscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+        ArrayList<Links> nextLink = Links.findAllByDestinationAndLinkTypeAndObjectType(result.subscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+        result.navPrevSubscription = prevLink ? prevLink.collect { it -> Subscription.get(it.destination) } : null
+        result.navNextSubscription = nextLink ? nextLink.collect { it -> Subscription.get(it.source)} : null
 
         withFormat {
             html result
@@ -709,8 +711,10 @@ class SubscriptionDetailsController extends AbstractDebugController {
         //    )
         //}
 
-        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        Links prevLink = Links.findByDestinationAndLinkTypeAndObjectType(result.fixedSubscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+        Links nextLink = Links.findBySourceAndLinkTypeAndObjectType(result.fixedSubscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+        result.navPrevSubscription = prevLink ? prevLink.collect { it -> Subscription.get(it.source) } : null
+        result.navNextSubscription = nextLink ? nextLink.collect { it -> Subscription.get(it.destination)} : null
 
         if (params.exportXLS == 'yes') {
 
@@ -997,8 +1001,10 @@ class SubscriptionDetailsController extends AbstractDebugController {
             }
         }
 
-        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        Links prevLink = Links.findByDestinationAndLinkTypeAndObjectType(result.fixedSubscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+        Links nextLink = Links.findBySourceAndLinkTypeAndObjectType(result.fixedSubscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+        result.navPrevSubscription = prevLink ? prevLink.collect { it -> Subscription.get(it.source) } : null
+        result.navNextSubscription = nextLink ? nextLink.collect { it -> Subscription.get(it.destination)} : null
 
         result
     }
@@ -1136,8 +1142,10 @@ class SubscriptionDetailsController extends AbstractDebugController {
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
         }
-        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        Links prevLink = Links.findByDestinationAndLinkTypeAndObjectType(result.fixedSubscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+        Links nextLink = Links.findBySourceAndLinkTypeAndObjectType(result.fixedSubscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+        result.navPrevSubscription = prevLink ? prevLink.collect { it -> Subscription.get(it.source) } : null
+        result.navNextSubscription = nextLink ? nextLink.collect { it -> Subscription.get(it.destination)} : null
         result
     }
 
@@ -1154,8 +1162,10 @@ class SubscriptionDetailsController extends AbstractDebugController {
             result.subscriber_shortcode = result.institution.shortcode
         }
 
-        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        Links prevLink = Links.findByDestinationAndLinkTypeAndObjectType(result.fixedSubscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+        Links nextLink = Links.findBySourceAndLinkTypeAndObjectType(result.fixedSubscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+        result.navPrevSubscription = prevLink ? prevLink.collect { it -> Subscription.get(it.source) } : null
+        result.navNextSubscription = nextLink ? nextLink.collect { it -> Subscription.get(it.destination)} : null
         result
     }
 
@@ -1186,8 +1196,10 @@ class SubscriptionDetailsController extends AbstractDebugController {
         }
         result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.subscriptionInstance, params)
 
-        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        Links prevLink = Links.findByDestinationAndLinkTypeAndObjectType(result.fixedSubscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+        Links nextLink = Links.findBySourceAndLinkTypeAndObjectType(result.fixedSubscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+        result.navPrevSubscription = prevLink ? prevLink.collect { it -> Subscription.get(it.source) } : null
+        result.navNextSubscription = nextLink ? nextLink.collect { it -> Subscription.get(it.destination)} : null
 
         log.debug(result.taskInstanceList)
         result
@@ -1227,8 +1239,10 @@ class SubscriptionDetailsController extends AbstractDebugController {
             response.sendError(401); return
         }
         result.contextOrg = contextService.getOrg()
-        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        ArrayList<Links> prevLink = Links.findAllBySourceAndLinkTypeAndObjectType(result.subscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+        ArrayList<Links> nextLink = Links.findAllByDestinationAndLinkTypeAndObjectType(result.subscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+        result.navPrevSubscription = prevLink ? prevLink.collect { it -> Subscription.get(it.destination) } : null
+        result.navNextSubscription = nextLink ? nextLink.collect { it -> Subscription.get(it.source)} : null
         result
     }
 
@@ -1556,8 +1570,10 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where className=? and persistedObjectId=? order by id desc", qry_params, [max: result.max, offset: result.offset]);
         result.historyLinesTotal = AuditLogEvent.executeQuery("select e.id from AuditLogEvent as e where className=? and persistedObjectId=?", qry_params).size()
 
-        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        ArrayList<Links> prevLink = Links.findAllBySourceAndLinkTypeAndObjectType(result.subscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+        ArrayList<Links> nextLink = Links.findAllByDestinationAndLinkTypeAndObjectType(result.subscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+        result.navPrevSubscription = prevLink ? prevLink.collect { it -> Subscription.get(it.destination) } : null
+        result.navNextSubscription = nextLink ? nextLink.collect { it -> Subscription.get(it.source)} : null
 
         result
     }
@@ -1588,8 +1604,10 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 baseParams
         )[0]
 
-        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        ArrayList<Links> prevLink = Links.findBySourceAndLinkTypeAndObjectType(result.subscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+        ArrayList<Links> nextLink = Links.findByDestinationAndLinkTypeAndObjectType(result.subscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+        result.navPrevSubscription = prevLink ? prevLink.collect { it -> Subscription.get(it.destination) } : null
+        result.navNextSubscription = nextLink ? nextLink.collect { it -> Subscription.get(it.source)} : null
 
         result
     }
@@ -1683,9 +1701,10 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
         }
 
-        //to be refactored as of ERMS-800
-        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        ArrayList<Links> prevLink = Links.findAllBySourceAndLinkTypeAndObjectType(params.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+        ArrayList<Links> nextLink = Links.findAllByDestinationAndLinkTypeAndObjectType(params.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+        result.navPrevSubscription = prevLink ? prevLink.collect { it -> Subscription.get(it.destination) } : null
+        result.navNextSubscription = nextLink ? nextLink.collect { it -> Subscription.get(it.source)} : null
 
         // links
         Long key = Long.parseLong(params.id)
@@ -2185,8 +2204,10 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             }
 
 
-            result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-            result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+            ArrayList<Links> prevLink = Links.findAllBySourceAndLinkTypeAndObjectType(result.subscriptionInstance.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+            ArrayList<Links> nextLink = Links.findAllByDestinationAndLinkTypeAndObjectType(result.subscriptionInstance.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+            result.navPrevSubscription = prevLink ? prevLink.collect { it -> Subscription.get(it.destination) } : null
+            result.navNextSubscription = nextLink ? nextLink.collect { it -> Subscription.get(it.source)} : null
 
             // tasks
             def contextOrg = contextService.getOrg()

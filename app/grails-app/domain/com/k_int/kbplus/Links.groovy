@@ -14,6 +14,8 @@ class Links extends AbstractBaseDomain {
     def contextService
     @Transient
     def springSecurityService
+    @Transient
+    def genericOIDService
 
     Long id
     Long source
@@ -68,7 +70,16 @@ class Links extends AbstractBaseDomain {
             return false
     }
 
-    Subscription getOther(Subscription context) {
+    Subscription getOther(key) {
+        Subscription context
+        if(key instanceof Subscription)
+            context = key
+        else if(key instanceof GString || key instanceof String)
+            context = genericOIDService.resolveOID(key)
+        else {
+            log.error("No context key!")
+            return null
+        }
         if(context.id == source)
             return Subscription.get(destination)
         else if(context.id == destination)
