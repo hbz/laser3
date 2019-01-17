@@ -333,7 +333,7 @@
     }
 
     $(document).ready(function() {
-        financeRecentController.go()
+        //financeRecentController.go() may make a further improvement; the recent added modal is not implemented anyway - needed to ensure export!
         financeHelper.calcSumOfCosts()
     })
 
