@@ -1781,11 +1781,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         // usage
         def suppliers = result.subscriptionInstance.issueEntitlements?.tipp.pkg.contentProvider?.id.unique()
 
-        // TODO ---> DEACTIVATED
-        // TODO ---> DEACTIVATED
-        // TODO ---> DEACTIVATED
-
-        if (false && suppliers) {
+        if (suppliers) {
             if (suppliers.size() > 1) {
                 log.debug('Found different content providers, cannot show usage')
             } else {
