@@ -214,9 +214,9 @@
         pullJob : null,
 
         go : function() {
-            console.log("go")
-            financeRecentController.recentCostItems( null ); // pulls latest cost items
-            financeRecentController.pullJob = setInterval( financeRecentController.costItemsPresent, 60 * 1000 ); // Recently updated code block
+            //console.log("go")
+            //financeRecentController.recentCostItems( null ); // pulls latest cost items
+            //financeRecentController.pullJob = setInterval( financeRecentController.costItemsPresent, 60 * 1000 ); // Recently updated code block
         },
 
         recentCostItems : function(to) {
