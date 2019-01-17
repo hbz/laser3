@@ -73,11 +73,7 @@ class IssueEntitlementController extends AbstractDebugController {
       def supplier = result.issueEntitlementInstance.tipp.pkg.contentProvider
       def supplier_id = supplier?.id
 
-        // TODO ---> DEACTIVATED
-        // TODO ---> DEACTIVATED
-        // TODO ---> DEACTIVATED
-
-      if ( false && title_id != null &&
+      if (title_id != null &&
            org != null &&
            supplier_id != null ) {
           result.natStatSupplierId = supplier.getIdentifierByType('statssid')?.value

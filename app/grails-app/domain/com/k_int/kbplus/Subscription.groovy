@@ -159,7 +159,8 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
         else if(getConsortia() && ! getAllSubscribers() && ! instanceOf) {
             result = TemplateSupport.CALCULATED_TYPE_CONSORTIAL
         }
-        else if(getConsortia() && getAllSubscribers() && instanceOf) {
+        else if(getConsortia() /* && getAllSubscribers() */ && instanceOf) {
+            // current and deleted member subscriptions
             result = TemplateSupport.CALCULATED_TYPE_PARTICIPATION
         }
         else if(! getConsortia() && getAllSubscribers() && ! instanceOf) {
@@ -402,8 +403,8 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
         Subscription.where{ instanceOf == this && (status == null || status.value != 'Deleted') }
     }
 
-    def getCaculatedPropDefGroups(Org contextOrg) {
-        def result = [ 'global':[], 'local':[], 'member':[], fallback: true ]
+    def getCalculatedPropDefGroups(Org contextOrg) {
+        def result = [ 'global':[], 'local':[], 'member':[], 'fallback': true, 'orphanedProperties':[]]
 
         // ALL type depending groups without checking tenants or bindings
         def groups = PropertyDefinitionGroup.findAllByOwnerType(Subscription.class.name)
@@ -449,6 +450,16 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
         }
 
         result.fallback = (result.global.size() == 0 && result.local.size() == 0 && result.member.size() == 0)
+
+        // storing properties without groups
+
+        def orph = customProperties.id
+
+        result.global.each{ gl -> orph.removeAll(gl.getCurrentProperties(this).id) }
+        result.local.each{ lc  -> orph.removeAll(lc[0].getCurrentProperties(this).id) }
+        result.member.each{ m  -> orph.removeAll(m[0].getCurrentProperties(this).id) }
+
+        result.orphanedProperties = SubscriptionCustomProperty.findAllByIdInList(orph)
 
         result
     }

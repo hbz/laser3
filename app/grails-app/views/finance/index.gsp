@@ -27,11 +27,17 @@
     </g:else>
 </semui:breadcrumbs>
 
+<g:form name="export" controller="finance" action="financialsExport">
+    <g:if test="${fixedSubscription}">
+        <input type="hidden" name="sub" value="${fixedSubscription.id}"/>
+    </g:if>
+</g:form>
+
 <semui:controlButtons>
     <semui:exportDropdown>
-        %{--<semui:exportDropdownItem>--}%
-            %{--<a class="item" data-mode="all" class="export" style="cursor: pointer">CSV Cost Items</a>--}%
-    %{--</semui:exportDropdownItem>--}%
+        <semui:exportDropdownItem>
+            <a class="item" onclick="$('#export').submit()">${message(code:'default.button.exports.xls', default:'XLS Export')}</a>
+        </semui:exportDropdownItem>
         <%--
         <semui:exportDropdownItem>
             <a data-mode="sub" class="disabled export" style="cursor: pointer">CSV Costs by Subscription</a>

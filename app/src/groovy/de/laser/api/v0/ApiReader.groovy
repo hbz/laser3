@@ -73,7 +73,7 @@ class ApiReader {
 
         result.owner    = ApiReaderHelper.resolveOrganisationStub(costItem.owner, context) // com.k_int.kbplus.Org
         result.sub      = ApiReaderHelper.resolveSubscriptionStub(costItem.sub, context) // com.k_int.kbplus.Subscription // RECURSION ???
-        result.subPkg   = ApiReaderHelper.resolveSubscriptionPackageStub(costItem.subPkg, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
+        //result.subPkg   = ApiReaderHelper.resolveSubscriptionPackageStub(costItem.subPkg, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.SubscriptionPackage
         result.issueEntitlement = ApiReaderHelper.resolveIssueEntitlement(costItem.issueEntitlement, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
         result.order    = ApiReaderHelper.resolveOrder(costItem.order) // com.k_int.kbplus.Order
         result.invoice  = ApiReaderHelper.resolveInvoice(costItem.invoice)
@@ -126,12 +126,12 @@ class ApiReader {
         result.impId            = lic.impId
         // result.lastmod          = lic.lastmod // legacy ?
         result.lastUpdated      = lic.lastUpdated
-        result.licenseUrl       = lic.licenseUrl
+        // result.licenseUrl       = lic.licenseUrl
         // removed - result.licensorRef      = lic.licensorRef
         // removed - result.licenseeRef      = lic.licenseeRef
         result.licenseType      = lic.licenseType
         result.licenseStatus    = lic.licenseStatus
-        result.noticePeriod     = lic.noticePeriod
+        //result.noticePeriod     = lic.noticePeriod
         result.reference        = lic.reference
         result.startDate        = lic.startDate
         result.normReference= lic.sortableReference
@@ -144,7 +144,7 @@ class ApiReader {
         result.isPublic         = lic.isPublic?.value
         // result.licenseCategory  = lic.licenseCategory?.value // legacy
         result.status           = lic.status?.value
-        result.type             = lic.type?.value
+        // result.type             = lic.type?.value
 
         // References
 

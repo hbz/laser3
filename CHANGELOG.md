@@ -1,4 +1,11 @@
 
+0.12.2
+
+- reactivated usage and statistics
+- fixed xeditable double values
+- fixed xls export for consortia members
+- fixed and improved finance xls export
+
 0.12.1
 
 - temporary deactivated usage and statistics
