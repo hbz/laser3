@@ -8,7 +8,6 @@ import grails.util.Holders
 import grails.web.Action
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
-import org.quartz.TriggerKey
 import org.quartz.impl.matchers.GroupMatcher
 
 import java.lang.reflect.Method

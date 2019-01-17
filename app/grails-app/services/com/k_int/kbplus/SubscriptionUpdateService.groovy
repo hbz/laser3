@@ -2,7 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.helper.RDStore
 
-class CronjobUpdateService {
+class SubscriptionUpdateService {
 
     /**
      * Cronjob-triggered.
@@ -31,7 +31,7 @@ class CronjobUpdateService {
             log.debug("Writing events")
             intendedSubsIds1.each { id ->
                 new EventLog(
-                        event: 'CronjobUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + CURRENT,
+                        event: 'SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + CURRENT,
                         message: 'SQL Update',
                         tstp: currentDate
                 ).save()
@@ -55,7 +55,7 @@ class CronjobUpdateService {
             log.debug("Writing events")
             intendedSubsIds2.each { id ->
                 new EventLog(
-                        event: 'CronjobUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + EXPIRED,
+                        event: 'SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + EXPIRED,
                         message: 'SQL Update',
                         tstp: currentDate
                 ).save()
@@ -79,7 +79,7 @@ class CronjobUpdateService {
             log.debug("Writing events")
             currentSubsIds.each { id ->
                 new EventLog(
-                        event: 'CronjobUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + EXPIRED,
+                        event: 'SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + EXPIRED,
                         message: 'SQL Update',
                         tstp: currentDate
                 ).save()
@@ -93,12 +93,12 @@ class CronjobUpdateService {
                 if (currentTime > sub.startDate.time && currentTime <= sub.endDate.time) {
                     log.info("Intended subscription with ID ${sub.id} has reached start date and is now running.")
                     Subscription.executeUpdate('UPDATE Subscription sub SET sub.status =:status WHERE sub.id =:id',[status: CURRENT, id: sub.id])
-                    new EventLog(event:'CronjobUpdateService UPDATE subscriptions WHERE ID ' + sub.id + ' Status: ' + CURRENT, message:'SQL Update', tstp:new Date(currentTime)).save(flush:true)
+                    new EventLog(event:'SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + sub.id + ' Status: ' + CURRENT, message:'SQL Update', tstp:new Date(currentTime)).save(flush:true)
                 }
                 else if (currentTime > sub.startDate.time && sub.endDate != null && currentTime > sub.endDate.time) {
                     log.info("Intended subscription with ID ${sub.id} has reached start and end date and is now expired.")
                     Subscription.executeUpdate('UPDATE Subscription sub SET sub.status =:status WHERE sub.id =:id',[status: EXPIRED, id: sub.id])
-                    new EventLog(event:'CronjobUpdateService UPDATE subscriptions WHERE ID ' + sub.id + ' Status: ' + EXPIRED, message:'SQL Update', tstp:new Date(currentTime)).save(flush:true)
+                    new EventLog(event:'SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + sub.id + ' Status: ' + EXPIRED, message:'SQL Update', tstp:new Date(currentTime)).save(flush:true)
                 }
             }
             catch (NullPointerException e) {
@@ -111,7 +111,7 @@ class CronjobUpdateService {
                 if (currentTime > sub.startDate.time && sub.endDate != null && currentTime > sub.endDate.time) {
                     log.info("Current subscription with ID ${sub.id} has reached end date and is now expired: ${sub.endDate.time} vs. ${currentTime}")
                     Subscription.executeUpdate('UPDATE Subscription sub SET sub.status =:status WHERE sub.id =:id',[status: EXPIRED, id: sub.id])
-                    new EventLog(event:'CronjobUpdateService UPDATE subscriptions WHERE ID ' + sub.id + ' Status: ' + EXPIRED, message:'SQL Update', tstp:new Date(currentTime)).save(flush:true)
+                    new EventLog(event:'SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + sub.id + ' Status: ' + EXPIRED, message:'SQL Update', tstp:new Date(currentTime)).save(flush:true)
                 }
             }
             catch (NullPointerException e) {
@@ -120,4 +120,23 @@ class CronjobUpdateService {
         }*/
 
     }
+
+    /**
+     * Triggered from the Yoda menu
+     * Refactors the preceding/following subscriptions to the new link model - to reset, delete the database table
+     */
+    void updateLinks() {
+        def subsWithPrevious = Subscription.findAllByPreviousSubscriptionIsNotNull().collect { it -> [source:it.id,destination:it.previousSubscription.id] }
+        subsWithPrevious.each { sub ->
+            log.debug(sub.source+" follows "+sub.destination)
+            Links link = new Links()
+            link.source = sub.source
+            link.destination = sub.destination
+            link.owner = Org.executeQuery('select o.org from OrgRole as o where o.roleType in :ownerRoles and o.sub = :source',[ownerRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER],source: Subscription.get(sub.source)]).get(0)
+            link.objectType = Subscription.class.name
+            link.linkType = RDStore.LINKTYPE_FOLLOWS
+            link.save(true)
+        }
+    }
+
 }

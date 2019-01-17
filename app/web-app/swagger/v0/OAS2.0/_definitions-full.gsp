@@ -646,8 +646,8 @@
     #        type: array
     #        items:
     #          $ref: "#/definitions/Person" # resolved PersonRole
-          previousSubscription:
-            $ref: "#/definitions/SubscriptionStub"
+    #     previousSubscription:
+    #       $ref: "#/definitions/SubscriptionStub"
           properties: # mapping attr customProperties
             type: array
             items:

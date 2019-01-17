@@ -346,6 +346,7 @@ class ApiReader {
         //removed: result.license          = ApiReaderHelper.resolveLicense(sub.owner, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.License
 
         //result.organisations        = ApiReaderHelper.resolveOrgLinks(sub.orgRelations, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole
+        //TODO contact David upon this!
         result.previousSubscription = ApiReaderHelper.resolveSubscriptionStub(sub.previousSubscription, context) // com.k_int.kbplus.Subscription
         result.properties           = ApiReaderHelper.resolveProperties(sub, context) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
 

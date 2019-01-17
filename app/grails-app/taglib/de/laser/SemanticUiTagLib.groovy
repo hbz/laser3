@@ -512,12 +512,16 @@ class SemanticUiTagLib {
         def tooltip = object.status.getI10n('value')
         out <<   "<div class='ui large label la-annual-rings'>"
         if (prev) {
-            if (attrs.mapping) {
-                out <<   g.link ('<i class="arrow left icon"></i>', contoller: attrs.controller, action: attrs.action, params:[sub:prev?.id], mapping: attrs.mapping)
+            StringJoiner sj = new StringJoiner("|")
+            prev.each { p ->
+                if (attrs.mapping) {
+                    sj.add(g.link ("<span data-tooltip=\"${p.name}\">#${p.id}</span>",contoller: attrs.controller, action: attrs.action, params:[sub:p.id], mapping: attrs.mapping))
+                }
+                else {
+                    sj.add(g.link ("<span data-tooltip=\"${p.name}\">#${p.id}</span>",contoller: attrs.controller, action: attrs.action, id:p.id))
+                }
             }
-            else {
-                out <<   g.link ('<i class="arrow left icon"></i>', contoller: attrs.controller, action: attrs.action, id:prev?.id)
-            }
+            out << sj.toString() + '<i class="arrow left icon"></i>'
         }
         else {
             out << '<i class="arrow left icon disabled"></i>'
@@ -531,12 +535,16 @@ class SemanticUiTagLib {
         out << '       ?'
         out << '</a>'
         if (next) {
-            if (attrs.mapping) {
-                out <<   g.link ('<i class="arrow right icon"></i>', contoller: attrs.controller, action: attrs.action, params:[sub:next?.id], mapping: attrs.mapping)
+            StringJoiner sj = new StringJoiner("|")
+            next.each { n ->
+                if (attrs.mapping) {
+                    sj.add(g.link ("<span data-tooltip=\"${n.name}\">#${n.id}</span>", contoller: attrs.controller, action: attrs.action, params:[sub:n.id], mapping: attrs.mapping))
+                }
+                else {
+                    sj.add(g.link ("<span data-tooltip=\"${n.name}\">#${n.id}</span>", contoller: attrs.controller, action: attrs.action, id:n.id))
+                }
             }
-            else {
-                out <<   g.link ('<i class="arrow right icon"></i>', contoller: attrs.controller, action: attrs.action, id:next?.id)
-            }
+            out << '<i class="arrow right icon"></i>' + sj.toString()
         }
         else {
             out << '<i class="arrow right icon disabled"></i>'

@@ -87,8 +87,11 @@ class FinanceController extends AbstractDebugController {
 
             result.fixedSubscription = params.int('sub')? Subscription.get(params.sub) : null
 
-            result.navPrevSubscription = result.fixedSubscription.previousSubscription ?: null
-            result.navNextSubscription = Subscription.findByPreviousSubscription(result.fixedSubscription) ?: null
+
+            Links prevLink = Links.findAllBySourceAndLinkTypeAndObjectType(result.fixedSubscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+            Links nextLink = Links.findAllByDestinationAndLinkTypeAndObjectType(result.fixedSubscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+            result.navPrevSubscription = prevLink ? prevLink.collect { it -> Subscription.get(it.destination) } : null
+            result.navNextSubscription = nextLink ? nextLink.collect { it -> Subscription.get(it.source)} : null
 
             if (! result.fixedSubscription) {
                 log.error("Financials in FIXED subscription mode, sent incorrect subscription ID: ${params?.sub}")
