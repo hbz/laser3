@@ -213,4 +213,22 @@
     </table>
 
     </g:if>
+<sec:ifAnyGranted roles="ROLE_USER">
+    <r:script>
+        // sticky table header
+        $('.table').floatThead({
+            position: 'fixed',
+            top: 90,
+            zIndex: 1
+        });
+    </r:script>
+</sec:ifAnyGranted>
+<r:script>
+    // sticky table header
+    $('.table').floatThead({
+        position: 'fixed',
+        top: 45,
+        zIndex: 1
+    });
+</r:script>
 </body>
