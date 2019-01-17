@@ -368,9 +368,9 @@ class YodaController {
 
             if (s.name == "MailSentDisabled") {
                 if (s.value == 'true')
-                    grails.mail.disabled = false
+                    grailsApplication.config.grails.mail.disabled = false
                 else
-                    grails.mail.disabled = true
+                    grailsApplication.config.grails.mail.disabled = true
             }
 
             s.save(flush:true)
@@ -492,17 +492,15 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def dueDates_updateDashboardDB(){
-        flash.message = "Datenbank wird upgedatet"
-        dashboardDueDatesService.takeCareOfDueDates(true, false)
+        flash.message = "DB wird upgedatet...<br/>"
+        dashboardDueDatesService.takeCareOfDueDates(true, false, flash)
         redirect(url: request.getHeader('referer'))
     }
 
     @Secured(['ROLE_YODA'])
     def dueDates_sendAllEmails() {
-        flash.message = "Emails mit fälligen Terminen werden vesandt"
-        def future = executorService.submit({
-            dashboardDueDatesService.takeCareOfDueDates(false, true)
-        } as java.util.concurrent.Callable)
+        flash.message = "Emails mit fälligen Terminen werden vesandt...<br/>"
+        dashboardDueDatesService.takeCareOfDueDates(false, true, flash)
         redirect(url: request.getHeader('referer'))
     }
 

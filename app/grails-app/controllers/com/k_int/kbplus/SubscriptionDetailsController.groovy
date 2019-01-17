@@ -1380,7 +1380,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
         if (params.addType && (params.addType != '')) {
             if (params.gokbApi) {
-                def gri = GlobalRecordInfo.findByIdentifier(params.addId)
+                def gri = GlobalRecordInfo.findByUuid(params.impId)
+
+                if (!gri) {
+                  gri = GlobalRecordInfo.findByIdentifier(params.addId)
+                }
 
                 if (!gri) {
                     redirect(url: request.getHeader('referer'))
@@ -1407,13 +1411,14 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                         log.error(grt.errors)
                     }
                 }
-                if (!Package.findByImpId(grt.owner.identifier)) {
+
+                if (!Package.findByImpId(grt.owner.uuid)) {
                     globalSourceSyncService.initialiseTracker(grt);
                     //Update INDEX ES
                     dataloadService.updateFTIndexes();
                 }
 
-                def pkg_to_link = Package.findByImpId(grt.owner.identifier)
+                def pkg_to_link = Package.findByImpId(grt.owner.uuid)
                 def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
                 log.debug("Add package ${params.addType} to subscription ${params}");
 
@@ -1424,8 +1429,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                         pkg_to_link.addToSubscription(it, true)
                     }
 
-                    redirect action: 'index', id: params.id
-                } else if (params.addType == 'Without') {
+                    redirect action:'index', id:params.id
+                }
+                else if ( params.addType == 'Without' ) {
                     pkg_to_link.addToSubscription(result.subscriptionInstance, false)
 
                     sub_instances.each {
@@ -1464,13 +1470,17 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             result.pkgs = []
             if (params.gokbApi) {
                 result.subscriptionInstance.packages.each { sp ->
+                    log.debug("Existing package ${sp.pkg.name} (Adding ImpID: ${sp.pkg.impId})")
                     result.pkgs.add(sp.pkg.impId)
                 }
             } else {
                 result.subscriptionInstance.packages.each { sp ->
+                    log.debug("Existing package ${sp.pkg.name} (Adding ID: ${sp.pkg.id})")
                     result.pkgs.add(sp.pkg.id)
                 }
             }
+        } else {
+          log.debug("Subscription has no linked packages yet")
         }
 
         if (result.institution) {
@@ -1830,11 +1840,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         // usage
         def suppliers = result.subscriptionInstance.issueEntitlements?.tipp.pkg.contentProvider?.id.unique()
 
-        // TODO ---> DEACTIVATED
-        // TODO ---> DEACTIVATED
-        // TODO ---> DEACTIVATED
-
-        if (false && suppliers) {
+        if (suppliers) {
             if (suppliers.size() > 1) {
                 log.debug('Found different content providers, cannot show usage')
             } else {

@@ -193,6 +193,7 @@
                     ${message(code: 'default.search.no_pagiantion.text', args: [resultsTotal])}
                 </g:else>
             </div>
+
             <g:if test="${hits}">
                 <semui:paginate action="linkPackage" controller="subscriptionDetails" params="${params}"
                                 next="${message(code: 'default.paginate.next', default: 'Next')}"
@@ -233,7 +234,7 @@
 <div class="ui segment">
 
     <div class="ui dimmer">
-        <div class="ui large text loader">Die Paket Verküpfung kann einige Zeit beanspruchen!</div>
+        <div class="ui large text loader">Die Paketverküpfung kann einige Zeit beanspruchen!</div>
     </div>
 
 </div>

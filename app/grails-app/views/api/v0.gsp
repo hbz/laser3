@@ -108,7 +108,7 @@
             var placeholders = {
                 query_q: 'q - Identifier for this query',
                 query_v: 'v - Value for this query',
-                authorization: 'Authorization - hmac-sha256 generated auth header',
+                authorization: 'x-authorization - hmac-sha256 generated auth header',
                 context: 'context - Concrete globalUID, if user has memberships in multiple organisations'
             }
 
@@ -180,7 +180,7 @@
                 var id      = jQuery('.topbar input[name=apiId]').val().trim()
                 var key     = jQuery('.topbar input[name=apiKey]').val().trim()
                 var method  = jQuery(div).parents('.opblock').find('.opblock-summary-method').text()
-                var path    = "/api/${apiVersion}" + jQuery(div).parents('.opblock').find('.opblock-summary-path > span').text()
+                var path    = "/api/${apiVersion}" + jQuery(div).parents('.opblock').find('.opblock-summary-path span').text()
                 var timestamp = ""
                 var nounce    = ""
                 var context = jQuery(div).find('input[placeholder="' + placeholders.context + '"]').val().trim()
@@ -200,16 +200,6 @@
                 var algorithm     = "hmac-sha256"
                 var digest        = CryptoJS.HmacSHA256(method + path + timestamp + nounce + query + body, key)
                 var authorization = "hmac " + id + ":" + timestamp + ":" + nounce + ":" + digest + "," + algorithm
-
-                if (false) {
-                    console.log('id: ' + id)
-                    console.log('key: ' + key)
-                    console.log('method: ' + method)
-                    console.log('path: ' + path)
-                    console.log('context: ' + context)
-                    console.log('query: ' + query)
-                    console.log('body: ' + body)
-                }
 
                 return authorization
             }

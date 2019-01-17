@@ -1,390 +1,200 @@
-
-### endpoints ###
-
-paths:
+<%-- indention: 2 --%>
 
   /refdatas:
+
     get:
       tags:
-      - Catalogues
-      summary: Catalogue of refdatas
+        - Catalogues
+      summary: Retrieving catalogue of combined refdatas
       description: >
-        An Overview for RefdataCategories and RefdataValues
+        Retrieving an overview for RefdataCategories and RefdataValues
+
       parameters:
-        - $ref: "#/parameters/q"
-        - $ref: "#/parameters/v"
-        - $ref: "#/parameters/context"
-        - $ref: "#/parameters/authorization"
-      produces:
-        - application/json
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/context"
+        - $ref: "#/components/parameters/authorization"
+
       responses:
         200:
           description: OK
-          schema:
-            $ref: "#/definitions/Refdatas"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Refdatas_Virtual"
         401:
-          $ref: "#/responses/notAuthorized"
+          $ref: "#/components/responses/notAuthorized"
+
 
   /costItem:
-    get:
-      tags:
-        - Finance
-      summary: Find cost item by identifier
-      description: >
-        Supported are queries by following identifiers: *uuid*
-      parameters:
-        - $ref: "#/parameters/q"
-        - $ref: "#/parameters/v"
-        - $ref: "#/parameters/context"
-        - $ref: "#/parameters/authorization"
-      produces:
-        - application/json
-      responses:
-        200:
-          description: OK
-        400:
-          $ref: "#/responses/badRequest"
-        401:
-          $ref: "#/responses/notAuthorized"
-        403:
-          $ref: "#/responses/forbidden"
-        404:
-          description: Valid request, but document not found
-        406:
-          $ref: "#/responses/notAcceptable"
 
-  /costItems:
-    get:
-      tags:
-        - Finance
-      summary: Find owner related cost items by identifier
-      description: >
-        Supported are queries by following identifiers: *uuid*
-      parameters:
-        - $ref: "#/parameters/q"
-        - $ref: "#/parameters/v"
-        - $ref: "#/parameters/context"
-        - $ref: "#/parameters/authorization"
-      produces:
-        - application/json
-      responses:
-        200:
-          description: OK
-        400:
-          $ref: "#/responses/badRequest"
-        401:
-          $ref: "#/responses/notAuthorized"
-        403:
-          $ref: "#/responses/forbidden"
-        404:
-          description: Valid request, but document not found
-        406:
-          $ref: "#/responses/notAcceptable"
-
-  /document:
-    get:
-      tags:
-        - Documents
-      summary: Find note or download document by identifier
-      description: >
-        Supported are queries by following identifiers: *uuid*
-      parameters:
-        - $ref: "#/parameters/q"
-        - $ref: "#/parameters/v"
-        - $ref: "#/parameters/context"
-        - $ref: "#/parameters/authorization"
-  #    produces:
-  #      - application/*
-  #      - text/*
-      responses:
-        200:
-          description: OK
-        400:
-          $ref: "#/responses/badRequest"
-        401:
-          $ref: "#/responses/notAuthorized"
-        403:
-          $ref: "#/responses/forbidden"
-        404:
-          description: Valid request, but document not found
-        406:
-          $ref: "#/responses/notAcceptable"
-<%--
-  /issueEntitlements:
-    get:
-      tags:
-        - IssueEntitlements
-      summary: Find issue entitlements by subscription identifier and package identifier
-      description: >
-        Supported are queries by following identifiers: *globalUID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_. Both Parameters have to be separated by *comma*.
-      parameters:
-        - $ref: "#/parameters/q"
-        - $ref: "#/parameters/v"
-        - $ref: "#/parameters/context"
-        - $ref: "#/parameters/authorization"
-      produces:
-        - text/plain
-        - application/json
-      responses:
-        200:
-          description: OK
-        400:
-          $ref: "#/responses/badRequest"
-        401:
-          $ref: "#/responses/notAuthorized"
-        403:
-          $ref: "#/responses/forbidden"
-        404:
-          description: Valid request, but no issue entitlements found
-        406:
-          $ref: "#/responses/notAcceptable"
---%>
-
-  /license:
     get:
       tags:
         - Objects
-      summary: Find license by identifier
+      summary: Retrieving a single cost item
       description: >
-        Supported are queries by following identifiers: *globalUID*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
+        Supported are queries by following identifiers: *uuid*
+
       parameters:
-        - $ref: "#/parameters/q"
-        - $ref: "#/parameters/v"
-        - $ref: "#/parameters/context"
-        - $ref: "#/parameters/authorization"
-      produces:
-        - application/json
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/context"
+        - $ref: "#/components/parameters/authorization"
+
       responses:
         200:
           description: OK
-          schema:
-            $ref: "#/definitions/License"
+          content:
+            application/*:
+              schema:
+                $ref: "#/components/schemas/CostItem"
         400:
-          $ref: "#/responses/badRequest"
+          $ref: "#/components/responses/badRequest"
         401:
-          $ref: "#/responses/notAuthorized"
+          $ref: "#/components/responses/notAuthorized"
         403:
-          $ref: "#/responses/forbidden"
+          $ref: "#/components/responses/forbidden"
         404:
-          description: Valid request, but license not found
+          description: Valid request, but cost item not found
         406:
-          $ref: "#/responses/notAcceptable"
-        412:
-          $ref: "#/responses/preconditionFailed"
-<%--
-    post:
-      tags:
-        - Licenses
-      summary: Create license (work in progess)
-      #TODO:  description: Organisations and Subscriptions will NOT be _created_, but _linked_ if found
-      description: Organisations will NOT be _created_, but _linked_ if found
-      parameters:
-        - $ref: "#/parameters/context"
-        - $ref: "#/parameters/authorization"
-        - in: body
-          name: body
-          required: true
-          schema:
-            $ref: "#/definitions/License"
-          description: Object data
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      responses:
-        201:
-          $ref: "#/responses/created"
-        400:
-          $ref: "#/responses/badRequest"
-        401:
-          $ref: "#/responses/notAuthorized"
-        409:
-          $ref: "#/responses/conflict"
-        500:
-          $ref: "#/responses/internalServerError"
+          $ref: "#/components/responses/notAcceptable"
 
-  /onixpl:
+
+  /costItems:
+
     get:
       tags:
-        - Documents
-      summary: Find onixpl documents by license identifier
+        - Objects
+      summary: Retrieving owner related cost items
       description: >
-        Supported are queries by following identifiers: *globalUID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
+        Supported are queries by following identifiers: *globalUID*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
+
       parameters:
-        - $ref: "#/parameters/q"
-        - $ref: "#/parameters/v"
-        - $ref: "#/parameters/context"
-        - $ref: "#/parameters/authorization"
-      produces:
-        - application/xml
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/context"
+        - $ref: "#/components/parameters/authorization"
+
       responses:
         200:
           description: OK
+          content:
+            application/*:
+              schema:
+                $ref: "#/components/schemas/PlaceholderList"
         400:
-          $ref: "#/responses/badRequest"
+          $ref: "#/components/responses/badRequest"
         401:
-          $ref: "#/responses/notAuthorized"
+          $ref: "#/components/responses/notAuthorized"
         403:
-          $ref: "#/responses/forbidden"
+          $ref: "#/components/responses/forbidden"
+        404:
+          description: Valid request, but no cost items found
+        406:
+          $ref: "#/components/responses/notAcceptable"
+
+
+  /document:
+
+    get:
+      tags:
+        - Objects
+      summary: Documents download
+      description: >
+        Supported are queries by following identifiers: *uuid*
+
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/context"
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/*:
+              schema:
+                $ref: "#/components/schemas/PlaceholderBinary"
+        400:
+          $ref: "#/components/responses/badRequest"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+        403:
+          $ref: "#/components/responses/forbidden"
         404:
           description: Valid request, but document not found
         406:
-          $ref: "#/responses/notAcceptable"
+          $ref: "#/components/responses/notAcceptable"
 
-  /organisation:
+
+  /license:
+
     get:
       tags:
-        - Organisations
-      summary: Find organisation by identifier
+        - Objects
+      summary: Retrieving a single license
       description: >
-        Supported are queries by following identifiers: *globalUID*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
+        Supported are queries by following identifiers: *globalUID*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _gasco-lic:0815_
+
       parameters:
-        - $ref: "#/parameters/q"
-        - $ref: "#/parameters/v"
-        - $ref: "#/parameters/context"
-        - $ref: "#/parameters/authorization"
-      produces:
-        - application/json
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/context"
+        - $ref: "#/components/parameters/authorization"
+
       responses:
         200:
           description: OK
-          schema:
-            $ref: "#/definitions/Organisation"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/License"
         400:
-          $ref: "#/responses/badRequest"
+          $ref: "#/components/responses/badRequest"
         401:
-          $ref: "#/responses/notAuthorized"
+          $ref: "#/components/responses/notAuthorized"
         403:
-          $ref: "#/responses/forbidden"
-        404:
-          description: Valid request, but organisation not found
-        406:
-          $ref: "#/responses/notAcceptable"
-        412:
-          $ref: "#/responses/preconditionFailed"
-    post:
-      tags:
-        - Organisations
-      summary: Create organisation
-      description: Organisation will NOT be created, if one organisation with same name AND namespace-identifier exists
-      parameters:
-        - $ref: "#/parameters/context"
-        - $ref: "#/parameters/authorization"
-        - in: body
-          name: body
-          required: true
-          schema:
-            $ref: "#/definitions/Organisation"
-          description: Object data
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      responses:
-        201:
-          $ref: "#/responses/created"
-        400:
-          $ref: "#/responses/badRequest"
-        401:
-          $ref: "#/responses/notAuthorized"
-        409:
-          $ref: "#/responses/conflict"
-        500:
-          $ref: "#/responses/internalServerError"
-
-  /package:
-    get:
-      tags:
-        - Packages
-      summary: Find packge by identifier
-      description: >
-        Supported are queries by following identifiers: *globalUID*, *identifier*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _xyz:4711_
-      parameters:
-        - $ref: "#/parameters/q"
-        - $ref: "#/parameters/v"
-        - $ref: "#/parameters/context"
-        - $ref: "#/parameters/authorization"
-      produces:
-        - application/json
-      responses:
-        200:
-          description: OK
-          schema:
-            $ref: "#/definitions/Package"
-        400:
-          $ref: "#/responses/badRequest"
-        401:
-          $ref: "#/responses/notAuthorized"
-        403:
-          $ref: "#/responses/forbidden"
+          $ref: "#/components/responses/forbidden"
         404:
           description: Valid request, but license not found
         406:
-          $ref: "#/responses/notAcceptable"
+          $ref: "#/components/responses/notAcceptable"
         412:
-          $ref: "#/responses/preconditionFailed"
---%>
+          $ref: "#/components/responses/preconditionFailed"
+
 
   /subscription:
+
     get:
       tags:
       - Objects
-      summary: Find subscription by identifier
+      summary: Retrieving a single subscription
       description: >
         Supported are queries by following identifiers: *globalUID*, *identifier*, *impId* and *ns:identifier*. Ns:identifier value has to be defined like this: _xyz:4711_
+
       parameters:
-        - $ref: "#/parameters/q"
-        - $ref: "#/parameters/v"
-        - $ref: "#/parameters/context"
-        - $ref: "#/parameters/authorization"
-      produces:
-        - application/json
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/context"
+        - $ref: "#/components/parameters/authorization"
+
       responses:
         200:
           description: OK
-          schema:
-            $ref: "#/definitions/Subscription"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
         400:
-          $ref: "#/responses/badRequest"
+          $ref: "#/components/responses/badRequest"
         401:
-          $ref: "#/responses/notAuthorized"
+          $ref: "#/components/responses/notAuthorized"
         403:
-          $ref: "#/responses/forbidden"
+          $ref: "#/components/responses/forbidden"
         404:
           description: Valid request, but subscription not found
         406:
-          $ref: "#/responses/notAcceptable"
+          $ref: "#/components/responses/notAcceptable"
         412:
-          $ref: "#/responses/preconditionFailed"
-<%--
-    post:
-      tags:
-        - Subscriptions
-      summary: Create Subscription (work in progess)
-      #TODO:  description: Organisations and Subscriptions will NOT be _created_, but _linked_ if found
-      description: Organisations will NOT be _created_, but _linked_ if found
-      parameters:
-        - $ref: "#/parameters/context"
-        - $ref: "#/parameters/authorization"
-        - in: body
-          name: body
-          required: true
-          schema:
-            $ref: "#/definitions/Subscription"
-          description: Object data
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      responses:
-        201:
-          $ref: "#/responses/created"
-        400:
-          $ref: "#/responses/badRequest"
-        401:
-          $ref: "#/responses/notAuthorized"
-        409:
-          $ref: "#/responses/conflict"
-        500:
-          $ref: "#/responses/internalServerError"
---%>
+          $ref: "#/components/responses/preconditionFailed"

@@ -193,49 +193,60 @@ class TitleInstance extends AbstractBaseDomain implements AuditTrait {
     return result;
   }
 
-  static def lookupOrCreate(candidate_identifiers, title) {
-    lookupOrCreate(candidate_identifiers, title, false, null)
+  static def lookupOrCreate(List candidate_identifiers, String title, String imp_uuid) {
+    lookupOrCreate(candidate_identifiers, title, false, null, imp_uuid)
   }
 
-  static def lookupOrCreate(candidate_identifiers, title, titletyp) {
-        lookupOrCreate(candidate_identifiers, title, false, titletyp)
+  static def lookupOrCreate(List candidate_identifiers, String title, String titletyp, String imp_uuid) {
+        lookupOrCreate(candidate_identifiers, title, false, titletyp, imp_uuid)
     }
 
-  static def lookupOrCreate(candidate_identifiers, title, enrich, titletyp) {
+  static def lookupOrCreate(List candidate_identifiers, String title, boolean enrich, String titletyp, String imp_uuid) {
     def result = null;
     def origin_uri = null
     def skip_creation = false
+    def valid_match = false
     def ti_candidates = []
     def canonical_ids = []
 
-    candidate_identifiers.each { i ->
-      if(i.namespace.toLowerCase() == 'uri'){
-        origin_uri = i.value
-      }
+    if(imp_uuid?.length() == 0) {
+      imp_uuid = null
+    }
 
-      def id = Identifier.lookupOrCreateCanonicalIdentifier(i.namespace, i.value)
+    if (imp_uuid) {
+      result = TitleInstance.findByImpId(imp_uuid)
+      if (result) valid_match = true
+    }
 
-      if(id && id.ns.ns && id.value){
-        canonical_ids.add(id)
-        static_logger.debug("processing candidate identifier ${i} as ${id}");
+    if(!result){
 
-        def io = IdentifierOccurrence.findAllByIdentifier(id)
+      candidate_identifiers.each { i ->
+        if(i.namespace.toLowerCase() == 'uri'){
+          origin_uri = i.value
+        }
 
-        if ( io.size() > 0 ) {
-          static_logger.debug("located existing title(s)");
-          io.each { occ ->
-            if(occ.ti && occ.ti.status?.value == 'Current' && !ti_candidates.contains(occ.ti)){
-              ti_candidates.add(occ.ti)
+        def id = Identifier.lookupOrCreateCanonicalIdentifier(i.namespace, i.value)
+
+        if(id && id.ns.ns && id.value){
+          canonical_ids.add(id)
+          static_logger.debug("processing candidate identifier ${i} as ${id}");
+
+          def io = IdentifierOccurrence.findAllByIdentifier(id)
+
+          if ( io.size() > 0 ) {
+            static_logger.debug("located existing title(s)");
+            io.each { occ ->
+              if(occ.ti && occ.ti.status?.value == 'Current' && !ti_candidates.contains(occ.ti)){
+                ti_candidates.add(occ.ti)
+              }
             }
           }
         }
-      }
-      else {
-        static_logger.debug("error processing candidate identifier ${i}");
+        else {
+          static_logger.debug("error processing candidate identifier ${i}");
+        }
       }
     }
-
-    def valid_match = false
 
     if( ti_candidates.size() > 0 ) {
       static_logger.debug("Collected ${ti_candidates.size()} title candidates: ${ti_candidates}")
@@ -335,12 +346,16 @@ class TitleInstance extends AbstractBaseDomain implements AuditTrait {
       }
     }
 
+    if (result && imp_uuid && result.impId != imp_uuid) {
+      result.impId = imp_uuid
+    }
+
     if (!valid_match && !skip_creation) {
       static_logger.debug("No valid match - creating new title");
       def ti_status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Current', de: 'Aktuell'])
       //result = new TitleInstance(title:title, impId:java.util.UUID.randomUUID().toString(), status:ti_status);
-      result = ((titletyp=='BookInstance') ? new BookInstance(title:title, impId:java.util.UUID.randomUUID().toString(), status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'EBook', de: 'EBook'])) :
-              (titletyp=='DatabaseInstance' ? new DatabaseInstance(title:title, impId:java.util.UUID.randomUUID().toString(), status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de: 'Database'])) : new JournalInstance(title:title, impId:java.util.UUID.randomUUID().toString(), status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Journal', de: 'Journal']))))
+      result = ((titletyp=='BookInstance') ? new BookInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'EBook', de: 'EBook'])) :
+              (titletyp=='DatabaseInstance' ? new DatabaseInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de: 'Database'])) : new JournalInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Journal', de: 'Journal']))))
       result.save(flush:true, failOnError: true);
 
       result.ids=[]

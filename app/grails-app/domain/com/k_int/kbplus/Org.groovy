@@ -12,6 +12,7 @@ import groovy.util.logging.*
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.hibernate.Criteria
 import javax.persistence.Transient
+import grails.util.Holders
 
 @Log4j
 class Org extends AbstractBaseDomain {
@@ -208,8 +209,8 @@ class Org extends AbstractBaseDomain {
         result
     }
 
-    def getCaculatedPropDefGroups(Org contextOrg) {
-        def result = [ 'global':[], 'local':[], fallback: true ]
+    def getCalculatedPropDefGroups(Org contextOrg) {
+        def result = [ 'global':[], 'local':[], 'fallback': true, 'orphanedProperties':[] ]
 
         // ALL type depending groups without checking tenants or bindings
         def groups = PropertyDefinitionGroup.findAllByOwnerType(Org.class.name)
@@ -227,6 +228,15 @@ class Org extends AbstractBaseDomain {
         }
 
         result.fallback = (result.global.size() == 0 && result.local.size() == 0)
+
+        // storing properties without groups
+
+        def orph = customProperties.id
+
+        result.global.each{ gl -> orph.removeAll(gl.getCurrentProperties(this).id) }
+        result.local.each{ lc  -> orph.removeAll(lc[0].getCurrentProperties(this).id) }
+
+        result.orphanedProperties = OrgCustomProperty.findAllByIdInList(orph)
 
         result
     }
@@ -270,10 +280,19 @@ class Org extends AbstractBaseDomain {
     return new Org(name:value)
   }
 
-    static def lookup(name, identifiers) {
+  static def lookup(name, identifiers, def uuid = null) {
 
-        def result = []
+      def result = []
 
+      if (uuid?.size() > 0) {
+        def uuid_match = Org.findByImpId(uuid)
+
+        if(uuid_match) {
+          result << uuid_match
+        }
+      }
+
+      if(!result) {
         // SUPPORT MULTIPLE IDENTIFIERS
         if (identifiers instanceof ArrayList) {
             identifiers.each { it ->
@@ -297,25 +316,30 @@ class Org extends AbstractBaseDomain {
                 }
             }
         }
+      }
 
-        // No match by identifier, try and match by name
-        if (! result) {
-            // log.debug("Match by name ${name}");
-            def o = Org.executeQuery("select o from Org as o where lower(o.name) = ?", [name.toLowerCase()])
+      // No match by identifier, try and match by name
+      if (! result) {
+          // log.debug("Match by name ${name}");
+          def o = Org.executeQuery("select o from Org as o where lower(o.name) = ?", [name.toLowerCase()])
 
-            if (o.size() > 0) result << o[0]
+          if (o.size() > 0) result << o[0]
+      }
+
+      result.isEmpty() ? null : result.get(0)
+    }
+
+    static def lookupOrCreate(name, sector, consortium, identifiers, iprange, def imp_uuid = null) {
+        lookupOrCreate2(name, sector, consortium, identifiers, iprange, null, imp_uuid)
+    }
+
+    static def lookupOrCreate2(name, sector, consortium, identifiers, iprange, orgRoleTyp, def imp_uuid = null) {
+
+        if(imp_uuid?.size() == 0) {
+          imp_uuid = null
         }
 
-        result.isEmpty() ? null : result.get(0)
-    }
-
-    static def lookupOrCreate(name, sector, consortium, identifiers, iprange) {
-        lookupOrCreate2(name, sector, consortium, identifiers, iprange, null)
-    }
-
-    static def lookupOrCreate2(name, sector, consortium, identifiers, iprange, orgRoleTyp) {
-
-        def result = Org.lookup(name, identifiers)
+        def result = Org.lookup(name, identifiers, imp_uuid)
 
         if ( result == null ) {
           // log.debug("Create new entry for ${name}");
@@ -331,7 +355,7 @@ class Org extends AbstractBaseDomain {
                            name:name,
                            sector:sector,
                            ipRange:iprange,
-                           impId:java.util.UUID.randomUUID().toString()
+                           impId: imp_uuid?.length() > 0 ? imp_uuid : java.util.UUID.randomUUID().toString()
           ).save()
           if(orgRoleTyp) {
               result.addToOrgRoleType(orgRoleTyp).save()
@@ -360,6 +384,8 @@ class Org extends AbstractBaseDomain {
                                      type: RefdataValue.getByValueAndCategory('Consortium','Combo Type')
             ).save()
           }
+        } else if (Holders.config.globalDataSync.replaceLocalImpIds.Org && imp_uuid && imp_uuid != result.impId){
+          result.impId = imp_uuid
         }
  
         result
