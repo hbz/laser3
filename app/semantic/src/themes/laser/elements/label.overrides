@@ -46,57 +46,94 @@
 }
 
 // not used yet
-  //left side
-  .ui.left-tag.labels .label,
-  .ui.left-tag.label {
-    margin-left: 1em;
-    position: relative;
-    padding-left: @tagHorizontalPadding;
-    padding-right: @tagHorizontalPadding;
+//left side
+.ui.left-tag.labels .label,
+.ui.left-tag.label {
+  margin-left: 1em;
+  position: relative;
+  padding-left: @tagHorizontalPadding;
+  padding-right: @tagHorizontalPadding;
 
-    border-radius: 0em @borderRadius @borderRadius 0em;
-    transition: @tagTransition;
-  }
-  .ui.left-tag.labels .label:before,
-  .ui.left-tag.label:before {
-    position: absolute;
-    transform: translateY(-50%) translateX(50%) rotate(-45deg);
+  border-radius: 0em @borderRadius @borderRadius 0em;
+  transition: @tagTransition;
+}
+.ui.left-tag.labels .label:before,
+.ui.left-tag.label:before {
+  position: absolute;
+  transform: translateY(-50%) translateX(50%) rotate(-45deg);
 
-    top: @tagTriangleTopOffset;
-    right: @tagTriangleRightOffset;
-    content: '';
+  top: @tagTriangleTopOffset;
+  right: @tagTriangleRightOffset;
+  content: '';
 
-    background-color: inherit;
-    background-image: @tagTriangleBackgroundImage;
+  background-color: inherit;
+  background-image: @tagTriangleBackgroundImage;
 
-    width: @tagTriangleSize;
-    height: @tagTriangleSize;
-    transition: @tagTransition;
-  }
-  //right-side
-  .ui.right-tag.labels .label,
-  .ui.right-tag.label {
-    margin-left: 1em;
-    position: relative;
-    padding-left: @tagHorizontalPadding;
-    padding-right: @tagHorizontalPadding;
+  width: @tagTriangleSize;
+  height: @tagTriangleSize;
+  transition: @tagTransition;
+}
+//right-side
+.ui.right-tag.labels .label,
+.ui.right-tag.label {
+  margin-left: 1em;
+  position: relative;
+  padding-left: @tagHorizontalPadding;
+  padding-right: @tagHorizontalPadding;
 
-    border-radius: 0em @borderRadius @borderRadius 0em;
-    transition: @tagTransition;
-  }
-  .ui.right-tag.labels .label:after,
-  .ui.right-tag.label:after {
-    position: absolute;
-    transform: translateY(-50%) translateX(50%) rotate(-45deg);
+  border-radius: 0em @borderRadius @borderRadius 0em;
+  transition: @tagTransition;
+}
+.ui.right-tag.labels .label:after,
+.ui.right-tag.label:after {
+  position: absolute;
+  transform: translateY(-50%) translateX(50%) rotate(-45deg);
+  top: @tagTriangleTopOffset;
+  //left: @tagTriangleRightOffset;
+  content: '';
+  background-color: inherit;
+  background-image: @tagTriangleBackgroundImage;
+  width: @tagTriangleSize;
+  height: @tagTriangleSize;
+  transition: @tagTransition;
+}
 
-    top: @tagTriangleTopOffset;
-    //left: @tagTriangleRightOffset;
-    content: '';
-
-    background-color: inherit;
-    background-image: @tagTriangleBackgroundImage;
-
-    width: @tagTriangleSize;
-    height: @tagTriangleSize;
-    transition: @tagTransition;
-  }
+  // labels in confirmation modal
+#js-confirmation-term-what-detail {
+  margin: 0 .5em 0 0;
+  padding: .4em .833em;
+  min-width: 3em;
+  text-align: center;
+  font-size: .85714286rem;
+  display: inline-block;
+  line-height: 1;
+  vertical-align: baseline;
+  background-color: #e8e8e8;
+  background-image: none;
+  color: rgba(0,0,0,.6);
+  text-transform: none;
+  font-weight: 700;
+  border: 0 solid transparent;
+  border-radius: 0;
+  white-space: nowrap;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+#js-confirmation-term-where-detail {
+  margin: 0 .5em 0 0;
+  padding: .4em .833em;
+  min-width: 3em;
+  text-align: center;
+  font-size: .85714286rem;
+  display: inline-block;
+  line-height: 1;
+  vertical-align: baseline;
+  background-color: #e8e8e8;
+  background-image: none;
+  color: rgba(0,0,0,.6);
+  text-transform: none;
+  font-weight: 700;
+  border: 0 solid transparent;
+  border-radius: 0;
+  white-space: nowrap;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}

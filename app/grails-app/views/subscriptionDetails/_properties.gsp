@@ -18,11 +18,12 @@
 
 <%-- grouped custom properties --%>
 
-<g:set var="allPropDefGroups" value="${subscriptionInstance.getCaculatedPropDefGroups()}" />
+<g:set var="allPropDefGroups" value="${subscriptionInstance.getCalculatedPropDefGroups(contextService.getOrg())}" />
 
 <g:each in="${allPropDefGroups.global}" var="propDefGroup">
     <g:if test="${propDefGroup.visible?.value == 'Yes'}">
 
+        <!-- global -->
         <g:render template="/templates/properties/groupWrapper" model="${[
                 propDefGroup: propDefGroup,
                 propDefGroupBinding: null,
@@ -37,6 +38,7 @@
 <%-- check binding visibility --%>
     <g:if test="${propDefInfo[1]?.visible?.value == 'Yes'}">
 
+        <!-- local -->
         <g:render template="/templates/properties/groupWrapper" model="${[
                 propDefGroup: propDefInfo[0],
                 propDefGroupBinding: propDefInfo[1],
@@ -53,6 +55,7 @@
     <%-- check member visibility --%>
         <g:if test="${propDefInfo[1]?.visibleForConsortiaMembers?.value == 'Yes'}">
 
+            <!-- member -->
             <g:render template="/templates/properties/groupWrapper" model="${[
                     propDefGroup: propDefInfo[0],
                     propDefGroupBinding: propDefInfo[1],
@@ -64,27 +67,38 @@
     </g:if>
 </g:each>
 
+<%-- orphaned properties --%>
+
+<g:if test="${! allPropDefGroups.fallback}">
+    <g:if test="${allPropDefGroups.orphanedProperties}">
+
+        <div class="ui card la-dl-no-table la-js-hideable">
+            <div class="content">
+                <h5 class="ui header">
+                    ${message(code:'subscription.properties.orphaned')}
+                </h5>
+
+                <div id="custom_props_div_props">
+                    <g:render template="/templates/properties/orphaned" model="${[
+                            prop_desc: PropertyDefinition.SUB_PROP,
+                            ownobj: subscriptionInstance,
+                            orphanedProperties: allPropDefGroups.orphanedProperties,
+                            custom_props_div: "custom_props_div_props" ]}"/>
+                </div>
+            </div>
+        </div>
+
+    </g:if>
+</g:if>
+
 <%-- custom properties --%>
 
-<g:if test="${allPropDefGroups.fallback}">
+<g:else>
 
     <div class="ui card la-dl-no-table la-js-hideable">
         <div class="content">
             <h5 class="ui header">
                 ${message(code:'subscription.properties')}
-                <% /*
-                                    if (subscriptionInstance.instanceOf && ! subscriptionInstance.instanceOf.isTemplate()) {
-                                        if (subscriptionInstance.isSlaved?.value?.equalsIgnoreCase('yes')) {
-                                            println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
-                                        }
-                                        else {
-                                            println '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
-                                        }
-                                    }
-                                    else {
-                                        println '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
-                                    }
-                                */ %>
             </h5>
 
             <div id="custom_props_div_props">
@@ -102,7 +116,7 @@
         });
     </r:script>
 
-</g:if>
+</g:else>
 
 <%-- private properties --%>
 

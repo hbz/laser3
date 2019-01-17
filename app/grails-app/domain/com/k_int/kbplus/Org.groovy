@@ -12,6 +12,7 @@ import groovy.util.logging.*
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.hibernate.Criteria
 import javax.persistence.Transient
+import grails.util.Holders
 
 @Log4j
 class Org extends AbstractBaseDomain {
@@ -42,15 +43,16 @@ class Org extends AbstractBaseDomain {
     int fteStudents
     int fteStaff
 
-    RefdataValue orgType        // RefdataCategory 'OrgType' OLD -> NEW: orgRoleType
+    RefdataValue orgType                 // RefdataCategory 'OrgType' OLD -> NEW: orgRoleType
     RefdataValue sector
     RefdataValue status
     RefdataValue membership
-    RefdataValue country        // RefdataCategory 'Country'
-    RefdataValue federalState   // RefdataCategory 'Federal State'
-    RefdataValue libraryNetwork // RefdataCategory 'Library Network'
-    RefdataValue funderType     // RefdataCategory 'Funder Type'
-    RefdataValue libraryType    // RefdataCategory 'Library Type'
+    RefdataValue country                 // RefdataCategory 'Country'
+    RefdataValue federalState            // RefdataCategory 'Federal State'
+    RefdataValue libraryNetwork          // RefdataCategory 'Library Network'
+    RefdataValue funderType              // RefdataCategory 'Funder Type'
+    RefdataValue libraryType             // RefdataCategory 'Library Type'
+    RefdataValue costConfigurationPreset // RefdataCategory 'Cost configuration'
 
     Set ids = []
 
@@ -83,33 +85,34 @@ class Org extends AbstractBaseDomain {
 
     static mapping = {
                 sort 'sortname'
-                id column:'org_id'
-           version column:'org_version'
-         globalUID column:'org_guid'
-             impId column:'org_imp_id', index:'org_imp_id_idx'
-              name column:'org_name', index:'org_name_idx'
-         shortname column:'org_shortname', index:'org_shortname_idx'
-          sortname column:'org_sortname', index:'org_sortname_idx'
-               url column:'org_url'
-            urlGov column:'org_url_gov'
-       fteStudents column:'org_fte_students'
-          fteStaff column:'org_fte_staff'
-           comment column:'org_comment'
-           ipRange column:'org_ip_range'
-         shortcode column:'org_shortcode', index:'org_shortcode_idx'
-             scope column:'org_scope'
-        categoryId column:'org_cat'
-           orgType column:'org_type_rv_fk'
-            sector column:'org_sector_rv_fk'
-            status column:'org_status_rv_fk'
-        membership column:'org_membership'
-           country column:'org_country_rv_fk'
-      federalState column:'org_federal_state_rv_fk'
-    libraryNetwork column:'org_library_network_rv_fk'
-        funderType column:'org_funder_type_rv_fk'
-       libraryType column:'org_library_type_rv_fk'
-      importSource column:'org_import_source'
-    lastImportDate column:'org_last_import_date'
+                id          column:'org_id'
+           version          column:'org_version'
+         globalUID          column:'org_guid'
+             impId          column:'org_imp_id', index:'org_imp_id_idx'
+              name          column:'org_name', index:'org_name_idx'
+         shortname          column:'org_shortname', index:'org_shortname_idx'
+          sortname          column:'org_sortname', index:'org_sortname_idx'
+               url          column:'org_url'
+            urlGov          column:'org_url_gov'
+       fteStudents          column:'org_fte_students'
+          fteStaff          column:'org_fte_staff'
+           comment          column:'org_comment'
+           ipRange          column:'org_ip_range'
+         shortcode          column:'org_shortcode', index:'org_shortcode_idx'
+             scope          column:'org_scope'
+        categoryId          column:'org_cat'
+           orgType          column:'org_type_rv_fk'
+            sector          column:'org_sector_rv_fk'
+            status          column:'org_status_rv_fk'
+        membership          column:'org_membership'
+           country          column:'org_country_rv_fk'
+      federalState          column:'org_federal_state_rv_fk'
+    libraryNetwork          column:'org_library_network_rv_fk'
+        funderType          column:'org_funder_type_rv_fk'
+       libraryType          column:'org_library_type_rv_fk'
+      importSource          column:'org_import_source'
+    lastImportDate          column:'org_last_import_date'
+    costConfigurationPreset column:'org_config_preset_rv_fk'
 
         orgRoleType joinTable: [name: 'org_roletype',
                                 key: 'org_id',
@@ -146,6 +149,7 @@ class Org extends AbstractBaseDomain {
          libraryType(nullable:true, blank:true)
         importSource(nullable:true, blank:true)
       lastImportDate(nullable:true, blank:true)
+      costConfigurationPreset(nullable:true, blank:false)
         orgRoleType(nullable:true, blank:true)
     }
 
@@ -205,8 +209,8 @@ class Org extends AbstractBaseDomain {
         result
     }
 
-    def getCaculatedPropDefGroups() {
-        def result = [ 'global':[], 'local':[], fallback: true ]
+    def getCalculatedPropDefGroups(Org contextOrg) {
+        def result = [ 'global':[], 'local':[], 'fallback': true, 'orphanedProperties':[] ]
 
         // ALL type depending groups without checking tenants or bindings
         def groups = PropertyDefinitionGroup.findAllByOwnerType(Org.class.name)
@@ -214,7 +218,7 @@ class Org extends AbstractBaseDomain {
 
             def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndOrg(it, this)
 
-            if (it.tenant == null || it.tenant?.id == contextService.getOrg()?.id) {
+            if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
                 if (binding) {
                     result.local << [it, binding]
                 } else {
@@ -224,6 +228,15 @@ class Org extends AbstractBaseDomain {
         }
 
         result.fallback = (result.global.size() == 0 && result.local.size() == 0)
+
+        // storing properties without groups
+
+        def orph = customProperties.id
+
+        result.global.each{ gl -> orph.removeAll(gl.getCurrentProperties(this).id) }
+        result.local.each{ lc  -> orph.removeAll(lc[0].getCurrentProperties(this).id) }
+
+        result.orphanedProperties = OrgCustomProperty.findAllByIdInList(orph)
 
         result
     }
@@ -267,10 +280,19 @@ class Org extends AbstractBaseDomain {
     return new Org(name:value)
   }
 
-    static def lookup(name, identifiers) {
+  static def lookup(name, identifiers, def uuid = null) {
 
-        def result = []
+      def result = []
 
+      if (uuid?.size() > 0) {
+        def uuid_match = Org.findByImpId(uuid)
+
+        if(uuid_match) {
+          result << uuid_match
+        }
+      }
+
+      if(!result) {
         // SUPPORT MULTIPLE IDENTIFIERS
         if (identifiers instanceof ArrayList) {
             identifiers.each { it ->
@@ -294,25 +316,30 @@ class Org extends AbstractBaseDomain {
                 }
             }
         }
+      }
 
-        // No match by identifier, try and match by name
-        if (! result) {
-            // log.debug("Match by name ${name}");
-            def o = Org.executeQuery("select o from Org as o where lower(o.name) = ?", [name.toLowerCase()])
+      // No match by identifier, try and match by name
+      if (! result) {
+          // log.debug("Match by name ${name}");
+          def o = Org.executeQuery("select o from Org as o where lower(o.name) = ?", [name.toLowerCase()])
 
-            if (o.size() > 0) result << o[0]
+          if (o.size() > 0) result << o[0]
+      }
+
+      result.isEmpty() ? null : result.get(0)
+    }
+
+    static def lookupOrCreate(name, sector, consortium, identifiers, iprange, def imp_uuid = null) {
+        lookupOrCreate2(name, sector, consortium, identifiers, iprange, null, imp_uuid)
+    }
+
+    static def lookupOrCreate2(name, sector, consortium, identifiers, iprange, orgRoleTyp, def imp_uuid = null) {
+
+        if(imp_uuid?.size() == 0) {
+          imp_uuid = null
         }
 
-        result.isEmpty() ? null : result.get(0)
-    }
-
-    static def lookupOrCreate(name, sector, consortium, identifiers, iprange) {
-        lookupOrCreate2(name, sector, consortium, identifiers, iprange, null)
-    }
-
-    static def lookupOrCreate2(name, sector, consortium, identifiers, iprange, orgRoleTyp) {
-
-        def result = Org.lookup(name, identifiers)
+        def result = Org.lookup(name, identifiers, imp_uuid)
 
         if ( result == null ) {
           // log.debug("Create new entry for ${name}");
@@ -328,7 +355,7 @@ class Org extends AbstractBaseDomain {
                            name:name,
                            sector:sector,
                            ipRange:iprange,
-                           impId:java.util.UUID.randomUUID().toString()
+                           impId: imp_uuid?.length() > 0 ? imp_uuid : java.util.UUID.randomUUID().toString()
           ).save()
           if(orgRoleTyp) {
               result.addToOrgRoleType(orgRoleTyp).save()
@@ -357,6 +384,8 @@ class Org extends AbstractBaseDomain {
                                      type: RefdataValue.getByValueAndCategory('Consortium','Combo Type')
             ).save()
           }
+        } else if (Holders.config.globalDataSync.replaceLocalImpIds.Org && imp_uuid && imp_uuid != result.impId){
+          result.impId = imp_uuid
         }
  
         result
@@ -443,7 +472,7 @@ class Org extends AbstractBaseDomain {
         def sqlQuery = hibernateSession.createSQLQuery(query)
         sqlQuery.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP)
         def result = sqlQuery.list()?.collect{ it.refdata_value_id as Long }
-        log.debug('getallOrgRoleTypeIds(): ' + result)
+        //log.debug('getallOrgRoleTypeIds(): ' + result)
         result
     }
 }

@@ -13,7 +13,7 @@ class ChangeAcceptJob extends AbstractJob {
    // Cron:: Min Hour DayOfMonth Month DayOfWeek Year
    // Example - every 10 mins 0 0/10 * * * ? 
    // At 5 past 3am every day
-   cron name:'changeAcceptJobTrigger', startDelay:180000, cronExpression: "0 5 3 * * ?"
+   cron name:'changeAcceptJobTrigger', startDelay:180000, cronExpression: "0 0 4 * * ?"
    // cronExpression: "s m h D M W Y"
    //                  | | | | | | `- Year [optional]
    //                  | | | | | `- Day of Week, 1-7 or SUN-SAT, ?

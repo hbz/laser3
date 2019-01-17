@@ -30,7 +30,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
     @Transient
     def springSecurityService
 
-  RefdataValue status
+  RefdataValue status       // RefdataCatagory 'Subscription Status'
   RefdataValue type         // RefdataCatagory 'Subscription Type'
   RefdataValue form         // RefdataCatagory 'Subscription Form'
   RefdataValue resource     // RefdataCatagory 'Subscription Resource'
@@ -133,11 +133,8 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
         isSlaved(nullable:true, blank:false)
         noticePeriod(nullable:true, blank:true)
         isPublic(nullable:true, blank:true)
-        //customProperties(nullable:true)
-        //privateProperties(nullable:true)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true, blank: true)
-        // vendor(nullable:true, blank:false)
     }
 
     // TODO: implement
@@ -150,6 +147,26 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
     @Override
     def hasTemplate() {
         return false
+    }
+
+    @Override
+    def getCalculatedType() {
+        def result = TemplateSupport.CALCULATED_TYPE_UNKOWN
+
+        if (isTemplate()) {
+            result = TemplateSupport.CALCULATED_TYPE_TEMPLATE
+        }
+        else if(getConsortia() && ! getAllSubscribers() && ! instanceOf) {
+            result = TemplateSupport.CALCULATED_TYPE_CONSORTIAL
+        }
+        else if(getConsortia() /* && getAllSubscribers() */ && instanceOf) {
+            // current and deleted member subscriptions
+            result = TemplateSupport.CALCULATED_TYPE_PARTICIPATION
+        }
+        else if(! getConsortia() && getAllSubscribers() && ! instanceOf) {
+            result = TemplateSupport.CALCULATED_TYPE_LOCAL
+        }
+        result
     }
 
     // used for views and dropdowns
@@ -386,8 +403,8 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
         Subscription.where{ instanceOf == this && (status == null || status.value != 'Deleted') }
     }
 
-    def getCaculatedPropDefGroups() {
-        def result = [ 'global':[], 'local':[], 'member':[], fallback: true ]
+    def getCalculatedPropDefGroups(Org contextOrg) {
+        def result = [ 'global':[], 'local':[], 'member':[], 'fallback': true, 'orphanedProperties':[]]
 
         // ALL type depending groups without checking tenants or bindings
         def groups = PropertyDefinitionGroup.findAllByOwnerType(Subscription.class.name)
@@ -406,7 +423,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
                     }
                 }
                 // consortium @ member; getting group by tenant and instanceOf.binding
-                if (it.tenant?.id == contextService.getOrg()?.id) {
+                if (it.tenant?.id == contextOrg?.id) {
                     if (binding) {
                         result.member << [it, binding]
                     }
@@ -422,7 +439,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
             else {
                 def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndSub(it, this)
 
-                if (it.tenant == null || it.tenant?.id == contextService.getOrg()?.id) {
+                if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
                     if (binding) {
                         result.local << [it, binding]
                     } else {
@@ -433,6 +450,16 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
         }
 
         result.fallback = (result.global.size() == 0 && result.local.size() == 0 && result.member.size() == 0)
+
+        // storing properties without groups
+
+        def orph = customProperties.id
+
+        result.global.each{ gl -> orph.removeAll(gl.getCurrentProperties(this).id) }
+        result.local.each{ lc  -> orph.removeAll(lc[0].getCurrentProperties(this).id) }
+        result.member.each{ m  -> orph.removeAll(m[0].getCurrentProperties(this).id) }
+
+        result.orphanedProperties = SubscriptionCustomProperty.findAllByIdInList(orph)
 
         result
     }

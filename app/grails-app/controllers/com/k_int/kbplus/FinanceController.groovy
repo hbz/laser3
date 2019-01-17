@@ -13,8 +13,8 @@ import org.apache.poi.ss.usermodel.Cell
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
-
 import java.text.SimpleDateFormat
+import org.springframework.orm.hibernate3.HibernateQueryException
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class FinanceController extends AbstractDebugController {
@@ -58,7 +58,7 @@ class FinanceController extends AbstractDebugController {
         def user =  User.get(springSecurityService.principal.id)
         def dateTimeFormat  = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
         def result = [:]
-
+        def tmp
       try {
         result.contextOrg = contextService.getOrg()
         result.institution = contextService.getOrg()
@@ -78,6 +78,7 @@ class FinanceController extends AbstractDebugController {
           result.queryMode = MODE_OWNER
           def orgRoleCons, orgRoleSubscr
 
+
         //this is the switch for the cost item fill
         if (result.inSubMode) {
             log.info("call from /subscriptionDetails/${params.sub}/finance")
@@ -94,7 +95,7 @@ class FinanceController extends AbstractDebugController {
             }
 
             // own costs
-            def tmp = financialData(result, params, user, MODE_OWNER)
+            tmp = financialData(result, params, user, MODE_OWNER)
             result.foundMatches    = tmp.foundMatches
             result.cost_items      = tmp.cost_items
             result.cost_item_count = tmp.cost_item_count
@@ -147,7 +148,7 @@ class FinanceController extends AbstractDebugController {
         }
         else {
             log.info("call from /myInstitution/finance")
-            def tmp = financialData(result, params, user, MODE_OWNER)
+            tmp = financialData(result, params, user, MODE_OWNER)
             result.foundMatches    = tmp.foundMatches
             result.cost_items      = tmp.cost_items
             result.cost_item_count = tmp.cost_item_count
@@ -259,7 +260,9 @@ class FinanceController extends AbstractDebugController {
       }
 
       //result.tab = params.tab ?: result.queryMode == MODE_CONS ? 'sc' : 'owner'
-
+        result.consOffset = tmp.consOffset
+        result.subscrOffset = tmp.subscrOffset
+        result.ownerOffset = tmp.ownerOffset
       result
     }
 
@@ -273,7 +276,7 @@ class FinanceController extends AbstractDebugController {
      * Note - Requests DB requests are cached ONLY if non-hardcoded values are used
      */
     private def financialData(result, params, user, queryMode) {
-        def tmp = [:]
+        def tmp = [ownerOffset:0, subscrOffset:0, consOffset:0]
 
         result.editable    =  accessService.checkMinUserOrgRole(user, result.institution, user_role)
         params.orgId       =  result.institution.id
@@ -285,9 +288,18 @@ class FinanceController extends AbstractDebugController {
         //result.offset      =  params.int('offset',0)?: 0
 
         // WORKAROUND: erms-517 (deactivated as erms-802)
-
         params.max = params.max ? params.max : user.getDefaultPageSizeTMP()
-        params.offset = params.offset ? params.offset : 0
+        switch(params.view) {
+            case "cons": tmp.consOffset = params.offset
+            break
+            case "owner": tmp.ownerOffset = params.offset
+            break
+            case "subscr": tmp.subscrOffset = params.offset
+            break
+            default: log.info("unhandled view: ${params.view}")
+            break
+        }
+
         /*
         result.max = 5000
         result.offset = 0
@@ -319,6 +331,7 @@ class FinanceController extends AbstractDebugController {
             cost_item_qry_params = [subs: memberSubs, owner: result.institution]
             cost_item_qry        = ' WHERE ci.sub IN ( :subs ) AND ci.owner = :owner '
             //orderAndSortBy       = orderAndSortBy
+            params.offset = tmp.consOffset
         }
 
         if (MODE_OWNER == queryMode) {
@@ -358,6 +371,7 @@ class FinanceController extends AbstractDebugController {
                     }
                 }
             }
+            params.offset = tmp.ownerOffset
         }
 
         // OVERWRITE
@@ -377,6 +391,7 @@ class FinanceController extends AbstractDebugController {
                   cost_item_qry = ' , OrgRole as ogr WHERE ci.sub IN ( :subs ) AND ogr.org = :owner AND ci.isVisibleForSubscriber is true '
                 }
             }
+            params.offset = tmp.subscrOffset
 
        }
 
@@ -395,6 +410,18 @@ class FinanceController extends AbstractDebugController {
         tmp.cost_item_count =  CostItem.executeQuery(ci_count + cost_item_qry + qryOutput.qry_string + " group by ci.id " + orderAndSortBy, cost_item_qry_params).size()
 
         log.debug("index(${queryMode})  -- Performed filtering process ${tmp.cost_item_count} result(s) found")
+
+        //very ugly ... but cleanup needs enormous refactoring
+        switch(params.view) {
+            case "cons": params.offset = tmp.consOffset
+                break
+            case "owner": params.offset = tmp.ownerOffset
+                break
+            case "subscr": params.offset = tmp.subscrOffset
+                break
+            default: log.info("unhandled view: ${params.view}")
+                break
+        }
 
         tmp
     }
@@ -853,17 +880,33 @@ class FinanceController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def editCostItem() {
         def result = [:]
+        def costItemElementConfigurations = []
+        def orgConfigurations = []
         result.tab = params.tab
 
         result.inSubMode = params.fixedSub ? true : false
         if (result.inSubMode) {
             result.fixedSubscription = params.int('fixedSub') ? Subscription.get(params.fixedSub) : null
         }
-        else {
+        else if(params.currSub) {
             result.currentSubscription = params.int('currSub') ? Subscription.get(params.currSub) : null
         }
         result.costItem = CostItem.findById(params.id)
+        if(result.costItem)
+          result.issueEntitlement = result.costItem.issueEntitlement
 
+        //format for dropdown: (o)id:value
+        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Cost configuration'))
+        ciecs.each { ciec ->
+            costItemElementConfigurations.add([id:ciec.class.name+":"+ciec.id,value:ciec.getI10n('value')])
+        }
+        def orgConf = CostItemElementConfiguration.findAllByForOrganisation(contextService.org)
+        orgConf.each { oc ->
+            orgConfigurations.add([id:oc.costItemElement.id,value:oc.elementSign.class.name+":"+oc.elementSign.id])
+        }
+
+        result.costItemElementConfigurations = costItemElementConfigurations
+        result.orgConfigurations = orgConfigurations
         result.formUrl = g.createLink(controller:'finance', action:'newCostItem', params:[tab:result.tab])
 
         render(template: "/finance/ajaxModal", model: result)
@@ -1075,6 +1118,7 @@ class FinanceController extends AbstractDebugController {
           def cost_billing_currency_after_tax   = params.newCostInBillingCurrencyAfterTax ? params.double( 'newCostInBillingCurrencyAfterTax') : cost_billing_currency
           def cost_local_currency_after_tax     = params.newCostInLocalCurrencyAfterTax ? params.double( 'newCostInLocalCurrencyAfterTax') : cost_local_currency
           def new_tax_rate                      = params.newTaxRate ? params.int( 'newTaxRate' ) : 0
+          def cost_item_element_configuration   = params.ciec ? genericOIDService.resolveOID(params.ciec) : null
 
           def cost_item_isVisibleForSubscriber = (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber)?.value == 'Yes') : false)
 
@@ -1112,6 +1156,7 @@ class FinanceController extends AbstractDebugController {
               newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double
               newCostItem.currencyRate = cost_currency_rate as Double
               newCostItem.taxRate = new_tax_rate as Integer
+              newCostItem.costItemElementConfiguration = cost_item_element_configuration
 
               newCostItem.datePaid = datePaid
               newCostItem.startDate = startDate

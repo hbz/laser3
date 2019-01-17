@@ -21,7 +21,7 @@ abstract class AbstractDebugController {
                     uri:      actionUri,
                     params:   json?.toString(),
                     ms:       delta,
-                    context:  contextService.getOrg()
+                    context:  contextService?.getOrg()
             )).save()
         }
     }

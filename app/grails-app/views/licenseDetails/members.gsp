@@ -69,11 +69,16 @@
                 </td>
                 <td class="x">
                     <g:if test="${editable}">
-                        <g:link controller="licenseDetails" action="deleteMember" class="ui icon negative button"
+                        <g:link class="ui icon negative button js-open-confirm-modal"
+                                data-confirm-term-what="license"
+                                data-confirm-term-what-detail="${lic.reference}"
+                                data-confirm-term-how="delete"
+                                controller="licenseDetails"
                                 params="${[id:license.id, target: lic.class.name + ':' + lic.id]}"
-                                onclick="return confirm('${message(code:'license.details.delete.confirm', args:[(lic.reference?:'this license')])}')">
+                                action="deleteMember">
                             <i class="trash alternate icon"></i>
                         </g:link>
+
                     </g:if>
                 </td>
             </tr>

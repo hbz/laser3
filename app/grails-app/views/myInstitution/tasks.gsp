@@ -53,7 +53,7 @@
 
         <semui:messages data="${flash}" />
 
-        <h2 class="ui header">Mir zugewiesene Aufgaben</h2>
+        <h2 class="ui header">${message(code: 'task.myTasks.header', default:'Tasks assigned to me')} <semui:totalNumber total="${taskInstanceCount}"/></h2>
 
         <g:if test="${editable}">
             <input type="submit" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" href="#modalCreateTask" />
@@ -61,9 +61,9 @@
 
         <g:render template="/templates/tasks/modal_create" />
 
-        <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList]}"/>
+        <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList,taskInstanceCount:taskInstanceCount]}"/>
 
-        <g:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList]}"/>
+        <g:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList,taskInstanceCount:myTaskInstanceCount]}"/>
 
         <g:render template="/templates/tasks/js_taskedit"/>
 

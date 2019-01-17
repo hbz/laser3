@@ -50,6 +50,8 @@ r2d2 = {
         r2d2.initDynamicSemuiStuff('body');
         r2d2.initDynamicXEditableStuff('body');
 
+        $("html").css("cursor", "auto");
+
         console.log("r2d2 @ locale: " + gspLocale + " > " + gspDateFormat);
     },
 
@@ -123,8 +125,8 @@ r2d2 = {
         $("*[data-semui='modal']").click(function() {
             $($(this).attr('href') + '.ui.modal').modal({
                 onVisible: function() {
+                    console.log("test");
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
-
                 },
                 detachable: true,
                 autofocus: false,
@@ -136,32 +138,8 @@ r2d2 = {
                 }
             }).modal('show')
         });
-
-        // confirmation modal
-        $(".js-open-confirm-modal").click(function(event){
-            var dataAttr = this.getAttribute("data-confirm-id")? this.getAttribute("data-confirm-id")+'_form':false;
-            var tmpTerm = this.getAttribute("data-confirm-term")? this.getAttribute("data-confirm-term"):"dieses Element";
-            var url = this.getAttribute('href')? this.getAttribute('href'): false;
-
-            event.preventDefault();
-            $('#js-confirmation-term').text(tmpTerm);
-            $('.mini.modal')
-                .modal({
-
-                    closable  : false,
-                    onApprove : function() {
-                        if (dataAttr){
-                            $('[data-confirm-id='+dataAttr+']').submit();
-                        }
-                        if (url){
-                            window.location.href = url;
-                        }
-                    }
-                })
-                .modal('show')
-            ;
-        });
     },
+
 
     initGlobalXEditableStuff : function() {
         console.log("r2d2.initGlobalXEditableStuff()");
@@ -298,6 +276,9 @@ r2d2 = {
             ctxSel = 'body'
         }
 
+        $("a[href], input.js-wait-wheel").not("a[href^='#'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-tooltip], a.la-ctrls , .close, .js-no-wait-wheel").click(function() {
+            $("html").css("cursor", "wait");
+        });
         // selectable table to avoid button is showing when focus after modal closed
         $(ctxSel + ' .la-selectable').hover(function() {
             $( ".button" ).blur();
@@ -331,9 +312,15 @@ r2d2 = {
             transition: 'fade',
             //showOnFocus: false
         });
-        $(ctxSel + ' .ui.search.dropdown').dropdown({
-            fullTextSearch: 'exact'
+        $(ctxSel + ' .la-filter .ui.dropdown').dropdown({
+            clearable: true
         });
+
+        $(ctxSel + ' .ui.search.dropdown').dropdown({
+            fullTextSearch: 'exact',
+            clearable: true
+        });
+
 
         // dropdowns escape
         $(ctxSel + ' .la-filter .ui.dropdown').on('keydown', function(e) {
@@ -343,17 +330,27 @@ r2d2 = {
             }
         });
 
+
+        function toggleFilterDropdown(that) {
+            $( that ).find("div.text").hasClass("default")? $(that).removeClass("la-filter-dropdown-selected") : $(that).addClass("la-filter-dropdown-selected");
+        }
+        $( '.la-filter .ui.dropdown' ).each(function( index ) {
+            toggleFilterDropdown(this)
+        });
+
         // SEM UI DROPDOWN CHANGE
         $(ctxSel + ' .la-filter .ui.dropdown').change(function() {
-            ($(this).hasClass("default")) ? $(this).removeClass("la-filter-dropdown-selected") : $(this).addClass("la-filter-dropdown-selected");
+            toggleFilterDropdown(this)
         });
 
         // for default selected Dropdown value
+        /*
         var currentDropdown = $(ctxSel + ' .la-filter .ui.dropdown > select > option[selected=selected]').parents('.ui.dropdown');
+
         currentDropdown.find("div.text").hasClass("default")
             ?  currentDropdown.removeClass('la-filter-dropdown-selected')
             : currentDropdown.addClass('la-filter-dropdown-selected');
-
+        */
 
 
         // FILTER SELECT FUNCTION - INPUT LOADING
@@ -379,11 +376,185 @@ r2d2 = {
             $(this).data("lastClicked", e.timeStamp);
 
         });
+        // confirmation modal
+        var buildConfirmationModal =
+            function(that){
+                var dataAttr = that.getAttribute("data-confirm-id")? that.getAttribute("data-confirm-id")+'_form':false;
+                var what = that.getAttribute("data-confirm-term-what")? that.getAttribute("data-confirm-term-what"):"";
+                var whatDetail = that.getAttribute("data-confirm-term-what-detail")? that.getAttribute("data-confirm-term-what-detail"):false;
+                var where = that.getAttribute("data-confirm-term-where")? that.getAttribute("data-confirm-term-where"):false;
+                var whereDetail = that.getAttribute("data-confirm-term-where-detail")? that.getAttribute("data-confirm-term-where-detail"):false;
+                var how = that.getAttribute("data-confirm-term-how") ? that.getAttribute("data-confirm-term-how"):"delete";
+                var content = that.getAttribute("data-confirm-term-content")? that.getAttribute("data-confirm-term-content"):false;
+                var messageHow;
 
+                switch (how) {
+                    case "delete":
+                        messageHow = "löschen";
+                        break;
+                    case "unlink":
+                        messageHow = "aufheben";
+                        break;
+                    case "inherit":
+                        messageHow = "ändern";
+                        break;
+                    case "ok":
+                        messageHow = "fortfahren";
+                        break;
+                    default:
+                        messageHow = "löschen";
+                }
+                var url = that.getAttribute('href') && (that.getAttribute('class') != 'js-gost') ? that.getAttribute('href'): false; // use url only if not remote link
+
+
+                // INHERIT BUTTON
+
+                var messageContent = content;
+                var messageWhat = what;
+
+
+                if (how == "inherit"){
+                    switch (what) {
+                        case "property":
+                            var messageWhat = "die Vererbung des Merkmals";
+                            break;
+                        default:
+                            var messageWhat = "die Vererbung des Merkmals";
+                    }
+                }
+                // UNLINK BUTTON
+                if (how == "unlink"){
+                    switch (what) {
+                        case "organisationtype":
+                            var messageWhat = "die Verknüpfung des Organisationstyps";
+                            break;
+                        case "contact":
+                            var messageWhat = "die Verknüpfung des Kontakts";
+                            break;
+                        case "membershipSubscription" :
+                            var messageWhat = "die Teilnahme der";
+                            break;
+                        default:
+                            var messageWhat = "die Verknüpfung des Objektes";
+                    }
+                    switch (where) {
+                        case "organisation":
+                            var messageWhere = "mit der Organisation";
+                            break;
+                        default:
+                            var messageWhere = where;
+                    }
+                }
+                // DELETE BUTTON
+                if (how == "delete"){
+                    switch (what) {
+                        case "organisationtype":
+                            var messageWhat = "den Organisationstyp";
+                            break;
+                        case "task":
+                            var messageWhat = "die Aufgabe";
+                            break;
+                        case "person":
+                            var messageWhat = "die Person";
+                            break;
+                        case "contactItems":
+                            var messageWhat = "die Kontaktdaten";
+                            break;
+                        case "contact":
+                            var messageWhat = "den Kontakt";
+                            break;
+                        case "address":
+                            var messageWhat = "die Adresse";
+                            break;
+                        case "subscription":
+                            var messageWhat = "die Lizenz";
+                            break;
+                        case "license":
+                            var messageWhat = "den Vertrag";
+                            break;
+                        case "property":
+                            var messageWhat = "das Merkmal";
+                            break;
+                        case "function":
+                            var messageWhat = "die Funktion";
+                            break;
+                        case "user":
+                            var messageWhat = "den Benutzer";
+                            break;
+                        default:
+                            var messageWhat = what;
+                    }
+                    switch (where) {
+                        case "organisation":
+                            var messageWhere = "aus der Organisation";
+                            break;
+                        case "addressbook":
+                            var messageWhere = "aus dem Adressbuch";
+                            break;
+                        case "system":
+                            var messageWhere = "aus dem System";
+                            break;
+                        default:
+                            var messageWhere = "aus dem System";
+                    }
+                }
+                $('#js-confirmation-term-what').text(messageWhat); // Should be always set - otherwise "dieses Element"
+                //whatDetail ? $('#js-confirmation-term-what').text(messageWhat) : $("#js-confirmation-term-what").remove();
+                whatDetail ? $('#js-confirmation-term-what-detail').text(whatDetail) : $("#js-confirmation-term-what-detail").remove();
+                whereDetail ? $('#js-confirmation-term-where-detail').text(whereDetail) : $("#js-confirmation-term-where-detail").remove();
+                where ? $('#js-confirmation-term-where').text(messageWhere) : $("#js-confirmation-term-where").remove();
+                content ? $('#js-confirmation-term-content').text(messageContent) : $("#js-confirmation-term-content").remove();
+                $('#js-confirmation-term-how').text(messageHow); // Should be always set - otherwise "delete"
+                switch (how) {
+                    case "delete":
+                        $('#js-confirmation-button').html('Löschen<i class="trash alternate icon"></i>');
+                        break;
+                    case "unlink":
+                        $('#js-confirmation-button').html('Aufheben<i class="chain broken icon"></i>');
+                        break;
+                    case "inherit":
+                        $('#js-confirmation-button').html('Vererbung ändern<i class="thumbtack icon"></i>');
+                        break;
+                    case "ok":
+                        $('#js-confirmation-button').html('OK<i class="check icon"></i>');
+                        break;
+                    default:
+                        $('').html('Entfernen<i class="x icon"></i>');
+                }
+
+                $('.tiny.modal')
+                    .modal({
+                        closable  : false,
+                        onApprove : function() {
+                            // open confirmation modal from inside a form
+                            if (dataAttr){
+                                $('[data-confirm-id='+dataAttr+']').submit();
+                            }
+                            // open confirmation modal and open a new url after conirmation
+                            if (url){
+                                window.location.href = url;
+                            }
+                        },
+                    })
+                    .modal('show')
+                ;
+            }
+        // for links and submit buttons
+        $(ctxSel + ' .js-open-confirm-modal').click(function(e) {
+            e.preventDefault();
+            buildConfirmationModal(this);
+        });
+        // for remote links = ajax calls
+        $(ctxSel + ' .js-open-confirm-modal-copycat').click(function(e) {
+            var onclickString = $(this).next('.js-gost').attr("onclick");
+            $('#js-confirmation-button').attr("onclick", onclickString);
+            var gostObject = $(this).next('.js-gost');
+            buildConfirmationModal(gostObject[0] );
+        });
     }
 }
 
 $(document).ready(function() {
-    r2d2.go()
+    r2d2.go();
 })
 

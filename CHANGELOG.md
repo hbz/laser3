@@ -9,6 +9,7 @@
 0.12.1
 
 - temporary deactivated usage and statistics
+- modified api 1 property export
 
 0.12
 
@@ -20,9 +21,10 @@
 - added new property type: url
 - added explanations to properties 
 - retrieving package list from gokb api
-- refactoring: use filesystem instead of database blobs
 - show api access information at user profile
 - cleaned up duplicate docstore uuids
+- refactoring: use filesystem instead of database blobs
+- migration to postgresql
 - various markup and style changes
 - various bugfixes
 

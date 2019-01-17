@@ -98,37 +98,49 @@
                     </td>
                     <td class="x">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
                         <g:if test="${prop.type.type == URL.toString()}">
-                            <semui:xEditable owner="${prop}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" />
-                            <span data-position="top right" data-tooltip="Diese URL aufrufen ..">
-                                <a href="${prop.value}" target="_blank" class="ui icon blue button">
-                                    <i class="share square icon"></i>
-                                </a>
-                            </span>
+                            <g:if test="${prop.value}">
+                                <span data-position="top right" data-tooltip="Diese URL aufrufen ..">
+                                    <a href="${prop.value}" target="_blank" class="ui icon blue button">
+                                        <i class="share square icon"></i>
+                                    </a>
+                                </span>
+                            </g:if>
                         </g:if>
                         <g:if test="${editable == true}">
                             <g:if test="${ownobj.hasProperty('instanceOf') && showConsortiaFunctions}">
                                 <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />
 
                                 <span data-position="top right" data-tooltip="${message(code:'property.audit.tooltip')}">
-                                <g:remoteLink controller="ajax" action="togglePropertyAuditConfig"
-                                              before="if(!confirm('${auditMsg}')) return false"
-                                              params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]' id="${prop.id}"
-                                              onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                              update="${custom_props_div}" class="ui icon button">
-                                    <i class="thumbtack icon"></i>
-                                </g:remoteLink>
+                                    <button class="ui icon button js-open-confirm-modal-copycat">
+                                        <i class="thumbtack icon"></i>
+                                    </button>
+                                    <g:remoteLink class="js-gost"
+                                                  controller="ajax" action="togglePropertyAuditConfig"
+                                                  params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]' id="${prop.id}"
+                                                  data-confirm-term-what="property"
+                                                  data-confirm-term-what-detail="${prop.type.name}"
+                                                  data-confirm-term-how="inherit"
+                                                  onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                                  onComplete="c3po.loadJsAfterAjax()"
+                                                  update="${custom_props_div}">
+                                    </g:remoteLink>
                                 </span>
                             </g:if>
 
                             <g:if test="${! AuditConfig.getConfig(prop)}">
                                 <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
-
-                                <g:remoteLink controller="ajax" action="deleteCustomProperty"
-                                              before="if(!confirm('${confirmMsg}')) return false"
-                                              params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:"${showConsortiaFunctions}"]' id="${prop.id}"
-                                              onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                              update="${custom_props_div}" class="ui icon negative button">
+                                <button class="ui icon negative button js-open-confirm-modal-copycat">
                                     <i class="trash alternate icon"></i>
+                                </button>
+                                <g:remoteLink class="js-gost"
+                                              controller="ajax" action="deleteCustomProperty"
+                                              params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:"${showConsortiaFunctions}"]' id="${prop.id}"
+                                              data-confirm-term-what="property"
+                                              data-confirm-term-what-detail="${prop.type.name}"
+                                              data-confirm-term-how="delete"
+                                              onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                              onComplete="c3po.loadJsAfterAjax()"
+                                              update="${custom_props_div}">
                                 </g:remoteLink>
                             </g:if>
                         </g:if>
@@ -151,7 +163,9 @@
                                   name="cust_prop_add_value"
                                   class="ui form"
                                   update="${custom_props_div}"
-                                  onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
+                                  onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                  onComplete="c3po.loadJsAfterAjax()"
+                    >
 
                         <input type="hidden" name="propIdent" data-desc="${prop_desc}" class="customPropSelect"/>
                         <input type="hidden" name="ownerId" value="${ownobj.id}"/>
@@ -161,7 +175,7 @@
 
                         <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
 
-                        <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button"/>
+                        <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
                     </g:formRemote>
                 </td>
             </tr>

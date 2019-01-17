@@ -6,6 +6,7 @@ import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AuditConfig
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.AbstractI10nTranslatable
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import com.k_int.properties.PropertyDefinition
@@ -504,10 +505,19 @@ class AjaxController extends AbstractDebugController {
 
         queryResult.each { it ->
             def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
-            result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n('name')}"])
+            if (pd.isUsedForLogic) {
+                if (it.isUsedForLogic) {
+                    result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n('name')}"])
+                }
+            }
+            else {
+                if (! it.isUsedForLogic) {
+                    result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n('name')}"])
+                }
+            }
         }
 
-        if (result) {
+        if (result.size() > 1) {
            result.sort{ x,y -> x.text.compareToIgnoreCase y.text }
         }
 
@@ -661,6 +671,31 @@ class AjaxController extends AbstractDebugController {
         render result as JSON
       }
     }
+  }
+
+  @Secured(['ROLE_USER'])
+  def lookupIssueEntitlements() {
+    //deploy code related to issue entitlements from FinanceController::editCostItem to here
+    def issueEntitlements = [values:[]]
+    def result = [:]
+    def org = contextService.org
+    //build up set of subscriptions which are owned by the current organisation or instances of such - or filter for a given subscription
+    def subFilter = 'in ( select s from Subscription as s where s in (select o.sub from OrgRole as o where o.org = :org and o.roleType in :orgRoles ) and s.status = :current )'
+    def filterParams = ['org':org, 'orgRoles': [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER], 'current':RDStore.SUBSCRIPTION_CURRENT]
+    if(params.sub) {
+      subFilter = '= :sub'
+      filterParams = ['sub':genericOIDService.resolveOID(params.sub)]
+    }
+    filterParams.put('query',params.q)
+    result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+subFilter+' and ie.tipp.title.title like :query',filterParams)
+    if(result.size() > 0) {
+      log.debug("issue entitlements found")
+      result.each { res ->
+        issueEntitlements.values.add([id:res.class.name+":"+res.id,text:res.tipp.title.title])
+      }
+      issueEntitlements.values.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
+    }
+    render issueEntitlements as JSON
   }
 
     @Secured(['ROLE_USER'])
@@ -841,17 +876,16 @@ class AjaxController extends AbstractDebugController {
         else {
             if (params.cust_prop_type.equals(RefdataValue.toString())) {
                 if (params.refdatacategory) {
-                    newProp = PropertyDefinition.lookupOrCreate(
+                    newProp = PropertyDefinition.loc(
                             params.cust_prop_name,
-                            params.cust_prop_type,
                             params.cust_prop_desc,
+                            params.cust_prop_type,
+                            RefdataCategory.get(params.refdatacategory),
                             params.cust_prop_expl,
                             params.cust_prop_multiple_occurence,
                             PropertyDefinition.FALSE,
                             null
                     )
-                    def cat = RefdataCategory.get(params.refdatacategory)
-                    newProp.setRefdataCategory(cat.desc)
                     newProp.save(flush: true)
                 }
                 else {
@@ -859,10 +893,11 @@ class AjaxController extends AbstractDebugController {
                 }
             }
             else {
-                newProp = PropertyDefinition.lookupOrCreate(
+                newProp = PropertyDefinition.loc(
                         params.cust_prop_name,
-                        params.cust_prop_type,
                         params.cust_prop_desc,
+                        params.cust_prop_type,
+                        null,
                         params.cust_prop_expl,
                         params.cust_prop_multiple_occurence,
                         PropertyDefinition.FALSE,
@@ -1384,7 +1419,45 @@ class AjaxController extends AbstractDebugController {
     if(date) date.delete(flush:true)
     redirect(action:'getTipCoreDates',controller:'ajax',params:params)
   }
-    
+
+  def getProvidersWithPrivateContacts() {
+    def result = [:]
+    def query_params = []
+    String fuzzyString = '%'
+    if(params.sSearch) {
+      fuzzyString+params.sSearch.trim().toLowerCase()+'%'
+    }
+    query_params.add(fuzzyString)
+    query_params.add(RefdataValue.getByValueAndCategory('Deleted', 'OrgStatus'))
+    String countQry = "select count(o) from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?)"
+    String rowQry = "select o from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?) order by o.name asc"
+    def cq = Org.executeQuery(countQry,query_params);
+
+    def rq = Org.executeQuery(rowQry,
+            query_params,
+            [max:params.iDisplayLength?:10,offset:params.iDisplayStart?:0]);
+
+      result.aaData = []
+      result.sEcho = params.sEcho
+      result.iTotalRecords = cq[0]
+      result.iTotalDisplayRecords = cq[0]
+
+    def currOrg = genericOIDService.resolveOID(params.oid)
+      rq.each { it ->
+        def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
+        def cQueryParams = [RefdataValue.getByValueAndCategory('Personal contact','Person Contact Type'),currOrg,rowobj]
+        def contacts = PersonRole.executeQuery(" select p from Person as p where p.contactType = ? and p.tenant = ? and ? in (select pr.org from PersonRole as pr where pr.prs = p) ",cQueryParams)
+        int ctr = 0;
+        def row = [:]
+        row["${ctr++}"] = rowobj["name"]
+        row["DT_RowId"] = "${rowobj.class.name}:${rowobj.id}"
+        row["contacts"] = contacts
+        result.aaData.add(row)
+      }
+
+    render result as JSON
+  }
+
   def lookup() {
       // fallback for static refdataFind calls
       params.shortcode  = contextService.getOrg()?.shortcode

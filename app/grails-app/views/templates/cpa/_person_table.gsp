@@ -92,7 +92,12 @@
                                     <g:link class="ui icon button" controller="person" action="show" id="${person?.id}">
                                         <i class="write icon"></i>
                                     </g:link>
-                                    <div class="ui icon negative button js-open-confirm-modal" data-confirm-term="diese Person" data-confirm-id="${person?.id}" >
+                                    <div class="ui icon negative button js-open-confirm-modal"
+                                         data-confirm-term-what="contact"
+                                         data-confirm-term-what-detail="${person?.toString()}"
+                                         data-confirm-term-where="addressbook"
+                                         data-confirm-term-how="delete"
+                                         data-confirm-id="${person?.id}" >
                                         <i class="trash alternate icon"></i>
                                     </div>
                             </g:form>

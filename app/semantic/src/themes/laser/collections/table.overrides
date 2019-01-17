@@ -201,3 +201,10 @@
 .ui.sortable.table thead th.la-hyphenation {
   text-align: justify;
 }
+//table row or cell with light orange background
+.ui.la-table.table tr.la-exposed-bg td {
+  background-color: @laSecondaryBackground;
+}
+.ui.la-table.table tr td.la-exposed-bg  {
+  background-color: @laSecondaryBackground;
+}

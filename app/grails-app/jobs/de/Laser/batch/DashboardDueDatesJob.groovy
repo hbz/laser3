@@ -22,7 +22,8 @@ class DashboardDueDatesJob extends AbstractJob {
             new EventLog(event:'Execute::dashboardDueDatesJob', message:'Start', tstp:new Date(System.currentTimeMillis())).save(flush:true)
             dashboardDueDatesService.takeCareOfDueDates(
                     grailsApplication.config.isUpdateDashboardTableInDatabase,
-                    grailsApplication.config.isSendEmailsForDueDatesOfAllUsers
+                    grailsApplication.config.isSendEmailsForDueDatesOfAllUsers,
+                    [:]
             )
             log.info("Execute::dashboardDueDatesJob - Finished");
             new EventLog(event:'Execute::dashboardDueDatesJob', message:'Finished', tstp:new Date(System.currentTimeMillis())).save(flush:true)

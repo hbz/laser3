@@ -38,14 +38,14 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
     // If a license is slaved then any changes to instanceOf will automatically be applied to this license
     RefdataValue isSlaved // RefdataCategory 'YN'
 
-  RefdataValue status
-  RefdataValue type
+    RefdataValue status           // RefdataCategory 'License Status'
+    RefdataValue type             // RefdataCategory 'License Type'
 
   String reference
   String sortableReference
 
-  RefdataValue licenseCategory
-  RefdataValue isPublic
+    RefdataValue licenseCategory  // RefdataCategory 'LicenseCategory'
+    RefdataValue isPublic         // RefdataCategory 'YN'
 
   String noticePeriod
   String licenseUrl
@@ -144,6 +144,40 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
     @Override
     def hasTemplate() {
         return instanceOf ? instanceOf.isTemplate() : false
+    }
+
+    @Override
+    def getCalculatedType() {
+        def result = TemplateSupport.CALCULATED_TYPE_UNKOWN
+
+        if (isTemplate()) {
+            result = TemplateSupport.CALCULATED_TYPE_TEMPLATE
+        }
+        else if(getLicensingConsortium() && ! getAllLicensee() && ! isTemplate()) {
+            result = TemplateSupport.CALCULATED_TYPE_CONSORTIAL
+        }
+        else if(getLicensingConsortium() /*&& getAllLicensee()*/ && instanceOf && ! hasTemplate()) {
+            // current and deleted member licenses
+            result = TemplateSupport.CALCULATED_TYPE_PARTICIPATION
+        }
+        else if(! getLicensingConsortium() && getAllLicensee() && ! isTemplate()) {
+            result = TemplateSupport.CALCULATED_TYPE_LOCAL
+        }
+        result
+    }
+
+    def getDerivedLicensees() {
+        def result = []
+
+        License.findAllByInstanceOf(this).each { l ->
+            def ors = OrgRole.findAllWhere( lic: l )
+            ors.each { or ->
+                if (or.roleType?.value in ['Licensee', 'Licensee_Consortial']) {
+                    result << or.org
+                }
+            }
+        }
+        result = result.sort {it.name}
     }
 
     // used for views and dropdowns
@@ -413,8 +447,8 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
         License.where{ instanceOf == this && (status == null || status.value != 'Deleted') }
     }
 
-    def getCaculatedPropDefGroups() {
-        def result = [ 'global':[], 'local':[], 'member':[], fallback: true ]
+    def getCalculatedPropDefGroups(Org contextOrg) {
+        def result = [ 'global':[], 'local':[], 'member':[], 'fallback': true, 'orphanedProperties':[]]
 
         // ALL type depending groups without checking tenants or bindings
         def groups = PropertyDefinitionGroup.findAllByOwnerType(License.class.name)
@@ -433,7 +467,7 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
                     }
                 }
                 // consortium @ member; getting group by tenant and instanceOf.binding
-                if (it.tenant?.id == contextService.getOrg()?.id) {
+                if (it.tenant?.id == contextOrg?.id) {
                     if (binding) {
                         result.member << [it, binding]
                     }
@@ -449,7 +483,7 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
             else {
                 def binding = PropertyDefinitionGroupBinding.findByPropDefGroupAndLic(it, this)
 
-                if (it.tenant == null || it.tenant?.id == contextService.getOrg()?.id) {
+                if (it.tenant == null || it.tenant?.id == contextOrg?.id) {
                     if (binding) {
                         result.local << [it, binding]
                     } else {
@@ -460,6 +494,16 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
         }
 
         result.fallback = (result.global.size() == 0 && result.local.size() == 0 && result.member.size() == 0)
+
+        // storing properties without groups
+
+        def orph = customProperties.id
+
+        result.global.each{ gl -> orph.removeAll(gl.getCurrentProperties(this).id) }
+        result.local.each{ lc  -> orph.removeAll(lc[0].getCurrentProperties(this).id) }
+        result.member.each{ m  -> orph.removeAll(m[0].getCurrentProperties(this).id) }
+
+        result.orphanedProperties = LicenseCustomProperty.findAllByIdInList(orph)
 
         result
     }

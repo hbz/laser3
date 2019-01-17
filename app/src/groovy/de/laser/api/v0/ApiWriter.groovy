@@ -18,6 +18,7 @@ class ApiWriter {
      * @param com.k_int.kbplus.Org context
      * @return
      */
+    @Deprecated
     static importLicense(JSONObject data, Org context) {
         def result = []
 
@@ -33,7 +34,7 @@ class ApiWriter {
                         licenseStatus:      data.licenseStatus,
                         noticePeriod:       data.noticePeriod,
                         reference:          data.reference,
-                        sortableReference:  data.sortableReference,
+                        sortableReference:  data.normReference,
                 )
 
                 license.startDate   = ApiWriterHelper.getValidDateFormat(data.startDate)
@@ -82,6 +83,7 @@ class ApiWriter {
      * @param com.k_int.kbplus.Org context
      * @return
      */
+    @Deprecated
     static importOrganisation(JSONObject data, Org context) {
         def result = []
 
@@ -137,6 +139,7 @@ class ApiWriter {
      * @param com.k_int.kbplus.Org context
      * @return
      */
+    @Deprecated
     static importSubscription(JSONObject data, Org context) {
         def result = []
 
@@ -154,7 +157,7 @@ class ApiWriter {
 
                 // RefdataValues
                 sub.isSlaved  = ApiWriterHelper.getRefdataValue(data.isSlaved, "YN")
-                sub.isPublic  = ApiWriterHelper.getRefdataValue(data.isPublic, "YN")
+                //sub.isPublic  = ApiWriterHelper.getRefdataValue(data.isPublic, "YN") // legacy
                 sub.status    = ApiWriterHelper.getRefdataValue(data.isSlaved, "Subscription Status")
                 sub.type      = ApiWriterHelper.getRefdataValue(data.isSlaved, "Organisational Role")
 

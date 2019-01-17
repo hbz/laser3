@@ -1,6 +1,35 @@
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.CostItemElementConfiguration;com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection />
 
 <g:each in="${cost_items}" var="ci" status="jj">
+        <%
+            def org = contextService.getOrg()
+            def elementSign = 'notSet'
+            def icon = ''
+            def dataTooltip = ""
+            if(ci.costItemElementConfiguration) {
+                elementSign = ci.costItemElementConfiguration
+            }
+            String cieString = "data-elementSign=${elementSign}"
+            switch(elementSign) {
+                case RDStore.CIEC_POSITIVE:
+                    dataTooltip = message(code:'financials.costItemConfiguration.positive')
+                    icon = '<i class="plus green circle icon"></i>'
+                    break
+                case RDStore.CIEC_NEGATIVE:
+                    dataTooltip = message(code:'financials.costItemConfiguration.negative')
+                    icon = '<i class="minus red circle icon"></i>'
+                    break
+                case RDStore.CIEC_NEUTRAL:
+                    dataTooltip = message(code:'financials.costItemConfiguration.neutral')
+                    icon = '<i class="circle yellow icon"></i>'
+                    break
+                default:
+                    dataTooltip = message(code:'financials.costItemConfiguration.notSet')
+                    icon = '<i class="question circle icon"></i>'
+                    break
+            }
+        %>
     <tr id="bulkdelete-b${ci.id}">
         <td>
             ${ jj + 1 + counterHelper}
@@ -15,12 +44,16 @@
             </td>
         </g:if>
         <td>
+            <span data-position="right center" data-tooltip="${dataTooltip}">${raw(icon)}</span>
+        </td>
+        <td>
             <span class="costData"
                   data-costInLocalCurrency="<g:formatNumber number="${ci.costInLocalCurrency}" locale="en" maxFractionDigits="2"/>"
                   data-costInLocalCurrencyAfterTax="<g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" locale="en" maxFractionDigits="2"/>"
                   data-billingCurrency="${ci.billingCurrency ?: 'EUR'}"
                   data-costInBillingCurrency="<g:formatNumber number="${ci.costInBillingCurrency}" locale="en" maxFractionDigits="2"/>"
                   data-costInBillingCurrencyAfterTax="<g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}" locale="en" maxFractionDigits="2"/>"
+                  ${cieString}
             >
                 <g:formatNumber number="${ci.costInBillingCurrency ?: 0.0}" type="currency" currencyCode="${ci.billingCurrency ?: 'EUR'}"/>
                 <br />
@@ -32,7 +65,6 @@
             <br />
             <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencyCode="EUR" />  (${ci.taxRate ?: 0}%)
         </td>
-
         <td>
             <semui:xEditableRefData config="CostItemStatus" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemStatus" />
         </td>
@@ -41,11 +73,9 @@
             <br />
             <semui:xEditable owner="${ci}" type="date" field="endDate" />
         </td>
-
         <td>
             <semui:xEditableRefData config="CostItemElement" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemElement" />
         </td>
-
         <td class="x">
             <g:if test="${editable}">
                 <g:if test="${forSingleSubcription}">
