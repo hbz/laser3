@@ -38,7 +38,7 @@
                     $.ajax({
                         url: '<g:createLink controller="ajax" action="refdataSearchByOID"/>' + '?oid=' + selOpt.attr('data-rdc') + '&format=json',
                         success: function (data) {
-                            var select = '<option></option>';
+                            var select = '<option value></option>';
                             for (var index = 0; index < data.length; index++) {
                                 var option = data[index];
                                 select += '<option value="' + option.value + '">' + option.text + '</option>';

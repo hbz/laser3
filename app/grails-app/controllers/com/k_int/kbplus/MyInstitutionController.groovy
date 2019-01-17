@@ -564,7 +564,7 @@ from License as l where (
 
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        if(!params.status && !params.orgRole) {
+        if (!params.status && (params.isSiteReloaded!="yes")) {
             params.status = RefdataValue.getByValueAndCategory('Current','Subscription Status').id
         }
 

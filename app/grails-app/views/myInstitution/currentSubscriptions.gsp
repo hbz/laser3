@@ -32,7 +32,7 @@
 
 <semui:filter>
     <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="form-inline ui small form">
-
+        <input type="hidden" name="isSiteReloaded" value="yes"/>
         <div class="three fields">
             <!-- 1-1 -->
             <div class="field">

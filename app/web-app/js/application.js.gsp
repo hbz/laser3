@@ -312,9 +312,15 @@ r2d2 = {
             transition: 'fade',
             //showOnFocus: false
         });
-        $(ctxSel + ' .ui.search.dropdown').dropdown({
-            fullTextSearch: 'exact'
+        $(ctxSel + ' .la-filter .ui.dropdown').dropdown({
+            clearable: true
         });
+
+        $(ctxSel + ' .ui.search.dropdown').dropdown({
+            fullTextSearch: 'exact',
+            clearable: true
+        });
+
 
         // dropdowns escape
         $(ctxSel + ' .la-filter .ui.dropdown').on('keydown', function(e) {
@@ -324,16 +330,28 @@ r2d2 = {
             }
         });
 
+
+        function toggleFilterDropdown(that) {
+            $( that ).find("div.text").hasClass("default")? $(that).removeClass("la-filter-dropdown-selected") : $(that).addClass("la-filter-dropdown-selected");
+        }
+        $( '.la-filter .ui.dropdown' ).each(function( index ) {
+            toggleFilterDropdown(this)
+        });
+
         // SEM UI DROPDOWN CHANGE
         $(ctxSel + ' .la-filter .ui.dropdown').change(function() {
-            ($(this).hasClass("default")) ? $(this).removeClass("la-filter-dropdown-selected") : $(this).addClass("la-filter-dropdown-selected");
+            toggleFilterDropdown(this)
         });
 
         // for default selected Dropdown value
+        /*
         var currentDropdown = $(ctxSel + ' .la-filter .ui.dropdown > select > option[selected=selected]').parents('.ui.dropdown');
+
         currentDropdown.find("div.text").hasClass("default")
             ?  currentDropdown.removeClass('la-filter-dropdown-selected')
             : currentDropdown.addClass('la-filter-dropdown-selected');
+        */
+
 
         // FILTER SELECT FUNCTION - INPUT LOADING
         $(ctxSel + ' .la-filter input[type=text]').each(function() {
