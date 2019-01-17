@@ -442,8 +442,13 @@ class FinanceController extends AbstractDebugController {
             def filename = result.institution.name
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}_financialExport.xls\"")
             response.contentType = "application/vnd.ms-excel"
-            workbook.write(response.outputStream)
-            response.outputStream.flush()
+            try {
+                workbook.write(response.outputStream)
+                response.outputStream.flush()
+            }
+            catch (IOException e) {
+                log.error("A request was started before the started one was terminated")
+            }
     }
 
     /**
