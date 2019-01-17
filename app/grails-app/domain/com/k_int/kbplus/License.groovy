@@ -146,7 +146,6 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
         return instanceOf ? instanceOf.isTemplate() : false
     }
 
-    // TODO: implement
     @Override
     def getCalculatedType() {
         def result = TemplateSupport.CALCULATED_TYPE_UNKOWN
@@ -157,10 +156,11 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
         else if(getLicensingConsortium() && ! getAllLicensee() && ! isTemplate()) {
             result = TemplateSupport.CALCULATED_TYPE_CONSORTIAL
         }
-        else if(getLicensingConsortium() && getAllLicensee() && instanceOf && ! hasTemplate()) {
+        else if(getLicensingConsortium() /*&& getAllLicensee()*/ && instanceOf && ! hasTemplate()) {
+            // current and deleted member licenses
             result = TemplateSupport.CALCULATED_TYPE_PARTICIPATION
         }
-        else if(! getLicensingConsortium() && getAllLicensee() && ! hasTemplate() && ! isTemplate()) {
+        else if(! getLicensingConsortium() && getAllLicensee() && ! isTemplate()) {
             result = TemplateSupport.CALCULATED_TYPE_LOCAL
         }
         result
@@ -447,7 +447,7 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
         License.where{ instanceOf == this && (status == null || status.value != 'Deleted') }
     }
 
-    def getCaculatedPropDefGroups(Org contextOrg) {
+    def getCalculatedPropDefGroups(Org contextOrg) {
         def result = [ 'global':[], 'local':[], 'member':[], fallback: true ]
 
         // ALL type depending groups without checking tenants or bindings
