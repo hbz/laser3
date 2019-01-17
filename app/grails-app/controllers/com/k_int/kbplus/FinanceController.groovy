@@ -553,7 +553,7 @@ class FinanceController extends AbstractDebugController {
                     cell.setCellValue(ci?.order ? ci.order.orderNumber : "")
                     if(viewMode == "cons") {
                         if(ci.sub) {
-                            def orgRoles = OrgRole.findBySubAndRoleType(ci.sub,RefdataValue.getByValueAndCategory('Subscriber_Consortial','Organisational Role'))
+                            def orgRoles = OrgRole.findBySubAndRoleType(ci.sub,RDStore.OR_SUBSCRIBER_CONS)
                             //participants (visible?)
                             cell = row.createCell(cellnum++)
                             orgRoles.each { or ->

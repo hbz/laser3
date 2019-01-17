@@ -18,7 +18,7 @@
 
 <%-- grouped custom properties --%>
 
-<g:set var="allPropDefGroups" value="${orgInstance.getCaculatedPropDefGroups(contextService.getOrg())}" />
+<g:set var="allPropDefGroups" value="${orgInstance.getCalculatedPropDefGroups(contextService.getOrg())}" />
 
 <g:each in="${allPropDefGroups.global}" var="propDefGroup">
     <g:if test="${propDefGroup.visible?.value == 'Yes'}">
@@ -47,24 +47,48 @@
     </g:if>
 </g:each>
 
+<%-- orphaned properties --%>
+
+<g:if test="${! allPropDefGroups.fallback}">
+    <g:if test="${allPropDefGroups.orphanedProperties}">
+
+        <div class="ui card la-dl-no-table la-js-hideable">
+            <div class="content">
+                <h5 class="ui header">
+                    ${message(code:'subscription.properties.orphaned')}
+                </h5>
+
+                <div id="custom_props_div_props">
+                    <g:render template="/templates/properties/orphaned" model="${[
+                            prop_desc: PropertyDefinition.ORG_PROP,
+                            ownobj: orgInstance,
+                            orphanedProperties: allPropDefGroups.orphanedProperties,
+                            custom_props_div: "custom_props_div_props" ]}"/>
+                </div>
+            </div>
+        </div>
+
+    </g:if>
+</g:if>
+
 <%-- custom properties --%>
 
-<g:if test="${allPropDefGroups.fallback}">
+<g:else>
 
-    <div class="ui card la-dl-no-table">
+    <div class="ui card la-dl-no-table la-js-hideable">
         <div class="content">
-            <h5 class="ui header">${message(code:'org.properties')}</h5>
+            <h5 class="ui header">
+                ${message(code:'org.properties')}
+            </h5>
 
             <div id="custom_props_div_props">
-
                 <g:render template="/templates/properties/custom" model="${[
                         prop_desc: PropertyDefinition.ORG_PROP,
                         ownobj: orgInstance,
-                        custom_props_div: "custom_props_div_props"
-                ]}"/>
+                        custom_props_div: "custom_props_div_props" ]}"/>
             </div>
         </div>
-    </div><!--.card-->
+    </div>
 
     <r:script language="JavaScript">
         $(document).ready(function(){
@@ -72,7 +96,7 @@
         });
     </r:script>
 
-</g:if>
+</g:else>
 
 <%-- private properties --%>
 

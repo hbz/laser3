@@ -1,5 +1,12 @@
 <%@ page import="de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.abstract_domain.AbstractProperty" %>
 <laser:serviceInjection />
+<div>
+    <g:set var="dashboard_last_update" value="${de.laser.DashboardDueDate.executeQuery("select max(lastUpdated) from DashboardDueDate ")[0]}" />
+    <g:if test="${ ! SqlDateUtils.isYesterdayOrToday(dashboard_last_update)}"><i class="exclamation triangle icon" ></i></g:if>
+    ${message(code:'myinst.dash.due_dates.lastUpdate')}&nbsp<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${dashboard_last_update}"/>&nbsp
+
+</div>
+
     <g:if test="${dueDates}">
 
         <table class="ui celled table">

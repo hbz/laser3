@@ -8,6 +8,7 @@ class GlobalRecordTracker {
   GlobalRecordInfo owner
   String localOid
   String identifier
+  String uuid
   String name
   Boolean autoAcceptTippAddition
   Boolean autoAcceptTippDelete
@@ -20,6 +21,7 @@ class GlobalRecordTracker {
                     version column:'grt_version'
                       owner column:'grt_owner_fk'
                  identifier column:'grt_identifier'
+                       uuid column:'grt_uuid'
                    localOid column:'grt_local_oid'
                        name column:'grt_name', type:'text'
      autoAcceptTippAddition column:'grt_auto_tipp_add'
@@ -32,6 +34,7 @@ class GlobalRecordTracker {
                          name(nullable:true, blank:false, maxSize:2048)
                      localOid(nullable:true, blank:false)
        autoAcceptTippAddition(nullable:true, blank:false)
+                         uuid(nullable:true, blank:false)
          autoAcceptTippDelete(nullable:true, blank:false)
          autoAcceptTippUpdate(nullable:true, blank:false)
       autoAcceptPackageUpdate(nullable:true, blank:false)

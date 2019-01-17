@@ -1,4 +1,7 @@
-<!-- _groups.gsp -->
+%{-- To use, add the g:render custom_props inside a div with id=custom_props_div_xxx, add g:javascript src=properties.js --}%
+%{-- on head of container page, and on window load execute  --}%
+%{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_xxx"); --}%
+
 <%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.License; de.laser.AuditConfig" %>
 
 <g:if test="${newProp}">
@@ -8,13 +11,12 @@
 <g:if test="${error}">
     <bootstrap:alert class="alert-danger">${error}</bootstrap:alert>
 </g:if>
-
 <table class="ui la-table-small la-table-inCard table">
-    <g:if test="${propDefGroup}">
+    <g:if test="${orphanedProperties}">
         <colgroup>
             <col style="width: 129px;">
             <col style="width: 96px;">
-            <g:if test="${propDefGroup.ownerType == License.class.name}">
+            <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
                 <col style="width: 359px;">
             </g:if>
             <col style="width: 148px;">
@@ -22,9 +24,9 @@
         </colgroup>
         <thead>
             <tr>
-                <th class="la-column-nowrap" >${message(code:'property.table.property')}</th>
+                <th class="la-column-nowrap la-js-dont-hide-this-card" >${message(code:'property.table.property')}</th>
                 <th>${message(code:'property.table.value')}</th>
-                <g:if test="${propDefGroup.ownerType == License.class.name}">
+                <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
                     <th>${message(code:'property.table.paragraph')}</th>
                 </g:if>
                 <th>${message(code:'property.table.notes')}</th>
@@ -33,10 +35,10 @@
         </thead>
     </g:if>
     <tbody>
-        <g:each in="${propDefGroup.getCurrentProperties(ownobj)}" var="prop">
-
+        <g:each in="${orphanedProperties.sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
+            <g:if test="${prop.type.descr == prop_desc}">
                 <tr>
-                    <td class="la-column-nowrap">
+                    <td class="la-js-dont-hide-this-card">
                         <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
                             ${prop.type.getI10n('name')}
                             <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${prop.type.getI10n('expl')}">
@@ -79,14 +81,14 @@
                         <g:elseif test="${prop.type.type == Date.toString()}">
                             <semui:xEditable owner="${prop}" type="date" field="dateValue"/>
                         </g:elseif>
-                        <g:elseif test="${prop.type.type == RefdataValue.toString()}">
-                            <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}"/>
-                        </g:elseif>
                         <g:elseif test="${prop.type.type == URL.toString()}">
                             <semui:xEditable owner="${prop}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" />
                         </g:elseif>
+                        <g:elseif test="${prop.type.type == RefdataValue.toString()}">
+                            <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}"/>
+                        </g:elseif>
                     </td>
-                    <g:if test="${propDefGroup.ownerType == License.class.name}">
+                    <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
                         <td>
                             <semui:xEditable owner="${prop}" type="textarea" field="paragraph"/>
                         </td>
@@ -114,12 +116,11 @@
                                     </button>
                                     <g:remoteLink class="js-gost"
                                                   controller="ajax" action="togglePropertyAuditConfig"
-                                                  params='[propClass: prop.getClass(), propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}", ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]'
-                                                  id="${prop.id}"
+                                                  params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]' id="${prop.id}"
                                                   data-confirm-term-what="property"
                                                   data-confirm-term-what-detail="${prop.type.name}"
                                                   data-confirm-term-how="inherit"
-                                                  onSuccess="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                                  onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                                   onComplete="c3po.loadJsAfterAjax()"
                                                   update="${custom_props_div}">
                                     </g:remoteLink>
@@ -133,56 +134,19 @@
                                 </button>
                                 <g:remoteLink class="js-gost"
                                               controller="ajax" action="deleteCustomProperty"
-                                              params='[propClass: prop.getClass(), propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}", ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:"${showConsortiaFunctions}"]'
-                                              id="${prop.id}"
+                                              params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:"${showConsortiaFunctions}"]' id="${prop.id}"
                                               data-confirm-term-what="property"
                                               data-confirm-term-what-detail="${prop.type.name}"
                                               data-confirm-term-how="delete"
-                                              onSuccess="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                              onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                               onComplete="c3po.loadJsAfterAjax()"
-                                              update="${custom_props_div}" >
+                                              update="${custom_props_div}">
                                 </g:remoteLink>
                             </g:if>
                         </g:if>
                     </td>
                 </tr>
-
+            </g:if>
         </g:each>
     </tbody>
-
-    <g:if test="${editable}">
-        <tfoot>
-            <tr>
-                <g:if test="${propDefGroup.ownerType == License.class.name}">
-                    <td colspan="5">
-                </g:if>
-                <g:else>
-                    <td colspan="4">
-                </g:else>
-
-                    <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']" method="post"
-                                  name="cust_prop_add_value"
-                                  class="ui form"
-                                  update="${custom_props_div}"
-                                  onComplete="c3po.loadJsAfterAjax()"
-                                  onSuccess="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')">
-
-                        <input type="hidden" name="propIdent" data-desc="${prop_desc}" data-oid="${propDefGroup.class.name}:${propDefGroup.id}" class="customPropSelect"/>
-                        <input type="hidden" name="ownerId" value="${ownobj.id}"/>
-                        <input type="hidden" name="editable" value="${editable}"/>
-                        <input type="hidden" name="showConsortiaFunctions" value="${showConsortiaFunctions}"/>
-                        <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
-                        <input type="hidden" name="propDefGroup" value="${propDefGroup.class.name}:${propDefGroup.id}"/>
-
-                        <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
-
-                        <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
-                    </g:formRemote>
-
-                </td>
-            </tr>
-        </tfoot>
-    </g:if>
-
 </table>
-<!-- _groups.gsp -->

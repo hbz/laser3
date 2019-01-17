@@ -390,8 +390,8 @@ class ApiReaderHelper {
     static resolveCustomProperties(def list, def generic, Org context) {
         def result = []
 
-        if (generic.metaClass.getMetaMethod("getCaculatedPropDefGroups")) {
-            def groups = generic.getCaculatedPropDefGroups(context)
+        if (generic.metaClass.getMetaMethod("getCalculatedPropDefGroups")) {
+            def groups = generic.getCalculatedPropDefGroups(context)
             def tmp = []
 
             groups.global?.each { it ->
