@@ -5,10 +5,8 @@ import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
 import de.laser.helper.SqlDateUtils
 import static com.k_int.kbplus.UserSettings.KEYS.*
-import static de.laser.helper.RDStore.*
 
 import static de.laser.helper.RDStore.*
-import static de.laser.helper.RDStore.YN_YES
 
 class QueryService {
     def subscriptionsQueryService
@@ -63,21 +61,6 @@ class QueryService {
         }
 
         dueObjects
-    }
-    private Map getReminderSettings(User user) {
-        def result = [:]
-//        result << [IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD, (user.getSetting(DASHBOARD_REMINDER_PERIOD, 14),    params.dashboardReminderPeriod,     'profile.updateProfile.updated.dashboardReminderPeriod')
-        result << [IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD, (user.getSetting(IS_REMIND_BY_EMAIL, YN_NO)==YN_YES)]
-        result << [IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD, (user.getSetting(IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD, YN_NO)==YN_YES)]
-        result << [IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD, (user.getSetting(IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE, YN_NO)==YN_YES)]
-        result << [IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD, (user.getSetting(IS_REMIND_FOR_SUBSCRIPTIONS_CUSTOM_PROP, YN_NO)==YN_YES)]
-        result << [IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD, (user.getSetting(IS_REMIND_FOR_SUBSCRIPTIONS_PRIVATE_PROP, YN_NO)==YN_YES)]
-        result << [IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD, (user.getSetting(IS_REMIND_FOR_LICENSE_CUSTOM_PROP, YN_NO)==YN_YES)]
-        result << [IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD, (user.getSetting(IS_REMIND_FOR_LIZENSE_PRIVATE_PROP, YN_NO)==YN_YES)]
-        result << [IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD, (user.getSetting(IS_REMIND_FOR_ORG_CUSTOM_PROP, YN_NO)==YN_YES)]
-        result << [IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD, (user.getSetting(IS_REMIND_FOR_ORG_PRIVATE_PROP, YN_NO)==YN_YES)]
-        result << [IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD, (user.getSetting(IS_REMIND_FOR_PERSON_PRIVATE_PROP, YN_NO)==YN_YES)]
-        result << [IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD, (user.getSetting(IS_REMIND_FOR_TASKS, YN_NO)==YN_YES)]
     }
 
     private def getQuery(Class propertyClass, Org contextOrg, java.sql.Date fromDateValue, java.sql.Date toDateValue){
