@@ -26,10 +26,16 @@
     </g:else>
 </semui:breadcrumbs>
 
+<g:form name="export" controller="finance" action="financialsExport">
+    <g:if test="${fixedSubscription}">
+        <input type="hidden" name="sub" value="${fixedSubscription.id}"/>
+    </g:if>
+</g:form>
+
 <semui:controlButtons>
     <semui:exportDropdown>
         <semui:exportDropdownItem>
-            <g:link class="item" action="financialsExport" params="${params}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
+            <a class="item" onclick="$('#export').submit()">${message(code:'default.button.exports.xls', default:'XLS Export')}</a>
         </semui:exportDropdownItem>
         <%--
         <semui:exportDropdownItem>
