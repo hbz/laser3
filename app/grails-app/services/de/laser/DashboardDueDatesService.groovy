@@ -49,28 +49,28 @@ class DashboardDueDatesService {
 
         if ( update_running == true ) {
                 log.info("Existing DashboardDueDatesService takeCareOfDueDates - one already running");
-            } else {
-                try {
-                    update_running = true;
-                    log.debug("Start DashboardDueDatesService takeCareOfDueDates");
-                    new EventLog(event:'DashboardDueDatesService takeCareOfDueDates', message:'Start', tstp:new Date(System.currentTimeMillis())).save(flush:true)
-                    if (isUpdateDashboardTableInDatabase) {
-                        flash= updateDashboardTableInDatabase(flash)
-                    }
-                    if (isSendEmailsForDueDatesOfAllUsers) {
-                        flash = sendEmailsForDueDatesOfAllUsers(flash)
-                    }
-                    log.debug("Finished DashboardDueDatesService takeCareOfDueDates");
-                    new EventLog(event:'DashboardDueDatesService takeCareOfDueDates', message:'Finished', tstp:new Date(System.currentTimeMillis())).save(flush:true)
-                } catch (Throwable t) {
-                    log.error("DashboardDueDatesService takeCareOfDueDates :: Unable to perform email due to exception ${t.message}")
-                    new EventLog(event:'DashboardDueDatesService takeCareOfDueDates', message:'Unable to perform email due to exception '+ t.message, tstp:new Date(System.currentTimeMillis())).save(flush:true)
-                    flash.error += messageSource.getMessage('menu.admin.error', null, locale)
-                    update_running = false
-                } finally {
-                    update_running = false
+        } else {
+            try {
+                update_running = true;
+                log.debug("Start DashboardDueDatesService takeCareOfDueDates");
+                new EventLog(event:'DashboardDueDatesService takeCareOfDueDates', message:'Start', tstp:new Date(System.currentTimeMillis())).save(flush:true)
+                if (isUpdateDashboardTableInDatabase) {
+                    flash= updateDashboardTableInDatabase(flash)
                 }
+                if (isSendEmailsForDueDatesOfAllUsers) {
+                    flash = sendEmailsForDueDatesOfAllUsers(flash)
+                }
+                log.debug("Finished DashboardDueDatesService takeCareOfDueDates");
+                new EventLog(event:'DashboardDueDatesService takeCareOfDueDates', message:'Finished', tstp:new Date(System.currentTimeMillis())).save(flush:true)
+            } catch (Throwable t) {
+                log.error("DashboardDueDatesService takeCareOfDueDates :: Unable to perform email due to exception ${t.message}")
+                new EventLog(event:'DashboardDueDatesService takeCareOfDueDates', message:'Unable to perform email due to exception '+ t.message, tstp:new Date(System.currentTimeMillis())).save(flush:true)
+                flash.error += messageSource.getMessage('menu.admin.error', null, locale)
+                update_running = false
+            } finally {
+                update_running = false
             }
+        }
     }
     private updateDashboardTableInDatabase(def flash){
         log.debug("Start DashboardDueDatesService updateDashboardTableInDatabase");
