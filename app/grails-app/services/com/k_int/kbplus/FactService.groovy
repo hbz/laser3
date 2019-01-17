@@ -243,7 +243,7 @@ class FactService {
       def y_axis_labels = []
 
       factList.each { li ->
-        y_axis_labels.add(li.factType.value + ':' + li.factMetric.value)
+        y_axis_labels.add(li.factType + ':' + li.factMetric)
       }
       y_axis_labels = y_axis_labels.unique().sort()
 
@@ -273,15 +273,15 @@ class FactService {
     def usage = new long[firstAxis.size()][secondAxis.size()]
     factList.each { f ->
       def x_label = f.get('reportingYear').intValue()
-      def y_label = f.get('factType').value + ':' + f.get('factMetric').value
-      usage[firstAxis.indexOf(y_label)][secondAxis.indexOf(x_label)] += Long.parseLong(f.get('factValue'))
+      def y_label = f.get('factType') + ':' + f.get('factMetric')
+      usage[firstAxis.indexOf(y_label)][secondAxis.indexOf(x_label)] += f.get('factValue')
     }
     usage
   }
 
   private def getTotalUsageFactsForSub(org_id, supplier_id, sub, title_id=null, restrictToSubscriptionPeriod=false)  {
     def params = [:]
-    def hql = 'select sum(f.factValue), f.reportingYear, f.reportingMonth, f.factType, f.factMetric' +
+    def hql = 'select sum(f.factValue), f.reportingYear, f.reportingMonth, f.factType.value, f.factMetric.value' +
         ' from Fact as f' +
         ' where f.supplier.id=:supplierid and f.inst.id=:orgid'
         if (restrictToSubscriptionPeriod) {
@@ -297,7 +297,7 @@ class FactService {
               'where ie.subscription= :sub  and tipp.title = f.relatedTitle and ie.status.value!=:status)'
           params['sub'] = sub
         }
-    hql += ' group by f.factType, f.reportingYear, f.reportingMonth, f.factMetric'
+    hql += ' group by f.factType.value, f.reportingYear, f.reportingMonth, f.factMetric.value'
     hql += ' order by f.reportingYear desc,f.reportingMonth desc'
     params['supplierid'] = supplier_id
     params['orgid'] = org_id
@@ -362,7 +362,7 @@ class FactService {
     if (! licenseYearsWithoutUsage.isEmpty()) {
       licenseYearsWithoutUsage.each { year ->
         licenseYears.each { ft ->
-          def newMapElement = [reportingYear:(year),factValue:'0',factType:(ft)]
+          def newMapElement = [reportingYear:(year),factValue:0,factType:(ft)]
           factList.add(newMapElement)
         }
       }
@@ -380,7 +380,7 @@ class FactService {
       // todo add column metric to table fact + data migration
       def y_axis_labels = []
       factList.each {
-        y_axis_labels.add(it.factType.value + ':' + it.factMetric.value)
+        y_axis_labels.add(it.factType + ':' + it.factMetric)
       }
       y_axis_labels = y_axis_labels.unique().sort()
       def x_axis_labels = factList.reportingYear.unique(false).sort()*.intValue()
