@@ -90,7 +90,8 @@ grails.project.dependency.resolution = {
         compile 'joda-time:joda-time:2.9.9'
 
         runtime 'gov.loc:bagit:4.0'
-        runtime 'org.apache.poi:poi:3.8'
+        //runtime 'org.apache.poi:poi:3.8'
+        runtime 'org.apache.poi:poi-ooxml:jar:3.9'
         runtime 'net.sf.opencsv:opencsv:2.0'
         runtime 'com.googlecode.juniversalchardet:juniversalchardet:1.0.3'
 
