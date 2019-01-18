@@ -11,6 +11,16 @@ class SqlDateUtils {
         SimpleDateFormat simpleDateFormat = new java.text.SimpleDateFormat("yyyyMMdd")
         (simpleDateFormat.format(date).compareTo(simpleDateFormat.format(new Date(System.currentTimeMillis())))) == 0
     }
+    static boolean isYesterday(date) {
+        def yesterday = Calendar.getInstance()
+        yesterday.add(Calendar.DATE, -1)
+        yesterday = new Date(yesterday.getTimeInMillis())
+        SimpleDateFormat simpleDateFormat = new java.text.SimpleDateFormat("yyyyMMdd")
+        (simpleDateFormat.format(date).compareTo(simpleDateFormat.format(yesterday))) == 0
+    }
+    static boolean isYesterdayOrToday(date){
+        isYesterday(date) || isToday(date)
+    }
     // ist getestet
     static boolean isBeforeToday(date) {
         SimpleDateFormat simpleDateFormat = new java.text.SimpleDateFormat("yyyyMMdd")

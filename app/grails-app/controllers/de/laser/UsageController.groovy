@@ -24,14 +24,6 @@ class UsageController extends AbstractDebugController {
 
     @Secured(['ROLE_STATISTICS_EDITOR','ROLE_ADMIN'])
     def index() {
-
-        render(view: '/serverCodes/unavailable')
-        return null
-
-        // TODO ---> DEACTIVATED
-        // TODO ---> DEACTIVATED
-        // TODO ---> DEACTIVATED
-
         def result = initResult()
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
@@ -40,8 +32,8 @@ class UsageController extends AbstractDebugController {
         // criteria and totalCount for PageResultList Object seems to be problematic with projections and aggregation
         // use extra hql query for now, TODO only use hql base query and move the query out of this method
 
-        def hql = "select stc.id from StatsTripleCursor as stc"
-        def groupCondition = " group by stc.supplierId, stc.customerId, stc.haveUpTo,stc.factType"
+        def hql = "select stc.supplierId, stc.customerId, stc.haveUpTo, stc.factType.id from StatsTripleCursor as stc"
+        def groupCondition = " group by stc.supplierId, stc.customerId, stc.haveUpTo, stc.factType.id"
         def whereConditions = []
         def queryParams = [:]
         if (params.supplier){
