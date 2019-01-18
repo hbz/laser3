@@ -139,4 +139,21 @@ class SubscriptionUpdateService {
         }
     }
 
+    /**
+     * Triggered from the Yoda menu
+     * Sets the status of every subscription without start date to null as of ERMS-847
+     */
+    boolean startDateCheck() {
+        def subsWithoutStartDate = Subscription.findAllByStartDateIsNullAndStatus(RDStore.SUBSCRIPTION_CURRENT).collect { it -> it.id }
+        if(subsWithoutStartDate) {
+            Subscription.executeUpdate('UPDATE Subscription SET status = null where id IN (:subs)',[subs:subsWithoutStartDate])
+            log.debug("Writing events")
+            log.info("${subsWithoutStartDate.size()} subscriptions affected")
+            return true
+        }
+        else {
+            return false
+        }
+    }
+
 }
