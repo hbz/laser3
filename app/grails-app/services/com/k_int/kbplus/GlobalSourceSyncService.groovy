@@ -1290,6 +1290,7 @@ class GlobalSourceSyncService {
       out.close()
 
       gli.record = baos.toByteArray()
+      gli.uuid = gli.uuid ?: newrecord?.parsed_rec.impId
       gli.save()
     }
 

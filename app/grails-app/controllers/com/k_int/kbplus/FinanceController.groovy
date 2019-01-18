@@ -24,7 +24,7 @@ class FinanceController extends AbstractDebugController {
     def contextService
     def genericOIDService
 
-    private final def ci_count        = 'select distinct count(ci.id) from CostItem as ci '
+    private final def ci_count        = 'select count(distinct ci.id) from CostItem as ci '
     private final def ci_select       = 'select distinct ci from CostItem as ci '
     private final def user_role        = Role.findByAuthority('INST_USER')
     private final def defaultCurrency = RefdataValue.getByValueAndCategory('EUR', 'Currency')
@@ -409,15 +409,8 @@ class FinanceController extends AbstractDebugController {
         //println cost_item_qry_params
 
         tmp.foundMatches    =  cost_item_qry_params.size() > 1 // [owner:default] ; used for flash
-        try{
-            tmp.cost_items      =  CostItem.executeQuery(ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy, cost_item_qry_params, params)
-            tmp.cost_item_count =  CostItem.executeQuery(ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy, cost_item_qry_params).size()
-        }
-        catch (HibernateQueryException e) {
-            tmp.cost_items = [:]
-            tmp.cost_item_count = 0
-        }
-
+        tmp.cost_items      =  CostItem.executeQuery(ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy, cost_item_qry_params, params)
+        tmp.cost_item_count =  CostItem.executeQuery(ci_count + cost_item_qry + qryOutput.qry_string + " group by ci.id " + orderAndSortBy, cost_item_qry_params).size()
 
         log.debug("index(${queryMode})  -- Performed filtering process ${tmp.cost_item_count} result(s) found")
 
@@ -479,8 +472,13 @@ class FinanceController extends AbstractDebugController {
             def filename = result.institution.name
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}_financialExport.xls\"")
             response.contentType = "application/vnd.ms-excel"
-            workbook.write(response.outputStream)
-            response.outputStream.flush()
+            try {
+                workbook.write(response.outputStream)
+                response.outputStream.flush()
+            }
+            catch (IOException e) {
+                log.error("A request was started before the started one was terminated")
+            }
     }
 
     /**

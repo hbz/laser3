@@ -48,11 +48,13 @@ class UsageController extends AbstractDebugController {
             hql += " where " + whereConditions.join(' and ')
         }
         hql += groupCondition
+        /* needed if we remove the criteria
         if ((params.sort != null) && (params.sort.length() > 0)) {
+           //numFact has to be addressed seperatly (todo)
             hql += " order by stc.${params.sort} ${params.order}"
         } else {
             hql += " order by stc.supplierId asc"
-        }
+        }*/
         def totalResultIds = StatsTripleCursor.executeQuery(hql, queryParams)
 
         def criteria = StatsTripleCursor.createCriteria()

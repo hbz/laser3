@@ -189,7 +189,7 @@
                                 </g:if>
                                 <g:else>
                                     ${record.name} <a target="_blank"
-                                                      href="${record.url ? record.url + '/gokb/resource/show/' + record.id : '#'}"><i
+                                                      href="${record.url ? record.url + '/gokb/public/packageContent/' + record.id : '#'}"><i
                                             title="GOKB Link" class="external alternate icon"></i></a>
                                 </g:else>
                             </td>

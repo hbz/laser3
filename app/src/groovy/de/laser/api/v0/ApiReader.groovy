@@ -176,12 +176,14 @@ class ApiReader {
                     allOrgRoles.addAll(lic.orgLinks)
 
                     // add derived licenses org roles
-                    allOrgRoles.addAll(
-                            OrgRole.executeQuery(
-                                "select oo from OrgRole oo where oo.lic in (:derived) and oo.roleType in (:roles)",
-                                [derived: lic.derivedLicenses, roles: [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]]
-                            )
-                    )
+                    if (lic.derivedLicenses) {
+                        allOrgRoles.addAll(
+                                OrgRole.executeQuery(
+                                        "select oo from OrgRole oo where oo.lic in (:derived) and oo.roleType in (:roles)",
+                                        [derived: lic.derivedLicenses, roles: [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]]
+                                )
+                        )
+                    }
 
                 }
                 allOrgRoles = allOrgRoles.unique()
@@ -350,11 +352,15 @@ class ApiReader {
         result.previousSubscription = ApiReaderHelper.resolveSubscriptionStub(sub.previousSubscription, context) // com.k_int.kbplus.Subscription
         result.properties           = ApiReaderHelper.resolveProperties(sub, context) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
 
+        def allOrgRoles = []
+
         // add derived subscriptions org roles
-        def allOrgRoles = OrgRole.executeQuery(
-                "select oo from OrgRole oo where oo.sub in (:derived) and oo.roleType in (:roles)",
-                [derived: sub.derivedSubscriptions, roles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
-        )
+        if (sub.derivedSubscriptions) {
+            allOrgRoles = OrgRole.executeQuery(
+                    "select oo from OrgRole oo where oo.sub in (:derived) and oo.roleType in (:roles)",
+                    [derived: sub.derivedSubscriptions, roles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER]]
+            )
+        }
         allOrgRoles.addAll(sub.orgRelations)
 
         result.organisations = ApiReaderHelper.resolveOrgLinks(allOrgRoles, ApiReaderHelper.IGNORE_SUBSCRIPTION, context) // com.k_int.kbplus.OrgRole

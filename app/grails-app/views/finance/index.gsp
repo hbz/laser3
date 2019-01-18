@@ -215,9 +215,9 @@
         pullJob : null,
 
         go : function() {
-            console.log("go")
-            financeRecentController.recentCostItems( null ); // pulls latest cost items
-            financeRecentController.pullJob = setInterval( financeRecentController.costItemsPresent, 60 * 1000 ); // Recently updated code block
+            //console.log("go")
+            //financeRecentController.recentCostItems( null ); // pulls latest cost items
+            //financeRecentController.pullJob = setInterval( financeRecentController.costItemsPresent, 60 * 1000 ); // Recently updated code block
         },
 
         recentCostItems : function(to) {
@@ -406,7 +406,7 @@
     }
 
     $(document).ready(function() {
-        financeRecentController.go()
+        //financeRecentController.go() may make a further improvement; the recent added modal is not implemented anyway - needed to ensure export!
         financeHelper.calcSumOfCosts()
     })
 
