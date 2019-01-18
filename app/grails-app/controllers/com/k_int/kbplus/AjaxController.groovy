@@ -1490,10 +1490,12 @@ class AjaxController extends AbstractDebugController {
         def cQueryParams = [RefdataValue.getByValueAndCategory('Personal contact','Person Contact Type'),currOrg,rowobj]
         def contacts = PersonRole.executeQuery(" select p from Person as p where p.contactType = ? and p.tenant = ? and ? in (select pr.org from PersonRole as pr where pr.prs = p) ",cQueryParams)
         int ctr = 0;
-        def row = [:]
-        row["${ctr++}"] = rowobj["name"]
+        LinkedHashMap row = [:]
+        String name = rowobj["name"]
+        if(contacts)
+          name += '<span data-tooltip="Persönlicher Kontakt vorhanden"><i class="address book icon"></i></span>'
+        row["${ctr++}"] = name
         row["DT_RowId"] = "${rowobj.class.name}:${rowobj.id}"
-        row["contacts"] = contacts
         result.aaData.add(row)
       }
 

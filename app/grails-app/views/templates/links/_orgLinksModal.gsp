@@ -16,7 +16,6 @@
                     <tr>
                         <th>${message(code:'template.orgLinksModal.name.label')}</th>
                         <th>${message(code:'template.orgLinksModal.select')}</th>
-                        <th>${message(code:'template.orgLinksModal.privateContactAvailable')}</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -67,20 +66,11 @@
                 "loadingIndicator": false
             },
             "aoColumnDefs": [ {
-                    "aTargets": [ 1 ],
-                    "mData": "DT_RowId",
-                    "mRender": function ( data, type, full ) {
-                        return '<input type="checkbox" name="orm_orgoid" value="' + data + '"/>';
-                    }
-                },
-                {
-                    "aTargets": [ 2 ],
-                    "mData": "contacts",
-                    "mRender": function ( data, type, full ) {
-                        if(data.length > 0)
-                            return '<span data-tooltip="Persönlicher Kontakt vorhanden"><i class="address book icon"></i></span>'
-                        return ''
-                    }
+                "aTargets": [ 1 ],
+                "mData": "DT_RowId",
+                "mRender": function ( data, type, full ) {
+                    return '<input type="checkbox" name="orm_orgoid" value="' + data + '"/>';
+                }
             } ],
             "language": {
                 "decimal":        "<g:message code='datatables.decimal' />",
