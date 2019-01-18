@@ -125,16 +125,16 @@
                             <g:else>
                                 <tr>
                                     <td>
-                                        <g:if test="${com.k_int.kbplus.Package.findByImpId(hit.id)}">
+                                        <g:if test="${com.k_int.kbplus.Package.findByImpId(hit.uuid)}">
                                             <g:link controller="packageDetails" target="_blank" action="show"
-                                                    id="${com.k_int.kbplus.Package.findByImpId(hit.id).id}">${hit.name}</g:link>
+                                                    id="${com.k_int.kbplus.Package.findByImpId(hit.uuid).id}">${hit.name}</g:link>
                                         </g:if>
                                         <g:else>
                                             ${hit.name} <a target="_blank"
-                                                           href="${hit.url ? hit.url + '/gokb/resource/show/' + hit.id : '#'}"><i
+                                                           href="${hit.url ? hit.url + '/gokb/public/packageContent/' + hit.id : '#'}"><i
                                                     title="GOKB Link" class="external alternate icon"></i></a>
                                         </g:else>
-                                        <br><b>(${hit.tippsCountCurrent ?: '0'} ${message(code: 'title.plural', default: 'Titles')})</b>
+                                        <br><b>(${hit.titleCount ?: '0'} ${message(code: 'title.plural', default: 'Titles')})</b>
                                     </td>
 
                                     <td><g:if test="${com.k_int.kbplus.Org.findByName(hit.providerName)}"><g:link
@@ -148,15 +148,15 @@
                                         <g:else>${hit.platformName}</g:else></td>
 
                                     <td>
-                                        <g:if test="${editable && (!pkgs || !(hit.id in pkgs))}">
+                                        <g:if test="${editable && (!pkgs || !(hit.uuid in pkgs))}">
                                             <g:link action="linkPackage" class="ui mini button packageLink"
                                                     id="${params.id}"
-                                                    params="${[addId: hit.id, addType: 'Without']}"
+                                                    params="${[impId: hit.uuid, addType: 'Without']}"
                                                     style="white-space:nowrap;">${message(code: 'subscription.details.link.no_ents', default: 'Link (no Entitlements)')}</g:link>
                                             <br/><br/>
                                             <g:link action="linkPackage" class="ui mini button packageLink"
                                                     id="${params.id}"
-                                                    params="${[addId: hit.id, addType: 'With']}"
+                                                    params="${[impId: hit.uuid, addType: 'With']}"
                                                     style="white-space:nowrap;">${message(code: 'subscription.details.link.with_ents', default: 'Link (with Entitlements)')}</g:link>
                                         </g:if>
                                         <g:else>
@@ -167,7 +167,7 @@
 
                                                 <div class="ui mini icon buttons">
                                                     <button class="ui button la-selectable-button"
-                                                            onclick="unlinkPackage(${com.k_int.kbplus.Package.findByImpId(hit.id)?.id})">
+                                                            onclick="unlinkPackage(${com.k_int.kbplus.Package.findByImpId(hit.uuid)?.id})">
                                                         <i class="times icon red"></i>${message(code: 'default.button.unlink.label')}
                                                     </button>
                                                 </div>

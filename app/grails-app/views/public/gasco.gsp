@@ -138,8 +138,16 @@
                         ${i + 1}
                     </td>
                     <td>
+                        <g:set var="gascoInfoLink" value="${sub.customProperties.find{ it.type == PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Information-Link')}?.urlValue}" />
                         <g:set var="anzeigeName" value="${sub.customProperties.find{ it.type == PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Anzeigename')}?.stringValue}" />
+                        <g:if test="${gascoInfoLink}">
+                            <span data-position="right center" data-tooltip="Diese URL aufrufen:  ${gascoInfoLink}">
+                                <a href="${gascoInfoLink}" target="_blank">${anzeigeName ?: sub}</a>
+                            </span>
+                        </g:if>
+                        <g:else>
                             ${anzeigeName ?: sub}
+                        </g:else>
 
                         <g:each in="${sub.packages}" var="subPkg" status="j">
                             <div class="la-flexbox">
@@ -163,16 +171,7 @@
                     <g:set var="verhandlername" value="${sub.customProperties.find{ it.type == PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Verhandlername')}?.stringValue}" />
                     ${verhandlername ?: sub.getConsortia()?.name}
                     <br>
-                    <g:set var="gascoInfoLink" value="${sub.customProperties.find{ it.type == PropertyDefinition.findByDescrAndName(PropertyDefinition.SUB_PROP, 'GASCO-Information-Link')}?.urlValue}" />
-                    <g:if test="${gascoInfoLink}">
-                        <div class="description">
-                            <i class="icon globe"></i>
-                            <span data-position="right center" data-tooltip="Diese URL aufrufen:  ${gascoInfoLink}">
-                                <a href="${gascoInfoLink}" target="_blank">${gascoInfoLink}</a>
-                            </span>
-                        </div>
-                    </g:if>
-                        <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RefdataValue.getByValueAndCategory('GASCO-Contact', 'Person Function'), sub.getConsortia())}" var="person">
+                    <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RefdataValue.getByValueAndCategory('GASCO-Contact', 'Person Function'), sub.getConsortia())}" var="person">
                             <div class="ui list">
                                 <div class="item">
                                     <div class="content">
@@ -213,4 +212,22 @@
     </table>
 
     </g:if>
+<sec:ifAnyGranted roles="ROLE_USER">
+    <r:script>
+        // sticky table header
+        $('.table').floatThead({
+            position: 'fixed',
+            top: 90,
+            zIndex: 1
+        });
+    </r:script>
+</sec:ifAnyGranted>
+<r:script>
+    // sticky table header
+    $('.table').floatThead({
+        position: 'fixed',
+        top: 45,
+        zIndex: 1
+    });
+</r:script>
 </body>

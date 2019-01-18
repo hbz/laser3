@@ -1380,7 +1380,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
         if (params.addType && (params.addType != '')) {
             if (params.gokbApi) {
-                def gri = GlobalRecordInfo.findByUuid(params.impId)
+                def gri = params.impId ? GlobalRecordInfo.findByUuid(params.impId) : null
 
                 if (!gri) {
                   gri = GlobalRecordInfo.findByIdentifier(params.addId)
@@ -1488,7 +1488,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             result.institutional_usage_identifier =
                     OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
         }
-        log.debug("Going for ES")
+        log.debug("Going for GOKB API")
         User user = springSecurityService.getCurrentUser()
         params.max = user?.getDefaultPageSizeTMP() ?: 25
 

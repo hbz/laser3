@@ -33,6 +33,7 @@ class GOKbService {
                     def pkg = [:]
 
                     pkg.id = r.id
+                    pkg.uuid = r.uuid
                     pkg.componentType = r.componentType
 
                     pkg.identifiers = []
@@ -45,25 +46,38 @@ class GOKbService {
                         pkg.altnames.add(name);
                     }
 
+                    pkg.variantNames = []
+                    r.variantNames?.each{ name ->
+                        pkg.variantNames.add(name);
+                    }
+
+                    pkg.updater = r.updater
                     pkg.listStatus = r.listStatus
-                    pkg.tippsCount = r.tippsCount
-                    pkg.consistent = r.consistent
-                    pkg.global = r.global
+                    //pkg.consistent = r.consistent
+                    //pkg.global = r.global
 
                     pkg.curatoryGroups = []
                     r.curatoryGroups?.each{ curatoryGroup ->
                         pkg.curatoryGroups.add(curatoryGroup);
                     }
 
-                    pkg.tippsCountCurrent = r.tippsCountCurrent
-                    pkg.scope = r.scope
+                    pkg.titleCount = r.titleCount
+                    //pkg.scope = r.scope
                     pkg.name = r.name
-                    pkg.fixed = r.fixed
+                    pkg.sortname = r.sortname
+                    //pkg.fixed = r.fixed
                     pkg.platformName = r.platformName
-                    pkg.breakable = r.breakable
-                    pkg.providerName = r.providerName
+                    //pkg.breakable = r.breakable
+                    pkg.providerName = r.cpname
+                    pkg.provider = r.provider
                     pkg.status = r.status
+                    pkg.description = r.description
+                    pkg.descriptionURL = r.descriptionURL
+
+                    pkg.lastUpdatedDisplay = r.lastUpdatedDisplay
+
                     pkg.url = apiSource.baseUrl
+
 
                     result.records << pkg
                 }
@@ -74,6 +88,7 @@ class GOKbService {
                     def pkg = [:]
 
                     pkg.id = r.id
+                    pkg.uuid = r.uuid
                     pkg.componentType = r.componentType
 
                     pkg.identifiers = []
@@ -86,25 +101,38 @@ class GOKbService {
                         pkg.altnames.add(name);
                     }
 
+                    pkg.variantNames = []
+                    r.variantNames?.each{ name ->
+                        pkg.variantNames.add(name);
+                    }
+
+                    pkg.updater = r.updater
                     pkg.listStatus = r.listStatus
-                    pkg.tippsCount = r.tippsCount
-                    pkg.consistent = r.consistent
-                    pkg.global = r.global
+                    //pkg.consistent = r.consistent
+                    //pkg.global = r.global
 
                     pkg.curatoryGroups = []
                     r.curatoryGroups?.each{ curatoryGroup ->
                         pkg.curatoryGroups.add(curatoryGroup);
                     }
 
-                    pkg.tippsCountCurrent = r.tippsCountCurrent
-                    pkg.scope = r.scope
+                    pkg.titleCount = r.titleCount
+                    //pkg.scope = r.scope
                     pkg.name = r.name
-                    pkg.fixed = r.fixed
+                    pkg.sortname = r.sortname
+                    //pkg.fixed = r.fixed
                     pkg.platformName = r.platformName
-                    pkg.breakable = r.breakable
-                    pkg.providerName = r.providerName
+                    //pkg.breakable = r.breakable
+                    pkg.providerName = r.cpname
+                    pkg.provider = r.provider
                     pkg.status = r.status
+                    pkg.description = r.description
+                    pkg.descriptionURL = r.descriptionURL
+
+                    pkg.lastUpdatedDisplay = r.lastUpdatedDisplay
+
                     pkg.url = apiSource.baseUrl
+
 
                     result.records << pkg
                 }
