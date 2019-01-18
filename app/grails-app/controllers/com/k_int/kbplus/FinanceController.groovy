@@ -6,13 +6,12 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.converters.JSON;
 import grails.plugin.springsecurity.annotation.Secured
-import org.apache.poi.hssf.usermodel.HSSFSheet
-import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Cell
+import org.apache.poi.xssf.streaming.SXSSFSheet
+import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 import org.springframework.orm.hibernate3.HibernateQueryException
@@ -468,14 +467,16 @@ class FinanceController extends AbstractDebugController {
                 tmp = financialData(result,params,user,MODE_SUBSCR)
                 result.cost_item_tabs["subscr"] = tmp.cost_items
             }
-            def workbook = processFinancialXLS(result) //use always header, no batch processing intended
+            def workbook = processFinancialXLSX(result) //use always header, no batch processing intended
 
             def filename = result.institution.name
-            response.setHeader("Content-disposition", "attachment; filename=\"${filename}_financialExport.xls\"")
-            response.contentType = "application/vnd.ms-excel"
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}_financialExport.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             try {
                 workbook.write(response.outputStream)
                 response.outputStream.flush()
+                response.outputStream.close()
+                workbook.dispose()
             }
             catch (IOException e) {
                 log.error("A request was started before the started one was terminated")
@@ -483,16 +484,21 @@ class FinanceController extends AbstractDebugController {
     }
 
     /**
-     * Make a XLS export of cost item results
+     * Make a XLSX export of cost item results
      * @param result - passed from index
      * @return
      */
-    def private processFinancialXLS(result) {
+    def private processFinancialXLSX(result) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(message(code: 'default.date.format.notime', default: 'dd.MM.yyyy'))
-        HSSFWorkbook wb = new HSSFWorkbook()
+        SXSSFWorkbook wb = new SXSSFWorkbook()
+        wb.setCompressTempFiles(true)
         result.cost_item_tabs.entrySet().each { cit ->
             String sheettitle
             String viewMode = cit.getKey()
+            LinkedHashMap subscribers = [:]
+            OrgRole.findByRoleType(RDStore.OR_SUBSCRIBER_CONS).each { it -> subscribers.put(it.sub,it.org)}
+            LinkedHashMap costItemGroups = [:]
+            CostItemGroup.findAll().each{ cig -> costItemGroups.put(cig.costItem,cig.budgetCode) }
             switch(viewMode) {
                 case "owner": sheettitle = message(code:'financials.header.ownCosts')
                 break
@@ -501,7 +507,8 @@ class FinanceController extends AbstractDebugController {
                 case "subscr": sheettitle = message(code:'financials.header.subscriptionCosts')
                 break
             }
-            HSSFSheet sheet = wb.createSheet(sheettitle)
+            SXSSFSheet sheet = wb.createSheet(sheettitle)
+            sheet.flushRows(10)
             sheet.setAutobreaks(true)
             Row headerRow = sheet.createRow(0)
             headerRow.setHeightInPoints(16.75f)
@@ -537,7 +544,7 @@ class FinanceController extends AbstractDebugController {
             HashSet<String> currencies = new HashSet<String>()
             if(cit.getValue().size() > 0) {
                 cit.getValue().each { ci ->
-                    def codes = CostItemGroup.findAllByCostItem(ci).collect { it?.budgetCode?.value }
+                    def codes = costItemGroups.get(ci)
                     def start_date   = ci.startDate ? dateFormat.format(ci?.startDate) : ''
                     def end_date     = ci.endDate ? dateFormat.format(ci?.endDate) : ''
                     def paid_date    = ci.datePaid ? dateFormat.format(ci?.datePaid) : ''
@@ -554,7 +561,7 @@ class FinanceController extends AbstractDebugController {
                     cell.setCellValue(ci?.order ? ci.order.orderNumber : "")
                     if(viewMode == "cons") {
                         if(ci.sub) {
-                            def orgRoles = OrgRole.findBySubAndRoleType(ci.sub,RDStore.OR_SUBSCRIBER_CONS)
+                            def orgRoles = subscribers.get(ci.sub)
                             //participants (visible?)
                             cell = row.createCell(cellnum++)
                             orgRoles.each { or ->
@@ -562,12 +569,13 @@ class FinanceController extends AbstractDebugController {
                                 if(ci.isVisibleForSubscriber)
                                     cellValue += " (sichtbar)"
                                 cell.setCellValue(cellValue)
+                                log.info("cell no ${cellnum} set")
                             }
                         }
                     }
                     //cost title
                     cell = row.createCell(cellnum++)
-                    cell.setCellValue(ci.costTitle)
+                    cell.setCellValue(ci.costTitle ?: '')
                     //subscription with running time
                     cell = row.createCell(cellnum++)
                     String dateString = ""
@@ -585,13 +593,13 @@ class FinanceController extends AbstractDebugController {
                     cell.setCellValue(ci?.issueEntitlement ? ci.issueEntitlement?.tipp?.title?.title:'')
                     //date paid
                     cell = row.createCell(cellnum++)
-                    cell.setCellValue(paid_date)
+                    cell.setCellValue(paid_date ?: '')
                     //date from
                     cell = row.createCell(cellnum++)
-                    cell.setCellValue(start_date)
+                    cell.setCellValue(start_date ?: '')
                     //date to
                     cell = row.createCell(cellnum++)
-                    cell.setCellValue(end_date)
+                    cell.setCellValue(end_date ?: '')
                     //cost item category
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci?.costItemCategory ? ci.costItemCategory.value:'')
