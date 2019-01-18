@@ -209,8 +209,8 @@ class Org extends AbstractBaseDomain {
         result
     }
 
-    def getCaculatedPropDefGroups(Org contextOrg) {
-        def result = [ 'global':[], 'local':[], fallback: true ]
+    def getCalculatedPropDefGroups(Org contextOrg) {
+        def result = [ 'global':[], 'local':[], 'fallback': true, 'orphanedProperties':[] ]
 
         // ALL type depending groups without checking tenants or bindings
         def groups = PropertyDefinitionGroup.findAllByOwnerType(Org.class.name)
@@ -228,6 +228,15 @@ class Org extends AbstractBaseDomain {
         }
 
         result.fallback = (result.global.size() == 0 && result.local.size() == 0)
+
+        // storing properties without groups
+
+        def orph = customProperties.id
+
+        result.global.each{ gl -> orph.removeAll(gl.getCurrentProperties(this).id) }
+        result.local.each{ lc  -> orph.removeAll(lc[0].getCurrentProperties(this).id) }
+
+        result.orphanedProperties = OrgCustomProperty.findAllByIdInList(orph)
 
         result
     }
