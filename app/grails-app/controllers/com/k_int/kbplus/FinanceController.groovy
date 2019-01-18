@@ -492,13 +492,15 @@ class FinanceController extends AbstractDebugController {
         SimpleDateFormat dateFormat = new SimpleDateFormat(message(code: 'default.date.format.notime', default: 'dd.MM.yyyy'))
         SXSSFWorkbook wb = new SXSSFWorkbook()
         wb.setCompressTempFiles(true)
+        LinkedHashMap subscribers = [:]
+        LinkedHashMap costItemGroups = [:]
+        OrgRole.findAllByRoleType(RDStore.OR_SUBSCRIBER_CONS).each { it ->
+            subscribers.put(it.sub,it.org)
+        }
+        CostItemGroup.findAll().each{ cig -> costItemGroups.put(cig.costItem,cig.budgetCode) }
         result.cost_item_tabs.entrySet().each { cit ->
             String sheettitle
             String viewMode = cit.getKey()
-            LinkedHashMap subscribers = [:]
-            OrgRole.findByRoleType(RDStore.OR_SUBSCRIBER_CONS).each { it -> subscribers.put(it.sub,it.org)}
-            LinkedHashMap costItemGroups = [:]
-            CostItemGroup.findAll().each{ cig -> costItemGroups.put(cig.costItem,cig.budgetCode) }
             switch(viewMode) {
                 case "owner": sheettitle = message(code:'financials.header.ownCosts')
                 break
@@ -565,11 +567,10 @@ class FinanceController extends AbstractDebugController {
                             //participants (visible?)
                             cell = row.createCell(cellnum++)
                             orgRoles.each { or ->
-                                String cellValue = or.org.getDesignation()
+                                String cellValue = or.getDesignation()
                                 if(ci.isVisibleForSubscriber)
                                     cellValue += " (sichtbar)"
                                 cell.setCellValue(cellValue)
-                                log.info("cell no ${cellnum} set")
                             }
                         }
                     }
