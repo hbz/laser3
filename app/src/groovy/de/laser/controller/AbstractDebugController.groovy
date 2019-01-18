@@ -9,11 +9,11 @@ abstract class AbstractDebugController {
     protected DebugUtil debugUtil = new DebugUtil()
 
     def beforeInterceptor = {
-        debugUtil.startBench(this.class.simpleName + '_' + session.id)
+        debugUtil.startBench(this.class.simpleName + ' ' + session.id)
     }
 
     def afterInterceptor = {
-        def delta = debugUtil.stopBench(this.class.simpleName + '_' + session.id)
+        def delta = debugUtil.stopBench(this.class.simpleName + ' ' + session.id)
 
         if (delta >= SystemProfiler.THRESHOLD_MS) {
             def json = (params as JSON)
