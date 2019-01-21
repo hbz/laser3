@@ -1,20 +1,12 @@
 package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
+import de.laser.helper.EhcacheWrapper
 import de.laser.helper.RDStore
-import de.laser.controller.AbstractDebugController
-import grails.converters.*
-import grails.plugin.cache.Cacheable
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
-import org.elasticsearch.groovy.common.xcontent.*
-import groovy.xml.MarkupBuilder
 import com.k_int.kbplus.auth.*
-import com.k_int.kbplus.Org
-import net.sf.ehcache.Cache
-import net.sf.ehcache.CacheManager
-import net.sf.ehcache.Element
 import static com.k_int.kbplus.UserSettings.KEYS.*
 import static de.laser.helper.RDStore.*
 
@@ -399,7 +391,7 @@ class ProfileController {
     def properties() {
 
         // def ctxCache = contextService.getCache('ProfileController/properties/')
-        def cache = cacheService.getTTL300Cache('ProfileController/properties/')
+        EhcacheWrapper cache = cacheService.getTTL300Cache('ProfileController/properties/')
 
         def propDefs = [:]
 

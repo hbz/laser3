@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.*
+import de.laser.SystemEvent
 import org.hibernate.ScrollMode
 import java.nio.charset.Charset
 import java.util.GregorianCalendar
@@ -42,7 +43,10 @@ class DataloadService {
 
     def updateFTIndexes() {
         log.debug("updateFTIndexes ${this.hashCode()}")
+        // TODO: remove due SystemEvent
         new EventLog(event:'kbplus.updateFTIndexes', message:'Update FT indexes', tstp:new Date(System.currentTimeMillis())).save(flush:true)
+
+        SystemEvent.createEvent('FT_INDEX_UPDATE_START')
 
         def future = executorService.submit({
             doFTUpdate()
@@ -407,7 +411,10 @@ class DataloadService {
     }
     catch ( Exception e ) {
       log.error("Problem with FT index", e)
+        // TODO: remove due SystemEvent
         new EventLog(event:'kbplus.updateFTIndexes', message:"Problem with FT index ${domain.name}", tstp:new Date(System.currentTimeMillis())).save(flush:true)
+
+        SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["index": domain.name])
     }
     finally {
       log.debug("Completed processing on ${domain.name} - saved ${count} records")
@@ -665,7 +672,10 @@ class DataloadService {
         }
         catch ( Exception e ) {
             log.warn("Problem deleting index ..", e)
+            // TODO: remove due SystemEvent
             new EventLog(event:'kbplus.fullReset', message:"Problem deleting index .. ${es_index}", tstp:new Date(System.currentTimeMillis())).save(flush:true)
+
+            SystemEvent.createEvent('FT_INDEX_CLEANUP_ERROR', ["index": es_index])
         }
 
         log.debug("Create new ES index ..")
