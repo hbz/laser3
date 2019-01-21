@@ -1,10 +1,9 @@
 package com.k_int.kbplus
 
+import de.laser.SystemEvent
 import de.laser.oai.OaiClient
 import com.k_int.kbplus.auth.User
 import de.laser.oai.OaiClientLaser
-
-import java.text.SimpleDateFormat
 import org.springframework.transaction.annotation.*
 
 /*
@@ -847,7 +846,11 @@ class GlobalSourceSyncService {
   def intOAI(sync_job_id) {
 
     log.debug("internalOAI processing ${sync_job_id}");
+
+    // TODO: remove due SystemEvent
     new EventLog(event:'kbplus.doOAISync', message:"internalOAI processing ${sync_job_id}", tstp:new Date(System.currentTimeMillis())).save(flush:true)
+
+      SystemEvent.createEvent('GSSS_OAI_START', ['jobId': sync_job_id])
 
     def sync_job = GlobalRecordSource.get(sync_job_id)
     int rectype = sync_job.rectype.longValue()
@@ -1034,7 +1037,11 @@ class GlobalSourceSyncService {
     catch ( Exception e ) {
       log.error("Problem",e);
       log.error("Problem running job ${sync_job_id}, conf=${cfg}",e);
+      // TODO: remove due SystemEvent
       new EventLog(event:'kbplus.doOAISync', message:"Problem running job ${sync_job_id}, conf=${cfg}", tstp:new Date(System.currentTimeMillis())).save(flush:true)
+
+        SystemEvent.createEvent('GSSS_OAI_ERROR', ['jobId': sync_job_id, 'conf': cfg])?.save(flush:true)
+
       log.debug("Reset sync job haveUpTo");
       def sync_object = GlobalRecordSource.get(sync_job_id)
       sync_object.haveUpTo = olddate
@@ -1042,6 +1049,10 @@ class GlobalSourceSyncService {
     }
     finally {
       log.debug("internalOAISync completed for job ${sync_job_id}");
+
+      SystemEvent.createEvent('GSSS_OAI_COMPLETE', ['jobId': sync_job_id])
+
+      // TODO: remove due SystemEvent
       new EventLog(event:'kbplus.doOAISync', message:"internalOAISync completed for job ${sync_job_id}", tstp:new Date(System.currentTimeMillis())).save(flush:true)
     }
   }

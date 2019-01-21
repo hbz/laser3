@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.SystemEvent
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
 import grails.converters.JSON
@@ -8,7 +9,6 @@ import grails.util.Holders
 import grails.web.Action
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
-import org.quartz.TriggerKey
 import org.quartz.impl.matchers.GroupMatcher
 
 import java.lang.reflect.Method
@@ -253,7 +253,11 @@ class YodaController {
         if (ftupdate_running == false) {
             try {
                 ftupdate_running = true
+                // TODO: remove due SystemEvent
                 new EventLog(event:'kbplus.fullReset',message:'Full Reset ES Start',tstp:new Date(System.currentTimeMillis())).save(flush:true)
+
+                SystemEvent.createEvent('YODA_ES_RESET_START')
+
                 log.debug("Delete all existing FT Control entries");
                 FTControl.withTransaction {
                     FTControl.executeUpdate("delete FTControl c")
