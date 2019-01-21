@@ -126,8 +126,7 @@
                     </div><!-- .field -->
                     <div class="field">
                         <label>${message(code:'financials.costItemConfiguration')}</label>
-                        <% //continue here: overridable!
-                        //<span id="ciec">${tooltipString}</span>
+                        <%
                             def ciec = null
                             if(costItem) {
                                 if(costItem.costItemElementConfiguration)

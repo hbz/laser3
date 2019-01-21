@@ -91,22 +91,23 @@
   Document:
     type: object
     properties:
-     content:
-       type: string
-     filename:
-       type: string
-     mimetype:
-       type: string
-     title:
-       type: string
-     type:
-       type: string
-       description: Mapping RefdataCategory
-       enum:
-         [""]
-     uuid:
-       type: string
-       example: "70d4ef8a-71b9-4b39-b339-9f3773c29b26"
+      placeholder:
+        type: string
+
+  #    filename:
+  #      type: string
+  #    mimetype:
+  #      type: string
+  #    title:
+  #      type: string
+  #    type:
+  #      type: string
+  #      description: Mapping RefdataCategory
+  #      enum:
+  #        [""]
+  #    uuid:
+  #      type: string
+  #      example: "70d4ef8a-71b9-4b39-b339-9f3773c29b26"
 
   Identifier:
     type: object
@@ -181,8 +182,8 @@
       - $ref: "#/definitions/LicenseStub"
       - type: object
         properties:
-    #      contact:
-    #        type: string
+          contact:
+            type: string
           dateCreated:
             type: string
             format: date
@@ -200,29 +201,29 @@
             description: Mapping RefdataCategory "YN"
             enum:
               [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('YN').collect{ it.value }.join(', ') }]
-    #      lastmod:
-    #        type: string
-    #        format: date
+          lastmod:
+            type: string
+            format: date
           lastUpdated:
             type: string
             format: date
-    #      licenseCategory:
-    #        type: string
-    #        description: Mapping RefdataCategory "LicenseCategory"
-    #        enum:
-    #          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('LicenseCategory').collect{ it.value }.join(', ') }]
-    #      licenseUrl:
-    #        type: string
-    #      licensorRef:
-    #        type: string
-    #      licenseeRef:
-    #        type: string
+          licenseCategory:
+            type: string
+            description: Mapping RefdataCategory "LicenseCategory"
+            enum:
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('LicenseCategory').collect{ it.value }.join(', ') }]
+          licenseUrl:
+            type: string
+          licensorRef:
+            type: string
+          licenseeRef:
+            type: string
           licenseStatus:
             type: string
           licenseType:
             type: string
-    #      noticePeriod:
-    #        type: string
+          noticePeriod:
+            type: string
           onixplLicense:
             $ref: "#/definitions/OnixplLicense"
           organisations: # mapping attr orgRelations
@@ -253,11 +254,11 @@
             type: array
             items:
               $ref: "#/definitions/SubscriptionStub"
-    #      type:
-    #        type: string
-    #        description: Mapping RefdataCategory "License Type"
-    #        enum:
-    #          [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('License Type').collect{ it.value }.join(', ') }]
+          type:
+            type: string
+            description: Mapping RefdataCategory "License Type"
+            enum:
+              [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('License Type').collect{ it.value }.join(', ') }]
 
   OnixplLicense:
     type: object

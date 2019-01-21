@@ -19,62 +19,31 @@
 
 			<div class="ui grid">
 				<div class="twelve wide column">
-					<table class="ui celled la-table la-table-small table">
+					<table class="ui celled la-table table">
 						<thead>
 						<tr>
 							<th><g:message code="identifierNamespace.ns.label"/></th>
 							<th>Identifiers</th>
 							<th><g:message code="identifierNamespace.family.label"/></th>
+							<th><g:message code="identifierNamespace.validationRegex.label"/></th>
 							<th><g:message code="identifierNamespace.nsType.label"/></th>
-                            <th><g:message code="identifierNamespace.validationRegex.label"/></th>
-                                <%--<th><g:message code="identifierNamespace.hide.label"/></th>--%>
-                            <th><g:message code="identifierNamespace.nonUnique.label"/></th>
-							<th></th>
+							<th><g:message code="identifierNamespace.hide.label"/></th>
+							<th><g:message code="identifierNamespace.nonUnique.label"/></th>
 						</tr>
 						</thead>
 						<tbody>
 						<g:each in="${identifierNamespaces}" var="idNs">
 							<tr>
-                                <g:if test="${Identifier.countByNs(idNs) == 0}">
-                                    <td>
-                                        <semui:xEditable owner="${idNs}" field="ns"/>
-                                    </td>
-                                    <td>
-                                        ${Identifier.countByNs(idNs)}
-                                    </td>
-                                    <td>
-                                        <semui:xEditable owner="${idNs}" field="family"/>
-                                    </td>
-                                    <td>
-                                        <semui:xEditable owner="${idNs}" field="nsType"/>
-                                    </td>
-                                    <td>
-                                        <semui:xEditable owner="${idNs}" field="validationRegex"/>
-                                    </td>
-                                        <%--<td>${fieldValue(bean: idNs, field: "hide")}</td>--%>
-                                    <td>
-                                        <semui:xEditableBoolean owner="${idNs}" field="nonUnique"/>
-                                    </td>
-                                    <td>
-                                        <g:link controller="admin" action="manageNamespaces"
-                                                params="${[cmd: 'deleteNamespace', oid: 'com.k_int.kbplus.IdentifierNamespace:' + idNs.id]}" class="ui icon negative button">
-                                            <i class="trash alternate icon"></i>
-                                        </g:link>
-                                    </td>
-                                </g:if>
-                                <g:else>
-                                    <td>${fieldValue(bean: idNs, field: "ns")}</td>
-                                    <td>${Identifier.countByNs(idNs)}</td>
-                                    <td>
-                                        <semui:xEditable owner="${idNs}" field="family"/>
-                                    </td>
-                                    <td>${fieldValue(bean: idNs, field: "nsType")}</td>
-                                    <td>${fieldValue(bean: idNs, field: "validationRegex")}</td>
-                                        <%--<td>${fieldValue(bean: idNs, field: "hide")}</td>--%>
-                                    <td>${fieldValue(bean: idNs, field: "nonUnique")}</td>
-                                    <td></td>
-                                </g:else>
-                            </tr>
+								<td>${fieldValue(bean: idNs, field: "ns")}</td>
+								<td>${Identifier.countByNs(idNs)}</td>
+								<td>${fieldValue(bean: idNs, field: "family")}</td>
+								<td>${fieldValue(bean: idNs, field: "validationRegex")}</td>
+								<td>
+                                    <semui:xEditable owner="${idNs}" field="nsType"/>
+                                </td>
+								<td>${fieldValue(bean: idNs, field: "hide")}</td>
+								<td>${fieldValue(bean: idNs, field: "nonUnique")}</td>
+							</tr>
 						</g:each>
 						</tbody>
 					</table>
@@ -100,6 +69,13 @@
 									<g:textField name="family" value="${identifierNamespaceInstance?.family}"/>
 								</div>
 
+								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'validationRegex', 'error')} ">
+									<label for="validationRegex">
+										<g:message code="identifierNamespace.validationRegex.label" />
+									</label>
+									<g:textField name="validationRegex" value="${identifierNamespaceInstance?.validationRegex}"/>
+								</div>
+
 								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'nsType', 'error')} ">
 									<label for="nsType">
 										<g:message code="identifierNamespace.nsType.label" />
@@ -110,21 +86,12 @@
 									        noSelection="['': '']"/>
 								</div>
 
-                                <%--
 								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'hide', 'error')} ">
 									<label for="hide">
 										<g:message code="identifierNamespace.hide.label" />
 									</label>
 									<g:checkBox name="hide" value="${identifierNamespaceInstance?.hide}" checked="${identifierNamespaceInstance?.hide}" />
 								</div>
-                                --%>
-
-                                <div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'validationRegex', 'error')} ">
-                                    <label for="validationRegex">
-                                        <g:message code="identifierNamespace.validationRegex.label" />
-                                    </label>
-                                    <g:textField name="validationRegex" value="${identifierNamespaceInstance?.validationRegex}"/>
-                                </div>
 
 								<div class="field fieldcontain ${hasErrors(bean: identifierNamespaceInstance, field: 'nonUnique', 'error')} ">
 									<label for="nonUnique">

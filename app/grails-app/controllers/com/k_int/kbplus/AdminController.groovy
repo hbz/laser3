@@ -823,45 +823,34 @@ class AdminController extends AbstractDebugController {
     result
   }
 
-    @Secured(['ROLE_ADMIN'])
-    def manageNamespaces() {
-        def identifierNamespaceInstance = new IdentifierNamespace(params)
+  @Secured(['ROLE_ADMIN'])
+  def manageNamespaces() {
 
-        switch (request.method) {
-            case 'GET':
-                if (params.cmd == 'deleteNamespace') {
-                    def idns = genericOIDService.resolveOID(params.oid)
-                    if (idns && Identifier.countByNs(idns) == 0) {
-                        try {
-                            idns.delete()
-                            flash.message = "Namensraum ${idns.ns} wurde gelöscht."
-                        } catch (Exception e) {
-                            flash.message = "Namensraum ${idns.ns} konnte nicht gelöscht werden."
-                        }
-                    }
-                }
-                break
+    def identifierNamespaceInstance = new IdentifierNamespace(params)
+    switch (request.method) {
+      case 'GET':
+        break
+      case 'POST':
+        if (IdentifierNamespace.findByNsIlike(params.ns) || !identifierNamespaceInstance.save(flush: true)) {
 
-            case 'POST':
-                if (IdentifierNamespace.findByNsIlike(params.ns) || !identifierNamespaceInstance.save(flush: true)) {
-
-                    if(IdentifierNamespace.findByNsIlike(params.ns)) {
-                        flash.error = message(code: 'identifier.namespace.exist', default: 'IdentifierNamespace exist', args:[params.ns])
-                        break
-                    }
-                    return
-                }
-                else {
-                    flash.message = message(code: 'default.created.message', args: [message(code: 'identifier.namespace.label', default: 'IdentifierNamespace'), identifierNamespaceInstance.ns])
-                }
-                break
+          if(IdentifierNamespace.findByNsIlike(params.ns))
+          {
+            flash.error = message(code: 'identifier.namespace.exist', default: 'IdentifierNamespace exist', args:[params.ns])
+            break
+          }
+          return
         }
-        render view: 'manageNamespaces', model: [
+        else {
+          flash.message = message(code: 'default.created.message', args: [message(code: 'identifier.namespace.label', default: 'IdentifierNamespace'), identifierNamespaceInstance.ns])
+        }
+        break
+    }
+    render view: 'manageNamespaces', model: [
             editable: true, // TODO check role and editable !!!
             identifierNamespaceInstance: identifierNamespaceInstance,
             identifierNamespaces: IdentifierNamespace.where{}.sort('ns')
-        ]
-    }
+    ]
+  }
 
     @Secured(['ROLE_ADMIN'])
     def managePropertyDefinitions() {

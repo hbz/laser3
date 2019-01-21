@@ -849,7 +849,6 @@ from License as l where (
 
             def new_sub = new Subscription(
                     type: subType,
-                    status: RefdataValue.getByValueAndCategory('Current', 'Subscription Status'),
                     name: params.newEmptySubName,
                     startDate: startDate,
                     endDate: endDate,
@@ -886,7 +885,6 @@ from License as l where (
                         def cons_sub = new Subscription(
                                             // type: RefdataValue.findByValue("Subscription Taken"),
                                           type: subType,
-                                          status: RefdataValue.getByValueAndCategory('Current', 'Subscription Status'),
                                           name: params.newEmptySubName,
                                           // name: params.newEmptySubName + " (${postfix})",
                                           startDate: startDate,
@@ -1032,9 +1030,8 @@ from License as l where (
         }
 
         def license_type = RefdataValue.getByValueAndCategory('Actual', 'License Type')
-        def license_status = RefdataValue.getByValueAndCategory('Current', 'License Status')
 
-        def licenseInstance = new License(type: license_type, status: license_status, reference: params.licenseName ?:null,
+        def licenseInstance = new License(type: license_type, reference: params.licenseName ?:null,
                 startDate:params.licenseStartDate ? parseDate(params.licenseStartDate,possible_date_formats) : null,
                 endDate: params.licenseEndDate ? parseDate(params.licenseEndDate,possible_date_formats) : null,)
 

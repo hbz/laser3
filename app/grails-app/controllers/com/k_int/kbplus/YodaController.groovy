@@ -523,4 +523,13 @@ class YodaController {
         redirect(url: request.getHeader('referer'))
     }
 
+    @Secured(['ROLE_YODA'])
+    def startDateCheck(){
+        if(subscriptionUpdateService.startDateCheck())
+            flash.message = "Lizenzen ohne Startdatum verlieren ihren Status ..."
+        else
+            flash.message = "Lizenzen ohne Startdatum haben bereits ihren Status verloren!"
+        redirect(url: request.getHeader('referer'))
+    }
+
 }
