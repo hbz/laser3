@@ -123,7 +123,7 @@ def performAccept(change,httpRequest) {
         change.status = RefdataValue.getByValueAndCategory("Accepted","PendingChangeStatus")
         change.actionDate = new Date()
         change.user = httpRequest?.user
-        change.save();
+        change.save(flush: true);
         log.debug("Pending change accepted and saved")
       }
       catch ( Exception e ) {
