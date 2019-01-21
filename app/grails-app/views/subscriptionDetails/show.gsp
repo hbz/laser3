@@ -167,7 +167,6 @@
                                             <g:link controller="subscriptionDetails" action="show" id="${pair.id}">#${pair.id}</g:link>: ${pair.name} (${sdf.format(pair.startDate)} - ${sdf.format(pair.endDate)})
                                         </dd>
                                         <dd>
-                                            <%-- BEWARE and continue here: the CONTEXT SUB does not need necessairly be the SOURCE!!!!! --%>
                                             <g:render template="/templates/links/subLinksModal"
                                                       model="${[tmplText:message(code:'subscription.details.editLink'),
                                                                 tmplID:'addLink',
