@@ -1,4 +1,4 @@
-<%@ page import="java.math.MathContext; com.k_int.kbplus.Subscription" %>
+<%@ page import="java.math.MathContext; com.k_int.kbplus.Subscription; com.k_int.kbplus.Links" %>
 <%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="com.k_int.properties.PropertyDefinition" %>
 <%@ page import="com.k_int.kbplus.RefdataCategory" %>
@@ -143,6 +143,59 @@
                                     </dd>
                                 </dl>
                             </g:if>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ui card">
+                    <div class="content">
+                        <dl class="control-label">
+                            ${message(code:'subscription.details.linksHeader')}
+                        </dl>
+                        <g:each in="${links.entrySet()}" var="linkTypes">
+                            <g:if test="${linkTypes.getValue().size() > 0}">
+                                <dl>
+                                    <dt>
+                                        ${linkTypes.getKey()}
+                                    </dt>
+                                </dl>
+                                <dl>
+                                    <g:each in="${linkTypes.getValue()}" var="link">
+                                        <dd>
+                                            <g:set var="pair" value="${link.getOther(subscriptionInstance)}"/>
+                                            <g:set var="sdf" value="${new SimpleDateFormat('dd.MM.yyyy')}"/>
+                                            <g:link controller="subscriptionDetails" action="show" id="${pair.id}">#${pair.id}</g:link>: ${pair.name} (${sdf.format(pair.startDate)} - ${sdf.format(pair.endDate)})
+                                        </dd>
+                                        <dd>
+                                            <g:render template="/templates/links/subLinksModal"
+                                                      model="${[tmplText:message(code:'subscription.details.editLink'),
+                                                                tmplID:'editLink',
+                                                                tmplButtonText:message(code:'subscription.details.editLink'),
+                                                                tmplModalID:"sub_edit_link_${link.id}",
+                                                                editmode: editable,
+                                                                context: "${subscriptionInstance.class.name}:${subscriptionInstance.id}",
+                                                                link: link
+                                                      ]}" />
+                                            <g:link class="ui icon negative button js-open-confirm-modal"
+                                                    data-confirm-term-content="${message(code:'subscription.details.confirmDeleteLink')}"
+                                                    data-confirm-term-how="delete"
+                                                    controller="ajax" action="delete" params='[cmd: "deleteLink", oid: "${link.class.name}:${link.id}"]'>
+                                                <i class="trash alternate icon"></i>
+                                            </g:link>
+                                        </dd>
+                                    </g:each>
+                                </dl>
+                            </g:if>
+                        </g:each>
+                        <div class="ui la-vertical buttons">
+                            <g:render template="/templates/links/subLinksModal"
+                                      model="${[tmplText:message(code:'subscription.details.addLink'),
+                                                tmplID:'addLink',
+                                                tmplButtonText:message(code:'subscription.details.addLink'),
+                                                tmplModalID:'sub_add_link',
+                                                editmode: editable,
+                                                context: "${subscriptionInstance.class.name}:${subscriptionInstance.id}"
+                                      ]}" />
                         </div>
                     </div>
                 </div>
