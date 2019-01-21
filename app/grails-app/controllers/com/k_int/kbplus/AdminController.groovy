@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
+import de.laser.SystemEvent
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.SpringSecurityUtils;
@@ -372,6 +373,18 @@ class AdminController extends AbstractDebugController {
     params.order = 'desc'
 
     result.eventlogs = EventLog.list(params)
+
+    result
+  }
+
+  @Secured(['ROLE_ADMIN'])
+  def systemEvents() {
+    def result = [:]
+
+    params.sort = 'created'
+    params.order = 'desc'
+
+    result.events = SystemEvent.list(params)
 
     result
   }

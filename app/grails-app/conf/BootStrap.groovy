@@ -3,6 +3,7 @@ import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
 import com.k_int.properties.PropertyDefinitionGroup
+import de.laser.SystemEvent
 import de.laser.domain.I10nTranslation
 import grails.converters.JSON
 import grails.plugin.springsecurity.SecurityFilterPosition
@@ -33,7 +34,11 @@ class BootStrap {
             def system_object = SystemObject.findBySysId(grailsApplication.config.laserSystemId) ?: new SystemObject(sysId: grailsApplication.config.laserSystemId).save(flush: true)
         }
 
+        // TODO: remove due SystemEvent
         def evt_startup   = new EventLog(event: 'kbplus.startup', message: 'Normal startup', tstp: new Date(System.currentTimeMillis())).save(flush: true)
+
+        SystemEvent.createEvent('BOOTSTRAP_STARTUP')
+
         def so_filetype   = DataloadFileType.findByName('Subscription Offered File') ?: new DataloadFileType(name: 'Subscription Offered File')
         def plat_filetype = DataloadFileType.findByName('Platforms File') ?: new DataloadFileType(name: 'Platforms File')
 
@@ -546,7 +551,7 @@ class BootStrap {
         def allDescr = [en: PropertyDefinition.SUB_PROP, de: PropertyDefinition.SUB_PROP]
 
         def requiredProps = [
-                [name: [en: "GASCO Entry", de: "GASCO-Eintrag"],                    descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "GASCO Entry", de: "GASCO-Eintrag"],                    descr:allDescr, type: OT.Rdv, cat:'YN', isUsedForLogic: true],
                 [name: [en: "EZB Gelbschaltung", de: "EZB Gelbschaltung"],          descr:allDescr, type: OT.Rdv, cat:'YN'],
                 [name: [en: "Metadata Delivery", de: "Metadatenlieferung"],         descr:allDescr, type: OT.Rdv, cat:'YN'],
                 [name: [en: "Metadata Source", de: "Metadaten Quelle"],             descr:allDescr, type: OT.String],
@@ -592,9 +597,9 @@ class BootStrap {
                 [name: [en: "Archivzugriff", de: "Archivzugriff"],                                      descr:allDescr, type: OT.Rdv, cat:'YN'],
                 [name: [en: "Eingeschränkter Benutzerkreis", de: "Eingeschränkter Benutzerkreis"],      descr:allDescr, type: OT.String],
                 [name: [en: "SFX-Eintrag", de: "SFX-Eintrag"],                      descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "GASCO-Anzeigename", de: "GASCO-Anzeigename"],          descr:allDescr, type: OT.String],
-                [name: [en: "GASCO-Verhandlername", de: "GASCO-Verhandlername"],    descr:allDescr, type: OT.String],
-                [name: [en: "GASCO-Information-Link", de: "GASCO-Informations-Link"],    descr:allDescr, type: OT.URL]
+                [name: [en: "GASCO-Anzeigename", de: "GASCO-Anzeigename"],              descr:allDescr, type: OT.String, isUsedForLogic: true],
+                [name: [en: "GASCO-Verhandlername", de: "GASCO-Verhandlername"],        descr:allDescr, type: OT.String, isUsedForLogic: true],
+                [name: [en: "GASCO-Information-Link", de: "GASCO-Informations-Link"],   descr:allDescr, type: OT.URL, isUsedForLogic: true]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
     }
@@ -660,6 +665,10 @@ class BootStrap {
                 prop.multipleOccurrence = default_prop.multiple
             }
 
+            if (default_prop.isUsedForLogic) {
+                prop.isUsedForLogic = default_prop.isUsedForLogic
+            }
+
             prop.type  = default_prop.type
             prop.descr = default_prop.descr['en']
             //prop.softData = false
@@ -668,6 +677,10 @@ class BootStrap {
 
             I10nTranslation.createOrUpdateI10n(prop, 'name', default_prop.name)
             I10nTranslation.createOrUpdateI10n(prop, 'descr', default_prop.descr)
+
+            if (default_prop.expl) {
+                I10nTranslation.createOrUpdateI10n(prop, 'expl', default_prop.expl)
+            }
         }
     }
 
