@@ -297,7 +297,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditTrait {
           origin_matches.add(cti)
         }
 
-        if ( name_match ){
+        if ( name_match && intersection >= 1){
           name_matches.add(cti)
         }
       }
@@ -346,7 +346,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditTrait {
       }
     }
 
-    if (result && imp_uuid && result.impId != imp_uuid) {
+    if ( result && imp_uuid && (result.impId != imp_uuid || !result.impId) ) {
       result.impId = imp_uuid
     }
 

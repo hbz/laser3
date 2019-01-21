@@ -87,28 +87,41 @@ class GlobalSourceSyncService {
       def toset = []
 
       historyEvent.from.each { he ->
-        def participant = TitleInstance.lookupOrCreate(he.ids,he.title,he.uuid)
+        def participant = TitleInstance.lookupOrCreate(he.ids,he.title,newtitle.type,he.uuid)
         fromset.add(participant)
       }
 
       historyEvent.to.each { he ->
-        def participant = TitleInstance.lookupOrCreate(he.ids,he.title,he.uuid)
+        def participant = TitleInstance.lookupOrCreate(he.ids,he.title,newtitle.type,he.uuid)
         toset.add(participant)
       }
 
       // Now - See if we can find a title history event for data and these particiapnts.
       // Title History Events are IMMUTABLE - so we delete them rather than updating them.
-      def base_query = "select the from TitleHistoryEvent as the where the.eventDate = ? "
+      def base_query = "select the from TitleHistoryEvent as the where"
       // Need to parse date...
       def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-      def query_params = [(((historyEvent.date != null ) && ( historyEvent.date.trim().length() > 0 ) ) ? sdf.parse(historyEvent.date) : null)]
+      def query_params = []
+      
+      if (historyEvent.date && historyEvent.date.trim().length() > 0) {
+        query_params.add(sdf.parse(historyEvent.date))
+        base_query += " the.eventDate = ? "
+      }
 
       fromset.each {
-        base_query += "and exists ( select p from the.participants as p where p.participant = ? and p.participantRole = 'from' ) "
+        if (query_params.size() > 0) {
+          base_query += "and"
+        }
+        
+        base_query += " exists ( select p from the.participants as p where p.participant = ? and p.participantRole = 'from' ) "
         query_params.add(it)
       }
       toset.each {
-        base_query += "and exists ( select p from the.participants as p where p.participant = ? and p.participantRole = 'to' ) "
+        if (query_params.size() > 0) {
+          base_query += "and"
+        }
+        
+        base_query += " exists ( select p from the.participants as p where p.participant = ? and p.participantRole = 'to' ) "
         query_params.add(it)
       }
 
@@ -414,7 +427,7 @@ class GlobalSourceSyncService {
       log.debug("updated tipp, ctx = ${ctx.toString()}");
 
       // Find title with ID tipp... in package ctx
-      def title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers,tipp.title.name,tipp.title.impId)
+      def title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers,tipp.title.name,tipp.title.type,tipp.title.impId)
 
       def db_tipp = null
 
@@ -519,7 +532,7 @@ class GlobalSourceSyncService {
     def onDeletedTipp = { ctx, tipp, auto_accept ->
 
       // Find title with ID tipp... in package ctx
-      def title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name, tipp.title.impId)
+      def title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name,tipp.title.type, tipp.title.impId)
 
       def TippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])
 
@@ -1189,12 +1202,12 @@ class GlobalSourceSyncService {
                 return
               }
 
-              title_instance.status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Deleted', de: 'Gelöscht'])
-
               if (titleinfo.status == 'Current') {
                 title_instance.status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Current', de: 'Aktuell'])
               } else if (titleinfo.status == 'Retired') {
                 title_instance.status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Retired', de: 'im Ruhestand'])
+              } else if (titleinfo.status == 'Deleted') {
+                title_instance.status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Deleted', de: 'Gelöscht'])
               }
 
               titleinfo.identifiers.each {
@@ -1234,28 +1247,41 @@ class GlobalSourceSyncService {
                 def toset = []
 
                 historyEvent.from.each { he ->
-                  def participant = TitleInstance.lookupOrCreate(he.ids, he.title, he.uuid)
+                  def participant = TitleInstance.lookupOrCreate(he.ids, he.title, titleinfo.type, he.uuid)
                   fromset.add(participant)
                 }
 
                 historyEvent.to.each { he ->
-                  def participant = TitleInstance.lookupOrCreate(he.ids, he.title, he.uuid)
+                  def participant = TitleInstance.lookupOrCreate(he.ids, he.title, titleinfo.type, he.uuid)
                   toset.add(participant)
                 }
 
                 // Now - See if we can find a title history event for data and these particiapnts.
                 // Title History Events are IMMUTABLE - so we delete them rather than updating them.
-                def base_query = "select the from TitleHistoryEvent as the where the.eventDate = ? "
+                def base_query = "select the from TitleHistoryEvent as the where"
                 // Need to parse date...
                 def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                def query_params = [(((historyEvent.date != null) && (historyEvent.date.trim().length() > 0)) ? sdf.parse(historyEvent.date) : null)]
+                def query_params = []
+                
+                if (historyEvent.date && historyEvent.date.trim().length() > 0) {
+                  query_params.add(sdf.parse(historyEvent.date))
+                  base_query += " the.eventDate = ? "
+                }
 
                 fromset.each {
-                  base_query += "and exists ( select p from the.participants as p where p.participant = ? and p.participantRole = 'from' ) "
+                  if (query_params.size() > 0) {
+                    base_query += "and"
+                  }
+                  
+                  base_query += " exists ( select p from the.participants as p where p.participant = ? and p.participantRole = 'from' ) "
                   query_params.add(it)
                 }
                 toset.each {
-                  base_query += "and exists ( select p from the.participants as p where p.participant = ? and p.participantRole = 'to' ) "
+                  if (query_params.size() > 0) {
+                    base_query += "and"
+                  }
+                  
+                  base_query += " exists ( select p from the.participants as p where p.participant = ? and p.participantRole = 'to' ) "
                   query_params.add(it)
                 }
 
