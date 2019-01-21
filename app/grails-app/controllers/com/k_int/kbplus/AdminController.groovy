@@ -377,17 +377,17 @@ class AdminController extends AbstractDebugController {
     result
   }
 
-  @Secured(['ROLE_ADMIN'])
-  def systemEvents() {
-    def result = [:]
+    @Secured(['ROLE_ADMIN'])
+    def systemEvents() {
+        def result = [:]
 
-    params.sort = 'created'
-    params.order = 'desc'
+        params.sort ?: 'created'
+        params.order ?: 'desc'
+        params.max ?: 500
 
-    result.events = SystemEvent.list(params)
-
-    result
-  }
+        result.events = SystemEvent.list(params)
+        result
+    }
 
   @Secured(['ROLE_YODA'])
   def dataCleanse() {

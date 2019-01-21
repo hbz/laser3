@@ -303,7 +303,8 @@
 
                                 <div class="menu">
                                     <g:link class="item" controller="yoda" action="appInfo">App Info</g:link>
-                                    <g:link class="item" controller="admin" action="eventLog">Event Log</g:link>
+                                    <g:link class="item" controller="admin" action="systemEvents">System Events (new)</g:link>
+                                    <g:link class="item" controller="admin" action="eventLog">Event Log (old)</g:link>
 
                                     <div class="divider"></div>
 
