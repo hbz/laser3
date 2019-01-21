@@ -132,10 +132,11 @@ class SubscriptionUpdateService {
             Links link = new Links()
             link.source = sub.source
             link.destination = sub.destination
-            link.owner = Org.executeQuery('select o.org from OrgRole as o where o.roleType in :ownerRoles and o.sub = :source',[ownerRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER],source: Subscription.get(sub.source)]).get(0)
+            link.owner = Org.executeQuery('select o.org from OrgRole as o where o.roleType in :ownerRoles and o.sub in :context',[ownerRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER],context: [Subscription.get(sub.source),Subscription.get(sub.destination)]]).get(0)
             link.objectType = Subscription.class.name
             link.linkType = RDStore.LINKTYPE_FOLLOWS
-            link.save(true)
+            if(!link.save(flush:true))
+                log.error("error with refactoring subscription link: ${link.errors}")
         }
     }
 
