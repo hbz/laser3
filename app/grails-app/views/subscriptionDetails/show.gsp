@@ -169,13 +169,19 @@
                                         <dd>
                                             <g:render template="/templates/links/subLinksModal"
                                                       model="${[tmplText:message(code:'subscription.details.editLink'),
-                                                                tmplID:'addLink',
+                                                                tmplID:'editLink',
                                                                 tmplButtonText:message(code:'subscription.details.editLink'),
                                                                 tmplModalID:"sub_edit_link_${link.id}",
                                                                 editmode: editable,
                                                                 context: "${subscriptionInstance.class.name}:${subscriptionInstance.id}",
                                                                 link: link
                                                       ]}" />
+                                            <g:link class="ui icon negative button js-open-confirm-modal"
+                                                    data-confirm-term-content="${message(code:'subscription.details.confirmDeleteLink')}"
+                                                    data-confirm-term-how="delete"
+                                                    controller="ajax" action="delete" params='[cmd: "deleteLink", oid: "${link.class.name}:${link.id}"]'>
+                                                <i class="trash alternate icon"></i>
+                                            </g:link>
                                         </dd>
                                     </g:each>
                                 </dl>

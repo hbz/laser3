@@ -211,10 +211,9 @@ class SubscriptionDetailsController extends AbstractDebugController {
             result.processingpc = true
         }
 
-        ArrayList<Links> prevLink = Links.findAllBySourceAndLinkTypeAndObjectType(result.subscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
-        ArrayList<Links> nextLink = Links.findAllByDestinationAndLinkTypeAndObjectType(result.subscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
-        result.navPrevSubscription = prevLink ? prevLink.collect { it -> Subscription.get(it.destination) } : null
-        result.navNextSubscription = nextLink ? nextLink.collect { it -> Subscription.get(it.source)} : null
+        LinkedHashMap<String,List> links = Links.generateNavigation(Subscription.class.name,result.subscription.id)
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
 
         withFormat {
             html result
@@ -711,10 +710,9 @@ class SubscriptionDetailsController extends AbstractDebugController {
         //    )
         //}
 
-        Links prevLink = Links.findByDestinationAndLinkTypeAndObjectType(result.fixedSubscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
-        Links nextLink = Links.findBySourceAndLinkTypeAndObjectType(result.fixedSubscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
-        result.navPrevSubscription = prevLink ? prevLink.collect { it -> Subscription.get(it.source) } : null
-        result.navNextSubscription = nextLink ? nextLink.collect { it -> Subscription.get(it.destination)} : null
+        LinkedHashMap<String,List> links = Links.generateNavigation(Subscription.class.name,result.subscription.id)
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
 
         if (params.exportXLS == 'yes') {
 
@@ -1001,10 +999,9 @@ class SubscriptionDetailsController extends AbstractDebugController {
             }
         }
 
-        Links prevLink = Links.findByDestinationAndLinkTypeAndObjectType(result.fixedSubscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
-        Links nextLink = Links.findBySourceAndLinkTypeAndObjectType(result.fixedSubscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
-        result.navPrevSubscription = prevLink ? prevLink.collect { it -> Subscription.get(it.source) } : null
-        result.navNextSubscription = nextLink ? nextLink.collect { it -> Subscription.get(it.destination)} : null
+        LinkedHashMap<String,List> links = Links.generateNavigation(Subscription.class.name,result.subscription.id)
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
 
         result
     }
@@ -1142,10 +1139,9 @@ class SubscriptionDetailsController extends AbstractDebugController {
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
         }
-        Links prevLink = Links.findByDestinationAndLinkTypeAndObjectType(result.fixedSubscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
-        Links nextLink = Links.findBySourceAndLinkTypeAndObjectType(result.fixedSubscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
-        result.navPrevSubscription = prevLink ? prevLink.collect { it -> Subscription.get(it.source) } : null
-        result.navNextSubscription = nextLink ? nextLink.collect { it -> Subscription.get(it.destination)} : null
+        LinkedHashMap<String,List> links = Links.generateNavigation(Subscription.class.name,result.subscription.id)
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
         result
     }
 
@@ -1162,10 +1158,9 @@ class SubscriptionDetailsController extends AbstractDebugController {
             result.subscriber_shortcode = result.institution.shortcode
         }
 
-        Links prevLink = Links.findByDestinationAndLinkTypeAndObjectType(result.fixedSubscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
-        Links nextLink = Links.findBySourceAndLinkTypeAndObjectType(result.fixedSubscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
-        result.navPrevSubscription = prevLink ? prevLink.collect { it -> Subscription.get(it.source) } : null
-        result.navNextSubscription = nextLink ? nextLink.collect { it -> Subscription.get(it.destination)} : null
+        LinkedHashMap<String,List> links = Links.generateNavigation(Subscription.class.name,result.subscription.id)
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
         result
     }
 
@@ -1196,10 +1191,9 @@ class SubscriptionDetailsController extends AbstractDebugController {
         }
         result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.subscriptionInstance, params)
 
-        Links prevLink = Links.findByDestinationAndLinkTypeAndObjectType(result.fixedSubscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
-        Links nextLink = Links.findBySourceAndLinkTypeAndObjectType(result.fixedSubscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
-        result.navPrevSubscription = prevLink ? prevLink.collect { it -> Subscription.get(it.source) } : null
-        result.navNextSubscription = nextLink ? nextLink.collect { it -> Subscription.get(it.destination)} : null
+        LinkedHashMap<String,List> links = Links.generateNavigation(Subscription.class.name,result.subscription.id)
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
 
         log.debug(result.taskInstanceList)
         result
@@ -1239,10 +1233,9 @@ class SubscriptionDetailsController extends AbstractDebugController {
             response.sendError(401); return
         }
         result.contextOrg = contextService.getOrg()
-        ArrayList<Links> prevLink = Links.findAllBySourceAndLinkTypeAndObjectType(result.subscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
-        ArrayList<Links> nextLink = Links.findAllByDestinationAndLinkTypeAndObjectType(result.subscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
-        result.navPrevSubscription = prevLink ? prevLink.collect { it -> Subscription.get(it.destination) } : null
-        result.navNextSubscription = nextLink ? nextLink.collect { it -> Subscription.get(it.source)} : null
+        LinkedHashMap<String,List> links = Links.generateNavigation(Subscription.class.name,result.subscription.id)
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
         result
     }
 
@@ -1580,10 +1573,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where className=? and persistedObjectId=? order by id desc", qry_params, [max: result.max, offset: result.offset]);
         result.historyLinesTotal = AuditLogEvent.executeQuery("select e.id from AuditLogEvent as e where className=? and persistedObjectId=?", qry_params).size()
 
-        ArrayList<Links> prevLink = Links.findAllBySourceAndLinkTypeAndObjectType(result.subscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
-        ArrayList<Links> nextLink = Links.findAllByDestinationAndLinkTypeAndObjectType(result.subscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
-        result.navPrevSubscription = prevLink ? prevLink.collect { it -> Subscription.get(it.destination) } : null
-        result.navNextSubscription = nextLink ? nextLink.collect { it -> Subscription.get(it.source)} : null
+        LinkedHashMap<String,List> links = Links.generateNavigation(Subscription.class.name,result.subscription.id)
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
 
         result
     }
@@ -1614,10 +1606,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 baseParams
         )[0]
 
-        ArrayList<Links> prevLink = Links.findBySourceAndLinkTypeAndObjectType(result.subscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
-        ArrayList<Links> nextLink = Links.findByDestinationAndLinkTypeAndObjectType(result.subscription.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
-        result.navPrevSubscription = prevLink ? prevLink.collect { it -> Subscription.get(it.destination) } : null
-        result.navNextSubscription = nextLink ? nextLink.collect { it -> Subscription.get(it.source)} : null
+        LinkedHashMap<String,List> links = Links.generateNavigation(Subscription.class.name,result.subscription.id)
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
 
         result
     }
@@ -1711,10 +1702,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
         }
 
-        ArrayList<Links> prevLink = Links.findAllBySourceAndLinkTypeAndObjectType(params.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
-        ArrayList<Links> nextLink = Links.findAllByDestinationAndLinkTypeAndObjectType(params.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
-        result.navPrevSubscription = prevLink ? prevLink.collect { it -> Subscription.get(it.destination) } : null
-        result.navNextSubscription = nextLink ? nextLink.collect { it -> Subscription.get(it.source)} : null
+        LinkedHashMap<String,List> links = Links.generateNavigation(Subscription.class.name,result.subscription.id)
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
 
         // links
         Long key = Long.parseLong(params.id)
@@ -1919,8 +1909,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
                     def subMember = Subscription.findById(sub)
 
-                    //ChildSub Exisit
-                    if (!Subscription.findAllByPreviousSubscription(subMember)) {
+                    //ChildSub Exist
+                    ArrayList<Links> prevLinks = Links.findAllByDestinationAndLinkTypeAndObjectType(subMember.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+                    if (prevLinks.size() == 0) {
 
                         /* Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
                             [result.subscriptionInstance, it.id])*/
@@ -1935,7 +1926,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                                 /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
                                 identifier: java.util.UUID.randomUUID().toString(),
                                 instanceOf: newSubConsortia?.id,
-                                previousSubscription: subMember?.id,
+                                //previousSubscription: subMember?.id,
                                 isSlaved: subMember.isSlaved,
                                 isPublic: subMember.isPublic,
                                 impId: java.util.UUID.randomUUID().toString(),
@@ -1944,7 +1935,13 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                                 form: newSubConsortia.form ?: null
                         )
                         newSubscription.save(flush: true)
-
+                        //ERMS-892: insert preceding relation in new data model
+                        if(subMember) {
+                            Links prevLink = new Links(source:newSubscription.id,destination:subMember.id,linkType:RDStore.LINKTYPE_FOLLOWS,objectType:Subscription.class.name,owner:contextService.org)
+                            if(!prevLink.save()) {
+                                log.error("Subscription linking failed, please check: ${prevLink.errors}")
+                            }
+                        }
 
                         if (subMember.customProperties) {
                             //customProperties
@@ -2113,7 +2110,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
                 if (params.baseSubscription) {
 
-                    if (Subscription.findAllByPreviousSubscription(baseSub)) {
+                    ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id,Subscription.class.name,RDStore.LINKTYPE_FOLLOWS)
+                    if (previousSubscriptions.size() > 0) {
                         flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
                     } else {
 
@@ -2122,7 +2120,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                                 name: baseSub.name,
                                 startDate: result.newStartDate,
                                 endDate: result.newEndDate,
-                                previousSubscription: baseSub.id,
+                                //previousSubscription: baseSub.id, overhauled as ERMS-800/ERMS-892
                                 identifier: java.util.UUID.randomUUID().toString(),
                                 isPublic: baseSub.isPublic,
                                 isSlaved: baseSub.isSlaved,
@@ -2146,6 +2144,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                                     newOrgRole.sub = newSub
                                     newOrgRole.save(flush: true)
                                 }
+                            }
+                            //link to previous subscription
+                            Links prevLink = new Links(source: newSub.id,destination: baseSub.id,objectType: Subscription.class.name,linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+                            if(!prevLink.save(flush:true)) {
+                                log.error("Problem linking to previous subscription: ${prevLink.errors}")
                             }
                             if (params.subscription.takeLinks) {
                                 //Package
@@ -2209,11 +2212,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 }
             }
 
-
-            ArrayList<Links> prevLink = Links.findAllBySourceAndLinkTypeAndObjectType(result.subscriptionInstance.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
-            ArrayList<Links> nextLink = Links.findAllByDestinationAndLinkTypeAndObjectType(result.subscriptionInstance.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
-            result.navPrevSubscription = prevLink ? prevLink.collect { it -> Subscription.get(it.destination) } : null
-            result.navNextSubscription = nextLink ? nextLink.collect { it -> Subscription.get(it.source)} : null
+            LinkedHashMap<String,List> links = Links.generateNavigation(result.subscriptionInstance.class.name,result.subscriptionInstance.id)
+            result.navPrevSubscription = links.prevLink
+            result.navNextSubscription = links.nextLink
 
             // tasks
             def contextOrg = contextService.getOrg()

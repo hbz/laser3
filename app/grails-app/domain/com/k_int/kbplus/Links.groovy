@@ -16,6 +16,8 @@ class Links extends AbstractBaseDomain {
     def springSecurityService
     @Transient
     def genericOIDService
+    @Transient
+    static def grailsApplication
 
     Long id
     Long source
@@ -85,6 +87,21 @@ class Links extends AbstractBaseDomain {
         else if(context.id == destination)
             return Subscription.get(source)
         else return null
+    }
+
+    static LinkedHashMap<String,List> generateNavigation(String contextClassName, Long contextID) {
+        List prevLink = []
+        List nextLink = []
+        List previous = findAllBySourceAndLinkTypeAndObjectType(contextID,RDStore.LINKTYPE_FOLLOWS,contextClassName)
+        List next = findAllByDestinationAndLinkTypeAndObjectType(contextID,RDStore.LINKTYPE_FOLLOWS,contextClassName)
+        def domainClass = grailsApplication.getArtefact('Domain', contextClassName)
+        prevLink = previous ? previous.collect { it -> domainClass.getClazz().get(it.destination) } : null
+        nextLink = next ? next.collect { it -> domainClass.getClazz().get(it.source)} : null
+        return [prevLink:prevLink,nextLink:nextLink]
+    }
+
+    static LinkedHashMap<String, List> generateNavigation(String contextClassName, String contextID) {
+        return generateNavigation(contextClassName,Long.parseLong(contextID))
     }
 
 }

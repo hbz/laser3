@@ -1426,23 +1426,27 @@ class AjaxController extends AbstractDebugController {
   }
 
     def delete() {
-
-        if (params.cmd?.equalsIgnoreCase('deleteAddress')) {
-            def obj = genericOIDService.resolveOID(params.oid)
-            if (obj) {
-                obj.delete()
+      switch(params.cmd) {
+        case 'deletePersonRole': deletePersonRole()
+        break
+        case 'deleteLink': Links obj = genericOIDService.resolveOID(params.oid)
+          if (obj) {
+            DocContext comment = DocContext.findByLink(obj)
+            if(comment) {
+              Doc commentContent = comment.owner
+              comment.delete()
+              commentContent.delete()
             }
-        }
-        if (params.cmd?.equalsIgnoreCase('deleteContact')) {
-            def obj = genericOIDService.resolveOID(params.oid)
-            if (obj) {
-                obj.delete()
-            }
-        }
-        if (params.cmd?.equalsIgnoreCase('deletePersonRole')) {
-            deletePersonRole()
-        }
-        redirect(url: request.getHeader('referer'))
+            obj.delete()
+          }
+        break
+        default: def obj = genericOIDService.resolveOID(params.oid)
+          if (obj) {
+            obj.delete()
+          }
+        break
+      }
+      redirect(url: request.getHeader('referer'))
     }
 
     //TODO: Überprüfuen, ob die Berechtigung korrekt funktioniert.
