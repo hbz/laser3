@@ -13,15 +13,15 @@
 </semui:breadcrumbs>
 
 <div>
-    <table class="ui sortable celled la-table table">
+    <table class="ui sortable celled la-table la-table-small table">
         <thead>
         <tr>
             <g:sortableColumn property="category" title="Category"/>
-            <g:sortableColumn property="source" title="Source"/>
-            <g:sortableColumn property="event" title="Event"/>
-            <g:sortableColumn property="message" title="Message"/>
-            <g:sortableColumn property="payload" title="Payload"/>
             <g:sortableColumn property="relevance" title="Relevance"/>
+            <th>Source</th>
+            <th>Event</th>
+            <th>Message</th>
+            <th>Payload</th>
             <g:sortableColumn property="created" title="Date"/>
         </tr>
         </thead>
@@ -31,22 +31,22 @@
                     ${el.category}
                 </td>
                 <td class="table-td-${el.relevance?.value?.toLowerCase()}">
+                    ${el.relevance}
+                </td>
+                <td class="table-td-${el.relevance?.value?.toLowerCase()}">
                     ${el.source}
                 </td>
                 <td class="table-td-${el.relevance?.value?.toLowerCase()}">
                     ${el.event}
                 </td>
                 <td class="table-td-${el.relevance?.value?.toLowerCase()}">
-                    ${el.message}
+                    ${el.descr}
                 </td>
                 <td class="table-td-${el.relevance?.value?.toLowerCase()}">
                     ${el.payload}
                 </td>
                 <td class="table-td-${el.relevance?.value?.toLowerCase()}">
-                    ${el.relevance}
-                </td>
-                <td class="table-td-${el.relevance?.value?.toLowerCase()}">
-                    <g:formatDate date="${el.created}" format="yyyy-MM-dd hh:mm" />
+                    <g:formatDate date="${el.created}" format="${message(code:'default.date.format.noZ')}" />
                 </td>
             </tr>
         </g:each>
