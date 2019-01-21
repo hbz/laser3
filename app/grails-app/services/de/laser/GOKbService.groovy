@@ -62,7 +62,7 @@ class GOKbService {
                     }
 
                     pkg.titleCount = r.titleCount
-                    //pkg.scope = r.scope
+                    pkg.scope = r.scope
                     pkg.name = r.name
                     pkg.sortname = r.sortname
                     //pkg.fixed = r.fixed
@@ -117,7 +117,7 @@ class GOKbService {
                     }
 
                     pkg.titleCount = r.titleCount
-                    //pkg.scope = r.scope
+                    pkg.scope = r.scope
                     pkg.name = r.name
                     pkg.sortname = r.sortname
                     //pkg.fixed = r.fixed
