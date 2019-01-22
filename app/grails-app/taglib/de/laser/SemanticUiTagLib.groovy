@@ -4,6 +4,7 @@ import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.UserSettings
 import com.k_int.kbplus.auth.User
+import de.laser.helper.RDStore
 import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
 import org.springframework.web.servlet.support.RequestContextUtils
 
@@ -507,17 +508,35 @@ class SemanticUiTagLib {
 
         def prev = attrs.navPrev
         def next = attrs.navNext
-        def statusType = object.status.owner.desc
-        def color = (object.status.id == RefdataValue.getByValueAndCategory('Current', statusType)?.id)? 'la-status-active':((object.status?.id == RefdataValue.getByValueAndCategory('Expired', statusType)?.id)? "la-status-inactive" : "la-status-else")
-        def tooltip = object.status.getI10n('value')
+        def statusType = object.status?.owner?.desc
+        def color
+        def tooltip
+        if(object.status) {
+            tooltip = object.status.getI10n('value')
+            switch(object.status) {
+                case RefdataValue.getByValueAndCategory('Current', statusType) : color = 'la-status-active'
+                break
+                case RefdataValue.getByValueAndCategory('Expired', statusType) : color = 'la-status-inactive'
+                break
+                default: color = 'la-status-else'
+                break
+            }
+        }
+        else {
+            tooltip = message(code:'subscription.details.statusNotSet')
+        }
         out <<   "<div class='ui large label la-annual-rings'>"
         if (prev) {
-            if (attrs.mapping) {
-                out <<   g.link ('<i class="arrow left icon"></i>', contoller: attrs.controller, action: attrs.action, params:[sub:prev?.id], mapping: attrs.mapping)
+            StringJoiner sj = new StringJoiner("|")
+            prev.each { p ->
+                if (attrs.mapping) {
+                    sj.add(g.link ("<span data-tooltip=\"${p.name}\">#${p.id}</span>",contoller: attrs.controller, action: attrs.action, params:[sub:p.id], mapping: attrs.mapping))
+                }
+                else {
+                    sj.add(g.link ("<span data-tooltip=\"${p.name}\">#${p.id}</span>",contoller: attrs.controller, action: attrs.action, id:p.id))
+                }
             }
-            else {
-                out <<   g.link ('<i class="arrow left icon"></i>', contoller: attrs.controller, action: attrs.action, id:prev?.id)
-            }
+            out << sj.toString() + '<i class="arrow left icon"></i>'
         }
         else {
             out << '<i class="arrow left icon disabled"></i>'
@@ -531,12 +550,16 @@ class SemanticUiTagLib {
         out << '       ?'
         out << '</a>'
         if (next) {
-            if (attrs.mapping) {
-                out <<   g.link ('<i class="arrow right icon"></i>', contoller: attrs.controller, action: attrs.action, params:[sub:next?.id], mapping: attrs.mapping)
+            StringJoiner sj = new StringJoiner("|")
+            next.each { n ->
+                if (attrs.mapping) {
+                    sj.add(g.link ("<span data-tooltip=\"${n.name}\">#${n.id}</span>", contoller: attrs.controller, action: attrs.action, params:[sub:n.id], mapping: attrs.mapping))
+                }
+                else {
+                    sj.add(g.link ("<span data-tooltip=\"${n.name}\">#${n.id}</span>", contoller: attrs.controller, action: attrs.action, id:n.id))
+                }
             }
-            else {
-                out <<   g.link ('<i class="arrow right icon"></i>', contoller: attrs.controller, action: attrs.action, id:next?.id)
-            }
+            out << '<i class="arrow right icon"></i>' + sj.toString()
         }
         else {
             out << '<i class="arrow right icon disabled"></i>'

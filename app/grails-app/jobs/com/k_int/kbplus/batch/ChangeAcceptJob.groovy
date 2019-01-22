@@ -3,6 +3,7 @@ package com.k_int.kbplus.batch
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.PendingChange
+import de.laser.SystemEvent
 import de.laser.quartz.AbstractJob
 
 class ChangeAcceptJob extends AbstractJob {
@@ -31,6 +32,8 @@ class ChangeAcceptJob extends AbstractJob {
  def execute(){
   log.debug("****Running Change Accept Job****")
 
+     SystemEvent.createEvent('CAJ_JOB_START')
+
   def pending_change_pending_status = RefdataValue.getByValueAndCategory("Pending", "PendingChangeStatus")
   //def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
   def user = User.findByDisplay("Admin")
@@ -52,6 +55,8 @@ class ChangeAcceptJob extends AbstractJob {
   licPendingChanges.each {
       pendingChangeService.performAccept(it,httpRequestMock)
   }
+
+     SystemEvent.createEvent('CAJ_JOB_COMPLETE')
 
   log.debug("****Change Accept Job Complete*****")
  }

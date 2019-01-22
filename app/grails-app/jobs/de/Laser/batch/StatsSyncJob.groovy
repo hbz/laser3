@@ -1,5 +1,6 @@
 package de.Laser.batch
 
+import de.laser.SystemEvent
 import de.laser.quartz.AbstractJob
 
 class StatsSyncJob extends AbstractJob {
@@ -29,11 +30,17 @@ class StatsSyncJob extends AbstractJob {
         log.debug("Execute::statsSyncJob");
         if ( grailsApplication.config.KBPlusMaster == true ) {
             log.debug("This server is marked as KBPlus master. Running Stats SYNC batch job");
+            SystemEvent.createEvent('STATS_SYNC_JOB_START')
+
             statsSyncService.doSync()
+            SystemEvent.createEvent('STATS_SYNC_JOB_COMPLETE')
         }
         else if ( grailsApplication.config.hbzMaster == true && grailsApplication.config.StatsSyncJobActiv == true ) {
             log.debug("This server is marked as KBPlus master. Running Stats SYNC batch job");
+            SystemEvent.createEvent('STATS_SYNC_JOB_START')
+
             statsSyncService.doSync()
+            SystemEvent.createEvent('STATS_SYNC_JOB_COMPLETE')
         }
         else {
             log.debug("This server is NOT marked as KBPlus master. NOT Running Stats SYNC batch job");

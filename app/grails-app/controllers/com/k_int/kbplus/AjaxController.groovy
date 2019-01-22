@@ -19,7 +19,7 @@ class AjaxController extends AbstractDebugController {
     def genericOIDService
     def contextService
     def taskService
-    def addressbookService
+    def controlledListService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -675,27 +675,69 @@ class AjaxController extends AbstractDebugController {
 
   @Secured(['ROLE_USER'])
   def lookupIssueEntitlements() {
-    //deploy code related to issue entitlements from FinanceController::editCostItem to here
-    def issueEntitlements = [values:[]]
-    def result = [:]
-    def org = contextService.org
-    //build up set of subscriptions which are owned by the current organisation or instances of such - or filter for a given subscription
-    def subFilter = 'in ( select s from Subscription as s where s in (select o.sub from OrgRole as o where o.org = :org and o.roleType in :orgRoles ) and s.status = :current )'
-    def filterParams = ['org':org, 'orgRoles': [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER], 'current':RDStore.SUBSCRIPTION_CURRENT]
-    if(params.sub) {
-      subFilter = '= :sub'
-      filterParams = ['sub':genericOIDService.resolveOID(params.sub)]
+    params.checkView = true
+    render controlledListService.getIssueEntitlements(params) as JSON
+  }
+
+  @Secured(['ROLE_USER'])
+  def lookupSubscriptions() {
+    render controlledListService.getSubscriptions(params) as JSON
+  }
+
+  /**
+   * connects the context subscription with the given pair.
+   *
+   * @return void, redirects to main page
+   */
+  @Secured(['ROLE_USER'])
+  def linkSubscriptions() {
+    //error when no pair is given!
+    if(!params.keySet().each {it.contains("pair_")}) {
+      flash.error = "Bitte Verknüpfungsziel angeben!"
     }
-    filterParams.put('query',params.q)
-    result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+subFilter+' and ie.tipp.title.title like :query',filterParams)
-    if(result.size() > 0) {
-      log.debug("issue entitlements found")
-      result.each { res ->
-        issueEntitlements.values.add([id:res.class.name+":"+res.id,text:res.tipp.title.title])
+    else {
+      Subscription context = genericOIDService.resolveOID(params.context)
+      Doc linkComment = genericOIDService.resolveOID(params.commentID)
+      Links link
+      String commentContent
+      //distinct between insert and update - if a link id exists, then proceed with edit, else create new instance
+      if(params.link) {
+        link = genericOIDService.resolveOID(params.link)
+        Subscription pair = genericOIDService.resolveOID(params["pair_${link.id}"])
+        RefdataValue linkType = genericOIDService.resolveOID(params["linkType_${link.id}"])
+        commentContent = params["linkComment_${link.id}"]
+        if(link.source == context.id)
+          link.destination = pair.id
+        else if(link.destination == context.id)
+          link.source = pair.id
+        link.linkType = linkType
+        log.debug(linkType)
       }
-      issueEntitlements.values.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
+      else {
+        Subscription pair = genericOIDService.resolveOID(params.pair_new)
+        RefdataValue linkType = genericOIDService.resolveOID(params.linkType_new)
+        commentContent = params.linkComment_new
+        link = new Links(linkType: linkType,source: context.id, destination: pair.id,owner: contextService.getOrg(),objectType:Subscription.class.name)
+      }
+      if(link.save(flush:true)) {
+        if(linkComment && commentContent.length() > 0) {
+          linkComment.content = commentContent
+          linkComment.save(true)
+        }
+        else if(!linkComment && commentContent.length() > 0) {
+          RefdataValue typeNote = RefdataValue.getByValueAndCategory('Note','Document Type')
+          linkComment = new Doc([content:commentContent,type:typeNote])
+          if(linkComment.save(true)) {
+            DocContext commentContext = new DocContext([doctype:typeNote,link:link,owner:linkComment])
+            commentContext.save(true)
+          }
+        }
+      }
+      else {
+        log.error(link.errors)
+      }
     }
-    render issueEntitlements as JSON
+    redirect(url: request.getHeader('referer'))
   }
 
     @Secured(['ROLE_USER'])
@@ -1384,23 +1426,27 @@ class AjaxController extends AbstractDebugController {
   }
 
     def delete() {
-
-        if (params.cmd?.equalsIgnoreCase('deleteAddress')) {
-            def obj = genericOIDService.resolveOID(params.oid)
-            if (obj) {
-                obj.delete()
+      switch(params.cmd) {
+        case 'deletePersonRole': deletePersonRole()
+        break
+        case 'deleteLink': Links obj = genericOIDService.resolveOID(params.oid)
+          if (obj) {
+            DocContext comment = DocContext.findByLink(obj)
+            if(comment) {
+              Doc commentContent = comment.owner
+              comment.delete()
+              commentContent.delete()
             }
-        }
-        if (params.cmd?.equalsIgnoreCase('deleteContact')) {
-            def obj = genericOIDService.resolveOID(params.oid)
-            if (obj) {
-                obj.delete()
-            }
-        }
-        if (params.cmd?.equalsIgnoreCase('deletePersonRole')) {
-            deletePersonRole()
-        }
-        redirect(url: request.getHeader('referer'))
+            obj.delete()
+          }
+        break
+        default: def obj = genericOIDService.resolveOID(params.oid)
+          if (obj) {
+            obj.delete()
+          }
+        break
+      }
+      redirect(url: request.getHeader('referer'))
     }
 
     //TODO: Überprüfuen, ob die Berechtigung korrekt funktioniert.
@@ -1448,10 +1494,12 @@ class AjaxController extends AbstractDebugController {
         def cQueryParams = [RefdataValue.getByValueAndCategory('Personal contact','Person Contact Type'),currOrg,rowobj]
         def contacts = PersonRole.executeQuery(" select p from Person as p where p.contactType = ? and p.tenant = ? and ? in (select pr.org from PersonRole as pr where pr.prs = p) ",cQueryParams)
         int ctr = 0;
-        def row = [:]
-        row["${ctr++}"] = rowobj["name"]
+        LinkedHashMap row = [:]
+        String name = rowobj["name"]
+        if(contacts)
+          name += '<span data-tooltip="Persönlicher Kontakt vorhanden"><i class="address book icon"></i></span>'
+        row["${ctr++}"] = name
         row["DT_RowId"] = "${rowobj.class.name}:${rowobj.id}"
-        row["contacts"] = contacts
         result.aaData.add(row)
       }
 
