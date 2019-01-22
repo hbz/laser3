@@ -68,7 +68,6 @@ class SubscriptionsQueryService {
             base_qry = """
 from Subscription as s where (
     exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :activeInst ) ) 
-    AND ( s.status.value != 'Deleted' )
     AND (
         ( not exists ( select o from s.orgRelations as o where o.roleType = :scRoleType ) )
         or
@@ -76,6 +75,7 @@ from Subscription as s where (
     )
 )
 """
+
             qry_params = ['roleType1':role_sub, 'roleType2':role_subCons, 'activeInst':contextOrg, 'scRoleType':role_sub_consortia]
         }
 
@@ -153,9 +153,22 @@ from Subscription as s where (
         }
 
         if (params.status) {
-            base_qry += " and s.status.id = :status "
-            qry_params.put('status', (params.status as Long))
+
+            if ((params.status as Long) == RefdataValue.getByValueAndCategory('No Status','Subscription Status').id) {
+                base_qry += " and (s.status.id = :status OR  s.status is null ) "
+                qry_params.put('status', (params.status as Long))
+                println( base_qry)
+
+            }
+            else {
+                base_qry += " and s.status.id = :status "
+                qry_params.put('status', (params.status as Long))
+            }
+
+        } else {
+            base_qry += " AND ( s.status.value != 'Deleted' ) "
         }
+
 
         if (params.form) {
             base_qry += "and s.form.id = :form "
