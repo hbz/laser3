@@ -66,10 +66,16 @@
             */ %>
 
             <!-- TMP -->
+            <%
+                def fakeList = []
+                fakeList.addAll(RefdataCategory.getAllRefdataValues('Subscription Status'))
+                fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
+            %>
+
             <div class="field fieldcontain">
                 <label>${message(code: 'myinst.currentSubscriptions.filter.status.label')}</label>
                 <laser:select class="ui dropdown" name="status"
-                              from="${RefdataCategory.getAllRefdataValues('Subscription Status')}"
+                              from="${ fakeList }"
                               optionKey="id"
                               optionValue="value"
                               value="${params.status}"
