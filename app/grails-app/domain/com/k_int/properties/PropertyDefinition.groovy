@@ -14,7 +14,7 @@ import javax.persistence.Transient
 import javax.validation.UnexpectedTypeException
 
 @Log4j
-class PropertyDefinition extends AbstractI10nTranslatable implements Serializable {
+class PropertyDefinition extends AbstractI10nTranslatable implements Serializable , Comparable<PropertyDefinition> {
 
     @Transient
     final static TRUE  = true
@@ -399,6 +399,11 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         result
 
     }
+    int compareTo(PropertyDefinition pd) {
+
+        return this.getI10n('name').toLowerCase()?.compareTo(pd.getI10n('name').toLowerCase())
+    }
+
 
 }
 
