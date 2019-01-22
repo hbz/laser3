@@ -26,6 +26,7 @@ class FinanceController extends AbstractDebugController {
     def accessService
     def contextService
     def genericOIDService
+    def navigationGenerationService
 
     private final def ci_count        = 'select count(distinct ci.id) from CostItem as ci '
     private final def ci_select       = 'select distinct ci from CostItem as ci '
@@ -90,7 +91,7 @@ class FinanceController extends AbstractDebugController {
             result.fixedSubscription = params.int('sub')? Subscription.get(params.sub) : null
 
 
-            LinkedHashMap<String,List> links = Links.generateNavigation(Subscription.class.name,result.fixedSubscription.id)
+            LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.fixedSubscription.id)
             result.navPrevSubscription = links.prevLink
             result.navNextSubscription = links.nextLink
 
