@@ -22,9 +22,9 @@ class SubscriptionUpdateJob extends AbstractJob {
    // TODO: remove due SystemEvent
    new EventLog(event:'Execute::SubscriptionUpdateJob', message:'Start', tstp:new Date(System.currentTimeMillis())).save(flush:true)
 
-   subscriptionUpdateService.subscriptionCheck()
-
    SystemEvent.createEvent('SUB_UPDATE_JOB_START')
+
+   subscriptionUpdateService.subscriptionCheck()
 
    log.info("Execute::SubscriptionUpdateJob - Finished");
 

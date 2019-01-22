@@ -73,11 +73,12 @@ class DashboardDueDatesService {
                 SystemEvent.createEvent('DBDD_SERVICE_COMPLETE_1')
 
             } catch (Throwable t) {
-                log.error("DashboardDueDatesService takeCareOfDueDates :: Unable to perform email due to exception ${t.message}")
+                String tMsg = t.message
+                log.error("DashboardDueDatesService takeCareOfDueDates :: Unable to perform email due to exception ${tMsg}")
                 // TODO: remove due SystemEvent
-                new EventLog(event:'DashboardDueDatesService takeCareOfDueDates', message:'Unable to perform email due to exception '+ t.message, tstp:new Date(System.currentTimeMillis())).save(flush:true)
+                new EventLog(event:'DashboardDueDatesService takeCareOfDueDates', message:'Unable to perform email due to exception '+ tMsg, tstp:new Date(System.currentTimeMillis())).save(flush:true)
 
-                SystemEvent.createEvent('DBDD_SERVICE_ERROR_1', ['error': t.message])
+                SystemEvent.createEvent('DBDD_SERVICE_ERROR_1', ['error': tMsg])
 
                 flash.error += messageSource.getMessage('menu.admin.error', null, locale)
                 update_running = false
@@ -132,13 +133,14 @@ class DashboardDueDatesService {
 
                 flash.message += messageSource.getMessage('menu.admin.updateDashboardTable.successful', null, locale)
             } catch (Throwable t) {
+                String tMsg = t.message
+                SystemEvent.createEvent('DBDD_SERVICE_ERROR_2', ['error': tMsg])
+
                 status.setRollbackOnly()
-                log.error("DashboardDueDatesService - updateDashboardTableInDatabase() :: Rollback for reason: ${t.message}")
+                log.error("DashboardDueDatesService - updateDashboardTableInDatabase() :: Rollback for reason: ${tMsg}")
 
                 // TODO: remove due SystemEvent
-                new EventLog(event:'DashboardDueDatesService.updateDashboardTableInDatabase', message:'Rollback for reason: ' + t.message, tstp:new Date(System.currentTimeMillis())).save(flush:true)
-
-                SystemEvent.createEvent('DBDD_SERVICE_ERROR_2', ['error': t.message])
+                new EventLog(event:'DashboardDueDatesService.updateDashboardTableInDatabase', message:'Rollback for reason: ' + tMsg, tstp:new Date(System.currentTimeMillis())).save(flush:true)
 
                 flash.error += messageSource.getMessage('menu.admin.updateDashboardTable.error', null, locale)
             }
@@ -148,7 +150,7 @@ class DashboardDueDatesService {
         // TODO: remove due SystemEvent
         new EventLog(event:'DashboardDueDatesService updateDashboardTableInDatabase', message:'Finished', tstp:new Date(System.currentTimeMillis())).save(flush:true)
 
-        SystemEvent.createEvent('DBDD_SERVICE_COMPLETE_2')
+       SystemEvent.createEvent('DBDD_SERVICE_COMPLETE_2')
 
     }
 
@@ -203,11 +205,13 @@ class DashboardDueDatesService {
                 log.debug("DashboardDueDatesService - finished sendEmail() to "+ user.displayName + " (" + user.email + ") " + org.name);
             }
         } catch (Exception e) {
-            log.error("DashboardDueDatesService - sendEmail() :: Unable to perform email due to exception ${e.message}")
-            // TODO: remove due SystemEvent
-            new EventLog(event:'DashboardDueDatesService.sendEmail', message:'Unable to perform email due to exception ' + e.message, tstp:new Date(System.currentTimeMillis())).save(flush:true)
+            String eMsg = e.message
 
-            SystemEvent.createEvent('DBDD_SERVICE_ERROR_3', ['error': e.message])
+            log.error("DashboardDueDatesService - sendEmail() :: Unable to perform email due to exception ${eMsg}")
+            // TODO: remove due SystemEvent
+            new EventLog(event:'DashboardDueDatesService.sendEmail', message:'Unable to perform email due to exception ' + eMsg, tstp:new Date(System.currentTimeMillis())).save(flush:true)
+
+            SystemEvent.createEvent('DBDD_SERVICE_ERROR_3', ['error': eMsg])
 
             throw e
         }

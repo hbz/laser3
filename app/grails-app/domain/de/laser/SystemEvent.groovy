@@ -46,6 +46,7 @@ class SystemEvent {
             'STATS_SYNC_JOB_COMPLETE'   : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SUB_UPDATE_JOB_START'      : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SUB_UPDATE_JOB_COMPLETE'   : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'SUB_UPDATE_SERVICE_PROCESSING' : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'YODA_ES_RESET_START'       : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO]
     ]
 
@@ -91,7 +92,6 @@ class SystemEvent {
     }
 
     def beforeInsert() {
-        payload = payload ? (new JSON(payload)).toString(false) : null
         created = created ?: new Date()
     }
 
@@ -112,7 +112,7 @@ class SystemEvent {
 
         if (result) {
             result.token = token
-            result.payload = payload
+            result.payload = payload ? (new JSON(payload)).toString(false) : null
 
             result.save(flush:true)
         }

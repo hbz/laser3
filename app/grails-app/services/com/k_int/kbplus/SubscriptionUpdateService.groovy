@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.SystemEvent
 import de.laser.helper.RDStore
 
 class SubscriptionUpdateService {
@@ -14,6 +15,8 @@ class SubscriptionUpdateService {
         println "processing all intended subscriptions ..."
         def currentDate = new Date(System.currentTimeMillis())
 
+        def updatedObjs = [:]
+
         // INTENDED -> CURRENT
 
         def intendedSubsIds1 = Subscription.where {
@@ -23,6 +26,8 @@ class SubscriptionUpdateService {
         log.info("Intended subscriptions reached start date and are now running: " + intendedSubsIds1)
 
         if (intendedSubsIds1) {
+            updatedObjs << ['intendedToCurrent' : intendedSubsIds1]
+
             Subscription.executeUpdate(
                     'UPDATE Subscription sub SET sub.status =:status WHERE sub.id in (:ids)',
                     [status: RDStore.SUBSCRIPTION_CURRENT, ids: intendedSubsIds1]
@@ -47,6 +52,8 @@ class SubscriptionUpdateService {
         log.info("Intended subscriptions reached start date and end date are now expired: " + intendedSubsIds2)
 
         if (intendedSubsIds2) {
+            updatedObjs << ['intendedToExpired' : intendedSubsIds2]
+
             Subscription.executeUpdate(
                     'UPDATE Subscription sub SET sub.status =:status WHERE sub.id in (:ids)',
                     [status: RDStore.SUBSCRIPTION_EXPIRED, ids: intendedSubsIds2]
@@ -71,6 +78,8 @@ class SubscriptionUpdateService {
         log.info("Current subscriptions reached end date and are now expired: " + currentSubsIds)
 
         if (currentSubsIds) {
+            updatedObjs << ['currentToExpired' : currentSubsIds]
+
             Subscription.executeUpdate(
                     'UPDATE Subscription sub SET sub.status =:status WHERE sub.id in (:ids)',
                     [status: RDStore.SUBSCRIPTION_EXPIRED, ids: currentSubsIds]
@@ -86,6 +95,7 @@ class SubscriptionUpdateService {
             }
         }
 
+        SystemEvent.createEvent('SUB_UPDATE_SERVICE_PROCESSING', updatedObjs)
 
         /*
         Subscription.findAllByStatus(INTENDED).each { sub ->
