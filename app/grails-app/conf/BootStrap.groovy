@@ -781,6 +781,8 @@ class BootStrap {
 
         // because legacy logic is hardcoded against RefdataCategory.desc & RefdataValue.value
 
+        RefdataCategory.loc('filter.fake.values', [en: 'filter.fake.values', de: 'filter.fake.values'], BOOTSTRAP)
+        RefdataValue.loc('filter.fake.values',   [key: 'subscription.status.no.status.set.but.null', en: 'No Status', de: 'Kein Status'], BOOTSTRAP)
         // refdata categories
 
         RefdataCategory.loc('YN',                   	                    [en: 'Yes/No', de: 'Ja/Nein'], BOOTSTRAP)
@@ -865,7 +867,8 @@ class BootStrap {
         RefdataValue.loc('Indemnification',  [en: 'Other', de: 'Andere'], BOOTSTRAP)
         RefdataValue.loc('Indemnification',  [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
 
-        RefdataValue.loc('Confidentiality',  [en: 'All', de: 'Alles'], BOOTSTRAP)
+
+
         RefdataValue.loc('Confidentiality',  [en: 'All but user terms', de: 'Alles außer Nutzungsbedingungen'], BOOTSTRAP)
         RefdataValue.loc('Confidentiality',  [en: 'Financial only', de: 'Nur Finanzangelegenheiten'], BOOTSTRAP)
         RefdataValue.loc('Confidentiality',  [en: 'No', de: 'Nein'], BOOTSTRAP)

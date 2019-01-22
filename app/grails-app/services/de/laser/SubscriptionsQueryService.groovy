@@ -154,11 +154,8 @@ from Subscription as s where (
 
         if (params.status) {
 
-            if ((params.status as Long) == RefdataValue.getByValueAndCategory('No Status','Subscription Status').id) {
-                base_qry += " and (s.status.id = :status OR  s.status is null ) "
-                qry_params.put('status', (params.status as Long))
-                println( base_qry)
-
+            if ((params.status as Long) == RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null','filter.fake.values').id) {
+                base_qry += " AND s.status is null "
             }
             else {
                 base_qry += " and s.status.id = :status "
