@@ -3,6 +3,7 @@ package de.laser.api.v0.entities
 import com.k_int.kbplus.CostItem
 import com.k_int.kbplus.Org
 import de.laser.api.v0.ApiReader
+import de.laser.api.v0.ApiReaderHelper
 import de.laser.helper.Constants
 import grails.converters.JSON
 
@@ -52,7 +53,7 @@ class ApiCostItem {
     /**
      * @return [] | FORBIDDEN
      */
-    static getCostItems(Org owner, Org context, boolean hasAccess){
+    static getCostItemList(Org owner, Org context, boolean hasAccess){
         def result = []
 
         if (! hasAccess) {
@@ -61,7 +62,9 @@ class ApiCostItem {
             }
         }
         if (hasAccess) {
-            result = ApiReader.exportCostItems(owner, context)
+            // TODO
+            result = CostItem.findAllByOwner(owner).globalUID
+            result = ApiReaderHelper.cleanUp(result, true, true)
         }
 
         return (hasAccess ? (result ? new JSON(result) : null) : Constants.HTTP_FORBIDDEN)

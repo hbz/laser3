@@ -16,7 +16,7 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 class ApiReader {
 
     static SUPPORTED_FORMATS = [
-            'costItems':            [Constants.MIME_APPLICATION_JSON],
+            'costItem':             [Constants.MIME_APPLICATION_JSON],
             'document':             [],
             'issueEntitlements':    [Constants.MIME_TEXT_PLAIN, Constants.MIME_APPLICATION_JSON],
             'license':              [Constants.MIME_APPLICATION_JSON],
@@ -77,14 +77,6 @@ class ApiReader {
         result.issueEntitlement = ApiReaderHelper.resolveIssueEntitlement(costItem.issueEntitlement, ApiReaderHelper.IGNORE_ALL, context) // com.k_int.kbplus.issueEntitlement
         result.order    = ApiReaderHelper.resolveOrder(costItem.order) // com.k_int.kbplus.Order
         result.invoice  = ApiReaderHelper.resolveInvoice(costItem.invoice)
-
-        return ApiReaderHelper.cleanUp(result, true, true)
-    }
-
-    static exportCostItems(Org owner, Org context){
-        def result = []
-
-        result = CostItem.findAllByOwner(owner).globalUID
 
         return ApiReaderHelper.cleanUp(result, true, true)
     }

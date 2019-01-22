@@ -45,7 +45,7 @@
         200:
           description: OK
           content:
-            application/*:
+            application/json:
               schema:
                 $ref: "#/components/schemas/CostItem"
         400:
@@ -60,12 +60,12 @@
           $ref: "#/components/responses/notAcceptable"
 
 
-  /costItems:
+  /costItemList:
 
     get:
       tags:
-        - Objects
-      summary: Retrieving owner related cost items
+        - Lists
+      summary: Retrieving a list of owner related cost items
       description: >
         Supported are queries by following identifiers: *globalUID*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
 
@@ -79,9 +79,9 @@
         200:
           description: OK
           content:
-            application/*:
+            application/json:
               schema:
-                $ref: "#/components/schemas/PlaceholderList"
+                $ref: "#/components/schemas/CostItemList"
         400:
           $ref: "#/components/responses/badRequest"
         401:
@@ -89,7 +89,7 @@
         403:
           $ref: "#/components/responses/forbidden"
         404:
-          description: Valid request, but no cost items found
+          description: Valid request, but owner not found
         406:
           $ref: "#/components/responses/notAcceptable"
 
@@ -164,6 +164,40 @@
           $ref: "#/components/responses/preconditionFailed"
 
 
+  /licenseList:
+
+    get:
+      tags:
+        - Lists
+      summary: Retrieving a list of owner related licenses
+      description: >
+        Supported are queries by following identifiers: *globalUID*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
+
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/context"
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LicenseList"
+        400:
+          $ref: "#/components/responses/badRequest"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+        403:
+          $ref: "#/components/responses/forbidden"
+        404:
+          description: Valid request, but owner not found
+        406:
+          $ref: "#/components/responses/notAcceptable"
+
+
   /subscription:
 
     get:
@@ -198,3 +232,37 @@
           $ref: "#/components/responses/notAcceptable"
         412:
           $ref: "#/components/responses/preconditionFailed"
+
+
+  /subscriptionList:
+
+    get:
+      tags:
+        - Lists
+      summary: Retrieving a list of owner related subscriptions
+      description: >
+        Supported are queries by following identifiers: *globalUID*, *impId* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _isil:DE-123_
+
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/context"
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionList"
+        400:
+          $ref: "#/components/responses/badRequest"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+        403:
+          $ref: "#/components/responses/forbidden"
+        404:
+          description: Valid request, but owner not found
+        406:
+          $ref: "#/components/responses/notAcceptable"

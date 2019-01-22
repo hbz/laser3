@@ -690,3 +690,24 @@
           type: string
         normTitle:
           type: string
+
+
+<%-- lists --%>
+
+
+    CostItemList:
+      type: array
+      items:
+        type: string
+
+
+    LicenseList:
+      type: array
+      items:
+        $ref: "#/components/schemas/LicenseStub"
+
+
+    SubscriptionList:
+      type: array
+      items:
+        $ref: "#/components/schemas/SubscriptionStub"
