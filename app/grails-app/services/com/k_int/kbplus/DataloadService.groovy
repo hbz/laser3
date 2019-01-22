@@ -349,24 +349,24 @@ class DataloadService {
 
         log.debug("Query completed .. processing rows ..")
 
-      while (results.next()) {
-        Object r = results.get(0);
-        def idx_record = recgen_closure(r)
-        def future
-        if(idx_record['_id'] == null) {
-          log.error("******** Record without an ID: ${idx_record} Obj:${r} ******** ")
-          continue
-        }
+        while (results.next()) {
+          Object r = results.get(0);
+          def idx_record = recgen_closure(r)
+          def future
+          if(idx_record['_id'] == null) {
+            log.error("******** Record without an ID: ${idx_record} Obj:${r} ******** ")
+            continue
+          }
 
           def recid = idx_record['_id'].toString()
           idx_record.remove('_id');
 
-          future = esclient.indexAsync {
+          future = esclient.index {
               index es_index
               type domain.name
               id recid
               source idx_record
-          }
+          }.actionGet()
 
 //        if ( idx_record?.status?.toLowerCase() == 'deleted' ) {
 //            future = esclient.delete {
@@ -389,19 +389,19 @@ class DataloadService {
               highest_timestamp = r.lastUpdated?.getTime();
           }
 
-        count++
-        total++
-        if ( count > 100 ) {
-          count = 0;
-          log.debug("processed ${++total} records (${domain.name})")
-            latest_ft_record.lastTimestamp = highest_timestamp
-          latest_ft_record.save(flush:true);
-          cleanUpGorm();
+          count++
+          total++
+          if ( count == 100 ) {
+            count = 0;
+            log.debug("processed ${total} records (${domain.name})")
+              latest_ft_record.lastTimestamp = highest_timestamp
+            latest_ft_record.save(flush:true);
+            cleanUpGorm();
+          }
         }
-      }
-      results.close();
+        results.close();
 
-      log.debug("Processed ${total} records for ${domain.name}")
+        log.debug("Processed ${total} records for ${domain.name}")
 
         // update timestamp
         latest_ft_record.lastTimestamp = highest_timestamp
