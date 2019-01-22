@@ -12,6 +12,22 @@
     <semui:crumb text="System Events" class="active"/>
 </semui:breadcrumbs>
 
+<%--
+    <semui:filter>
+        <div class="fields">
+            <div class="field">
+                <label>Category</label>
+            </div>
+            <div class="field">
+                <label>Relevance</label>
+            </div>
+            <div class="field">
+                <label>Source</label>
+            </div>
+        </div>
+    </semui:filter>
+--%>
+
 <div>
     <table class="ui sortable celled la-table la-table-small table">
         <thead>
@@ -26,7 +42,11 @@
         </tr>
         </thead>
         <g:each in="${events}" var="el">
-            <tr>
+            <tr
+                    data-category="${el.category}"
+                    data-relevance="${el.relevance}"
+                    data-source="${el.source}"
+            >
                 <td class="table-td-${el.relevance?.value?.toLowerCase()}">
                     ${el.category}
                 </td>

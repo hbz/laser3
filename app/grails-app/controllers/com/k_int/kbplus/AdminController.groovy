@@ -381,11 +381,12 @@ class AdminController extends AbstractDebugController {
     def systemEvents() {
         def result = [:]
 
-        params.sort ?: 'created'
-        params.order ?: 'desc'
-        params.max ?: 500
+        params.sort =   params.sort ?: 'created'
+        params.order =  params.order ?: 'desc'
+        params.max =    params.max ?: 500
 
         result.events = SystemEvent.list(params)
+
         result
     }
 

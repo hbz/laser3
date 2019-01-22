@@ -17,36 +17,36 @@ class SystemEvent {
     RELEVANCE relevance
     Date      created
 
-    static final ALLOWED_TOKENS = [
-            'BOOTSTRAP_STARTUP',
-            'CAJ_JOB_START',
-            'CAJ_JOB_COMPLETE',
-            'DBDD_JOB_START',
-            'DBDD_JOB_COMPLETE',
-            'DBDD_JOB_IGNORE',
-            'DBDD_SERVICE_START_1',
-            'DBDD_SERVICE_COMPLETE_1',
-            'DBDD_SERVICE_ERROR_1',
-            'DBDD_SERVICE_START_2',
-            'DBDD_SERVICE_PROCESSING_2',
-            'DBDD_SERVICE_COMPLETE_2',
-            'DBDD_SERVICE_ERROR_2',
-            'DBDD_SERVICE_START_3',
-            'DBDD_SERVICE_COMPLETE_3',
-            'DBDD_SERVICE_ERROR_3',
-            'FT_INDEX_UPDATE_START',
-            'FT_INDEX_UPDATE_ERROR',
-            'FT_INDEX_CLEANUP_ERROR',
-            'GD_SYNC_JOB_START',
-            'GD_SYNC_JOB_COMPLETE',
-            'GSSS_OAI_START',
-            'GSSS_OAI_COMPLETE',
-            'GSSS_OAI_ERROR',
-            'STATS_SYNC_JOB_START',
-            'STATS_SYNC_JOB_COMPLETE',
-            'SUB_UPDATE_JOB_START',
-            'SUB_UPDATE_JOB_COMPLETE',
-            'YODA_ES_RESET_START'
+    static final DEFINED_EVENTS = [
+            'BOOTSTRAP_STARTUP'         : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'CAJ_JOB_START'             : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'CAJ_JOB_COMPLETE'          : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'DBDD_JOB_START'            : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'DBDD_JOB_COMPLETE'         : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'DBDD_JOB_IGNORE'           : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.WARNING],
+            'DBDD_SERVICE_START_1'      : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'DBDD_SERVICE_COMPLETE_1'   : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'DBDD_SERVICE_ERROR_1'      : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
+            'DBDD_SERVICE_START_2'      : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'DBDD_SERVICE_PROCESSING_2' : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'DBDD_SERVICE_COMPLETE_2'   : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'DBDD_SERVICE_ERROR_2'      : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
+            'DBDD_SERVICE_START_3'      : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'DBDD_SERVICE_COMPLETE_3'   : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'DBDD_SERVICE_ERROR_3'      : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
+            'FT_INDEX_UPDATE_START'     : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'FT_INDEX_UPDATE_ERROR'     : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
+            'FT_INDEX_CLEANUP_ERROR'    : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
+            'GD_SYNC_JOB_START'         : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'GD_SYNC_JOB_COMPLETE'      : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'GSSS_OAI_START'            : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'GSSS_OAI_COMPLETE'         : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'GSSS_OAI_ERROR'            : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
+            'STATS_SYNC_JOB_START'      : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'STATS_SYNC_JOB_COMPLETE'   : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'SUB_UPDATE_JOB_START'      : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'SUB_UPDATE_JOB_COMPLETE'   : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'YODA_ES_RESET_START'       : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO]
     ]
 
     static enum RELEVANCE {
@@ -103,95 +103,11 @@ class SystemEvent {
 
         SystemEvent result
 
-        if (! ALLOWED_TOKENS.contains(token)) {
+        if (DEFINED_EVENTS.containsKey(token)) {
+            result = new SystemEvent( category: DEFINED_EVENTS.get(token).category, relevance: DEFINED_EVENTS.get(token).relevance )
+        }
+        else {
             result = new SystemEvent( category: CATEGORY.UNKNOWN, relevance: RELEVANCE.UNKNOWN )
-        }
-        else if ('BOOTSTRAP_STARTUP' == token) {
-            result = new SystemEvent( category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO )
-        }
-        else if ('CAJ_JOB_START' == token) {
-            result = new SystemEvent( category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO )
-        }
-        else if ('CAJ_JOB_COMPLETE' == token) {
-            result = new SystemEvent( category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO )
-        }
-        else if ('DBDD_JOB_START' == token) {
-            result = new SystemEvent( category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO )
-        }
-        else if ('DBDD_JOB_COMPLETE' == token) {
-            result = new SystemEvent( category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO )
-        }
-        else if ('DBDD_JOB_IGNORE' == token) {
-            result = new SystemEvent( category: CATEGORY.CRONJOB, relevance: RELEVANCE.WARNING )
-        }
-        else if ('DBDD_SERVICE_START_1' == token) {
-            result = new SystemEvent( category: CATEGORY.OTHER, relevance: RELEVANCE.INFO )
-        }
-        else if ('DBDD_SERVICE_COMPLETE_1' == token) {
-            result = new SystemEvent( category: CATEGORY.OTHER, relevance: RELEVANCE.INFO )
-        }
-        else if ('DBDD_SERVICE_ERROR_1' == token) {
-            result = new SystemEvent( category: CATEGORY.OTHER, relevance: RELEVANCE.ERROR )
-        }
-        else if ('DBDD_SERVICE_START_2' == token) {
-            result = new SystemEvent( category: CATEGORY.OTHER, relevance: RELEVANCE.INFO )
-        }
-        else if ('DBDD_SERVICE_PROCESSING_2' == token) {
-            result = new SystemEvent( category: CATEGORY.OTHER, relevance: RELEVANCE.INFO )
-        }
-        else if ('DBDD_SERVICE_COMPLETE_2' == token) {
-            result = new SystemEvent( category: CATEGORY.OTHER, relevance: RELEVANCE.INFO )
-        }
-        else if ('DBDD_SERVICE_ERROR_2' == token) {
-            result = new SystemEvent( category: CATEGORY.OTHER, relevance: RELEVANCE.ERROR )
-        }
-        else if ('DBDD_SERVICE_START_3' == token) {
-            result = new SystemEvent( category: CATEGORY.OTHER, relevance: RELEVANCE.INFO )
-        }
-        else if ('DBDD_SERVICE_COMPLETE_3' == token) {
-            result = new SystemEvent( category: CATEGORY.OTHER, relevance: RELEVANCE.INFO )
-        }
-        else if ('DBDD_SERVICE_ERROR_3' == token) {
-            result = new SystemEvent( category: CATEGORY.OTHER, relevance: RELEVANCE.ERROR )
-        }
-        else if ('FT_INDEX_UPDATE_START' == token) {
-            result = new SystemEvent( category: CATEGORY.OTHER, relevance: RELEVANCE.INFO )
-        }
-        else if ('FT_INDEX_UPDATE_ERROR' == token) {
-            result = new SystemEvent(  category: CATEGORY.OTHER, relevance: RELEVANCE.ERROR )
-        }
-        else if ('FT_INDEX_CLEANUP_ERROR' == token) {
-            result = new SystemEvent( category: CATEGORY.OTHER, relevance: RELEVANCE.ERROR )
-        }
-        else if ('GD_SYNC_JOB_START' == token) {
-            result = new SystemEvent( category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO )
-        }
-        else if ('GD_SYNC_JOB_COMPLETE' == token) {
-            result = new SystemEvent( category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO )
-        }
-        else if ('GSSS_OAI_START' == token) {
-            result = new SystemEvent( category: CATEGORY.OTHER, relevance: RELEVANCE.INFO )
-        }
-        else if ('GSSS_OAI_ERROR' == token) {
-            result =  new SystemEvent( category: CATEGORY.OTHER, relevance: RELEVANCE.ERROR )
-        }
-        else if ('GSSS_OAI_COMPLETE' == token) {
-            result = new SystemEvent( category: CATEGORY.OTHER, relevance: RELEVANCE.INFO )
-        }
-        else if ('STATS_SYNC_JOB_START' == token) {
-            result = new SystemEvent( category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO )
-        }
-        else if ('STATS_SYNC_JOB_COMPLETE' == token) {
-            result = new SystemEvent( category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO )
-        }
-        else if ('SUB_UPDATE_JOB_START' == token) {
-            result = new SystemEvent( category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO )
-        }
-        else if ('SUB_UPDATE_JOB_COMPLETE' == token) {
-            result = new SystemEvent( category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO )
-        }
-        else if ('YODA_ES_RESET_START' == token) {
-            result = new SystemEvent( category: CATEGORY.OTHER, relevance: RELEVANCE.INFO )
         }
 
         if (result) {
