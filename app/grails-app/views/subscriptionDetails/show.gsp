@@ -164,7 +164,7 @@
                                         <dd>
                                             <g:set var="pair" value="${link.getOther(subscriptionInstance)}"/>
                                             <g:set var="sdf" value="${new SimpleDateFormat('dd.MM.yyyy')}"/>
-                                            <g:link controller="subscriptionDetails" action="show" id="${pair.id}">#${pair.id}</g:link>: ${pair.name} (${sdf.format(pair.startDate)} - ${sdf.format(pair.endDate)})
+                                            <g:link controller="subscriptionDetails" action="show" id="${pair.id}">#${pair.id}</g:link>: ${pair.name} (${sdf.format(pair.startDate)} - ${pair.endDate ? sdf.format(pair.endDate) : ""})
                                         </dd>
                                         <dd>
                                             <g:render template="/templates/links/subLinksModal"
