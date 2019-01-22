@@ -1,4 +1,9 @@
 
+0.12.3
+
+- fixed presentation of property type url
+- added debug information
+
 0.12.2
 
 - reactivated usage and statistics
