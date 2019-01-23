@@ -236,7 +236,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
       if ( createEntitlements ) {
         def live_issue_entitlement = RefdataValue.getByValueAndCategory('Live', 'Entitlement Issue Status')
-        tipps.each { tipp ->
+        TitleInstancePackagePlatform.findAllByPkg(this).each { tipp ->
           if(tipp.status?.value != "Deleted"){
             def new_ie = new IssueEntitlement(status: live_issue_entitlement,
                                               subscription: subscription,
