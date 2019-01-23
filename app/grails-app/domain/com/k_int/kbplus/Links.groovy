@@ -46,7 +46,6 @@ class Links {
     }
 
     def beforeInsert() {
-        super.beforeInsert()
 
         def user = springSecurityService.getCurrentUser()
         if (user) {
@@ -57,7 +56,6 @@ class Links {
     }
 
     def beforeUpdate() {
-        super.beforeUpdate()
 
         def user = springSecurityService.getCurrentUser()
         if (user)
