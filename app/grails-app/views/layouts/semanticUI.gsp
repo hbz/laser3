@@ -574,7 +574,7 @@
                                             $('.card.la-js-hideable').not( ":has(.la-js-dont-hide-this-card)" ).addClass('hidden');
                                             $('.la-js-hide-this-card').addClass('hidden');
                                             $('.ui.form').not('.ui.modal .ui.form').addClass('hidden');
-                                            $('#collapseableSubDetails').not('.ui.modal').find('.button').not('.ui.modal .button').addClass('hidden');
+                                            $('#collapseableSubDetails').not('.ui.modal').find('.button').not('.ui.modal .button, .la-url-button').addClass('hidden');
                                             $(toggleButton).removeAttr();
                                             $(toggleButton).attr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
                                             $( toggleIcon ).addClass( "slash" );
