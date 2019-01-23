@@ -87,6 +87,7 @@
                             </sec:ifAnyGranted>
                                 <g:link class="item" controller="organisations" action="listProvider">${message(code:'menu.institutions.all_provider')}</g:link>
                                 <g:link class="item" controller="platform" action="list">${message(code:'menu.institutions.all_platforms')}</g:link>
+                                <g:link class="item" controller="gasco">${message(code:'menu.institutions.gasco_monitor')}</g:link>
 
                             <%--<div class="divider"></div>
 
@@ -574,7 +575,7 @@
                                             $('.card.la-js-hideable').not( ":has(.la-js-dont-hide-this-card)" ).addClass('hidden');
                                             $('.la-js-hide-this-card').addClass('hidden');
                                             $('.ui.form').not('.ui.modal .ui.form').addClass('hidden');
-                                            $('#collapseableSubDetails').not('.ui.modal').find('.button').not('.ui.modal .button').addClass('hidden');
+                                            $('#collapseableSubDetails').not('.ui.modal').find('.button').not('.ui.modal .button, .la-url-button').addClass('hidden');
                                             $(toggleButton).removeAttr();
                                             $(toggleButton).attr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
                                             $( toggleIcon ).addClass( "slash" );
