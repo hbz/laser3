@@ -1,5 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person" %>
-<%@ page import="com.k_int.kbplus.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.Person; de.laser.helper.RDStore" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -46,24 +45,28 @@
         </form>
     </semui:filter>
     --%>
+<semui:filter>
+    <g:form action="members" method="get" class="ui form">
+        <g:render template="/templates/filter/orgFilter"
+                  model="[
+                          tmplConfigShow: [['name', 'libraryType'], ['federalState', 'libraryNetwork','property']],
+                          tmplConfigFormFilter: true,
+                          useNewLayouter: true
+                  ]"/>
+    </g:form>
+</semui:filter>
 
 <semui:messages data="${flash}" />
 
     <g:if test="${validSubChilds}">
-
-    <g:each in="${[validSubChilds]}" status="i" var="outerLoop">
+    <g:each in="${validSubChilds}" status="i" var="sub">
 
         <table class="ui celled la-table table">
             <thead>
                 <tr>
-                    <th>
-                        ${message(code:'sidewide.number')}
-                    </th>
-                    <th>Sortiername</th>
-                    <th>
-                        ${message(code:'subscriptionDetails.members.members')}
-                    </th>
-
+                    <th>${message(code:'sidewide.number')}</th>
+                    <th>${message(code:'default.sortname.label')}</th>
+                    <th>${message(code:'subscriptionDetails.members.members')}</th>
                     <th>${message(code:'default.startDate.label')}</th>
                     <th>${message(code:'default.endDate.label')}</th>
                     <th>${message(code:'subscription.details.status')}</th>
@@ -71,15 +74,13 @@
                 </tr>
             </thead>
             <tbody>
-                <g:each in="${outerLoop}" status="j" var="sub">
                     <tr>
-                        <td>${j + 1}</td>
+                        <td>${i + 1}</td>
 
                         <g:each in="${sub.getAllSubscribers()}" var="subscr">
 
-                            <td>
-                                ${subscr.sortname}
-                            </td>
+                            <td>${subscr.sortname}</td>
+
                             <td>
                                 <g:link controller="organisations" action="show" id="${subscr.id}">${subscr}</g:link>
 
@@ -89,8 +90,8 @@
                                     </span>
                                 </g:if>
 
-                                <g:set var="rdvGcp" value="${RefdataValue.findByValue('General contact person')}"/>
-                                <g:set var="rdvSse" value="${RefdataValue.findByValue('Specific subscription editor')}"/>
+                                <g:set var="rdvGcp" value="${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS}"/>
+                                <g:set var="rdvSse" value="${RDStore.PRS_RESP_SPEC_SUB_EDITOR}"/>
 
                                 <div class="ui list">
 
@@ -128,15 +129,12 @@
                             <td></td>
                         </g:if>
 
-                        <td>
-                            <g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/>
-                        </td>
-                        <td>
-                            <g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/>
-                        </td>
-                        <td>
-                            ${sub.status.getI10n('value')}
-                        </td>
+                        <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
+
+                        <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
+
+                        <td>${sub.status.getI10n('value')}</td>
+
                         <td class="x">
                             <g:link controller="subscriptionDetails" action="show" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
 
@@ -154,15 +152,14 @@
                                     </g:link>
                                 </g:each>
                             </g:if>
-
                         </td>
+
                     </tr>
                 </g:each>
             </tbody>
         </table>
 
-    <g:render template="../templates/copyEmailaddresses" model="[orgList: outerLoop.collect {it.getAllSubscribers()}]"/>
-    </g:each>
+        <g:render template="../templates/copyEmailaddresses" model="[orgList: outerLoop.collect {it.getAllSubscribers()}]"/>
 
     </g:if>
     <g:else>
