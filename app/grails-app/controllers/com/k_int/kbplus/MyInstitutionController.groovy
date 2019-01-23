@@ -984,11 +984,11 @@ from License as l where (
         def user = User.get(springSecurityService.principal.id)
         def org = contextService.getOrg()
 
-        params.asOrgRoleType = params.asOrgRoleType ? [params.asOrgRoleType] : [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType').id.toString()]
+        params.asOrgRoleType = params.asOrgRoleType ? [params.asOrgRoleType] : [RDStore.OR_TYPE_INSTITUTION.id.toString()]
 
 
         if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
-            flash.error = message(code:'myinst.error.noAdmin', args:[org.name]);
+            flash.error = message(code:'myinst.error.noAdmin', args:[org.name])
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
             return;
@@ -1001,7 +1001,6 @@ from License as l where (
                 log.debug("return 401....");
                 flash.error = message(code: 'myinst.newLicense.error', default: 'You do not have permission to view the selected license. Please request access on the profile page');
                 response.sendError(401)
-
             }
             else {
                 def copyLicense = institutionsService.copyLicense(baseLicense, params)
@@ -1031,11 +1030,13 @@ from License as l where (
 
         def license_type = RefdataValue.getByValueAndCategory('Actual', 'License Type')
 
-        def licenseInstance = new License(type: license_type, reference: params.licenseName ?:null,
+        def licenseInstance = new License(type: license_type, reference: params.licenseName,
                 startDate:params.licenseStartDate ? parseDate(params.licenseStartDate,possible_date_formats) : null,
                 endDate: params.licenseEndDate ? parseDate(params.licenseEndDate,possible_date_formats) : null,)
 
         if (!licenseInstance.save(flush: true)) {
+            flash.error = licenseInstance.errors
+            return
         }
         else {
             log.debug("Save ok");
