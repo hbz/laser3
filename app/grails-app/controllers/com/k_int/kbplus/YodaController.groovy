@@ -518,8 +518,8 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def updateLinks(){
-        flash.message = "Vor-/Nachfolgebeziehungen werden neu verknüpft"
-        subscriptionUpdateService.updateLinks()
+        int affected = subscriptionUpdateService.updateLinks()
+        flash.message = "Es wurden ${affected} Vor-/Nachfolgebeziehungen neu verknüpft"
         redirect(url: request.getHeader('referer'))
     }
 

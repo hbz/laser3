@@ -248,6 +248,15 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
         result = result.sort {it.name}
     }
 
+    Subscription getCalculatedPrevious() {
+        Links match = Links.findWhere(
+                source: this.id,
+                objectType: Subscription.class.name,
+                linkType: RDStore.LINKTYPE_FOLLOWS
+        )
+        return match ? Subscription.get(match?.destination) : null
+    }
+
     def isEditableBy(user) {
         hasPerm('edit', user)
     }

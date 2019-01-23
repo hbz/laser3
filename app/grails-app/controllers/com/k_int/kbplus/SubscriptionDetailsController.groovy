@@ -36,7 +36,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
     def contextService
     def addressbookService
     def taskService
-    def alertsService
+    def navigationGenerationService
     def genericOIDService
     def transformerService
     def exportService
@@ -211,7 +211,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
             result.processingpc = true
         }
 
-        LinkedHashMap<String,List> links = Links.generateNavigation(Subscription.class.name,result.subscription.id)
+        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 
@@ -710,7 +710,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
         //    )
         //}
 
-        LinkedHashMap<String,List> links = Links.generateNavigation(Subscription.class.name,result.subscription.id)
+        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 
@@ -999,7 +999,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
             }
         }
 
-        LinkedHashMap<String,List> links = Links.generateNavigation(Subscription.class.name,result.subscription.id)
+        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 
@@ -1139,7 +1139,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
         }
-        LinkedHashMap<String,List> links = Links.generateNavigation(Subscription.class.name,result.subscription.id)
+        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
         result
@@ -1158,7 +1158,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
             result.subscriber_shortcode = result.institution.shortcode
         }
 
-        LinkedHashMap<String,List> links = Links.generateNavigation(Subscription.class.name,result.subscription.id)
+        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
         result
@@ -1191,7 +1191,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
         }
         result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.subscriptionInstance, params)
 
-        LinkedHashMap<String,List> links = Links.generateNavigation(Subscription.class.name,result.subscription.id)
+        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 
@@ -1233,7 +1233,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
             response.sendError(401); return
         }
         result.contextOrg = contextService.getOrg()
-        LinkedHashMap<String,List> links = Links.generateNavigation(Subscription.class.name,result.subscription.id)
+        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
         result
@@ -1573,7 +1573,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where className=? and persistedObjectId=? order by id desc", qry_params, [max: result.max, offset: result.offset]);
         result.historyLinesTotal = AuditLogEvent.executeQuery("select e.id from AuditLogEvent as e where className=? and persistedObjectId=?", qry_params).size()
 
-        LinkedHashMap<String,List> links = Links.generateNavigation(Subscription.class.name,result.subscription.id)
+        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 
@@ -1606,7 +1606,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 baseParams
         )[0]
 
-        LinkedHashMap<String,List> links = Links.generateNavigation(Subscription.class.name,result.subscription.id)
+        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 
@@ -1702,7 +1702,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
         }
 
-        LinkedHashMap<String,List> links = Links.generateNavigation(Subscription.class.name,result.subscription.id)
+        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 
@@ -2212,7 +2212,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 }
             }
 
-            LinkedHashMap<String,List> links = Links.generateNavigation(result.subscriptionInstance.class.name,result.subscriptionInstance.id)
+            LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(result.subscriptionInstance.class.name,result.subscriptionInstance.id)
             result.navPrevSubscription = links.prevLink
             result.navNextSubscription = links.nextLink
 

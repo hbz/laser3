@@ -120,6 +120,16 @@ class SystemEvent {
         result
     }
 
+    static getAllSources() {
+        def result = []
+        SystemEvent.findAll().each { it ->
+            result.add( it.getSource() )
+        }
+        result.unique()
+    }
+
+    // GETTER
+
     private setInfo() {
         if (!i18n) {
             i18n = messageSource.getMessage('se.' + (token ?: 'UNKNOWN'), null, LocaleContextHolder.locale)
