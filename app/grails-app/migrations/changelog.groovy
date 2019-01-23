@@ -9,4 +9,7 @@ databaseChangeLog = {
 
 	// v0.12
 	include file: 'changelog-10.groovy'
+
+	// v0.13
+	include file: 'changelog-20.groovy'
 }
