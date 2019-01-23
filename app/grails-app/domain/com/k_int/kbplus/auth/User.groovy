@@ -224,6 +224,13 @@ class User implements Permissions {
         false
     }
 
+    def isAdmin() {
+        SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")
+    }
+    def isYoda() {
+        SpringSecurityUtils.ifAnyGranted("ROLE_YODA")
+    }
+
     /*
     def hasRole(roleName) {
       log.debug("USER.hasRole(): " + roleName) // TODO check roleHierarchy

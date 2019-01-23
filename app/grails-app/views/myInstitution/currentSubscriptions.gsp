@@ -1,4 +1,5 @@
 <%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
+<laser:serviceInjection />
 <!doctype html>
 
 <r:require module="annotations" />
@@ -368,7 +369,9 @@
                           </laser:statsLink>
                         </g:if>
 
-                    <g:if test="${editable && (OrgRole.findAllByOrgAndSubAndRoleType(institution, s, RDStore.OR_SUBSCRIBER) || s.consortia?.id == institution?.id)}">
+                    <g:if test="${ contextService.getUser().isAdmin() || contextService.getUser().isYoda() ||
+                        (editable && (OrgRole.findAllByOrgAndSubAndRoleType(institution, s, RDStore.OR_SUBSCRIBER) || s.consortia?.id == institution?.id))
+                    }">
                     <%--<g:if test="${editable && ((institution?.id in s.allSubscribers.collect{ it.id }) || s.consortia?.id == institution?.id)}">--%>
                             <g:link class="ui icon negative button js-open-confirm-modal"
                                     data-confirm-term-what="subscription"

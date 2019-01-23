@@ -24,7 +24,7 @@
         <input type="hidden" name="offset" value="${params.offset}"/>
 
         <div class="field">
-            <label>${message(code: 'package.show.pkg_name', default: 'Package Name')}</label>
+            <label>${message(code: 'home.search.text')}: ${message(code: 'package.show.pkg_name', default: 'Package Name')}, ${message(code: 'package.content_provider')}</label>
             <input name="q" placeholder="" value="${params.q}"/>
         </div>
 
@@ -208,7 +208,7 @@
                                     <g:else>
                                         <g:if test="${com.k_int.kbplus.Package.findByImpId(record.uuid)}">
                                             <g:link controller="packageDetails" action="current"
-                                                    id="${com.k_int.kbplus.Package.findByImpId(record.uuid).id}">${message(code: 'packageDetails.index.result.titles', args: [record.tippsCountCurrent])}</g:link>
+                                                    id="${com.k_int.kbplus.Package.findByImpId(record.uuid).id}">${message(code: 'packageDetails.index.result.titles', args: [record.titleCount])}</g:link>
                                         </g:if>
                                         <g:else>
                                             ${message(code: 'packageDetails.index.result.titles', args: [record.titleCount])}
