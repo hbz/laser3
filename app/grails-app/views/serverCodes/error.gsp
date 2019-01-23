@@ -1,12 +1,13 @@
 <%@ page import="org.codehaus.groovy.grails.web.errors.ExceptionUtils" %>
 <laser:serviceInjection />
-
-<% Throwable exception = (Throwable) exception %>
-<% def root = ExceptionUtils.getRootCause(exception) %>
-<% def causedby;
-if (root != null && root != exception && root.message != exception.message) {
-    causedby = "Cause: " + root.message
-} %>
+<%
+    Throwable exception = (Throwable) exception
+    def root = ExceptionUtils.getRootCause(exception)
+    def causedby
+    if (root != null && root != exception && root.message != exception.message) {
+        causedby = "Cause: " + root.message
+    }
+%>
 <!doctype html>
 <html>
 <head>
@@ -45,6 +46,16 @@ if (root != null && root != exception && root.message != exception.message) {
         </g:if>
     </div>
 </div>
+
+<g:if test="${params.debug}">
+    <div class="ui segment">
+        <h4 class="ui red header">
+            <i class="bug icon"></i>
+            DEBUG-INFORMATION
+        </h4>
+        <div class="content">${exception.printStackTrace(new java.io.PrintWriter(out))}</div>
+    </div>
+</g:if>
 
 <g:if test="${grailsApplication.config.getCurrentServer() == contextService.SERVER_DEV}">
     <g:renderException exception="${exception}"/>
