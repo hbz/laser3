@@ -118,7 +118,7 @@
                                                   controller="ajax" action="togglePropertyAuditConfig"
                                                   params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]' id="${prop.id}"
                                                   data-confirm-term-what="property"
-                                                  data-confirm-term-what-detail="${prop.type.name}"
+                                                  data-confirm-term-what-detail="${prop.type.getI10n('name')}"
                                                   data-confirm-term-how="inherit"
                                                   onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                                   onComplete="c3po.loadJsAfterAjax()"
@@ -128,7 +128,7 @@
                             </g:if>
 
                             <g:if test="${! AuditConfig.getConfig(prop)}">
-                                <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
+
                                 <button class="ui icon negative button js-open-confirm-modal-copycat">
                                     <i class="trash alternate icon"></i>
                                 </button>
@@ -136,7 +136,7 @@
                                               controller="ajax" action="deleteCustomProperty"
                                               params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:"${showConsortiaFunctions}"]' id="${prop.id}"
                                               data-confirm-term-what="property"
-                                              data-confirm-term-what-detail="${prop.type.name}"
+                                              data-confirm-term-what-detail="${prop.type.getI10n('name')}"
                                               data-confirm-term-how="delete"
                                               onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                               onComplete="c3po.loadJsAfterAjax()"
