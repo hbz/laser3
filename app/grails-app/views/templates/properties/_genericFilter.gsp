@@ -8,7 +8,7 @@
 
         <g:select id="filterPropDef" name="filterPropDef" class="ui search selection dropdown"
 
-                  from="${propList}" optionKey="${{
+                  from="${propList.toSorted()}" optionKey="${{
                     it.refdataCategory ?
                               "com.k_int.properties.PropertyDefinition:${it.id}\" data-rdc=\"com.k_int.kbplus.RefdataCategory:${RefdataCategory.findByDesc(it.refdataCategory)?.id}"
                             : "com.k_int.properties.PropertyDefinition:${it.id}" }}" optionValue="${{ it.getI10n('name') }}"

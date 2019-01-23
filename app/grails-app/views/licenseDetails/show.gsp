@@ -184,7 +184,10 @@
                                             <input type="hidden" name="license" value="${license.id}"/>
                                             <div class="fields">
                                                 <div class="field">
-                                                    <g:select optionKey="id" optionValue="${{it.getNameConcatenated()}}" from="${availableSubs}" name="subscription" class="ui search selectable dropdown"/>
+                                                    <g:select class="ui search selectable dropdown"
+                                                              optionKey="id" optionValue="${{it.getNameConcatenated()}}"
+                                                              from="${availableSubs}" name="subscription"
+                                                              noSelection="['':'Wählen Sie hier eine Lizenz zur Verknüpfung ..']"/>
                                                 </div>
                                                 <div class="field">
                                                     <input type="submit" class="ui button" value="${message(code:'default.button.link.label', default:'Link')}"/>
