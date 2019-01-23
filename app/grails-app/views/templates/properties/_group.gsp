@@ -98,7 +98,7 @@
                         <g:if test="${prop.type.type == URL.toString()}">
                             <g:if test="${prop.value}">
                                 <span data-position="top right" data-tooltip="Diese URL aufrufen ..">
-                                    <a href="${prop.value}" target="_blank" class="ui icon blue button">
+                                    <a href="${prop.value}" target="_blank" class="ui icon blue button la-url-button">
                                         <i class="share square icon"></i>
                                     </a>
                                 </span>
