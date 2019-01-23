@@ -1,7 +1,9 @@
 
 0.12.3
 
+- fixed usage data processing
 - fixed presentation of property type url
+- minor ui improvement
 - added debug information
 
 0.12.2
