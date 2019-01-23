@@ -18,6 +18,9 @@ class SystemEvent {
     Date      created
 
     static final DEFINED_EVENTS = [
+            'ADM_JOB_START'             : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'BATCH_IMP_JOB_START'       : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'BATCH_TOUCH_JOB_START'     : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'BOOTSTRAP_STARTUP'         : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'CAJ_JOB_START'             : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'CAJ_JOB_COMPLETE'          : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
