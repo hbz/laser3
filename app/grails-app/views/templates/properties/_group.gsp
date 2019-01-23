@@ -117,7 +117,7 @@
                                                   params='[propClass: prop.getClass(), propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}", ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]'
                                                   id="${prop.id}"
                                                   data-confirm-term-what="property"
-                                                  data-confirm-term-what-detail="${prop.type.name}"
+                                                  data-confirm-term-what-detail="${prop.type.getI10n('name')}"
                                                   data-confirm-term-how="inherit"
                                                   onSuccess="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                                   onComplete="c3po.loadJsAfterAjax()"
@@ -136,7 +136,7 @@
                                               params='[propClass: prop.getClass(), propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}", ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:"${showConsortiaFunctions}"]'
                                               id="${prop.id}"
                                               data-confirm-term-what="property"
-                                              data-confirm-term-what-detail="${prop.type.name}"
+                                              data-confirm-term-what-detail="${prop.type.getI10n('name')}"
                                               data-confirm-term-how="delete"
                                               onSuccess="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
                                               onComplete="c3po.loadJsAfterAjax()"
