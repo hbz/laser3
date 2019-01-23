@@ -310,8 +310,12 @@ r2d2 = {
         $(ctxSel + ' .ui.dropdown').dropdown({
             duration: 150,
             transition: 'fade',
+            apiSettings: {
+                cache: false
+            }
             //showOnFocus: false
         });
+        $(ctxSel + ' .la-filter form').attr('autocomplete', 'off');
         $(ctxSel + ' .la-filter .ui.dropdown').dropdown({
             clearable: true
         });
