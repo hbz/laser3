@@ -1,13 +1,11 @@
 package com.k_int.kbplus
 
-import de.laser.domain.AbstractBaseDomain
 
 import com.k_int.kbplus.auth.User
-import de.laser.helper.RDStore
 
 import javax.persistence.Transient
 
-class Links extends AbstractBaseDomain {
+class Links {
 
 
     @Transient
@@ -29,7 +27,6 @@ class Links extends AbstractBaseDomain {
 
     static mapping = {
         id          column: 'l_id'
-        globalUID   column: 'l_guid'
         source      column: 'l_source_fk'
         destination column: 'l_destination_fk'
         objectType  column: 'l_object'
@@ -39,7 +36,6 @@ class Links extends AbstractBaseDomain {
     }
 
     static constraints = {
-        globalUID     (nullable: true, blank: false, unique: true, maxSize: 255)
         source        (nullable: false, blank: false)
         destination   (nullable: false, blank: false)
         objectType    (nullable: false, blank: false)

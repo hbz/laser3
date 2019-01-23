@@ -8,37 +8,19 @@ import com.k_int.kbplus.auth.User
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class LicenseCompareController extends AbstractDebugController {
-  
-    static String INSTITUTIONAL_LICENSES_QUERY = " from License as l where exists ( select ol from OrgRole as ol where ol.lic = l AND ol.org = ? and ol.roleType = ? ) AND l.status.value != 'Deleted'"
+
     def springSecurityService
     def exportService
-    def accessService
     def contextService
+    def controlledListService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
   def index() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        //result.institution = Org.findByShortcode(params.shortcode)
         result.institution = contextService.getOrg()
-
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page";
-            response.sendError(401)
-            return;
-        }
-
-        // TODO: find by 'Licensee' AND 'Licensee_Consortial'
-        // ajax/lookup
-        // License.refdataFind()
-
-        result.isPublic = RefdataValue.getByValueAndCategory('Yes','YN')
-
-        result.licensee_role = RDStore.OR_LICENSEE
-        result.licensee_cons_role = RDStore.OR_LICENSEE_CONS
-        result.licensing_cons_role = RDStore.OR_LICENSING_CONSORTIUM
-
+        result.availableLicenses = controlledListService.getLicenses(params)
         result
   }
 
@@ -47,9 +29,8 @@ class LicenseCompareController extends AbstractDebugController {
   def compare(){
     log.debug("compare ${params}")
     def result = [:]
-    result.institution = Org.get(params.institution)
-
-    def licenses = params.list("selectedLicenses").collect{
+    result.institution = contextService.getOrg()
+    def licenses = params.list("availableLicenses").collect{
       License.get(it.toLong())
     }
     log.debug("IDS: ${licenses}")

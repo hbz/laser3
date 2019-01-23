@@ -133,21 +133,30 @@ class SubscriptionUpdateService {
 
     /**
      * Triggered from the Yoda menu
-     * Refactors the preceding/following subscriptions to the new link model - to reset, delete the database table
+     * Refactors the preceding/following subscriptions to the new link model
      */
-    void updateLinks() {
+    int updateLinks() {
+        int affected = 0
         def subsWithPrevious = Subscription.findAllByPreviousSubscriptionIsNotNull().collect { it -> [source:it.id,destination:it.previousSubscription.id] }
         subsWithPrevious.each { sub ->
-            log.debug(sub.source+" follows "+sub.destination)
-            Links link = new Links()
-            link.source = sub.source
-            link.destination = sub.destination
-            link.owner = Org.executeQuery('select o.org from OrgRole as o where o.roleType in :ownerRoles and o.sub in :context',[ownerRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER],context: [Subscription.get(sub.source),Subscription.get(sub.destination)]]).get(0)
-            link.objectType = Subscription.class.name
-            link.linkType = RDStore.LINKTYPE_FOLLOWS
-            if(!link.save(flush:true))
-                log.error("error with refactoring subscription link: ${link.errors}")
+            List<Links> linkList = Links.executeQuery('select l from Links as l where l.objectType = :subType and l.source = :source and l.destination = :destination and l.linkType = :linkType',[subType:Subscription.class.name,source:sub.source,destination:sub.destination,linkType:RDStore.LINKTYPE_FOLLOWS])
+            if(linkList.size() == 0) {
+                log.debug(sub.source+" follows "+sub.destination+", is being refactored")
+                Links link = new Links()
+                link.source = sub.source
+                link.destination = sub.destination
+                link.owner = Org.executeQuery('select o.org from OrgRole as o where o.roleType in :ownerRoles and o.sub in :context',[ownerRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER],context: [Subscription.get(sub.source),Subscription.get(sub.destination)]]).get(0)
+                link.objectType = Subscription.class.name
+                link.linkType = RDStore.LINKTYPE_FOLLOWS
+                if(!link.save(flush:true))
+                    log.error("error with refactoring subscription link: ${link.errors}")
+                affected++
+            }
+            else if(linkList.size() > 0) {
+                log.debug("Link already exists: ${sub.source} follows ${sub.destination} is/are link/s ##${linkList}")
+            }
         }
+        affected
     }
 
     /**
