@@ -1488,20 +1488,22 @@ class AjaxController extends AbstractDebugController {
             query_params,
             [max:params.iDisplayLength?:10,offset:params.iDisplayStart?:0]);
 
-      result.aaData = []
-      result.sEcho = params.sEcho
-      result.iTotalRecords = cq[0]
-      result.iTotalDisplayRecords = cq[0]
-
+    result.aaData = []
+    result.sEcho = params.sEcho
+    result.iTotalRecords = cq[0]
+    result.iTotalDisplayRecords = cq[0]
     def currOrg = genericOIDService.resolveOID(params.oid)
+    List<Person> contacts = Person.findAllByContactTypeAndTenant(RefdataValue.getByValueAndCategory('Personal contact','Person Contact Type'),currOrg)
+    LinkedHashMap personRoles = [:]
+    PersonRole.findAll().collect { prs ->
+      personRoles.put(prs.org,prs.prs)
+    }
       rq.each { it ->
         def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
-        def cQueryParams = [RefdataValue.getByValueAndCategory('Personal contact','Person Contact Type'),currOrg,rowobj]
-        def contacts = PersonRole.executeQuery(" select p from Person as p where p.contactType = ? and p.tenant = ? and ? in (select pr.org from PersonRole as pr where pr.prs = p) ",cQueryParams)
         int ctr = 0;
         LinkedHashMap row = [:]
         String name = rowobj["name"]
-        if(contacts)
+        if(personRoles.get(rowobj) && contacts.indexOf(personRoles.get(rowobj)) > -1)
           name += '<span data-tooltip="Persönlicher Kontakt vorhanden"><i class="address book icon"></i></span>'
         row["${ctr++}"] = name
         row["DT_RowId"] = "${rowobj.class.name}:${rowobj.id}"
