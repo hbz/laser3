@@ -11,10 +11,11 @@ class RDStore {
     static final OR_SUBSCRIPTION_CONSORTIA  = getRefdataValue('Subscription Consortia','Organisational Role')
     static final OR_SUBSCRIBER              = getRefdataValue('Subscriber','Organisational Role')
     static final OR_SUBSCRIBER_CONS         = getRefdataValue('Subscriber_Consortial','Organisational Role')
-    static final OR_TYPE_CONSORTIUM         = getRefdataValue('Consortium', 'OrgRoleType')
 
-    static final ORT_PROVIDER   = getRefdataValue('Provider', 'OrgRoleType')
-    static final ORT_AGENCY     = getRefdataValue('Agency', 'OrgRoleType')
+    static final OR_TYPE_CONSORTIUM         = getRefdataValue('Consortium', 'OrgRoleType')
+    static final OR_TYPE_INSTITUTION         = getRefdataValue('Institution', 'OrgRoleType')
+    static final OR_TYPE_PROVIDER   = getRefdataValue('Provider', 'OrgRoleType')
+    static final OR_TYPE_AGENCY     = getRefdataValue('Agency', 'OrgRoleType')
 
     static final SUBSCRIPTION_DELETED  = getRefdataValue('Deleted', 'Subscription Status')
     static final SUBSCRIPTION_CURRENT  = getRefdataValue('Current', 'Subscription Status')

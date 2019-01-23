@@ -120,8 +120,8 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
         status(nullable:true, blank:false)
         type(nullable:true, blank:false)
         impId(nullable:true, blank:false)
-        reference(nullable:true, blank:true)
-        sortableReference(nullable:true, blank:true)
+        reference(nullable:false, blank:false)
+        sortableReference(nullable:true, blank:true) // !! because otherwise, the beforeInsert() method which generates a value is not executed
         isPublic(nullable:true, blank:true)
         noticePeriod(nullable:true, blank:true)
         licenseUrl(nullable:true, blank:true)
