@@ -231,10 +231,15 @@ class FactService {
         supplier_id != null) {
 
       Calendar cal = Calendar.getInstance()
+      def (lastSubscriptionMonth, lastSubscriptionYear) = [cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR)]
+
       cal.setTimeInMillis(subscription.startDate.getTime())
       def (firstSubscriptionMonth, firstSubscriptionYear) = [cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR)]
-      cal.setTimeInMillis(subscription.endDate.getTime())
-      def (lastSubscriptionMonth, lastSubscriptionYear) = [cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR)]
+
+      if (subscription.endDate) {
+        cal.setTimeInMillis(subscription.endDate.getTime())
+        (lastSubscriptionMonth, lastSubscriptionYear) = [cal.get(Calendar.MONTH) + 1, cal.get(Calendar.YEAR)]
+      }
 
       def factList = getTotalUsageFactsForSub(org_id, supplier_id, subscription, title_id, true)
       if (factList.size == 0){
@@ -285,9 +290,12 @@ class FactService {
         ' from Fact as f' +
         ' where f.supplier.id=:supplierid and f.inst.id=:orgid'
         if (restrictToSubscriptionPeriod) {
-          hql += ' and f.factFrom >= :start and f.factTo <= :end'
+          hql += ' and f.factFrom >= :start'
           params['start'] = sub.startDate
-          params['end'] = sub.endDate
+          if (sub.endDate) {
+            hql += ' and f.factTo <= :end'
+            params['end'] = sub.endDate
+          }
         }
         if (title_id) {
           hql += ' and f.relatedTitle.id=:titleid'
@@ -395,7 +403,7 @@ class FactService {
   def totalUsageForSub(sub, factType, metric) {
     Fact.executeQuery(TOTAL_USAGE_FOR_SUB_IN_PERIOD, [
         start: sub.startDate,
-        end  : sub.endDate,
+        end  : sub.endDate ?: new Date().parse('yyyy', '9999'), // TODO Fix that hack
         sub  : sub,
         factType : factType,
         status : 'Deleted',
