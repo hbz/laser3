@@ -7,8 +7,10 @@
 -- erms-930
 -- 2019-01-23
 -- execute before startup / before applying changelog-20.groovy
-UPDATE public.license SET lic_ref = 'Name fehlt', lic_sortable_ref = 'name fehlt' WHERE lic_ref IS null;
+-- changeSet: 1548252520602-24
+-- UPDATE public.license SET lic_ref = 'Name fehlt', lic_sortable_ref = 'name fehlt' WHERE lic_ref IS null;
 
 -- 2019-01-23
 -- execute before startup / after applying changelog-20.groovy
-UPDATE property_definition SET pd_used_for_logic = false WHERE pd_used_for_logic IS null;
+-- changeSet: 1548252520602-25
+-- UPDATE property_definition SET pd_used_for_logic = false WHERE pd_used_for_logic IS null;

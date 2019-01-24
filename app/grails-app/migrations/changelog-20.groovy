@@ -150,6 +150,24 @@ databaseChangeLog = {
 		}
 	}
 
+	changeSet(author: "kloberd (manually)", id: "1548252520602-24") {
+		grailsChange {
+			change {
+				sql.execute("UPDATE public.license SET lic_ref = 'Name fehlt', lic_sortable_ref = 'name fehlt' WHERE lic_ref IS null")
+			}
+			confirm 'Updated Table Data'
+		}
+	}
+
+	changeSet(author: "kloberd (manually)", id: "1548252520602-25") {
+		grailsChange {
+			change {
+				sql.execute("UPDATE public.property_definition SET pd_used_for_logic = false WHERE pd_used_for_logic IS null")
+			}
+			confirm 'Updated Table Data'
+		}
+	}
+
 	/*
 	changeSet(author: "kloberd (generated)", id: "1548252520602-24") {
 		dropSequence(schemaName: "public", sequenceName: "access_point_data_id_seq")
