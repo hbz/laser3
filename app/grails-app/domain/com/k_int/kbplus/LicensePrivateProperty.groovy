@@ -10,8 +10,6 @@ import javax.persistence.Transient
 class LicensePrivateProperty extends PrivateProperty {
 
     @Transient
-    String paragraph
-    @Transient
     def grailsApplication
     @Transient
     def messageSource
@@ -20,6 +18,7 @@ class LicensePrivateProperty extends PrivateProperty {
 
     PropertyDefinition type
     License owner
+    String paragraph
 
     static mapping = {
         includes AbstractProperty.mapping

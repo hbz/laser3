@@ -823,6 +823,10 @@ class ApiReaderHelper {
             tmp.value           = (it.stringValue ?: (it.intValue ?: (it.decValue ?: (it.refValue?.value ?: (it.urlValue ?: (it.dateValue ?: null)))))) // RefdataValue
             tmp.note            = it.note
 
+            if (it instanceof LicensePrivateProperty) {
+                tmp.paragraph = it.paragraph
+            }
+
             if(it.type.tenant?.id == context.id) {
                 tmp.isPublic    = "No" // derived to substitute tentant
                 result << cleanUp(tmp, true, false)

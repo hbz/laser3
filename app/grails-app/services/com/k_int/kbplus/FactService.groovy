@@ -89,14 +89,28 @@ class FactService {
     def costPerUseMetric = preferedMetrics.findAll {
       existingMetrics.contains(it)
     }?.first()
-    def query = 'select sum(co.costInLocalCurrency) as lccost, sum(co.costInBillingCurrency) as bccost ' +
-        'from CostItem co where co.sub=:sub'
-    def totalCostRow = CostItem.executeQuery(query, [sub: subscription]).first()
+    def costsQuery = 'select sum(co.costInLocalCurrency) as lccost, sum(co.costInBillingCurrency) as bccost, ' +
+        'costItemElementConfiguration.value from CostItem co where co.sub=:sub and costItemElementConfiguration.value=:costType ' +
+        'group by costItemElementConfiguration.value'
+    def positiveCosts = CostItem.executeQuery(costsQuery, [sub: subscription, costType: 'positive'])
+    if (positiveCosts.empty){
+      log.debug('No positive CostItems found for this subscription')
+      return null
+    }
+    def totalCosts = positiveCosts.first()[0]
+    def negativeCosts = CostItem.executeQuery(costsQuery, [sub: subscription, costType: 'negative'])
+    if (! negativeCosts.empty){
+      totalCosts =  totalCosts - negativeCosts.first()[0]
+      if (totalCosts < 0){
+        log.debug('Total Costs < 0')
+        return null
+      }
+    }
     def totalUsageForLicense = totalUsageForSub(subscription, report, costPerUseMetric)
     def totalCostPerUse = []
-    if (totalCostRow[0] && totalUsageForLicense) {
+    if (totalCosts && totalUsageForLicense) {
       totalCostPerUse[0] = costPerUseMetric
-      totalCostPerUse[1] = totalCostRow[0] / Double.valueOf(totalUsageForLicense)
+      totalCostPerUse[1] = totalCosts / Double.valueOf(totalUsageForLicense)
     }
     totalCostPerUse
   }

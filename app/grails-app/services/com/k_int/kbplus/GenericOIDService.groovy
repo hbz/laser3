@@ -1,10 +1,13 @@
 package com.k_int.kbplus
 
+import groovy.transform.CompileStatic
+import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.codehaus.groovy.grails.commons.GrailsClass
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 class GenericOIDService {
 
-  def grailsApplication
+  GrailsApplication grailsApplication
 
   def resolveOID(oid) {
 
@@ -13,13 +16,13 @@ class GenericOIDService {
     if ( oid != null ) {
       def oid_components = oid.toString().split(':');
   
-      def domain_class=null;
+      GrailsClass domain_class
   
       if ( oid_components[0].startsWith("com.k_int") ) {
         domain_class = grailsApplication.getArtefact('Domain', oid_components[0])
       }
       else if ( oid_components[0].startsWith("de.laser") ) {
-        domain_class = grailsApplication.getArtefact('Domain', ${oid_components[0]})
+        domain_class = grailsApplication.getArtefact('Domain', oid_components[0])
       }
       else {
         domain_class = grailsApplication.getArtefact('Domain', "com.k_int.kbplus.${oid_components[0]}")
@@ -36,7 +39,7 @@ class GenericOIDService {
     GrailsHibernateUtil.unwrapIfProxy(result)
   }
 
-  def getOID(def object) {
+  String getOID(def object) {
     if (object) {
       return "${object.class.name}:${object.id}"
     }

@@ -441,6 +441,33 @@
                                 <div class="ui divider"></div>
                             </g:if>
                             <dl>
+                                <dt class="control-label">${message(code: 'default.usage.licenseGrid.header')}</dt>
+                                <dd>
+                                    <table class="ui la-table-small celled la-table-inCard table">
+                                        <thead>
+                                        <tr>
+                                            <th>${message(code: 'default.usage.reportType')}</th>
+                                            <g:each in="${l_x_axis_labels}" var="l">
+                                                <th>${l}</th>
+                                            </g:each>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <g:set var="counter" value="${0}"/>
+                                        <g:each in="${lusage}" var="v">
+                                            <tr>
+                                                <td>${l_y_axis_labels[counter++]}</td>
+                                                <g:each in="${v}" var="v2">
+                                                    <td>${v2}</td>
+                                                </g:each>
+                                            </tr>
+                                        </g:each>
+                                        </tbody>
+                                    </table>
+                                </dd>
+                            </dl>
+                            <div class="ui divider"></div>
+                            <dl>
                                 <dt class="control-label la-js-dont-hide-this-card">${message(code: 'default.usage.label')}</dt>
                                 <dd>
                                     <table class="ui la-table-small celled la-table-inCard table">
@@ -477,33 +504,6 @@
                                                             ${v2}
                                                         </laser:statsLink>
                                                     </td>
-                                                </g:each>
-                                            </tr>
-                                        </g:each>
-                                        </tbody>
-                                    </table>
-                                </dd>
-                            </dl>
-                            <div class="ui divider"></div>
-                            <dl>
-                                <dt class="control-label">${message(code: 'default.usage.licenseGrid.header')}</dt>
-                                <dd>
-                                    <table class="ui la-table-small celled la-table-inCard table">
-                                        <thead>
-                                        <tr>
-                                            <th>${message(code: 'default.usage.reportType')}</th>
-                                            <g:each in="${l_x_axis_labels}" var="l">
-                                                <th>${l}</th>
-                                            </g:each>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <g:set var="counter" value="${0}"/>
-                                        <g:each in="${lusage}" var="v">
-                                            <tr>
-                                                <td>${l_y_axis_labels[counter++]}</td>
-                                                <g:each in="${v}" var="v2">
-                                                    <td>${v2}</td>
                                                 </g:each>
                                             </tr>
                                         </g:each>

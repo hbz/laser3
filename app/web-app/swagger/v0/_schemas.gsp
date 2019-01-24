@@ -300,6 +300,8 @@
           type: string
         explanation: # mapping attr expl
           type: string
+        paragraph: # only if license preoperties
+          type: string
         name:
           type: string
         note:

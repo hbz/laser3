@@ -1,11 +1,13 @@
 package de.laser
 
 import grails.plugin.springsecurity.SpringSecurityUtils
+import groovy.transform.CompileStatic
+import org.codehaus.groovy.grails.commons.GrailsApplication
 
+@CompileStatic
 class YodaService {
 
-    def grailsApplication
-    def springSecurityService
+    GrailsApplication grailsApplication
 
     // gsp:
     // grailsApplication.mainContext.getBean("yodaService")
