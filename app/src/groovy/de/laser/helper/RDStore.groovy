@@ -1,8 +1,10 @@
 package de.laser.helper
 
 import com.k_int.kbplus.RefdataValue
+import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+@CompileStatic
 class RDStore {
 
     static final OR_LICENSING_CONSORTIUM    = getRefdataValue('Licensing Consortium', 'Organisational Role')
@@ -33,7 +35,7 @@ class RDStore {
     static final CIEC_NEGATIVE  = getRefdataValue('negative','Cost configuration')
     static final CIEC_NEUTRAL   = getRefdataValue('neutral','Cost configuration')
 
-    static getRefdataValue(String value, String category) {
-        GrailsHibernateUtil.unwrapIfProxy( RefdataValue.getByValueAndCategory(value,category))
+    static RefdataValue getRefdataValue(String value, String category) {
+        (RefdataValue) GrailsHibernateUtil.unwrapIfProxy( RefdataValue.getByValueAndCategory(value, category))
     }
 }

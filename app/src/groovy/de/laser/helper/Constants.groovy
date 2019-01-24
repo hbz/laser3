@@ -1,5 +1,8 @@
 package de.laser.helper
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 class Constants {
 
     static final HTTP_CREATED                = "CREATED" // 200
