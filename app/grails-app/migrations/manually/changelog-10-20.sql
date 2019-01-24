@@ -7,10 +7,15 @@
 -- erms-930
 -- 2019-01-23
 -- execute before startup / before applying changelog-20.groovy
--- changeSet: 1548252520602-24
 -- UPDATE public.license SET lic_ref = 'Name fehlt', lic_sortable_ref = 'name fehlt' WHERE lic_ref IS null;
 
 -- 2019-01-23
 -- execute before startup / after applying changelog-20.groovy
--- changeSet: 1548252520602-25
 -- UPDATE property_definition SET pd_used_for_logic = false WHERE pd_used_for_logic IS null;
+
+-- erms-934
+-- 2019-01-24
+-- execute before startup / after applying changelog-20.groovy
+UPDATE i10n_translation SET i10n_value_de = null WHERE i10n_value_de = 'null';
+UPDATE i10n_translation SET i10n_value_en = null WHERE i10n_value_en = 'null';
+UPDATE i10n_translation SET i10n_value_fr = null WHERE i10n_value_fr = 'null';
