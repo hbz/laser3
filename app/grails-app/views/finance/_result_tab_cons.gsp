@@ -189,20 +189,25 @@
     </g:else>
 </tbody>
     <tfoot>
+        <%
+            int colspan = 9
+            if(forSingleSubscription)
+                colspan = 8
+        %>
         <tr id="sumOfCosts_${i}">
-            <th colspan="9">
+            <th colspan="${colspan}">
 
             </th>
             <th>
                 ${message(code:'financials.sum.local')}<br>
                 ${message(code:'financials.sum.localAfterTax')}
             </th>
-            <th colspan="3">
+            <th colspan="5">
 
             </th>
         </tr>
         <tr>
-            <td colspan="9">
+            <td colspan="${colspan}">
 
             </td>
             <td class="la-exposed-bg">

@@ -532,10 +532,11 @@ class FinanceController extends AbstractDebugController {
             sheet.setAutobreaks(true)
             Row headerRow = sheet.createRow(0)
             headerRow.setHeightInPoints(16.75f)
-            ArrayList titles = [message(code: 'sidewide.number'), message(code: 'financials.invoice_number'), message(code: 'financials.order_number')]
+            ArrayList titles = [message(code: 'sidewide.number')]
             if(viewMode == "cons")
-                titles.addAll(["${message(code:'financials.newCosts.costParticipants')} (${message(code:'financials.isVisibleForSubscriber')})"])
-            titles.addAll([message(code: 'financials.newCosts.costTitle'), message(code: 'financials.newCosts.subscriptionHeader'), message(code: 'financials.costItemConfiguration'),
+                titles.addAll([message(code:'financials.newCosts.costParticipants'),message(code:'org.sortName.label'),message(code:'financials.isVisibleForSubscriber')])
+            titles.addAll([message(code: 'financials.newCosts.costTitle'), message(code: 'financials.forSubscription'), message(code:'subscription.startDate.label'),
+                           message(code: 'subscription.endDate.label'), message(code: 'financials.costItemConfiguration'),
                            message(code: 'package'), message(code: 'issueEntitlement.label'), message(code: 'financials.datePaid'), message(code: 'financials.dateFrom'),
                            message(code: 'financials.dateTo'), message(code: 'financials.addNew.costCategory'), message(code: 'financials.costItemStatus'),
                            message(code: 'financials.billingCurrency'),message(code: 'financials.costInBillingCurrency'),"EUR",message(code: 'financials.costInLocalCurrency'),
@@ -543,7 +544,8 @@ class FinanceController extends AbstractDebugController {
             if(["owner","cons"].indexOf(viewMode) > -1)
                 titles.addAll([message(code:'financials.billingCurrency'),message(code: 'financials.costInBillingCurrencyAfterTax'),"EUR",message(code: 'financials.costInLocalCurrencyAfterTax')])
             titles.addAll([message(code: 'financials.costItemElement'),message(code: 'financials.newCosts.description'),
-                           message(code: 'financials.newCosts.constsReferenceOn'), message(code: 'financials.budgetCode')])
+                           message(code: 'financials.newCosts.constsReferenceOn'), message(code: 'financials.budgetCode'),
+                           message(code: 'financials.invoice_number'), message(code: 'financials.order_number')])
             titles.eachWithIndex { titleName, int i ->
                 Cell cell = headerRow.createCell(i)
                 cell.setCellValue(titleName)
@@ -573,37 +575,43 @@ class FinanceController extends AbstractDebugController {
                     //sidewide number
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(rownum)
-                    //invoice number
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(ci?.invoice ? ci.invoice.invoiceNumber : "")
-                    //order number
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(ci?.order ? ci.order.orderNumber : "")
                     if(viewMode == "cons") {
                         if(ci.sub) {
                             List<Org> orgRoles = subscribers.get(ci.sub)
                             //participants (visible?)
-                            cell = row.createCell(cellnum++)
+                            Cell cellA = row.createCell(cellnum++)
+                            Cell cellB = row.createCell(cellnum++)
+                            String cellValueA = ""
+                            String cellValueB = ""
                             orgRoles.each { or ->
-                                String cellValue = or.getDesignation()
-                                if(ci.isVisibleForSubscriber)
-                                    cellValue += " (sichtbar)"
-                                cell.setCellValue(cellValue)
+                                cellValueA += or.name
+                                cellValueB += or.sortname
+                            }
+                            cellA.setCellValue(cellValueA)
+                            cellB.setCellValue(cellValueB)
+                            if(ci.isVisibleForSubscriber) {
+                                cell = row.createCell(cellnum++)
+                                cell.setCellValue("sichtbar für Teilnehmer")
                             }
                         }
                     }
                     //cost title
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci.costTitle ?: '')
-                    //subscription with running time
+                    //subscription
                     cell = row.createCell(cellnum++)
-                    String dateString = ""
                     if(ci.sub) {
-                        dateString = "${ci.sub.name} (${dateFormat.format(ci.sub.startDate)}"
-                        if(ci.sub.endDate)
-                            dateString += " - ${dateFormat.format(ci.sub.endDate)})"
+                        cell.setCellValue(ci.sub.name)
                     }
-                    cell.setCellValue(dateString)
+                    //dates from-to
+                    Cell fromCell = row.createCell(cellnum++)
+                    Cell toCell = row.createCell(cellnum++)
+                    if(ci.sub) {
+                        if(ci.sub.startDate)
+                            fromCell.setCellValue(dateFormat.format(ci.sub.startDate))
+                        else if(ci.sub.endDate)
+                            toCell.setCellValue(dateFormat.format(ci.sub.endDate))
+                    }
                     //cost sign
                     cell = row.createCell(cellnum++)
                     if(ci.costItemElementConfiguration) {
@@ -729,6 +737,12 @@ class FinanceController extends AbstractDebugController {
                     //budget codes
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(codes ? codes.toString() : '')
+                    //invoice number
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.invoice ? ci.invoice.invoiceNumber : "")
+                    //order number
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.order ? ci.order.orderNumber : "")
                     rownum++
                 }
                 rownum++
