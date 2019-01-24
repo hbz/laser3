@@ -110,6 +110,16 @@ class CacheService implements ApplicationContextAware {
         }
     }
 
+    def remove(def cache, String key) {
+
+        if (cache instanceof Cache) {
+            cache.remove(key)
+        }
+        else if (cache instanceof GrailsConcurrentMapCache) {
+            println " TODO -> IMPLEMENT GrailsConcurrentMapCache.remove()"
+        }
+    }
+
     def clear(def cache) {
 
         if (cache instanceof Cache) {
