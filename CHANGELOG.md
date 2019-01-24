@@ -9,6 +9,7 @@
 - improved excel export
 - improved property management
 - improved namespace and identifier management
+- improved profiler
 - added new event logging
 - added various paginations
 - various bugfixes
