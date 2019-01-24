@@ -176,12 +176,14 @@
                                                                 context: "${subscriptionInstance.class.name}:${subscriptionInstance.id}",
                                                                 link: link
                                                       ]}" />
-                                            <g:link class="ui icon negative button js-open-confirm-modal"
-                                                    data-confirm-term-content="${message(code:'subscription.details.confirmDeleteLink')}"
-                                                    data-confirm-term-how="delete"
-                                                    controller="ajax" action="delete" params='[cmd: "deleteLink", oid: "${link.class.name}:${link.id}"]'>
-                                                <i class="trash alternate icon"></i>
-                                            </g:link>
+                                            <g:if test="${editable}">
+                                                <g:link class="ui icon negative button js-open-confirm-modal"
+                                                        data-confirm-term-content="${message(code:'subscription.details.confirmDeleteLink')}"
+                                                        data-confirm-term-how="delete"
+                                                        controller="ajax" action="delete" params='[cmd: "deleteLink", oid: "${link.class.name}:${link.id}"]'>
+                                                    <i class="trash alternate icon"></i>
+                                                </g:link>
+                                            </g:if>
                                         </dd>
                                     </g:each>
                                 </dl>

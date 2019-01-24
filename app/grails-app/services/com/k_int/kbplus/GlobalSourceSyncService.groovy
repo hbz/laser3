@@ -1029,8 +1029,8 @@ class GlobalSourceSyncService {
           }
         }
 
-        if (record_timestamp.getTime() > max_timestamp) {
-          max_timestamp = record_timestamp.getTime()
+        if (record_timestamp?.getTime() > max_timestamp) {
+          max_timestamp = record_timestamp?.getTime()
           log.debug("Max timestamp is now ${record_timestamp}");
         }
 

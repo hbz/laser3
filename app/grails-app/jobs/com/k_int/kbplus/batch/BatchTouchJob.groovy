@@ -2,6 +2,7 @@ package com.k_int.kbplus.batch
 
 import com.k_int.kbplus.TitleInstance
 import com.k_int.kbplus.Package
+import de.laser.SystemEvent
 import de.laser.quartz.AbstractJob
 import org.hibernate.ScrollMode
 
@@ -20,6 +21,8 @@ class BatchTouchJob extends AbstractJob {
 
   def execute() {
     log.debug("BatchTouchJob::execute");
+
+      SystemEvent.createEvent('BATCH_TOUCH_JOB_START')
 
     //The following will only make changes to objects when required. If fields are populated they will skip
     //Make sure all classes have impIDs, as they are the key used for ES

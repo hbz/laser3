@@ -85,7 +85,7 @@
                         <g:if test="${prop.type.type == URL.toString()}">
                             <g:if test="${prop.value}">
                                 <span data-position="top right" data-tooltip="Diese URL aufrufen ..">
-                                    <a href="${prop.value}" target="_blank" class="ui icon blue button">
+                                    <a href="${prop.value}" target="_blank" class="ui icon blue button la-url-button">
                                         <i class="share square icon"></i>
                                     </a>
                                 </span>
@@ -99,7 +99,7 @@
                             <g:remoteLink class="js-gost"
                                 style="visibility: hidden"
                                 data-confirm-term-what="property"
-                                data-confirm-term-what-detail="${prop.type.name}"
+                                data-confirm-term-what-detail="${prop.type.getI10n('name')}"
                                 data-confirm-term-how="delete"
                                 controller="ajax" action="deletePrivateProperty"
                                 params='[propClass: prop.getClass(),ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", editable:"${editable}"]' id="${prop.id}"
