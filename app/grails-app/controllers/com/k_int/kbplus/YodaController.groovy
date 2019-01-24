@@ -153,7 +153,6 @@ class YodaController {
         result.byUriAndContext =
                 SystemProfiler.executeQuery("select sp.uri, org.id, avg(sp.ms) as ms, count(org.id) as count from SystemProfiler sp join sp.context as org group by sp.uri, org.id").sort{it[2]}.reverse()
 
-        println result.globalCountByUri
         result
     }
 

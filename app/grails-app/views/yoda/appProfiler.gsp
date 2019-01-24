@@ -42,7 +42,7 @@
             <tr>
                 <th>url</th>
                 <th>avg(sec)</th>
-                <th>count(*)</th>
+                <th>count(*) > ${de.laser.domain.SystemProfiler.THRESHOLD_MS} ms</th>
                 <th>context</th>
             </tr>
         </thead>
