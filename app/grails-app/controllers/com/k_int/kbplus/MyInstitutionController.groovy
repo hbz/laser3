@@ -3306,16 +3306,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-        result.propList =
-                PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
-                        defList: [PropertyDefinition.ORG_PROP],
-                ] // public properties
-                ) +
-                        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant = :tenant", [
-                                defList: [PropertyDefinition.ORG_PROP],
-                                tenant: contextService.getOrg()
-                        ]// private properties
-                        )
+        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
 
         if (params.selectedOrgs) {
             log.debug('remove orgs from consortia')
@@ -3332,23 +3323,21 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         def fsq = filterService.getOrgComboQuery(params, result.institution)
         def consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
 
+        def limit = [:]
+        if(params.exportXLS) {
+            params.remove("max")
+            params.remove("offset")
+        } else {
+            limit = [max: result.max, offset: result.offset]
+        }
         if (params.filterPropDef && consortiaMembers) {
             def tmpQueryParams           = [oids: consortiaMembers.collect{ it.id }]
             def tmpQuery                 = "select o FROM Org o WHERE o.id IN (:oids)"
             (tmpQuery, tmpQueryParams)   = propertyService.evalFilterQuery(params, tmpQuery, 'o', tmpQueryParams)
-            result.consortiaMembers      = Org.executeQuery( tmpQuery, tmpQueryParams, [max: result.max, offset: result.offset] )
+            result.consortiaMembers      = Org.executeQuery( tmpQuery, tmpQueryParams, limit )
             tmpQuery                     = "select o.id " + tmpQuery.minus("select o ")
             result.consortiaMembersCount = Org.executeQuery( tmpQuery, tmpQueryParams ).size()
         } else {
-            //very ugly hotfix for ERMS-875 as it is not general at all ...
-            def limit = [:]
-            if(!params.exportXLS) {
-                limit = [max: result.max, offset: result.offset]
-            }
-            else if(params.exportXLS) {
-                params.remove("max")
-                params.remove("offset")
-            }
             result.consortiaMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params << limit )
             def tmpQuery                 = "select o.id " + fsq.query.minus("select o ")
             result.consortiaMembersCount = Org.executeQuery( tmpQuery, fsq.queryParams).size()

@@ -1,13 +1,12 @@
 <!-- _copyEmailAddresses.gsp -->
-<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact" %>
+<%@ page import="com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore; com.k_int.kbplus.PersonRole; com.k_int.kbplus.Contact" %>
 <laser:serviceInjection />
 
 <semui:modal id="copyEmailaddresses_ajaxModal" text="${message(code:'menu.institutions.copy_emailaddresses')}" hideSubmitButton="true">
 
-    <g:set var="rdvEmail" value="${RefdataValue.getByValueAndCategory('E-Mail','ContactContentType')}"/>
-    <g:set var="rdvGeneralContactPrs" value="${RefdataValue.getByValueAndCategory('General contact person', 'Person Function')}"/>
-    <g:set var="rdvAllPersonFunctions" value="${PersonRole.getAllRefdataValues('Person Function')}"/>
-    <g:set var="emailAddressLists" value="new ArrayList()"/>
+    <g:set var="rdvEmail"               value="${RDStore.CCT_EMAIL}"/>
+    <g:set var="rdvGeneralContactPrs"   value="${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS}"/>
+    <g:set var="rdvAllPersonFunctions"  value="${PersonRole.getAllRefdataValues('Person Function')}"/>
 
     <div class="field">
         <label>Funktion</label>
@@ -19,12 +18,18 @@
                       value="${rdvGeneralContactPrs.id}"/>
     </div>
     <br><br>
+    %{--TextAreas für alle PersonFunctions anlegen und je nach Dropdownauswahl anzeigen--}%
     <g:each in="${rdvAllPersonFunctions}" var="prsFunction" status="counter">
-        <% allEmailAddresses = null; %>
+        <% allEmailAddresses = ""; %>
         <g:each in="${orgList}" var="org">
-            <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(prsFunction, org)}" var="person">
-                <g:each in ="${Contact.findAllByPrsAndContentType(person.getPrs(), rdvEmail)}" var="email">
-                    <% allEmailAddresses = (allEmailAddresses == null)? email?.content?.trim() + "; " : allEmailAddresses + email?.content?.trim() + "; "; %>
+            <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(prsFunction, org).prs}" var="person">
+                <g:each in ="${Contact.findAllByPrsAndContentType(person, rdvEmail)}" var="email">
+                    <% allEmailAddresses += email?.content?.trim() + "; "%>
+                    <% allEmailAddresses += org.name; %>
+                    <% allEmailAddresses += person.first_name; %>
+                    <% allEmailAddresses += person.last_name; %>
+                    <% allEmailAddresses += prsFunction; %>
+                    <% allEmailAddresses += "\n"; %>
                 </g:each>
             </g:each>
         </g:each>

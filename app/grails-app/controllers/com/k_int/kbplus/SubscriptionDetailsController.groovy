@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
+import de.laser.SubscriptionsQueryService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
@@ -48,6 +49,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
     def renewals_reversemap = ['subject': 'subject', 'provider': 'provid', 'pkgname': 'tokname']
     def accessService
     def filterService
+    def propertyService
     def factService
     def docstoreService
     def ESWrapperService
@@ -682,25 +684,46 @@ class SubscriptionDetailsController extends AbstractDebugController {
         if (!result) {
             response.sendError(401); return
         }
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
 
         //if (params.showDeleted == 'Y') {
 
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
                 result.subscriptionInstance,
-                RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+                RDStore.SUBSCRIPTION_DELETED
         )
-
+        //Sortieren
         result.validSubChilds = validSubChilds.sort { a, b ->
             def sa = a.getSubscriber()
             def sb = b.getSubscriber()
             (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
         }
+//        ---------- NEU FILTERN --------------
+        def filteredOrgIds = getOrgsForFilter().collect {it.id}
+        def filteredOrgIds_neu = getOrgsForFilter_neu().collect {it.id}
+        print "Orig: "+filteredOrgIds
+        print "Neu:  "+filteredOrgIds_neu
+        result.filteredSubChilds = new ArrayList<Subscription>()
+        result.validSubChilds.each { sub ->
+            List<Org> subscr = sub.getAllSubscribers()
+            def filteredSubscr = []
+            subscr.each { Org subOrg ->
+                if (filteredOrgIds.contains(subOrg.id)) { filteredSubscr << subOrg }
+            }
+            if (filteredSubscr) {
+                result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
+            }
+        }
+//        ---------- NEU FILTERN --------------
 
-        def deletedSubChilds = Subscription.findAllByInstanceOfAndStatus(
-                result.subscriptionInstance,
-                RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
-        )
-        result.deletedSubChilds = deletedSubChilds
+
+//        def deletedSubChilds = Subscription.findAllByInstanceOfAndStatus(
+//                result.subscriptionInstance,
+//                RDStore.SUBSCRIPTION_DELETED
+//          )
+//        result.deletedSubChilds = deletedSubChilds
         //}
         //else {
         //    result.subscriptionChildren = Subscription.executeQuery(
@@ -710,19 +733,13 @@ class SubscriptionDetailsController extends AbstractDebugController {
         //}
 
         result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RDStore.SUBSCRIPTION_DELETED)
 
         if (params.exportXLS == 'yes') {
-
             def orgs = []
-
-
             validSubChilds.each { subChild ->
-
                subChild.getAllSubscribers().each { subscr ->
-
                    def org = [:]
-
                    org.name = subscr.name
                    org.sortname = subscr.sortname
                    org.shortname = subscr.shortname
@@ -736,7 +753,6 @@ class SubscriptionDetailsController extends AbstractDebugController {
                    org.status = subChild.status
                    org.customProperties = subscr.customProperties
                    org.privateProperties = subscr.privateProperties
-
                    orgs << org
                }
            }
@@ -748,6 +764,39 @@ class SubscriptionDetailsController extends AbstractDebugController {
         }
 
         result
+    }
+    private Org[] getOrgsForFilter() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def resultOrgs
+        def tmpParams = params.clone()
+        tmpParams.remove("max")
+        tmpParams.remove("offset")
+        def fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
+        def consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
+
+        if (tmpParams.filterPropDef && consortiaMembers) {
+            def tmpQueryParams           = [oids: consortiaMembers.collect{ it.id }]
+            def tmpQuery                 = "select o FROM Org o WHERE o.id IN (:oids)"
+            (tmpQuery, tmpQueryParams)   = propertyService.evalFilterQuery(tmpParams, tmpQuery, 'o', tmpQueryParams)
+            resultOrgs      = Org.executeQuery( tmpQuery, tmpQueryParams, [:] )
+        } else {
+            resultOrgs      = Org.executeQuery(fsq.query, fsq.queryParams, tmpParams )
+        }
+        resultOrgs
+    }
+    private Org[] getOrgsForFilter_neu() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        def resultOrgs
+        def tmpParams = params.clone()
+        tmpParams.remove("max")
+        tmpParams.remove("offset")
+        def fsq = filterService.getOrgComboQuery_retMap(tmpParams, result.institution)
+
+        if (tmpParams.filterPropDef) {
+            fsq   = propertyService.evalFilterQuery_retMap(tmpParams, fsq.query, 'o', fsq.queryParams)
+        }
+        resultOrgs = Org.executeQuery(fsq.query, fsq.queryParams, tmpParams)
+        resultOrgs
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')

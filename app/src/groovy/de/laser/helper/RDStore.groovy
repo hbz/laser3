@@ -11,10 +11,12 @@ class RDStore {
     static final OR_SUBSCRIPTION_CONSORTIA  = getRefdataValue('Subscription Consortia','Organisational Role')
     static final OR_SUBSCRIBER              = getRefdataValue('Subscriber','Organisational Role')
     static final OR_SUBSCRIBER_CONS         = getRefdataValue('Subscriber_Consortial','Organisational Role')
-    static final OR_TYPE_CONSORTIUM         = getRefdataValue('Consortium', 'OrgRoleType')
 
-    static final ORT_PROVIDER   = getRefdataValue('Provider', 'OrgRoleType')
-    static final ORT_AGENCY     = getRefdataValue('Agency', 'OrgRoleType')
+    static final ORT_TYPE_CONSORTIUM        = getRefdataValue('Consortium', 'OrgRoleType')
+    static final ORT_PROVIDER               = getRefdataValue('Provider', 'OrgRoleType')
+    static final ORT_AGENCY                 = getRefdataValue('Agency', 'OrgRoleType')
+
+    static final O_DELETED           = getRefdataValue('Deleted', 'OrgStatus')
 
     static final SUBSCRIPTION_DELETED  = getRefdataValue('Deleted', 'Subscription Status')
     static final SUBSCRIPTION_CURRENT  = getRefdataValue('Current', 'Subscription Status')
@@ -29,6 +31,10 @@ class RDStore {
     static final CIEC_POSITIVE  = getRefdataValue('positive','Cost configuration')
     static final CIEC_NEGATIVE  = getRefdataValue('negative','Cost configuration')
     static final CIEC_NEUTRAL   = getRefdataValue('neutral','Cost configuration')
+
+    static final PRS_FUNC_GENERAL_CONTACT_PRS = getRefdataValue('General contact person', 'Person Function')
+    static final CCT_EMAIL =                    getRefdataValue('E-Mail','ContactContentType')
+    static final PRS_RESP_SPEC_SUB_EDITOR =     getRefdataValue('Specific subscription editor', 'Person Responsibility')
 
     static getRefdataValue(String value, String category) {
         GrailsHibernateUtil.unwrapIfProxy( RefdataValue.getByValueAndCategory(value,category))

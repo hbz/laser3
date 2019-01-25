@@ -16,6 +16,12 @@ class PropertyService {
         [query.join(" "), qry_params]
     }
 
+    def evalFilterQuery_retMap(params, String base_qry, hqlVar, Map base_qry_params) {
+        def query
+        def queryParams
+        (query, queryParams) = evalFilterQuery(params, base_qry, hqlVar, base_qry_params)
+        [query: query, queryParams: queryParams]
+    }
     def evalFilterQuery(params, List<String> base_qry, hqlVar, Map base_qry_params) {
         def order_by
         for (int i = 0; i<base_qry.size(); i++) {

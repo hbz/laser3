@@ -3,6 +3,7 @@ package de.laser
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.UserSettings
 import de.laser.helper.EhcacheWrapper
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.web.util.WebUtils
 
 class ContextService {
@@ -23,7 +24,8 @@ class ContextService {
     def getOrg() {
         def session = WebUtils.retrieveGrailsWebRequest().getSession()
         def context = session.getAttribute('contextOrg') ?: getUser()?.getSettingsValue(UserSettings.KEYS.DASHBOARD)
-        context?.refresh()
+//        context?.refresh()
+        GrailsHibernateUtil.unwrapIfProxy(context) // fix: unwrap proxy
     }
 
     def getUser() {
