@@ -24,12 +24,9 @@
         <g:each in="${orgList}" var="org">
             <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(prsFunction, org).prs}" var="person">
                 <g:each in ="${Contact.findAllByPrsAndContentType(person, rdvEmail)}" var="email">
-                    <% allEmailAddresses += email?.content?.trim() + "; "%>
-                    <% allEmailAddresses += org.name; %>
-                    <% allEmailAddresses += person.first_name; %>
-                    <% allEmailAddresses += person.last_name; %>
-                    <% allEmailAddresses += prsFunction; %>
-                    <% allEmailAddresses += "\n"; %>
+                    <g:if test="${(person?.isPublic?.value=='Yes') || (person?.isPublic?.value=='No' && person?.tenant?.id == contextService.getOrg()?.id)}">
+                        <% allEmailAddresses += email?.content?.trim() + "; "%>
+                    </g:if>
                 </g:each>
             </g:each>
         </g:each>
