@@ -1,7 +1,6 @@
 package de.laser
 
 import groovy.util.logging.Log4j
-
 import javax.persistence.Transient
 
 @Log4j
@@ -32,16 +31,16 @@ class AuditConfig {
     }
 
     static addConfig(Object obj) {
-        addConfig(obj, COMPLETE_OBJECT)
+        addConfig(obj, AuditConfig.COMPLETE_OBJECT)
     }
-    static getConfig(Object obj) {
-        getConfig(obj, COMPLETE_OBJECT)
+    static AuditConfig getConfig(Object obj) {
+        getConfig(obj, AuditConfig.COMPLETE_OBJECT)
     }
-    static removeConfig(Object obj) {
-        removeConfig(obj, COMPLETE_OBJECT)
+    static void removeConfig(Object obj) {
+        removeConfig(obj, AuditConfig.COMPLETE_OBJECT)
     }
 
-    static addConfig(Object obj, String field) {
+    static void addConfig(Object obj, String field) {
         new AuditConfig (
             referenceId: obj.getId(),
             referenceClass: obj.getClass().name,
@@ -49,15 +48,15 @@ class AuditConfig {
         ).save(flush: true)
     }
 
-    static getConfig(Object obj, String field) {
-        AuditConfig.findAllWhere(
+    static AuditConfig getConfig(Object obj, String field) {
+        AuditConfig.findWhere(
             referenceId: obj.getId(),
             referenceClass: obj.getClass().name,
             referenceField: field
         )
     }
 
-    static removeConfig(Object obj, String field) {
+    static void removeConfig(Object obj, String field) {
         AuditConfig.findAllWhere(
                 referenceId: obj.getId(),
                 referenceClass: obj.getClass().name,
@@ -65,7 +64,7 @@ class AuditConfig {
         ).each{ it.delete() }
     }
 
-    static removeAllConfigs(Object obj) {
+    static void removeAllConfigs(Object obj) {
         AuditConfig.findAllWhere(
                 referenceId: obj.getId(),
                 referenceClass: obj.getClass().name

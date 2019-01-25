@@ -1,4 +1,26 @@
 
+0.13
+
+- reworked and improved finance handling
+- added cost item configurations for improved calculations
+- added user based reminder configuration
+- reworked and improved laser-api
+- reworked public gasco view
+- improved excel export
+- improved property management
+- improved namespace and identifier management
+- improved profiler
+- added new event logging
+- added various paginations
+- various bugfixes
+
+0.12.3
+
+- fixed usage data processing
+- fixed presentation of property type url
+- minor ui improvement
+- added debug information
+
 0.12.2
 
 - reactivated usage and statistics

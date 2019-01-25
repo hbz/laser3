@@ -45,7 +45,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
   String cancellationAllowances
 
   Subscription instanceOf
-  Subscription previousSubscription
+  Subscription previousSubscription //deleted as ERMS-800
 
   // If a subscription is slaved then any changes to instanceOf will automatically be applied to this subscription
   RefdataValue isSlaved // RefdataCategory 'YN'
@@ -109,7 +109,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
         manualRenewalDate       column:'sub_manual_renewal_date'
         manualCancellationDate  column:'sub_manual_cancellation_date'
         instanceOf              column:'sub_parent_sub_fk', index:'sub_parent_idx'
-        previousSubscription    column:'sub_previous_subscription_fk'
+        previousSubscription    column:'sub_previous_subscription_fk' //-> see Links, deleted as ERMS-800
         isSlaved        column:'sub_is_slaved'
         noticePeriod    column:'sub_notice_period'
         isPublic        column:'sub_is_public'
@@ -129,7 +129,7 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
         manualRenewalDate(nullable:true, blank:false)
         manualCancellationDate(nullable:true, blank:false)
         instanceOf(nullable:true, blank:false)
-        previousSubscription(nullable:true, blank:false)
+        previousSubscription(nullable:true, blank:false) //-> see Links, deleted as ERMS-800
         isSlaved(nullable:true, blank:false)
         noticePeriod(nullable:true, blank:true)
         isPublic(nullable:true, blank:true)
@@ -246,6 +246,15 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
             }
         }
         result = result.sort {it.name}
+    }
+
+    Subscription getCalculatedPrevious() {
+        Links match = Links.findWhere(
+                source: this.id,
+                objectType: Subscription.class.name,
+                linkType: RDStore.LINKTYPE_FOLLOWS
+        )
+        return match ? Subscription.get(match?.destination) : null
     }
 
     def isEditableBy(user) {

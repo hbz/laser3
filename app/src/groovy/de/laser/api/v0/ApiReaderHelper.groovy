@@ -1,6 +1,7 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
+import de.laser.api.v0.entities.*
 import de.laser.helper.Constants
 import groovy.util.logging.Log4j
 
@@ -112,19 +113,20 @@ class ApiReaderHelper {
     }
 
     static resolveLicenseStub(License lic, Org context) {
+        resolveLicenseStub(lic, context, false)
+    }
+
+    static resolveLicenseStub(License lic, Org context, hasAccess) {
         def result = [:]
-        def hasAccess = false
 
         if (!lic) {
             return null
         }
 
-        lic.getOrgLinks().each { orgRole ->
-            // TODO check orgRole.roleType
-            if (orgRole.getOrg().id == context?.id) {
-                hasAccess = true
-            }
+        if (! hasAccess) {
+            hasAccess = ApiLicense.calculateAccess(lic, context, hasAccess)
         }
+
         if (hasAccess) {
             result.globalUID    = lic.globalUID
             result.impId        = lic.impId
@@ -200,19 +202,20 @@ class ApiReaderHelper {
      * @return MAP | Constants.HTTP_FORBIDDEN
      */
     static resolveSubscriptionStub(Subscription sub, Org context) {
+        resolveSubscriptionStub(sub, context, false)
+    }
+
+    static resolveSubscriptionStub(Subscription sub, Org context, boolean hasAccess) {
         def result = [:]
-        def hasAccess = false
 
         if (!sub) {
             return null
         }
 
-        sub.getOrgRelations().each { orgRole ->
-            // TODO check orgRole.roleType
-            if (orgRole.getOrg().id == context?.id) {
-                hasAccess = true
-            }
+        if (! hasAccess) {
+            hasAccess = ApiSubscription.calculateAccess(sub, context, hasAccess)
         }
+
         if (hasAccess) {
             result.globalUID    = sub.globalUID
             result.name         = sub.name
@@ -819,6 +822,10 @@ class ApiReaderHelper {
             //tmp.tenant          = resolveOrganisationStub(it.tenant, context) // com.k_int.kbplus.Org
             tmp.value           = (it.stringValue ?: (it.intValue ?: (it.decValue ?: (it.refValue?.value ?: (it.urlValue ?: (it.dateValue ?: null)))))) // RefdataValue
             tmp.note            = it.note
+
+            if (it instanceof LicensePrivateProperty) {
+                tmp.paragraph = it.paragraph
+            }
 
             if(it.type.tenant?.id == context.id) {
                 tmp.isPublic    = "No" // derived to substitute tentant

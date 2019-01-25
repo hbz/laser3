@@ -7,6 +7,9 @@ databaseChangeLog = {
     // postgresql migration
 	include file: 'changelog-0.groovy'
 
-	// v0.12
-	include file: 'changelog-10.groovy'
+	include file: 'changelog-10.groovy'		// v0.12
+
+	include file: 'changelog-20.groovy'		// v0.13
+
+	include file: 'changelog-20-qa.groovy' 	// v0.13 @ QA only
 }

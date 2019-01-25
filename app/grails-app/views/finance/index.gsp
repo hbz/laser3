@@ -360,8 +360,14 @@
                     break;
                     case 'CONS':
                     case 'CONS_AT_SUBSCR':
-                        colspan1 = 6;
-                        colspan2 = 4;
+                        <g:if test="${inSubMode}">
+                            colspan1 = 5;
+                            colspan2 = 4;
+                        </g:if>
+                        <g:else>
+                            colspan1 = 6;
+                            colspan2 = 4;
+                        </g:else>
                     break;
                     case 'SUBSCR':
                         colspan1 = 2;

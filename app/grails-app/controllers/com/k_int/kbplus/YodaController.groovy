@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.SystemEvent
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
 import grails.converters.JSON
@@ -8,7 +9,6 @@ import grails.util.Holders
 import grails.web.Action
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
-import org.quartz.TriggerKey
 import org.quartz.impl.matchers.GroupMatcher
 
 import java.lang.reflect.Method
@@ -26,7 +26,7 @@ class YodaController {
     def globalSourceSyncService
     def contextService
     def dashboardDueDatesService
-    def cronjobUpdateService
+    def subscriptionUpdateService
     def executorService
     def quartzScheduler
 
@@ -140,9 +140,16 @@ class YodaController {
     def appProfiler() {
         def result = [:]
 
+        result.globalCountByUri = [:]
+
+        SystemProfiler.executeQuery(
+        "select sp.uri, sp.ms as count from SystemProfiler sp where sp.context is null and sp.params is null"
+        ).each { it ->
+            result.globalCountByUri["${it[0]}"] = it[1]
+        }
+
         result.byUri =
-                //SystemProfiler.executeQuery("select sp, avg(sp.ms) as ms, count(*), sp.id from SystemProfiler sp group by sp.uri").sort{it[1]}.reverse()
-                SystemProfiler.executeQuery("select sp.uri, avg(sp.ms) as ms, count(sp.id) as count from SystemProfiler sp group by sp.uri").sort{it[1]}.reverse()
+                SystemProfiler.executeQuery("select sp.uri, avg(sp.ms) as ms, count(sp.id) as count from SystemProfiler sp where sp.context is not null group by sp.uri").sort{it[1]}.reverse()
         result.byUriAndContext =
                 SystemProfiler.executeQuery("select sp.uri, org.id, avg(sp.ms) as ms, count(org.id) as count from SystemProfiler sp join sp.context as org group by sp.uri, org.id").sort{it[2]}.reverse()
 
@@ -253,7 +260,11 @@ class YodaController {
         if (ftupdate_running == false) {
             try {
                 ftupdate_running = true
+                // TODO: remove due SystemEvent
                 new EventLog(event:'kbplus.fullReset',message:'Full Reset ES Start',tstp:new Date(System.currentTimeMillis())).save(flush:true)
+
+                SystemEvent.createEvent('YODA_ES_RESET_START')
+
                 log.debug("Delete all existing FT Control entries");
                 FTControl.withTransaction {
                     FTControl.executeUpdate("delete FTControl c")
@@ -508,7 +519,23 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def subscriptionCheck(){
         flash.message = "Lizenzen werden upgedatet"
-        cronjobUpdateService.subscriptionCheck()
+        subscriptionUpdateService.subscriptionCheck()
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_YODA'])
+    def updateLinks(){
+        int affected = subscriptionUpdateService.updateLinks()
+        flash.message = "Es wurden ${affected} Vor-/Nachfolgebeziehungen neu verknüpft"
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_YODA'])
+    def startDateCheck(){
+        if(subscriptionUpdateService.startDateCheck())
+            flash.message = "Lizenzen ohne Startdatum verlieren ihren Status ..."
+        else
+            flash.message = "Lizenzen ohne Startdatum haben bereits ihren Status verloren!"
         redirect(url: request.getHeader('referer'))
     }
 

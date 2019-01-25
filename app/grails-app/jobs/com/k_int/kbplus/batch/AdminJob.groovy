@@ -1,5 +1,6 @@
 package com.k_int.kbplus.batch
 
+import de.laser.SystemEvent
 import de.laser.quartz.AbstractJob
 
 class AdminJob extends AbstractJob {
@@ -28,6 +29,8 @@ class AdminJob extends AbstractJob {
         log.debug("Execute::AdminJob");
         if ( grailsApplication.config.hbzMaster == true  && grailsApplication.config.AdminReminderJobActiv == true) {
             log.debug("This server is marked as hbz master");
+            SystemEvent.createEvent('ADM_JOB_START')
+
             AdminReminderService.AdminReminder();
         }
         else {

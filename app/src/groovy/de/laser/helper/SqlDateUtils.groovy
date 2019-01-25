@@ -1,9 +1,12 @@
 package de.laser.helper
 
+import groovy.transform.CompileStatic
+
 import java.text.SimpleDateFormat
 import java.sql.Date
 import java.sql.Timestamp
 
+@CompileStatic
 class SqlDateUtils {
 
     // ist getestet

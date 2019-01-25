@@ -9,6 +9,7 @@ class PendingChangeController extends AbstractDebugController {
     def genericOIDService
     def pendingChangeService
     def executorWrapperService
+    def contextService
 
     @Secured(['ROLE_USER'])
     def accept() {

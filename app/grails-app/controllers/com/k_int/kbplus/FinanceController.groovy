@@ -6,15 +6,18 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.converters.JSON;
 import grails.plugin.springsecurity.annotation.Secured
-import org.apache.poi.hssf.usermodel.HSSFSheet
-import org.apache.poi.hssf.usermodel.HSSFWorkbook
+import org.apache.poi.ss.usermodel.FillPatternType
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Cell
+import org.apache.poi.xssf.streaming.SXSSFSheet
+import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.apache.poi.xssf.usermodel.XSSFCellStyle
+import org.apache.poi.xssf.usermodel.XSSFColor
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.springframework.context.i18n.LocaleContextHolder
+
 import java.text.SimpleDateFormat
-import org.springframework.orm.hibernate3.HibernateQueryException
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class FinanceController extends AbstractDebugController {
@@ -23,6 +26,7 @@ class FinanceController extends AbstractDebugController {
     def accessService
     def contextService
     def genericOIDService
+    def navigationGenerationService
 
     private final def ci_count        = 'select count(distinct ci.id) from CostItem as ci '
     private final def ci_select       = 'select distinct ci from CostItem as ci '
@@ -86,8 +90,10 @@ class FinanceController extends AbstractDebugController {
 
             result.fixedSubscription = params.int('sub')? Subscription.get(params.sub) : null
 
-            result.navPrevSubscription = result.fixedSubscription.previousSubscription ?: null
-            result.navNextSubscription = Subscription.findByPreviousSubscription(result.fixedSubscription) ?: null
+
+            LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.fixedSubscription.id)
+            result.navPrevSubscription = links.prevLink
+            result.navNextSubscription = links.nextLink
 
             if (! result.fixedSubscription) {
                 log.error("Financials in FIXED subscription mode, sent incorrect subscription ID: ${params?.sub}")
@@ -255,7 +261,7 @@ class FinanceController extends AbstractDebugController {
           result.tab = params.tab
       }
       else if(!params.tab) {
-          if(result.queryMode == MODE_CONS)
+          if(result.queryMode == MODE_CONS && params.view == "cons")
               result.tab = 'sc'
       }
 
@@ -464,14 +470,16 @@ class FinanceController extends AbstractDebugController {
                 tmp = financialData(result,params,user,MODE_SUBSCR)
                 result.cost_item_tabs["subscr"] = tmp.cost_items
             }
-            def workbook = processFinancialXLS(result) //use always header, no batch processing intended
+            def workbook = processFinancialXLSX(result) //use always header, no batch processing intended
 
             def filename = result.institution.name
-            response.setHeader("Content-disposition", "attachment; filename=\"${filename}_financialExport.xls\"")
-            response.contentType = "application/vnd.ms-excel"
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}_financialExport.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             try {
                 workbook.write(response.outputStream)
                 response.outputStream.flush()
+                response.outputStream.close()
+                workbook.dispose()
             }
             catch (IOException e) {
                 log.error("A request was started before the started one was terminated")
@@ -479,13 +487,35 @@ class FinanceController extends AbstractDebugController {
     }
 
     /**
-     * Make a XLS export of cost item results
+     * Make a XLSX export of cost item results
      * @param result - passed from index
      * @return
      */
-    def private processFinancialXLS(result) {
+    def private processFinancialXLSX(result) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(message(code: 'default.date.format.notime', default: 'dd.MM.yyyy'))
-        HSSFWorkbook wb = new HSSFWorkbook()
+        XSSFWorkbook workbook = new XSSFWorkbook()
+        LinkedHashMap<Subscription,List<Org>> subscribers = [:]
+        LinkedHashMap costItemGroups = [:]
+        OrgRole.findAllByRoleType(RDStore.OR_SUBSCRIBER_CONS).each { it ->
+            List<Org> orgs = subscribers.get(it.sub)
+            if(orgs == null)
+                orgs = [it.org]
+            else orgs.add(it.org)
+            subscribers.put(it.sub,orgs)
+        }
+        Map<RefdataValue, XSSFCellStyle> cellStyleMap = [:]
+        XSSFCellStyle csPositive = workbook.createCellStyle()
+        csPositive.setFillForegroundColor(new XSSFColor(new java.awt.Color(198,239,206)))
+        csPositive.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+        XSSFCellStyle csNegative = workbook.createCellStyle()
+        csNegative.setFillForegroundColor(new XSSFColor(new java.awt.Color(255,199,206)))
+        csNegative.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+        XSSFCellStyle csNeutral = workbook.createCellStyle()
+        csNeutral.setFillForegroundColor(new XSSFColor(new java.awt.Color(255,235,156)))
+        csNeutral.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+        SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50)
+        wb.setCompressTempFiles(true)
+        CostItemGroup.findAll().each{ cig -> costItemGroups.put(cig.costItem,cig.budgetCode) }
         result.cost_item_tabs.entrySet().each { cit ->
             String sheettitle
             String viewMode = cit.getKey()
@@ -497,14 +527,16 @@ class FinanceController extends AbstractDebugController {
                 case "subscr": sheettitle = message(code:'financials.header.subscriptionCosts')
                 break
             }
-            HSSFSheet sheet = wb.createSheet(sheettitle)
+            SXSSFSheet sheet = wb.createSheet(sheettitle)
+            sheet.flushRows(10)
             sheet.setAutobreaks(true)
             Row headerRow = sheet.createRow(0)
             headerRow.setHeightInPoints(16.75f)
-            ArrayList titles = [message(code: 'sidewide.number'), message(code: 'financials.invoice_number'), message(code: 'financials.order_number')]
+            ArrayList titles = [message(code: 'sidewide.number')]
             if(viewMode == "cons")
-                titles.addAll(["${message(code:'financials.newCosts.costParticipants')} (${message(code:'financials.isVisibleForSubscriber')})"])
-            titles.addAll([message(code: 'financials.newCosts.costTitle'), message(code: 'financials.newCosts.subscriptionHeader'),
+                titles.addAll([message(code:'financials.newCosts.costParticipants'),message(code:'org.sortName.label'),message(code:'financials.isVisibleForSubscriber')])
+            titles.addAll([message(code: 'financials.newCosts.costTitle'), message(code: 'financials.forSubscription'), message(code:'subscription.startDate.label'),
+                           message(code: 'subscription.endDate.label'), message(code: 'financials.costItemConfiguration'),
                            message(code: 'package'), message(code: 'issueEntitlement.label'), message(code: 'financials.datePaid'), message(code: 'financials.dateFrom'),
                            message(code: 'financials.dateTo'), message(code: 'financials.addNew.costCategory'), message(code: 'financials.costItemStatus'),
                            message(code: 'financials.billingCurrency'),message(code: 'financials.costInBillingCurrency'),"EUR",message(code: 'financials.costInLocalCurrency'),
@@ -512,7 +544,8 @@ class FinanceController extends AbstractDebugController {
             if(["owner","cons"].indexOf(viewMode) > -1)
                 titles.addAll([message(code:'financials.billingCurrency'),message(code: 'financials.costInBillingCurrencyAfterTax'),"EUR",message(code: 'financials.costInLocalCurrencyAfterTax')])
             titles.addAll([message(code: 'financials.costItemElement'),message(code: 'financials.newCosts.description'),
-                           message(code: 'financials.newCosts.constsReferenceOn'), message(code: 'financials.budgetCode')])
+                           message(code: 'financials.newCosts.constsReferenceOn'), message(code: 'financials.budgetCode'),
+                           message(code: 'financials.invoice_number'), message(code: 'financials.order_number')])
             titles.eachWithIndex { titleName, int i ->
                 Cell cell = headerRow.createCell(i)
                 cell.setCellValue(titleName)
@@ -533,7 +566,7 @@ class FinanceController extends AbstractDebugController {
             HashSet<String> currencies = new HashSet<String>()
             if(cit.getValue().size() > 0) {
                 cit.getValue().each { ci ->
-                    def codes = CostItemGroup.findAllByCostItem(ci).collect { it?.budgetCode?.value }
+                    def codes = costItemGroups.get(ci)
                     def start_date   = ci.startDate ? dateFormat.format(ci?.startDate) : ''
                     def end_date     = ci.endDate ? dateFormat.format(ci?.endDate) : ''
                     def paid_date    = ci.datePaid ? dateFormat.format(ci?.datePaid) : ''
@@ -542,37 +575,50 @@ class FinanceController extends AbstractDebugController {
                     //sidewide number
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(rownum)
-                    //invoice number
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(ci?.invoice ? ci.invoice.invoiceNumber : "")
-                    //order number
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(ci?.order ? ci.order.orderNumber : "")
                     if(viewMode == "cons") {
                         if(ci.sub) {
-                            def orgRoles = OrgRole.findBySubAndRoleType(ci.sub,RDStore.OR_SUBSCRIBER_CONS)
+                            List<Org> orgRoles = subscribers.get(ci.sub)
                             //participants (visible?)
-                            cell = row.createCell(cellnum++)
+                            Cell cellA = row.createCell(cellnum++)
+                            Cell cellB = row.createCell(cellnum++)
+                            String cellValueA = ""
+                            String cellValueB = ""
                             orgRoles.each { or ->
-                                String cellValue = or.org.getDesignation()
-                                if(ci.isVisibleForSubscriber)
-                                    cellValue += " (sichtbar)"
-                                cell.setCellValue(cellValue)
+                                cellValueA += or.name
+                                cellValueB += or.sortname
+                            }
+                            cellA.setCellValue(cellValueA)
+                            cellB.setCellValue(cellValueB)
+                            if(ci.isVisibleForSubscriber) {
+                                cell = row.createCell(cellnum++)
+                                cell.setCellValue("sichtbar für Teilnehmer")
                             }
                         }
                     }
                     //cost title
                     cell = row.createCell(cellnum++)
-                    cell.setCellValue(ci.costTitle)
-                    //subscription with running time
+                    cell.setCellValue(ci.costTitle ?: '')
+                    //subscription
                     cell = row.createCell(cellnum++)
-                    String dateString = ""
                     if(ci.sub) {
-                        dateString = "${ci.sub.name} (${dateFormat.format(ci.sub.startDate)}"
-                        if(ci.sub.endDate)
-                            dateString += " - ${dateFormat.format(ci.sub.endDate)})"
+                        cell.setCellValue(ci.sub.name)
                     }
-                    cell.setCellValue(dateString)
+                    //dates from-to
+                    Cell fromCell = row.createCell(cellnum++)
+                    Cell toCell = row.createCell(cellnum++)
+                    if(ci.sub) {
+                        if(ci.sub.startDate)
+                            fromCell.setCellValue(dateFormat.format(ci.sub.startDate))
+                        else if(ci.sub.endDate)
+                            toCell.setCellValue(dateFormat.format(ci.sub.endDate))
+                    }
+                    //cost sign
+                    cell = row.createCell(cellnum++)
+                    if(ci.costItemElementConfiguration) {
+                        cell.setCellValue(ci.costItemElementConfiguration.getI10n("value"))
+                    }
+                    else
+                        cell.setCellValue(message(code:'financials.costItemConfiguration.notSet'))
                     //subscription package
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci?.subPkg ? ci.subPkg.pkg.name:'')
@@ -581,13 +627,13 @@ class FinanceController extends AbstractDebugController {
                     cell.setCellValue(ci?.issueEntitlement ? ci.issueEntitlement?.tipp?.title?.title:'')
                     //date paid
                     cell = row.createCell(cellnum++)
-                    cell.setCellValue(paid_date)
+                    cell.setCellValue(paid_date ?: '')
                     //date from
                     cell = row.createCell(cellnum++)
-                    cell.setCellValue(start_date)
+                    cell.setCellValue(start_date ?: '')
                     //date to
                     cell = row.createCell(cellnum++)
-                    cell.setCellValue(end_date)
+                    cell.setCellValue(end_date ?: '')
                     //cost item category
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci?.costItemCategory ? ci.costItemCategory.value:'')
@@ -607,14 +653,36 @@ class FinanceController extends AbstractDebugController {
                         sumCurrencyCell = cellnum
                         cell = row.createCell(cellnum++)
                         cell.setCellValue(ci?.costInBillingCurrency ? ci.costInBillingCurrency : 0.0)
-                        sumCounters[ci.billingCurrency.value] += ci.costInBillingCurrency
+                        if(ci.costItemElementConfiguration) {
+                            switch(ci.costItemElementConfiguration) {
+                                case RDStore.CIEC_POSITIVE: sumCounters[ci.billingCurrency.value] += ci.costInBillingCurrency
+                                    cell.setCellStyle(csPositive)
+                                break
+                                case RDStore.CIEC_NEGATIVE: sumCounters[ci.billingCurrency.value] -= ci.costInBillingCurrency
+                                    cell.setCellStyle(csNegative)
+                                break
+                                case RDStore.CIEC_NEUTRAL: cell.setCellStyle(csNeutral)
+                                break
+                            }
+                        }
                         //local currency and value
                         cell = row.createCell(cellnum++)
                         cell.setCellValue("EUR")
                         sumcell = cellnum
                         cell = row.createCell(cellnum++)
                         cell.setCellValue(ci?.costInLocalCurrency ? ci.costInLocalCurrency : 0.0)
-                        localSum += ci.costInLocalCurrency
+                        if(ci.costItemElementConfiguration) {
+                            switch(ci.costItemElementConfiguration) {
+                                case RDStore.CIEC_POSITIVE: localSum += ci.costInLocalCurrency
+                                    cell.setCellStyle(csPositive)
+                                break
+                                case RDStore.CIEC_NEGATIVE: localSum -= ci.costInLocalCurrency
+                                    cell.setCellStyle(csNegative)
+                                break
+                                case RDStore.CIEC_NEUTRAL: cell.setCellStyle(csNeutral)
+                                break
+                            }
+                        }
                     }
                     //tax rate
                     cell = row.createCell(cellnum++)
@@ -627,14 +695,36 @@ class FinanceController extends AbstractDebugController {
                     sumCurrencyAfterTaxCell = cellnum
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci?.costInBillingCurrencyAfterTax ? ci.costInBillingCurrencyAfterTax : 0.0)
-                    sumAfterTaxCounters[ci.billingCurrency.value] += ci.costInBillingCurrencyAfterTax
+                    if(ci.costItemElementConfiguration) {
+                        switch(ci.costItemElementConfiguration) {
+                            case RDStore.CIEC_POSITIVE: sumAfterTaxCounters[ci.billingCurrency.value] += ci.costInBillingCurrencyAfterTax
+                                cell.setCellStyle(csPositive)
+                            break
+                            case RDStore.CIEC_NEGATIVE: sumAfterTaxCounters[ci.billingCurrency.value] -= ci.costInBillingCurrencyAfterTax
+                                cell.setCellStyle(csNegative)
+                            break
+                            case RDStore.CIEC_NEUTRAL: cell.setCellStyle(csNeutral)
+                            break
+                        }
+                    }
                     //local currency and value
                     cell = row.createCell(cellnum++)
                     cell.setCellValue("EUR")
                     sumcellAfterTax = cellnum
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci?.costInLocalCurrencyAfterTax ? ci.costInLocalCurrencyAfterTax : 0.0)
-                    localSumAfterTax += ci.costInLocalCurrencyAfterTax
+                    if(ci.costItemElementConfiguration) {
+                        switch(ci.costItemElementConfiguration) {
+                            case RDStore.CIEC_POSITIVE: localSumAfterTax += ci.costInLocalCurrencyAfterTax
+                                cell.setCellStyle(csPositive)
+                            break
+                            case RDStore.CIEC_NEGATIVE: localSumAfterTax -= ci.costInLocalCurrencyAfterTax
+                                cell.setCellStyle(csNegative)
+                            break
+                            case RDStore.CIEC_NEUTRAL: cell.setCellStyle(csNeutral)
+                            break
+                        }
+                    }
                     //cost item element
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci?.costItemElement?ci.costItemElement.getI10n("value") : '')
@@ -647,6 +737,12 @@ class FinanceController extends AbstractDebugController {
                     //budget codes
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(codes ? codes.toString() : '')
+                    //invoice number
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.invoice ? ci.invoice.invoiceNumber : "")
+                    //order number
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.order ? ci.order.orderNumber : "")
                     rownum++
                 }
                 rownum++

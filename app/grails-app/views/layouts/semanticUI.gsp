@@ -87,6 +87,7 @@
                             </sec:ifAnyGranted>
                                 <g:link class="item" controller="organisations" action="listProvider">${message(code:'menu.institutions.all_provider')}</g:link>
                                 <g:link class="item" controller="platform" action="list">${message(code:'menu.institutions.all_platforms')}</g:link>
+                                <g:link class="item" controller="gasco">${message(code:'menu.institutions.gasco_monitor')}</g:link>
 
                             <%--<div class="divider"></div>
 
@@ -220,12 +221,18 @@
                     </div>
                 </g:if>
 
-                <sec:ifAnyGranted roles="ROLE_ORG_MANAGER,ROLE_DATAMANAGER,ROLE_ADMIN,ROLE_GLOBAL_DATA">
+                <sec:ifAnyGranted roles="ROLE_ORG_MANAGER,ROLE_DATAMANAGER,ROLE_ADMIN,ROLE_GLOBAL_DATA,ROLE_STATISTICS_EDITOR">
                     <div class="ui simple dropdown item">
                         ${message(code:'menu.datamanager')}
                         <i class="dropdown icon"></i>
 
                         <div class="menu">
+                            <sec:ifAnyGranted roles="ROLE_STATISTICS_EDITOR">
+                                <g:link class="item" controller="usage"
+                                        action="index">${message(code: 'menu.datamanager.manage_usage_stats', default: 'Manage Usage Stats')}</g:link>
+                            </sec:ifAnyGranted>
+
+
                             <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN">
                                 <g:link class="item" controller="dataManager" action="index">${message(code:'menu.datamanager.dash')}</g:link>
                                 <g:link class="item" controller="dataManager"
@@ -303,7 +310,8 @@
 
                                 <div class="menu">
                                     <g:link class="item" controller="yoda" action="appInfo">App Info</g:link>
-                                    <g:link class="item" controller="admin" action="eventLog">Event Log</g:link>
+                                    <g:link class="item" controller="admin" action="systemEvents">System Events (new)</g:link>
+                                    <g:link class="item" controller="admin" action="eventLog">Event Log (old)</g:link>
 
                                     <div class="divider"></div>
 
@@ -408,6 +416,8 @@
                             <div class="divider"></div>
 
                             <g:link class="item" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</g:link>
+                            <g:link class="item" controller="yoda" action="updateLinks">${message(code:'menu.admin.updateLinks')}</g:link>
+                            <g:link class="item" controller="yoda" action="startDateCheck">${message(code:'menu.admin.startDatesCheck')}</g:link>
 
                             <div class="divider"></div>
 
@@ -571,7 +581,7 @@
                                             $('.card.la-js-hideable').not( ":has(.la-js-dont-hide-this-card)" ).addClass('hidden');
                                             $('.la-js-hide-this-card').addClass('hidden');
                                             $('.ui.form').not('.ui.modal .ui.form').addClass('hidden');
-                                            $('#collapseableSubDetails').not('.ui.modal').find('.button').not('.ui.modal .button').addClass('hidden');
+                                            $('#collapseableSubDetails').not('.ui.modal').find('.button').not('.ui.modal .button, .la-url-button').addClass('hidden');
                                             $(toggleButton).removeAttr();
                                             $(toggleButton).attr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
                                             $( toggleIcon ).addClass( "slash" );

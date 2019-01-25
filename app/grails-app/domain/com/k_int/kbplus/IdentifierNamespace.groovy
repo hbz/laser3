@@ -15,7 +15,8 @@ class IdentifierNamespace {
     @Transient
     public static final NS_TITLE        = "com.k_int.kbplus.TitleInstance"
     @Transient
-    public static final NS_CREATOR      = "com.k_int.kbplus.Creator"
+    public static final NS_CREATOR        = "com.k_int.kbplus.Creator"
+
 
     @Transient
     final static String[] AVAILABLE_NSTYPES = [

@@ -21,6 +21,9 @@
         <colgroup>
             <col style="width: 229px;">
             <col style="width: 96px;">
+            <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                <col style="width: 359px;">
+            </g:if>
             <col style="width: 298px;">
             <col style="width: 76px;">
         </colgroup>
@@ -28,6 +31,9 @@
             <tr>
                 <th class="la-column-nowrap la-js-dont-hide-this-card">${message(code:'property.table.property')}</th>
                 <th>${message(code:'property.table.value')}</th>
+                <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                    <th>${message(code:'property.table.paragraph')}</th>
+                </g:if>
                 <th>${message(code:'property.table.notes')}</th>
                 <th>${message(code:'property.table.delete')}</th>
             </tr>
@@ -78,6 +84,11 @@
                             <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}" />
                         </g:elseif>
                     </td>
+                    <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                        <td>
+                            <semui:xEditable owner="${prop}" type="textarea" field="paragraph"/>
+                        </td>
+                    </g:if>
                     <td>
                         <semui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}" />
                     </td>
@@ -85,7 +96,7 @@
                         <g:if test="${prop.type.type == URL.toString()}">
                             <g:if test="${prop.value}">
                                 <span data-position="top right" data-tooltip="Diese URL aufrufen ..">
-                                    <a href="${prop.value}" target="_blank" class="ui icon blue button">
+                                    <a href="${prop.value}" target="_blank" class="ui icon blue button la-url-button">
                                         <i class="share square icon"></i>
                                     </a>
                                 </span>
@@ -99,7 +110,7 @@
                             <g:remoteLink class="js-gost"
                                 style="visibility: hidden"
                                 data-confirm-term-what="property"
-                                data-confirm-term-what-detail="${prop.type.name}"
+                                data-confirm-term-what-detail="${prop.type.getI10n('name')}"
                                 data-confirm-term-how="delete"
                                 controller="ajax" action="deletePrivateProperty"
                                 params='[propClass: prop.getClass(),ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", editable:"${editable}"]' id="${prop.id}"

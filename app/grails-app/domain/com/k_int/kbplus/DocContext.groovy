@@ -6,7 +6,8 @@ class DocContext {
     owner:Doc ,
     license : License,
     subscription : Subscription,
-    pkg : Package
+    pkg : Package,
+    link : Links
   ]
 
   RefdataValue status
@@ -27,19 +28,21 @@ class DocContext {
           license column:'dc_lic_fk'
      subscription column:'dc_sub_fk'
               pkg column:'dc_pkg_fk'
+             link column:'dc_link_fk'
      globannounce column:'dc_is_global'
            status column:'dc_status_fk'
             alert column:'dc_alert_fk'
   }
 
   static constraints = {
-    doctype(nullable:true, blank:false);
-    license(nullable:true, blank:false);
-    subscription(nullable:true, blank:false);
-    pkg(nullable:true, blank:false);
-    domain(nullable:true, blank:false);
-    status(nullable:true, blank:false);
-    alert(nullable:true, blank:false);
-    globannounce(nullable:true, blank:true);
+    doctype(nullable:true, blank:false)
+    license(nullable:true, blank:false)
+    subscription(nullable:true, blank:false)
+    pkg(nullable:true, blank:false)
+    link(nullable:true, blank:false)
+    domain(nullable:true, blank:false)
+    status(nullable:true, blank:false)
+    alert(nullable:true, blank:false)
+    globannounce(nullable:true, blank:true)
   }
 }

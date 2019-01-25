@@ -24,7 +24,7 @@
         <input type="hidden" name="offset" value="${params.offset}"/>
 
         <div class="field">
-            <label>${message(code: 'package.show.pkg_name', default: 'Package Name')}</label>
+            <label>${message(code: 'home.search.text')}: ${message(code: 'package.show.pkg_name', default: 'Package Name')}, ${message(code: 'package.content_provider')}</label>
             <input name="q" placeholder="" value="${params.q}"/>
         </div>
 
@@ -183,35 +183,35 @@
                         <tr>
                             <td>${(params.int('offset') ?: 0) + jj + 1}</td>
                             <td>
-                                <g:if test="${com.k_int.kbplus.Package.findByImpId(record.id)}">
+                                <g:if test="${com.k_int.kbplus.Package.findByImpId(record.uuid)}">
                                     <g:link controller="packageDetails" action="show"
-                                            id="${com.k_int.kbplus.Package.findByImpId(record.id).id}">${record.name}</g:link>
+                                            id="${com.k_int.kbplus.Package.findByImpId(record.uuid).id}">${record.name}</g:link>
                                 </g:if>
                                 <g:else>
                                     ${record.name} <a target="_blank"
-                                                      href="${record.url ? record.url + '/gokb/resource/show/' + record.id : '#'}"><i
+                                                      href="${record.url ? record.url + '/gokb/public/packageContent/' + record.id : '#'}"><i
                                             title="GOKB Link" class="external alternate icon"></i></a>
                                 </g:else>
                             </td>
                             <td>${message(code: 'refdata.' + record.status)}</td>
                             <td>
-                                <g:if test="${record.tippsCountCurrent}">
-                                    <g:if test="${record.tippsCountCurrent == 1}">
-                                        <g:if test="${com.k_int.kbplus.Package.findByImpId(record.id)}">
+                                <g:if test="${record.titleCount}">
+                                    <g:if test="${record.titleCount == 1}">
+                                        <g:if test="${com.k_int.kbplus.Package.findByImpId(record.uuid)}">
                                             <g:link controller="packageDetails" action="current"
-                                                    id="${com.k_int.kbplus.Package.findByImpId(record.id).id}">${message(code: 'packageDetails.index.result.titles.single')}</g:link>
+                                                    id="${com.k_int.kbplus.Package.findByImpId(record.uuid).id}">${message(code: 'packageDetails.index.result.titles.single')}</g:link>
                                         </g:if>
                                         <g:else>
                                             ${message(code: 'packageDetails.index.result.titles.single')}
                                         </g:else>
                                     </g:if>
                                     <g:else>
-                                        <g:if test="${com.k_int.kbplus.Package.findByImpId(record.id)}">
+                                        <g:if test="${com.k_int.kbplus.Package.findByImpId(record.uuid)}">
                                             <g:link controller="packageDetails" action="current"
-                                                    id="${com.k_int.kbplus.Package.findByImpId(record.id).id}">${message(code: 'packageDetails.index.result.titles', args: [record.tippsCountCurrent])}</g:link>
+                                                    id="${com.k_int.kbplus.Package.findByImpId(record.uuid).id}">${message(code: 'packageDetails.index.result.titles', args: [record.titleCount])}</g:link>
                                         </g:if>
                                         <g:else>
-                                            ${message(code: 'packageDetails.index.result.titles', args: [record.tippsCountCurrent])}
+                                            ${message(code: 'packageDetails.index.result.titles', args: [record.titleCount])}
                                         </g:else>
 
                                     </g:else>

@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.32'
+    static final VERSION = '0.35'
     static final NOT_SUPPORTED = false
 
     /**
@@ -34,7 +34,7 @@ class ApiManager {
         log.debug("API-READ (" + VERSION + "): ${obj} (${format}) -> ${query}:${value}")
 
         if ('costItem'.equalsIgnoreCase(obj)) {
-            if (format in ApiReader.SUPPORTED_FORMATS.costItems) {
+            if (format in ApiReader.SUPPORTED_FORMATS.costItem) {
                 def costItem = ApiCostItem.findCostItemBy(query, value)
                 if (costItem && !(costItem in failureCodes)) {
                     result = ApiCostItem.getCostItem((CostItem) costItem, contextOrg, accessDueDatamanager)
@@ -44,11 +44,11 @@ class ApiManager {
                 return Constants.HTTP_NOT_ACCEPTABLE
             }
         }
-        else if ('costItems'.equalsIgnoreCase(obj)) {
-            if (format in ApiReader.SUPPORTED_FORMATS.costItems) {
+        else if ('costItemList'.equalsIgnoreCase(obj)) {
+            if (format in ApiReader.SUPPORTED_FORMATS.costItem) {
                 result = ApiOrg.findOrganisationBy(query, value) // use of http status code
                 if (result && !(result in failureCodes)) {
-                    result = ApiCostItem.getCostItems(result, contextOrg, accessDueDatamanager)
+                    result = ApiCostItem.getCostItemList(result, contextOrg, accessDueDatamanager)
                 }
             }
             else {
@@ -85,6 +85,17 @@ class ApiManager {
 
                 if (result && !(result in failureCodes)) {
                     result = ApiLicense.getLicense((License) result, contextOrg, accessDueDatamanager)
+                }
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
+            }
+        }
+        else if ('licenseList'.equalsIgnoreCase(obj)) {
+            if (format in ApiReader.SUPPORTED_FORMATS.license) {
+                result = ApiOrg.findOrganisationBy(query, value) // use of http status code
+                if (result && !(result in failureCodes)) {
+                    result = ApiLicense.getLicenseList(result, contextOrg, accessDueDatamanager)
                 }
             }
             else {
@@ -141,6 +152,17 @@ class ApiManager {
 
                 if (result && !(result in failureCodes)) {
                     result = ApiSubscription.getSubscription((Subscription) result, contextOrg, accessDueDatamanager)
+                }
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
+            }
+        }
+        else if ('subscriptionList'.equalsIgnoreCase(obj)) {
+            if (format in ApiReader.SUPPORTED_FORMATS.subscription) {
+                result = ApiOrg.findOrganisationBy(query, value) // use of http status code
+                if (result && !(result in failureCodes)) {
+                    result = ApiSubscription.getSubscriptionList(result, contextOrg, accessDueDatamanager)
                 }
             }
             else {

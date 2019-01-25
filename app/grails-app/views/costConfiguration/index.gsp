@@ -12,7 +12,7 @@
         </semui:breadcrumbs>
         <h1 class="ui left aligned icon header"><semui:headerIcon/><g:message code="menu.institutions.costConfiguration"/></h1>
         <semui:messages data="${flash}"/>
-        <div class="content ui form">
+        <%--<div class="content ui form">
             <div class="two fields wide">
                 <div class="field">
                     <g:message code="costConfiguration.preset"/>
@@ -26,7 +26,7 @@
                     </g:else>
                 </div>
             </div>
-        </div>
+        </div>--%>
         <g:if test="${editable}">
             <div class="content ui form">
                 <div class="fields">

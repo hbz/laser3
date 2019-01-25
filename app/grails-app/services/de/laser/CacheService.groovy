@@ -1,7 +1,9 @@
 package de.laser
 
 import de.laser.helper.EhcacheWrapper
-import net.sf.ehcache.config.CacheConfiguration
+import grails.plugin.cache.GrailsConcurrentMapCacheManager
+import grails.plugin.springsecurity.SpringSecurityService
+import groovy.transform.CompileStatic
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationContextAware
 import grails.plugin.cache.GrailsConcurrentMapCache
@@ -12,7 +14,7 @@ import net.sf.ehcache.Element
 class CacheService implements ApplicationContextAware {
 
     ApplicationContext applicationContext
-    def springSecurityService
+    SpringSecurityService springSecurityService
 
     final static EHCACHE = 'EHCACHE'
     final static PLUGINCACHE = 'PLUGINCACHE'
@@ -20,7 +22,6 @@ class CacheService implements ApplicationContextAware {
     // global caches
     private Cache cache_ttl_300
     private Cache cache_ttl_1800
-
 
     def getCacheManager(def type) {
 
@@ -34,15 +35,20 @@ class CacheService implements ApplicationContextAware {
         }
     }
 
-    def getCache(def cacheManager, def cacheName) {
+    def getCache(def cacheManager, String cacheName) {
 
-        def cache
+        def cache = null
 
         if (cacheManager) {
-            if (! cacheManager.getCache(cacheName)) {
-                cacheManager.addCache(cacheName)
+            if (cacheManager instanceof CacheManager) {
+                if (! cacheManager.getCache(cacheName)) {
+                    cacheManager.addCache(cacheName)
+                }
+                cache = cacheManager.getCache(cacheName)
             }
-            cache = cacheManager.getCache(cacheName)
+            else if (cacheManager instanceof GrailsConcurrentMapCacheManager) {
+                cache = cacheManager.getCache(cacheName)
+            }
         }
 
         return cache
@@ -50,32 +56,32 @@ class CacheService implements ApplicationContextAware {
 
     /* --- */
 
-    def getTTL300Cache(def cacheKeyPrefix) {
+    EhcacheWrapper getTTL300Cache(String cacheKeyPrefix) {
 
         if (! cache_ttl_300) {
 
-            def cacheName = 'CACHE_TTL_300'
+            String cacheName = 'CACHE_TTL_300'
             def cacheManager = getCacheManager(EHCACHE)
-            def cache = getCache(cacheManager, cacheName)
+            Cache cache = (Cache) getCache(cacheManager, cacheName)
 
-            cache?.configuration?.setTimeToLiveSeconds(300)
-            cache?.configuration?.setTimeToIdleSeconds(300)
+            cache?.getCacheConfiguration()?.setTimeToLiveSeconds(300)
+            cache?.getCacheConfiguration()?.setTimeToIdleSeconds(300)
             cache_ttl_300 = cache
         }
 
         return new EhcacheWrapper(cache_ttl_300, cacheKeyPrefix)
     }
 
-    def getTTL1800Cache(def cacheKeyPrefix) {
+    EhcacheWrapper getTTL1800Cache(String cacheKeyPrefix) {
 
         if (! cache_ttl_1800) {
 
-            def cacheName = 'CACHE_TTL_1800'
+            String cacheName = 'CACHE_TTL_1800'
             def cacheManager = getCacheManager(EHCACHE)
-            def cache = getCache(cacheManager, cacheName)
+            Cache cache = (Cache) getCache(cacheManager, cacheName)
 
-            cache?.configuration?.setTimeToLiveSeconds(1800)
-            cache?.configuration?.setTimeToIdleSeconds(1800)
+            cache?.getCacheConfiguration()?.setTimeToLiveSeconds(1800)
+            cache?.getCacheConfiguration()?.setTimeToIdleSeconds(1800)
             cache_ttl_1800 = cache
         }
 
@@ -101,6 +107,16 @@ class CacheService implements ApplicationContextAware {
         }
         else if (cache instanceof GrailsConcurrentMapCache) {
             cache.get(key)
+        }
+    }
+
+    def remove(def cache, String key) {
+
+        if (cache instanceof Cache) {
+            cache.remove(key)
+        }
+        else if (cache instanceof GrailsConcurrentMapCache) {
+            println " TODO -> IMPLEMENT GrailsConcurrentMapCache.remove()"
         }
     }
 

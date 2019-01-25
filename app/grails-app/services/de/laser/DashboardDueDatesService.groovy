@@ -53,7 +53,12 @@ class DashboardDueDatesService {
             try {
                 update_running = true;
                 log.debug("Start DashboardDueDatesService takeCareOfDueDates");
+
+                // TODO: remove due SystemEvent
                 new EventLog(event:'DashboardDueDatesService takeCareOfDueDates', message:'Start', tstp:new Date(System.currentTimeMillis())).save(flush:true)
+
+                SystemEvent.createEvent('DBDD_SERVICE_START_1')
+
                 if (isUpdateDashboardTableInDatabase) {
                     flash= updateDashboardTableInDatabase(flash)
                 }
@@ -61,10 +66,20 @@ class DashboardDueDatesService {
                     flash = sendEmailsForDueDatesOfAllUsers(flash)
                 }
                 log.debug("Finished DashboardDueDatesService takeCareOfDueDates");
+
+                // TODO: remove due SystemEvent
                 new EventLog(event:'DashboardDueDatesService takeCareOfDueDates', message:'Finished', tstp:new Date(System.currentTimeMillis())).save(flush:true)
+
+                SystemEvent.createEvent('DBDD_SERVICE_COMPLETE_1')
+
             } catch (Throwable t) {
-                log.error("DashboardDueDatesService takeCareOfDueDates :: Unable to perform email due to exception ${t.message}")
-                new EventLog(event:'DashboardDueDatesService takeCareOfDueDates', message:'Unable to perform email due to exception '+ t.message, tstp:new Date(System.currentTimeMillis())).save(flush:true)
+                String tMsg = t.message
+                log.error("DashboardDueDatesService takeCareOfDueDates :: Unable to perform email due to exception ${tMsg}")
+                // TODO: remove due SystemEvent
+                new EventLog(event:'DashboardDueDatesService takeCareOfDueDates', message:'Unable to perform email due to exception '+ tMsg, tstp:new Date(System.currentTimeMillis())).save(flush:true)
+
+                SystemEvent.createEvent('DBDD_SERVICE_ERROR_1', ['error': tMsg])
+
                 flash.error += messageSource.getMessage('menu.admin.error', null, locale)
                 update_running = false
             } finally {
@@ -74,7 +89,12 @@ class DashboardDueDatesService {
     }
     private updateDashboardTableInDatabase(def flash){
         log.debug("Start DashboardDueDatesService updateDashboardTableInDatabase");
+
+        // TODO: remove due SystemEvent
         new EventLog(event:'DashboardDueDatesService.updateDashboardTableInDatabase', message:'Start', tstp:new Date(System.currentTimeMillis())).save(flush:true)
+
+        SystemEvent.createEvent('DBDD_SERVICE_START_2')
+
         List<DashboardDueDate> dashboarEntriesToInsert = []
         def users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
         users.each { user ->
@@ -105,22 +125,42 @@ class DashboardDueDatesService {
                     log.debug("DashboardDueDatesService INSERT: " + it);
                 }
                 log.debug("DashboardDueDatesService INSERT Anzahl: " + dashboarEntriesToInsert.size);
+
+                // TODO: remove due SystemEvent
                 new EventLog(event:'DashboardDueDatesService INSERT Anzahl: ' + dashboarEntriesToInsert.size, message:'SQL Insert', tstp:new Date(System.currentTimeMillis())).save(flush:true)
+
+                SystemEvent.createEvent('DBDD_SERVICE_PROCESSING_2', ['count': dashboarEntriesToInsert.size])
+
                 flash.message += messageSource.getMessage('menu.admin.updateDashboardTable.successful', null, locale)
             } catch (Throwable t) {
+                String tMsg = t.message
+                SystemEvent.createEvent('DBDD_SERVICE_ERROR_2', ['error': tMsg])
+
                 status.setRollbackOnly()
-                log.error("DashboardDueDatesService - updateDashboardTableInDatabase() :: Rollback for reason: ${t.message}")
-                new EventLog(event:'DashboardDueDatesService.updateDashboardTableInDatabase', message:'Rollback for reason: ' + t.message, tstp:new Date(System.currentTimeMillis())).save(flush:true)
+                log.error("DashboardDueDatesService - updateDashboardTableInDatabase() :: Rollback for reason: ${tMsg}")
+
+                // TODO: remove due SystemEvent
+                new EventLog(event:'DashboardDueDatesService.updateDashboardTableInDatabase', message:'Rollback for reason: ' + tMsg, tstp:new Date(System.currentTimeMillis())).save(flush:true)
+
                 flash.error += messageSource.getMessage('menu.admin.updateDashboardTable.error', null, locale)
             }
         }
         log.debug("Finished DashboardDueDatesService updateDashboardTableInDatabase");
+
+        // TODO: remove due SystemEvent
         new EventLog(event:'DashboardDueDatesService updateDashboardTableInDatabase', message:'Finished', tstp:new Date(System.currentTimeMillis())).save(flush:true)
+
+       SystemEvent.createEvent('DBDD_SERVICE_COMPLETE_2')
+
     }
 
     private sendEmailsForDueDatesOfAllUsers(def flash) {
         try {
+            // TODO: remove due SystemEvent
             new EventLog(event: 'DashboardDueDatesService.sendEmailsForDueDatesOfAllUsers', message: 'Start', tstp: new Date(System.currentTimeMillis())).save(flush: true)
+
+            SystemEvent.createEvent('DBDD_SERVICE_START_3')
+
             def users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
             users.each { user ->
                 boolean userWantsEmailReminder = RDStore.YN_YES.equals(user.getSetting(UserSettings.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO).rdValue)
@@ -132,7 +172,11 @@ class DashboardDueDatesService {
                     }
                 }
             }
+            // TODO: remove due SystemEvent
             new EventLog(event: 'DashboardDueDatesService.sendEmailsForDueDatesOfAllUsers', message: 'Finished', tstp: new Date(System.currentTimeMillis())).save(flush: true)
+
+            SystemEvent.createEvent('DBDD_SERVICE_COMPLETE_3')
+
             flash.message += messageSource.getMessage('menu.admin.sendEmailsForDueDates.successful', null, locale)
         } catch (Exception e) {
             flash.error += messageSource.getMessage('menu.admin.sendEmailsForDueDates.error', null, locale)
@@ -161,8 +205,14 @@ class DashboardDueDatesService {
                 log.debug("DashboardDueDatesService - finished sendEmail() to "+ user.displayName + " (" + user.email + ") " + org.name);
             }
         } catch (Exception e) {
-            log.error("DashboardDueDatesService - sendEmail() :: Unable to perform email due to exception ${e.message}")
-            new EventLog(event:'DashboardDueDatesService.sendEmail', message:'Unable to perform email due to exception ' + e.message, tstp:new Date(System.currentTimeMillis())).save(flush:true)
+            String eMsg = e.message
+
+            log.error("DashboardDueDatesService - sendEmail() :: Unable to perform email due to exception ${eMsg}")
+            // TODO: remove due SystemEvent
+            new EventLog(event:'DashboardDueDatesService.sendEmail', message:'Unable to perform email due to exception ' + eMsg, tstp:new Date(System.currentTimeMillis())).save(flush:true)
+
+            SystemEvent.createEvent('DBDD_SERVICE_ERROR_3', ['error': eMsg])
+
             throw e
         }
     }

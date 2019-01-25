@@ -300,6 +300,8 @@
           type: string
         explanation: # mapping attr expl
           type: string
+        paragraph: # only if license preoperties
+          type: string
         name:
           type: string
         note:
@@ -690,3 +692,24 @@
           type: string
         normTitle:
           type: string
+
+
+<%-- lists --%>
+
+
+    CostItemList:
+      type: array
+      items:
+        type: string
+
+
+    LicenseList:
+      type: array
+      items:
+        $ref: "#/components/schemas/LicenseStub"
+
+
+    SubscriptionList:
+      type: array
+      items:
+        $ref: "#/components/schemas/SubscriptionStub"
