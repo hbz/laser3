@@ -40,8 +40,13 @@
     </g:else>
 </tbody>
     <tfoot>
+        <%
+            int colspan = 5
+            if(forSingleSubscription)
+                colspan = 4
+        %>
         <tr id="sumOfCosts_${i}">
-            <th colspan="5">
+            <th colspan="${colspan}">
 
             </th>
             <th>
@@ -53,7 +58,7 @@
             </th>
         </tr>
         <tr>
-            <td colspan="5">
+            <td colspan="${colspan}">
 
             </td>
             <td class="la-exposed-bg">
