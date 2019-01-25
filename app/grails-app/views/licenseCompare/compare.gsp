@@ -18,64 +18,32 @@
                 </ul>
             </li>--%>
         </semui:breadcrumbs>
-        <h2 class="ui header">${message(code:'menu.institutions.comp_lic')}</h2>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.comp_lic')}</h1>
+        <g:render template="selectionForm" model="${[selectedLicenses:licenses]}" />
         <div class="ui grid">
             <table class="ui la-table la-table-small table">
+                <g:set var="licenseCount" value="${licenses.size()}"/>
                 <thead>
                     <th>${message(code:'property.table.property')}</th>
-                    <g:each in="${licenses}" var="license" status="counter">
+                    <g:each in="${licenses}" var="license">
                         <th>${license.reference}</th>
                     </g:each>
                 </thead>
                 <tbody>
-                    <g:each in="${map}" var="entry">
+                    <g:each in="${groupedProperties}" var="groupedProps">
+                        <%-- leave it for debugging
                         <tr>
-                            <td>${entry.getKey()}</td>
-                            <g:each in="${licenses}" var="lic">
-                                <g:if test="${entry.getValue().containsKey(lic.reference)}">
-                                    <td>
-                                        <g:set var="point" value="${entry.getValue().get(lic.reference)}"/>
-                                        <g:if test="${['stringValue','intValue','decValue'].contains(point.getValueType())}">
-                                            <span class="cell-inner">  <strong>${point.getValue()}</strong></span>
-                                        </g:if>
-                                        <g:else>
-                                            <g:set var="val" value="${point.getValue()}"/>
-                                            <g:if test="${val == 'Y' || val=="Yes"}">
-                                                <span class="cell-inner">
-                                                    <span title="${val}" class="onix-status onix-tick" />
-                                                </span>
-                                            </g:if>
-                                            <g:elseif test="${val=='N' || val=="No"}">
-                                                <span class="cell-inner">
-                                                    <span title="${val}" class="onix-status onix-pl-prohibited" />
-                                                </span>
-                                            </g:elseif>
-                                            <g:elseif test="${['O','Other','Specified'].contains(val)}">
-                                                <span class="cell-inner">
-                                                    <span title="${val}" class="onix-status onix-info" />
-                                                </span>
-                                            </g:elseif>
-                                            <g:elseif test="${['U','Unknown','Not applicable','Not Specified'].contains(val)}">
-                                                <span class="cell-inner-undefined">
-                                                    <span title="${val}" class="onix-status onix-pl-undefined" ></span>
-                                                </span>
-                                            </g:elseif>
-                                            <g:else>
-                                                 <span class="cell-inner">  <strong>${point.getValue()}</strong></span>
-                                            </g:else>
-                                        </g:else>
-                                    </td>
-                                </g:if>
-                                <g:else>
-                                    <td>
-                                        <span class="cell-inner-undefined">
-                                            <span title='Not Set' class="onix-status onix-pl-undefined" ></span>
-                                        </span>
-                                    </td>
-                                </g:else>
-                            </g:each>
+                            <td colspan="999">${groupedProps}</td>
+                        </tr>--%>
+                        <tr>
+                            <th colspan="${licenseCount}">${groupedProps.getKey().name}</th>
                         </tr>
+                        <g:render template="comparisonTableRow" model="[group:groupedProps.getValue(),licenses:licenses]" />
                     </g:each>
+                    <tr>
+                        <th colspan="${licenses.size()+1}" scope="colgroup">${message(code:'license.properties')}</th>
+                    </tr>
+                    <g:render template="comparisonTableRow" model="[group:orphanedProperties,licenses:licenses]" />
                 </tbody>
             </table>
         </div>
