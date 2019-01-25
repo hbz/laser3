@@ -22,7 +22,7 @@
                     <td>
                         <div class="ui mini icon buttons">
                             <g:link class="ui mini icon button la-selectable-button" controller="ajax" action="delOrgRole" id="${role.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
-                                <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
+                                <i class="unlink icon"></i> ${message(code:'default.button.unlink.label')}
                             </g:link>
                         </div>
                     </td>

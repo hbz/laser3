@@ -168,7 +168,7 @@
                                                 <div class="ui mini icon buttons">
                                                     <button class="ui button la-selectable-button"
                                                             onclick="unlinkPackage(${com.k_int.kbplus.Package.findByImpId(hit.uuid)?.id})">
-                                                        <i class="times icon red"></i>${message(code: 'default.button.unlink.label')}
+                                                        <i class="unlink icon"></i> ${message(code: 'default.button.unlink.label')}
                                                     </button>
                                                 </div>
                                                 <br/>

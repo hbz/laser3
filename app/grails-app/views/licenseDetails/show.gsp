@@ -155,7 +155,7 @@
                                                                     controller="licenseDetails" action="unlinkSubscription"
                                                                     params="['license':license.id, 'subscription':sub.id]"
                                                                     onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
-                                                                <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
+                                                                <i class="unlink icon"></i> ${message(code:'default.button.unlink.label')}
                                                             </g:link>
                                                         </div>
                                                     </g:if>
@@ -224,7 +224,7 @@
 
                                                 <div class="ui mini icon buttons">
                                                     <g:link class="ui button" controller="licenseDetails" action="unlinkLicense" params="[license_id: license.id, opl_id: onixplLicense.id]">
-                                                        <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
+                                                        <i class="unlink icon"> </i>${message(code:'default.button.unlink.label')}
                                                     </g:link>
                                                 </div>
 
