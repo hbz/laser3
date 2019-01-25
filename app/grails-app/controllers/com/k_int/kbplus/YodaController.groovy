@@ -82,6 +82,7 @@ class YodaController {
     def quartzInfo() {
         def result = [:]
 
+        result.currentConfig   = grails.util.Holders.config
         result.quartzScheduler = quartzScheduler
 
         def groups = [:]

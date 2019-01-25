@@ -32,13 +32,32 @@
                         ${job.name}
                     </td>
                     <td>
-                        ${job.configFlags}
+                        <g:each in="${job.configFlags.split(',')}" var="flag">
+                            <g:if test="${currentConfig.get(flag) && currentConfig.get(flag) != false}">
+                                ${flag}
+                            </g:if>
+                            <g:else>
+                                <span style="color:lightgrey;font-style:italic">${flag}</span>
+                            </g:else>
+                        </g:each>
                     </td>
                     <td>
                         <code>${job.cronEx}</code>
                     </td>
                     <td>
-                        ${job.nextFireTime}
+                        <%
+                            boolean isActive = true
+                            job.configFlags.split(',').each { flag ->
+                                flag = flag.trim()
+                                isActive = isActive && (currentConfig.get(flag) && currentConfig.get(flag) != false)
+                            }
+                        %>
+                        <g:if test="${isActive}">
+                            ${job.nextFireTime}
+                        </g:if>
+                        <g:else>
+                            <span style="color:lightgrey">${job.nextFireTime}</span>
+                        </g:else>
                         <%--<g:formatDate format="${message(code:'default.date.format.noZ')}" date="${job.nextFireTime}" />--%>
                     </td>
                 </tr>
