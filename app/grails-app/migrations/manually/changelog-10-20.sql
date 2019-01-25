@@ -16,6 +16,6 @@
 -- erms-934
 -- 2019-01-24
 -- execute before startup / after applying changelog-20.groovy
-UPDATE i10n_translation SET i10n_value_de = null WHERE i10n_value_de = 'null';
-UPDATE i10n_translation SET i10n_value_en = null WHERE i10n_value_en = 'null';
-UPDATE i10n_translation SET i10n_value_fr = null WHERE i10n_value_fr = 'null';
+UPDATE i10n_translation SET i10n_value_fr = null WHERE i10n_reference_field = 'expl' AND i10n_value_fr = 'null';
+UPDATE i10n_translation SET i10n_value_en = null WHERE i10n_reference_field = 'expl' AND i10n_value_en = 'null';
+UPDATE i10n_translation SET i10n_value_de = null WHERE i10n_reference_field = 'expl' AND i10n_value_de = 'null';
