@@ -14,7 +14,7 @@ import com.k_int.properties.PropertyDefinition
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Secured(['permitAll']) // TODO
-class AjaxController extends AbstractDebugController {
+class AjaxController {
 
     def genericOIDService
     def contextService
