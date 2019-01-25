@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
 import de.laser.SystemEvent
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
@@ -222,6 +224,23 @@ class YodaController {
             }
         }
         result.controller = cList.sort{it.key}
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def appUserMatrix() {
+        def result = [:]
+
+        result.matrix = [:]
+
+        Role.findAll("from Role order by authority").each { role -> result.matrix[role.authority] = [] }
+
+        User.executeQuery(
+                "SELECT us, ro FROM User us JOIN us.roles usro JOIN usro.role ro GROUP BY ro, us"
+        ).each { usro ->
+            result.matrix[usro[1].authority].add(usro[0])
+        }
+
         result
     }
 

@@ -393,6 +393,7 @@
                             <g:link class="item" controller="yoda" action="manageSystemMessage">${message(code: 'menu.admin.systemMessage', default: 'System Message')}</g:link>
                             <g:link class="item" controller="yoda" action="appConfig">App Config</g:link>
                             <g:link class="item" controller="yoda" action="appSecurity">App Security</g:link>
+                            <g:link class="item" controller="yoda" action="appUserMatrix">App User Matrix</g:link>
                             <g:link class="item" controller="yoda" action="appProfiler">App Profiler</g:link>
                             <g:link class="item" controller="yoda" action="cacheInfo">App Cache Info</g:link>
                             <g:link class="item" controller="yoda" action="quartzInfo">Quartz Info</g:link>
