@@ -1716,7 +1716,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         sources.each { link ->
           Subscription destination = Subscription.get(link.destination)
           if (destination.isVisibleBy(result.user)) {
-            def index = link.linkType.getI10n("value")
+            def index = link.linkType.getI10n("value")?.split("\\|")[0]
             if (result.links[index] == null) {
               result.links[index] = [link]
             }
@@ -1726,7 +1726,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         destinations.each { link ->
           Subscription source = Subscription.get(link.source)
           if (source.isVisibleBy(result.user)) {
-            def index = link.linkType.getI10n("value")
+            def index = link.linkType.getI10n("value")?.split("\\|")[1]
             if(result.links[index] == null) {
               result.links[index] = [link]
             }

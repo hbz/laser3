@@ -21,6 +21,8 @@ class DebugUtil {
         if (date) {
             diff = (new Date().getTime()) - date.getTime()
         }
+        benchCache.remove(key)
+
         return diff
     }
 }

@@ -27,6 +27,9 @@ class EhcacheWrapper {
     def get(String key) {
         cacheService.get(cache, keyPrefix + key)
     }
+    def remove(String key) {
+        cacheService.remove(cache, keyPrefix + key)
+    }
     def clear() {
         cacheService.clear(cache)
     }

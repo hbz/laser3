@@ -140,9 +140,16 @@ class YodaController {
     def appProfiler() {
         def result = [:]
 
+        result.globalCountByUri = [:]
+
+        SystemProfiler.executeQuery(
+        "select sp.uri, sp.ms as count from SystemProfiler sp where sp.context is null and sp.params is null"
+        ).each { it ->
+            result.globalCountByUri["${it[0]}"] = it[1]
+        }
+
         result.byUri =
-                //SystemProfiler.executeQuery("select sp, avg(sp.ms) as ms, count(*), sp.id from SystemProfiler sp group by sp.uri").sort{it[1]}.reverse()
-                SystemProfiler.executeQuery("select sp.uri, avg(sp.ms) as ms, count(sp.id) as count from SystemProfiler sp group by sp.uri").sort{it[1]}.reverse()
+                SystemProfiler.executeQuery("select sp.uri, avg(sp.ms) as ms, count(sp.id) as count from SystemProfiler sp where sp.context is not null group by sp.uri").sort{it[1]}.reverse()
         result.byUriAndContext =
                 SystemProfiler.executeQuery("select sp.uri, org.id, avg(sp.ms) as ms, count(org.id) as count from SystemProfiler sp join sp.context as org group by sp.uri, org.id").sort{it[2]}.reverse()
 

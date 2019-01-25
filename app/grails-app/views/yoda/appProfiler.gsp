@@ -20,7 +20,8 @@
             <tr>
                 <th>url</th>
                 <th>avg(sec)</th>
-                <th>count(*)</th>
+                <th>count(*) > ${de.laser.domain.SystemProfiler.THRESHOLD_MS} ms</th>
+                <th>total hits</th>
             </tr>
         </thead>
         <tbody>
@@ -29,6 +30,7 @@
                     <td data-uri="${bench[0]}">${bench[0]}</td>
                     <td>${(bench[1] / 1000).round(2)}</td>
                     <td>${bench[2]}</td>
+                    <td>${globalCountByUri.get(bench[0])}</td>
                 </tr>
             </g:each>
         </tbody>
@@ -40,7 +42,7 @@
             <tr>
                 <th>url</th>
                 <th>avg(sec)</th>
-                <th>count(*)</th>
+                <th>count(*) > ${de.laser.domain.SystemProfiler.THRESHOLD_MS} ms</th>
                 <th>context</th>
             </tr>
         </thead>
