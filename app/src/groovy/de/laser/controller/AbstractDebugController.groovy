@@ -24,5 +24,13 @@ abstract class AbstractDebugController {
                     context:  contextService?.getOrg()
             )).save()
         }
+
+        // added global counts
+        SystemProfiler global = SystemProfiler.findWhere( uri: actionUri, context: null, params: null )
+        if (! global) {
+            global = new SystemProfiler(uri: actionUri, ms: 0)
+        }
+        global.setMs(Integer.valueOf(global.ms) + 1)
+        global.save(flush:true)
     }
 }

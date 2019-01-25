@@ -140,9 +140,14 @@ databaseChangeLog = {
 		}
 	}
 
-	changeSet(author: "kloberd (generated)", id: "1548252520602-10") {
-		addNotNullConstraint(columnDataType: "varchar(255)", columnName: "lic_ref", tableName: "license")
-	}
+    changeSet(author: "kloberd (manually)", id: "1548252520602-10") {
+        grailsChange {
+            change {
+                sql.execute("UPDATE public.license SET lic_ref = 'Name fehlt', lic_sortable_ref = 'name fehlt' WHERE lic_ref IS null")
+            }
+            confirm 'Updated Table Data'
+        }
+    }
 
 	changeSet(author: "kloberd (generated)", id: "1548252520602-23") {
 		createIndex(indexName: "ciec_guid_uniq_1548252516917", schemaName: "public", tableName: "cost_item_element_configuration", unique: "true") {
@@ -150,14 +155,9 @@ databaseChangeLog = {
 		}
 	}
 
-	changeSet(author: "kloberd (manually)", id: "1548252520602-24") {
-		grailsChange {
-			change {
-				sql.execute("UPDATE public.license SET lic_ref = 'Name fehlt', lic_sortable_ref = 'name fehlt' WHERE lic_ref IS null")
-			}
-			confirm 'Updated Table Data'
-		}
-	}
+    changeSet(author: "kloberd (generated)", id: "1548252520602-24") {
+        addNotNullConstraint(columnDataType: "varchar(255)", columnName: "lic_ref", tableName: "license")
+    }
 
 	changeSet(author: "kloberd (manually)", id: "1548252520602-25") {
 		grailsChange {

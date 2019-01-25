@@ -1,15 +1,19 @@
 package de.laser
 
 import grails.converters.JSON
+import groovy.util.logging.Log4j
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import javax.persistence.Transient
 
+@Log4j
 class SystemEvent {
 
     @Transient
-    def messageSource
+    MessageSource messageSource
 
-    private i18n
+    @Transient
+    private String i18n
 
     String    token        // i18n and more
     String    payload      // json for object ids, etx
@@ -106,8 +110,10 @@ class SystemEvent {
 
         SystemEvent result
 
-        if (DEFINED_EVENTS.containsKey(token)) {
-            result = new SystemEvent( category: DEFINED_EVENTS.get(token).category, relevance: DEFINED_EVENTS.get(token).relevance )
+        if (SystemEvent.DEFINED_EVENTS.containsKey(token)) {
+            result = new SystemEvent(
+                    category: SystemEvent.DEFINED_EVENTS.get(token).category,
+                    relevance: SystemEvent.DEFINED_EVENTS.get(token).relevance )
         }
         else {
             result = new SystemEvent( category: CATEGORY.UNKNOWN, relevance: RELEVANCE.UNKNOWN )
@@ -123,31 +129,33 @@ class SystemEvent {
         result
     }
 
-    static getAllSources() {
-        def result = []
+    static List<String> getAllSources() {
+        List<String> result = []
+
         SystemEvent.findAll().each { it ->
             result.add( it.getSource() )
         }
+
         result.unique()
     }
 
     // GETTER
 
-    private setInfo() {
+    private void setInfo() {
         if (!i18n) {
             i18n = messageSource.getMessage('se.' + (token ?: 'UNKNOWN'), null, LocaleContextHolder.locale)
         }
-        true
     }
-    def getSource() {
+
+    String getSource() {
         setInfo()
         i18n.split('\\|')[0]
     }
-    def getEvent() {
+    String getEvent() {
         setInfo()
         i18n.split('\\|')[1]
     }
-    def getDescr() {
+    String getDescr() {
         setInfo()
         i18n.split('\\|')[2]
     }
