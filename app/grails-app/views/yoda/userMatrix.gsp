@@ -2,16 +2,16 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code:'laser', default:'LAS:eR')} : Application User Matrix</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.yoda.userMatrix')}</title>
 </head>
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
-    <semui:crumb text="Application User Matrix" class="active"/>
+    <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
+    <semui:crumb message="menu.yoda.userMatrix" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon />Application User Matrix</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.yoda.userMatrix')}</h1>
 
 <br />
 
