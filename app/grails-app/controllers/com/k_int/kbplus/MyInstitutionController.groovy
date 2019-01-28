@@ -19,6 +19,8 @@ import com.k_int.properties.*
 import de.laser.DashboardDueDate
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+import java.sql.Timestamp
+
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
 import java.text.SimpleDateFormat
@@ -1256,14 +1258,14 @@ from License as l where (
         if (filterOtherPlat.contains("all")) filterOtherPlat = null
 
         def limits = (isHtmlOutput) ? [readOnly:true,max: result.max, offset: result.offset] : [offset: 0]
-        def del_sub = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
-        def del_ie =  RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
+        RefdataValue del_sub = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+        RefdataValue del_ie =  RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
 
-        def role_sub        = RDStore.OR_SUBSCRIBER
-        def role_sub_cons   = RDStore.OR_SUBSCRIBER_CONS
+        RefdataValue role_sub        = RDStore.OR_SUBSCRIBER
+        RefdataValue role_sub_cons   = RDStore.OR_SUBSCRIBER_CONS
 
-        def role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIA
-        def role_pkg_consortia = RefdataValue.getByValueAndCategory('Package Consortia', 'Organisational Role')
+        RefdataValue role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        RefdataValue role_pkg_consortia = RefdataValue.getByValueAndCategory('Package Consortia', 'Organisational Role')
         def roles = [role_sub.id,role_sub_consortia.id,role_pkg_consortia.id]
         
         log.debug("viable roles are: ${roles}")
@@ -1287,14 +1289,18 @@ from License as l where (
         if (filterPvd) {
             sub_qry += "INNER JOIN org_role orgrole on orgrole.or_pkg_fk=tipp.tipp_pkg_fk "
         }
-        sub_qry += "WHERE ie.ie_tipp_fk=tipp.tipp_id and tipp.tipp_ti_fk=ti2.ti_id and ( orole.or_roletype_fk = :role_sub or orole.or_roletype_fk = :role_sub_cons or orole.or_roletype_fk = :role_cons ) "
+        sub_qry += "WHERE ie.ie_tipp_fk=tipp.tipp_id  and tipp.tipp_ti_fk=ti2.ti_id and ( orole.or_roletype_fk = :role_sub or orole.or_roletype_fk = :role_sub_cons or orole.or_roletype_fk = :role_cons ) "
         sub_qry += "AND orole.or_org_fk = :institution "
         sub_qry += "AND (sub.sub_status_rv_fk is null or sub.sub_status_rv_fk != :del_sub) "
         sub_qry += "AND (ie.ie_status_rv_fk is null or ie.ie_status_rv_fk != :del_ie ) "
 
         if (date_restriction) {
-            sub_qry += " AND sub.sub_start_date <= :date_restriction AND sub.sub_end_date >= :date_restriction "
+            sub_qry += " AND ( "
+            sub_qry += "( ie.ie_start_date <= :date_restriction OR (ie.ie_start_date is null AND (sub.sub_start_date <= :date_restriction OR sub.sub_start_date is null) ) ) AND "
+            sub_qry += "( ie.ie_end_date >= :date_restriction OR (ie.ie_end_date is null AND (sub.sub_end_date >= :date_restriction OR sub.sub_end_date is null) ) ) "
+            sub_qry += ") "
             result.date_restriction = date_restriction
+            qry_params.date_restriction = new Timestamp(date_restriction.getTime())
         }
 
         if ((params.filter) && (params.filter.length() > 0)) {
@@ -1327,8 +1333,8 @@ from License as l where (
             qry_params.provider = filterPvd.join(", ")
         }
 
-        def having_clause = params.filterMultiIE ? 'having count(ie.ie_id) > 1' : ''
-        def limits_clause = limits ? " limit :max offset :offset " : ""
+        String having_clause = params.filterMultiIE ? 'having count(ie.ie_id) > 1' : ''
+        String limits_clause = limits ? " limit :max offset :offset " : ""
         
         def order_by_clause = ''
         if (params.order == 'desc') {
@@ -1339,7 +1345,7 @@ from License as l where (
 
         def sql = new Sql(dataSource)
 
-        def queryStr = "tipp.tipp_ti_fk, count(ie.ie_id) ${sub_qry} group by ti.sort_title, tipp.tipp_ti_fk ${having_clause} ".toString()
+        String queryStr = "tipp.tipp_ti_fk, count(ie.ie_id) ${sub_qry} group by ti.sort_title, tipp.tipp_ti_fk ${having_clause} ".toString()
 
         log.debug(" SELECT ${queryStr} ${order_by_clause} ${limits_clause} ")
 
@@ -1357,8 +1363,7 @@ from License as l where (
             result.entitlements = sql.rows(exportQuery,qry_params).collect { IssueEntitlement.get(it.ie_id) }
         } 
 
-
-        def filename = "titles_listing_${result.institution.shortcode}"
+        String filename = "titles_listing_${result.institution.shortcode}"
         withFormat {
             html {
                 result
