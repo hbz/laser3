@@ -19,6 +19,9 @@
     </div>
     <br><br>
     %{--TextAreas für alle PersonFunctions anlegen und je nach Dropdownauswahl anzeigen--}%
+    <g:if test="${ ! rdvAllPersonFunctions}">
+        Es sind keine Organisationen ausgewählt.
+    </g:if>
     <g:each in="${rdvAllPersonFunctions}" var="prsFunction" status="counter">
         <% allEmailAddresses = ""; %>
         <g:each in="${orgList}" var="org">

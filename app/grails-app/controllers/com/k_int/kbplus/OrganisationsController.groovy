@@ -589,16 +589,7 @@ class OrganisationsController extends AbstractDebugController {
                 titles.add(g.message(code: 'org.country.label'))
             }
 
-            def propList =
-                    PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
-                            defList: [PropertyDefinition.ORG_PROP],
-                    ] // public properties
-                    ) +
-                            PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant = :tenant", [
-                                    defList: [PropertyDefinition.ORG_PROP],
-                                    tenant: contextService.getOrg()
-                            ]// private properties
-                            )
+            def propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
             propList.sort { a, b -> a.name.compareToIgnoreCase b.name}
 

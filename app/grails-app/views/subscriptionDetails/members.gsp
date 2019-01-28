@@ -148,8 +148,7 @@ NEU NEU NEU
         </tbody>
     </table>
 
-    <g:render template="../templates/copyEmailaddresses" model="[orgList: filteredSubChilds.collect {it.orgs}]"/>
-    %{--<g:render template="../templates/copyEmailaddresses" model="[orgList: outerLoop.collect {it.getAllSubscribers()}]"/>--}%
+    <g:render template="../templates/copyEmailaddresses" model="[orgList: filteredSubChilds?.collect {it.orgs}?:[]]"/>
 
     </g:if>
 <g:else><br/>--- KEINE TREFFER ---<br/></g:else>

@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
 import de.laser.helper.RDStore
 
@@ -8,10 +9,9 @@ class FilterService {
     private static final Long FAKE_CONSTRAINT_ORGID_WITHOUT_HITS = new Long(-1)
     def springSecurityService
 
-    def getOrgQuery(params) {
-        def result = [:]
-        def query = ["(o.status is null or o.status != :orgStatus)"]
-        def queryParams = ["orgStatus" : RDStore.O_DELETED]
+    Map<String, Map<String, Object>> getOrgQuery(params) {
+        ArrayList<String> query = ["(o.status is null or o.status != :orgStatus)"]
+        Map<String, Object> queryParams = ["orgStatus" : RDStore.O_DELETED]
 
         if (params.orgNameContains?.length() > 0) {
             query << "(lower(o.name) like :orgNameContains1 or lower(o.shortname) like :orgNameContains2 or lower(o.sortname) like :orgNameContains3)"
@@ -72,61 +72,10 @@ class FilterService {
         result
     }
 
-    def getOrgComboQuery(params, org) {
-        def result = [:]
-        def query = ["(o.status is null or o.status != ?)"]
-        def queryParams = [RDStore.O_DELETED]
-
-        if (params.orgNameContains?.length() > 0) {
-            query << "(lower(o.name) like ? or lower(o.shortname) like ? or lower(o.sortname) like ?)"
-            queryParams << "%${params.orgNameContains.toLowerCase()}%"
-            queryParams << "%${params.orgNameContains.toLowerCase()}%"
-            queryParams << "%${params.orgNameContains.toLowerCase()}%"
-        }
-       /* if (params.orgType?.length() > 0) {
-            query << "o.orgType.id = ?"
-            queryParams << Long.parseLong(params.orgType)
-        }*/
-        if (params.orgRoleType?.length() > 0) {
-            query << " exists (select roletype from o.orgRoleType as roletype where roletype.id = ? )"
-            queryParams << Long.parseLong(params.orgRoleType)
-        }
-        if (params.orgSector?.length() > 0) {
-            query << "o.sector.id = ?"
-            queryParams << Long.parseLong(params.orgSector)
-        }
-        if (params.federalState?.length() > 0) {
-            query << "o.federalState.id = ?"
-            queryParams << Long.parseLong(params.federalState)
-        }
-        if (params.libraryNetwork?.length() > 0) {
-            query << "o.libraryNetwork.id = ?"
-            queryParams << Long.parseLong(params.libraryNetwork)
-        }
-        if (params.libraryType?.length() > 0) {
-            query << "o.libraryType.id = ?"
-            queryParams << Long.parseLong(params.libraryType)
-        }
-
-        queryParams << org
-        queryParams << 'Consortium'
-
-        def defaultOrder = " order by " + (params.sort ?: " LOWER(o.sortname)") + " " + (params.order ?: "asc")
-
-        if (query.size() > 0) {
-            query = "select o from Org as o, Combo as c where " + query.join(" and ") + " and c.fromOrg = o and c.toOrg = ? and c.type.value = ? " + defaultOrder
-        } else {
-            query = "select o from Org as o, Combo as c where c.fromOrg = o and c.toOrg = ? and c.type.value = ? " + defaultOrder
-        }
-
-        result.query = query
-        result.queryParams = queryParams
-        result
-    }
-    def getOrgComboQuery_retMap(params, org) {
-        def result = [:]
-        def query = ["(o.status is null or o.status != :orgStatus)"]
-        def queryParams = ["orgStatus" : RDStore.O_DELETED]
+    Map<String, Map<String, Object>> getOrgComboQuery(Map params, Org org) {
+        Map<String, Map<String, Object>> result = [:]
+        ArrayList<String> query = ["(o.status is null or o.status != :orgStatus)"]
+        Map<String, Object> queryParams = ["orgStatus" : RDStore.O_DELETED]
 
         if (params.orgNameContains?.length() > 0) {
             query << "(lower(o.name) like :orgNameContains1 or lower(o.shortname) like :orgNameContains2 or lower(o.sortname) like :orgNameContains3)"
@@ -162,15 +111,13 @@ class FilterService {
         queryParams.put("org", org)
         queryParams.put("consortium", 'Consortium')
 
-        def defaultOrder = " order by " + (params.sort ?: " LOWER(o.sortname)") + " " + (params.order ?: "asc")
+        String defaultOrder = " order by " + (params.sort ?: " LOWER(o.sortname)") + " " + (params.order ?: "asc")
 
         if (query.size() > 0) {
-            query = "select o from Org as o, Combo as c where " + query.join(" and ") + " and c.fromOrg = o and c.toOrg = :org and c.type.value = :consortium " + defaultOrder
+            result.query = "select o from Org as o, Combo as c where " + query.join(" and ") + " and c.fromOrg = o and c.toOrg = :org and c.type.value = :consortium " + defaultOrder
         } else {
-            query = "select o from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :org and c.type.value = :consortium " + defaultOrder
+            result.query = "select o from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :org and c.type.value = :consortium " + defaultOrder
         }
-
-        result.query = query
         result.queryParams = queryParams
         result
     }

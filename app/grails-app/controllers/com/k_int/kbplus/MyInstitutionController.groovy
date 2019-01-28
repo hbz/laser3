@@ -801,7 +801,7 @@ from License as l where (
             result.defaultEndYear = sdf.format(cal.getTime())
             result.defaultSubIdentifier = java.util.UUID.randomUUID().toString()
 
-            if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgRoleType)) {
+            if((RDStore.OR_TYPE_CONSORTIUM?.id in result.orgRoleType)) {
                 def fsq = filterService.getOrgComboQuery(params, result.institution)
                 result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             }
@@ -3300,12 +3300,12 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         def result = setResultGenerics()
 
         // new: filter preset
-        params.orgRoleType   = RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')?.id?.toString()
-        params.orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')?.id?.toString()
+        params.orgRoleType  = RDStore.OR_TYPE_INSTITUTION?.id?.toString()
+        params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
+        result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.offset       = params.offset ? Integer.parseInt(params.offset) : 0;
+        result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
 
         if (params.selectedOrgs) {
             log.debug('remove orgs from consortia')
@@ -3574,7 +3574,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
         if (result.editable) {
 
-            if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgRoleType)) {
+            if((RDStore.OR_TYPE_CONSORTIUM?.id in result.orgRoleType)) {
                 def fsq = filterService.getOrgComboQuery(params, result.institution)
                 result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             }
@@ -3664,16 +3664,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 titles.add(g.message(code: 'org.country.label'))
             }
 
-            def propList =
-                    PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
-                            defList: [PropertyDefinition.ORG_PROP],
-                    ] // public properties
-                    ) +
-                            PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant = :tenant", [
-                                    defList: [PropertyDefinition.ORG_PROP],
-                                    tenant: contextService.getOrg()
-                            ]// private properties
-                            )
+            def propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
             propList.sort { a, b -> a.name.compareToIgnoreCase b.name}
 
