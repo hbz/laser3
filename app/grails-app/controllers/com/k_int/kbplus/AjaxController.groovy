@@ -684,6 +684,11 @@ class AjaxController {
     render controlledListService.getSubscriptions(params) as JSON
   }
 
+  @Secured(['ROLE_USER'])
+  def lookupLicenses() {
+    render controlledListService.getLicenses(params) as JSON
+  }
+
   /**
    * connects the context subscription with the given pair.
    *
