@@ -22,8 +22,7 @@
                         <g:link controller="yoda" action="manageSystemMessage">${message(code: 'menu.admin.systemMessage')}</g:link>
                     </div>
                     <div class="item">
-                        <br />
-                        <%--<g:link controller="profile" action="errorOverview">${message(code: "menu.user.errorReport")}</g:link>--%>
+                        <g:link controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</g:link>
                     </div>
                     <div class="item">
                         <br />
