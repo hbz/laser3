@@ -7,7 +7,7 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
+    <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
     <semui:crumb text="Pending Changes" class="active"/>
 </semui:breadcrumbs>
 
