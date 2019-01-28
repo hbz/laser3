@@ -12,6 +12,7 @@ import grails.web.Action
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
+import org.quartz.impl.triggers.SimpleTriggerImpl
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -108,15 +109,20 @@ class YodaController {
                 def cf  = clazz.configFlags
 
                 def triggers = quartzScheduler.getTriggersOfJob(key)
-                def crx = triggers.collect{ it.cronEx ?: null }
                 def nft = triggers.collect{ it.nextFireTime ?: null }
 
-                group << [
+                Map map = [
                         name: key.getName(),
                         configFlags: cf.join(', '),
-                        cronEx: crx ? crx.get(0) : '',
                         nextFireTime: nft ? nft.get(0).toTimestamp() : ''
                 ]
+
+                def crx = triggers.collect{ it.cronEx ?: null }
+
+                if (crx) {
+                    map << ['cronEx': crx.get(0).cronExpression]
+                }
+                group << map
             }
 
             groups << ["${groupName}" : group.sort{ it.nextFireTime }]
