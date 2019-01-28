@@ -22,15 +22,17 @@ abstract class AbstractDebugController {
                     params:   json?.toString(),
                     ms:       delta,
                     context:  contextService?.getOrg()
-            )).save()
+            )).save(flush: true)
         }
 
         // added global counts
-        SystemProfiler global = SystemProfiler.findWhere( uri: actionUri, context: null, params: null )
-        if (! global) {
-            global = new SystemProfiler(uri: actionUri, ms: 0)
+        SystemProfiler.withTransaction { status ->
+            SystemProfiler global = SystemProfiler.findWhere(uri: actionUri, context: null, params: null)
+            if (!global) {
+                global = new SystemProfiler(uri: actionUri, ms: 0)
+            }
+            global.setMs(Integer.valueOf(global.ms) + 1)
+            global.save(flush: true)
         }
-        global.setMs(Integer.valueOf(global.ms) + 1)
-        global.save(flush:true)
     }
 }

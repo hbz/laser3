@@ -14,7 +14,7 @@ import com.k_int.properties.PropertyDefinition
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Secured(['permitAll']) // TODO
-class AjaxController extends AbstractDebugController {
+class AjaxController {
 
     def genericOIDService
     def contextService
@@ -682,6 +682,11 @@ class AjaxController extends AbstractDebugController {
   @Secured(['ROLE_USER'])
   def lookupSubscriptions() {
     render controlledListService.getSubscriptions(params) as JSON
+  }
+
+  @Secured(['ROLE_USER'])
+  def lookupLicenses() {
+    render controlledListService.getLicenses(params) as JSON
   }
 
   /**

@@ -2,14 +2,14 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : System Events</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.admin.systemEvents')}</title>
 </head>
 
 <body>
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
-    <semui:crumb text="System Events" class="active"/>
+    <semui:crumb message="menu.admin.systemEvents" class="active"/>
 </semui:breadcrumbs>
 
 

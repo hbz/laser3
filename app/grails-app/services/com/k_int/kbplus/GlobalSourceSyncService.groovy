@@ -513,7 +513,7 @@ class GlobalSourceSyncService {
                   PendingChange.PROP_PKG,
                   ctx,
                   // pendingChange.message_GS02
-                  "Eine TIPP/Coverage Änderung für den Titel \"${title_of_tipp_to_update.title}\", ${changetext}, Status: ${tippStatus}",
+                  "Eine TIPP/Coverage Änderung für den Titel \"${title_of_tipp_to_update?.title}\", ${changetext}, Status: ${tippStatus}",
                   null,
                   [
                           changeTarget: "com.k_int.kbplus.TitleInstancePackagePlatform:${db_tipp.id}",
