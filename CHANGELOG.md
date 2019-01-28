@@ -11,7 +11,9 @@
 - improved namespace and identifier management
 - improved profiler
 - added new event logging
+- added data consistency check
 - added various paginations
+- fixed current titles date filter
 - various bugfixes
 
 0.12.3
