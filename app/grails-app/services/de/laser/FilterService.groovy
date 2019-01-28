@@ -9,7 +9,8 @@ class FilterService {
     private static final Long FAKE_CONSTRAINT_ORGID_WITHOUT_HITS = new Long(-1)
     def springSecurityService
 
-    Map<String, Map<String, Object>> getOrgQuery(params) {
+    Map<String, Map<String, Object>> getOrgQuery(Map params) {
+        Map<String, Map<String, Object>> result = [:]
         ArrayList<String> query = ["(o.status is null or o.status != :orgStatus)"]
         Map<String, Object> queryParams = ["orgStatus" : RDStore.O_DELETED]
 
@@ -60,12 +61,10 @@ class FilterService {
         def defaultOrder = " order by " + (params.sort ?: " LOWER(o.name)") + " " + (params.order ?: "asc")
 
         if (query.size() > 0) {
-            query = "from Org o where " + query.join(" and ") + defaultOrder
+            result.query = "from Org o where " + query.join(" and ") + defaultOrder
         } else {
-            query = "from Org o " + defaultOrder
+            result.query = "from Org o " + defaultOrder
         }
-
-        result.query = query
         result.queryParams = queryParams
 
         log.debug(result)

@@ -482,9 +482,8 @@ from License as l where (
         def role_sub            = RDStore.OR_SUBSCRIBER
         def role_sub_cons       = RDStore.OR_SUBSCRIBER_CONS
         def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
-
-        def ogr_provider   = RefdataValue.getByValueAndCategory('Provider', 'Organisational Role')
-        def ogr_agency     = RefdataValue.getByValueAndCategory('Agency', 'Organisational Role')
+        def ogr_provider        = RDStore.OR_PROVIDER
+        def ogr_agency          = RDStore.OR_AGENCY
 
         result.orgRoles    = [ogr_provider, ogr_agency]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
