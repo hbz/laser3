@@ -589,10 +589,8 @@ class FinanceController extends AbstractDebugController {
                             }
                             cellA.setCellValue(cellValueA)
                             cellB.setCellValue(cellValueB)
-                            if(ci.isVisibleForSubscriber) {
-                                cell = row.createCell(cellnum++)
-                                cell.setCellValue("sichtbar für Teilnehmer")
-                            }
+                            cell = row.createCell(cellnum++)
+                            cell.setCellValue(ci.isVisibleForSubscriber ? "sichtbar für Teilnehmer" : "")
                         }
                     }
                     //cost title
