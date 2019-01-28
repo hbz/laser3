@@ -285,11 +285,9 @@
             $('table[id^=costTable]').each( function() {
 
                 //this is a collection box for all costs
-                var costs = {}
+                var costs = {};
                 //get all currencies of cost items
-                var currencies = $.unique($(this).find('.costData').filter('[data-elementSign="positive"],[data-elementSign="negative"]').map(function(){
-                    return $(this).attr('data-billingCurrency')
-                }))
+                var allCostItems = $('.costData').filter('[data-elementSign="positive"],[data-elementSign="negative"]');
                 /*
                     in the collection box, create for each currency the following sum counters:
                     - local sum (means the actual value and not the amount which is going to be paid)
@@ -297,10 +295,11 @@
                     - billing sum
                     - billing sum after taxation (see above)
                  */
-                currencies.each(function() {
-                    costs[this] = {local: 0.0, localAfterTax: 0.0, billing: 0.0, billingAfterTax: 0.0}
-                })
-
+                allCostItems.each(function() {
+                    var currency = $(this).attr("data-billingCurrency");
+                    if(typeof(costs[currency]) === 'undefined')
+                        costs[currency] = {local: 0.0, localAfterTax: 0.0, billing: 0.0, billingAfterTax: 0.0};
+                });
                 /*
                     the information necessary has been stuffed into a <span> element and are thus defined in the templates
                     _result_tab_{cons|owner_table|subscr}. Again, we take only those which are marked as being considered:
@@ -308,7 +307,7 @@
                 $(this).find('tbody tr span.costData').filter('[data-elementSign="positive"],[data-elementSign="negative"]').each( function() {
 
                     //take the correct currency map to assign
-                    var ci = costs[$(this).attr('data-billingCurrency')]
+                    var ci = costs[$(this).attr('data-billingCurrency')];
 
                     /*
                         as of ERMS-804, costs can have several signs: they may be positive, negative or neutral. See the RefdataCategory 'Cost configuration'.
@@ -317,7 +316,7 @@
                     var operators = {
                         'positive': function(a,b) { return a + b },
                         'negative': function(a,b) { return a - b }
-                    }
+                    };
 
                     /*
                         Here is the actual calculation being done:
@@ -337,22 +336,23 @@
                         ci.billingAfterTax = operators[$(this).attr('data-elementSign')](ci.billingAfterTax,parseFloat($(this).attr('data-costInBillingCurrencyAfterTax')))
                     }
 
-                })
+                });
 
                 //this is the final counter for all local costs, independently of their currency
-                var finalLocal = 0.0
-                var finalLocalAfterTax = 0.0
+                var finalLocal = 0.0;
+                var finalLocalAfterTax = 0.0;
 
                 //add all local costs and those after taxation (if there are costs at all)
                 for (ci in costs) {
-                    finalLocal += costs[ci].local
-                    finalLocalAfterTax += costs[ci].localAfterTax
+                    finalLocal += costs[ci].local;
+                    finalLocalAfterTax += costs[ci].localAfterTax;
                 }
 
                 //get the current tab
                 var currentTab = $(this).attr("data-queryMode");
                 var colspan1;
                 var colspan2;
+                var totalHeaderRow;
                 switch(currentTab) {
                     case 'OWNER':
                         <g:if test="${inSubMode}">
@@ -363,6 +363,7 @@
                             colspan1 = 4;
                             colspan2 = 5;
                         </g:else>
+                        totalHeaderRow = '<tr><th colspan="'+colspan1+'"><strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}</strong></th><th></th><th></th><th colspan="'+colspan2+'"></th></tr>';
                     break;
                     case 'CONS':
                     case 'CONS_AT_SUBSCR':
@@ -374,10 +375,12 @@
                             colspan1 = 6;
                             colspan2 = 4;
                         </g:else>
+                        totalHeaderRow = '<tr><th colspan="'+colspan1+'"><strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}</strong></th><th></th><th></th><th></th><th colspan="'+colspan2+'"></th></tr>';
                     break;
                     case 'SUBSCR':
                         colspan1 = 2;
                         colspan2 = 4;
+                        totalHeaderRow = '<tr><th colspan="'+colspan1+'"><strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}</strong></th><th></th><th></th><th colspan="'+colspan2+'"></th></tr>';
                     break;
                     default: console.log("unhandled tab mode: "+currentTab);
                     break;
@@ -387,32 +390,33 @@
                 $("#localSum_"+currentTab).html('<strong>'+Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(finalLocal)+'</strong>');
                 $("#localSumAfterTax_"+currentTab).html('<strong>'+Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(finalLocalAfterTax)+'</strong>');
 
-                var row = ""
+                $("#sumOfCosts_"+currentTab).before(totalHeaderRow);
+                var row = "";
                 //and display each currency counter
                 for (ci in costs) {
                     switch(currentTab) {
                         case 'OWNER':
-                            row = '<tr><th colspan="'+colspan1+'"><strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}</strong></th><th>${message(code:'financials.sum.billing')} ' + ci + '<br>${message(code:'financials.sum.billingAfterTax')}</th><th colspan="'+colspan2+'"></th></tr>';
+                            row = '<tr><th colspan="'+colspan1+'"></th><th>${message(code:'financials.sum.billing')} ' + ci + '<br>${message(code:'financials.sum.billingAfterTax')}</th><th colspan="'+colspan2+'"></th></tr>';
                             row += '<tr><td colspan="'+colspan1+'"></td><td class="la-exposed-bg"><strong>'+Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billing)+'</strong><br><strong>'+Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billingAfterTax)+'</strong></td><td colspan="'+colspan2+'"></td></tr>';
                         break;
                         case 'CONS':
                         case 'CONS_AT_SUBSCR':
-                            row = '<tr><th colspan="'+colspan1+'"><strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}</strong></th><th>${message(code:'financials.sum.billing')} ' + ci + '</th><th></th><th>${message(code:'financials.sum.billingAfterTax')}</th><th colspan="'+colspan2+'"></th></tr>';
+                            row = '<tr><th colspan="'+colspan1+'"></th><th>${message(code:'financials.sum.billing')} ' + ci + '</th><th></th><th>${message(code:'financials.sum.billingAfterTax')}</th><th colspan="'+colspan2+'"></th></tr>';
                             row += '<tr><td colspan="'+colspan1+'"></td><td class="la-exposed-bg"><strong>'+Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billing)+'</strong></td>';
                             row += '<td></td>';
                             row += '<td class="la-exposed-bg"><strong>'+Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billingAfterTax)+'</strong></td><td colspan="'+colspan2+'"></td></tr>';
                         break;
                         case 'SUBSCR':
-                            row = '<tr><th colspan="'+colspan1+'"><strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}</strong></th><th>${message(code:'financials.sum.billing')} ' + ci + '</th><th colspan="'+colspan2+'"></th></tr>';
+                            row = '<tr><th colspan="'+colspan1+'"></th><th>${message(code:'financials.sum.billing')} ' + ci + '</th><th colspan="'+colspan2+'"></th></tr>';
                             row += '<tr><td colspan="'+colspan1+'"></td><td class="la-exposed-bg"><strong>'+Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billingAfterTax)+'</strong></td><td colspan="'+colspan2+'"></td></tr>';
                         break;
                         default: console.log("unhandled tab mode: "+currentTab);
                         break;
                     }
+                    $("#sumOfCosts_"+currentTab).before(row);
                 }
                 if(typeof(ci) === 'undefined')
-                    row = '<tr><td colspan="13">${message(code:'financials.noCostsConsidered')}</td></tr>';
-                $("#sumOfCosts_"+currentTab).before(row);
+                    $("#sumOfCosts_"+currentTab).before('<tr><td colspan="13">${message(code:'financials.noCostsConsidered')}</td></tr>');
             })
         }
     }
