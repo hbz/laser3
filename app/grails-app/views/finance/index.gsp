@@ -355,8 +355,14 @@
                 var colspan2;
                 switch(currentTab) {
                     case 'OWNER':
-                        colspan1 = 4;
-                        colspan2 = 5;
+                        <g:if test="${inSubMode}">
+                            colspan1 = 3;
+                            colspan2 = 5;
+                        </g:if>
+                        <g:else>
+                            colspan1 = 4;
+                            colspan2 = 5;
+                        </g:else>
                     break;
                     case 'CONS':
                     case 'CONS_AT_SUBSCR':
