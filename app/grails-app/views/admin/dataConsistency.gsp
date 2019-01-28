@@ -2,25 +2,25 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} - Data Consistency</title>
+    <title>${message(code:'laser', default:'LAS:eR')} - ${message(code: "menu.admin.dataConsistency")}</title>
 </head>
 
 <body>
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
-    <semui:crumb text="Data Consistency" class="active"/>
+    <semui:crumb message="menu.admin.dataConsistency" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui header">Data Consistency Check</h1>
+<h1 class="ui header">${message(code: "menu.admin.dataConsistency")}</h1>
 
 <div class="ui grid">
     <div class="twelve wide column">
 
-        <h2 class="ui headerline">Import Ids</h2>
+        <h2 class="ui headerline">${message(code: "admin.duplicateImpIds")}</h2>
 
         <g:each in="${importIds}" var="obj">
-            <g:if test="${true}">
+            <g:if test="${obj.value}">
 
                 <h3 class="ui headerline" id="jumpMark_1_${obj.key}">${obj.key} (${obj.value.size()})</h3>
 
@@ -44,7 +44,7 @@
             </g:if>
         </g:each>
 
-        <h2 class="ui headerline">Names and Titles</h2>
+        <h2 class="ui headerline">${message(code: "admin.duplicateNamesAndTitles")}</h2>
 
         <g:each in="${titles}" var="obj">
             <g:if test="${true}">
@@ -81,14 +81,16 @@
     <div class="four wide column">
         <div class="ui sticky">
             <aside>
-                <p>Import Ids</p>
+                <p>${message(code: "admin.duplicateImpIds")}</p>
 
                 <g:each in="${importIds}" var="obj">
-                    <a href="#jumpMark_1_${obj.key}">${obj.key}</a> <br />
+                    <g:if test="${obj.value}">
+                        <a href="#jumpMark_1_${obj.key}">${obj.key}</a> <br />
+                    </g:if>
                 </g:each>
 
                 <br />
-                <p>Names and Titles</p>
+                <p>${message(code: "admin.duplicateNamesAndTitles")}</p>
 
                 <g:each in="${titles}" var="obj">
                     <a href="#jumpMark_2_${obj.key}">${obj.key}</a> <br />
