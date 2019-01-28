@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
 import de.laser.SystemEvent
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
@@ -10,6 +12,7 @@ import grails.web.Action
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
+import org.quartz.impl.triggers.SimpleTriggerImpl
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -32,10 +35,22 @@ class YodaController {
 
     static boolean ftupdate_running = false
 
+    @Secured(['ROLE_YODA'])
+    def index() {
+        redirect action: 'dashboard'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def dashboard() {
+        Map result = [:]
+
+        result
+    }
+
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def demo() {
-        def result = [:]
+        Map result = [:]
 
         result.user = springSecurityService.getCurrentUser()
         result.roles = result.user.roles
@@ -66,7 +81,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def appConfig() {
-        def result = [:]
+        Map result = [:]
         //SystemAdmin should only be created once in BootStrap
         result.adminObj = SystemAdmin.list().first()
         result.editable = true
@@ -80,7 +95,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def quartzInfo() {
-        def result = [:]
+        Map result = [:]
 
         result.currentConfig   = grails.util.Holders.config
         result.quartzScheduler = quartzScheduler
@@ -94,15 +109,20 @@ class YodaController {
                 def cf  = clazz.configFlags
 
                 def triggers = quartzScheduler.getTriggersOfJob(key)
-                def crx = triggers.collect{ it.cronEx ?: null }
                 def nft = triggers.collect{ it.nextFireTime ?: null }
 
-                group << [
+                Map map = [
                         name: key.getName(),
                         configFlags: cf.join(', '),
-                        cronEx: crx ? crx.get(0) : '',
                         nextFireTime: nft ? nft.get(0).toTimestamp() : ''
                 ]
+
+                def crx = triggers.collect{ it.cronEx ?: null }
+
+                if (crx) {
+                    map << ['cronEx': crx.get(0).cronExpression]
+                }
+                group << map
             }
 
             groups << ["${groupName}" : group.sort{ it.nextFireTime }]
@@ -113,7 +133,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def cacheInfo() {
-        def result = [:]
+        Map result = [:]
 
         result.grailsApp = grailsApplication
         result.appContext = getApplicationContext()
@@ -138,8 +158,8 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
-    def appProfiler() {
-        def result = [:]
+    def profiler() {
+        Map result = [:]
 
         result.globalCountByUri = [:]
 
@@ -160,7 +180,7 @@ class YodaController {
     //@Cacheable('message')
     @Secured(['ROLE_ADMIN'])
     def appInfo() {
-        def result = [:]
+        Map result = [:]
 
         result.statsSyncService = [:]
         result.dataloadService = [:]
@@ -185,8 +205,8 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def appSecurity() {
-        def result = [:]
-        def cList = [:]
+        Map result = [:]
+        Map cList = [:]
 
         grailsApplication.controllerClasses.toList().each { controller ->
             Class controllerClass = controller.clazz
@@ -226,10 +246,27 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    def userMatrix() {
+        Map result = [:]
+
+        result.matrix = [:]
+
+        Role.findAll("from Role order by authority").each { role -> result.matrix[role.authority] = [] }
+
+        User.executeQuery(
+                "SELECT us, ro FROM User us JOIN us.roles usro JOIN usro.role ro GROUP BY ro, us"
+        ).each { usro ->
+            result.matrix[usro[1].authority].add(usro[0])
+        }
+
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
     def pendingChanges() {
 
         // TODO: DEBUG ONLY
-        def result = [:]
+        Map result = [:]
 
         result.pending = PendingChange.executeQuery(
                 "SELECT pc FROM PendingChange pc WHERE pc.status IS NULL ORDER BY pc.id DESC",
@@ -301,7 +338,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def manageGlobalSources() {
-        def result = [:]
+        Map result = [:]
         log.debug("manageGlobalSources ..")
         result.sources = GlobalRecordSource.list()
 
@@ -310,7 +347,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def manageESSources() {
-        def result = [:]
+        Map result = [:]
         log.debug("manageESSources ..")
         result.sources = ElasticsearchSource.list()
 
@@ -319,7 +356,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def newESSource() {
-        def result=[:]
+        Map result=[:]
         log.debug("manageGlobalSources ..")
 
         /*result.newSource = ElasticsearchSource.findByIdentifier(params.identifier) ?: new ElasticsearchSource(
@@ -341,7 +378,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def newGlobalSource() {
-        def result=[:]
+        Map result=[:]
         log.debug("manageGlobalSources ..")
 
         result.newSource = GlobalRecordSource.findByIdentifier(params.identifier) ?: new GlobalRecordSource(
@@ -362,14 +399,14 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def settings() {
-        def result = [:]
+        Map result = [:]
         result.settings = Setting.list();
         result
     }
 
     @Secured(['ROLE_YODA'])
     def toggleBoolSetting() {
-        def result = [:]
+        Map result = [:]
         def s = Setting.findByName(params.setting)
         if (s) {
             if (s.tp == Setting.CONTENT_TYPE_BOOLEAN) {
@@ -465,7 +502,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def manageSystemMessage() {
-        def result = [:]
+        Map result = [:]
         result.user = springSecurityService.currentUser
 
         if(params.create)

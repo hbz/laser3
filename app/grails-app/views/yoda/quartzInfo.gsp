@@ -2,16 +2,16 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code:'laser', default:'LAS:eR')} : Quarz Info</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.yoda.quartzInfo')}</title>
 </head>
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
-    <semui:crumb text="Quarz Info" class="active"/>
+    <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
+    <semui:crumb message="menu.yoda.quartzInfo" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon />App Cronjob Info</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.yoda.quartzInfo')}</h1>
 
 <g:each in="${quartz}" var="groupKey, group">
     <h3 class="ui header">${groupKey}</h3>
