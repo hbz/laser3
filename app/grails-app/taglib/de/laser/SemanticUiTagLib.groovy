@@ -511,6 +511,7 @@ class SemanticUiTagLib {
         def statusType = object.status?.owner?.desc
         def color
         def tooltip
+
         if(object.status) {
             tooltip = object.status.getI10n('value')
             switch(object.status) {
@@ -527,16 +528,28 @@ class SemanticUiTagLib {
         }
         out <<   "<div class='ui large label la-annual-rings'>"
         if (prev) {
-            StringJoiner sj = new StringJoiner("|")
-            prev.each { p ->
+            if (prev.size() == 1) {
                 if (attrs.mapping) {
-                    sj.add(g.link ("<span data-tooltip=\"${p.name}\">#${p.id}</span>",contoller: attrs.controller, action: attrs.action, params:[sub:p.id], mapping: attrs.mapping))
-                }
-                else {
-                    sj.add(g.link ("<span data-tooltip=\"${p.name}\">#${p.id}</span>",contoller: attrs.controller, action: attrs.action, id:p.id))
+                    out << g.link("<i class='arrow left icon'></i>", contoller: attrs.controller, action: attrs.action, class: "item", params:[sub:prev.id], mapping: attrs.mapping)
+
+                } else {
+                    out << g.link("<i class='arrow left icon'></i>", contoller: attrs.controller, action: attrs.action, class: "item", id: prev.id)
                 }
             }
-            out << sj.toString() + '<i class="arrow left icon"></i>'
+            else {
+                out << "<div class='ui dropdown'>" +
+                        "<i class='arrow left icon'></i>" +
+                        "<div class='menu'>"
+                prev.each { p ->
+                    if (attrs.mapping) {
+                        out << g.link("${p.name}", contoller: attrs.controller, action: attrs.action, class: "item", params:[sub:p.id], mapping: attrs.mapping)
+                    } else {
+                        out << g.link("${p.name}", contoller: attrs.controller, action: attrs.action, class: "item", id: p.id)
+                    }
+                }
+                out << "</div>" +
+                        "</div>"
+            }
         }
         else {
             out << '<i class="arrow left icon disabled"></i>'
@@ -546,20 +559,33 @@ class SemanticUiTagLib {
             out << '–'
             out << g.formatDate(date: object.endDate, format: message(code: 'default.date.format.notime'))
         }
-        out << "<a class='ui ${color} circular tiny label'  data-position='right center' data-variation='tiny' data-tooltip='Status: ${tooltip}'>"
+        out << "<a class='ui ${color} circular tiny label'  data-variation='tiny' data-tooltip='Status: ${tooltip}'>"
         out << '       ?'
         out << '</a>'
+
         if (next) {
-            StringJoiner sj = new StringJoiner("|")
-            next.each { n ->
+            if (next.size() == 1) {
                 if (attrs.mapping) {
-                    sj.add(g.link ("<span data-tooltip=\"${n.name}\">#${n.id}</span>", contoller: attrs.controller, action: attrs.action, params:[sub:n.id], mapping: attrs.mapping))
-                }
-                else {
-                    sj.add(g.link ("<span data-tooltip=\"${n.name}\">#${n.id}</span>", contoller: attrs.controller, action: attrs.action, id:n.id))
+                    out << g.link("<i class='arrow right icon'></i>", contoller: attrs.controller, action: attrs.action, class: "item", params:[sub:next.id], mapping: attrs.mapping)
+
+                } else {
+                    out << g.link("<i class='arrow right icon'></i>", contoller: attrs.controller, action: attrs.action, class: "item", id: next.id)
                 }
             }
-            out << '<i class="arrow right icon"></i>' + sj.toString()
+            else {
+                out << "<div class='ui dropdown'>" +
+                            "<i class='arrow right icon'></i>" +
+                            "<div class='menu'>"
+                next.each { n ->
+                    if (attrs.mapping) {
+                        out << g.link("${n.name}", contoller: attrs.controller, action: attrs.action, class: "item", params:[sub:n.id], mapping: attrs.mapping)
+                    } else {
+                        out << g.link("${n.name}", contoller: attrs.controller, action: attrs.action, class: "item", id: n.id)
+                    }
+                }
+                out << "</div>" +
+                        "</div>"
+            }
         }
         else {
             out << '<i class="arrow right icon disabled"></i>'
