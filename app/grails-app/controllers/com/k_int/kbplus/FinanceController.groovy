@@ -384,7 +384,6 @@ class FinanceController extends AbstractDebugController {
         if (MODE_SUBSCR == queryMode) {
 
             if(result.fixedSubscription) {
-                // TODO FLAG isVisibleForSubscriber
                 cost_item_qry_params =  [sub: result.fixedSubscription, owner: result.institution]
                 cost_item_qry        = ' , OrgRole as ogr WHERE ci.sub = :sub AND ogr.org = :owner AND ci.isVisibleForSubscriber is true ' // (join)? "LEFT OUTER JOIN ${join} AS j WHERE ci.owner = :owner " :"  where ci.owner = :owner "
                 //orderAndSortBy       = orderAndSortBy
