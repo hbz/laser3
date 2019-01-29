@@ -36,12 +36,12 @@
 
                 </div>
 
-                <div class="field wide six fieldcontain ${hasErrors(bean: numbersInstance, field: 'number', 'error')} ">
+                <div class="field wide six fieldcontain ${hasErrors(bean: numbersInstance, field: 'number', 'error')} required">
                     <label for="number">
                         <g:message code="numbers.number.label" default="Number" />
 
                     </label>
-                    <g:textField name="number" value="${numbersInstance?.number}"/>
+                    <g:textField id="number" name="number" value="${numbersInstance?.number}"/>
 
                 </div>
 
@@ -52,17 +52,27 @@
 
     <r:script>
 
-        $('#create_person')
+        $('#create_number')
                 .form({
             on: 'blur',
             inline: true,
             fields: {
-                last_name: {
-                    identifier  : 'last_name',
+                number: {
+                    identifier  : 'number',
                     rules: [
                         {
-                            type   : 'empty',
-                            prompt : '{name} <g:message code="validation.needsToBeFilledOut" default=" muss ausgefüllt werden" />'
+                            type   : 'number',
+                            prompt : '{name} <g:message code="validation.onlyInteger" />'
+                        }
+                    ]
+                },
+                startDate: {
+                    identifier : 'startDate',
+                    rules: [
+                        {
+                            type : 'regExp',
+                            value: /\d{2}\.\d{2}\.\d{4}/,
+                            prompt: '<g:message code="validation.validDate"/>'
                         }
                     ]
                 }

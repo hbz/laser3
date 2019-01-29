@@ -231,19 +231,6 @@ class User implements Permissions {
         SpringSecurityUtils.ifAnyGranted("ROLE_YODA")
     }
 
-    /*
-    def hasRole(roleName) {
-      log.debug("USER.hasRole(): " + roleName) // TODO check roleHierarchy
-
-        def result = false
-        def role = Role.findByAuthority(roleName)
-        if (role) {
-            def ur = UserRole.findByUserAndRole(this, role)
-            result = (ur && roles?.contains(ur))
-        }
-        result
-    } */
-
     def hasAffiliation(userRoleName) {
         hasAffiliationAND(userRoleName, 'ROLE_USER')
     }
