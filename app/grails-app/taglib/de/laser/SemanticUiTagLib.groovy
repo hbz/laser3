@@ -511,6 +511,15 @@ class SemanticUiTagLib {
         def statusType = object.status?.owner?.desc
         def color
         def tooltip
+        def startDate
+        def endDate
+        def dash
+
+        def prevStartDate
+        def prevEndDate
+
+        def nextStartDate
+        def nextEndDate
 
         if(object.status) {
             tooltip = object.status.getI10n('value')
@@ -527,6 +536,13 @@ class SemanticUiTagLib {
             tooltip = message(code:'subscription.details.statusNotSet')
         }
         out <<   "<div class='ui large label la-annual-rings'>"
+        if (object.startDate) {
+            startDate = g.formatDate(date: object.startDate, format: message(code: 'default.date.format.notime'))
+        }
+        if (object.endDate) {
+            dash = '–'
+            endDate = g.formatDate(date: object.endDate, format: message(code: 'default.date.format.notime'))
+        }
         if (prev) {
             if (prev.size() == 1) {
                 if (attrs.mapping) {
@@ -537,14 +553,23 @@ class SemanticUiTagLib {
                 }
             }
             else {
+
                 out << "<div class='ui dropdown'>" +
                         "<i class='arrow left icon'></i>" +
                         "<div class='menu'>"
                 prev.each { p ->
+
+
+                    if (p.startDate) {
+                        prevStartDate = g.formatDate(date: p.startDate, format: message(code: 'default.date.format.notime'))
+                    }
+                    if (p.endDate) {
+                        prevEndDate = g.formatDate(date: p.endDate, format: message(code: 'default.date.format.notime'))
+                    }
                     if (attrs.mapping) {
-                        out << g.link("${p.name}", contoller: attrs.controller, action: attrs.action, class: "item", params:[sub:p.id], mapping: attrs.mapping)
+                        out << g.link("<b>${p.name}:</b> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", contoller: attrs.controller, action: attrs.action, class: "item", params:[sub:p.id], mapping: attrs.mapping)
                     } else {
-                        out << g.link("${p.name}", contoller: attrs.controller, action: attrs.action, class: "item", id: p.id)
+                        out << g.link("<b>${p.name}:</b> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", contoller: attrs.controller, action: attrs.action, class: "item", id: p.id)
                     }
                 }
                 out << "</div>" +
@@ -554,16 +579,17 @@ class SemanticUiTagLib {
         else {
             out << '<i class="arrow left icon disabled"></i>'
         }
-        out <<   g.formatDate(date:object.startDate,format:message(code: 'default.date.format.notime'))
-        if (object.endDate) {
-            out << '–'
-            out << g.formatDate(date: object.endDate, format: message(code: 'default.date.format.notime'))
-        }
+
+        out << startDate
+        out << dash
+        out <<  endDate
+
         out << "<a class='ui ${color} circular tiny label'  data-variation='tiny' data-tooltip='Status: ${tooltip}'>"
         out << '       ?'
         out << '</a>'
 
         if (next) {
+
             if (next.size() == 1) {
                 if (attrs.mapping) {
                     out << g.link("<i class='arrow right icon'></i>", contoller: attrs.controller, action: attrs.action, class: "item", params:[sub:next.id], mapping: attrs.mapping)
@@ -577,10 +603,17 @@ class SemanticUiTagLib {
                             "<i class='arrow right icon'></i>" +
                             "<div class='menu'>"
                 next.each { n ->
+
+                    if (n.startDate) {
+                        nextStartDate = g.formatDate(date: n.startDate, format: message(code: 'default.date.format.notime'))
+                    }
+                    if (n.endDate) {
+                        nextEndDate = g.formatDate(date: n.endDate, format: message(code: 'default.date.format.notime'))
+                    }
                     if (attrs.mapping) {
-                        out << g.link("${n.name}", contoller: attrs.controller, action: attrs.action, class: "item", params:[sub:n.id], mapping: attrs.mapping)
+                        out << g.link("<b>${n.name}:</b> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", contoller: attrs.controller, action: attrs.action, class: "item", params:[sub:n.id], mapping: attrs.mapping)
                     } else {
-                        out << g.link("${n.name}", contoller: attrs.controller, action: attrs.action, class: "item", id: n.id)
+                        out << g.link("<b>${n.name}:</b> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", contoller: attrs.controller, action: attrs.action, class: "item", id: n.id)
                     }
                 }
                 out << "</div>" +
