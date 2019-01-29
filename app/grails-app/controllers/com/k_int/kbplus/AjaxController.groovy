@@ -20,6 +20,7 @@ class AjaxController {
     def contextService
     def taskService
     def controlledListService
+    def dataConsistencyService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -705,7 +706,7 @@ class AjaxController {
         link = genericOIDService.resolveOID(params.link)
         Subscription pair = genericOIDService.resolveOID(params["pair_${link.id}"])
         RefdataValue linkType = genericOIDService.resolveOID(params["linkType_${link.id}"])
-        commentContent = params["linkComment_${link.id}"]
+        commentContent = params["linkComment_${link.id}"].trim()
         if(link.source == context.id)
           link.destination = pair.id
         else if(link.destination == context.id)
@@ -720,9 +721,16 @@ class AjaxController {
         link = new Links(linkType: linkType,source: context.id, destination: pair.id,owner: contextService.getOrg(),objectType:Subscription.class.name)
       }
       if(link.save(flush:true)) {
-        if(linkComment && commentContent.length() > 0) {
-          linkComment.content = commentContent
-          linkComment.save(true)
+        if(linkComment) {
+          if(commentContent.length() > 0) {
+            linkComment.content = commentContent
+            linkComment.save(true)
+          }
+          else if(commentContent.length() == 0) {
+            DocContext commentContext = DocContext.findByOwner(linkComment)
+            if(commentContext.delete())
+              linkComment.delete()
+          }
         }
         else if(!linkComment && commentContent.length() > 0) {
           RefdataValue typeNote = RefdataValue.getByValueAndCategory('Note','Document Type')
@@ -1884,4 +1892,9 @@ class AjaxController {
         render template:"../templates/notes/modal_edit", model: result
     }
 
+    @Secured(['ROLE_USER'])
+    def consistencyCheck() {
+        def result = dataConsistencyService.ajaxQuery(params.key, params.key2, params.value)
+        render result as JSON
+    }
 }

@@ -495,6 +495,7 @@ class FinanceController extends AbstractDebugController {
         SimpleDateFormat dateFormat = new SimpleDateFormat(message(code: 'default.date.format.notime', default: 'dd.MM.yyyy'))
         XSSFWorkbook workbook = new XSSFWorkbook()
         LinkedHashMap<Subscription,List<Org>> subscribers = [:]
+        LinkedHashMap<Subscription,List<Org>> providers = [:]
         LinkedHashMap costItemGroups = [:]
         OrgRole.findAllByRoleType(RDStore.OR_SUBSCRIBER_CONS).each { it ->
             List<Org> orgs = subscribers.get(it.sub)
@@ -502,6 +503,13 @@ class FinanceController extends AbstractDebugController {
                 orgs = [it.org]
             else orgs.add(it.org)
             subscribers.put(it.sub,orgs)
+        }
+        OrgRole.findAllByRoleType(RDStore.OR_PROVIDER).each { it ->
+            List<Org> orgs = providers.get(it.sub)
+            if(orgs == null)
+                orgs = [it.org]
+            else orgs.add(it.org)
+            providers.put(it.sub,orgs)
         }
         Map<RefdataValue, XSSFCellStyle> cellStyleMap = [:]
         XSSFCellStyle csPositive = workbook.createCellStyle()
@@ -534,13 +542,15 @@ class FinanceController extends AbstractDebugController {
             headerRow.setHeightInPoints(16.75f)
             ArrayList titles = [message(code: 'sidewide.number')]
             if(viewMode == "cons")
-                titles.addAll([message(code:'financials.newCosts.costParticipants'),message(code:'org.sortName.label'),message(code:'financials.isVisibleForSubscriber')])
-            titles.addAll([message(code: 'financials.newCosts.costTitle'), message(code: 'financials.forSubscription'), message(code:'subscription.startDate.label'),
-                           message(code: 'subscription.endDate.label'), message(code: 'financials.costItemConfiguration'),
-                           message(code: 'package'), message(code: 'issueEntitlement.label'), message(code: 'financials.datePaid'), message(code: 'financials.dateFrom'),
-                           message(code: 'financials.dateTo'), message(code: 'financials.addNew.costCategory'), message(code: 'financials.costItemStatus'),
-                           message(code: 'financials.billingCurrency'),message(code: 'financials.costInBillingCurrency'),"EUR",message(code: 'financials.costInLocalCurrency'),
-                           message(code: 'financials.taxRate')])
+                titles.addAll([message(code:'org.sortName.label'),message(code:'financials.newCosts.costParticipants'),message(code:'financials.isVisibleForSubscriber')])
+            titles.add(message(code: 'financials.newCosts.costTitle'))
+            if(viewMode == "cons")
+                titles.add(message(code:'default.provider.label'))
+            titles.addAll([message(code: 'financials.forSubscription'), message(code:'subscription.startDate.label'), message(code: 'subscription.endDate.label'),
+                           message(code: 'financials.costItemConfiguration'), message(code: 'package'), message(code: 'issueEntitlement.label'),
+                           message(code: 'financials.datePaid'), message(code: 'financials.dateFrom'), message(code: 'financials.dateTo'),
+                           message(code: 'financials.addNew.costCategory'), message(code: 'financials.costItemStatus'), message(code: 'financials.billingCurrency'),
+                           message(code: 'financials.costInBillingCurrency'),"EUR",message(code: 'financials.costInLocalCurrency'), message(code: 'financials.taxRate')])
             if(["owner","cons"].indexOf(viewMode) > -1)
                 titles.addAll([message(code:'financials.billingCurrency'),message(code: 'financials.costInBillingCurrencyAfterTax'),"EUR",message(code: 'financials.costInLocalCurrencyAfterTax')])
             titles.addAll([message(code: 'financials.costItemElement'),message(code: 'financials.newCosts.description'),
@@ -584,33 +594,47 @@ class FinanceController extends AbstractDebugController {
                             String cellValueA = ""
                             String cellValueB = ""
                             orgRoles.each { or ->
-                                cellValueA += or.name
-                                cellValueB += or.sortname
+                                cellValueA += or.sortname
+                                cellValueB += or.name
                             }
                             cellA.setCellValue(cellValueA)
                             cellB.setCellValue(cellValueB)
-                            if(ci.isVisibleForSubscriber) {
-                                cell = row.createCell(cellnum++)
-                                cell.setCellValue("sichtbar für Teilnehmer")
-                            }
+                            cell = row.createCell(cellnum++)
+                            cell.setCellValue(ci.isVisibleForSubscriber ? "sichtbar für Teilnehmer" : "")
                         }
                     }
                     //cost title
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci.costTitle ?: '')
+                    if(viewMode == "cons") {
+                        //provider
+                        cell = row.createCell(cellnum++)
+                        if(ci.sub) {
+                            List<Org> orgRoles = providers.get(ci.sub)
+                            String cellValue = ""
+                            orgRoles.each { or ->
+                                cellValue += or.name
+                            }
+                            cell.setCellValue(cellValue)
+                        }
+                        else cell.setCellValue("")
+                    }
+                    //cell.setCellValue(ci.sub ? ci.sub"")
                     //subscription
                     cell = row.createCell(cellnum++)
-                    if(ci.sub) {
-                        cell.setCellValue(ci.sub.name)
-                    }
+                    cell.setCellValue(ci.sub ? ci.sub.name : "")
                     //dates from-to
                     Cell fromCell = row.createCell(cellnum++)
                     Cell toCell = row.createCell(cellnum++)
                     if(ci.sub) {
                         if(ci.sub.startDate)
                             fromCell.setCellValue(dateFormat.format(ci.sub.startDate))
-                        else if(ci.sub.endDate)
+                        else
+                            fromCell.setCellValue("")
+                        if(ci.sub.endDate)
                             toCell.setCellValue(dateFormat.format(ci.sub.endDate))
+                        else
+                            toCell.setCellValue("")
                     }
                     //cost sign
                     cell = row.createCell(cellnum++)

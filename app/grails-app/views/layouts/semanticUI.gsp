@@ -349,6 +349,7 @@
                                     <g:link class="item" controller="admin" action="ieTransfer">IE Transfer</g:link>
                                     <g:link class="item" controller="admin" action="userMerge">User Merge</g:link>
                                     <g:link class="item" controller="admin" action="hardDeletePkgs">Package Delete</g:link>
+                                    <g:link class="item" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</g:link>
                                 </div>
                             </div>
 
