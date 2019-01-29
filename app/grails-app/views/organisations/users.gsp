@@ -15,7 +15,7 @@
         ${orgInstance.name}
       </h1>
 
-      <g:render template="nav" contextPath="." />
+      <g:render template="nav" />
 
       <semui:messages data="${flash}" />
 
@@ -38,7 +38,7 @@
                     ${userOrg[0].user.displayName}
                   <g:if test="${userOrg[0].user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.name}">
                     <br>
-                    ${userOrg[0].user.getSettingsValue(UserSettings.KEYS.DASHBOARD).name}
+                    ${userOrg[0].user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.name}
                   </g:if>
                 </g:link>
             </td>
@@ -79,7 +79,7 @@
                           data-confirm-term-what="user"
                           data-confirm-term-what-detail="${userOrg[0].user.displayName}"
                           data-confirm-term-where="organisation"
-                          data-confirm-term-where-detail="${userOrg[0].user.getSettingsValue(UserSettings.KEYS.DASHBOARD).name}"
+                          data-confirm-term-where-detail="${userOrg[0].user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.name}"
                           data-confirm-term-how="delete"
                           controller="organisations"
                           action="deleteRole"
