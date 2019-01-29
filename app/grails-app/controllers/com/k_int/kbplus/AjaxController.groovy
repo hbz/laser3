@@ -20,6 +20,7 @@ class AjaxController {
     def contextService
     def taskService
     def controlledListService
+    def dataConsistencyService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -1891,4 +1892,9 @@ class AjaxController {
         render template:"../templates/notes/modal_edit", model: result
     }
 
+    @Secured(['ROLE_USER'])
+    def consistencyCheck() {
+        def result = dataConsistencyService.ajaxQuery(params.key, params.key2, params.value)
+        render result as JSON
+    }
 }
