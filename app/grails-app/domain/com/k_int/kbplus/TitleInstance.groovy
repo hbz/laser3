@@ -29,7 +29,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditTrait {
   String keyTitle
   String sortTitle
   String impId
-  RefdataValue status
+  RefdataValue status       // RefdataCategory 'TitleInstanceStatus'
   RefdataValue type
   Date dateCreated
   Date lastUpdated

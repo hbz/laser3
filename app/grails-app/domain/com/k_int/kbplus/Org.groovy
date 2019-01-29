@@ -45,7 +45,7 @@ class Org extends AbstractBaseDomain {
 
     RefdataValue orgType                 // RefdataCategory 'OrgType' OLD -> NEW: orgRoleType
     RefdataValue sector
-    RefdataValue status
+    RefdataValue status                  // RefdataCategory 'OrgStatus'
     RefdataValue membership
     RefdataValue country                 // RefdataCategory 'Country'
     RefdataValue federalState            // RefdataCategory 'Federal State'

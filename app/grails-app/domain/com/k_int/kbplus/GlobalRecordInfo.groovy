@@ -14,7 +14,7 @@ class GlobalRecordInfo {
   Set trackers 
   byte[] record
   RefdataValue kbplusCompliant
-    RefdataValue globalRecordInfoStatus
+    RefdataValue globalRecordInfoStatus // RefdataCategory unkown !
 
   static hasMany = [ trackers : GlobalRecordTracker ]
   static mappedBy = [ trackers : 'owner']

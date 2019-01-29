@@ -36,7 +36,7 @@ class PendingChange {
     @Deprecated
     String desc
 
-    RefdataValue status
+    RefdataValue status     // RefdataCategory 'PendingChangeStatus'
     Date actionDate
     User user
 
