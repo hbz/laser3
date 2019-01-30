@@ -5,6 +5,7 @@ import de.laser.AccessService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
+import de.laser.interfaces.TemplateSupport
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -54,6 +55,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
     def globalSourceSyncService
     def dataloadService
     def GOKbService
+    def financialDataService
 
     private static String INVOICES_FOR_SUB_HQL =
             'select co.invoice, sum(co.costInLocalCurrency), sum(co.costInBillingCurrency), co from CostItem as co where co.sub = :sub group by co.invoice order by min(co.invoice.startDate) desc';
@@ -1869,6 +1871,16 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     result.l_y_axis_labels = fsLicenseResult?.y_axis_labels
                 }
             }
+        }
+
+        //cost items, reactivated as of ERMS-943
+        LinkedHashMap costItems = financialDataService.getCostItems(result.subscription)
+        result.costItemSums = [ownCosts:financialDataService.calculateResults(costItems.ownCosts)]
+        if(costItems.consCosts.size() > 0) {
+            result.costItemSums.consCosts = financialDataService.calculateResults(costItems.consCosts)
+        }
+        if(costItems.subscrCosts.size() > 0) {
+            result.costItemSums.subscrCosts = financialDataService.calculateResults(costItems.subscrCosts)
         }
 
         result

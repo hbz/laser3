@@ -274,8 +274,9 @@
     var financeHelper = {
 
         /*
-            This function calculates the total sum of the cost items. The number of cost items is the number of elements displayed on a page; it should be considered in the medium-term to
-            deploy this onto server side for that "total" really means "total", i.e. is independent of the page the user is currently viewing.
+            This function calculates the total sum of the cost items. The number of cost items is the number of elements displayed on a page;
+            it should be considered in the medium-term to deploy this onto server side for that "total" really means "total", i.e. is independent
+            of the page the user is currently viewing.
 
             It is not the original developer annotating this code; so this "documentation" done a posteriori reflects a stranger's understanding of it.
         */
@@ -363,7 +364,7 @@
                             colspan1 = 4;
                             colspan2 = 5;
                         </g:else>
-                        totalHeaderRow = '<tr><th colspan="'+colspan1+'"><strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}</strong></th><th></th><th></th><th colspan="'+colspan2+'"></th></tr>';
+                        totalHeaderRow = '<tr><th colspan="'+colspan1+'"><strong>${g.message(code: 'financials.totalCostOnPage', default: 'Total Cost')}</strong></th><th></th><th></th><th colspan="'+colspan2+'"></th></tr>';
                     break;
                     case 'CONS':
                     case 'CONS_AT_SUBSCR':
@@ -375,12 +376,12 @@
                             colspan1 = 6;
                             colspan2 = 4;
                         </g:else>
-                        totalHeaderRow = '<tr><th colspan="'+colspan1+'"><strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}</strong></th><th></th><th></th><th></th><th colspan="'+colspan2+'"></th></tr>';
+                        totalHeaderRow = '<tr><th colspan="'+colspan1+'"><strong>${g.message(code: 'financials.totalCostOnPage', default: 'Total Cost')}</strong></th><th></th><th></th><th></th><th colspan="'+colspan2+'"></th></tr>';
                     break;
                     case 'SUBSCR':
                         colspan1 = 2;
                         colspan2 = 4;
-                        totalHeaderRow = '<tr><th colspan="'+colspan1+'"><strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}</strong></th><th></th><th></th><th colspan="'+colspan2+'"></th></tr>';
+                        totalHeaderRow = '<tr><th colspan="'+colspan1+'"><strong>${g.message(code: 'financials.totalCostOnPage', default: 'Total Cost')}</strong></th><th></th><th></th><th colspan="'+colspan2+'"></th></tr>';
                     break;
                     default: console.log("unhandled tab mode: "+currentTab);
                     break;
@@ -416,7 +417,7 @@
                     $("#sumOfCosts_"+currentTab).before(row);
                 }
                 if(typeof(ci) === 'undefined')
-                    $("#sumOfCosts_"+currentTab).before('<tr><td colspan="13">${message(code:'financials.noCostsConsidered')}</td></tr>');
+                    $("#sumOfCosts_"+currentTab).before('<tr><td colspan="13">${message(code:'financials.noCostsConsideredOnPage')}</td></tr>');
             })
         }
     }
