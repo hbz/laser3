@@ -707,23 +707,41 @@ class AjaxController {
       Links link
       String commentContent
       //distinct between insert and update - if a link id exists, then proceed with edit, else create new instance
+      //perspectiveIndex 0: source -> dest, 1: dest -> source
       if(params.link) {
         link = genericOIDService.resolveOID(params.link)
         Subscription pair = genericOIDService.resolveOID(params["pair_${link.id}"])
-        RefdataValue linkType = genericOIDService.resolveOID(params["linkType_${link.id}"])
+        String linkTypeString = params["linkType_${link.id}"].split("§")[0]
+        int perspectiveIndex = Integer.parseInt(params["linkType_${link.id}"].split("§")[1])
+        RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
         commentContent = params["linkComment_${link.id}"].trim()
-        if(link.source == context.id)
+        if(perspectiveIndex == 0) {
+          link.source = context.id
           link.destination = pair.id
-        else if(link.destination == context.id)
+        }
+        else if(perspectiveIndex == 1) {
           link.source = pair.id
+          link.destination = context.id
+        }
         link.linkType = linkType
         log.debug(linkType)
       }
       else {
         Subscription pair = genericOIDService.resolveOID(params.pair_new)
-        RefdataValue linkType = genericOIDService.resolveOID(params.linkType_new)
+        String linkTypeString = params["linkType_new"].split("§")[0]
+        int perspectiveIndex = Integer.parseInt(params["linkType_new"].split("§")[1])
+        RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
         commentContent = params.linkComment_new
-        link = new Links(linkType: linkType,source: context.id, destination: pair.id,owner: contextService.getOrg(),objectType:Subscription.class.name)
+        Long source, destination
+        if(perspectiveIndex == 0) {
+          source = context.id
+          destination = pair.id
+        }
+        else if(perspectiveIndex == 1) {
+          source = pair.id
+          destination = context.id
+        }
+        link = new Links(linkType: linkType,source: source, destination: destination,owner: contextService.getOrg(),objectType:Subscription.class.name)
       }
       if(link.save(flush:true)) {
         if(linkComment) {
