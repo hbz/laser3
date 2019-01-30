@@ -1,4 +1,5 @@
 <%@page import="com.k_int.kbplus.License"%>
+<laser:serviceInjection/>
 <!doctype html>
 <html>
     <head>
@@ -24,10 +25,7 @@
             <table class="ui la-table la-table-small table">
                 <g:set var="licenseCount" value="${licenses.size()}"/>
                 <thead>
-                    <th>${message(code:'property.table.property')}</th>
-                    <g:each in="${licenses}" var="license">
-                        <th>${license.reference}</th>
-                    </g:each>
+                    <th colspan="${licenseCount}">${message(code:'property.table.property')}</th>
                 </thead>
                 <tbody>
                     <g:each in="${groupedProperties}" var="groupedProps">
@@ -35,15 +33,16 @@
                         <tr>
                             <td colspan="999">${groupedProps}</td>
                         </tr>--%>
-                        <tr>
-                            <th colspan="${licenseCount}">${groupedProps.getKey().name}</th>
-                        </tr>
-                        <g:render template="comparisonTableRow" model="[group:groupedProps.getValue(),licenses:licenses]" />
+                        <g:if test="${groupedProps.getValue()}">
+                            <g:render template="comparisonTableRow" model="[group:groupedProps.getValue().groupTree,key:groupedProps.getKey().name,propBinding:groupedProps.getValue().binding,licenses:licenses]" />
+                        </g:if>
                     </g:each>
-                    <tr>
-                        <th colspan="${licenses.size()+1}" scope="colgroup">${message(code:'license.properties')}</th>
-                    </tr>
-                    <g:render template="comparisonTableRow" model="[group:orphanedProperties,licenses:licenses]" />
+                    <g:if test="${orphanedProperties.size() > 0}">
+                        <g:render template="comparisonTableRow" model="[group:orphanedProperties,key:message(code:'license.properties'),licenses:licenses]" />
+                    </g:if>
+                    <g:if test="${privateProperties.size() > 0}">
+                        <g:render template="comparisonTableRow" model="[group:privateProperties,key:message(code:'license.properties.private')+' '+contextService.getOrg().name,licenses:licenses]" />
+                    </g:if>
                 </tbody>
             </table>
         </div>
