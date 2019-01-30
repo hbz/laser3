@@ -25,7 +25,7 @@ class ControlledListService {
      * @return a map containing a sorted list of subscriptions, an empty one if no subscriptions match the filter
      * The map is necessary for the Select2 processing afterwards
      */
-    LinkedHashMap getSubscriptions(GrailsParameterMap params) {
+    Map getSubscriptions(GrailsParameterMap params) {
         Org org = contextService.getOrg()
         LinkedHashMap result = [values:[]]
         String queryString = "select s from Subscription as s where s in (select o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) )"
@@ -55,7 +55,7 @@ class ControlledListService {
      * @return a map containing a list of issue entitlements, an empty one if no issue entitlements match the filter
      * The map is necessary for the Select2 processing afterwards
      */
-    LinkedHashMap getIssueEntitlements(GrailsParameterMap params) {
+    Map getIssueEntitlements(GrailsParameterMap params) {
         Org org = contextService.getOrg()
         LinkedHashMap issueEntitlements = [values:[]]
         List<IssueEntitlement> result = []
@@ -84,12 +84,12 @@ class ControlledListService {
      * @return a map containing licenses, an empty one if no licenses match the filter
      * The map is necessary for the Select2 processing afterwards
      */
-    LinkedHashMap getLicenses(GrailsParameterMap params) {
+    Map getLicenses(GrailsParameterMap params) {
         Org org = contextService.getOrg()
         LinkedHashMap licenses = [values:[]]
         List<License> result = []
         String licFilter = ''
-        LinkedHashMap filterParams = [org:org,orgRoles:[RDStore.OR_LICENSING_CONSORTIUM]]
+        LinkedHashMap filterParams = [org:org,orgRoles:[RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE,RDStore.OR_LICENSEE_CONS]]
         if(params.q) {
             licFilter = ' and l.reference like :query'
             filterParams.put('query',"%"+params.q+"%")

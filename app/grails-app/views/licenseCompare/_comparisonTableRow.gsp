@@ -1,25 +1,39 @@
 <%@page import="de.laser.helper.RDStore;com.k_int.kbplus.*" %>
+<%
+    String unknownString = raw("<span data-tooltip=\"${RDStore.PERM_UNKNOWN.getI10n("value")}\"><i class=\"question circle icon large\"></i></span>")
+%>
+<tr>
+    <th>${key}</th>
+    <g:each in="${licenses}" var="l">
+        <g:if test="${propBinding && propBinding.get(l)?.visibleForConsortiaMembers}">
+            <th>${l.reference}<span class="ui blue tag label">${message(code:'financials.isVisibleForSubscriber')}</span></th>
+        </g:if>
+        <g:else>
+            <th>${l.reference}</th>
+        </g:else>
+    </g:each>
+</tr>
 <g:each in="${group}" var="prop">
     <%-- leave it for debugging
     <tr>
-        <td colspan="999">${prop}</td>
+        <td colspan="999">${prop.getValue()}</td>
     </tr>--%>
     <tr>
         <td>${prop.getKey()}</td>
-        <g:set value="${prop.getValue()}" var="propValues"/>
         <g:each in="${licenses}" var="l">
+            <g:set var="propValues" value="${prop.getValue()}" />
             <g:if test="${propValues.containsKey(l)}">
                 <g:set var="propValue" value="${propValues.get(l)}"/>
                 <%
                     String value
-                    if(propValue.prop.value) {
-                        switch(propValue.prop.type.type) {
+                    if(propValue.value) {
+                        switch(propValue.type.type) {
                             case "class ${RefdataValue.class.name}":
-                                String spanOpen = '<span data-tooltip="'+propValue.prop.refValue.getI10n("value")+'">'
-                                switch(propValue.prop.refValue.owner) {
+                                String spanOpen = '<span data-tooltip="'+propValue.refValue.getI10n("value")+'">'
+                                switch(propValue.refValue.owner) {
                                 case RefdataCategory.findByDesc("YN"):
                                 case RefdataCategory.findByDesc("YNO"):
-                                    switch(propValue.prop.refValue) {
+                                    switch(propValue.refValue) {
                                         case RDStore.YN_YES:
                                         case RDStore.YNO_YES: value = raw(spanOpen+'<i class="green thumbs up icon large"></i></span>')
                                             break
@@ -31,7 +45,7 @@
                                     }
                                     break
                                 case RefdataCategory.findByDesc("Permissions"):
-                                    switch(propValue.prop.refValue){
+                                    switch(propValue.refValue){
                                         case RDStore.PERM_PERM_EXPL: value = raw(spanOpen+'<i class="green check circle icon large"></i></span>')
                                             break
                                         case RDStore.PERM_PERM_INTERP: value = raw(spanOpen+'<i class="green check circle outline icon large"></i></span>')
@@ -48,25 +62,25 @@
                                             break
                                     }
                                     break
-                                default: value = propValue.prop.refValue.getI10n("value")
+                                default: value = propValue.refValue.getI10n("value")
                                     break
                                 }
                                 break
-                            default: value = propValue.prop.value
+                            default: value = propValue.value
                                 break
                         }
                     }
-                    else if(propValue.prop.paragraph)
-                        value = propValue.prop.paragraph
+                    else if(propValue.paragraph)
+                        value = propValue.paragraph
+                    else value = unknownString
                 %>
                 <td>
                     ${value}
-                    <g:if test="${propValue.binding}"><div class="ui orange tag label">${message(code:'financials.isVisibleForSubscriber')}</div></g:if>
                 </td>
             </g:if>
             <g:else>
                 <td>
-                    <span data-tooltip="${RDStore.PERM_UNKNOWN.getI10n("value")}"><i class="question circle icon large"></i></span>
+                    ${unknownString}
                 </td>
             </g:else>
         </g:each>

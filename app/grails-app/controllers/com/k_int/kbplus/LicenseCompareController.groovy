@@ -19,6 +19,7 @@ class LicenseCompareController extends AbstractDebugController {
     def contextService
     def controlledListService
     def genericOIDService
+    def comparisonService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -33,12 +34,13 @@ class LicenseCompareController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
   Map compare(){
-    LinkedHashMap result = [groupedProperties:[:],orphanedProperties:[:]]
+    LinkedHashMap result = [groupedProperties:[:],orphanedProperties:[:],privateProperties:[:]]
     Org org = contextService.getOrg()
     List licenses = params.availableLicenses.split(',').collect{
-      genericOIDService.resolveOID(it)
+      (License) genericOIDService.resolveOID(it)
     }
     licenses.each{ lic ->
+
       /*
         Back to square one:
         I need the following groupings:
@@ -55,15 +57,21 @@ class LicenseCompareController extends AbstractDebugController {
         Intended:
         groupedProperties {
           Archivkopie {
-            Archivkopie: Kosten{51: {value: null,binding: ?}, 57: {value: Free, binding: ?}},
-            Archivkopie: Form{51: {value: null,binding: ?}, 57: {value: Data, binding: ?}},
-            Archivkopie: Recht{51: {value: null,binding: ?}, 57: [value: Yes, binding: ?}}
-          }
+            Archivkopie: Kosten{51: null, 57: Free},
+            Archivkopie: Form{51: null, 57: Data},
+            Archivkopie: Recht{51: null, 57: Yes}
+          }, binding: ?
           Gerichtsstand {
-            Signed{51: {value: Yes,binding: ?}, 57: {value: Yes, binding: ?}},
-            Anzuwendes Recht{51: {value: Dt. Recht, binidng: ?}, 57: {value: null, binding: ?}},
-            Gerichtsstand{51: {value: Berlin, binding: ?}, 57: {value: null, binidng: ?}}
-          }
+            Signed{51: Yes, 57: Yes},
+            Anzuwendes Recht{51: Dt. Recht, 57: null},
+            Gerichtsstand{51: Berlin, 57: null}
+          }, binding: ?
+        },
+        orphanedProperties {
+          ...
+        },
+        privateProperties {
+          ...
         }
       */
       def allPropDefGroups = lic.getCalculatedPropDefGroups(org)
@@ -72,68 +80,61 @@ class LicenseCompareController extends AbstractDebugController {
           group group level
           There are: global, local, member (consortium@subscriber) property *groups* and orphaned *properties* which is ONE group
          */
-        switch(propDefGroupWrapper.getKey()) {
-          case "global":
-          case "local":
-          case "member":
-            /*
-              group level
-              Each group may have different property groups
-            */
-            LinkedHashMap groupedProperties = result.groupedProperties
-            propDefGroupWrapper.getValue().each { propDefGroup ->
-              PropertyDefinitionGroup groupKey
-              PropertyDefinitionGroupBinding groupBinding
-              //distinct between propDefGroup objects who have a binding and those who do not
-              if(propDefGroup instanceof List) {
-                println "processing local or member scope"
+        String wrapperKey = propDefGroupWrapper.getKey()
+        if(wrapperKey.equals("orphanedProperties")) {
+          TreeMap orphanedProperties = result.orphanedProperties
+          orphanedProperties = comparisonService.buildComparisonTree(orphanedProperties,lic,propDefGroupWrapper.getValue())
+          result.orphanedProperties = orphanedProperties
+        }
+        else {
+          LinkedHashMap groupedProperties = result.groupedProperties
+          /*
+            group level
+            Each group may have different property groups
+          */
+          propDefGroupWrapper.getValue().each { propDefGroup ->
+            PropertyDefinitionGroup groupKey
+            PropertyDefinitionGroupBinding groupBinding
+            switch(wrapperKey) {
+              case "global": println "processing global scope"
+                groupKey = (PropertyDefinitionGroup) propDefGroup
+                if(groupKey.visible == RDStore.YN_YES)
+                  groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,null,lic))
+                break
+              case "local": println "processing local scope"
                 try {
                   groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
                   groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
+                  if(groupBinding.visible == RDStore.YN_YES) {
+                    groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,groupBinding,lic))
+                  }
                 }
                 catch (ClassCastException e) {
                   log.error("Erroneous values in calculated property definition group! Stack trace as follows:")
                   e.printStackTrace()
                 }
-              }
-              else if(propDefGroup instanceof PropertyDefinitionGroup) {
-                println "processing global scope"
-                groupKey = propDefGroup
-                groupBinding = null
-              }
-              //check if there is already a mapping for the current property definition group
-              def group = groupedProperties.get(propDefGroup)
-              if(group == null) {
-                group = new TreeMap()
-              }
-              //get the current properties within each group for each license
-              ArrayList<LicenseCustomProperty> licenceProps = groupKey.getCurrentProperties(lic)
-              licenceProps.each { prop ->
-                //property level - check if the group contains already a mapping for the current property
-                def propertyMap = group.get(prop.type.getI10n("name"))
-                if(propertyMap == null)
-                  propertyMap = [:]
-                propertyMap.put(lic,[prop:prop,binding:groupBinding])
-                group.put(prop.type.getI10n("name"),propertyMap)
-              }
-              groupedProperties[propDefGroup] = group
+                break
+              case "member": println "processing member scope"
+                try {
+                  groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
+                  groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
+                  if(groupBinding.visible == RDStore.YN_YES && groupBinding.visibleForConsortiaMembers == RDStore.YN_YES) {
+                    groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,groupBinding,lic))
+                  }
+                }
+                catch (ClassCastException e) {
+                  log.error("Erroneous values in calculated property definition group! Stack trace as follows:")
+                  e.printStackTrace()
+                }
+                break
             }
-            result.groupedProperties = groupedProperties
-          break
-          case "orphanedProperties":
-            LinkedHashMap orphanedProperties = result.orphanedProperties
-            propDefGroupWrapper.getValue().each { prop ->
-              //property level - check if the group contains already a mapping for the current property
-              def propertyMap = orphanedProperties.get(prop.type.getI10n("name"))
-              if(propertyMap == null)
-                propertyMap = [:]
-              propertyMap.put(lic,[prop:prop,binding:null])
-              orphanedProperties.put(prop.type.getI10n("name"),propertyMap)
-            }
-            result.orphanedProperties = orphanedProperties
-          break
+          }
+          result.groupedProperties = groupedProperties
         }
       }
+      TreeMap privateProperties = result.privateProperties
+      privateProperties = comparisonService.buildComparisonTree(privateProperties,lic,lic.privateProperties)
+      result.privateProperties = privateProperties
     }
     result.licenses = licenses
     result.institution = org
