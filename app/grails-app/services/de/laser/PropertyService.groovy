@@ -22,6 +22,7 @@ class PropertyService {
         (query, queryParams) = evalFilterQuery(params, base_qry, hqlVar, base_qry_params)
         [query: query, queryParams: queryParams]
     }
+    @Deprecated
     def evalFilterQuery(params, List<String> base_qry, hqlVar, Map base_qry_params) {
         def order_by
         for (int i = 0; i<base_qry.size(); i++) {

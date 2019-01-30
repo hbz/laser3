@@ -110,7 +110,9 @@ from Subscription as s where (
         // eval property filter
 
         if (params.filterPropDef) {
-            (base_qry, qry_params) = propertyService.evalFilterQuery(params, base_qry, 's', qry_params)
+            def query = propertyService.evalFilterQuery_retMap(params, base_qry, 's', qry_params)
+            base_qry = query.query
+            qry_params = query.queryParams
         }
 
         if (date_restriction) {

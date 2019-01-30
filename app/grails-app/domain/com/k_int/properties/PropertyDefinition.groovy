@@ -399,7 +399,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         result
     }
 
-    static findAllPublicAndPrivateProp(String[] propertyDefinitionList, Org contextOrg){
+    static findAllPublicAndPrivateProp(List propertyDefinitionList, Org contextOrg){
         def result = PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and (pd.tenant is null or pd.tenant = :tenant)", [
                         defList: propertyDefinitionList,
                         tenant: contextOrg

@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
 import grails.converters.JSON
 import org.apache.poi.hssf.usermodel.HSSFRichTextString
 import org.apache.poi.hssf.usermodel.HSSFSheet
@@ -108,43 +109,27 @@ class OrganisationsController extends AbstractDebugController {
         def result = [:]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         result.user        = User.get(springSecurityService.principal.id)
+        result.editable    = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR')
 
-        params.orgSector   = RefdataValue.getByValueAndCategory('Publisher','OrgSector')?.id?.toString()
-        params.orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')?.id?.toString()
+        params.orgSector   = RDStore.O_SECTOR_PUBLISHER?.id?.toString()
+        params.orgRoleType = RDStore.OR_TYPE_PROVIDER?.id?.toString()
         params.sort        = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
-        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR')
-
         def fsq            = filterService.getOrgQuery(params)
-        def orgListTotal   = Org.findAll(fsq.query, fsq.queryParams)
-        params.max         = params.max ?: result.user?.getDefaultPageSizeTMP()
-        def fsq2           = null
 
         if (params.filterPropDef) {
-            def tmpQuery
-            def tmpQueryParams
-            fsq2 = filterService.getOrgQuery([constraint_orgIds: orgListTotal.collect{ it2 -> it2.id }] << params)
-            (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, fsq2.query, 'o', [:])
-            def tmpQueryParams2 = fsq2.queryParams << tmpQueryParams
-            result.orgList      = Org.findAll(tmpQuery, tmpQueryParams2, params)
-            result.orgListTotal = Org.executeQuery("select o.id ${tmpQuery}", tmpQueryParams2).size()
-            fsq.query = tmpQuery
-            fsq.queryParams  = tmpQueryParams2
-
-        } else {
-
-            result.orgList      = Org.findAll(fsq.query, fsq.queryParams, params)
-            result.orgListTotal = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams).size()
+            def orgIdList = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams)
+            fsq = filterService.getOrgQuery([constraint_orgIds: orgIdList] << params)
+            fsq = propertyService.evalFilterQuery_retMap(params, fsq.query, 'o', fsq.queryParams)
         }
+        params.max          = params.max ?: result.user?.getDefaultPageSizeTMP()
+        result.orgList      = Org.findAll(fsq.query, fsq.queryParams, params)
+        result.orgListTotal = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams).size()
 
         if ( params.exportXLS=='yes' ) {
-
             params.remove('max')
-
             def orgs = Org.findAll(fsq.query, fsq.queryParams, params)
-
             def message = g.message(code: 'menu.institutions.all_provider')
-
             exportOrg(orgs, message, false)
             return
         }

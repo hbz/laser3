@@ -19,8 +19,10 @@ class RDStore {
 
     static final OR_TYPE_CONSORTIUM         = getRefdataValue('Consortium', 'OrgRoleType')
     static final OR_TYPE_INSTITUTION        = getRefdataValue('Institution', 'OrgRoleType')
+    static final OR_TYPE_PROVIDER           = getRefdataValue('Provider', 'OrgRoleType')
 
     static final O_SECTOR_HIGHER_EDU        = getRefdataValue('Higher Education', 'OrgSector')
+    static final O_SECTOR_PUBLISHER         = getRefdataValue('Publisher', 'OrgSector')
 
     static final O_DELETED                  = getRefdataValue('Deleted', 'OrgStatus')
 
@@ -30,6 +32,8 @@ class RDStore {
     static final SUBSCRIPTION_EXPIRED       = getRefdataValue('Expired', 'Subscription Status')
   
     static final LICENSE_DELETED            = getRefdataValue('Deleted', 'License Status')
+
+    static final LICENSE_TYPE_TEMPLATE      = getRefdataValue('Template', 'License Type')
 
     static final LINKTYPE_FOLLOWS           = getRefdataValue('follows','Link Type')
 
