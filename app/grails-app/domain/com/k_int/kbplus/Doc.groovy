@@ -21,7 +21,7 @@ class Doc {
   private static final MAX_SIZE = 1073741824 // 4GB 
   def sessionFactory
 
-  RefdataValue status
+  RefdataValue status       // RefdataCategory unkown !
   RefdataValue type
   Alert alert
 

@@ -2,7 +2,7 @@ package com.k_int.kbplus
 
 class Combo {
 
-  RefdataValue status
+  RefdataValue status       // RefdataCategory unkown !
   RefdataValue type
 
   // Participant 1 - One of these

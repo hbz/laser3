@@ -3,6 +3,8 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.Role
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
+import de.laser.helper.RDStore
+import de.laser.interfaces.DeleteFlag
 import de.laser.traits.AuditTrait
 import de.laser.domain.AbstractBaseDomain
 import de.laser.interfaces.Permissions
@@ -13,7 +15,9 @@ import java.text.Normalizer
 import com.k_int.properties.PropertyDefinition
 import com.k_int.ClassUtils
 
-class License extends AbstractBaseDomain implements TemplateSupport, Permissions, Comparable<License>, AuditTrait {
+class License
+        extends AbstractBaseDomain
+        implements TemplateSupport, DeleteFlag, Permissions, Comparable<License>, AuditTrait {
 
     @Transient
     def grailsApplication
@@ -136,6 +140,12 @@ class License extends AbstractBaseDomain implements TemplateSupport, Permissions
         endDate(nullable: true, blank: true)
         lastUpdated(nullable: true, blank: true)
     }
+
+    @Override
+    boolean isDeleted() {
+        return RDStore.LICENSE_DELETED.id == status?.id
+    }
+
     @Override
     def isTemplate() {
         return (type != null) && (type == RefdataValue.getByValueAndCategory('Template', 'License Type'))

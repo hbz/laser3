@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserRole
 import de.laser.SystemEvent
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
@@ -60,6 +61,16 @@ class YodaController {
         result.check2 = "INST_ADM: " + result.user.hasAffiliation("INST_ADM")
         result.check3 = "INST_EDITOR: " + result.user.hasAffiliation("INST_EDITOR")
         result.check4 = "INST_USER: " + result.user.hasAffiliation("INST_USER")
+
+        result.q1 = User.executeQuery('select u from User u where u.accountLocked = true and u.id < 4')
+        result.q2 = User.executeQuery('select u from User u where u.accountLocked != true and u.id < 4')
+
+        result.q3 = User.executeQuery('select u from User u where u.accountLocked = false and u.id < 4')
+        result.q4 = User.executeQuery('select u from User u where u.accountLocked != false and u.id < 4')
+
+        //result.q5 = User.executeQuery('select u from User u where u.accountLocked is null and u.id < 4')
+        result.q6 = User.executeQuery('select u from User u where u.accountLocked is not null and u.id < 4')
+
         result
     }
 
@@ -114,7 +125,7 @@ class YodaController {
                 Map map = [
                         name: key.getName(),
                         configFlags: cf.join(', '),
-                        nextFireTime: nft ? nft.get(0).toTimestamp() : ''
+                        nextFireTime: nft ? nft.get(0)?.toTimestamp() : ''
                 ]
 
                 def crx = triggers.collect{ it.cronEx ?: null }
@@ -253,12 +264,11 @@ class YodaController {
 
         Role.findAll("from Role order by authority").each { role -> result.matrix[role.authority] = [] }
 
-        User.executeQuery(
-                "SELECT us, ro FROM User us JOIN us.roles usro JOIN usro.role ro GROUP BY ro, us"
-        ).each { usro ->
-            result.matrix[usro[1].authority].add(usro[0])
+        UserRole.executeQuery(
+                "select u, urro from User u join u.roles ur join ur.role urro group by urro, u"
+        ).each { usRo ->
+            result.matrix[usRo[1].authority].add(usRo[0])
         }
-
         result
     }
 

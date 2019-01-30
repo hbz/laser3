@@ -1,4 +1,14 @@
 
+0.14 PRE
+
+TODO
+ 
+- upgrade to hibernate 4.3.10
+- ehcache upgrade
+
+TODO
+
+
 0.13
 
 - reworked and improved finance handling

@@ -17,16 +17,18 @@ class RDStore {
     static final OR_PROVIDER                = getRefdataValue('Provider', 'Organisational Role')
 
     static final OR_TYPE_CONSORTIUM         = getRefdataValue('Consortium', 'OrgRoleType')
-    static final OR_TYPE_INSTITUTION         = getRefdataValue('Institution', 'OrgRoleType')
-    static final OR_TYPE_PROVIDER   = getRefdataValue('Provider', 'OrgRoleType')
-    static final OR_TYPE_AGENCY     = getRefdataValue('Agency', 'OrgRoleType')
+    static final OR_TYPE_INSTITUTION        = getRefdataValue('Institution', 'OrgRoleType')
+    static final OR_TYPE_PROVIDER           = getRefdataValue('Provider', 'OrgRoleType')
+    static final OR_TYPE_AGENCY             = getRefdataValue('Agency', 'OrgRoleType')
+
+    static final LICENSE_DELETED        = getRefdataValue('Deleted', 'License Status')
+    static final ORG_DELETED            = getRefdataValue('Deleted', 'OrgStatus')
+    static final PACKAGE_DELETED        = getRefdataValue('Deleted', 'Package Status')
 
     static final SUBSCRIPTION_DELETED  = getRefdataValue('Deleted', 'Subscription Status')
     static final SUBSCRIPTION_CURRENT  = getRefdataValue('Current', 'Subscription Status')
     static final SUBSCRIPTION_INTENDED = getRefdataValue('Intended', 'Subscription Status')
     static final SUBSCRIPTION_EXPIRED  = getRefdataValue('Expired', 'Subscription Status')
-  
-    static final LICENSE_DELETED = getRefdataValue('Deleted', 'License Status')
 
     static final LINKTYPE_FOLLOWS = getRefdataValue('follows','Link Type')
 

@@ -2,11 +2,15 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RDStore
+import de.laser.interfaces.DeleteFlag
 import de.laser.interfaces.TemplateSupport
 
 import javax.persistence.Transient
 
-class CostItem extends AbstractBaseDomain implements TemplateSupport {
+class CostItem
+        extends AbstractBaseDomain
+        implements DeleteFlag, TemplateSupport {
 
     Org owner
     Subscription sub
@@ -128,6 +132,11 @@ class CostItem extends AbstractBaseDomain implements TemplateSupport {
         endDate         (nullable: true, blank: false)
         lastUpdatedBy   (nullable: true)
         createdBy       (nullable: true)
+    }
+
+    @Override
+    boolean isDeleted() {
+        return false
     }
 
     def beforeInsert() {

@@ -10,7 +10,7 @@ class DocContext {
     link : Links
   ]
 
-  RefdataValue status
+  RefdataValue status   // RefdataCategory 'Document Context Status'
   RefdataValue doctype
 
   Boolean globannounce=false

@@ -51,11 +51,11 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements AuditTr
   String coverageDepth
   String coverageNote
   String impId
-  RefdataValue status
+  RefdataValue status       // RefdataCategory 'TIPP Status'
   RefdataValue option
   RefdataValue delayedOA
   RefdataValue hybridOA
-  RefdataValue statusReason
+  RefdataValue statusReason   // RefdataCategory unkown !
   RefdataValue payment
   String hostPlatformURL
   Date coreStatusStart
