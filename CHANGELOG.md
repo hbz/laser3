@@ -9,12 +9,18 @@
 - improved excel export
 - improved property management
 - improved namespace and identifier management
+- added yoda dashboard
 - improved profiler
 - added new event logging
 - added data consistency check
 - added various paginations
+- reworked dashboard tabs
+- improved ui dialogs and buttons
+- clearable filter dropdowns
 - fixed current titles date filter
+- various ui improvements
 - various bugfixes
+- upgrade to semantic-ui 2.4.2
 
 0.12.3
 

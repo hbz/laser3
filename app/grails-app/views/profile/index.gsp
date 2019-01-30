@@ -259,6 +259,11 @@
                 </div>
 
                 <div class="field">
+                    <label>${message(code: 'profile.itemsTimeWindow', default:'Default Page Size')}</label>
+                    <semui:xEditable owner="${user.getSetting(UserSettings.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" field="strValue" />
+                </div>
+
+                <div class="field">
                     <label>${message(code: 'profile.pagesize', default:'Default Page Size')}</label>
                     <semui:xEditable owner="${user.getSetting(UserSettings.KEYS.PAGE_SIZE, 10)}" field="strValue" />
                 </div>
