@@ -23,12 +23,17 @@ class ControlledListService {
     LinkedHashMap getSubscriptions(GrailsParameterMap params) {
         Org org = contextService.getOrg()
         LinkedHashMap result = [values:[]]
-        String queryString = "select s from Subscription as s where s in (select o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) )"
-        LinkedHashMap filter = ['org':org,'orgRoles':[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIPTION_CONSORTIA]]
+        String queryString = "select s from Subscription as s where s in (select o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) ) and s.status != :deleted"
+        LinkedHashMap filter = ['org':org,'orgRoles':[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIPTION_CONSORTIA],'deleted':RDStore.SUBSCRIPTION_DELETED]
         //may be generalised later - here it is where to expand the query filter
         if(params.q.length() > 0) {
             filter.put("query","%${params.q}%")
             queryString += " and s.name like :query"
+        }
+        if(params.ctx) {
+            Subscription ctx = genericOIDService.resolveOID(params.ctx)
+            filter.ctx = ctx
+            queryString += " and s != :ctx"
         }
         List<Subscription> subscriptions = Subscription.executeQuery(queryString,filter)
         if(subscriptions.size() > 0) {
