@@ -1,5 +1,4 @@
-<%@ page import="com.k_int.kbplus.Person" %>
-<%@ page import="com.k_int.kbplus.RefdataValue" %>
+<%@ page import="com.k_int.kbplus.Person; de.laser.helper.RDStore" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -27,7 +26,6 @@
     </h1>
 
     <g:render template="nav" />
-
     <%--
     <semui:filter>
         <form class="ui form">
@@ -46,124 +44,108 @@
         </form>
     </semui:filter>
     --%>
+    <semui:filter>
+        <g:form action="members"  controller="subscriptionDetails" params="${[id:params.id]}" method="get" class="ui form">
+            <g:render template="/templates/filter/orgFilter"
+                  model="[
+                      tmplConfigShow: [['name', 'libraryType'], ['federalState', 'libraryNetwork','property']],
+                      tmplConfigFormFilter: true,
+                      useNewLayouter: true
+                  ]"/>
+        </g:form>
+    </semui:filter>
 
-<semui:messages data="${flash}" />
+    <semui:messages data="${flash}" />
 
-    <g:if test="${validSubChilds}">
-
-    <g:each in="${[validSubChilds]}" status="i" var="outerLoop">
-
+    <g:if test="${filteredSubChilds}">
         <table class="ui celled la-table table">
             <thead>
-                <tr>
-                    <th>
-                        ${message(code:'sidewide.number')}
-                    </th>
-                    <th>Sortiername</th>
-                    <th>
-                        ${message(code:'subscriptionDetails.members.members')}
-                    </th>
-
-                    <th>${message(code:'default.startDate.label')}</th>
-                    <th>${message(code:'default.endDate.label')}</th>
-                    <th>${message(code:'subscription.details.status')}</th>
-                    <th></th>
-                </tr>
+            <tr>
+                <th>${message(code:'sidewide.number')}</th>
+                <th>${message(code:'default.sortname.label')}</th>
+                <th>${message(code:'subscriptionDetails.members.members')}</th>
+                <th>${message(code:'default.startDate.label')}</th>
+                <th>${message(code:'default.endDate.label')}</th>
+                <th>${message(code:'subscription.details.status')}</th>
+                <th></th>
+            </tr>
             </thead>
             <tbody>
-                <g:each in="${outerLoop}" status="j" var="sub">
-                    <tr>
-                        <td>${j + 1}</td>
-
-                        <g:each in="${sub.getAllSubscribers()}" var="subscr">
-
-                            <td>
-                                ${subscr.sortname}
-                            </td>
-                            <td>
-                                <g:link controller="organisations" action="show" id="${subscr.id}">${subscr}</g:link>
-
-                                <g:if test="${sub.isSlaved?.value?.equalsIgnoreCase('yes')}">
-                                    <span data-position="top right" data-tooltip="${message(code:'license.details.isSlaved.tooltip')}">
-                                        <i class="thumbtack blue icon"></i>
-                                    </span>
-                                </g:if>
-
-                                <g:set var="rdvGcp" value="${RefdataValue.findByValue('General contact person')}"/>
-                                <g:set var="rdvSse" value="${RefdataValue.findByValue('Specific subscription editor')}"/>
-
-                                <div class="ui list">
-
-                                    <g:each in="${Person.getPublicByOrgAndFunc(subscr, 'General contact person')}" var="gcp">
-                                        <div class="item">
-                                            <g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>
-                                            (${rdvGcp.getI10n('value')})
-                                        </div>
-                                    </g:each>
-                                    <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(subscr, 'General contact person', contextService.getOrg())}" var="gcp">
-                                        <div class="item">
-                                            <g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>
-                                            (${rdvGcp.getI10n('value')} <i class="address book outline icon" style="display:inline-block"></i>)
-                                        </div>
-                                    </g:each>
-                                    <g:each in="${Person.getPublicByOrgAndObjectResp(subscr, sub, 'Specific subscription editor')}" var="sse">
-                                        <div class="item">
-                                            <g:link controller="person" action="show" id="${sse.id}">${sse}</g:link>
-                                            (${rdvSse.getI10n('value')})
-                                        </div>
-                                    </g:each>
-                                    <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(subscr, sub, 'Specific subscription editor', contextService.getOrg())}" var="sse">
-                                        <div class="item">
-                                            <g:link controller="person" action="show" id="${sse.id}">${sse}</g:link>
-                                            (${rdvSse.getI10n('value')} <i class="address book outline icon" style="display:inline-block"></i>)
-                                        </div>
-                                    </g:each>
-
-                                </div>
-                            </td>
-
-                        </g:each>
-                        <g:if test="${! sub.getAllSubscribers()}">
-                            <td></td>
-                            <td></td>
-                        </g:if>
-
+            <g:each in="${filteredSubChilds}" status="i" var="zeile">
+                <g:set var="sub" value="${zeile.sub}"/>
+                <tr>
+                    <td>${i + 1}</td>
+                    <g:set var="filteredSubscribers" value="${zeile.orgs}" />
+                    <g:each in="${filteredSubscribers}" var="subscr">
+                        <td>${subscr.sortname}</td>
                         <td>
-                            <g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/>
-                        </td>
-                        <td>
-                            <g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/>
-                        </td>
-                        <td>
-                            ${sub.status.getI10n('value')}
-                        </td>
-                        <td class="x">
-                            <g:link controller="subscriptionDetails" action="show" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                            <g:link controller="organisations" action="show" id="${subscr.id}">${subscr}</g:link>
 
-                            <g:if test="${editable && i<1}">
-                                <g:each in="${sub.getAllSubscribers()}" var="subscr">
-                                    <g:link class="ui icon negative button js-open-confirm-modal"
-                                            data-confirm-term-what="membershipSubscription"
-                                            data-confirm-term-what-detail="${subscr}"
-                                            data-confirm-term-where="an der Lizenz"
-                                            data-confirm-term-where-detail="${(sub.name)}"
-                                            data-confirm-term-how="unlink"
-                                            controller="subscriptionDetails" action="deleteMember"
-                                            params="${[id:subscriptionInstance.id, target: sub.class.name + ':' + sub.id]}">
-                                        <i class="unlink icon"></i>
-                                    </g:link>
-                                </g:each>
+                            <g:if test="${sub.isSlaved?.value?.equalsIgnoreCase('yes')}">
+                                <span data-position="top right" data-tooltip="${message(code:'license.details.isSlaved.tooltip')}">
+                                    <i class="thumbtack blue icon"></i>
+                                </span>
                             </g:if>
 
+                            <div class="ui list">
+                                <g:each in="${Person.getPublicByOrgAndFunc(subscr, 'General contact person')}" var="gcp">
+                                    <div class="item">
+                                        <g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>
+                                        (${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')})
+                                    </div>
+                                </g:each>
+                                <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(subscr, 'General contact person', contextService.getOrg())}" var="gcp">
+                                    <div class="item">
+                                        <g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>
+                                        (${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')} <i class="address book outline icon" style="display:inline-block"></i>)
+                                    </div>
+                                </g:each>
+                                <g:each in="${Person.getPublicByOrgAndObjectResp(subscr, sub, 'Specific subscription editor')}" var="sse">
+                                    <div class="item">
+                                        <g:link controller="person" action="show" id="${sse.id}">${sse}</g:link>
+                                        (${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')})
+                                    </div>
+                                </g:each>
+                                <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(subscr, sub, 'Specific subscription editor', contextService.getOrg())}" var="sse">
+                                    <div class="item">
+                                        <g:link controller="person" action="show" id="${sse.id}">${sse}</g:link>
+                                        (${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')} <i class="address book outline icon" style="display:inline-block"></i>)
+                                    </div>
+                                </g:each>
+                            </div>
                         </td>
-                    </tr>
-                </g:each>
+                    </g:each>
+                    <g:if test="${! sub.getAllSubscribers()}">
+                        <td></td>
+                        <td></td>
+                    </g:if>
+
+                    <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
+                    <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
+                    <td>${sub.status.getI10n('value')}</td>
+
+                    <td class="x">
+                        <g:link controller="subscriptionDetails" action="show" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                        <g:if test="${editable && i<1}">
+                            <g:each in="${sub.getAllSubscribers()}" var="subscr">
+                                <g:link class="ui icon negative button js-open-confirm-modal"
+                                        data-confirm-term-what="membershipSubscription"
+                                        data-confirm-term-what-detail="${subscr}"
+                                        data-confirm-term-where="an der Lizenz"
+                                        data-confirm-term-where-detail="${(sub.name)}"
+                                        data-confirm-term-how="unlink"
+                                        controller="subscriptionDetails" action="deleteMember"
+                                        params="${[id:subscriptionInstance.id, target: sub.class.name + ':' + sub.id]}">
+                                    <i class="unlink icon"></i>
+                                </g:link>
+                            </g:each>
+                        </g:if>
+                    </td>
+                </tr>
+            </g:each>
             </tbody>
         </table>
-
-    <g:render template="../templates/copyEmailaddresses" model="[orgList: outerLoop.collect {it.getAllSubscribers()}]"/>
-    </g:each>
-
+        <g:render template="../templates/copyEmailaddresses" model="[orgList: filteredSubChilds?.collect {it.orgs}?:[]]"/>
     </g:if>
     <g:else>
         <br><strong><g:message code="subscription.details.nomembers.label" default="No members have been added to this license. You must first add members."/></strong>

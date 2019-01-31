@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
+import de.laser.SubscriptionsQueryService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
@@ -37,7 +38,6 @@ class SubscriptionDetailsController extends AbstractDebugController {
     def contextService
     def addressbookService
     def taskService
-    def navigationGenerationService
     def genericOIDService
     def transformerService
     def exportService
@@ -49,12 +49,14 @@ class SubscriptionDetailsController extends AbstractDebugController {
     def renewals_reversemap = ['subject': 'subject', 'provider': 'provid', 'pkgname': 'tokname']
     def accessService
     def filterService
+    def propertyService
     def factService
     def docstoreService
     def ESWrapperService
     def globalSourceSyncService
     def dataloadService
     def GOKbService
+    def navigationGenerationService
     def financialDataService
 
     private static String INVOICES_FOR_SUB_HQL =
@@ -685,25 +687,40 @@ class SubscriptionDetailsController extends AbstractDebugController {
         if (!result) {
             response.sendError(401); return
         }
+//        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+//        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
 
         //if (params.showDeleted == 'Y') {
 
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(
                 result.subscriptionInstance,
-                RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+                RDStore.SUBSCRIPTION_DELETED
         )
-
+        //Sortieren
         result.validSubChilds = validSubChilds.sort { a, b ->
             def sa = a.getSubscriber()
             def sb = b.getSubscriber()
             (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
         }
+        ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
+        result.filteredSubChilds = new ArrayList<Subscription>()
+        result.validSubChilds.each { sub ->
+            List<Org> subscr = sub.getAllSubscribers()
+            def filteredSubscr = []
+            subscr.each { Org subOrg ->
+                if (filteredOrgIds.contains(subOrg.id)) { filteredSubscr << subOrg }
+            }
+            if (filteredSubscr) {
+                result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
+            }
+        }
 
-        def deletedSubChilds = Subscription.findAllByInstanceOfAndStatus(
-                result.subscriptionInstance,
-                RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
-        )
-        result.deletedSubChilds = deletedSubChilds
+//        def deletedSubChilds = Subscription.findAllByInstanceOfAndStatus(
+//                result.subscriptionInstance,
+//                RDStore.SUBSCRIPTION_DELETED
+//          )
+//        result.deletedSubChilds = deletedSubChilds
         //}
         //else {
         //    result.subscriptionChildren = Subscription.executeQuery(
@@ -717,16 +734,10 @@ class SubscriptionDetailsController extends AbstractDebugController {
         result.navNextSubscription = links.nextLink
 
         if (params.exportXLS == 'yes') {
-
             def orgs = []
-
-
             validSubChilds.each { subChild ->
-
                subChild.getAllSubscribers().each { subscr ->
-
                    def org = [:]
-
                    org.name = subscr.name
                    org.sortname = subscr.sortname
                    org.shortname = subscr.shortname
@@ -740,11 +751,9 @@ class SubscriptionDetailsController extends AbstractDebugController {
                    org.status = subChild.status
                    org.customProperties = subscr.customProperties
                    org.privateProperties = subscr.privateProperties
-
                    orgs << org
                }
            }
-
             def message = g.message(code: 'subscriptionDetails.members.members')
 
             exportOrg(orgs, message, true)
@@ -752,6 +761,21 @@ class SubscriptionDetailsController extends AbstractDebugController {
         }
 
         result
+    }
+
+    private ArrayList<Long> getOrgIdsForFilter() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        ArrayList<Long> resultOrgIds
+        def tmpParams = params.clone()
+        tmpParams.remove("max")
+        tmpParams.remove("offset")
+        def fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
+
+        if (tmpParams.filterPropDef) {
+            fsq   = propertyService.evalFilterQuery(tmpParams, fsq.query, 'o', fsq.queryParams)
+        }
+        fsq.query = fsq.query.replaceFirst("select o from ", "select o.id from ")
+        Org.executeQuery(fsq.query, fsq.queryParams, tmpParams)
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -2581,16 +2605,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             titles.add(g.message(code: 'subscription.details.endDate'))
             titles.add(g.message(code: 'subscription.details.status'))
 
-            def propList =
-                    PropertyDefinition.findAll("from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
-                            defList: [PropertyDefinition.ORG_PROP],
-                    ] // public properties
-                    ) +
-                            PropertyDefinition.findAll("from PropertyDefinition as pd where pd.descr in :defList and pd.tenant = :tenant", [
-                                    defList: [PropertyDefinition.ORG_PROP],
-                                    tenant : contextService.getOrg()
-                            ]// private properties
-                            )
+            def propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
             propList.sort { a, b -> a.name.compareToIgnoreCase b.name }
 

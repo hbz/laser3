@@ -18,8 +18,8 @@ import org.apache.poi.ss.usermodel.*
 import com.k_int.properties.*
 import de.laser.DashboardDueDate
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-
 import java.sql.Timestamp
+import java.text.DateFormat
 
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
@@ -212,30 +212,17 @@ class MyInstitutionController extends AbstractDebugController {
             date_restriction = sdf.parse(params.validOn)
         }
 
-        result.propList =
-                PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
-                        //defList: [PropertyDefinition.LIC_PROP, PropertyDefinition.LIC_OA_PROP, PropertyDefinition.LIC_ARC_PROP],
-                        defList: [PropertyDefinition.LIC_PROP],
-                    ] // public properties
-                ) +
-                        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant = :tenant", [
-                                //defList: [PropertyDefinition.LIC_PROP, PropertyDefinition.LIC_OA_PROP, PropertyDefinition.LIC_ARC_PROP],
-                                defList: [PropertyDefinition.LIC_PROP],
-                                tenant: contextService.getOrg()
-                            ]// private properties
-                        )
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.LIC_PROP], contextService.org)
+        result.max      = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.offset   = params.offset ? Integer.parseInt(params.offset) : 0;
+        result.max      = params.format ? 10000 : result.max
+        result.offset   = params.format? 0 : result.offset
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-        result.max = params.format ? 10000 : result.max
-        result.offset = params.format? 0 : result.offset
-
-        def licensee_role = RDStore.OR_LICENSEE
-        def licensee_cons_role = RDStore.OR_LICENSEE_CONS
-        def lic_cons_role = RDStore.OR_LICENSING_CONSORTIUM
-
-        def template_license_type = RefdataValue.getByValueAndCategory('Template', 'License Type')
-        def license_status = RefdataValue.getByValueAndCategory('Deleted', 'License Status')
+        def licensee_role           = RDStore.OR_LICENSEE
+        def licensee_cons_role      = RDStore.OR_LICENSEE_CONS
+        def lic_cons_role           = RDStore.OR_LICENSING_CONSORTIUM
+        def template_license_type   = RDStore.LICENSE_TYPE_TEMPLATE
+        def license_status          = RDStore.LICENSE_DELETED
 
         def base_qry
         def qry_params
@@ -244,7 +231,7 @@ class MyInstitutionController extends AbstractDebugController {
         def qry = INSTITUTIONAL_LICENSES_QUERY
 
         if (! params.orgRole) {
-            if ((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) {
+            if ((RDStore.OR_TYPE_CONSORTIUM?.id in result.institution?.getallOrgRoleTypeIds())) {
                 params.orgRole = 'Licensing Consortium'
             }
             else {
@@ -292,7 +279,9 @@ from License as l where (
         // eval property filter
 
         if (params.filterPropDef) {
-            (base_qry, qry_params) = propertyService.evalFilterQuery(params, base_qry, 'l', qry_params)
+            def psq = propertyService.evalFilterQuery(params, base_qry, 'l', qry_params)
+            base_qry = psq.query
+            qry_params = psq.queryParams
         }
 
         if (date_restriction) {
@@ -484,9 +473,8 @@ from License as l where (
         def role_sub            = RDStore.OR_SUBSCRIBER
         def role_sub_cons       = RDStore.OR_SUBSCRIBER_CONS
         def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
-
-        def ogr_provider   = RefdataValue.getByValueAndCategory('Provider', 'Organisational Role')
-        def ogr_agency     = RefdataValue.getByValueAndCategory('Agency', 'Organisational Role')
+        def ogr_provider        = RDStore.OR_PROVIDER
+        def ogr_agency          = RDStore.OR_AGENCY
 
         result.orgRoles    = [ogr_provider, ogr_agency]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
@@ -517,19 +505,12 @@ from License as l where (
 //        result.user = User.get(springSecurityService.principal.id)
         params.max        = params.max ?: result.user?.getDefaultPageSizeTMP()
 
-        def fsq2  = filterService.getOrgQuery([constraint_orgIds: orgListTotal.collect{ it2 -> it2.id }] << params)
+        def fsq  = filterService.getOrgQuery([constraint_orgIds: orgListTotal.collect{ it2 -> it2.id }] << params)
         if (params.filterPropDef) {
-            def tmpQuery
-            def tmpQueryParams
-            (tmpQuery, tmpQueryParams) = propertyService.evalFilterQuery(params, fsq2.query, 'o', [:])
-            def tmpQueryParams2 = fsq2.queryParams << tmpQueryParams
-            result.orgList      = Org.findAll(tmpQuery, tmpQueryParams2, params)
-            result.orgListTotal = Org.executeQuery("select o.id ${tmpQuery}", tmpQueryParams2).size()
-
-        } else {
-            result.orgList      = Org.findAll(fsq2.query, fsq2.queryParams, params)
-            result.orgListTotal = Org.executeQuery("select o.id ${fsq2.query}", fsq2.queryParams).size()
+            fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
         }
+        result.orgList      = Org.findAll(fsq.query, fsq.queryParams, params)
+        result.orgListTotal = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams).size()
         result
     }
 
@@ -843,7 +824,7 @@ from License as l where (
             result.defaultEndYear = sdf.format(cal.getTime())
             result.defaultSubIdentifier = java.util.UUID.randomUUID().toString()
 
-            if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgRoleType)) {
+            if((RDStore.OR_TYPE_CONSORTIUM?.id in result.orgRoleType)) {
                 def fsq = filterService.getOrgComboQuery(params, result.institution)
                 result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             }
@@ -2894,12 +2875,12 @@ AND EXISTS (
 
         // tasks
 
-        def sdFormat    = new DateUtil().getSimpleDateFormat_NoTime()
+        DateFormat sdFormat    = new DateUtil().getSimpleDateFormat_NoTime()
         params.taskStatus = 'not done'
         def query       = filterService.getTaskQuery(params, sdFormat)
         def contextOrg  = contextService.getOrg()
         result.tasks    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg, query)
-        result.tasksCount    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg, query).size()
+        result.tasksCount    = result.tasks.size()
         def preCon      = taskService.getPreconditions(contextOrg)
         result.enableMyInstFormFields = true // enable special form fields
         result << preCon
@@ -3168,7 +3149,9 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         def query = "SELECT p FROM Person AS p WHERE " + qParts.join(" AND ")
 
         if (params.filterPropDef) {
-            (query, qParams) = propertyService.evalFilterQuery(params, query, 'p', qParams)
+            def psq = propertyService.evalFilterQuery(params, query, 'p', qParams)
+            query = psq.query
+            qParams = psq.queryParams
         }
 
         result.visiblePersons = Person.executeQuery(query + " ORDER BY p.last_name, p.first_name ASC", qParams, [max:result.max, offset:result.offset]);
@@ -3250,7 +3233,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
         }
 
-        def sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
+        DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
         def query = filterService.getTaskQuery(params, sdFormat)
         int offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.taskInstanceList = taskService.getTasksByResponsibles(result.user, result.institution, query)
@@ -3339,21 +3322,12 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         def result = setResultGenerics()
 
         // new: filter preset
-        params.orgRoleType   = RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')?.id?.toString()
-        params.orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')?.id?.toString()
+        params.orgRoleType  = RDStore.OR_TYPE_INSTITUTION?.id?.toString()
+        params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-        result.propList =
-                PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
-                        defList: [PropertyDefinition.ORG_PROP],
-                ] // public properties
-                ) +
-                        PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant = :tenant", [
-                                defList: [PropertyDefinition.ORG_PROP],
-                                tenant: contextService.getOrg()
-                        ]// private properties
-                        )
+        result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
+        result.offset       = params.offset ? Integer.parseInt(params.offset) : 0;
+        result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
 
         if (params.selectedOrgs) {
             log.debug('remove orgs from consortia')
@@ -3368,29 +3342,21 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
         }
         def fsq = filterService.getOrgComboQuery(params, result.institution)
-        def consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
+        def tmpQuery = "select o.id " + fsq.query.minus("select o ")
+        def consortiaMemberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
-        if (params.filterPropDef && consortiaMembers) {
-            def tmpQueryParams           = [oids: consortiaMembers.collect{ it.id }]
-            def tmpQuery                 = "select o FROM Org o WHERE o.id IN (:oids)"
-            (tmpQuery, tmpQueryParams)   = propertyService.evalFilterQuery(params, tmpQuery, 'o', tmpQueryParams)
-            result.consortiaMembers      = Org.executeQuery( tmpQuery, tmpQueryParams, [max: result.max, offset: result.offset] )
-            tmpQuery                     = "select o.id " + tmpQuery.minus("select o ")
-            result.consortiaMembersCount = Org.executeQuery( tmpQuery, tmpQueryParams ).size()
+        if(params.exportXLS) {
+            params.remove("max")
+            params.remove("offset")
         } else {
-            //very ugly hotfix for ERMS-875 as it is not general at all ...
-            def limit = [:]
-            if(!params.exportXLS) {
-                limit = [max: result.max, offset: result.offset]
-            }
-            else if(params.exportXLS) {
-                params.remove("max")
-                params.remove("offset")
-            }
-            result.consortiaMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params << limit )
-            def tmpQuery                 = "select o.id " + fsq.query.minus("select o ")
-            result.consortiaMembersCount = Org.executeQuery( tmpQuery, fsq.queryParams).size()
+            params << [max: result.max, offset: result.offset]
         }
+
+        if (params.filterPropDef && consortiaMemberIds) {
+            fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: consortiaMemberIds])
+        }
+        result.consortiaMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params)
+        result.consortiaMembersCount = Org.executeQuery(fsq.query, fsq.queryParams).size()
 
         if ( params.exportXLS=='yes' ) {
 
@@ -3624,7 +3590,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
         if (result.editable) {
 
-            if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgRoleType)) {
+            if((RDStore.OR_TYPE_CONSORTIUM?.id in result.orgRoleType)) {
                 def fsq = filterService.getOrgComboQuery(params, result.institution)
                 result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             }
@@ -3714,16 +3680,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 titles.add(g.message(code: 'org.country.label'))
             }
 
-            def propList =
-                    PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant is null", [
-                            defList: [PropertyDefinition.ORG_PROP],
-                    ] // public properties
-                    ) +
-                            PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList and pd.tenant = :tenant", [
-                                    defList: [PropertyDefinition.ORG_PROP],
-                                    tenant: contextService.getOrg()
-                            ]// private properties
-                            )
+            def propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
             propList.sort { a, b -> a.name.compareToIgnoreCase b.name}
 
