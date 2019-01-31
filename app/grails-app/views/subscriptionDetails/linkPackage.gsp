@@ -147,7 +147,7 @@
                                             id="${com.k_int.kbplus.Platform.findByName(hit.platformName).id}">${hit.platformName}</g:link></g:if>
                                         <g:else>${hit.platformName}</g:else></td>
 
-                                    <td>
+                                    <td class="right aligned">
                                         <g:if test="${editable && (!pkgs || !(hit.uuid in pkgs))}">
                                             <g:link action="linkPackage" class="ui mini button packageLink"
                                                     id="${params.id}"
@@ -165,10 +165,10 @@
                                             <g:if test="${editable}">
                                                 <br>
 
-                                                <div class="ui mini icon buttons">
+                                                <div class="ui icon negative buttons">
                                                     <button class="ui button la-selectable-button"
                                                             onclick="unlinkPackage(${com.k_int.kbplus.Package.findByImpId(hit.uuid)?.id})">
-                                                        <i class="unlink icon"></i> ${message(code: 'default.button.unlink.label')}
+                                                        <i class="unlink icon"></i>
                                                     </button>
                                                 </div>
                                                 <br/>

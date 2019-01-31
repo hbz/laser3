@@ -1,10 +1,12 @@
 <%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.OrgRole;com.k_int.kbplus.Subscription;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.DocContext;com.k_int.kbplus.Doc" %>
 <g:if test="${editmode}">
     <a class="ui button ${tmplCss}" data-semui="modal" href="#${tmplModalID}">
-        <g:if test="${tmplButtonText}">
+        <g:if test="${tmplIcon}">
             <i class="${tmplIcon} icon"></i>
         </g:if>
-        ${tmplButtonText}
+        <g:if test="${tmplButtonText}">
+            ${tmplButtonText}
+        </g:if>
     </a>
 </g:if>
 

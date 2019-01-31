@@ -155,12 +155,9 @@
                         </h5>
                         <g:if test="${links.entrySet()}">
                             <table class="ui la-selectable table">
-                                <colgroup>
-                                    <col width="100">
-                                    <col width="200">
-                                    <col width="130">
-                                    <col width="130">
-                                </colgroup>
+                                <col width="33%">
+                                <col width="33%">
+                                <col width="33%">
                                 <g:each in="${links.entrySet().toSorted()}" var="linkTypes">
                                     <g:if test="${linkTypes.getValue().size() > 0}">
                                         <g:each in="${linkTypes.getValue()}" var="link">
@@ -174,29 +171,27 @@
                                                     </g:link><br>
                                                     ${sdf.format(pair.startDate)}–${pair.endDate ? sdf.format(pair.endDate) : ""}
                                                 </td>
-                                                <td>
-                                                    <div class="ui mini icon buttons">
+                                                <td class="right aligned">
+                                                    <div class="ui icon buttons">
                                                         <g:render template="/templates/links/subLinksModal"
                                                                   model="${[tmplText:message(code:'subscription.details.editLink'),
                                                                             tmplIcon:'write',
                                                                             tmplCss: 'la-selectable-button',
                                                                             tmplID:'editLink',
-                                                                            tmplButtonText:message(code:'subscription.details.editLink'),
                                                                             tmplModalID:"sub_edit_link_${link.id}",
                                                                             editmode: editable,
                                                                             context: "${subscriptionInstance.class.name}:${subscriptionInstance.id}",
                                                                             link: link
                                                                   ]}" />
                                                     </div>
-                                                </td>
-                                                <td>
-                                                    <div class="ui mini icon buttons">
+
+                                                    <div class="ui icon negative buttons">
                                                         <g:if test="${editable}">
                                                             <g:link class="ui mini icon button la-selectable-button js-open-confirm-modal"
                                                                     data-confirm-term-content="${message(code:'subscription.details.confirmDeleteLink')}"
                                                                     data-confirm-term-how="unlink"
                                                                     controller="ajax" action="delete" params='[cmd: "deleteLink", oid: "${link.class.name}:${link.id}"]'>
-                                                                <i class="unlink icon"></i> ${message(code:'default.button.unlink.label')}
+                                                                <i class="unlink icon"></i>
                                                             </g:link>
                                                         </g:if>
                                                     </div>
@@ -225,11 +220,9 @@
                         <div class="content">
 
                             <table class="ui la-selectable table">
-                                <colgroup>
-                                    <col width="130" />
-                                    <col width="300" />
-                                    <col width="430"/>
-                                </colgroup>
+                                <col width="33%">
+                                <col width="33%">
+                                <col width="33%">
                                 <g:each in="${subscriptionInstance.packages.sort{it.pkg.name}}" var="sp">
                                     <tr>
                                     <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'subscription.packages.label')}</th>
@@ -240,12 +233,12 @@
                                                 (${sp.pkg?.contentProvider?.name})
                                             </g:if>
                                         </td>
-                                        <td>
+                                        <td class="right aligned">
                                             <g:if test="${editable}">
 
-                                                <div class="ui mini icon buttons">
+                                                <div class="ui icon negative buttons">
                                                     <button class="ui button la-selectable-button" onclick="unlinkPackage(${sp.pkg.id})">
-                                                        <i class="unlink icon"></i> ${message(code:'default.button.unlink.label')}
+                                                        <i class="unlink icon"></i>
                                                     </button>
                                                 </div>
                                                 <br />
@@ -256,11 +249,9 @@
                             </table>
 
                             <table class="ui la-selectable table">
-                                <colgroup>
-                                    <col width="130" />
-                                    <col width="300" />
-                                    <col width="430"/>
-                                </colgroup>
+                                <col width="33%">
+                                <col width="33%">
+                                <col width="33%">
                                 <tr>
                                     <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'license')}</th>
                                     <td>
@@ -278,11 +269,11 @@
                                              </g:link>]
                                          </g:if>--}%
                                     </td>
-                                    <td>
+                                    <td class="right aligned">
                                         <g:if test="${editable && subscriptionInstance.owner}">
-                                            <div class="ui mini icon buttons">
+                                            <div class="ui icon negative buttons">
                                                 <a href="?cmd=unlinkLicense" class="ui button la-selectable-button">
-                                                    <i class="unlink icon"></i> ${message(code:'default.button.unlink.label')}
+                                                    <i class="unlink icon"></i>
                                                 </a>
                                             </div>
                                             <br />
