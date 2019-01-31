@@ -56,13 +56,16 @@ class Subscription
   String noticePeriod
   Date dateCreated
   Date lastUpdated
-  // Org vendor
+  @Transient
+  List<Org> providers
+  @Transient
+  List<Org> agencies
 
   License owner
   SortedSet issueEntitlements
   RefdataValue isPublic     // RefdataCategory 'YN'
 
-  static transients = [ 'subscriber', 'provider', 'consortia' ]
+  static transients = [ 'subscriber', 'providers', 'agencies', 'consortia' ]
 
   static hasMany = [
                      ids: IdentifierOccurrence,

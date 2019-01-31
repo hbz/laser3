@@ -227,7 +227,8 @@
                 <th rowspan="2" >${message(code: 'consortium', default: 'Consortia')}</th>
             </g:if>
 
-            <th rowspan="2" >${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}</th>
+            <g:sortableColumn params="${params}" property="orgRole§provider" title="${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}" rowspan="2" />
+            <%--<th rowspan="2" >${message(code: 'default.provider.label', default: 'Provider')} / ${message(code: 'default.agency.label', default: 'Agency')}</th>--%>
 
             <%--
             <g:if test="${params.orgRole == 'Subscription Consortia'}">
@@ -315,11 +316,12 @@
                         </td>
                     </g:if>
                     <td>
-                        <g:each in="${OrgRole.findAllBySubAndRoleType(s, RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'))}" var="role">
-                            <g:link controller="Organisations" action="show" id="${role.org?.id}">${role.org?.name}</g:link><br />
+                        <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
+                        <g:each in="${s.providers}" var="org">
+                            <g:link controller="Organisations" action="show" id="${org.id}">${org.name}</g:link><br />
                         </g:each>
-                        <g:each in="${OrgRole.findAllBySubAndRoleType(s, RefdataValue.getByValueAndCategory('Agency', 'Organisational Role'))}" var="role">
-                            <g:link controller="Organisations" action="show" id="${role.org?.id}">${role.org?.name} (${message(code: 'default.agency.label', default: 'Agency')})</g:link><br />
+                        <g:each in="${s.agencies}" var="org">
+                            <g:link controller="Organisations" action="show" id="${org.id}">${org.name} (${message(code: 'default.agency.label', default: 'Agency')})</g:link><br />
                         </g:each>
                     </td>
                     <%--

@@ -177,7 +177,8 @@ from Subscription as s where (
           qry_params.put('resource', (params.resource as Long))
         }
 
-        if ((params.sort != null) && (params.sort.length() > 0)) {
+        //ERMS-584: the symbol "§" means that the given sort parameter should not be considered in base query
+        if ((params.sort != null) && (params.sort.length() > 0) && params.sort.indexOf("§") < 0) {
             base_qry += (params.sort=="s.name") ? " order by LOWER(${params.sort}) ${params.order}":" order by ${params.sort} ${params.order}"
         } else {
             base_qry += " order by lower(trim(s.name)) asc"
