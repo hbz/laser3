@@ -38,7 +38,6 @@ class SubscriptionDetailsController extends AbstractDebugController {
     def contextService
     def addressbookService
     def taskService
-    def navigationGenerationService
     def genericOIDService
     def transformerService
     def exportService
