@@ -63,11 +63,8 @@
         </div>
 
         <semui:messages data="${flash}" />
+
         <br />
-        <div>
-            <g:message code="profile.dashboardReminderPeriod" default="You will be reminded of upcoming appointments {0} days before the due date."
-                   args="${user.getSettingsValue(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}"/>
-        </div>
 
     <%-- should be made overridable by pagination setting --%>
     <%
@@ -106,15 +103,13 @@
             ${tasksCount}
             ${message(code:'myinst.dash.task.label')}
         </a>
+    </div><!-- secondary -->
 
-    </div>
         <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Due Dates' || US_DASHBOARD_TAB.getValue()=='Due Dates' ? 'active':''}" data-tab="first" style="border-top: 1px solid #d4d4d5; ">
             <div>
                 <g:render template="/user/dueDatesView"
-                          model="[user: user,
-                                  dueDates: dueDates, dueDatesCount: dueDatesCount]"/>
+                          model="[user: user, dueDates: dueDates, dueDatesCount: dueDatesCount]"/>
             </div>
-
         </div>
 
         <div class="ui bottom attached tab segment ${US_DASHBOARD_TAB.getValue().value == 'Changes' || US_DASHBOARD_TAB.getValue() == 'Changes' ? 'active':''}" data-tab="second" style="border-top: 1px solid #d4d4d5; ">
@@ -123,6 +118,12 @@
                     <g:link action="changes" class="ui button">${message(code:'myinst.todo.submit.label', default:'View To Do List')}</g:link>
                 </div>
             </g:if>
+
+            <g:message code="profile.dashboardItemsTimeWindow"
+                       default="You see events from the last {0} days."
+                       args="${user.getSettingsValue(UserSettings.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" />
+
+            <br />
 
             <div class="ui relaxed list" style="clear:both;padding-top:1rem;">
                 <g:each in="${changes}" var="changeSet">
@@ -185,6 +186,12 @@
                     <g:link action="announcements" class="ui button">${message(code:'myinst.ann.view.label', default:'View All Announcements')}</g:link>
                 </div>
             </g:if>
+
+            <g:message code="profile.dashboardItemsTimeWindow"
+                       default="You see events from the last {0} days."
+                       args="${user.getSettingsValue(UserSettings.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" />
+
+            <br />
 
             <div class="ui relaxed list" style="clear:both;padding-top:1rem;">
                 <g:each in="${recentAnnouncements}" var="ra">

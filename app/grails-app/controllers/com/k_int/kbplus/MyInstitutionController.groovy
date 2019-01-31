@@ -2887,10 +2887,6 @@ AND EXISTS (
 
         result.changes = []
 
-        if (! periodInDays) {
-            periodInDays = contextService.getUser().getSettingsValue(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)
-        }
-
         def tsCheck = (new Date()).minus(periodInDays)
 
         def baseParams = [owner: result.institution, tsCheck: tsCheck, stats: ['Accepted']]
@@ -2952,14 +2948,16 @@ AND EXISTS (
         def result = setResultGenerics()
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page";
+            flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page"
             response.sendError(401)
             return;
         }
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-        getTodoForInst(result, 365)
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        result.itemsTimeWindow = 365
+        getTodoForInst(result, result.itemsTimeWindow)
 
         result
     }
@@ -2969,16 +2967,12 @@ AND EXISTS (
     def announcements() {
         def result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-
-        def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
-        result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max, sort: 'dateCreated', order: 'desc'])
+        result.itemsTimeWindow = 365
+        result.recentAnnouncements = Doc.executeQuery(
+                'select d from Doc d where d.type = :type and d.dateCreated >= :tsCheck order by d.dateCreated desc',
+                [type: RefdataValue.getByValueAndCategory('Announcement', 'Document Type'), tsCheck: (new Date()).minus(365)]
+        )
         result.num_announcements = result.recentAnnouncements.size()
-
-        // result.num_sub_rows = Subscription.executeQuery("select count(s) "+base_qry, qry_params )[0]
-        // result.subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params, [max:result.max, offset:result.offset]);
-
 
         result
     }

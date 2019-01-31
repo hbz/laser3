@@ -1,19 +1,28 @@
 <!doctype html>
 <html>
-  <head>
-    <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} ${message(code:'menu.datamanager.ann')}</title>
-  </head>
+    <head>
+        <meta name="layout" content="semanticUI"/>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.datamanager.ann')}</title>
+    </head>
 
-  <body>
+    <body>
 
-  <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
-    <semui:crumb message="menu.datamanager.ann" class="active" />
-  </semui:breadcrumbs>
+        <semui:breadcrumbs>
+            <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+            <semui:crumb message="menu.datamanager.ann" class="active" />
+        </semui:breadcrumbs>
 
-    <div class="home-page">
-            <table class="ui table">
+        <h1 class="ui left aligned icon header"><semui:headerIcon />
+            ${message(code:'menu.datamanager.ann')}
+        </h1>
+
+        <g:message code="profile.dashboardItemsTimeWindow"
+             default="You see events from the last {0} days."
+             args="${itemsTimeWindow}" />
+
+        <br />
+
+            <table class="ui table la-table la-table-small">
               <g:each in="${recentAnnouncements}" var="ra">
                 <tr>
                   <td>
@@ -27,15 +36,6 @@
                 </tr>
               </g:each>
             </table>
-
-
-        <g:if test="${recentAnnouncements!=null}" >
-          <semui:paginate  action="announcements" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="10" total="${num_announcements}" />
-        </g:if>
-
-
-    </div>
-
 
   </body>
 </html>
