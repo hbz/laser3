@@ -34,10 +34,10 @@
                     </div>
                 </div>
                 <g:if test="${editable}">
-                    <div class="ui mini icon buttons">
+                    <div class="ui icon negative buttons">
                         <g:link class="ui button" controller="ajax" action="delPrsRole" id="${pr.id}"
                             onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})">
-                            <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
+                            <i class="unlink icon"></i>
                         </g:link>
                     </div>
                     <br />
