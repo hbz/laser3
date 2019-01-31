@@ -438,6 +438,9 @@ r2d2 = {
                         case "membershipSubscription" :
                             var messageWhat = "die Teilnahme der";
                             break;
+                        case "subscription":
+                            var messageWhat = "die Verknüpfung der Lizenz";
+                            break;
                         default:
                             var messageWhat = "die Verknüpfung des Objektes";
                     }
