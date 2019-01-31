@@ -623,7 +623,11 @@ from License as l where (
 
         result.subscriptions = []
 
-        for(int i = result.offset;i < result.offset+result.max;i++) {
+        int breakPoint = result.offset+result.max
+        if(subscriptions.size() < breakPoint)
+            breakPoint = subscriptions.size()
+
+        for(int i = result.offset;i < breakPoint;i++) {
             result.subscriptions.add(subscriptions.get(i))
         }
 
