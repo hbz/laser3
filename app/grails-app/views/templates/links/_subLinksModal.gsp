@@ -14,18 +14,30 @@
     <g:form id="link_subs" class="ui form" url="[controller: 'ajax', action: 'linkSubscriptions']" method="post">
         <input type="hidden" name="context" value="${context}"/>
         <%
-            int perspIndex
-            if(context == Subscription.class.name+":"+link?.source) {
-                perspIndex = 0
+            List<RefdataValue> refdataValues = RefdataValue.findAllByOwner(RefdataCategory.getByI10nDesc('Link type'))
+            LinkedHashMap linkTypes = [:]
+            refdataValues.each { rv ->
+                String[] linkArray = rv.getI10n("value").split("\\|")
+                linkArray.eachWithIndex { l, int perspective ->
+                    linkTypes.put(rv.class.name+":"+rv.id+"§"+perspective,l)
+                }
+                if(link && link.linkType == rv) {
+                    int perspIndex
+                    if(context == Subscription.class.name+":"+link.source) {
+                        perspIndex = 0
+                    }
+                    else if(context == Subscription.class.name+":"+link.destination) {
+                        perspIndex = 1
+                    }
+                    else {
+                        perspIndex = 0
+                    }
+                    linkType = "${rv.class.name}:${rv.id}§${perspIndex}"
+                }
             }
-            else if(context == Subscription.class.name+":"+link?.destination) {
-                perspIndex = 1
-            }
-            else perspIndex = 0
         %>
         <g:if test="${link}">
             <g:set var="pair" value="${link.getOther(context)}"/>
-            <g:set var="linkType" value="${link.linkType}"/>
             <g:set var="comment" value="${DocContext.findByLink(link)}"/>
             <g:set var="selectPair" value="pair_${link.id}"/>
             <g:set var="selectLink" value="linkType_${link.id}"/>
@@ -52,9 +64,8 @@
                         Diese Lizenz
                     </div>
                     <div class="twelve wide column">
-                        <g:set var="linkTypes" value="${RefdataValue.findAllByOwner(RefdataCategory.getByI10nDesc('Link type'))}"/>
-                        <g:select name="${selectLink}" id="${selectLink}" from="${linkTypes}" optionKey="${{it.class.name+":"+it.id}}"
-                                  optionValue="${{it.getI10n('value').split("\\|")[perspIndex]}}" value="${linkType?.class?.name}:${linkType?.id}" noSelection="['':'']"/>
+                        <g:select name="${selectLink}" id="${selectLink}" from="${linkTypes}" optionKey="${{it.key}}"
+                                  optionValue="${{it.value}}" value="${linkType ?: null}" noSelection="['':'']"/>
                     </div>
                 </div>
                 <div class="row">
