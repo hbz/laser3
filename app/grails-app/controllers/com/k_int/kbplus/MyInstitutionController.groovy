@@ -572,7 +572,7 @@ from License as l where (
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.num_sub_rows = Subscription.executeQuery("select s.id " + tmpQ[0], tmpQ[1]).size()
-        result.subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1], [max: result.max, offset: result.offset]);
+        List subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]) //,[max: result.max, offset: result.offset]
 
         result.date_restriction = date_restriction;
 
@@ -591,9 +591,45 @@ from License as l where (
             result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) ? 'package' : 'institution'
         }
 
+        Map<Subscription,List> allProviders = [:]
+        OrgRole.findAllByRoleType(RefdataValue.getByValueAndCategory('Provider', 'Organisational Role')).collect { it ->
+            List currProviders = allProviders.get(it.sub)
+            if(currProviders == null)
+                currProviders = [it.org]
+            allProviders.put(it.sub,currProviders)
+        }
+        Map<Subscription,List> allAgencies = [:]
+        OrgRole.findAllByRoleType(RefdataValue.getByValueAndCategory('Agency', 'Organisational Role')).collect { it ->
+            List currAgencies = allAgencies.get(it.sub)
+            if(currAgencies == null)
+                currAgencies = [it.org]
+            allAgencies.put(it.sub,currAgencies)
+        }
+
+        subscriptions.each { s ->
+            s.providers = allProviders.get(s)
+            s.agencies = allAgencies.get(s)
+        }
+
+        if(params.sort && params.sort.indexOf("§") >= 0) {
+            switch(params.sort) {
+                case "orgRole§provider":
+                    subscriptions.sort { x,y -> x.providers.get(0).name.compareToIgnoreCase y.providers.get(0).name }
+                    if(params.order.equals("desc"))
+                        subscriptions.reverse(true)
+                break
+            }
+        }
+
+        result.subscriptions = []
+
+        for(int i = result.offset;i < result.offset+result.max;i++) {
+            result.subscriptions.add(subscriptions.get(i))
+        }
+
         if ( params.exportXLS=='yes' ) {
-            def subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]);
-            exportcurrentSubscription(subscriptions)
+            def subscriptionsExport = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]);
+            exportcurrentSubscription(subscriptionsExport)
             return
         }
 
