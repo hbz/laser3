@@ -13,7 +13,7 @@ class FilterService {
     Map<String, Object> getOrgQuery(Map params) {
         Map<String, Object> result = [:]
         ArrayList<String> query = ["(o.status is null or o.status != :orgStatus)"]
-        Map<String, Object> queryParams = ["orgStatus" : RDStore.O_DELETED]
+        Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_DELETED]
 
         if (params.orgNameContains?.length() > 0) {
             query << "(lower(o.name) like :orgNameContains1 or lower(o.shortname) like :orgNameContains2 or lower(o.sortname) like :orgNameContains3)"
@@ -75,7 +75,7 @@ class FilterService {
     Map<String, Object> getOrgComboQuery(Map params, Org org) {
         Map<String, Object> result = [:]
         ArrayList<String> query = ["(o.status is null or o.status != :orgStatus)"]
-        Map<String, Object> queryParams = ["orgStatus" : RDStore.O_DELETED]
+        Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_DELETED]
 
         if (params.orgNameContains?.length() > 0) {
             query << "(lower(o.name) like :orgNameContains1 or lower(o.shortname) like :orgNameContains2 or lower(o.sortname) like :orgNameContains3)"
