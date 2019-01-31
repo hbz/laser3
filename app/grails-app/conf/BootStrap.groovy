@@ -988,9 +988,9 @@ class BootStrap {
         RefdataValue.loc('Library Type',   [en: 'Sonstige', de: 'Sonstige'], BOOTSTRAP)
         RefdataValue.loc('Library Type',   [en: 'keine Angabe', de: 'keine Angabe'], BOOTSTRAP)
 
-        RefdataValue.loc('Link Type', [en: 'follows',de: '...ist Nachfolger von|... ist Vorgänger von'], BOOTSTRAP)
-        RefdataValue.loc('Link Type', [en: 'references',de: 'referenziert|wird referenziert durch'], BOOTSTRAP)
-        RefdataValue.loc('Link Type', [en: 'is condition for',de: '...ist Bedingung für|ist bedingt durch'], BOOTSTRAP)
+        RefdataValue.loc('Link Type', [en: 'follows',de: '... ist Nachfolger von|... ist Vorgänger von'], BOOTSTRAP)
+        RefdataValue.loc('Link Type', [en: 'references',de: '... referenziert|... wird referenziert durch'], BOOTSTRAP)
+        RefdataValue.loc('Link Type', [en: 'is condition for',de: '... ist Bedingung für|... ist bedingt durch'], BOOTSTRAP)
 
         RefdataValue.loc('OrgStatus',      [en: 'Current', de: 'Aktuell'], BOOTSTRAP)
         RefdataValue.loc('OrgStatus',      [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
