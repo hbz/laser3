@@ -701,7 +701,6 @@ class SubscriptionDetailsController extends AbstractDebugController {
             def sb = b.getSubscriber()
             (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
         }
-//        ---------- NEU FILTERN --------------
         ArrayList<Long> filteredOrgIds = getOrgIdsForFilter()
         result.filteredSubChilds = new ArrayList<Subscription>()
         result.validSubChilds.each { sub ->
@@ -714,7 +713,6 @@ class SubscriptionDetailsController extends AbstractDebugController {
                 result.filteredSubChilds << [sub: sub, orgs: filteredSubscr]
             }
         }
-//        ---------- NEU FILTERN --------------
 
 //        def deletedSubChilds = Subscription.findAllByInstanceOfAndStatus(
 //                result.subscriptionInstance,
@@ -793,7 +791,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
         def fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
 
         if (tmpParams.filterPropDef) {
-            fsq   = propertyService.evalFilterQuery_retMap(tmpParams, fsq.query, 'o', fsq.queryParams)
+            fsq   = propertyService.evalFilterQuery(tmpParams, fsq.query, 'o', fsq.queryParams)
         }
         fsq.query = fsq.query.replaceFirst("select o from ", "select o.id from ")
         Org.executeQuery(fsq.query, fsq.queryParams, tmpParams)

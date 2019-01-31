@@ -10,30 +10,19 @@ class PropertyService {
     def grailsApplication
     def genericOIDService
 
-    def evalFilterQuery(params, String base_qry, hqlVar, Map base_qry_params) {
-
-        def (query, qry_params) = evalFilterQuery(params, [] << base_qry, hqlVar, base_qry_params)
-        [query.join(" "), qry_params]
-    }
-
-    def evalFilterQuery_retMap(params, String base_qry, hqlVar, Map base_qry_params) {
-        def query
-        def queryParams
-        (query, queryParams) = evalFilterQuery(params, base_qry, hqlVar, base_qry_params)
-        [query: query, queryParams: queryParams]
-    }
-    @Deprecated
-    def evalFilterQuery(params, List<String> base_qry, hqlVar, Map base_qry_params) {
-        def order_by
-        for (int i = 0; i<base_qry.size(); i++) {
-            String qry_part = base_qry.get(i)
-            def pos = qry_part.toLowerCase().indexOf("order by")
-            if (pos >= 0) {
-                order_by = qry_part.substring(pos-1)
-                base_qry.remove(i)
-                base_qry.add(i, qry_part.substring(0, pos-1))
-            }
+    private List<String> splitQueryFromOrderBy(String sql) {
+        String order_by = null
+        int pos = sql.toLowerCase().indexOf("order by")
+        if (pos >= 0) {
+            order_by = sql.substring(pos-1)
+            sql = sql.substring(0, pos-1)
         }
+        [sql, order_by]
+    }
+
+    Map<String, Object> evalFilterQuery(Map params, String base_qry, String hqlVar, Map base_qry_params) {
+        def order_by
+        (base_qry, order_by) = splitQueryFromOrderBy(base_qry)
 
         if (params.filterPropDef) {
             def pd = genericOIDService.resolveOID(params.filterPropDef)
@@ -72,13 +61,12 @@ class PropertyService {
                         break
                 }
             }
-
             base_qry += " ) "
         }
         if (order_by) {
             base_qry += order_by
         }
-        return [base_qry, base_qry_params]
+        [query: base_qry, queryParams: base_qry_params]
     }
 
     def getUsageDetails() {

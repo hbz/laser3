@@ -35,8 +35,8 @@ class TaskService {
     def getTasksByResponsible(User user, Map queryMap) {
         def tasks = []
         if (user) {
-            def query  = "select t from Task t where t.responsibleUser = ?" + queryMap.query
-            def params = [user] + queryMap.queryParams
+            def query  = "select t from Task t where t.responsibleUser = :user" + queryMap.query
+            def params = [user : user] << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
         }
         tasks
@@ -45,8 +45,8 @@ class TaskService {
     def getTasksByResponsible(Org org, Map queryMap) {
         def tasks = []
         if (org) {
-            def query  = "select t from Task t where t.responsibleOrg = ?" + queryMap.query
-            def params = [org] + queryMap.queryParams
+            def query  = "select t from Task t where t.responsibleOrg = :org" + queryMap.query
+            def params = [org : org] << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
         }
         tasks
@@ -56,8 +56,8 @@ class TaskService {
         def tasks = []
 
         if (user && org) {
-            def query = "select t from Task t where ( t.responsibleUser = ? or t.responsibleOrg = ? ) " + queryMap.query
-            def params = [user, org] + queryMap.queryParams
+            def query = "select t from Task t where ( t.responsibleUser = :user or t.responsibleOrg = :org ) " + queryMap.query
+            def params = [user : user, org: org] << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
         } else if (user) {
             tasks = getTasksByResponsible(user, queryMap)

@@ -56,8 +56,10 @@ class RDStore {
     static final PERM_UNKNOWN               = getRefdataValue('Unknown','Permissions')
 
     static final PRS_FUNC_GENERAL_CONTACT_PRS = getRefdataValue('General contact person', 'Person Function')
-    static final CCT_EMAIL =                    getRefdataValue('E-Mail','ContactContentType')
-    static final PRS_RESP_SPEC_SUB_EDITOR =     getRefdataValue('Specific subscription editor', 'Person Responsibility')
+    static final CCT_EMAIL                  = getRefdataValue('E-Mail','ContactContentType')
+    static final PRS_RESP_SPEC_SUB_EDITOR   = getRefdataValue('Specific subscription editor', 'Person Responsibility')
+
+    static final TASK_STATUS_DONE           =  getRefdataValue('Done', 'Task Status')
 
     static RefdataValue getRefdataValue(String value, String category) {
         (RefdataValue) GrailsHibernateUtil.unwrapIfProxy( RefdataValue.getByValueAndCategory(value, category))

@@ -120,7 +120,7 @@ class OrganisationsController extends AbstractDebugController {
         if (params.filterPropDef) {
             def orgIdList = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams)
             fsq = filterService.getOrgQuery([constraint_orgIds: orgIdList] << params)
-            fsq = propertyService.evalFilterQuery_retMap(params, fsq.query, 'o', fsq.queryParams)
+            fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
         }
         params.max          = params.max ?: result.user?.getDefaultPageSizeTMP()
         result.orgList      = Org.findAll(fsq.query, fsq.queryParams, params)

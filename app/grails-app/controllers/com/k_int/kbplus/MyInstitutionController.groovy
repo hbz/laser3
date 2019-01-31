@@ -19,6 +19,8 @@ import com.k_int.properties.*
 import de.laser.DashboardDueDate
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+import java.text.DateFormat
+
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
 import java.text.SimpleDateFormat
@@ -277,7 +279,7 @@ from License as l where (
         // eval property filter
 
         if (params.filterPropDef) {
-            def psq = propertyService.evalFilterQuery_retMap(params, base_qry, 'l', qry_params)
+            def psq = propertyService.evalFilterQuery(params, base_qry, 'l', qry_params)
             base_qry = psq.query
             qry_params = psq.queryParams
         }
@@ -505,7 +507,7 @@ from License as l where (
 
         def fsq  = filterService.getOrgQuery([constraint_orgIds: orgListTotal.collect{ it2 -> it2.id }] << params)
         if (params.filterPropDef) {
-            fsq = propertyService.evalFilterQuery_retMap(params, fsq.query, 'o', fsq.queryParams)
+            fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
         }
         result.orgList      = Org.findAll(fsq.query, fsq.queryParams, params)
         result.orgListTotal = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams).size()
@@ -2830,12 +2832,12 @@ AND EXISTS (
 
         // tasks
 
-        def sdFormat    = new DateUtil().getSimpleDateFormat_NoTime()
+        DateFormat sdFormat    = new DateUtil().getSimpleDateFormat_NoTime()
         params.taskStatus = 'not done'
         def query       = filterService.getTaskQuery(params, sdFormat)
         def contextOrg  = contextService.getOrg()
         result.tasks    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg, query)
-        result.tasksCount    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg, query).size()
+        result.tasksCount    = result.tasks.size()
         def preCon      = taskService.getPreconditions(contextOrg)
         result.enableMyInstFormFields = true // enable special form fields
         result << preCon
@@ -3110,7 +3112,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         def query = "SELECT p FROM Person AS p WHERE " + qParts.join(" AND ")
 
         if (params.filterPropDef) {
-            def psq = propertyService.evalFilterQuery_retMap(params, query, 'p', qParams)
+            def psq = propertyService.evalFilterQuery(params, query, 'p', qParams)
             query = psq.query
             qParams = psq.queryParams
         }
@@ -3194,7 +3196,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
         }
 
-        def sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
+        DateFormat sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
         def query = filterService.getTaskQuery(params, sdFormat)
         int offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.taskInstanceList = taskService.getTasksByResponsibles(result.user, result.institution, query)
@@ -3314,11 +3316,10 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
 
         if (params.filterPropDef && consortiaMemberIds) {
-            fsq                      = propertyService.evalFilterQuery_retMap(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: consortiaMemberIds])
+            fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: consortiaMemberIds])
         }
-        result.consortiaMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params )
-        fsq.query                    = "select o.id " + fsq.query.minus("select o ")
-        result.consortiaMembersCount = Org.executeQuery( fsq.query, fsq.queryParams).size()
+        result.consortiaMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params)
+        result.consortiaMembersCount = Org.executeQuery(fsq.query, fsq.queryParams).size()
 
         if ( params.exportXLS=='yes' ) {
 
