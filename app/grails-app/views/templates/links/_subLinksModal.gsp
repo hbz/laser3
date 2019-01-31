@@ -107,6 +107,7 @@
             data: function(term, page) {
                 return {
                     q: term,
+                    ctx: "${context}",
                     page_limit: 20,
                     baseClass: 'com.k_int.kbplus.Subscription'
                 };
