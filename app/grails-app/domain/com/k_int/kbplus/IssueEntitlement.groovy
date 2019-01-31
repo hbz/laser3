@@ -9,7 +9,7 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
   Date accessStartDate
   Date accessEndDate
 
-  RefdataValue status
+  RefdataValue status   // RefdataCategory 'Entitlement Issue Status'
   Date startDate
   String startVolume
   String startIssue
@@ -22,7 +22,7 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
   String ieReason
   Date coreStatusStart
   Date coreStatusEnd
-  RefdataValue coreStatus // core Status is really core Medium.. dont ask.
+  RefdataValue coreStatus // core Status is really core Medium.. dont ask. // RefdataCategory 'CoreStatus'
   RefdataValue medium
 
   static belongsTo = [subscription: Subscription, tipp: TitleInstancePackagePlatform]

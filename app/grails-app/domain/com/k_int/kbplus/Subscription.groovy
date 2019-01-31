@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.helper.RDStore
+import de.laser.interfaces.DeleteFlag
 import de.laser.traits.AuditTrait
 import de.laser.domain.AbstractBaseDomain
 import de.laser.interfaces.Permissions
@@ -11,7 +12,9 @@ import de.laser.interfaces.TemplateSupport
 
 import javax.persistence.Transient
 
-class Subscription extends AbstractBaseDomain implements TemplateSupport, Permissions, AuditTrait {
+class Subscription
+        extends AbstractBaseDomain
+        implements TemplateSupport, DeleteFlag, Permissions, AuditTrait {
 
     // AuditTrait
     static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
@@ -53,13 +56,16 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
   String noticePeriod
   Date dateCreated
   Date lastUpdated
-  // Org vendor
+  @Transient
+  List<Org> providers
+  @Transient
+  List<Org> agencies
 
   License owner
   SortedSet issueEntitlements
   RefdataValue isPublic     // RefdataCategory 'YN'
 
-  static transients = [ 'subscriber', 'provider', 'consortia' ]
+  static transients = [ 'subscriber', 'providers', 'agencies', 'consortia' ]
 
   static hasMany = [
                      ids: IdentifierOccurrence,
@@ -135,6 +141,11 @@ class Subscription extends AbstractBaseDomain implements TemplateSupport, Permis
         isPublic(nullable:true, blank:true)
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true, blank: true)
+    }
+
+    @Override
+    boolean isDeleted() {
+        return RDStore.SUBSCRIPTION_DELETED.id == status?.id
     }
 
     // TODO: implement

@@ -6,6 +6,7 @@ import de.laser.SubscriptionsQueryService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
+import de.laser.interfaces.TemplateSupport
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -37,6 +38,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
     def contextService
     def addressbookService
     def taskService
+    def navigationGenerationService
     def genericOIDService
     def transformerService
     def exportService
@@ -56,6 +58,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
     def dataloadService
     def GOKbService
     def navigationGenerationService
+    def financialDataService
 
     private static String INVOICES_FOR_SUB_HQL =
             'select co.invoice, sum(co.costInLocalCurrency), sum(co.costInBillingCurrency), co from CostItem as co where co.sub = :sub group by co.invoice order by min(co.invoice.startDate) desc';
@@ -761,27 +764,6 @@ class SubscriptionDetailsController extends AbstractDebugController {
         result
     }
 
-/*
-    private Org[] getOrgsForFilter_old() {
-        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        def resultOrgs
-        def tmpParams = params.clone()
-        tmpParams.remove("max")
-        tmpParams.remove("offset")
-        def fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
-        def consortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
-
-        if (tmpParams.filterPropDef && consortiaMembers) {
-            def tmpQueryParams           = [oids: consortiaMembers.collect{ it.id }]
-            def tmpQuery                 = "select o FROM Org o WHERE o.id IN (:oids)"
-            (tmpQuery, tmpQueryParams)   = propertyService.evalFilterQuery(tmpParams, tmpQuery, 'o', tmpQueryParams)
-            resultOrgs      = Org.executeQuery( tmpQuery, tmpQueryParams, [:] )
-        } else {
-            resultOrgs      = Org.executeQuery(fsq.query, fsq.queryParams, tmpParams )
-        }
-        resultOrgs
-    }
-*/
     private ArrayList<Long> getOrgIdsForFilter() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         ArrayList<Long> resultOrgIds
@@ -1914,6 +1896,16 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     result.l_y_axis_labels = fsLicenseResult?.y_axis_labels
                 }
             }
+        }
+
+        //cost items, reactivated as of ERMS-943
+        LinkedHashMap costItems = financialDataService.getCostItems(result.subscription)
+        result.costItemSums = [ownCosts:financialDataService.calculateResults(costItems.ownCosts)]
+        if(costItems.consCosts.size() > 0) {
+            result.costItemSums.consCosts = financialDataService.calculateResults(costItems.consCosts)
+        }
+        if(costItems.subscrCosts.size() > 0) {
+            result.costItemSums.subscrCosts = financialDataService.calculateResults(costItems.subscrCosts)
         }
 
         result

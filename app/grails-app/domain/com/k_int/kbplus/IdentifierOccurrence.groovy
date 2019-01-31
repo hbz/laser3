@@ -19,8 +19,6 @@ class IdentifierOccurrence {
             cre:   Creator
     ]
 
-
-
     static mapping = {
         id  column:'io_id'
         identifier column:'io_canonical_id'
@@ -75,14 +73,4 @@ class IdentifierOccurrence {
     String toString() {
         "IdentifierOccurrence(${id} - lic:${lic}, org:${org}, pkg:${pkg}, sub:${sub}, ti:${ti}, tipp:${tipp}, cre:${cre})"
     }
-
-  @Transient
-  def onSave = {
-  }
-
-  @Transient
-  def onDelete = {
-  }
-
-
 }

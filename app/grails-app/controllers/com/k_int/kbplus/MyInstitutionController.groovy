@@ -18,7 +18,7 @@ import org.apache.poi.ss.usermodel.*
 import com.k_int.properties.*
 import de.laser.DashboardDueDate
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
-
+import java.sql.Timestamp
 import java.text.DateFormat
 
 // import org.json.simple.JSONArray;
@@ -553,7 +553,7 @@ from License as l where (
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.num_sub_rows = Subscription.executeQuery("select s.id " + tmpQ[0], tmpQ[1]).size()
-        result.subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1], [max: result.max, offset: result.offset]);
+        List subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]) //,[max: result.max, offset: result.offset]
 
         result.date_restriction = date_restriction;
 
@@ -572,9 +572,45 @@ from License as l where (
             result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) ? 'package' : 'institution'
         }
 
+        Map<Subscription,List> allProviders = [:]
+        OrgRole.findAllByRoleType(RefdataValue.getByValueAndCategory('Provider', 'Organisational Role')).collect { it ->
+            List currProviders = allProviders.get(it.sub)
+            if(currProviders == null)
+                currProviders = [it.org]
+            allProviders.put(it.sub,currProviders)
+        }
+        Map<Subscription,List> allAgencies = [:]
+        OrgRole.findAllByRoleType(RefdataValue.getByValueAndCategory('Agency', 'Organisational Role')).collect { it ->
+            List currAgencies = allAgencies.get(it.sub)
+            if(currAgencies == null)
+                currAgencies = [it.org]
+            allAgencies.put(it.sub,currAgencies)
+        }
+
+        subscriptions.each { s ->
+            s.providers = allProviders.get(s)
+            s.agencies = allAgencies.get(s)
+        }
+
+        if(params.sort && params.sort.indexOf("§") >= 0) {
+            switch(params.sort) {
+                case "orgRole§provider":
+                    subscriptions.sort { x,y -> x.providers.get(0).name.compareToIgnoreCase y.providers.get(0).name }
+                    if(params.order.equals("desc"))
+                        subscriptions.reverse(true)
+                break
+            }
+        }
+
+        result.subscriptions = []
+
+        for(int i = result.offset;i < result.offset+result.max;i++) {
+            result.subscriptions.add(subscriptions.get(i))
+        }
+
         if ( params.exportXLS=='yes' ) {
-            def subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]);
-            exportcurrentSubscription(subscriptions)
+            def subscriptionsExport = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]);
+            exportcurrentSubscription(subscriptionsExport)
             return
         }
 
@@ -1239,14 +1275,14 @@ from License as l where (
         if (filterOtherPlat.contains("all")) filterOtherPlat = null
 
         def limits = (isHtmlOutput) ? [readOnly:true,max: result.max, offset: result.offset] : [offset: 0]
-        def del_sub = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
-        def del_ie =  RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
+        RefdataValue del_sub = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+        RefdataValue del_ie =  RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
 
-        def role_sub        = RDStore.OR_SUBSCRIBER
-        def role_sub_cons   = RDStore.OR_SUBSCRIBER_CONS
+        RefdataValue role_sub        = RDStore.OR_SUBSCRIBER
+        RefdataValue role_sub_cons   = RDStore.OR_SUBSCRIBER_CONS
 
-        def role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIA
-        def role_pkg_consortia = RefdataValue.getByValueAndCategory('Package Consortia', 'Organisational Role')
+        RefdataValue role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        RefdataValue role_pkg_consortia = RefdataValue.getByValueAndCategory('Package Consortia', 'Organisational Role')
         def roles = [role_sub.id,role_sub_consortia.id,role_pkg_consortia.id]
         
         log.debug("viable roles are: ${roles}")
@@ -1270,14 +1306,18 @@ from License as l where (
         if (filterPvd) {
             sub_qry += "INNER JOIN org_role orgrole on orgrole.or_pkg_fk=tipp.tipp_pkg_fk "
         }
-        sub_qry += "WHERE ie.ie_tipp_fk=tipp.tipp_id and tipp.tipp_ti_fk=ti2.ti_id and ( orole.or_roletype_fk = :role_sub or orole.or_roletype_fk = :role_sub_cons or orole.or_roletype_fk = :role_cons ) "
+        sub_qry += "WHERE ie.ie_tipp_fk=tipp.tipp_id  and tipp.tipp_ti_fk=ti2.ti_id and ( orole.or_roletype_fk = :role_sub or orole.or_roletype_fk = :role_sub_cons or orole.or_roletype_fk = :role_cons ) "
         sub_qry += "AND orole.or_org_fk = :institution "
         sub_qry += "AND (sub.sub_status_rv_fk is null or sub.sub_status_rv_fk != :del_sub) "
         sub_qry += "AND (ie.ie_status_rv_fk is null or ie.ie_status_rv_fk != :del_ie ) "
 
         if (date_restriction) {
-            sub_qry += " AND sub.sub_start_date <= :date_restriction AND sub.sub_end_date >= :date_restriction "
+            sub_qry += " AND ( "
+            sub_qry += "( ie.ie_start_date <= :date_restriction OR (ie.ie_start_date is null AND (sub.sub_start_date <= :date_restriction OR sub.sub_start_date is null) ) ) AND "
+            sub_qry += "( ie.ie_end_date >= :date_restriction OR (ie.ie_end_date is null AND (sub.sub_end_date >= :date_restriction OR sub.sub_end_date is null) ) ) "
+            sub_qry += ") "
             result.date_restriction = date_restriction
+            qry_params.date_restriction = new Timestamp(date_restriction.getTime())
         }
 
         if ((params.filter) && (params.filter.length() > 0)) {
@@ -1310,8 +1350,8 @@ from License as l where (
             qry_params.provider = filterPvd.join(", ")
         }
 
-        def having_clause = params.filterMultiIE ? 'having count(ie.ie_id) > 1' : ''
-        def limits_clause = limits ? " limit :max offset :offset " : ""
+        String having_clause = params.filterMultiIE ? 'having count(ie.ie_id) > 1' : ''
+        String limits_clause = limits ? " limit :max offset :offset " : ""
         
         def order_by_clause = ''
         if (params.order == 'desc') {
@@ -1322,7 +1362,7 @@ from License as l where (
 
         def sql = new Sql(dataSource)
 
-        def queryStr = "tipp.tipp_ti_fk, count(ie.ie_id) ${sub_qry} group by ti.sort_title, tipp.tipp_ti_fk ${having_clause} ".toString()
+        String queryStr = "tipp.tipp_ti_fk, count(ie.ie_id) ${sub_qry} group by ti.sort_title, tipp.tipp_ti_fk ${having_clause} ".toString()
 
         log.debug(" SELECT ${queryStr} ${order_by_clause} ${limits_clause} ")
 
@@ -1340,8 +1380,7 @@ from License as l where (
             result.entitlements = sql.rows(exportQuery,qry_params).collect { IssueEntitlement.get(it.ie_id) }
         } 
 
-
-        def filename = "titles_listing_${result.institution.shortcode}"
+        String filename = "titles_listing_${result.institution.shortcode}"
         withFormat {
             html {
                 result
@@ -2854,10 +2893,6 @@ AND EXISTS (
 
         result.changes = []
 
-        if (! periodInDays) {
-            periodInDays = contextService.getUser().getSettingsValue(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)
-        }
-
         def tsCheck = (new Date()).minus(periodInDays)
 
         def baseParams = [owner: result.institution, tsCheck: tsCheck, stats: ['Accepted']]
@@ -2919,14 +2954,16 @@ AND EXISTS (
         def result = setResultGenerics()
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page";
+            flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page"
             response.sendError(401)
             return;
         }
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-        getTodoForInst(result, 365)
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        result.itemsTimeWindow = 365
+        getTodoForInst(result, result.itemsTimeWindow)
 
         result
     }
@@ -2936,16 +2973,12 @@ AND EXISTS (
     def announcements() {
         def result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-
-        def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
-        result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max, sort: 'dateCreated', order: 'desc'])
+        result.itemsTimeWindow = 365
+        result.recentAnnouncements = Doc.executeQuery(
+                'select d from Doc d where d.type = :type and d.dateCreated >= :tsCheck order by d.dateCreated desc',
+                [type: RefdataValue.getByValueAndCategory('Announcement', 'Document Type'), tsCheck: (new Date()).minus(365)]
+        )
         result.num_announcements = result.recentAnnouncements.size()
-
-        // result.num_sub_rows = Subscription.executeQuery("select count(s) "+base_qry, qry_params )[0]
-        // result.subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params, [max:result.max, offset:result.offset]);
-
 
         result
     }

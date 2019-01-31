@@ -20,8 +20,8 @@ class Package extends AbstractBaseDomain {
   String vendorURL
   String cancellationAllowances
   RefdataValue packageType
-  RefdataValue packageStatus
-  RefdataValue packageListStatus
+  RefdataValue packageStatus        // RefdataCategory 'Package Status'
+  RefdataValue packageListStatus    // RefdataCategory 'Package.ListStatus'
   RefdataValue breakable
   RefdataValue consistent
   RefdataValue fixed

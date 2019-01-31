@@ -1,9 +1,5 @@
 <%@ page
-        import="com.k_int.kbplus.Org"
-        import="com.k_int.kbplus.Person"
-        import="com.k_int.kbplus.PersonRole"
-        import="com.k_int.kbplus.RefdataValue"
-        import="com.k_int.kbplus.RefdataCategory"
+        import="com.k_int.kbplus.Org;com.k_int.kbplus.Person;com.k_int.kbplus.PersonRole;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory"
 %>
 <g:set var="overwriteEditable" value="${editable || accService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}" />
 <!doctype html>
@@ -23,7 +19,7 @@
 ${orgInstance.name}
 </h1>
 
-<g:render template="nav" contextPath="."/>
+<g:render template="nav"/>
 
 <semui:messages data="${flash}"/>
 
@@ -54,7 +50,7 @@ ${orgInstance.name}
 <g:each in="${numbersInstanceList}" var="numbersInstance">
     <tr>
         <td><semui:xEditableRefData config="Number Type" owner="${numbersInstance}" field="type" overwriteEditable="${overwriteEditable}"/></td>
-        <td><semui:xEditable owner="${numbersInstance}" field="number" overwriteEditable="${overwriteEditable}"/></td>
+        <td><semui:xEditable owner="${numbersInstance}" type="number" field="number" overwriteEditable="${overwriteEditable}"/></td>
         <td><semui:xEditable owner="${numbersInstance}" type="date" field="startDate" overwriteEditable="${overwriteEditable}"/></td>
         <td><semui:xEditable owner="${numbersInstance}" type="date" field="endDate" overwriteEditable="${overwriteEditable}"/></td>
         <td class="x">

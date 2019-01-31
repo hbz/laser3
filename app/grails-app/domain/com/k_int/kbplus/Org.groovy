@@ -4,6 +4,8 @@ import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RDStore
+import de.laser.interfaces.DeleteFlag
 import groovy.sql.Sql
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.logging.LogFactory
@@ -15,7 +17,9 @@ import javax.persistence.Transient
 import grails.util.Holders
 
 @Log4j
-class Org extends AbstractBaseDomain {
+class Org
+        extends AbstractBaseDomain
+        implements DeleteFlag {
 
     @Transient
     def sessionFactory // TODO: ugliest HOTFIX ever
@@ -45,7 +49,7 @@ class Org extends AbstractBaseDomain {
 
     RefdataValue orgType                 // RefdataCategory 'OrgType' OLD -> NEW: orgRoleType
     RefdataValue sector
-    RefdataValue status
+    RefdataValue status                  // RefdataCategory 'OrgStatus'
     RefdataValue membership
     RefdataValue country                 // RefdataCategory 'Country'
     RefdataValue federalState            // RefdataCategory 'Federal State'
@@ -151,6 +155,11 @@ class Org extends AbstractBaseDomain {
       lastImportDate(nullable:true, blank:true)
       costConfigurationPreset(nullable:true, blank:false)
         orgRoleType(nullable:true, blank:true)
+    }
+
+    @Override
+    boolean isDeleted() {
+        return RDStore.ORG_DELETED.id == status?.id
     }
 
     @Override

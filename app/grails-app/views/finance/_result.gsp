@@ -10,16 +10,16 @@
 
 <div id="financeFilterData" class="ui top attached tabular menu" data-current="${queryMode ? queryMode.minus('MODE_') : ''}">
     <g:if test="${queryMode != FinanceController.MODE_CONS_AT_SUBSCR}">
-        <div class="item ${tabOwnerActive}" data-tab="OWNER">Eigene Kosten</div>
+        <div class="item ${tabOwnerActive}" data-tab="OWNER">${message(code:'financials.tab.ownCosts')}</div>
     </g:if>
     <g:if test="${queryMode == FinanceController.MODE_CONS}">
-        <div class="item ${tabSCActive}" data-tab="CONS">Teilnehmerkosten (Konsortialsicht)</div>
+        <div class="item ${tabSCActive}" data-tab="CONS">${message(code:'financials.tab.consCosts')}</div>
     </g:if>
     <g:if test="${queryMode == FinanceController.MODE_CONS_AT_SUBSCR}">
-        <div class="item ${tabOwnerActive}" data-tab="CONS_AT_SUBSCR">Teilnehmerkosten (Konsortialsicht)</div>
+        <div class="item ${tabOwnerActive}" data-tab="CONS_AT_SUBSCR">${message(code:'financials.tab.consCosts')}</div>
     </g:if>
     <g:if test="${queryMode == FinanceController.MODE_SUBSCR}">
-        <div class="item" data-tab="SUBSCR">Teilnehmerkosten</div>
+        <div class="item" data-tab="SUBSCR">${message(code:'financials.tab.subscrCosts')}</div>
     </g:if>
 </div>
 

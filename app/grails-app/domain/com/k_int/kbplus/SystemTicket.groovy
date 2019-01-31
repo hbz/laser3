@@ -12,7 +12,7 @@ class SystemTicket {
     String info
     String meta
 
-    RefdataValue status
+    RefdataValue status             // RefdataCategory 'Ticket.Status'
     RefdataValue category
 
     Date dateCreated

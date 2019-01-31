@@ -1,4 +1,4 @@
-<%@ page import="java.math.MathContext; com.k_int.kbplus.Subscription; com.k_int.kbplus.Links" %>
+<%@ page import="java.math.MathContext; com.k_int.kbplus.Subscription; com.k_int.kbplus.Links; de.laser.interfaces.TemplateSupport" %>
 <%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="com.k_int.properties.PropertyDefinition" %>
 <%@ page import="com.k_int.kbplus.RefdataCategory" %>
@@ -364,68 +364,70 @@
                         </div>
                     </div>
 
-                <%-- FINANCE
-
-                <g:if test="${subscriptionInstance.costItems}">
-
-                    <div class="ui card la-dl-no-table la-js-hideable hidden">
-                        <div class="content">
-                            <dl>
-                                <dt class="control-label">${message(code:'financials.label', default:'Financials')}</dt>
-                                <dd>
-                                    <table class="ui single line  table">
+                <%-- FINANCE, to be reactivated as of ERMS-943 --%>
+                <%-- assemble data on server side --%>
+                <g:if test="${costItemSums}">
+                    <g:each in="${costItemSums}" var="view">
+                        <%
+                            String keyString
+                            switch(view.getKey()) {
+                                case "ownCosts": keyString = message(code:'financials.tab.ownCosts')
+                                    break
+                                case "consCosts": keyString = message(code:'financials.tab.consCosts')
+                                    break
+                                case "subscrCosts": keyString = message(code:'financials.tab.subscrCosts')
+                                    break
+                            }
+                        %>
+                        <div class="ui card la-dl-no-table la-js-hideable">
+                            <div class="content">
+                                <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${keyString}</h5>
+                                <g:if test="${view.getValue().currencies.size() > 0}">
+                                    <table class="ui la-table-small la-table-inCard table">
                                         <thead>
-                                        <tr>
-                                            <th class="la-column-nowrap">${message(code:'financials.costItemCategory')}</th>
-                                            <th>${message(code:'financials.costItemElement')}</th>
-                                            <th>${message(code:'financials.costInLocalCurrency')}</th>
-                                            <th>${message(code:'financials.costItemStatus', default:'Status')}</th>
-                                        </tr>
+                                            <tr>
+                                                <th>${message(code:'financials.costInBillingCurrency')}</th>
+                                                <th>${message(code:'financials.billingCurrency')}</th>
+                                                <th>${message(code:'financials.newCosts.valueInEuro')}</th>
+                                                <g:if test="${subscriptionInstance.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_CONSORTIAL)}">
+                                                    <th>${message(code:'financials.costInBillingCurrencyAfterTax')}</th>
+                                                    <th>${message(code:'financials.billingCurrency')}</th>
+                                                    <th>${message(code:'financials.newCosts.valueInEuro')}</th>
+                                                </g:if>
+                                            </tr>
                                         </thead>
                                         <tbody>
-                                            <g:each in="${subscriptionInstance.costItems}" var="ci">
+                                            <g:set var="sums" value="${view.getValue()}" />
+                                            <g:each in="${sums.currencies}" var="sum">
+                                                <g:set var="currency" value="${sum.getValue()}" />
                                                 <tr>
-                                                    <td class="la-column-nowrap">${ci.costItemCategory?.getI10n('value')}</td>
-                                                    <td>${ci.costItemElement?.getI10n('value')}</td>
-                                                    <td>${ci.costInLocalCurrency} ${RefdataCategory.lookupOrCreate('Currency','EUR').getI10n('value')}</td>
-                                                    <td>${ci.costItemStatus?.getI10n('value')}</td>
+                                                    <g:if test="${subscriptionInstance.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_CONSORTIAL)}">
+                                                        <td><g:formatNumber number="${currency.billing}" type="currency" currencySymbol=""/></td>
+                                                        <td>${sum.getKey()}</td>
+                                                        <td><g:formatNumber number="${sums.local}" type="currency" currencySymbol=""/></td>
+                                                        <td><g:formatNumber number="${currency.billingAfterTax}" type="currency" currencySymbol=""/></td>
+                                                        <td>${sum.getKey()}</td>
+                                                        <td><g:formatNumber number="${sums.localAfterTax}" type="currency" currencyCode="EUR" currencySymbol=""/></td>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <td><g:formatNumber number="${currency.billingAfterTax}" type="currency" currencySymbol=""/></td>
+                                                        <td>${sum.getKey()}</td>
+                                                        <td><g:formatNumber number="${sums.localAfterTax}" type="currency" currencyCode="EUR" currencySymbol=""/></td>
+                                                    </g:else>
                                                 </tr>
                                             </g:each>
                                         </tbody>
                                     </table>
-                                    <% /*
-                                    <table class="ui celled striped table">
-                                        <thead>
-                                        <tr>
-                                            <th>${message(code:'financials.costItem', default:'CI')}</th>
-                                            <th>${message(code:'financials.order', default:'Order')}</th>
-                                            <th>${message(code:'financials.datePaid', default:'Date Paid')}</th>
-                                            <th>${message(code:'default.startDate.label', default:'Start Date')}</th>
-                                            <th>${message(code:'default.endDate.label', default:'End Date')}</th>
-                                            <th>${message(code:'financials.amount', default:'Amount')}</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <g:each in="${subscriptionInstance.costItems}" var="ci">
-                                            <tr>
-                                                <td>${ci.id}</td>
-                                                <td>${ci.order?.orderNumber}</td>
-                                                <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ci.datePaid}"/></td>
-                                                <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ci.startDate}"/></td>
-                                                <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ci.endDate}"/></td>
-                                                <td>${ci.costInLocalCurrency} / ${ci.costInBillingCurrency}</td>
-                                            </tr>
-                                        </g:each>
-                                        </tbody>
-                                    </table>
-                                    */ %>
-                                </dd>
-                            </dl>
+                                </g:if>
+                                <g:else>
+                                    <dl>
+                                        <dd>${message(code:'financials.noCostsConsidered')}</dd>
+                                    </dl>
+                                </g:else>
+                            </div>
                         </div>
-                    </div>
+                    </g:each>
                 </g:if>
-
-                FINANCE --%>
                 <g:if test="${usage}">
                     <div class="ui card la-dl-no-table la-js-hideable hidden">
                         <div class="content">

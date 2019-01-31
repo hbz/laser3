@@ -29,6 +29,7 @@ class AdminController extends AbstractDebugController {
     def contextService
     def refdataService
     def propertyService
+    def dataConsistencyService
 
   def docstoreService
   def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
@@ -423,6 +424,16 @@ class AdminController extends AbstractDebugController {
 
     result
   }
+
+    @Secured(['ROLE_ADMIN'])
+    def dataConsistency() {
+        Map result = [:]
+
+        result.importIds = dataConsistencyService.checkImportIds()
+        result.titles    = dataConsistencyService.checkTitles()
+
+        result
+    }
 
   @Secured(['ROLE_ADMIN'])
   def newContentItem() {

@@ -19,7 +19,7 @@ class Platform extends AbstractBaseDomain {
   String primaryUrl
   String provenance
   RefdataValue type
-  RefdataValue status
+  RefdataValue status             // RefdataValue 'Platform Status'; TODO: not in Bootstrap
   RefdataValue serviceProvider
   RefdataValue softwareProvider
   Date dateCreated
