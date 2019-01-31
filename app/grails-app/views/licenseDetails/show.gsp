@@ -138,24 +138,22 @@
                                 <g:each in="${license.subscriptions.sort{it.name}}" var="sub">
                                     <g:if test="${contextOrg?.id in sub.orgRelations?.org?.id || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextOrg?.getallOrgRoleTypeIds())}">
                                         <table class="ui la-selectable table">
-                                            <colgroup>
-                                                <col width="130" />
-                                                <col width="300" />
-                                                <col width="430"/>
-                                            </colgroup>
+                                            <col width="33%">
+                                            <col width="33%">
+                                            <col width="33%">
                                             <tr>
                                                 <th scope="row">${message(code:'license.linkedSubscription', default:'Linked Subscription')}</th>
                                                 <td>
                                                     <g:link controller="subscriptionDetails" action="show" id="${sub.id}">${sub.name }</g:link>
                                                 </td>
-                                                <td>
+                                                <td class="right aligned">
                                                     <g:if test="${editable}">
-                                                        <div class="ui mini icon buttons">
+                                                        <div class="ui icon negative buttons">
                                                             <g:link class="ui button la-selectable-button" name="unlinkSubscription"
                                                                     controller="licenseDetails" action="unlinkSubscription"
                                                                     params="['license':license.id, 'subscription':sub.id]"
                                                                     onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
-                                                                <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
+                                                                <i class="unlink icon"></i>
                                                             </g:link>
                                                         </div>
                                                     </g:if>
@@ -224,7 +222,7 @@
 
                                                 <div class="ui mini icon buttons">
                                                     <g:link class="ui button" controller="licenseDetails" action="unlinkLicense" params="[license_id: license.id, opl_id: onixplLicense.id]">
-                                                        <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
+                                                        <i class="unlink icon"> </i>${message(code:'default.button.unlink.label')}
                                                     </g:link>
                                                 </div>
 
