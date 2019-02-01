@@ -125,7 +125,6 @@ r2d2 = {
         $("*[data-semui='modal']").click(function() {
             $($(this).attr('href') + '.ui.modal').modal({
                 onVisible: function() {
-                    console.log("test");
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
                 },
                 detachable: true,
