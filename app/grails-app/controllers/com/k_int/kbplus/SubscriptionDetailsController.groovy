@@ -1990,10 +1990,12 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                         }
                         if (subMember.privateProperties) {
                             //privatProperties
-                            def contextOrg = contextService.getOrg()
 
+                            List tenantOrgs = OrgRole.executeQuery('select o.org from OrgRole as o where o.sub = :sub and o.roleType in (:roleType)',[sub:subMember,roleType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIPTION_CONSORTIA]]).collect {
+                                it -> it.id
+                            }
                             subMember.privateProperties?.each { prop ->
-                                if (prop.type?.tenant?.id == contextOrg?.id) {
+                                if (tenantOrgs.indexOf(prop.type?.tenant?.id) > -1) {
                                     def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscription)
                                     copiedProp = prop.copyInto(copiedProp)
                                     copiedProp.save(flush: true)
