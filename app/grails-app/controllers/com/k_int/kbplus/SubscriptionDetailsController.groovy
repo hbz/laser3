@@ -1907,6 +1907,20 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             result.costItemSums.subscrCosts = financialDataService.calculateResults(costItems.subscrCosts)
         }
 
+        result.availableProviderList = Org.executeQuery(
+                "select o from Org o join o.orgRoleType as rt where rt.value = 'Provider' order by lower(o.sortname), o.name"
+        ).minus( OrgRole.executeQuery(
+                "select o from OrgRole oo join oo.org o where oo.sub.id = :sub and oo.roleType.value = 'Provider'",
+                [sub: result.subscriptionInstance.id]
+        ))
+
+        result.availableAgencyList = Org.executeQuery(
+                "select o from Org o join o.orgRoleType as rt where rt.value = 'Agency' order by lower(o.sortname), o.name"
+        ).minus( OrgRole.executeQuery(
+                "select o from OrgRole oo join oo.org o where oo.sub.id = :sub and oo.roleType.value = 'Agency'",
+                [sub: result.subscriptionInstance.id]
+        ))
+
         result
     }
 
