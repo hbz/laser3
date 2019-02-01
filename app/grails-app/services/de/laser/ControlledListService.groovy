@@ -5,14 +5,19 @@ import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Subscription
 import de.laser.helper.RDStore
+import de.laser.interfaces.TemplateSupport
 import grails.transaction.Transactional
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.context.i18n.LocaleContextHolder
+
+import java.text.SimpleDateFormat
 
 @Transactional
 class ControlledListService {
 
     def contextService
     def genericOIDService
+    def messageSource
 
     /**
      * Retrieves a list of subscriptions owned by the context organisation matching given
@@ -21,6 +26,7 @@ class ControlledListService {
      * @return a list of subscriptions, an empty one if no subscriptions match the filter
      */
     LinkedHashMap getSubscriptions(GrailsParameterMap params) {
+        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,LocaleContextHolder.getLocale()))
         Org org = contextService.getOrg()
         LinkedHashMap result = [values:[]]
         String queryString = "select s from Subscription as s where s in (select o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) ) and s.status != :deleted"
@@ -40,8 +46,22 @@ class ControlledListService {
             log.info("subscriptions found")
             subscriptions.each { s ->
                 if((params.checkView && s.isVisibleBy(contextService.getUser())) || !params.checkView) {
-                    OrgRole owner = OrgRole.findBySub(s)
-                    result.values.add([id:s.class.name+":"+s.id,sortKey:s.name,text:"#${s.id}: ${s.name} (${owner.org.name})"])
+                    LinkedHashMap ownerParams = [sub:s]
+                    switch(s.getCalculatedType()) {
+                        case TemplateSupport.CALCULATED_TYPE_CONSORTIAL: ownerParams.roleType = RDStore.OR_SUBSCRIPTION_CONSORTIA
+                        break
+                        case TemplateSupport.CALCULATED_TYPE_LOCAL: ownerParams.roleType = RDStore.OR_SUBSCRIBER
+                        break
+                        case TemplateSupport.CALCULATED_TYPE_PARTICIPATION: ownerParams.roleType = RDStore.OR_SUBSCRIBER_CONS
+                        break
+                    }
+                    OrgRole owner = OrgRole.findWhere(ownerParams)
+                    String dateString = ", "
+                    if(s.startDate)
+                        dateString += sdf.format(s.startDate)+"-"
+                    if(s.endDate)
+                        dateString += sdf.format(s.endDate)
+                    result.values.add([id:s.class.name+":"+s.id,sortKey:s.name,text:"${s.name} (${owner.org.name}${dateString})"])
                 }
             }
             result.values.sort{ x,y -> x.sortKey.compareToIgnoreCase y.sortKey }
