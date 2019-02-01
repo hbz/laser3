@@ -1658,7 +1658,18 @@ AND EXISTS (
                 OrgRole.executeUpdate("delete from OrgRole where sub = ? and org = ?",[subscription, inst])
               } else {
                 subscription.status = deletedStatus
-                subscription.save(flush: true);
+                if(subscription.save(flush: true)) {
+                    //delete eventual links, bugfix for ERMS-800 (ERMS-892)
+                    Links.executeQuery('select l from Links as l where l.objectType = :objType and :subscription in (l.source,l.destination)',[objType:Subscription.class.name,subscription:subscription]).each { l ->
+                        DocContext comment = DocContext.findByLink(l)
+                        if(comment) {
+                            Doc commentContent = comment.owner
+                            comment.delete()
+                            commentContent.delete()
+                        }
+                        l.delete()
+                    }
+                }
               }
             } else {
                 flash.error = message(code:'myinst.actionCurrentSubscriptions.error', default:'Unable to delete - The selected license has attached subscriptions')
