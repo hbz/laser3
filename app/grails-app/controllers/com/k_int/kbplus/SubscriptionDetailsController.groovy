@@ -2165,10 +2165,17 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                                 resource: baseSub.resource ?: null,
                                 form: baseSub.form ?: null
                         )
+
+                        if (params.subscription.takeLinks) {
+                            //License
+                            newSub.owner = baseSub.owner ?: null
+                        }
+
                         if (!newSub.save(flush: true)) {
                             log.error("Problem saving subscription ${newSub.errors}");
                             return newSub
-                        } else {
+                        }
+                        else {
                             log.debug("Save ok");
                             //Copy References
                             //OrgRole
@@ -2194,9 +2201,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                                     newSubscriptionPackage.subscription = newSub
                                     newSubscriptionPackage.save(flush: true)
                                 }
+                                // fixed hibernate error: java.util.ConcurrentModificationException
+                                // change owner before first save
                                 //License
-                                newSub.owner = baseSub.owner ?: null
-                                newSub.save(flush: true)
+                                //newSub.owner = baseSub.owner ?: null
+                                //newSub.save(flush: true)
                             }
 
                             if (params.subscription.takeEntitlements) {
