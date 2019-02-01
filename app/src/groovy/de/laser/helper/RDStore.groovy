@@ -12,6 +12,7 @@ class RDStore {
     static final OR_SUBSCRIBER              = getRefdataValue('Subscriber','Organisational Role')
     static final OR_SUBSCRIBER_CONS         = getRefdataValue('Subscriber_Consortial','Organisational Role')
     static final OR_PROVIDER                = getRefdataValue('Provider', 'Organisational Role')
+    static final OR_AGENCY                  = getRefdataValue('Agency', 'Organisational Role')
 
     static final OR_TYPE_CONSORTIUM         = getRefdataValue('Consortium', 'OrgRoleType')
     static final OR_TYPE_INSTITUTION         = getRefdataValue('Institution', 'OrgRoleType')
