@@ -388,15 +388,15 @@ class SemanticUiTagLib {
 
     def modal = { attrs, body ->
 
-        def id = attrs.id ? ' id="' + attrs.id + '" ' : ''
-        def text = attrs.text ? attrs.text : ''
-        def message = attrs.message ? "${message(code: attrs.message)}" : ''
-        def title = (text && message) ? text + " - " + message : text + message
-        def editmodal = attrs.editmodal
+        String id = attrs.id ? ' id="' + attrs.id + '" ' : ''
+        String text = attrs.text ? attrs.text : ''
+        String message = attrs.message ? "${message(code: attrs.message)}" : ''
+        String title = (text && message) ? text + " - " + message : text + message
+        String editmodal = attrs.editmodal
 
-        def msgClose = "Schließen"
-        def msgSave = editmodal ? "Änderungen speichern" : "Anlegen"
-        def msgDelete = "Löschen"
+        String msgClose    = attrs.msgClose ?: "Schließen"
+        String msgSave     = attrs.msgSave ?: (editmodal ? "Änderungen speichern" : "Anlegen")
+        String msgDelete   = attrs.msgDelete ?: "Löschen"
 
         out << '<div class="ui modal"' + id + '>'
         out << '<div class="header">' + title + '</div>'
@@ -435,8 +435,8 @@ class SemanticUiTagLib {
     //        <g:link class="..... js-open-confirm-modal" data-confirm-term-what="diese Kontaktdresse" ...... >
     def confirmationModal = { attrs, body ->
 
-        def msgDelete = "Endgültig löschen"
-        def msgCancel = "Abbrechen"
+        String msgDelete = "Endgültig löschen"
+        String msgCancel = "Abbrechen"
 
         out << '<div class="ui tiny modal">'
         out << '<div class="header">Wollen Sie wirklich '
