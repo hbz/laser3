@@ -1,7 +1,5 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.*
-import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import de.laser.controller.AbstractDebugController
@@ -47,6 +45,7 @@ class MyInstitutionController extends AbstractDebugController {
     def queryService
     def dashboardDueDatesService
     def subscriptionsQueryService
+    def providerHelperService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -470,42 +469,20 @@ from License as l where (
 
         def result = setResultGenerics()
 
-        def role_sub            = RDStore.OR_SUBSCRIBER
-        def role_sub_cons       = RDStore.OR_SUBSCRIBER_CONS
-        def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
-        def ogr_provider        = RDStore.OR_PROVIDER
-        def ogr_agency          = RDStore.OR_AGENCY
-
-        result.orgRoles    = [ogr_provider, ogr_agency]
+        result.orgRoles    = [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-        params.sort        = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
-        def mySubs = Subscription.executeQuery( """
-            select s from Subscription as s join s.orgRelations as ogr where
-                ( s.status.value != 'Deleted' ) and
-                ( s = ogr.sub and ogr.org = :subOrg ) and
-                ( ogr.roleType = (:roleSub) or ogr.roleType = (:roleSubCons) or ogr.roleType = (:roleSubConsortia) )
-        """, [subOrg: contextService.getOrg(), roleSub: role_sub, roleSubCons: role_sub_cons, roleSubConsortia: role_sub_consortia])
+        List<Org> providers = providerHelperService.getCurrentProviders( contextService.getOrg()).collect{ it -> it.org }
+        List<Org> agencies   = providerHelperService.getCurrentAgencies( contextService.getOrg()).collect{ it -> it.org }
 
-        def orgListTotal = []
-        // new
-        def providers = OrgRole.findAll("""
-                from OrgRole where sub in (:subscriptions) and (roleType = :provider or roleType = :agency)
-            """, [
-                subscriptions: mySubs,
-                provider: ogr_provider,
-                agency:   ogr_agency
-        ])
+        providers.addAll(agencies)
+        List orgIds = providers.unique().collect{ it2 -> it2.id }
 
-        providers.each { p ->
-            if (! orgListTotal.contains(p.org)) {
-                orgListTotal << p.org
-            }
-        }
 //        result.user = User.get(springSecurityService.principal.id)
-        params.max        = params.max ?: result.user?.getDefaultPageSizeTMP()
+        params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
+        params.max  = params.max ?: result.user?.getDefaultPageSizeTMP()
 
-        def fsq  = filterService.getOrgQuery([constraint_orgIds: orgListTotal.collect{ it2 -> it2.id }] << params)
+        def fsq  = filterService.getOrgQuery([constraint_orgIds: orgIds] << params)
         if (params.filterPropDef) {
             fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
         }
