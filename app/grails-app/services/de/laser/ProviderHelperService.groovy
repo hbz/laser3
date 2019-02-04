@@ -9,6 +9,9 @@ class ProviderHelperService {
 
     def contextService
 
+    /**
+     * @return List<Subscription> with accessible (my) subscriptions
+     */
     def getCurrentSubscriptions(Org context) {
         return Subscription.executeQuery( """
             select s from Subscription as s join s.orgRelations as ogr where
@@ -22,17 +25,45 @@ class ProviderHelperService {
         )
     }
 
+    /**
+     * @return List<Org> with OrgRole relations (type 'Provider') depending on current (my) subscriptions
+     */
     def getCurrentProviders(Org context) {
-        return OrgRole.findAll("from OrgRole where sub in (:subscriptions) and roleType = :provider",
+        List<Org> result = OrgRole.findAll("from OrgRole where sub in (:subscriptions) and roleType = :provider",
                 [subscriptions: getCurrentSubscriptions(context),
                  provider: RDStore.OR_PROVIDER]
+        ).collect{ it -> it.org }
+
+        result.unique()
+    }
+
+    /**
+     * @return List<Org> with OrgRole relations (type 'Agency') depending on current (my) subscriptions
+     */
+    def getCurrentAgencies(Org context) {
+        List<Org> result = OrgRole.findAll("from OrgRole where sub in (:subscriptions) and roleType = :agency",
+                [subscriptions: getCurrentSubscriptions(context),
+                 agency: RDStore.OR_AGENCY]
+        ).collect{ it -> it.org }
+
+        result.unique()
+    }
+
+    /**
+     * @return List<Org> with orgRoleType 'Provider'; generic
+     */
+    def getAllWithTypeProvider() {
+        Org.executeQuery(
+                "select o from Org o join o.orgRoleType as rt where rt.value = 'Provider' order by lower(o.sortname), o.name"
         )
     }
 
-    def getCurrentAgencies(Org context) {
-        return OrgRole.findAll("from OrgRole where sub in (:subscriptions) and roleType = :agency",
-                [subscriptions: getCurrentSubscriptions(context),
-                 agency: RDStore.OR_AGENCY]
+    /**
+     * @return List<Org> with orgRoleType 'Agency'; generic
+     */
+    def getAllWithTypeAgency() {
+        Org.executeQuery(
+                "select o from Org o join o.orgRoleType as rt where rt.value = 'Agency' order by lower(o.sortname), o.name"
         )
     }
 }

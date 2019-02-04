@@ -17,14 +17,12 @@ class SemanticUiDropdownTagLib {
 
     def controlButtons = { attrs, body ->
 
-
         out << '<div class="ui icon buttons la-ctrls la-float-right">'
         out <<   body()
         out << '</div>'
     }
 
     def exportDropdown = { attrs, body ->
-
 
         out << '<div class="ui simple dropdown button">'
         out <<   '<i class="download icon"></i>'
@@ -50,13 +48,35 @@ class SemanticUiDropdownTagLib {
         out << '</div>'
     }
 
-    //<semui:exportDropdownItem> LINK <semui:exportDropdownItem>
-
+    // <semui:exportDropdownItem> LINK <semui:exportDropdownItem>
     def exportDropdownItem = { attrs, body ->
 
+        out << body()
+    }
 
-        out <<   body()
+    // <semui:signedDropdown name="xyz" noSelection="Bitte auswählen .." from="${orgList}" signedIds="${signedOrgIdList}" optionValue='name' />
+    def signedDropdown = { attrs, body ->
 
+        String id = ''
+        if (attrs.name) {
+            id = ' id="' + attrs.name + '" name="' + attrs.name + '" '
+        }
+        out << '<select class="ui fluid labeled search dropdown' + id + '">'
+
+        if (attrs.noSelection) {
+            out << '<option value="">' + attrs.noSelection + '</div>'
+        }
+
+        attrs.from?.each { item ->
+            out << '<option value="' + (item.class.name + ':' + item.id) + '">'
+            out << item."${attrs.optionValue}"
+
+            if (attrs.signedIds?.contains(item.id)) {
+                out << '&nbsp; &#10004;'
+            }
+            out << '</option>'
+        }
+        out << '</select>'
     }
 
     // <semui:actionsDropdown params="${params}"  />
