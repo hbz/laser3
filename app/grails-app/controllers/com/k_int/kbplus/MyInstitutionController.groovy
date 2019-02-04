@@ -546,18 +546,18 @@ from License as l where (
 
         if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)) {
             result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
-            result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) ? 'package' : 'institution'
+            result.usageMode = ((RDStore.OR_TYPE_CONSORTIUM.id in result.institution?.getallOrgRoleTypeIds())) ? 'package' : 'institution'
         }
 
         Map<Subscription,List> allProviders = [:]
-        OrgRole.findAllByRoleType(RefdataValue.getByValueAndCategory('Provider', 'Organisational Role')).collect { it ->
+        OrgRole.findAllByRoleType(RDStore.OR_PROVIDER).collect { it ->
             List currProviders = allProviders.get(it.sub)
             if(currProviders == null)
                 currProviders = [it.org]
             allProviders.put(it.sub,currProviders)
         }
         Map<Subscription,List> allAgencies = [:]
-        OrgRole.findAllByRoleType(RefdataValue.getByValueAndCategory('Agency', 'Organisational Role')).collect { it ->
+        OrgRole.findAllByRoleType(RDStore.OR_PROVIDER).collect { it ->
             List currAgencies = allAgencies.get(it.sub)
             if(currAgencies == null)
                 currAgencies = [it.org]
