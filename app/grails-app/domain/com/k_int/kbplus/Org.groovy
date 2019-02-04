@@ -253,12 +253,9 @@ class Org
     def getIdentifierByType(String idtype) {
         def result = null
 
-        def test = Identifier.executeQuery(
-              'select id from Identifier id join id.ns ns join id.occurrences oc where oc.org = :org and lower(ns.ns) = :idtype',
-              [org: this, idtype: idtype.toLowerCase()]
-        )
+        def test = getIdentifiersByType(idtype)
         if (test.size() > 0) {
-            result.add( test.get(0) ) // TODO refactoring: multiple occurrences
+            result = test.get(0)  // TODO refactoring: multiple occurrences
         }
 
       /*
@@ -271,21 +268,20 @@ class Org
     result
   }
 
-    // TODO
     def getIdentifiersByType(String idtype) {
-        def result = []
         /*
+        def result = []
         ids.each { id ->
             if ( id.identifier.ns.ns.equalsIgnoreCase(idtype) ) {
                 result << id.identifier;
             }
         }
         */
-        def test = Identifier.executeQuery(
+        def result = Identifier.executeQuery(
                 'select id from Identifier id join id.ns ns join id.occurrences oc where oc.org = :org and lower(ns.ns) = :idtype',
                 [org: this, idtype: idtype.toLowerCase()]
         )
-        result = test
+
         result
     }
 
