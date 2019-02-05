@@ -29,9 +29,9 @@ class QueryService {
             dueObjects.addAll( taskService.getTasksByResponsibles(
                     contextUser,
                     contextOrg,
-                    [query:" and status = ? and endDate <= ?",
-                     queryParams:[RefdataValue.getByValueAndCategory('Open', 'Task Status'),
-                                  infoDate]]) )
+                    [query:" and status = :open and endDate <= :endDate",
+                     queryParams:[open: RefdataValue.getByValueAndCategory('Open', 'Task Status'),
+                                  endDate: infoDate]]) )
         }
 
         if (contextUser.getSettingsValue(IS_REMIND_FOR_LICENSE_CUSTOM_PROP)==YN_YES) {
