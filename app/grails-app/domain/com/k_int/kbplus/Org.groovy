@@ -259,6 +259,8 @@ class Org
         }
 
       /*
+      org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role: com.k_int.kbplus.Org.ids, could not initialize proxy
+
     ids.each { id ->
       if ( id.identifier.ns.ns.equalsIgnoreCase(idtype) ) {
         result = id.identifier;
@@ -270,6 +272,8 @@ class Org
 
     def getIdentifiersByType(String idtype) {
         /*
+        org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role: com.k_int.kbplus.Org.ids, could not initialize proxy -
+
         def result = []
         ids.each { id ->
             if ( id.identifier.ns.ns.equalsIgnoreCase(idtype) ) {
