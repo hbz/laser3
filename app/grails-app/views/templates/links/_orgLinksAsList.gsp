@@ -1,14 +1,7 @@
 <%@ page import="com.k_int.kbplus.Person;com.k_int.kbplus.RefdataValue" %>
 <laser:serviceInjection />
 
-<table class="ui la-selectable table">
-    <colgroup>
-        <col width="130" />
-        <col width="300" />
-        <col width="130"/>
-        <col width="200"/>
-    </colgroup>
-
+<table class="ui three column la-selectable table">
     <g:each in="${roleLinks.sort{it?.roleType?.getI10n("value")}}" var="role">
         <g:if test="${role.org}">
             <g:set var="cssId" value="prsLinksModal-${role.org.id}-${role.roleType.id}" />
@@ -19,17 +12,16 @@
                     <g:link controller="Organisations" action="show" id="${role.org.id}">${role?.org?.name}</g:link>
                 </td>
                 <g:if test="${editmode}">
-                    <td>
-                        <div class="ui mini icon buttons">
+                    <td class="right aligned">
+                        <div class="ui icon negative buttons">
                             <g:link class="ui mini icon button la-selectable-button" controller="ajax" action="delOrgRole" id="${role.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
-                                <i class="times icon red"></i>${message(code:'default.button.unlink.label')}
+                                <i class="unlink icon"></i>
                             </g:link>
                         </div>
-                    </td>
-                    <td>
-                        <div class="ui mini icon buttons">
-                            <button class="ui button la-selectable-button" data-semui="modal" href="#${cssId}" style="margin-left:1rem">
-                                        <i class="address plus icon"></i> ${modalPrsLinkRole.getI10n("value")} hinzufügen
+
+                        <div class="ui icon buttons">
+                            <button class="ui button la-selectable-button" data-semui="modal" href="#${cssId}">
+                                        <i class="address plus icon"></i>
                             </button>
                         </div>
 
@@ -129,7 +121,6 @@
                         </g:if><%-- private --%>
 
                     </td>
-                    <td></td>
                     <td></td>
                 </tr>
             </g:if>

@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.Org
 import com.k_int.kbplus.auth.User
 
 // Semantic UI
@@ -17,7 +18,6 @@ class SemanticUiDropdownTagLib {
 
     def controlButtons = { attrs, body ->
 
-
         out << '<div class="ui icon buttons la-ctrls la-float-right">'
         out <<   body()
         out << '</div>'
@@ -25,38 +25,57 @@ class SemanticUiDropdownTagLib {
 
     def exportDropdown = { attrs, body ->
 
-
         out << '<div class="ui simple dropdown button">'
         out <<   '<i class="download icon"></i>'
         out <<   '<div class="menu">'
 
         out <<       body()
-        /*
-        out <<       '<div class="item">'
-        out <<         g.link("JSON Export", action:"show", params:"${params+[format:'json']}")
-        out <<       '</div>'
-        out <<       '<div class="item">'
-        out <<         g.link("XML Export", action:"show", params:"${params+[format:'xml']}")
-        out <<       '</div>'
-
-        attrs.transforms?.each{key, val ->
-            out <<       '<div class="item">'
-            out <<         g.link("${val.name}", action:"show", id:"${attrs.params.id}", params:"${[format:'xml', transformId:key, mode:attrs.params.mode]}")
-            out <<       '</div>'
-        }
-        */
 
         out <<  '</div>'
         out << '</div>'
     }
 
-    //<semui:exportDropdownItem> LINK <semui:exportDropdownItem>
+    // <semui:exportDropdownItem> LINK <semui:exportDropdownItem>
 
     def exportDropdownItem = { attrs, body ->
 
+        out << body()
+    }
 
-        out <<   body()
+    // <semui:signedDropdown name="xyz" noSelection="Bitte auswählen .." from="${orgList}" signedIds="${signedOrgIdList}" />
 
+    def signedDropdown = { attrs, body ->
+
+        String id = ''
+        if (attrs.name) {
+            id = ' id="' + attrs.name + '" name="' + attrs.name + '" '
+        }
+        out << '<select class="ui fluid labeled search dropdown' + id + '">'
+
+        if (attrs.noSelection) {
+            out << '<option value="">' + attrs.noSelection + '</div>'
+        }
+
+        attrs.from?.each { item ->
+            out << '<option value="' + (item.class.name + ':' + item.id) + '">'
+
+            if (item instanceof Org) {
+                out << item.name
+
+                if (item.shortname) {
+                    out << ' (' + item.shortname + ') '
+                }
+            }
+            else {
+                out << item.toString()
+            }
+
+            if (attrs.signedIds?.contains(item.id)) {
+                out << '&nbsp; &#10004;'
+            }
+            out << '</option>'
+        }
+        out << '</select>'
     }
 
     // <semui:actionsDropdown params="${params}"  />

@@ -1,6 +1,13 @@
 <%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.OrgRole;com.k_int.kbplus.Subscription;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.DocContext;com.k_int.kbplus.Doc" %>
 <g:if test="${editmode}">
-    <a class="ui button" data-semui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
+    <a class="ui button ${tmplCss}" data-semui="modal" href="#${tmplModalID}">
+        <g:if test="${tmplIcon}">
+            <i class="${tmplIcon} icon"></i>
+        </g:if>
+        <g:if test="${tmplButtonText}">
+            ${tmplButtonText}
+        </g:if>
+    </a>
 </g:if>
 
 <semui:modal id="${tmplModalID}" text="${tmplText}">
@@ -100,6 +107,7 @@
             data: function(term, page) {
                 return {
                     q: term,
+                    ctx: "${context}",
                     page_limit: 20,
                     baseClass: 'com.k_int.kbplus.Subscription'
                 };

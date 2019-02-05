@@ -121,7 +121,7 @@ class Org
         orgRoleType joinTable: [name: 'org_roletype',
                                 key: 'org_id',
                                 column: 'refdata_value_id',
-                                type: "BIGINT"]
+                                type: "BIGINT"], lazy: false
 
         addresses   lazy: false
         contacts    lazy: false
@@ -250,24 +250,42 @@ class Org
         result
     }
 
-  def getIdentifierByType(idtype) {
-    def result = null
+    def getIdentifierByType(String idtype) {
+        def result = null
+
+        def test = getIdentifiersByType(idtype)
+        if (test.size() > 0) {
+            result = test.get(0)  // TODO refactoring: multiple occurrences
+        }
+
+      /*
+      org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role: com.k_int.kbplus.Org.ids, could not initialize proxy
+
     ids.each { id ->
       if ( id.identifier.ns.ns.equalsIgnoreCase(idtype) ) {
         result = id.identifier;
       }
     }
+    */
     result
   }
 
-    // TODO
-    def getIdentifiersByType(idtype) {
+    def getIdentifiersByType(String idtype) {
+        /*
+        org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role: com.k_int.kbplus.Org.ids, could not initialize proxy -
+
         def result = []
         ids.each { id ->
             if ( id.identifier.ns.ns.equalsIgnoreCase(idtype) ) {
                 result << id.identifier;
             }
         }
+        */
+        def result = Identifier.executeQuery(
+                'select id from Identifier id join id.ns ns join id.occurrences oc where oc.org = :org and lower(ns.ns) = :idtype',
+                [org: this, idtype: idtype.toLowerCase()]
+        )
+
         result
     }
 
@@ -474,6 +492,11 @@ class Org
 
     def getallOrgRoleTypeIds()
     {
+        List result = []
+        orgRoleType.collect{ it -> result.add(it.id) }
+        result
+
+        /*
         // TODO: ugliest HOTFIX ever
         def hibernateSession = sessionFactory.currentSession
 
@@ -483,5 +506,6 @@ class Org
         def result = sqlQuery.list()?.collect{ it.refdata_value_id as Long }
         //log.debug('getallOrgRoleTypeIds(): ' + result)
         result
+        */
     }
 }

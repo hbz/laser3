@@ -125,7 +125,6 @@ r2d2 = {
         $("*[data-semui='modal']").click(function() {
             $($(this).attr('href') + '.ui.modal').modal({
                 onVisible: function() {
-                    console.log("test");
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
                 },
                 detachable: true,
@@ -437,6 +436,9 @@ r2d2 = {
                             break;
                         case "membershipSubscription" :
                             var messageWhat = "die Teilnahme der";
+                            break;
+                        case "subscription":
+                            var messageWhat = "die Verknüpfung der Lizenz";
                             break;
                         default:
                             var messageWhat = "die Verknüpfung des Objektes";

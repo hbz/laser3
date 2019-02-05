@@ -58,6 +58,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
     def GOKbService
     def navigationGenerationService
     def financialDataService
+    def providerHelperService
 
     private static String INVOICES_FOR_SUB_HQL =
             'select co.invoice, sum(co.costInLocalCurrency), sum(co.costInBillingCurrency), co from CostItem as co where co.sub = :sub group by co.invoice order by min(co.invoice.startDate) desc';
@@ -1741,7 +1742,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
         sources.each { link ->
           Subscription destination = Subscription.get(link.destination)
-          if (destination.isVisibleBy(result.user)) {
+          if (destination.isVisibleBy(result.user) && destination.status != RDStore.SUBSCRIPTION_DELETED) {
             def index = link.linkType.getI10n("value")?.split("\\|")[0]
             if (result.links[index] == null) {
               result.links[index] = [link]
@@ -1751,7 +1752,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         }
         destinations.each { link ->
           Subscription source = Subscription.get(link.source)
-          if (source.isVisibleBy(result.user)) {
+          if (source.isVisibleBy(result.user) && source.status != RDStore.SUBSCRIPTION_DELETED) {
             def index = link.linkType.getI10n("value")?.split("\\|")[1]
             if(result.links[index] == null) {
               result.links[index] = [link]
@@ -1906,6 +1907,20 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         if(costItems.subscrCosts.size() > 0) {
             result.costItemSums.subscrCosts = financialDataService.calculateResults(costItems.subscrCosts)
         }
+
+        result.availableProviderList = providerHelperService.getAllWithTypeProvider().minus(
+                OrgRole.executeQuery(
+                "select o from OrgRole oo join oo.org o where oo.sub.id = :sub and oo.roleType.value = 'Provider'",
+                [sub: result.subscriptionInstance.id]
+        ))
+        result.existingProviderIdList = providerHelperService.getCurrentProviders(contextService.getOrg()).collect{ it -> it.id }
+
+        result.availableAgencyList = providerHelperService.getAllWithTypeAgency().minus(
+                OrgRole.executeQuery(
+                "select o from OrgRole oo join oo.org o where oo.sub.id = :sub and oo.roleType.value = 'Agency'",
+                [sub: result.subscriptionInstance.id]
+        ))
+        result.existingAgencyIdList = providerHelperService.getCurrentAgencies(contextService.getOrg()).collect{ it -> it.id }
 
         result
     }

@@ -11,46 +11,65 @@
     <div class="field">
         <label>Funktion</label>
         <laser:select class="ui dropdown search"
-                      name="newPrsRoleType"
+                      name="roleTypeMultiSelect"
+                      multiple=""
                       from="${rdvAllPersonFunctions}"
                       optionKey="id"
                       optionValue="value"
                       value="${rdvGeneralContactPrs.id}"/>
     </div>
     <br><br>
-    %{--TextAreas für alle PersonFunctions anlegen und je nach Dropdownauswahl anzeigen--}%
-    <g:if test="${ ! rdvAllPersonFunctions}">
-        Es sind keine Organisationen ausgewählt.
-    </g:if>
+    <g:set var="generalContactPrsMap" value="${new HashMap()}"/>
     <g:each in="${rdvAllPersonFunctions}" var="prsFunction" status="counter">
         <% allEmailAddresses = ""; %>
         <g:each in="${orgList}" var="org">
             <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(prsFunction, org).prs}" var="person">
-                <g:each in ="${Contact.findAllByPrsAndContentType(person, rdvEmail)}" var="email">
-                    <g:if test="${(person?.isPublic?.value=='Yes') || (person?.isPublic?.value=='No' && person?.tenant?.id == contextService.getOrg()?.id)}">
+                <g:if test="${(person?.isPublic?.value=='Yes') || (person?.isPublic?.value=='No' && person?.tenant?.id == contextService.getOrg()?.id)}">
+                    <g:each in ="${Contact.findAllByPrsAndContentType(person, rdvEmail)}" var="email">
                         <% allEmailAddresses += email?.content?.trim() + "; "%>
-                    </g:if>
-                </g:each>
+                    </g:each>
+                </g:if>
             </g:each>
         </g:each>
-        <g:if test="${prsFunction.id == rdvGeneralContactPrs.id}">
-            <div class="ui form">
-                <div class="field">
-                    <g:textArea name="emailaddressfield${counter}" readonly="false" rows="5" cols="1" class="myTargets">${allEmailAddresses}</g:textArea>
-                </div>
-            </div>
-        </g:if>
-        <g:else>
-            <g:textArea name="emailaddressfield${counter}" readonly="false" rows="5" cols="1" class="myTargets hidden" style="width: 100%;">${allEmailAddresses}</g:textArea>
-        </g:else>
+        <% generalContactPrsMap.put(prsFunction.id, allEmailAddresses)%>
     </g:each>
+    <div class="ui form">
+        <div class="field">
+            <g:textArea id="emailAddressesTextArea" name="emailAddresses" readonly="false" rows="5" cols="1" class="myTargetsNeu" style="width: 100%;" />
+        </div>
+    </div>
 
     <g:javascript>
-        $('#newPrsRoleType').change(function() {
-            $('.myTargets').addClass('hidden');
-            var ndx = $("#newPrsRoleType").prop('selectedIndex');
-            $('#emailaddressfield' + ndx).removeClass('hidden');
+        // modals
+        $("*[data-semui='modal']").click(function() {
+            $($(this).attr('href') + '.ui.modal').modal({
+                onVisible: function() {
+                    updateTextArea();
+                    $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
+                },
+                detachable: true,
+                autofocus: false,
+                closable: false,
+                transition: 'scale',
+                onApprove : function() {
+                    $(this).find('.ui.form').submit();
+                    return false;
+                }
+            }).modal('show')
         });
+
+        var jsonEmailMap = <%=groovy.json.JsonOutput.toJson((Map)generalContactPrsMap)%>;
+
+        $('#roleTypeMultiSelect').change(function() { updateTextArea(); });
+
+        function updateTextArea() {
+            var selectedRoleTypIds = $("#roleTypeMultiSelect").val();
+            var emailsForSelectedRoleTypes = ""
+            for (var i = 0; i<selectedRoleTypIds.length; i++) {
+                emailsForSelectedRoleTypes += jsonEmailMap[selectedRoleTypIds[i]]
+            }
+            $('#emailAddressesTextArea').val(emailsForSelectedRoleTypes);
+        }
     </g:javascript>
 
 </semui:modal>

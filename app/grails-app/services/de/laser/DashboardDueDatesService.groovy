@@ -74,9 +74,9 @@ class DashboardDueDatesService {
 
             } catch (Throwable t) {
                 String tMsg = t.message
-                log.error("DashboardDueDatesService takeCareOfDueDates :: Unable to perform email due to exception ${tMsg}")
+                log.error("DashboardDueDatesService takeCareOfDueDates :: Unable to perform takeCareOfDueDates due to exception ${tMsg}")
                 // TODO: remove due SystemEvent
-                new EventLog(event:'DashboardDueDatesService takeCareOfDueDates', message:'Unable to perform email due to exception '+ tMsg, tstp:new Date(System.currentTimeMillis())).save(flush:true)
+                new EventLog(event:'DashboardDueDatesService takeCareOfDueDates', message:'Unable to takeCareOfDueDates email due to exception '+ tMsg, tstp:new Date(System.currentTimeMillis())).save(flush:true)
 
                 SystemEvent.createEvent('DBDD_SERVICE_ERROR_1', ['error': tMsg])
 
