@@ -1,10 +1,15 @@
 <%@ page import="de.laser.helper.SqlDateUtils; com.k_int.kbplus.*; com.k_int.kbplus.abstract_domain.AbstractProperty; de.laser.DashboardDueDate" %>
 <laser:serviceInjection />
 
-    <g:message code="profile.dashboardReminderPeriod"
-               default="You will be reminded of upcoming appointments {0} days before the due date."
-               args="${user.getSettingsValue(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}" />
-
+    <g:if test="${dueDates}">
+        <g:message code="profile.dashboardReminderPeriod"
+                   default="You will be reminded of upcoming appointments {0} days before the due date."
+                   args="${user.getSettingsValue(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}" />
+    </g:if>
+    <g:else>
+        <g:message code="profile.noDashboardReminderDates" default="In the next {0} days no dates are due!"
+                   args="${user?.getSettingsValue(com.k_int.kbplus.UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}"/>
+    </g:else>
     <g:set var="dashboard_last_update" value="${DashboardDueDate.executeQuery("select max(lastUpdated) from DashboardDueDate ")[0]}" />
     <g:if test="${dashboard_last_update != null}" >
         <div class="pull-right">
@@ -104,7 +109,3 @@
             </tfoot>
         </table>
     </g:if>
-    <g:else>
-        <g:message code="profile.noDashboardReminderDates" default="In the next {0} days no dates are due!"
-                   args="${user?.getSettingsValue(com.k_int.kbplus.UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}"/>
-    </g:else>

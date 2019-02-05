@@ -1611,7 +1611,7 @@ AND EXISTS (
         def deletedStatus = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
 
         if (subscription.hasPerm("edit", result.user)) {
-            def derived_subs = Subscription.findByInstanceOfAndStatusNot(subscription, deletedStatus)
+            def derived_subs = Subscription.findByInstanceOfAndStatusNotEqual(subscription, deletedStatus)
 
             if (!derived_subs) {
               log.debug("Current Institution is ${inst}, sub has consortium ${subscription.consortia}")
@@ -1619,6 +1619,7 @@ AND EXISTS (
                 OrgRole.executeUpdate("delete from OrgRole where sub = ? and org = ?",[subscription, inst])
               } else {
                 subscription.status = deletedStatus
+                
                 if(subscription.save(flush: true)) {
                     //delete eventual links, bugfix for ERMS-800 (ERMS-892)
                     Links.executeQuery('select l from Links as l where l.objectType = :objType and :subscription in (l.source,l.destination)',[objType:Subscription.class.name,subscription:subscription]).each { l ->
