@@ -223,4 +223,13 @@ class CostItem
 
         result
     }
+
+    Date getDerivedStartDate() {
+        startDate ? startDate : sub.startDate
+    }
+
+    Date getDerivedEndDate() {
+        endDate ? endDate : sub.endDate
+    }
+
 }

@@ -512,14 +512,6 @@ class Subscription
   //    }
   //  }
 
-  public Date getDerivedAccessStartDate() {
-    startDate ? startDate : null
-  }
-
-  public Date getDerivedAccessEndDate() {
-    endDate ? endDate : null
-  }
-
   public Date getRenewalDate() {
     manualRenewalDate ? manualRenewalDate : null
   }

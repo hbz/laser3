@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
 <laser:serviceInjection />
 
 <!doctype html>
@@ -15,13 +16,116 @@
     <semui:crumb message="menu.institutions.myConsortiaLicenses" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'menu.institutions.myConsortiaLicenses')}</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'menu.institutions.myConsortiaLicenses')} - ${costItems.size()} Treffer</h1>
+
+<h2>SEITE IN ARBEIT</h2>
 
 <semui:messages data="${flash}"/>
 
-<h2>IN ARBEIT</h2>
+<semui:filter>
+    <g:form action="manageConsortiaLicenses" controller="myInstitution" method="get" class="form-inline ui small form">
 
-<table id="costTable_${i}" data-queryMode="${i}" class="ui celled sortable table table-tworow la-table ignore-floatThead">
+        <div class="three fields">
+            <div class="field">
+                <%--
+               <label>${message(code: 'default.search.text', default: 'Search text')}
+                   <span data-position="right center" data-variation="tiny" data-tooltip="${message(code:'default.search.tooltip.subscription')}">
+                       <i class="question circle icon"></i>
+                   </span>
+               </label>
+               <div class="ui input">
+                   <input type="text" name="q"
+                          placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
+                          value="${params.q}"/>
+               </div>
+               --%>
+
+                <label>Konsorten</label>
+                <g:select class="ui dropdown" name="member"
+                              from="${filterConsortiaMembers}"
+                              optionKey="id"
+                              optionValue="name"
+                              value="${params.member}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+            <div class="field fieldcontain">
+                <semui:datepicker label="default.valid_on.label" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
+            </div>
+
+            <div class="field fieldcontain">
+                <label>${message(code: 'myinst.currentSubscriptions.filter.status.label')}</label>
+                <laser:select class="ui dropdown" name="status"
+                              from="${ RefdataCategory.getAllRefdataValues('Subscription Status') }"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.status}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+        </div>
+
+        <div class="four fields">
+            <g:render template="../templates/properties/genericFilter" model="[propList: filterPropList]"/>
+
+            <div class="field">
+                <label>${message(code:'subscription.form.label')}</label>
+                <laser:select class="ui dropdown" name="form"
+                              from="${RefdataCategory.getAllRefdataValues('Subscription Form')}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.form}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+
+            <div class="field">
+                <label>${message(code:'subscription.resource.label')}</label>
+                <laser:select class="ui dropdown" name="resource"
+                              from="${RefdataCategory.getAllRefdataValues('Subscription Resource')}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.resource}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+        </div>
+
+        <div class="two fields">
+            <div class="field">
+                <label for="subscritionType">${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
+
+                <fieldset id="subscritionType">
+                    <div class="inline fields la-filter-inline">
+
+                        <g:each in="${filterSubTypes}" var="subType">
+                            <div class="inline field">
+                                <div class="ui checkbox">
+                                    <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
+                                    <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
+                                        <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
+                                           tabindex="0">
+                                </div>
+                            </div>
+                        </g:each>
+                    </div>
+                </fieldset>
+            </div>
+
+            <div class="field">
+                <div class="two fields">
+
+                    <div class="field">
+                    </div>
+
+                    <div class="field la-field-right-aligned">
+                        <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </g:form>
+</semui:filter>
+
+
+<table class="ui celled sortable table table-tworow la-table ignore-floatThead">
     <thead>
         <tr>
             <th>${message(code:'sidewide.number')}</th>
@@ -29,9 +133,7 @@
             <th>Verknüpfte Pakete</th>
             <th>Anbieter</th>
             <th>Laufzeit von / bis</th>
-            <th>getDerivedStartDate</th>
-            <th>Endpreis</th>
-            <th></th>
+            <th>${message(code:'financials.amountFinal')}</th>
         </tr>
     </thead>
     <tbody>
@@ -44,11 +146,6 @@
             <tr>
                 <td>
                     ${ jj + 1 }
-                    <g:if test="${ci.isVisibleForSubscriber}">
-                        <span data-position="top right" data-tooltip="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
-                            <i class="ui icon eye orange"></i>
-                        </span>
-                    </g:if>
                 </td>
                 <td>
                     <div class="la-flexbox">
@@ -75,47 +172,35 @@
                 </td>
                 <td>
                     <g:each in="${subCons.providers}" var="p">
-                        <g:link controller="organisations" action="show" id="${p.id}">${p}</g:link> <br/>
+                        <g:link controller="organisations" action="show" id="${p.id}">${p.getDesignation()}</g:link> <br/>
                     </g:each>
                 </td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td>
+                    <g:if test="${ci.getDerivedStartDate() || ci.getDerivedEndDate()}">
+                        <g:formatDate date="${ci.getDerivedStartDate()}"
+                                  format="${message(code:'default.date.format.notime')}"/>
+                        <br />
+                    </g:if>
+                    <g:if test="${ci.getDerivedStartDate() || ci.getDerivedEndDate()}">
+                        <g:formatDate date="${ci.getDerivedEndDate()}"
+                                  format="${message(code:'default.date.format.notime')}"/>
+                    </g:if>
+                </td>
+                <td>
+                    <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}"
+                                    type="currency"
+                                    currencySymbol="${ci.billingCurrency ?: 'EUR'}" />
+
+                    <g:if test="${ci.isVisibleForSubscriber}">
+                        <span data-position="top right" data-tooltip="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
+                            <i class="ui icon eye orange"></i>
+                        </span>
+                    </g:if>
+                </td>
             </tr>
         </g:each>
     </tbody>
 </table>
-<%--
-    <semui:filter>
-        <g:form action="manageConsortia" method="get" class="ui form">
-            <g:render template="/templates/filter/orgFilter"
-                      model="[
-                              tmplConfigShow: [['name', 'libraryType'], ['federalState', 'libraryNetwork','property']],
-                              tmplConfigFormFilter: true,
-                              useNewLayouter: true
-                      ]"/>
-        </g:form>
-    </semui:filter>
---%>
-
-<%--
-    <g:form action="manageConsortia" controller="myInstitution" method="post" class="ui form">
-
-        <g:render template="/templates/filter/orgFilterTable"
-                  model="[orgList: consortiaMembers,
-                          tmplShowCheckbox: true,
-                          tmplConfigShow: ['sortname', 'name', 'mainContact', 'currentFTEs', 'numberOfSubscriptions', 'libraryType']
-                  ]"/>
-
-
-        <g:if test="${consortiaMembers}">
-            <input type="submit" class="ui button" onclick="if(confirm('Wollen Sie die ausgewählten Konsorten wirklich entfernen?')){return true;} return false;"
-               value="${message(code: 'default.button.revoke.label', default: 'Revoke')}"/>
-        </g:if>
-    </g:form>
-    <g:render template="../templates/copyEmailaddresses" model="[orgList: consortiaMembers]"/>
-    <semui:paginate action="manageConsortia" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${consortiaMembersCount}" />
---%>
 
 </body>
 </html>

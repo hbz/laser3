@@ -51,3 +51,20 @@ Or use *global caches* with *cacheKeyPrefix* like this:
     def globalCache30m = cacheService.getTTL1800Cache('ProfileController/properties/')
     def globalCache5m = cacheService.getTTL300Cache('ProfileController/properties/')
     
+## Naming Conventions
+
+#### Derived Attributes
+
+Attributes, that are obtained from other objects if not set. 
+
+    ObjA.getDerivedAttribute() {
+        attribute ?: ObjB.attribute
+    }
+
+#### Calculated Attributes
+
+Non-persistent Attributes, that are calculated realtime.
+
+    ObjA.getCalculatedAttribute() {
+        attributeC * attributeD * 0.19
+    }
