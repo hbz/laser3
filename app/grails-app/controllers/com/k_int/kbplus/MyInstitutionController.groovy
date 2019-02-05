@@ -549,30 +549,14 @@ from License as l where (
             result.usageMode = ((RDStore.OR_TYPE_CONSORTIUM.id in result.institution?.getallOrgRoleTypeIds())) ? 'package' : 'institution'
         }
 
-        Map<Subscription,List> allProviders = [:]
-        OrgRole.findAllByRoleType(RDStore.OR_PROVIDER).collect { it ->
-            List currProviders = allProviders.get(it.sub)
-            if(currProviders == null)
-                currProviders = [it.org]
-            allProviders.put(it.sub,currProviders)
-        }
-        Map<Subscription,List> allAgencies = [:]
-        OrgRole.findAllByRoleType(RDStore.OR_PROVIDER).collect { it ->
-            List currAgencies = allAgencies.get(it.sub)
-            if(currAgencies == null)
-                currAgencies = [it.org]
-            allAgencies.put(it.sub,currAgencies)
-        }
-
-        subscriptions.each { s ->
-            s.providers = allProviders.get(s)
-            s.agencies = allAgencies.get(s)
-        }
-
         if(params.sort && params.sort.indexOf("§") >= 0) {
             switch(params.sort) {
                 case "orgRole§provider":
-                    subscriptions.sort { x,y -> x.providers.get(0).name.compareToIgnoreCase y.providers.get(0).name }
+                    subscriptions.sort { x,y ->
+                        String a = x.getProviders().size() > 0 ? x.getProviders().first().name : ''
+                        String b = y.getProviders().size() > 0 ? y.getProviders().first().name : ''
+                        a.compareToIgnoreCase b
+                    }
                     if(params.order.equals("desc"))
                         subscriptions.reverse(true)
                 break
@@ -3356,6 +3340,36 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             return
         }
 
+        result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def manageConsortiaLicenses() {
+        def result = setResultGenerics()
+
+        /*
+        List<CostItem, Org> costs = CostItem.executeQuery(
+                "select ci, orSubscr.org from CostItem ci join ci.owner owner join ci.sub sub join sub.orgRelations orCons join sub.orgRelations orSubscr " +
+                "where owner = :org and owner = orCons.org and orCons.roleType = :rdvCons " +
+                "and orSubscr.roleType = :rdvSubscr and sub.status.value != 'Deleted' order by orSubscr.org.sortname, orSubscr.org.name, ci",
+                [org: result.institution,
+                 rdvCons: RDStore.OR_SUBSCRIPTION_CONSORTIA,
+                 rdvSubscr: RDStore.OR_SUBSCRIBER_CONS
+                ])
+        */
+        List<CostItem, Subscription, Org> costs = CostItem.executeQuery(
+                "select ci, subK, roleT.org from CostItem ci join ci.owner orgK join ci.sub subT join subT.instanceOf subK " +
+                        "join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
+                        "where orgK = :org and orgK = roleK.org and roleK.roleType = :rdvCons " +
+                        "and orgK = roleTK.org and roleTK.roleType = :rdvCons " +
+                        "and roleT.roleType = :rdvSubscr and subK.status.value != 'Deleted' and subT.status.value != 'Deleted' order by subK.name, roleT.org.name",
+                [org: result.institution,
+                 rdvCons: RDStore.OR_SUBSCRIPTION_CONSORTIA,
+                 rdvSubscr: RDStore.OR_SUBSCRIBER_CONS
+                ])
+
+        result.costItems = costs
         result
     }
 

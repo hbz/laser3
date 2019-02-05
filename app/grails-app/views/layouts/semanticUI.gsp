@@ -117,11 +117,15 @@
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentProviders" message="menu.institutions.myProviders" />
 
-                            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgRoleTypeIds())}">
-                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.myConsortia" />
-                            </g:if>
-
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.institutions.myTitles" />
+
+                            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgRoleTypeIds())}">
+                                <div class="divider"></div>
+
+                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.myConsortia" />
+
+                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortiaLicenses" message="menu.institutions.myConsortiaLicenses" />
+                            </g:if>
 
                             <%--<semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="tipview" message="menu.institutions.myCoreTitles" />--%>
 
