@@ -16,11 +16,13 @@
     <semui:crumb message="menu.institutions.myConsortiaLicenses" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'menu.institutions.myConsortiaLicenses')} - ${costItems.size()} Treffer</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'menu.institutions.myConsortiaLicenses')} - ${countCostItems} Treffer</h1>
 
 <h2>* SEITE IN ARBEIT *</h2>
 
 <semui:messages data="${flash}"/>
+
+<div id="calculations"></div>
 
 <semui:filter>
     <g:form action="manageConsortiaLicenses" controller="myInstitution" method="get" class="form-inline ui small form">
@@ -41,7 +43,7 @@
                --%>
 
                 <label>Konsorten</label>
-                <g:select class="ui dropdown" name="member"
+                <g:select class="ui search selection dropdown" name="member"
                               from="${filterConsortiaMembers}"
                               optionKey="id"
                               optionValue="${{ it.sortname + ' (' + it.name + ')'}}"
@@ -128,13 +130,17 @@
 <table class="ui celled sortable table table-tworow la-table ignore-floatThead">
     <thead>
         <tr>
-            <th>${message(code:'sidewide.number')}</th>
-            <g:sortableColumn property="roleT.org.sortname" params="${params}" title="Teilnehmer" />
-            <th>Name / Vertrag</th>
-            <th>Verknüpfte Pakete</th>
-            <th>Anbieter</th>
-            <th>Laufzeit von / bis</th>
-            <th>${message(code:'financials.amountFinal')}</th>
+            <th rowspan="2" class="center aligned">${message(code:'sidewide.number')}</th>
+            <g:sortableColumn property="roleT.org.sortname" params="${params}" title="Teilnehmer" rowspan="2" />
+            <g:sortableColumn property="subK.name" params="${params}" title="Name" class="la-smaller-table-head" />
+            <th rowspan="2">Verknüpfte Pakete</th>
+            <th rowspan="2">Anbieter</th>
+            <th rowspan="2">Laufzeit von / bis</th>
+            <th rowspan="2">${message(code:'financials.amountFinal')}</th>
+            <th rowspan="2"></th>
+        </tr>
+        <tr>
+            <g:sortableColumn property="subK.owner.reference" params="${params}" title="Vertrag" class="la-smaller-table-head" />
         </tr>
     </thead>
     <tbody>
@@ -157,12 +163,12 @@
                 <td>
                     <div class="la-flexbox">
                         <i class="icon balance scale la-list-icon"></i>
-                        <g:link controller="subscriptionDetails" action="show" id="${subCons.id}">${subCons}</g:link>
+                        <g:link controller="subscriptionDetails" action="show" id="${subCons.id}">${subCons.name}</g:link>
                     </div>
                     <g:if test="${subCons.owner}">
                         <div class="la-flexbox">
                             <i class="icon folder open outline la-list-icon"></i>
-                            <g:link controller="licenseDetails" action="show" id="${subCons.owner.id}">${subCons.owner}</g:link>
+                            <g:link controller="licenseDetails" action="show" id="${subCons.owner.id}">${subCons.owner.reference}</g:link>
                         </div>
                     </g:if>
                 </td>
@@ -189,13 +195,48 @@
                                   format="${message(code:'default.date.format.notime')}"/>
                     </g:if>
                 </td>
-                <td class="costData"
-                    data-costInBillingCurrency="<g:formatNumber number="${ci.costInBillingCurrency}" locale="en" maxFractionDigits="2"/>"
-                    data-billingCurrency="${ci.billingCurrency ?: 'EUR'}"
-                >
+                <td>
                     <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}"
                                     type="currency"
                                     currencySymbol="${ci.billingCurrency ?: 'EUR'}" />
+                </td>
+
+                <%  // TODO .. copied from finance/_result_tab_cons.gsp
+
+                    def elementSign = 'notSet'
+                    def icon = ''
+                    def dataTooltip = ""
+                    if (ci.costItemElementConfiguration) {
+                        elementSign = ci.costItemElementConfiguration
+                    }
+                    String cieString = "data-elementSign=${elementSign}"
+
+                    switch(elementSign) {
+                        case RDStore.CIEC_POSITIVE:
+                            dataTooltip = message(code:'financials.costItemConfiguration.positive')
+                            icon = '<i class="plus green circle icon"></i>'
+                            break
+                        case RDStore.CIEC_NEGATIVE:
+                            dataTooltip = message(code:'financials.costItemConfiguration.negative')
+                            icon = '<i class="minus red circle icon"></i>'
+                            break
+                        case RDStore.CIEC_NEUTRAL:
+                            dataTooltip = message(code:'financials.costItemConfiguration.neutral')
+                            icon = '<i class="circle yellow icon"></i>'
+                            break
+                        default:
+                            dataTooltip = message(code:'financials.costItemConfiguration.notSet')
+                            icon = '<i class="question circle icon"></i>'
+                            break
+                    }
+                %>
+
+                <td class="costData"
+                    data-costInBillingCurrency="<g:formatNumber number="${ci.costInBillingCurrency}" locale="en" maxFractionDigits="2"/>"
+                    data-billingCurrency="${ci.billingCurrency ?: 'EUR'}"
+                    data-elementsign="${elementSign}"
+                >
+                    <span data-position="top left" data-tooltip="${dataTooltip}">${raw(icon)}</span>
 
                     <g:if test="${ci.isVisibleForSubscriber}">
                         <span data-position="top right" data-tooltip="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
@@ -207,6 +248,41 @@
         </g:each>
     </tbody>
 </table>
+
+<r:script>
+
+    var costs = []
+    $('.costData').each( function(index, elem) {
+
+        var value = $(elem).attr('data-costInBillingCurrency')
+        var crncy = $(elem).attr('data-billingCurrency')
+        var signd = $(elem).attr('data-elementsign')
+
+        if (! costs[crncy]) {
+            costs[crncy] = 0
+        }
+
+        if (signd == 'positive') {
+            costs[crncy] = costs[crncy] + Number(value)
+        }
+        else if (signd == 'negative') {
+            costs[crncy] = costs[crncy] - Number(value)
+        }
+
+        console.log( costs )
+    })
+
+    for(e in costs) {
+        $('#calculations').append('<div class="ui mini horizontal statistic"><div class="value">' + costs[e] + '</div><div class="label">' + e + '</div></div>')
+    }
+
+</r:script>
+
+
+<semui:paginate action="manageConsortiaLicenses" controller="myInstitution" params="${params}"
+                next="${message(code:'default.paginate.next', default:'Next')}"
+                prev="${message(code:'default.paginate.prev', default:'Prev')}"
+                max="${max}" total="${countCostItems}" />
 
 </body>
 </html>
