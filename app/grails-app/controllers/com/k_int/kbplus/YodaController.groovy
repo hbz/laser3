@@ -211,6 +211,11 @@ class YodaController {
         result.dataloadService.lastIndexUpdate = dataloadService.lastIndexUpdate
         result.esinfos = FTControl.list()
 
+        def dbmQuery = (sessionFactory.currentSession.createSQLQuery(
+                'SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1'
+        )).list()
+        result.dbmVersion = dbmQuery.size() > 0 ? dbmQuery.first() : ['unkown', 'unkown', 'unkown']
+
         result
     }
 

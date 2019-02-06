@@ -1283,7 +1283,7 @@ class FinanceController extends AbstractDebugController {
               newCostItem.invoiceDate = invoiceDate
 
               newCostItem.includeInSubscription = null //todo Discussion needed, nobody is quite sure of the functionality behind this...
-              newCostItem.reference = params.newReference ? params.newReference.trim()?.toLowerCase() : null
+              newCostItem.reference = params.newReference ? params.newReference.trim() : null
 
 
               if (! newCostItem.validate())
@@ -1346,7 +1346,7 @@ class FinanceController extends AbstractDebugController {
             budgetcodes.split(",").each { c ->
                 def bc = null
                 if (c.startsWith("-1")) { //New code option from select2 UI
-                    bc = new BudgetCode(owner: budgetOwner, value: c.substring(2).toLowerCase()).save(flush: true)
+                    bc = new BudgetCode(owner: budgetOwner, value: c.substring(2)).save(flush: true)
                 }
                 else {
                     bc = BudgetCode.get(c)

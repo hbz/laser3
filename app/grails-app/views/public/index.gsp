@@ -73,26 +73,20 @@
 
                     <span class="ui basic blue left pointing  label la-eye-catcher-txt">
 
-                        <strong>LAS:eR-Pilotbetrieb gestartet</strong>
-                        <br />
-                        <br />
-
-                        Seit Mai 2018 läuft der Pilotbetrieb von LAS:eR mit Unterstützung einer heterogene Anwendergruppe, bestehend aus den Universitätsbibliotheken Erlangen-Nürnberg,
-                        Frankfurt, Gießen und Tübingen, der Universitäts- und Landesbibliothek Münster, der Technischen Informationsbibliothek Hannover, der Fachhochschule Südwestfalen, der Jade Hochschule Wilhelmshaven, dem
-                        Forschungszentrum Jülich und der KIT-Bibliothek Karlsruhe.
-
-                        <br />
-                        <br />
-                        Gemeinsam gehen Pilotanwender und LAS:eR-Projektgruppe jetzt die ersten wichtigen Schritte auf dem Weg zur produktiven Nutzung des bundesweiten ERMS.
-
-                        Die Umsetzung der weiteren Entwicklungsaufgaben für die Vollversion erfolgt parallel:
-                        Dadurch können neue Features direkt im Pilotbetrieb erprobt und Anregungen aus dem Pilotbetrieb in die Vollversion übernommen werden.
+                        <strong>GASCO-Produktsuche via LAS:eR aktiv</strong>
 
                         <br />
                         <br />
 
-                        Sollten Sie Interesse haben zu einem späteren Zeitpunkt noch in den Pilotbetrieb einzusteigen, können Sie sich gerne jederzeit unter <a href="mailto:laser@hbz-nrw.de">laser@hbz-nrw.de</a> vormerken lassen.
-                        Auch bei Detailfragen zu LAS:eR stehen wir gerne zur Verfügung!
+                        Als erstes allgemein nutzbares Zusatzfeature ist ab sofort der GASCO-Monitor unter
+                        <a href="https://laser.hbz-nrw.de/gasco">https://laser.hbz-nrw.de/gasco verfügbar</a> verfügbar,
+                        <br/>
+
+                        der aus den Eintragungen der projektbeteiligten Konsortialstellen und der GASCO-Teilnehmer automatisiert einen Index
+                        der konsortial verfügbaren Produkte erzeugt und somit die bisher manuell zusammengestellte GASCO-Liste ablöst.
+
+                        <br />
+                        <br />
 
                     </span>
                 </div>

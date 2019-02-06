@@ -252,7 +252,7 @@ class BootStrap {
             return it?.format("yyyy-MM-dd'T'HH:mm:ss'Z'")
         }
 
-        log.debug("Init completed ..")
+        log.debug("Here we go ..")
     }
 
     def destroy = {

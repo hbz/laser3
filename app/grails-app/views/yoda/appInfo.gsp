@@ -19,6 +19,7 @@
         <tr><td>Build Number</td><td> <g:meta name="app.buildNumber"/></td></tr>
         <tr><td>Build Profile</td><td> <g:meta name="app.buildProfile"/></td></tr>
         <tr><td>App version</td><td> <g:meta name="app.version"/></td></tr>
+        <tr><td>DBM version</td><td> ${dbmVersion[0]} : ${dbmVersion[1]} </td></tr>
         <tr><td>Grails version</td><td> <g:meta name="app.grails.version"/></td></tr>
         <tr><td>Groovy version</td><td> ${GroovySystem.getVersion()}</td></tr>
         <tr><td>JVM version</td><td> ${System.getProperty('java.version')}</td></tr>

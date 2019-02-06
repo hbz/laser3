@@ -28,11 +28,14 @@ abstract class AbstractDebugController {
         // added global counts
         SystemProfiler.withTransaction { status ->
             SystemProfiler global = SystemProfiler.findWhere(uri: actionUri, context: null, params: null)
-            if (!global) {
-                global = new SystemProfiler(uri: actionUri, ms: 0)
+            if (! global) {
+                global = new SystemProfiler(uri: actionUri, ms: 1)
+                global.save(flush:true)
             }
-            global.setMs(Integer.valueOf(global.ms) + 1)
-            global.save(flush: true)
+            else {
+                SystemProfiler.executeUpdate('UPDATE SystemProfiler SET ms =:newValue WHERE id =:spId',
+                [newValue: Integer.valueOf(global.ms) + 1, spId: global.id])
+            }
         }
     }
 }
