@@ -111,7 +111,6 @@
         %>
         var data = {
                       id: "${pair.class.name}:${pair.id}",
-                      sortKey: "${pair.name}",
                       text: "${pair.name} (${ownerName}${dateString})"
                     };
     </g:if>
