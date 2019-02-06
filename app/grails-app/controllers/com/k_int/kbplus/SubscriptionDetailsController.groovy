@@ -1937,12 +1937,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) {
             def baseSub = Subscription.get(params.baseSubscription ?: params.id)
 
-            Date newStartDate
-            Date newEndDate
-
             use(TimeCategory) {
-                result.newStartDate = baseSub.startDate + 1.year
-                result.newEndDate = baseSub.endDate + 1.year
+                result.newStartDate = baseSub.startDate ? baseSub.startDate + 1.year : null
+                result.newEndDate = baseSub.endDate ? baseSub.endDate + 1.year : null
             }
 
             if (params.workFlowPart == '3') {
