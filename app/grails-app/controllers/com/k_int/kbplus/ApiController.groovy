@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.*
 import de.laser.ContextService
 import de.laser.api.v0.ApiManager
+import de.laser.api.v0.ApiReader
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.Constants
 import grails.converters.JSON
@@ -371,7 +372,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
 
         if (! result) {
             if ('GET' == request.method) {
-                if (!query || !value) {
+                if ((!query || !value) /*&& ! ApiReader.SUPPORTED_SIMPLE_QUERIES.contains(obj)*/) {
                     result = Constants.HTTP_BAD_REQUEST
                 }
                 else {
@@ -395,21 +396,17 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                     result = apiManager.read((String) obj, (String) query, (String) value, (User) user, (Org) contextOrg, format)
 
                     if (result instanceof Doc) {
+                        response.contentType = result.mimeType
+
                         if (result.contentType == Doc.CONTENT_TYPE_STRING) {
-                            response.contentType = result.mimeType
                             response.setHeader('Content-Disposition', 'attachment; filename="' + result.title + '"')
                             response.outputStream << result.content
-                            response.outputStream.flush()
-                            return
                         }
                         else if (result.contentType == Doc.CONTENT_TYPE_BLOB) {
-                            response.contentType = result.mimeType
-                            response.setHeader('Content-Disposition', 'attachment; filename="' + result.title + '-' + result.filename + '"')
-                            response.setHeader('Content-Length', "${result.getBlobSize()}")
-                            response.outputStream << result.getBlobData()
-                            response.outputStream.flush()
-                            return
+                            result.render(response, result.filename)
                         }
+                        response.outputStream.flush()
+                        return
                     }
                 }
             }

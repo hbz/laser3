@@ -8,12 +8,13 @@
 
         <g:select id="filterPropDef" name="filterPropDef" class="ui search selection dropdown"
 
-                  from="${propList}" optionKey="${{
+                  from="${propList.toSorted()}" optionKey="${{
                     it.refdataCategory ?
                               "com.k_int.properties.PropertyDefinition:${it.id}\" data-rdc=\"com.k_int.kbplus.RefdataCategory:${RefdataCategory.findByDesc(it.refdataCategory)?.id}"
                             : "com.k_int.properties.PropertyDefinition:${it.id}" }}" optionValue="${{ it.getI10n('name') }}"
-                  noSelection="['':'']"
+                  noSelection="['':message(code:'default.select.choose.label', default:'Please Choose...')]"
         />
+
     </div>
 
     <div class="field">
@@ -31,13 +32,13 @@
         var propertyFilterController = {
 
             updateProp: function (selOpt) {
-                
+
                 //If we are working with RefdataValue, grab the values and create select box
                 if (selOpt.attr('data-rdc')) {
                     $.ajax({
                         url: '<g:createLink controller="ajax" action="refdataSearchByOID"/>' + '?oid=' + selOpt.attr('data-rdc') + '&format=json',
                         success: function (data) {
-                            var select = '<option></option>';
+                            var select = '<option value></option>';
                             for (var index = 0; index < data.length; index++) {
                                 var option = data[index];
                                 select += '<option value="' + option.value + '">' + option.text + '</option>';

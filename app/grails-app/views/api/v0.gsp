@@ -20,25 +20,28 @@
           background: #fff;
         }
         #swagger-ui {
-            margin-top: 80px;
+            margin-top: 100px;
         }
         #swagger-ui .topbar {
             position: fixed;
             top: 0;
             width: 100%;
             padding: 0px 30px;
-            background-color: rgba(0,0,0, 0.1);
-            box-shadow: 0 5px 5px rgba(255,255,255, 0.3);
+            background-color: rgba(0,0,0, 0.75);
+            z-index: 99;
         }
-        .ui-box {
-            font-size: 12px;
-            padding: 5px 10px;
-        }
-        .ui-box input {
+        #swagger-ui .topbar input {
             width: 250px;
             padding: 8px 10px;
-            border: 1px solid #d9d9d9;
+            border: none;
         }
+        #swagger-ui .topbar .ui-box {
+            font-family: "Courier New";
+            font-size: 12px;
+            padding: 5px 10px;
+            color: #fff;
+        }
+
         #swagger-ui .topbar .link,
         #swagger-ui .topbar .download-url-wrapper {
             display: none;
@@ -49,6 +52,11 @@
         #swagger-ui textarea.curl {
             color: #666;
             background-color: #fff;
+        }
+
+        .glow {
+            background-color: yellow !important;
+            transition: background-color 0.5s;
         }
     </style>
 
@@ -100,20 +108,8 @@
             var placeholders = {
                 query_q: 'q - Identifier for this query',
                 query_v: 'v - Value for this query',
-                authorization: 'Authorization - hmac-sha256 generated auth header',
+                authorization: 'x-authorization - hmac-sha256 generated auth header',
                 context: 'context - Concrete globalUID, if user has memberships in multiple organisations'
-            }
-
-            var reactAccess = function(element) {
-                for (var key in element) {
-                    if (key.startsWith("__reactInternalInstance$")) {
-                        var compInternals = element[key]._currentElement
-                        var compWrapper = compInternals._owner
-                        var comp = compWrapper._instance
-                        return comp
-                    }
-                }
-                return null
             }
 
             var jabba = SwaggerUIBundle({
@@ -136,7 +132,9 @@
                 jQuery('.topbar-wrapper').append('<span class="ui-box">Key <input name="apiKey" type="password" placeholder="Current API Key" value="${apiKey}"></span>')
                 jQuery('.topbar-wrapper').append('<span class="ui-box">Context <input name="apiContext" type="text" placeholder="Current Context" value="${apiContext}"></span>')
                 jQuery('.topbar-wrapper').append('<span class="ui-box">Authorization <input name="apiAuth" type="text" placeholder="Will be generated" value=""></span>')
+            }, 1000)
 
+            setTimeout(function(){
                 jQuery('.opblock').delegate('input, textarea', 'change', function() {
                     var div = jQuery(this).parents('.parameters').first()
                     var auth = genDigist(div)
@@ -147,9 +145,20 @@
                 jQuery('.topbar-wrapper input').on('focus', function(){
                     jQuery(this).select()
                 })
-            }, 1200)
+            }, 2000)
 
             /*
+            var reactAccess = function(element) {
+                for (var key in element) {
+                    if (key.startsWith("__reactInternalInstance$")) {
+                        var compInternals = element[key]._currentElement
+                        var compWrapper = compInternals._owner
+                        var comp = compWrapper._instance
+                        return comp
+                    }
+                }
+                return null
+            }
             function setContext(div) {
                 var context = jQuery('.topbar-wrapper input[name=apiContext]').val()
                 var elem    = jQuery(div).find('input[placeholder="' + placeholders.context + '"]')
@@ -171,7 +180,7 @@
                 var id      = jQuery('.topbar input[name=apiId]').val().trim()
                 var key     = jQuery('.topbar input[name=apiKey]').val().trim()
                 var method  = jQuery(div).parents('.opblock').find('.opblock-summary-method').text()
-                var path    = "/api/${apiVersion}" + jQuery(div).parents('.opblock').find('.opblock-summary-path > span').text()
+                var path    = "/api/${apiVersion}" + jQuery(div).parents('.opblock').find('.opblock-summary-path span').text()
                 var timestamp = ""
                 var nounce    = ""
                 var context = jQuery(div).find('input[placeholder="' + placeholders.context + '"]').val().trim()

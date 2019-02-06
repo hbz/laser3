@@ -1,5 +1,7 @@
 package de.laser.domain
 
+import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+
 import javax.persistence.Transient
 
 class I10nTranslation {
@@ -42,12 +44,16 @@ class I10nTranslation {
     // -- getter and setter --
 
     static get(Object reference, String referenceField) {
+        reference = GrailsHibernateUtil.unwrapIfProxy(reference)
+
         def i10n = findByReferenceClassAndReferenceIdAndReferenceField(reference.getClass().getCanonicalName(), reference.getId(), referenceField)
 
         i10n
     }
 
     static get(Object reference, String referenceField, String locale) {
+        reference = GrailsHibernateUtil.unwrapIfProxy(reference)
+
         def i10n = findByReferenceClassAndReferenceIdAndReferenceField(reference.getClass().getCanonicalName(), reference.getId(), referenceField)
 
         switch(locale.toLowerCase()){
@@ -66,6 +72,8 @@ class I10nTranslation {
     static set(Object reference, String referenceField, Map values) {
         if (!reference || !referenceField)
             return
+
+        reference = GrailsHibernateUtil.unwrapIfProxy(reference)
 
         def i10n = get(reference, referenceField)
         if (!i10n) {
@@ -100,7 +108,6 @@ class I10nTranslation {
     static createI10nOnTheFly(Object reference, String referenceField) {
 
         def values = [:] // no effect in set()
-
         def existing = get(reference, referenceField)
         if (! existing) { // set default values
             values = [

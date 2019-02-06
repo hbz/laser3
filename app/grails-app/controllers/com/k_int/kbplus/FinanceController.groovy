@@ -6,10 +6,14 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.converters.JSON;
 import grails.plugin.springsecurity.annotation.Secured
+import org.apache.poi.ss.usermodel.FillPatternType
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.xssf.streaming.SXSSFSheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.apache.poi.xssf.usermodel.XSSFCellStyle
+import org.apache.poi.xssf.usermodel.XSSFColor
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 
@@ -22,6 +26,7 @@ class FinanceController extends AbstractDebugController {
     def accessService
     def contextService
     def genericOIDService
+    def navigationGenerationService
 
     private final def ci_count        = 'select count(distinct ci.id) from CostItem as ci '
     private final def ci_select       = 'select distinct ci from CostItem as ci '
@@ -57,7 +62,7 @@ class FinanceController extends AbstractDebugController {
         def user =  User.get(springSecurityService.principal.id)
         def dateTimeFormat  = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
         def result = [:]
-
+        def tmp
       try {
         result.contextOrg = contextService.getOrg()
         result.institution = contextService.getOrg()
@@ -77,6 +82,7 @@ class FinanceController extends AbstractDebugController {
           result.queryMode = MODE_OWNER
           def orgRoleCons, orgRoleSubscr
 
+
         //this is the switch for the cost item fill
         if (result.inSubMode) {
             log.info("call from /subscriptionDetails/${params.sub}/finance")
@@ -84,8 +90,10 @@ class FinanceController extends AbstractDebugController {
 
             result.fixedSubscription = params.int('sub')? Subscription.get(params.sub) : null
 
-            result.navPrevSubscription = result.fixedSubscription.previousSubscription ?: null
-            result.navNextSubscription = Subscription.findByPreviousSubscription(result.fixedSubscription) ?: null
+
+            LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.fixedSubscription.id)
+            result.navPrevSubscription = links.prevLink
+            result.navNextSubscription = links.nextLink
 
             if (! result.fixedSubscription) {
                 log.error("Financials in FIXED subscription mode, sent incorrect subscription ID: ${params?.sub}")
@@ -93,7 +101,7 @@ class FinanceController extends AbstractDebugController {
             }
 
             // own costs
-            def tmp = financialData(result, params, user, MODE_OWNER)
+            tmp = financialData(result, params, user, MODE_OWNER)
             result.foundMatches    = tmp.foundMatches
             result.cost_items      = tmp.cost_items
             result.cost_item_count = tmp.cost_item_count
@@ -146,7 +154,7 @@ class FinanceController extends AbstractDebugController {
         }
         else {
             log.info("call from /myInstitution/finance")
-            def tmp = financialData(result, params, user, MODE_OWNER)
+            tmp = financialData(result, params, user, MODE_OWNER)
             result.foundMatches    = tmp.foundMatches
             result.cost_items      = tmp.cost_items
             result.cost_item_count = tmp.cost_item_count
@@ -253,12 +261,14 @@ class FinanceController extends AbstractDebugController {
           result.tab = params.tab
       }
       else if(!params.tab) {
-          if(result.queryMode == MODE_CONS)
+          if(result.queryMode == MODE_CONS && params.view == "cons")
               result.tab = 'sc'
       }
 
       //result.tab = params.tab ?: result.queryMode == MODE_CONS ? 'sc' : 'owner'
-
+        result.consOffset = tmp.consOffset
+        result.subscrOffset = tmp.subscrOffset
+        result.ownerOffset = tmp.ownerOffset
       result
     }
 
@@ -272,7 +282,7 @@ class FinanceController extends AbstractDebugController {
      * Note - Requests DB requests are cached ONLY if non-hardcoded values are used
      */
     private def financialData(result, params, user, queryMode) {
-        def tmp = [:]
+        def tmp = [ownerOffset:0, subscrOffset:0, consOffset:0]
 
         result.editable    =  accessService.checkMinUserOrgRole(user, result.institution, user_role)
         params.orgId       =  result.institution.id
@@ -284,9 +294,18 @@ class FinanceController extends AbstractDebugController {
         //result.offset      =  params.int('offset',0)?: 0
 
         // WORKAROUND: erms-517 (deactivated as erms-802)
-
         params.max = params.max ? params.max : user.getDefaultPageSizeTMP()
-        params.offset = params.offset ? params.offset : 0
+        switch(params.view) {
+            case "cons": tmp.consOffset = params.offset
+            break
+            case "owner": tmp.ownerOffset = params.offset
+            break
+            case "subscr": tmp.subscrOffset = params.offset
+            break
+            default: log.info("unhandled view: ${params.view}")
+            break
+        }
+
         /*
         result.max = 5000
         result.offset = 0
@@ -318,6 +337,7 @@ class FinanceController extends AbstractDebugController {
             cost_item_qry_params = [subs: memberSubs, owner: result.institution]
             cost_item_qry        = ' WHERE ci.sub IN ( :subs ) AND ci.owner = :owner '
             //orderAndSortBy       = orderAndSortBy
+            params.offset = tmp.consOffset
         }
 
         if (MODE_OWNER == queryMode) {
@@ -357,6 +377,7 @@ class FinanceController extends AbstractDebugController {
                     }
                 }
             }
+            params.offset = tmp.ownerOffset
         }
 
         // OVERWRITE
@@ -376,6 +397,7 @@ class FinanceController extends AbstractDebugController {
                   cost_item_qry = ' , OrgRole as ogr WHERE ci.sub IN ( :subs ) AND ogr.org = :owner AND ci.isVisibleForSubscriber is true '
                 }
             }
+            params.offset = tmp.subscrOffset
 
        }
 
@@ -394,6 +416,18 @@ class FinanceController extends AbstractDebugController {
         tmp.cost_item_count =  CostItem.executeQuery(ci_count + cost_item_qry + qryOutput.qry_string + " group by ci.id " + orderAndSortBy, cost_item_qry_params).size()
 
         log.debug("index(${queryMode})  -- Performed filtering process ${tmp.cost_item_count} result(s) found")
+
+        //very ugly ... but cleanup needs enormous refactoring
+        switch(params.view) {
+            case "cons": params.offset = tmp.consOffset
+                break
+            case "owner": params.offset = tmp.ownerOffset
+                break
+            case "subscr": params.offset = tmp.subscrOffset
+                break
+            default: log.info("unhandled view: ${params.view}")
+                break
+        }
 
         tmp
     }
@@ -459,13 +493,36 @@ class FinanceController extends AbstractDebugController {
      */
     def private processFinancialXLSX(result) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(message(code: 'default.date.format.notime', default: 'dd.MM.yyyy'))
-        SXSSFWorkbook wb = new SXSSFWorkbook()
-        wb.setCompressTempFiles(true)
-        LinkedHashMap subscribers = [:]
+        XSSFWorkbook workbook = new XSSFWorkbook()
+        LinkedHashMap<Subscription,List<Org>> subscribers = [:]
+        LinkedHashMap<Subscription,List<Org>> providers = [:]
         LinkedHashMap costItemGroups = [:]
         OrgRole.findAllByRoleType(RDStore.OR_SUBSCRIBER_CONS).each { it ->
-            subscribers.put(it.sub,it.org)
+            List<Org> orgs = subscribers.get(it.sub)
+            if(orgs == null)
+                orgs = [it.org]
+            else orgs.add(it.org)
+            subscribers.put(it.sub,orgs)
         }
+        OrgRole.findAllByRoleType(RDStore.OR_PROVIDER).each { it ->
+            List<Org> orgs = providers.get(it.sub)
+            if(orgs == null)
+                orgs = [it.org]
+            else orgs.add(it.org)
+            providers.put(it.sub,orgs)
+        }
+        Map<RefdataValue, XSSFCellStyle> cellStyleMap = [:]
+        XSSFCellStyle csPositive = workbook.createCellStyle()
+        csPositive.setFillForegroundColor(new XSSFColor(new java.awt.Color(198,239,206)))
+        csPositive.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+        XSSFCellStyle csNegative = workbook.createCellStyle()
+        csNegative.setFillForegroundColor(new XSSFColor(new java.awt.Color(255,199,206)))
+        csNegative.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+        XSSFCellStyle csNeutral = workbook.createCellStyle()
+        csNeutral.setFillForegroundColor(new XSSFColor(new java.awt.Color(255,235,156)))
+        csNeutral.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+        SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50)
+        wb.setCompressTempFiles(true)
         CostItemGroup.findAll().each{ cig -> costItemGroups.put(cig.costItem,cig.budgetCode) }
         result.cost_item_tabs.entrySet().each { cit ->
             String sheettitle
@@ -483,18 +540,22 @@ class FinanceController extends AbstractDebugController {
             sheet.setAutobreaks(true)
             Row headerRow = sheet.createRow(0)
             headerRow.setHeightInPoints(16.75f)
-            ArrayList titles = [message(code: 'sidewide.number'), message(code: 'financials.invoice_number'), message(code: 'financials.order_number')]
+            ArrayList titles = [message(code: 'sidewide.number')]
             if(viewMode == "cons")
-                titles.addAll(["${message(code:'financials.newCosts.costParticipants')} (${message(code:'financials.isVisibleForSubscriber')})"])
-            titles.addAll([message(code: 'financials.newCosts.costTitle'), message(code: 'financials.newCosts.subscriptionHeader'),
-                           message(code: 'package'), message(code: 'issueEntitlement.label'), message(code: 'financials.datePaid'), message(code: 'financials.dateFrom'),
-                           message(code: 'financials.dateTo'), message(code: 'financials.addNew.costCategory'), message(code: 'financials.costItemStatus'),
-                           message(code: 'financials.billingCurrency'),message(code: 'financials.costInBillingCurrency'),"EUR",message(code: 'financials.costInLocalCurrency'),
-                           message(code: 'financials.taxRate')])
+                titles.addAll([message(code:'org.sortName.label'),message(code:'financials.newCosts.costParticipants'),message(code:'financials.isVisibleForSubscriber')])
+            titles.add(message(code: 'financials.newCosts.costTitle'))
+            if(viewMode == "cons")
+                titles.add(message(code:'default.provider.label'))
+            titles.addAll([message(code: 'financials.forSubscription'), message(code:'subscription.startDate.label'), message(code: 'subscription.endDate.label'),
+                           message(code: 'financials.costItemConfiguration'), message(code: 'package'), message(code: 'issueEntitlement.label'),
+                           message(code: 'financials.datePaid'), message(code: 'financials.dateFrom'), message(code: 'financials.dateTo'),
+                           message(code: 'financials.addNew.costCategory'), message(code: 'financials.costItemStatus'), message(code: 'financials.billingCurrency'),
+                           message(code: 'financials.costInBillingCurrency'),"EUR",message(code: 'financials.costInLocalCurrency'), message(code: 'financials.taxRate')])
             if(["owner","cons"].indexOf(viewMode) > -1)
                 titles.addAll([message(code:'financials.billingCurrency'),message(code: 'financials.costInBillingCurrencyAfterTax'),"EUR",message(code: 'financials.costInLocalCurrencyAfterTax')])
             titles.addAll([message(code: 'financials.costItemElement'),message(code: 'financials.newCosts.description'),
-                           message(code: 'financials.newCosts.constsReferenceOn'), message(code: 'financials.budgetCode')])
+                           message(code: 'financials.newCosts.constsReferenceOn'), message(code: 'financials.budgetCode'),
+                           message(code: 'financials.invoice_number'), message(code: 'financials.order_number')])
             titles.eachWithIndex { titleName, int i ->
                 Cell cell = headerRow.createCell(i)
                 cell.setCellValue(titleName)
@@ -524,37 +585,64 @@ class FinanceController extends AbstractDebugController {
                     //sidewide number
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(rownum)
-                    //invoice number
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(ci?.invoice ? ci.invoice.invoiceNumber : "")
-                    //order number
-                    cell = row.createCell(cellnum++)
-                    cell.setCellValue(ci?.order ? ci.order.orderNumber : "")
                     if(viewMode == "cons") {
                         if(ci.sub) {
-                            def orgRoles = subscribers.get(ci.sub)
+                            List<Org> orgRoles = subscribers.get(ci.sub)
                             //participants (visible?)
-                            cell = row.createCell(cellnum++)
+                            Cell cellA = row.createCell(cellnum++)
+                            Cell cellB = row.createCell(cellnum++)
+                            String cellValueA = ""
+                            String cellValueB = ""
                             orgRoles.each { or ->
-                                String cellValue = or.getDesignation()
-                                if(ci.isVisibleForSubscriber)
-                                    cellValue += " (sichtbar)"
-                                cell.setCellValue(cellValue)
+                                cellValueA += or.sortname
+                                cellValueB += or.name
                             }
+                            cellA.setCellValue(cellValueA)
+                            cellB.setCellValue(cellValueB)
+                            cell = row.createCell(cellnum++)
+                            cell.setCellValue(ci.isVisibleForSubscriber ? "sichtbar für Teilnehmer" : "")
                         }
                     }
                     //cost title
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci.costTitle ?: '')
-                    //subscription with running time
-                    cell = row.createCell(cellnum++)
-                    String dateString = ""
-                    if(ci.sub) {
-                        dateString = "${ci.sub.name} (${dateFormat.format(ci.sub.startDate)}"
-                        if(ci.sub.endDate)
-                            dateString += " - ${dateFormat.format(ci.sub.endDate)})"
+                    if(viewMode == "cons") {
+                        //provider
+                        cell = row.createCell(cellnum++)
+                        if(ci.sub) {
+                            List<Org> orgRoles = providers.get(ci.sub)
+                            String cellValue = ""
+                            orgRoles.each { or ->
+                                cellValue += or.name
+                            }
+                            cell.setCellValue(cellValue)
+                        }
+                        else cell.setCellValue("")
                     }
-                    cell.setCellValue(dateString)
+                    //cell.setCellValue(ci.sub ? ci.sub"")
+                    //subscription
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci.sub ? ci.sub.name : "")
+                    //dates from-to
+                    Cell fromCell = row.createCell(cellnum++)
+                    Cell toCell = row.createCell(cellnum++)
+                    if(ci.sub) {
+                        if(ci.sub.startDate)
+                            fromCell.setCellValue(dateFormat.format(ci.sub.startDate))
+                        else
+                            fromCell.setCellValue("")
+                        if(ci.sub.endDate)
+                            toCell.setCellValue(dateFormat.format(ci.sub.endDate))
+                        else
+                            toCell.setCellValue("")
+                    }
+                    //cost sign
+                    cell = row.createCell(cellnum++)
+                    if(ci.costItemElementConfiguration) {
+                        cell.setCellValue(ci.costItemElementConfiguration.getI10n("value"))
+                    }
+                    else
+                        cell.setCellValue(message(code:'financials.costItemConfiguration.notSet'))
                     //subscription package
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci?.subPkg ? ci.subPkg.pkg.name:'')
@@ -589,14 +677,36 @@ class FinanceController extends AbstractDebugController {
                         sumCurrencyCell = cellnum
                         cell = row.createCell(cellnum++)
                         cell.setCellValue(ci?.costInBillingCurrency ? ci.costInBillingCurrency : 0.0)
-                        sumCounters[ci.billingCurrency.value] += ci.costInBillingCurrency
+                        if(ci.costItemElementConfiguration) {
+                            switch(ci.costItemElementConfiguration) {
+                                case RDStore.CIEC_POSITIVE: sumCounters[ci.billingCurrency.value] += ci.costInBillingCurrency
+                                    cell.setCellStyle(csPositive)
+                                break
+                                case RDStore.CIEC_NEGATIVE: sumCounters[ci.billingCurrency.value] -= ci.costInBillingCurrency
+                                    cell.setCellStyle(csNegative)
+                                break
+                                case RDStore.CIEC_NEUTRAL: cell.setCellStyle(csNeutral)
+                                break
+                            }
+                        }
                         //local currency and value
                         cell = row.createCell(cellnum++)
                         cell.setCellValue("EUR")
                         sumcell = cellnum
                         cell = row.createCell(cellnum++)
                         cell.setCellValue(ci?.costInLocalCurrency ? ci.costInLocalCurrency : 0.0)
-                        localSum += ci.costInLocalCurrency
+                        if(ci.costItemElementConfiguration) {
+                            switch(ci.costItemElementConfiguration) {
+                                case RDStore.CIEC_POSITIVE: localSum += ci.costInLocalCurrency
+                                    cell.setCellStyle(csPositive)
+                                break
+                                case RDStore.CIEC_NEGATIVE: localSum -= ci.costInLocalCurrency
+                                    cell.setCellStyle(csNegative)
+                                break
+                                case RDStore.CIEC_NEUTRAL: cell.setCellStyle(csNeutral)
+                                break
+                            }
+                        }
                     }
                     //tax rate
                     cell = row.createCell(cellnum++)
@@ -609,14 +719,36 @@ class FinanceController extends AbstractDebugController {
                     sumCurrencyAfterTaxCell = cellnum
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci?.costInBillingCurrencyAfterTax ? ci.costInBillingCurrencyAfterTax : 0.0)
-                    sumAfterTaxCounters[ci.billingCurrency.value] += ci.costInBillingCurrencyAfterTax
+                    if(ci.costItemElementConfiguration) {
+                        switch(ci.costItemElementConfiguration) {
+                            case RDStore.CIEC_POSITIVE: sumAfterTaxCounters[ci.billingCurrency.value] += ci.costInBillingCurrencyAfterTax
+                                cell.setCellStyle(csPositive)
+                            break
+                            case RDStore.CIEC_NEGATIVE: sumAfterTaxCounters[ci.billingCurrency.value] -= ci.costInBillingCurrencyAfterTax
+                                cell.setCellStyle(csNegative)
+                            break
+                            case RDStore.CIEC_NEUTRAL: cell.setCellStyle(csNeutral)
+                            break
+                        }
+                    }
                     //local currency and value
                     cell = row.createCell(cellnum++)
                     cell.setCellValue("EUR")
                     sumcellAfterTax = cellnum
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci?.costInLocalCurrencyAfterTax ? ci.costInLocalCurrencyAfterTax : 0.0)
-                    localSumAfterTax += ci.costInLocalCurrencyAfterTax
+                    if(ci.costItemElementConfiguration) {
+                        switch(ci.costItemElementConfiguration) {
+                            case RDStore.CIEC_POSITIVE: localSumAfterTax += ci.costInLocalCurrencyAfterTax
+                                cell.setCellStyle(csPositive)
+                            break
+                            case RDStore.CIEC_NEGATIVE: localSumAfterTax -= ci.costInLocalCurrencyAfterTax
+                                cell.setCellStyle(csNegative)
+                            break
+                            case RDStore.CIEC_NEUTRAL: cell.setCellStyle(csNeutral)
+                            break
+                        }
+                    }
                     //cost item element
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci?.costItemElement?ci.costItemElement.getI10n("value") : '')
@@ -629,6 +761,12 @@ class FinanceController extends AbstractDebugController {
                     //budget codes
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(codes ? codes.toString() : '')
+                    //invoice number
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.invoice ? ci.invoice.invoiceNumber : "")
+                    //order number
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(ci?.order ? ci.order.orderNumber : "")
                     rownum++
                 }
                 rownum++
@@ -862,17 +1000,33 @@ class FinanceController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def editCostItem() {
         def result = [:]
+        def costItemElementConfigurations = []
+        def orgConfigurations = []
         result.tab = params.tab
 
         result.inSubMode = params.fixedSub ? true : false
         if (result.inSubMode) {
             result.fixedSubscription = params.int('fixedSub') ? Subscription.get(params.fixedSub) : null
         }
-        else {
+        else if(params.currSub) {
             result.currentSubscription = params.int('currSub') ? Subscription.get(params.currSub) : null
         }
         result.costItem = CostItem.findById(params.id)
+        if(result.costItem)
+          result.issueEntitlement = result.costItem.issueEntitlement
 
+        //format for dropdown: (o)id:value
+        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Cost configuration'))
+        ciecs.each { ciec ->
+            costItemElementConfigurations.add([id:ciec.class.name+":"+ciec.id,value:ciec.getI10n('value')])
+        }
+        def orgConf = CostItemElementConfiguration.findAllByForOrganisation(contextService.org)
+        orgConf.each { oc ->
+            orgConfigurations.add([id:oc.costItemElement.id,value:oc.elementSign.class.name+":"+oc.elementSign.id])
+        }
+
+        result.costItemElementConfigurations = costItemElementConfigurations
+        result.orgConfigurations = orgConfigurations
         result.formUrl = g.createLink(controller:'finance', action:'newCostItem', params:[tab:result.tab])
 
         render(template: "/finance/ajaxModal", model: result)
@@ -1084,6 +1238,7 @@ class FinanceController extends AbstractDebugController {
           def cost_billing_currency_after_tax   = params.newCostInBillingCurrencyAfterTax ? params.double( 'newCostInBillingCurrencyAfterTax') : cost_billing_currency
           def cost_local_currency_after_tax     = params.newCostInLocalCurrencyAfterTax ? params.double( 'newCostInLocalCurrencyAfterTax') : cost_local_currency
           def new_tax_rate                      = params.newTaxRate ? params.int( 'newTaxRate' ) : 0
+          def cost_item_element_configuration   = params.ciec ? genericOIDService.resolveOID(params.ciec) : null
 
           def cost_item_isVisibleForSubscriber = (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber)?.value == 'Yes') : false)
 
@@ -1121,6 +1276,7 @@ class FinanceController extends AbstractDebugController {
               newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double
               newCostItem.currencyRate = cost_currency_rate as Double
               newCostItem.taxRate = new_tax_rate as Integer
+              newCostItem.costItemElementConfiguration = cost_item_element_configuration
 
               newCostItem.datePaid = datePaid
               newCostItem.startDate = startDate
@@ -1128,7 +1284,7 @@ class FinanceController extends AbstractDebugController {
               newCostItem.invoiceDate = invoiceDate
 
               newCostItem.includeInSubscription = null //todo Discussion needed, nobody is quite sure of the functionality behind this...
-              newCostItem.reference = params.newReference ? params.newReference.trim()?.toLowerCase() : null
+              newCostItem.reference = params.newReference ? params.newReference.trim() : null
 
 
               if (! newCostItem.validate())
@@ -1191,7 +1347,7 @@ class FinanceController extends AbstractDebugController {
             budgetcodes.split(",").each { c ->
                 def bc = null
                 if (c.startsWith("-1")) { //New code option from select2 UI
-                    bc = new BudgetCode(owner: budgetOwner, value: c.substring(2).toLowerCase()).save(flush: true)
+                    bc = new BudgetCode(owner: budgetOwner, value: c.substring(2)).save(flush: true)
                 }
                 else {
                     bc = BudgetCode.get(c)

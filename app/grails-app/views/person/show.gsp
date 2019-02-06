@@ -157,102 +157,108 @@ ${personInstance}
                                                 <g:if test="${editable}">
                                                     <div class="ui mini icon buttons">
                                                         <g:set var="oid" value="${link.class.name}:${link.id}" />
-                                                        <g:link class="ui negative button" controller="person" action="deletePersonRole" id="${personInstance.id}" params="[oid: oid]">
+                                                        <g:link class="ui negative button js-open-confirm-modal"
+                                                                data-confirm-term-what="function"
+                                                                data-confirm-term-what-detail="${link.functionType?.getI10n('value')}"
+                                                                data-confirm-term-how="delete"
+                                                                controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]">
                                                             <i class="trash alternate icon"></i>
                                                         </g:link>
                                                     </div>
-                                                </g:if>
-                                            </div>
-                                        </div>
-                                    </g:if>
-                                </g:each>
-                            </div>
 
-                            <g:if test="${editable}">
-                                <a href="#personRoleFormModal" data-semui="modal" class="ui button">${message('code':'default.button.add.label')}</a>
-                            </g:if>
-                        </dd>
-                    </dl>
 
-                    <dl><dt><g:message code="person.responsibilites.label" default="Responsibilites"/></dt>
-                        <dd>
-                            <div class="ui divided middle aligned selection list la-flex-list">
-                                <g:each in="${personInstance.roleLinks}" var="link">
-                                    <g:if test="${link.responsibilityType}">
-                                        <div class="ui item address-details">
+                                               </g:if>
+                                           </div>
+                                       </div>
+                                   </g:if>
+                               </g:each>
+                           </div>
 
-                                            <g:if test="${link.pkg}">
-                                                <span data-tooltip="${message(code:'package.label')}" data-position="top right" data-variation="tiny">
-                                                    <i class="ui icon university la-list-icon"></i>
-                                                </span>
-                                            </g:if>
-                                            <g:if test="${link.cluster}">
-                                                <span data-tooltip="${message(code:'cluster.label')}" data-position="top right" data-variation="tiny">
-                                                    <i class="ui icon university la-list-icon"></i>
-                                                </span>
-                                            </g:if>
-                                            <g:if test="${link.sub}">
-                                                <span data-tooltip="${message(code:'subscription.label')}" data-position="top right" data-variation="tiny">
-                                                    <i class="ui icon folder open la-list-icon"></i>
-                                                </span>
-                                            </g:if>
-                                            <g:if test="${link.lic}">
-                                                <span data-tooltip="${message(code:'license.label')}" data-position="top right" data-variation="tiny">
-                                                    <i class="ui icon balance scale la-list-icon"></i>
-                                                </span>
-                                            </g:if>
-                                            <g:if test="${link.title}">
-                                                <span data-tooltip="${message(code:'title.label')}" data-position="top right" data-variation="tiny">
-                                                    <i class="ui icon book la-list-icon"></i>
-                                                </span>
-                                            </g:if>
+                           <g:if test="${editable}">
+                               <a href="#personRoleFormModal" data-semui="modal" class="ui button">${message('code':'default.button.add.label')}</a>
+                           </g:if>
+                       </dd>
+                   </dl>
 
-                                            <div class="content">
-                                                <div class="header">
-                                                    ${link.responsibilityType?.getI10n('value')}
-                                                </div>
-                                                <g:link controller="organisations" action="show" id="${link.org?.id}">${link.org?.name}</g:link>
-                                                <br />
+                   <dl><dt><g:message code="person.responsibilites.label" default="Responsibilites"/></dt>
+                       <dd>
+                           <div class="ui divided middle aligned selection list la-flex-list">
+                               <g:each in="${personInstance.roleLinks}" var="link">
+                                   <g:if test="${link.responsibilityType}">
+                                       <div class="ui item address-details">
 
-                                                <g:if test="${link.pkg}">
-                                                    <g:link controller="packageDetails" action="show" id="${link.pkg.id}">${link.pkg.name}</g:link>
-                                                </g:if>
-                                                <g:if test="${link.cluster}">
-                                                    <g:link controller="cluster" action="show" id="${link.cluster.id}">${link.cluster.name}</g:link>
-                                                </g:if>
-                                                <g:if test="${link.sub}">
-                                                    <g:link controller="subscriptionDetails" action="show" id="${link.sub.id}">${link.sub.name}</g:link>
-                                                </g:if>
-                                                <g:if test="${link.lic}">
-                                                    <g:link controller="licenseDetails" action="show" id="${link.lic.id}">${link.lic}</g:link>
-                                                </g:if>
-                                                <g:if test="${link.title}">
-                                                    <g:link controller="titleDetails" action="show" id="${link.title.id}">${link.title.title}</g:link>
-                                                </g:if>
-                                            </div>
+                                           <g:if test="${link.pkg}">
+                                               <span data-tooltip="${message(code:'package.label')}" data-position="top right" data-variation="tiny">
+                                                   <i class="ui icon university la-list-icon"></i>
+                                               </span>
+                                           </g:if>
+                                           <g:if test="${link.cluster}">
+                                               <span data-tooltip="${message(code:'cluster.label')}" data-position="top right" data-variation="tiny">
+                                                   <i class="ui icon university la-list-icon"></i>
+                                               </span>
+                                           </g:if>
+                                           <g:if test="${link.sub}">
+                                               <span data-tooltip="${message(code:'subscription.label')}" data-position="top right" data-variation="tiny">
+                                                   <i class="ui icon folder open la-list-icon"></i>
+                                               </span>
+                                           </g:if>
+                                           <g:if test="${link.lic}">
+                                               <span data-tooltip="${message(code:'license.label')}" data-position="top right" data-variation="tiny">
+                                                   <i class="ui icon balance scale la-list-icon"></i>
+                                               </span>
+                                           </g:if>
+                                           <g:if test="${link.title}">
+                                               <span data-tooltip="${message(code:'title.label')}" data-position="top right" data-variation="tiny">
+                                                   <i class="ui icon book la-list-icon"></i>
+                                               </span>
+                                           </g:if>
 
-                                            <div class="content">
-                                                <g:if test="${editable}">
-                                                    <div class="ui mini icon buttons">
-                                                        <g:set var="oid" value="${link.class.name}:${link.id}" />
-                                                        <g:link class="ui negative button" controller="person" action="deletePersonRole" id="${personInstance.id}" params="[oid: oid]">
-                                                            <i class="trash alternate icon"></i>
-                                                        </g:link>
-                                                    </div>
-                                                </g:if>
+                                           <div class="content">
+                                               <div class="header">
+                                                   ${link.responsibilityType?.getI10n('value')}
+                                               </div>
+                                               <g:link controller="organisations" action="show" id="${link.org?.id}">${link.org?.name}</g:link>
+                                               <br />
 
-                                            </div>
+                                               <g:if test="${link.pkg}">
+                                                   <g:link controller="packageDetails" action="show" id="${link.pkg.id}">${link.pkg.name}</g:link>
+                                               </g:if>
+                                               <g:if test="${link.cluster}">
+                                                   <g:link controller="cluster" action="show" id="${link.cluster.id}">${link.cluster.name}</g:link>
+                                               </g:if>
+                                               <g:if test="${link.sub}">
+                                                   <g:link controller="subscriptionDetails" action="show" id="${link.sub.id}">${link.sub.name}</g:link>
+                                               </g:if>
+                                               <g:if test="${link.lic}">
+                                                   <g:link controller="licenseDetails" action="show" id="${link.lic.id}">${link.lic}</g:link>
+                                               </g:if>
+                                               <g:if test="${link.title}">
+                                                   <g:link controller="titleDetails" action="show" id="${link.title.id}">${link.title.title}</g:link>
+                                               </g:if>
+                                           </div>
 
-                                        </div>
-                                    </g:if>
-                                </g:each>
-                            </div>
+                                           <div class="content">
+                                               <g:if test="${editable}">
+                                                   <div class="ui mini icon buttons">
+                                                       <g:set var="oid" value="${link.class.name}:${link.id}" />
+                                                       <g:link class="ui negative button" controller="person" action="deletePersonRole" id="${personInstance.id}" params="[oid: oid]">
+                                                           <i class="trash alternate icon"></i>
+                                                       </g:link>
+                                                   </div>
+                                               </g:if>
 
-                            <%--
-                            <g:if test="${editable}">
-                                <button class="ui button add-person-role" type="button">${message('code':'default.button.add.label')}</button>
-                            </g:if>
-                            --%>
+                                           </div>
+
+                                       </div>
+                                   </g:if>
+                               </g:each>
+                           </div>
+
+                           <%--
+                           <g:if test="${editable}">
+                               <button class="ui button add-person-role" type="button">${message('code':'default.button.add.label')}</button>
+                           </g:if>
+                           --%>
                         </dd></dl>
 
                     </div>

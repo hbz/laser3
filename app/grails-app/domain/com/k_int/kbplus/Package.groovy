@@ -236,7 +236,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
       if ( createEntitlements ) {
         def live_issue_entitlement = RefdataValue.getByValueAndCategory('Live', 'Entitlement Issue Status')
-        tipps.each { tipp ->
+        TitleInstancePackagePlatform.findAllByPkg(this).each { tipp ->
           if(tipp.status?.value != "Deleted"){
             def new_ie = new IssueEntitlement(status: live_issue_entitlement,
                                               subscription: subscription,
@@ -373,6 +373,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
     result.packageName = this.name
     result.packageId = this.identifier
+    result.impId = this.impId
 
     result.tipps = []
     this.tipps.each { tip ->
@@ -385,12 +386,16 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       def newtip = [
                      title: [
                        name:tip.title.title,
+                       impId:tip.title.impId,
                        identifiers:[]
                      ],
                      titleId:title_id,
+                     titleUuid:tip.title.impId,
                      tippId:tipp_id,
+                     tippUuid:tip.impId,
                      platform:tip.platform.name,
                      platformId:tip.platform.id,
+                     platformUuid:tip.platform.impId,
                      coverage:[],
                      url:tip.hostPlatformURL,
                      identifiers:[],

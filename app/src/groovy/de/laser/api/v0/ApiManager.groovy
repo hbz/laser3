@@ -1,9 +1,8 @@
 package de.laser.api.v0
 
 import com.k_int.kbplus.*
-import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
-import com.k_int.kbplus.auth.UserRole
+import de.laser.api.v0.catalogue.ApiCatalogue
 import de.laser.api.v0.entities.*
 import de.laser.helper.Constants
 import grails.converters.JSON
@@ -16,6 +15,9 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
+    static final VERSION = '0.34'
+    static final NOT_SUPPORTED = false
+
     /**
      * @return Object
      * @return BAD_REQUEST: if invalid/missing (unsupported) identifier
@@ -26,24 +28,46 @@ class ApiManager {
     static read(String obj, String query, String value, User user, Org contextOrg, String format) {
         def result
 
-        def failureCodes = [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED]
-        def hasAccess    = ApiReader.isDataManager(user)
+        def failureCodes  = [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED]
+        def accessDueDatamanager = ApiReader.isDataManager(user)
 
-        log.debug("API-READ: ${obj} (${format}) @ ${query}:${value}")
+        log.debug("API-READ (" + VERSION + "): ${obj} (${format}) -> ${query}:${value}")
 
-        if ('document'.equalsIgnoreCase(obj)) {
+        if ('costItem'.equalsIgnoreCase(obj)) {
+            if (format in ApiReader.SUPPORTED_FORMATS.costItem) {
+                def costItem = ApiCostItem.findCostItemBy(query, value)
+                if (costItem && !(costItem in failureCodes)) {
+                    result = ApiCostItem.getCostItem((CostItem) costItem, contextOrg, accessDueDatamanager)
+                }
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
+            }
+        }
+        else if ('costItemList'.equalsIgnoreCase(obj)) {
+            if (format in ApiReader.SUPPORTED_FORMATS.costItem) {
+                result = ApiOrg.findOrganisationBy(query, value) // use of http status code
+                if (result && !(result in failureCodes)) {
+                    result = ApiCostItem.getCostItemList(result, contextOrg, accessDueDatamanager)
+                }
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
+            }
+        }
+        else if ('document'.equalsIgnoreCase(obj)) {
             //if (format in ApiReader.SUPPORTED_FORMATS.document) {
                 result = ApiDoc.findDocumentBy(query, value)
                 if (result && !(result in failureCodes)) {
-                    result = ApiDoc.getDocument((Doc) result, contextOrg, hasAccess)
+                    result = ApiDoc.getDocument((Doc) result, contextOrg, accessDueDatamanager)
                 }
             //}
         }
-        else if ('issueEntitlements'.equalsIgnoreCase(obj)) {
+        else if (NOT_SUPPORTED && 'issueEntitlements'.equalsIgnoreCase(obj)) {
             if (format in ApiReader.SUPPORTED_FORMATS.issueEntitlements) {
                 def subPkg = ApiIssueEntitlement.findSubscriptionPackageBy(query, value)
                 if (subPkg && !(subPkg in failureCodes) ) {
-                    result = ApiIssueEntitlement.getIssueEntitlements(subPkg, contextOrg, hasAccess)
+                    result = ApiIssueEntitlement.getIssueEntitlements(subPkg, contextOrg, accessDueDatamanager)
 
                     if (result && format == Constants.MIME_TEXT_PLAIN) {
                         def kbart = ApiKbartConverter.convertIssueEntitlements(result)
@@ -60,44 +84,63 @@ class ApiManager {
                 result = ApiLicense.findLicenseBy(query, value)
 
                 if (result && !(result in failureCodes)) {
-                    result = ApiLicense.getLicense((License) result, contextOrg, hasAccess)
+                    result = ApiLicense.getLicense((License) result, contextOrg, accessDueDatamanager)
                 }
             }
             else {
                 return Constants.HTTP_NOT_ACCEPTABLE
             }
         }
-        else if ('onixpl'.equalsIgnoreCase(obj)) {
+        else if ('licenseList'.equalsIgnoreCase(obj)) {
+            if (format in ApiReader.SUPPORTED_FORMATS.license) {
+                result = ApiOrg.findOrganisationBy(query, value) // use of http status code
+                if (result && !(result in failureCodes)) {
+                    result = ApiLicense.getLicenseList(result, contextOrg, accessDueDatamanager)
+                }
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
+            }
+        }
+        else if (NOT_SUPPORTED && 'onixpl'.equalsIgnoreCase(obj)) {
             if (format in ApiReader.SUPPORTED_FORMATS.onixpl) {
                 def lic = ApiLicense.findLicenseBy(query, value)
 
                 if (lic && !(lic in failureCodes)) {
-                    result = ApiDoc.getOnixPlDocument((License) lic, contextOrg, hasAccess)
+                    result = ApiDoc.getOnixPlDocument((License) lic, contextOrg, accessDueDatamanager)
                 }
             }
             else {
                 return Constants.HTTP_NOT_ACCEPTABLE
             }
         }
-        else if ('organisation'.equalsIgnoreCase(obj)) {
+        else if (NOT_SUPPORTED && 'organisation'.equalsIgnoreCase(obj)) {
             if (format in ApiReader.SUPPORTED_FORMATS.organisation) {
                 result = ApiOrg.findOrganisationBy(query, value)
 
                 if (result && !(result in failureCodes)) {
-                    result = ApiOrg.getOrganisation((Org) result, contextOrg, hasAccess)
+                    result = ApiOrg.getOrganisation((Org) result, contextOrg, accessDueDatamanager)
                 }
             }
             else {
                 return Constants.HTTP_NOT_ACCEPTABLE
             }
         }
-        else if ('package'.equalsIgnoreCase(obj)) {
+        else if (NOT_SUPPORTED && 'package'.equalsIgnoreCase(obj)) {
             if (format in ApiReader.SUPPORTED_FORMATS.package) {
                 result = ApiPkg.findPackageBy(query, value)
 
                 if (result && !(result in failureCodes)) {
-                    result = ApiPkg.getPackage((Package) result, contextOrg, hasAccess)
+                    result = ApiPkg.getPackage((Package) result, contextOrg, accessDueDatamanager)
                 }
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
+            }
+        }
+        else if ('refdatas'.equalsIgnoreCase(obj)) {
+            if (format in ApiReader.SUPPORTED_FORMATS.refdatas) {
+                result = ApiCatalogue.getAllRefdatas()
             }
             else {
                 return Constants.HTTP_NOT_ACCEPTABLE
@@ -108,7 +151,18 @@ class ApiManager {
                 result = ApiSubscription.findSubscriptionBy(query, value)
 
                 if (result && !(result in failureCodes)) {
-                    result = ApiSubscription.getSubscription((Subscription) result, contextOrg, hasAccess)
+                    result = ApiSubscription.getSubscription((Subscription) result, contextOrg, accessDueDatamanager)
+                }
+            }
+            else {
+                return Constants.HTTP_NOT_ACCEPTABLE
+            }
+        }
+        else if ('subscriptionList'.equalsIgnoreCase(obj)) {
+            if (format in ApiReader.SUPPORTED_FORMATS.subscription) {
+                result = ApiOrg.findOrganisationBy(query, value) // use of http status code
+                if (result && !(result in failureCodes)) {
+                    result = ApiSubscription.getSubscriptionList(result, contextOrg, accessDueDatamanager)
                 }
             }
             else {
@@ -122,13 +176,14 @@ class ApiManager {
         result
     }
 
+    @Deprecated
     static write(String obj, JSONObject data, User user, Org contextOrg) {
         def result
 
         // check existing resources
         def conflict = false
 
-        if ('organisation'.equalsIgnoreCase(obj)) {
+        if (NOT_SUPPORTED && 'organisation'.equalsIgnoreCase(obj)) {
 
             data.identifiers?.each { ident ->
                 def hits = ApiOrg.findOrganisationBy('ns:identifier', ident.namespace + ":" + ident.value)
@@ -147,11 +202,11 @@ class ApiManager {
 
             result = ApiWriter.importOrganisation(data, contextOrg)
         }
-        else if ('license'.equalsIgnoreCase(obj)) {
+        else if (NOT_SUPPORTED && 'license'.equalsIgnoreCase(obj)) {
 
             result = ApiWriter.importLicense(data, contextOrg)
         }
-        else if ('subscription'.equalsIgnoreCase(obj)) {
+        else if (NOT_SUPPORTED && 'subscription'.equalsIgnoreCase(obj)) {
 
             data.identifiers?.each { ident ->
                 def hits = ApiSubscription.findSubscriptionBy('ns:identifier', ident.namespace + ":" + ident.value)
@@ -234,7 +289,12 @@ class ApiManager {
             response << HttpStatus.NOT_FOUND.value()
         }
         else {
-            response << result
+            if (result instanceof List) {
+                response << new JSON(result)
+            }
+            else {
+                response << result
+            }
             response << HttpStatus.OK.value()
         }
 

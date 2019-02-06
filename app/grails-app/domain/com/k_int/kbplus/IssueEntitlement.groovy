@@ -116,6 +116,17 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
     def ie_access_start_date = getDerivedAccessStartDate()
     def ie_access_end_date = getDerivedAccessEndDate()
 
+    result = RefdataCategory.lookupOrCreate('IE Access Status','Current')
+
+    if (ie_access_start_date && as_at < ie_access_start_date ) {
+      result = RefdataCategory.lookupOrCreate('IE Access Status','Expected');
+    }
+    else if (ie_access_end_date && as_at > ie_access_end_date ) {
+      result = RefdataCategory.lookupOrCreate('IE Access Status','Expired');
+    }
+
+
+    /* legacy stuff ...
     if ( ( ie_access_start_date == null ) || ( ie_access_end_date == null ) ) {
       result = RefdataCategory.lookupOrCreate('IE Access Status','ERROR - No Subscription Start and/or End Date');
     }
@@ -133,6 +144,7 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
     else {
       result = RefdataCategory.lookupOrCreate('IE Access Status','Current');
     }
+    */
     result
   }
 

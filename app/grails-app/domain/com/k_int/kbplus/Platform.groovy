@@ -5,6 +5,7 @@ import de.laser.domain.AbstractBaseDomain
 import javax.persistence.Transient
 import com.k_int.ClassUtils
 import org.apache.commons.logging.*
+import grails.util.Holders
 
 class Platform extends AbstractBaseDomain {
 
@@ -63,7 +64,11 @@ class Platform extends AbstractBaseDomain {
     def platform = null;
     def platform_candidates = null;
 
-    if ( params.name && (params.name.trim().length() > 0)  ) {
+    if ( params.impId && params.impId.trim().length() > 0) {
+      platform = Platform.findByImpId(params.impId)
+    }
+
+    if ( !platform && params.name && (params.name.trim().length() > 0)  ) {
 
       String norm_name = params.name.trim().toLowerCase();
 
@@ -85,13 +90,16 @@ class Platform extends AbstractBaseDomain {
       }
 
       if ( !platform && !platform_candidates) {
-        platform = new Platform(impId:java.util.UUID.randomUUID().toString(),
+        platform = new Platform(impId:params.impId?.length() > 0 ? params.impId : java.util.UUID.randomUUID().toString(),
                                 name:params.name,
                                 normname:norm_name,
                                 provenance:params.provenance,
                                 primaryUrl:(params.primaryUrl ?: null),
                                 lastmod:System.currentTimeMillis()).save(flush:true)
 
+      } else if (platform && Holders.config.globalDataSync.replaceLocalImpIds.Platform && params.impId) {
+        platform.impId = params.impId
+        platform.save(flush:true)
       }
     }
     platform;

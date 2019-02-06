@@ -1,14 +1,17 @@
 package de.laser.helper
 
+import de.laser.CacheService
 import grails.util.Holders
+import groovy.transform.CompileStatic
 import net.sf.ehcache.Cache
 
+@CompileStatic
 class EhcacheWrapper {
 
-    def cacheService = Holders.grailsApplication.mainContext.getBean('cacheService')
+    CacheService cacheService = (CacheService) Holders.grailsApplication.mainContext.getBean('cacheService')
 
     private Cache cache
-    private def keyPrefix
+    private String keyPrefix
 
     EhcacheWrapper(Cache cache, String keyPrefix) {
         this.cache = cache
@@ -23,6 +26,9 @@ class EhcacheWrapper {
     }
     def get(String key) {
         cacheService.get(cache, keyPrefix + key)
+    }
+    def remove(String key) {
+        cacheService.remove(cache, keyPrefix + key)
     }
     def clear() {
         cacheService.clear(cache)

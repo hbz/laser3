@@ -31,8 +31,8 @@
         <thead>
             <tr>
                 <th>${message(code: 'financials.budgetCode')}</th>
-                <th>Beschreibung</th>
-                <th>Verwendung</th>
+                <th>${message(code: 'financials.budgetCode.description')}</th>
+                <th>${message(code: 'financials.budgetCode.usage')}</th>
                 <th></th>
             </tr>
         </thead>

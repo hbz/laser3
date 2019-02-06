@@ -2,6 +2,8 @@ import com.k_int.kbplus.*
 
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinition
+import com.k_int.properties.PropertyDefinitionGroup
+import de.laser.SystemEvent
 import de.laser.domain.I10nTranslation
 import grails.converters.JSON
 import grails.plugin.springsecurity.SecurityFilterPosition
@@ -21,6 +23,7 @@ class BootStrap {
             RdC:    RefdataCategory.toString(),
             Rdv:    RefdataValue.toString(),
             String: String.toString(),
+            URL:    URL.toString()
     ]
 
     def init = { servletContext ->
@@ -31,14 +34,19 @@ class BootStrap {
             def system_object = SystemObject.findBySysId(grailsApplication.config.laserSystemId) ?: new SystemObject(sysId: grailsApplication.config.laserSystemId).save(flush: true)
         }
 
+        // TODO: remove due SystemEvent
         def evt_startup   = new EventLog(event: 'kbplus.startup', message: 'Normal startup', tstp: new Date(System.currentTimeMillis())).save(flush: true)
+
+        SystemEvent.createEvent('BOOTSTRAP_STARTUP')
+
         def so_filetype   = DataloadFileType.findByName('Subscription Offered File') ?: new DataloadFileType(name: 'Subscription Offered File')
         def plat_filetype = DataloadFileType.findByName('Platforms File') ?: new DataloadFileType(name: 'Platforms File')
 
-        // Reset harddata flag for given refdata
+        // Reset harddata flag for given refdata and properties
 
         RefdataValue.executeUpdate('UPDATE RefdataValue rdv SET rdv.hardData =:reset', [reset: false])
         RefdataCategory.executeUpdate('UPDATE RefdataCategory rdc SET rdc.hardData =:reset', [reset: false])
+        PropertyDefinition.executeUpdate('UPDATE PropertyDefinition pd SET pd.hardData =:reset', [reset: false])
 
         // Here we go ..
 
@@ -180,6 +188,9 @@ class BootStrap {
 
         def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'true', value: 'true').save()
 
+
+        def mailSent = Setting.findByName('MailSentDisabled') ?: new Setting(name: 'MailSentDisabled', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'false', value: (grailsApplication.config.grails.mail.disabled ?: "false")).save()
+
         //def maintenance_mode = Setting.findByName('MaintenanceMode') ?: new Setting(name: 'MaintenanceMode', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'false', value: 'false').save()
 
         def systemMessage = SystemMessage.findByText('Das System wird in den nächsten Minuten aktualisiert. Bitte pflegen Sie keine Daten mehr ein!') ?: new SystemMessage(text: 'Das System wird in den nächsten Minuten aktualisiert. Bitte pflegen Sie keine Daten mehr ein!', showNow: false).save()
@@ -241,7 +252,7 @@ class BootStrap {
             return it?.format("yyyy-MM-dd'T'HH:mm:ss'Z'")
         }
 
-        log.debug("Init completed ..")
+        log.debug("Here we go ..")
     }
 
     def destroy = {
@@ -382,7 +393,8 @@ class BootStrap {
 
             pd.type  = prop.type
             pd.descr = prop.descr['en']
-            pd.softData = false
+            //pd.softData = false
+            pd.hardData = BOOTSTRAP
             pd.save(failOnError: true)
 
             if (! SystemAdminCustomProperty.findByType(pd)) {
@@ -542,7 +554,7 @@ class BootStrap {
         def allDescr = [en: PropertyDefinition.SUB_PROP, de: PropertyDefinition.SUB_PROP]
 
         def requiredProps = [
-                [name: [en: "GASCO Entry", de: "GASCO-Eintrag"],                    descr:allDescr, type: OT.Rdv, cat:'YN'],
+                [name: [en: "GASCO Entry", de: "GASCO-Eintrag"],                    descr:allDescr, type: OT.Rdv, cat:'YN', isUsedForLogic: true],
                 [name: [en: "EZB Gelbschaltung", de: "EZB Gelbschaltung"],          descr:allDescr, type: OT.Rdv, cat:'YN'],
                 [name: [en: "Metadata Delivery", de: "Metadatenlieferung"],         descr:allDescr, type: OT.Rdv, cat:'YN'],
                 [name: [en: "Metadata Source", de: "Metadaten Quelle"],             descr:allDescr, type: OT.String],
@@ -588,8 +600,9 @@ class BootStrap {
                 [name: [en: "Archivzugriff", de: "Archivzugriff"],                                      descr:allDescr, type: OT.Rdv, cat:'YN'],
                 [name: [en: "Eingeschränkter Benutzerkreis", de: "Eingeschränkter Benutzerkreis"],      descr:allDescr, type: OT.String],
                 [name: [en: "SFX-Eintrag", de: "SFX-Eintrag"],                      descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "GASCO-Anzeigename", de: "GASCO-Anzeigename"],          descr:allDescr, type: OT.String],
-                [name: [en: "GASCO-Verhandlername", de: "GASCO-Verhandlername"],    descr:allDescr, type: OT.String]
+                [name: [en: "GASCO-Anzeigename", de: "GASCO-Anzeigename"],              descr:allDescr, type: OT.String, isUsedForLogic: true],
+                [name: [en: "GASCO-Verhandlername", de: "GASCO-Verhandlername"],        descr:allDescr, type: OT.String, isUsedForLogic: true],
+                [name: [en: "GASCO-Information-Link", de: "GASCO-Informations-Link"],   descr:allDescr, type: OT.URL, isUsedForLogic: true]
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
     }
@@ -655,13 +668,22 @@ class BootStrap {
                 prop.multipleOccurrence = default_prop.multiple
             }
 
+            if (default_prop.isUsedForLogic) {
+                prop.isUsedForLogic = default_prop.isUsedForLogic
+            }
+
             prop.type  = default_prop.type
             prop.descr = default_prop.descr['en']
-            prop.softData = false
+            //prop.softData = false
+            prop.hardData = BOOTSTRAP
             prop.save(failOnError: true)
 
             I10nTranslation.createOrUpdateI10n(prop, 'name', default_prop.name)
             I10nTranslation.createOrUpdateI10n(prop, 'descr', default_prop.descr)
+
+            if (default_prop.expl) {
+                I10nTranslation.createOrUpdateI10n(prop, 'expl', default_prop.expl)
+            }
         }
     }
 
@@ -759,6 +781,8 @@ class BootStrap {
 
         // because legacy logic is hardcoded against RefdataCategory.desc & RefdataValue.value
 
+        RefdataCategory.loc('filter.fake.values', [en: 'filter.fake.values', de: 'filter.fake.values'], BOOTSTRAP)
+        RefdataValue.loc('filter.fake.values',   [key: 'subscription.status.no.status.set.but.null', en: 'No Status', de: 'Kein Status'], BOOTSTRAP)
         // refdata categories
 
         RefdataCategory.loc('YN',                   	                    [en: 'Yes/No', de: 'Ja/Nein'], BOOTSTRAP)
@@ -776,6 +800,7 @@ class BootStrap {
         RefdataCategory.loc('ContactContentType',   	                    [en: 'Type of Contact', de: 'Kontakttyp'], BOOTSTRAP)
         RefdataCategory.loc('ContactType',          	                    [en: 'Contact Type', de: 'Art des Kontaktes'], BOOTSTRAP)
         RefdataCategory.loc('CoreStatus',           	                    [en: 'Core Status', de: 'Kerntitel-Status'], BOOTSTRAP)
+        RefdataCategory.loc('Cost configuration',                        [en: 'Cost configuration', de: 'Kostenkonfiguration'], BOOTSTRAP)
         RefdataCategory.loc('Country',              	                    [en: 'Country', de: 'Land'], BOOTSTRAP)
         RefdataCategory.loc('FactType',             	                    [en: 'FactType', de: 'FactType'], BOOTSTRAP)
         RefdataCategory.loc('Federal State',        	                    [en: 'Federal State', de: 'Bundesland'], BOOTSTRAP)
@@ -842,7 +867,8 @@ class BootStrap {
         RefdataValue.loc('Indemnification',  [en: 'Other', de: 'Andere'], BOOTSTRAP)
         RefdataValue.loc('Indemnification',  [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
 
-        RefdataValue.loc('Confidentiality',  [en: 'All', de: 'Alles'], BOOTSTRAP)
+
+
         RefdataValue.loc('Confidentiality',  [en: 'All but user terms', de: 'Alles außer Nutzungsbedingungen'], BOOTSTRAP)
         RefdataValue.loc('Confidentiality',  [en: 'Financial only', de: 'Nur Finanzangelegenheiten'], BOOTSTRAP)
         RefdataValue.loc('Confidentiality',  [en: 'No', de: 'Nein'], BOOTSTRAP)
@@ -882,6 +908,10 @@ class BootStrap {
         RefdataValue.loc('CoreStatus',   [en: 'Print', de: 'Print'], BOOTSTRAP)
         RefdataValue.loc('CoreStatus',   [en: 'Electronic', de: 'Elektronisch'], BOOTSTRAP)
         RefdataValue.loc('CoreStatus',   [en: 'Print+Electronic', de: 'Print & Elektronisch'], BOOTSTRAP)
+
+        RefdataValue.loc('Cost configuration',[en:'positive',de:'positiv'],BOOTSTRAP)
+        RefdataValue.loc('Cost configuration',[en:'negative',de:'negativ'],BOOTSTRAP)
+        RefdataValue.loc('Cost configuration',[en:'neutral',de:'neutral'],BOOTSTRAP)
 
         RefdataValue.loc('Country',   [en: 'Germany', de: 'Deutschland'], BOOTSTRAP)
         RefdataValue.loc('Country',   [en: 'Switzerland', de: 'Schweiz'], BOOTSTRAP)
@@ -957,6 +987,10 @@ class BootStrap {
         RefdataValue.loc('Library Type',   [en: 'Wissenschafltiche Spezialbibliothek', de: 'Wissenschafltiche Spezialbibliothek'], BOOTSTRAP)
         RefdataValue.loc('Library Type',   [en: 'Sonstige', de: 'Sonstige'], BOOTSTRAP)
         RefdataValue.loc('Library Type',   [en: 'keine Angabe', de: 'keine Angabe'], BOOTSTRAP)
+
+        RefdataValue.loc('Link Type', [en: 'follows',de: '... ist Nachfolger von|... ist Vorgänger von'], BOOTSTRAP)
+        RefdataValue.loc('Link Type', [en: 'references',de: '... referenziert|... wird referenziert durch'], BOOTSTRAP)
+        RefdataValue.loc('Link Type', [en: 'is condition for',de: '... ist Bedingung für|... ist bedingt durch'], BOOTSTRAP)
 
         RefdataValue.loc('OrgStatus',      [en: 'Current', de: 'Aktuell'], BOOTSTRAP)
         RefdataValue.loc('OrgStatus',      [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
@@ -1058,10 +1092,10 @@ class BootStrap {
         RefdataValue.loc('Subscription Status',      [en: 'Publication discontinued', de: 'Erscheinen eingestellt'], BOOTSTRAP)
         RefdataValue.loc('Subscription Status',      [en: 'Rejected', de: 'Abgelehnt'], BOOTSTRAP)
 
-		RefdataValue.loc('Subscription Type',      [en: 'Alliance Licence', de: 'Allianzlizenz'], BOOTSTRAP)
-		RefdataValue.loc('Subscription Type',      [en: 'National Licence', de: 'Nationallizenz'], BOOTSTRAP)
-		RefdataValue.loc('Subscription Type',      [en: 'Local Licence', de: 'Lokale Lizenz'], BOOTSTRAP)
-		RefdataValue.loc('Subscription Type',      [en: 'Consortial Licence', de: 'Konsortiallizenz'], BOOTSTRAP)
+        RefdataValue.loc('Subscription Type',      [en: 'Alliance Licence', de: 'Allianzlizenz'], BOOTSTRAP)
+		    RefdataValue.loc('Subscription Type',      [en: 'National Licence', de: 'Nationallizenz'], BOOTSTRAP)
+		    RefdataValue.loc('Subscription Type',      [en: 'Local Licence', de: 'Lokale Lizenz'], BOOTSTRAP)
+		    RefdataValue.loc('Subscription Type',      [en: 'Consortial Licence', de: 'Konsortiallizenz'], BOOTSTRAP)
 
         RefdataValue.loc('Task Priority',   [en: 'Trivial', de: 'Trivial'], BOOTSTRAP)
         RefdataValue.loc('Task Priority',   [en: 'Low', de: 'Niedrig'], BOOTSTRAP)

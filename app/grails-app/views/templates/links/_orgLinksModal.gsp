@@ -1,3 +1,4 @@
+<%@ page import="com.k_int.kbplus.Org" %>
 <g:if test="${editmode}">
     <a class="ui button" data-semui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
 </g:if>
@@ -55,7 +56,7 @@
         oOrTable = $('#org_role_tab_${tmplModalID}').dataTable( {
             'bAutoWidth':  true,
             "sScrollY":    "240px",
-            "sAjaxSource": "<g:createLink controller="ajax" action="refdataSearch" id="${ajaxID}" params="${[format:'json']}"/>",
+            "sAjaxSource": "<g:createLink controller="ajax" action="getProvidersWithPrivateContacts" id="${ajaxID}" params="${[oid:"${contextOrg.class.name}:${contextOrg.id}"]}"/>",
             "bServerSide": true,
             "bProcessing": true,
             "bDestroy":    true,
@@ -65,12 +66,12 @@
                 "loadingIndicator": false
             },
             "aoColumnDefs": [ {
-                    "aTargets": [ 1 ],
-                    "mData": "DT_RowId",
-                    "mRender": function ( data, type, full ) {
-                        return '<input type="checkbox" name="orm_orgoid" value="' + data + '"/>';
-                    }
-                } ],
+                "aTargets": [ 1 ],
+                "mData": "DT_RowId",
+                "mRender": function ( data, type, full ) {
+                    return '<input type="checkbox" name="orm_orgoid" value="' + data + '"/>';
+                }
+            } ],
             "language": {
                 "decimal":        "<g:message code='datatables.decimal' />",
                 "emptyTable":     "<g:message code='datatables.emptyTable' />",

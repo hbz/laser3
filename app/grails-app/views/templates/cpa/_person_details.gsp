@@ -76,18 +76,13 @@
                 <g:if test="${editable && tmplShowDeleteButton}">
                     <g:set var="oid" value="${personRole?.class.name}:${personRole?.id}" />
 
-                    <g:link class="ui mini icon negative button deletePersonRoleLink-${personRole?.id}"
+                    <g:link class="ui mini icon negative button js-open-confirm-modal"
+                            data-confirm-term-what="contact"
+                            data-confirm-term-where="organisation"
+                            data-confirm-term-how="unlink"
                             controller="ajax" action="delete" params="[cmd: 'deletePersonRole', oid: oid]">
-                        <i class="trash alternate icon"></i>
+                        <i class="unlink icon"></i>
                     </g:link>
-                    <script>
-                        $('.deletePersonRoleLink-${personRole?.id}').on( 'click', function(event) {
-                            event.preventDefault()
-                            if (confirm('Wollen Sie wirklich die Zuordnung der Person zu dieser Organisation löschen?')) {
-                                window.location.href = $(this).attr('href')
-                            }
-                        })
-                    </script>
                 </g:if>
             </div>
         </div><!-- .person-details -->

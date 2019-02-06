@@ -2,18 +2,18 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code:'laser', default:'LAS:eR')} : Cache Info</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.yoda.cacheInfo')}</title>
 </head>
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb message="menu.admin.dash" controller="admin" action="index"/>
-    <semui:crumb text="Cache Info" class="active"/>
+    <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
+    <semui:crumb message="menu.yoda.cacheInfo" class="active"/>
 </semui:breadcrumbs>
 
 
 
-<h1 class="ui left aligned icon header"><semui:headerIcon />Cache Info</h1>
+<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.yoda.cacheInfo')}</h1>
 
 <% /* --------------------------------------------------------------------------------- */ %>
 
@@ -55,6 +55,8 @@ ${session.id}
 
     <g:link class="ui button negative"
             controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', cache: cacheName, type: 'ehcache']">Cache löschen</g:link>
+
+    <hr />
 </g:each>
 
 <% /* --------------------------------------------------------------------------------- */ %>
@@ -76,9 +78,10 @@ ${session.id}
 
     <g:link class="ui button negative"
             controller="yoda" action="cacheInfo" params="[cmd: 'clearCache', cache: cacheName, type: 'cache']">Cache löschen</g:link>
+
+    <hr />
 </g:each>
 
-<hr />
 
 </body>
 </html>

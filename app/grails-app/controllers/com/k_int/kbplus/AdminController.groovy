@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
+import de.laser.SystemEvent
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.SpringSecurityUtils;
@@ -28,6 +29,7 @@ class AdminController extends AbstractDebugController {
     def contextService
     def refdataService
     def propertyService
+    def dataConsistencyService
 
   def docstoreService
   def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
@@ -376,6 +378,19 @@ class AdminController extends AbstractDebugController {
     result
   }
 
+    @Secured(['ROLE_ADMIN'])
+    def systemEvents() {
+        def result = [:]
+
+        params.sort =   params.sort ?: 'created'
+        params.order =  params.order ?: 'desc'
+        params.max =    params.max ?: 500
+
+        result.events = SystemEvent.list(params)
+
+        result
+    }
+
   @Secured(['ROLE_YODA'])
   def dataCleanse() {
     // Sets nominal platform
@@ -409,6 +424,16 @@ class AdminController extends AbstractDebugController {
 
     result
   }
+
+    @Secured(['ROLE_ADMIN'])
+    def dataConsistency() {
+        Map result = [:]
+
+        result.importIds = dataConsistencyService.checkImportIds()
+        result.titles    = dataConsistencyService.checkTitles()
+
+        result
+    }
 
   @Secured(['ROLE_ADMIN'])
   def newContentItem() {
@@ -595,6 +620,7 @@ class AdminController extends AbstractDebugController {
   }
 
   @Secured(['ROLE_ADMIN'])
+  @Deprecated
   def docstoreMigrate() {
     docstoreService.migrateToDb()
     redirect(controller:'home')
@@ -809,34 +835,45 @@ class AdminController extends AbstractDebugController {
     result
   }
 
-  @Secured(['ROLE_ADMIN'])
-  def manageNamespaces() {
+    @Secured(['ROLE_ADMIN'])
+    def manageNamespaces() {
+        def identifierNamespaceInstance = new IdentifierNamespace(params)
 
-    def identifierNamespaceInstance = new IdentifierNamespace(params)
-    switch (request.method) {
-      case 'GET':
-        break
-      case 'POST':
-        if (IdentifierNamespace.findByNsIlike(params.ns) || !identifierNamespaceInstance.save(flush: true)) {
+        switch (request.method) {
+            case 'GET':
+                if (params.cmd == 'deleteNamespace') {
+                    def idns = genericOIDService.resolveOID(params.oid)
+                    if (idns && Identifier.countByNs(idns) == 0) {
+                        try {
+                            idns.delete()
+                            flash.message = "Namensraum ${idns.ns} wurde gelöscht."
+                        } catch (Exception e) {
+                            flash.message = "Namensraum ${idns.ns} konnte nicht gelöscht werden."
+                        }
+                    }
+                }
+                break
 
-          if(IdentifierNamespace.findByNsIlike(params.ns))
-          {
-            flash.error = message(code: 'identifier.namespace.exist', default: 'IdentifierNamespace exist', args:[params.ns])
-            break
-          }
-          return
+            case 'POST':
+                if (IdentifierNamespace.findByNsIlike(params.ns) || !identifierNamespaceInstance.save(flush: true)) {
+
+                    if(IdentifierNamespace.findByNsIlike(params.ns)) {
+                        flash.error = message(code: 'identifier.namespace.exist', default: 'IdentifierNamespace exist', args:[params.ns])
+                        break
+                    }
+                    return
+                }
+                else {
+                    flash.message = message(code: 'default.created.message', args: [message(code: 'identifier.namespace.label', default: 'IdentifierNamespace'), identifierNamespaceInstance.ns])
+                }
+                break
         }
-        else {
-          flash.message = message(code: 'default.created.message', args: [message(code: 'identifier.namespace.label', default: 'IdentifierNamespace'), identifierNamespaceInstance.ns])
-        }
-        break
-    }
-    render view: 'manageNamespaces', model: [
+        render view: 'manageNamespaces', model: [
             editable: true, // TODO check role and editable !!!
             identifierNamespaceInstance: identifierNamespaceInstance,
             identifierNamespaces: IdentifierNamespace.where{}.sort('ns')
-    ]
-  }
+        ]
+    }
 
     @Secured(['ROLE_ADMIN'])
     def managePropertyDefinitions() {

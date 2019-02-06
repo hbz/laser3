@@ -71,39 +71,44 @@ class Doc {
     migrated  (nullable:true, blank:false, maxSize:1)
   }
 
+    @Deprecated
   def setBlobData(InputStream is, long length) {
     Session hib_ses = sessionFactory.getCurrentSession()
     blobContent = hib_ses.getLobHelper().createBlob(is, length)
   }
-    
+
+    @Deprecated
   def getBlobData() {
     return blobContent?.binaryStream
   }
 
-
+    @Deprecated
   Long getBlobSize() {
     return blobContent?.length() ?: 0
   }
-    
-  def render(def response, def filename) {
-    response.setContentType(mimeType)
-    response.addHeader("content-disposition", "attachment; filename=\"${filename}\"")
 
-      // erms-790
-      def output
-      try {
-          def fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+    def render(def response, def filename) {
+        // erms-790
+        def output
+        def contentLength
 
-          def file = new File("${fPath}/${uuid}")
-          output = file.getBytes()
+        try {
+            def fPath = grailsApplication.config.documentStorageLocation ?: '/tmp/laser'
+            def file = new File("${fPath}/${uuid}")
+            output = file.getBytes()
+            contentLength = output.length
+        } catch(Exception e) {
+            // fallback
+            output = getBlobData()
+            contentLength = getBlobSize()
+        }
 
-      } catch(Exception e) {
-          // fallback
-          output = getBlobData()
-      }
+        response.setContentType(mimeType)
+        response.addHeader("Content-Disposition", "attachment; filename=\"${filename}\"")
+        response.setHeader('Content-Length', "${contentLength}")
 
-      response.outputStream << output
-  }
+        response.outputStream << output
+    }
     
   static fromUpload(def file) {
     if(!file) return new Doc()

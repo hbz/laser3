@@ -1,5 +1,6 @@
 package com.k_int.kbplus.batch
 
+import de.laser.SystemEvent
 import de.laser.quartz.AbstractJob
 import org.hibernate.ScrollMode
 
@@ -16,6 +17,9 @@ class BatchImpIdJob extends AbstractJob {
 
   def execute() {
     log.debug("BatchImpIdJob::execute()");
+
+      SystemEvent.createEvent('BATCH_IMP_JOB_START')
+
     def event = "BatchImpIdJob"
     def startTime = printStart(event)
     def counter = 0

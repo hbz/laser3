@@ -1,6 +1,7 @@
 package com.k_int.properties
 
 import com.k_int.kbplus.Org
+import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import de.laser.domain.AbstractI10nTranslatable
@@ -13,7 +14,7 @@ import javax.persistence.Transient
 import javax.validation.UnexpectedTypeException
 
 @Log4j
-class PropertyDefinition extends AbstractI10nTranslatable implements Serializable {
+class PropertyDefinition extends AbstractI10nTranslatable implements Serializable , Comparable<PropertyDefinition> {
 
     @Transient
     final static TRUE  = true
@@ -89,6 +90,8 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     boolean softData
     // indicates this object is created via current bootstrap
     boolean hardData
+    // indicates hard coded logic
+    boolean isUsedForLogic
 
     //Map keys can change and they wont affect any of the functionality
     @Deprecated
@@ -129,6 +132,7 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
                mandatory column: 'pd_mandatory'
                 softData column: 'pd_soft_data'
                 hardData column: 'pd_hard_data'
+          isUsedForLogic column: 'pd_used_for_logic'
                       sort name: 'desc'
 
         propDefGroupItems cascade: 'all'  // for deleting
@@ -144,7 +148,8 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         multipleOccurrence  (nullable: true,  blank: true,  default: false)
         mandatory           (nullable: false, blank: false, default: false)
         softData            (nullable: false, blank: false, default: false)
-        hardData            (nullable: false, blank:false,  default: false)
+        hardData            (nullable: false, blank: false, default: false)
+        isUsedForLogic      (nullable: false, blank: false, default: false)
     }
 
     private static def typeIsValid(key) {
@@ -199,30 +204,29 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         GrailsHibernateUtil.unwrapIfProxy(newProp)
     }
 
-    static def lookupOrCreate(name, typeClass, descr, expl,  multipleOccurence, mandatory, Org tenant) {
-        //println typeClass
+    static def loc(String name, String descr, String typeClass, RefdataCategory rdc, String expl, multipleOccurence, mandatory, Org tenant) {
+
         typeIsValid(typeClass)
 
         def type = findWhere(
-                name:   name,
-                descr:  descr,
-                expl:   expl,
-                tenant: tenant
+            name:   name,
+            descr:  descr,
+            tenant: tenant
         )
 
-        if (!type) {
-            log.debug("No PropertyDefinition match for ${name} : ${descr} ( ${expl} ) @ ${tenant?.name}. Creating new ..")
+        if (! type) {
+            log.debug("No PropertyDefinition match for ${name} : ${descr} ( ${expl} ) @ ${tenant?.name}. Creating new one ..")
 
             type = new PropertyDefinition(
-                    name:   name,
-                    descr:  descr,
-                    expl:   expl,
-                    type:   typeClass,
-                    // refdataCategory:    rdc,
+                    name:               name,
+                    descr:              descr,
+                    expl:               expl,
+                    type:               typeClass,
+                    refdataCategory:    rdc?.desc,
                     multipleOccurrence: (multipleOccurence ? true : false),
                     mandatory:          (mandatory ? true : false),
-                    // TODO softData is set to FALSE,
-                    tenant: tenant
+                    isUsedForLogic:     false,
+                    tenant:             tenant
             )
             type.save(flush:true)
         }
@@ -395,6 +399,11 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         result
 
     }
+    int compareTo(PropertyDefinition pd) {
+
+        return this.getI10n('name').toLowerCase()?.compareTo(pd.getI10n('name').toLowerCase())
+    }
+
 
 }
 

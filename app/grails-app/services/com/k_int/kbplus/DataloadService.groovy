@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.*
+import de.laser.SystemEvent
 import org.hibernate.ScrollMode
 import java.nio.charset.Charset
 import java.util.GregorianCalendar
@@ -42,7 +43,10 @@ class DataloadService {
 
     def updateFTIndexes() {
         log.debug("updateFTIndexes ${this.hashCode()}")
+        // TODO: remove due SystemEvent
         new EventLog(event:'kbplus.updateFTIndexes', message:'Update FT indexes', tstp:new Date(System.currentTimeMillis())).save(flush:true)
+
+        SystemEvent.createEvent('FT_INDEX_UPDATE_START')
 
         def future = executorService.submit({
             doFTUpdate()
@@ -76,6 +80,7 @@ class DataloadService {
             //result._id = org.impId
             result._id = org.globalUID
             result.dbId = org.id
+            result.impId = org.impId
             result.guid = org.globalUID ?:''
 
             result.name = org.name
@@ -104,6 +109,7 @@ class DataloadService {
                 //result._id = ti.impId
                 result._id = ti.globalUID
                 result.dbId = ti.id
+                result.impId = ti.impId
                 result.guid = ti.globalUID ?:''
 
                 result.identifiers = []
@@ -135,6 +141,7 @@ class DataloadService {
             //result._id = pkg.impId
             result._id = pkg.globalUID
             result.dbId = pkg.id
+            result.impId = pkg.impId
             result.guid = pkg.globalUID ?:''
 
             result.consortiaId = pkg.getConsortia()?.id
@@ -206,6 +213,7 @@ class DataloadService {
             //result._id = plat.impId
             result._id = plat.globalUID
             result.dbId = plat.id
+            result.impId = plat.impId
             result.guid = plat.globalUID ?:''
 
             result.name = plat.name
@@ -341,24 +349,24 @@ class DataloadService {
 
         log.debug("Query completed .. processing rows ..")
 
-      while (results.next()) {
-        Object r = results.get(0);
-        def idx_record = recgen_closure(r)
-        def future
-        if(idx_record['_id'] == null) {
-          log.error("******** Record without an ID: ${idx_record} Obj:${r} ******** ")
-          continue
-        }
+        while (results.next()) {
+          Object r = results.get(0);
+          def idx_record = recgen_closure(r)
+          def future
+          if(idx_record['_id'] == null) {
+            log.error("******** Record without an ID: ${idx_record} Obj:${r} ******** ")
+            continue
+          }
 
           def recid = idx_record['_id'].toString()
           idx_record.remove('_id');
 
-          future = esclient.indexAsync {
+          future = esclient.index {
               index es_index
               type domain.name
               id recid
               source idx_record
-          }
+          }.actionGet()
 
 //        if ( idx_record?.status?.toLowerCase() == 'deleted' ) {
 //            future = esclient.delete {
@@ -381,19 +389,19 @@ class DataloadService {
               highest_timestamp = r.lastUpdated?.getTime();
           }
 
-        count++
-        total++
-        if ( count > 100 ) {
-          count = 0;
-          log.debug("processed ${++total} records (${domain.name})")
-            latest_ft_record.lastTimestamp = highest_timestamp
-          latest_ft_record.save(flush:true);
-          cleanUpGorm();
+          count++
+          total++
+          if ( count == 100 ) {
+            count = 0;
+            log.debug("processed ${total} records (${domain.name})")
+              latest_ft_record.lastTimestamp = highest_timestamp
+            latest_ft_record.save(flush:true);
+            cleanUpGorm();
+          }
         }
-      }
-      results.close();
+        results.close();
 
-      log.debug("Processed ${total} records for ${domain.name}")
+        log.debug("Processed ${total} records for ${domain.name}")
 
         // update timestamp
         latest_ft_record.lastTimestamp = highest_timestamp
@@ -403,7 +411,10 @@ class DataloadService {
     }
     catch ( Exception e ) {
       log.error("Problem with FT index", e)
+        // TODO: remove due SystemEvent
         new EventLog(event:'kbplus.updateFTIndexes', message:"Problem with FT index ${domain.name}", tstp:new Date(System.currentTimeMillis())).save(flush:true)
+
+        SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["index": domain.name])
     }
     finally {
       log.debug("Completed processing on ${domain.name} - saved ${count} records")
@@ -661,7 +672,10 @@ class DataloadService {
         }
         catch ( Exception e ) {
             log.warn("Problem deleting index ..", e)
+            // TODO: remove due SystemEvent
             new EventLog(event:'kbplus.fullReset', message:"Problem deleting index .. ${es_index}", tstp:new Date(System.currentTimeMillis())).save(flush:true)
+
+            SystemEvent.createEvent('FT_INDEX_CLEANUP_ERROR', ["index": es_index])
         }
 
         log.debug("Create new ES index ..")

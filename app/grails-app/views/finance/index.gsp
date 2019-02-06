@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.RDStore" %>
 <!doctype html>
 <html xmlns="http://www.w3.org/1999/html">
 <head>
@@ -113,12 +114,12 @@
             <input type="hidden" name="redirect" value="redirect"/>
 
             <div class="field">
-                <label>Beschreibung</label>
+                <label>${message(code:'financials.budgetCode.description')}</label>
                 <input type="text" name="bc"/>
             </div>
 
             <div class="field">
-                <label>Verwendung</label>
+                <label>${message(code:'financials.budgetCode.usage')}</label>
                 <textarea name="descr"></textarea>
             </div>
 
@@ -193,7 +194,7 @@
 
                     <g:render template="filter" model="['ciList':cost_items, 'ciListCons':cost_items_CS, 'ciListSubscr':cost_items_SUBSCR]"/>
 
-                    <g:render template="result" model="['forSingleSubscription':fixedSubscription, 'ciList':cost_items, 'ciCountOwner':cost_item_count, 'ciListCons':cost_items_CS, 'ciCountCons':cost_item_count_CS, 'ciListSubscr':cost_items_SUBSCR, 'ciCountSub':cost_item_count_SUBSCR]"/>
+                    <g:render template="result" model="['forSingleSubscription':fixedSubscription, 'ciList':cost_items, 'ciCountOwner':cost_item_count, 'ciListCons':cost_items_CS, 'ciCountCons':cost_item_count_CS, 'ciListSubscr':cost_items_SUBSCR, 'ciCountSub':cost_item_count_SUBSCR, 'ownerOffset': ownerOffset, 'subscrOffset': subscrOffset, 'consOffset': consOffset]"/>
                 </div>
             </div>
 
@@ -272,62 +273,150 @@
 
     var financeHelper = {
 
+        /*
+            This function calculates the total sum of the cost items. The number of cost items is the number of elements displayed on a page; it should be considered in the medium-term to
+            deploy this onto server side for that "total" really means "total", i.e. is independent of the page the user is currently viewing.
+
+            It is not the original developer annotating this code; so this "documentation" done a posteriori reflects a stranger's understanding of it.
+        */
         calcSumOfCosts : function () {
 
+            //take all tabs - we have two at most
             $('table[id^=costTable]').each( function() {
 
-                var costs = {}
-                var currencies = $.unique($(this).find('.costData').map(function(){
-                    return $(this).attr('data-billingCurrency')
-                }))
-                currencies.each(function() {
-                    costs[this] = {local: 0.0, localAfterTax: 0.0, billing: 0.0, billingAfterTax: 0.0}
-                })
+                //this is a collection box for all costs
+                var costs = {};
+                //get all currencies of cost items
+                var allCostItems = $('.costData').filter('[data-elementSign="positive"],[data-elementSign="negative"]');
+                /*
+                    in the collection box, create for each currency the following sum counters:
+                    - local sum (means the actual value and not the amount which is going to be paid)
+                    - local sum after taxation (for Germany, VATs of 7 and 19 per cent apply)
+                    - billing sum
+                    - billing sum after taxation (see above)
+                 */
+                allCostItems.each(function() {
+                    var currency = $(this).attr("data-billingCurrency");
+                    if(typeof(costs[currency]) === 'undefined')
+                        costs[currency] = {local: 0.0, localAfterTax: 0.0, billing: 0.0, billingAfterTax: 0.0};
+                });
+                /*
+                    the information necessary has been stuffed into a <span> element and are thus defined in the templates
+                    _result_tab_{cons|owner_table|subscr}. Again, we take only those which are marked as being considered:
+                 */
+                $(this).find('tbody tr span.costData').filter('[data-elementSign="positive"],[data-elementSign="negative"]').each( function() {
 
-                $(this).find('tbody tr span.costData').each( function() {
+                    //take the correct currency map to assign
+                    var ci = costs[$(this).attr('data-billingCurrency')];
 
-                    var ci = costs[$(this).attr('data-billingCurrency')]
+                    /*
+                        as of ERMS-804, costs can have several signs: they may be positive, negative or neutral. See the RefdataCategory 'Cost configuration'.
+                        For positive and negative costs, we have to assign different operators here
+                    */
+                    var operators = {
+                        'positive': function(a,b) { return a + b },
+                        'negative': function(a,b) { return a - b }
+                    };
 
+                    /*
+                        Here is the actual calculation being done:
+                        we have to distinct between non-neutral and neutral cost items. We defined above operators which will be applied here.
+                        As of January 4th, 2019, it is unclear what should happen with neutral costs. We shall collect them thus in separate counters for display.
+                     */
                     if ($(this).attr('data-costInLocalCurrency')) {
-                        ci.local += parseFloat($(this).attr('data-costInLocalCurrency'))
+                        ci.local = operators[$(this).attr('data-elementSign')](ci.local,parseFloat($(this).attr('data-costInLocalCurrency')))
                     }
                     if ($(this).attr('data-costInLocalCurrencyAfterTax')) {
-                        ci.localAfterTax += parseFloat($(this).attr('data-costInLocalCurrencyAfterTax'))
+                        ci.localAfterTax = operators[$(this).attr('data-elementSign')](ci.localAfterTax,parseFloat($(this).attr('data-costInLocalCurrencyAfterTax')))
                     }
                     if ($(this).attr('data-costInBillingCurrency')) {
-                        ci.billing += parseFloat($(this).attr('data-costInBillingCurrency'))
+                        ci.billing = operators[$(this).attr('data-elementSign')](ci.billing,parseFloat($(this).attr('data-costInBillingCurrency')))
                     }
                     if ($(this).attr('data-costInBillingCurrencyAfterTax')) {
-                        ci.billingAfterTax += parseFloat($(this).attr('data-costInBillingCurrencyAfterTax'))
+                        ci.billingAfterTax = operators[$(this).attr('data-elementSign')](ci.billingAfterTax,parseFloat($(this).attr('data-costInBillingCurrencyAfterTax')))
                     }
-                })
 
-                var finalLocal = 0.0
-                var finalLocalAfterTax = 0.0
+                });
 
+                //this is the final counter for all local costs, independently of their currency
+                var finalLocal = 0.0;
+                var finalLocalAfterTax = 0.0;
+
+                //add all local costs and those after taxation (if there are costs at all)
                 for (ci in costs) {
-                    finalLocal += costs[ci].local
-                    finalLocalAfterTax += costs[ci].localAfterTax
+                    finalLocal += costs[ci].local;
+                    finalLocalAfterTax += costs[ci].localAfterTax;
                 }
 
-                var info = ""
-                    info += "Wert: "
-                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(finalLocal)
-                    info += "<br />"
-                    info += "Endpreis nach Steuern: "
-                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(finalLocalAfterTax)
-
-                for (ci in costs) {
-                    info += "<br /><br /><strong>" + ci + "</strong><br />"
-                    info += "Rechnungssumme: "
-                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billing)
-                    info += "<br />"
-                    info += "Endpreis nach Steuern: "
-                    info += Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billingAfterTax)
+                //get the current tab
+                var currentTab = $(this).attr("data-queryMode");
+                var colspan1;
+                var colspan2;
+                var totalHeaderRow;
+                switch(currentTab) {
+                    case 'OWNER':
+                        <g:if test="${inSubMode}">
+                            colspan1 = 3;
+                            colspan2 = 5;
+                        </g:if>
+                        <g:else>
+                            colspan1 = 4;
+                            colspan2 = 5;
+                        </g:else>
+                        totalHeaderRow = '<tr><th colspan="'+colspan1+'"><strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}</strong></th><th></th><th></th><th colspan="'+colspan2+'"></th></tr>';
+                    break;
+                    case 'CONS':
+                    case 'CONS_AT_SUBSCR':
+                        <g:if test="${inSubMode}">
+                            colspan1 = 5;
+                            colspan2 = 4;
+                        </g:if>
+                        <g:else>
+                            colspan1 = 6;
+                            colspan2 = 4;
+                        </g:else>
+                        totalHeaderRow = '<tr><th colspan="'+colspan1+'"><strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}</strong></th><th></th><th></th><th></th><th colspan="'+colspan2+'"></th></tr>';
+                    break;
+                    case 'SUBSCR':
+                        colspan1 = 2;
+                        colspan2 = 4;
+                        totalHeaderRow = '<tr><th colspan="'+colspan1+'"><strong>${g.message(code: 'financials.totalcost', default: 'Total Cost')}</strong></th><th></th><th></th><th colspan="'+colspan2+'"></th></tr>';
+                    break;
+                    default: console.log("unhandled tab mode: "+currentTab);
+                    break;
                 }
 
-                var socClass = $(this).find('span[class^=sumOfCosts]').attr('class')
-                $('.' + socClass).html( info )
+                //display the local costs
+                $("#localSum_"+currentTab).html('<strong>'+Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(finalLocal)+'</strong>');
+                $("#localSumAfterTax_"+currentTab).html('<strong>'+Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR'}).format(finalLocalAfterTax)+'</strong>');
+
+                $("#sumOfCosts_"+currentTab).before(totalHeaderRow);
+                var row = "";
+                //and display each currency counter
+                for (ci in costs) {
+                    switch(currentTab) {
+                        case 'OWNER':
+                            row = '<tr><th colspan="'+colspan1+'"></th><th>${message(code:'financials.sum.billing')} ' + ci + '<br>${message(code:'financials.sum.billingAfterTax')}</th><th colspan="'+colspan2+'"></th></tr>';
+                            row += '<tr><td colspan="'+colspan1+'"></td><td class="la-exposed-bg"><strong>'+Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billing)+'</strong><br><strong>'+Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billingAfterTax)+'</strong></td><td colspan="'+colspan2+'"></td></tr>';
+                        break;
+                        case 'CONS':
+                        case 'CONS_AT_SUBSCR':
+                            row = '<tr><th colspan="'+colspan1+'"></th><th>${message(code:'financials.sum.billing')} ' + ci + '</th><th></th><th>${message(code:'financials.sum.billingAfterTax')}</th><th colspan="'+colspan2+'"></th></tr>';
+                            row += '<tr><td colspan="'+colspan1+'"></td><td class="la-exposed-bg"><strong>'+Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billing)+'</strong></td>';
+                            row += '<td></td>';
+                            row += '<td class="la-exposed-bg"><strong>'+Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billingAfterTax)+'</strong></td><td colspan="'+colspan2+'"></td></tr>';
+                        break;
+                        case 'SUBSCR':
+                            row = '<tr><th colspan="'+colspan1+'"></th><th>${message(code:'financials.sum.billing')} ' + ci + '</th><th colspan="'+colspan2+'"></th></tr>';
+                            row += '<tr><td colspan="'+colspan1+'"></td><td class="la-exposed-bg"><strong>'+Intl.NumberFormat('de-DE', {style: 'currency', currency: ci}).format(costs[ci].billingAfterTax)+'</strong></td><td colspan="'+colspan2+'"></td></tr>';
+                        break;
+                        default: console.log("unhandled tab mode: "+currentTab);
+                        break;
+                    }
+                    $("#sumOfCosts_"+currentTab).before(row);
+                }
+                if(typeof(ci) === 'undefined')
+                    $("#sumOfCosts_"+currentTab).before('<tr><td colspan="13">${message(code:'financials.noCostsConsidered')}</td></tr>');
             })
         }
     }

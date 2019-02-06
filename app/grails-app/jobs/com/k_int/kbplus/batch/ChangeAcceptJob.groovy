@@ -3,6 +3,7 @@ package com.k_int.kbplus.batch
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.PendingChange
+import de.laser.SystemEvent
 import de.laser.quartz.AbstractJob
 
 class ChangeAcceptJob extends AbstractJob {
@@ -13,7 +14,7 @@ class ChangeAcceptJob extends AbstractJob {
    // Cron:: Min Hour DayOfMonth Month DayOfWeek Year
    // Example - every 10 mins 0 0/10 * * * ? 
    // At 5 past 3am every day
-   cron name:'changeAcceptJobTrigger', startDelay:180000, cronExpression: "0 5 3 * * ?"
+   cron name:'changeAcceptJobTrigger', startDelay:180000, cronExpression: "0 0 4 * * ?"
    // cronExpression: "s m h D M W Y"
    //                  | | | | | | `- Year [optional]
    //                  | | | | | `- Day of Week, 1-7 or SUN-SAT, ?
@@ -30,6 +31,8 @@ class ChangeAcceptJob extends AbstractJob {
 **/
  def execute(){
   log.debug("****Running Change Accept Job****")
+
+     SystemEvent.createEvent('CAJ_JOB_START')
 
   def pending_change_pending_status = RefdataValue.getByValueAndCategory("Pending", "PendingChangeStatus")
   //def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
@@ -52,6 +55,8 @@ class ChangeAcceptJob extends AbstractJob {
   licPendingChanges.each {
       pendingChangeService.performAccept(it,httpRequestMock)
   }
+
+     SystemEvent.createEvent('CAJ_JOB_COMPLETE')
 
   log.debug("****Change Accept Job Complete*****")
  }

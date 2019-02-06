@@ -1,4 +1,5 @@
-<%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.Subscription;com.k_int.kbplus.CostItem" %>
+<laser:serviceInjection />
 <!doctype html>
 
 <r:require module="annotations" />
@@ -32,7 +33,7 @@
 
 <semui:filter>
     <g:form action="currentSubscriptions" controller="myInstitution" method="get" class="form-inline ui small form">
-
+        <input type="hidden" name="isSiteReloaded" value="yes"/>
         <div class="three fields">
             <!-- 1-1 -->
             <div class="field">
@@ -66,10 +67,16 @@
             */ %>
 
             <!-- TMP -->
+            <%
+                def fakeList = []
+                fakeList.addAll(RefdataCategory.getAllRefdataValues('Subscription Status'))
+                fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
+            %>
+
             <div class="field fieldcontain">
                 <label>${message(code: 'myinst.currentSubscriptions.filter.status.label')}</label>
                 <laser:select class="ui dropdown" name="status"
-                              from="${RefdataCategory.getAllRefdataValues('Subscription Status')}"
+                              from="${ fakeList }"
                               optionKey="id"
                               optionValue="value"
                               value="${params.status}"
@@ -154,7 +161,7 @@
 
 
                         <div class="field">
-                            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgRoleTypeIds())}">
+                            <g:if test="${(RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgRoleTypeIds())}">
                             <%--
                             <g:if test="${params.orgRole == 'Subscriber'}">
                                 <input id="radioSubscriber" type="hidden" value="Subscriber" name="orgRole" tabindex="0" class="hidden">
@@ -361,11 +368,17 @@
                             <i class="chart bar outline icon"></i>
                           </laser:statsLink>
                         </g:if>
-                        <g:if test="${editable && ((institution?.id in s.allSubscribers.collect{ it.id }) || s.consortia?.id == institution?.id)}">
-                            <g:link controller="myInstitution" action="actionCurrentSubscriptions"
-                                    class="ui icon negative button"
-                                    params="${[curInst: institution.id, basesubscription: s.id]}"
-                                    onclick="return confirm('${message(code: 'license.details.delete.confirm', args: [(s.name ?: 'this subscription')])}')">
+
+                    <g:if test="${ contextService.getUser().isAdmin() || contextService.getUser().isYoda() ||
+                        (editable && (OrgRole.findAllByOrgAndSubAndRoleType(institution, s, RDStore.OR_SUBSCRIBER) || s.consortia?.id == institution?.id))
+                    }">
+                    <%--<g:if test="${editable && ((institution?.id in s.allSubscribers.collect{ it.id }) || s.consortia?.id == institution?.id)}">--%>
+                            <g:link class="ui icon negative button js-open-confirm-modal"
+                                    data-confirm-term-what="subscription"
+                                    data-confirm-term-what-detail="${s.name}"
+                                    data-confirm-term-how="delete"
+                                    controller="myInstitution" action="actionCurrentSubscriptions"
+                                    params="${[curInst: institution.id, basesubscription: s.id]}">
                                 <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>

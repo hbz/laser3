@@ -2,7 +2,7 @@
 
     <div class="sixteen wide column">
 
-        <h2 class="ui header">Von mir erstellte Aufgaben</h2>
+        <h2 class="ui header">${message(code:'task.tasksCreatedByMe.header')} <semui:totalNumber total="${taskInstanceCount}"/></h2>
 
         <table class="ui celled la-table table">
             <thead>
@@ -58,7 +58,10 @@
                         <a onclick="taskedit(${taskInstance.id});" class="ui icon button">
                             <i class="write icon"></i>
                         </a>
-                        <g:link controller="myInstitution" action="tasks" params="[deleteId:taskInstance.id]" class="ui icon negative button">
+                        <g:link class="ui icon negative button js-open-confirm-modal"
+                                data-confirm-term-what="task"
+                                data-confirm-term-how="delete"
+                                controller="myInstitution" action="tasks" params="[deleteId:taskInstance.id]" >
                             <i class="trash alternate icon"></i>
                         </g:link>
                 </tr>
@@ -67,7 +70,7 @@
             </tbody>
         </table>
 
-        <semui:paginate total="${taskInstanceTotal}" />
+        <semui:paginate total="${taskInstanceCount}" />
 
     </div><!-- .sixteen -->
 

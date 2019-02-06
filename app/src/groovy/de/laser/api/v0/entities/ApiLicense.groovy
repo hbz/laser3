@@ -3,10 +3,11 @@ package de.laser.api.v0.entities
 import com.k_int.kbplus.Identifier
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.OrgRole
 import de.laser.helper.Constants
 import de.laser.api.v0.ApiReader
 import de.laser.api.v0.ApiReaderHelper
+import de.laser.helper.RDStore
 import grails.converters.JSON
 import groovy.util.logging.Log4j
 
@@ -42,24 +43,64 @@ class ApiLicense {
         result
     }
 
+
+    /**
+     * @return boolean
+     */
+    static calculateAccess(License lic, Org context, boolean hasAccess) {
+
+        if (! hasAccess) {
+            if (OrgRole.findByLicAndRoleTypeAndOrg(lic, RDStore.OR_LICENSING_CONSORTIUM, context)) {
+                hasAccess = true
+            }
+            else if (OrgRole.findByLicAndRoleTypeAndOrg(lic, RDStore.OR_LICENSEE, context)) {
+                hasAccess = true
+            }
+            else if (OrgRole.findByLicAndRoleTypeAndOrg(lic, RDStore.OR_LICENSEE_CONS, context)) {
+                hasAccess = true
+            }
+        }
+
+        hasAccess
+    }
+
     /**
      * @return grails.converters.JSON | FORBIDDEN
      */
     static getLicense(License lic, Org context, boolean hasAccess){
         def result = []
-
-        if (! hasAccess) {
-            lic.orgLinks.each { orgRole ->
-                if (orgRole.getOrg().id == context?.id) {
-                    hasAccess = true
-                }
-            }
-        }
+        hasAccess = calculateAccess(lic, context, hasAccess)
 
         if (hasAccess) {
-            result = ApiReader.exportLicense(lic, ApiReaderHelper.IGNORE_NONE, context) // TODO check orgRole.roleType
+            result = ApiReader.exportLicense(lic, ApiReaderHelper.IGNORE_NONE, context)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
+    }
+
+    /**
+     * @return [] | FORBIDDEN
+     */
+    static getLicenseList(Org owner, Org context, boolean hasAccess){
+        def result = []
+
+        List<License> available = License.executeQuery(
+                'SELECT lic FROM License lic JOIN lic.orgLinks oo WHERE oo.org = :owner AND oo.roleType in (:roles ) AND lic.status != :del' ,
+                [
+                        owner: owner,
+                        roles: [RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE],
+                        del:   RDStore.LICENSE_DELETED
+                ]
+        )
+
+        available.each { lic ->
+            //if (calculateAccess(lic, context, hasAccess)) {
+                println lic.id + ' ' + lic.reference
+                result.add(ApiReaderHelper.resolveLicenseStub(lic, context, true))
+                //result.add([globalUID: lic.globalUID])
+            //}
+        }
+
+        return (result ? new JSON(result) : null)
     }
 }

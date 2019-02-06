@@ -9,11 +9,11 @@ abstract class AbstractDebugController {
     protected DebugUtil debugUtil = new DebugUtil()
 
     def beforeInterceptor = {
-        debugUtil.startBench(this.class.simpleName + '_' + session.id)
+        debugUtil.startBench(this.class.simpleName + ' ' + session.id)
     }
 
     def afterInterceptor = {
-        def delta = debugUtil.stopBench(this.class.simpleName + '_' + session.id)
+        def delta = debugUtil.stopBench(this.class.simpleName + ' ' + session.id)
 
         if (delta >= SystemProfiler.THRESHOLD_MS) {
             def json = (params as JSON)
@@ -21,8 +21,21 @@ abstract class AbstractDebugController {
                     uri:      actionUri,
                     params:   json?.toString(),
                     ms:       delta,
-                    context:  contextService.getOrg()
-            )).save()
+                    context:  contextService?.getOrg()
+            )).save(flush: true)
+        }
+
+        // added global counts
+        SystemProfiler.withTransaction { status ->
+            SystemProfiler global = SystemProfiler.findWhere(uri: actionUri, context: null, params: null)
+            if (! global) {
+                global = new SystemProfiler(uri: actionUri, ms: 1)
+                global.save(flush:true)
+            }
+            else {
+                SystemProfiler.executeUpdate('UPDATE SystemProfiler SET ms =:newValue WHERE id =:spId',
+                [newValue: Integer.valueOf(global.ms) + 1, spId: global.id])
+            }
         }
     }
 }

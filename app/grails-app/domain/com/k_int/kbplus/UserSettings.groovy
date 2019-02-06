@@ -12,15 +12,26 @@ class UserSettings {
     def genericOIDService
 
     static enum KEYS {
-        PAGE_SIZE                    (Long),
-        DASHBOARD                    (Org),
-        DASHBOARD_TAB                (RefdataValue, 'User.Settings.Dashboard.Tab'),
-        DASHBOARD_REMINDER_PERIOD    (Integer),
-        LANGUAGE_OF_EMAILS           (RefdataValue, 'Language'),
-        IS_REMIND_BY_EMAIL           (RefdataValue, 'YN'),
-        SHOW_SIMPLE_VIEWS            (RefdataValue, 'YN'),
-        SHOW_INFO_ICON               (RefdataValue, 'YN'),
-        SHOW_EDIT_MODE               (RefdataValue, 'YN')
+        PAGE_SIZE                                   (Long),
+        DASHBOARD                                   (Org),
+        DASHBOARD_TAB                               (RefdataValue, 'User.Settings.Dashboard.Tab'),
+        DASHBOARD_REMINDER_PERIOD                   (Integer),
+        DASHBOARD_ITEMS_TIME_WINDOW                 (Integer),
+        LANGUAGE_OF_EMAILS                          (RefdataValue, 'Language'),
+        SHOW_SIMPLE_VIEWS                           (RefdataValue, 'YN'),
+        SHOW_INFO_ICON                              (RefdataValue, 'YN'),
+        SHOW_EDIT_MODE                              (RefdataValue, 'YN'),
+        IS_REMIND_BY_EMAIL                          (RefdataValue, 'YN'),
+        IS_REMIND_FOR_SUBSCRIPTIONS_NOTICEPERIOD    (RefdataValue, 'YN'),
+        IS_REMIND_FOR_SUBSCRIPTIONS_ENDDATE         (RefdataValue, 'YN'),
+        IS_REMIND_FOR_SUBSCRIPTIONS_CUSTOM_PROP     (RefdataValue, 'YN'),
+        IS_REMIND_FOR_SUBSCRIPTIONS_PRIVATE_PROP    (RefdataValue, 'YN'),
+        IS_REMIND_FOR_LICENSE_CUSTOM_PROP           (RefdataValue, 'YN'),
+        IS_REMIND_FOR_LIZENSE_PRIVATE_PROP          (RefdataValue, 'YN'),
+        IS_REMIND_FOR_ORG_CUSTOM_PROP               (RefdataValue, 'YN'),
+        IS_REMIND_FOR_ORG_PRIVATE_PROP              (RefdataValue, 'YN'),
+        IS_REMIND_FOR_PERSON_PRIVATE_PROP           (RefdataValue, 'YN'),
+        IS_REMIND_FOR_TASKS                         (RefdataValue, 'YN')
 
         KEYS(type, rdc) {
             this.type = type

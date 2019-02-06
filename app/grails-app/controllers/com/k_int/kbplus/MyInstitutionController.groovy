@@ -19,6 +19,8 @@ import com.k_int.properties.*
 import de.laser.DashboardDueDate
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+import java.sql.Timestamp
+
 // import org.json.simple.JSONArray;
 // import org.json.simple.JSONObject;
 import java.text.SimpleDateFormat
@@ -564,7 +566,7 @@ from License as l where (
 
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        if(!params.status) {
+        if (!params.status && (params.isSiteReloaded!="yes")) {
             params.status = RefdataValue.getByValueAndCategory('Current','Subscription Status').id
         }
 
@@ -849,7 +851,6 @@ from License as l where (
 
             def new_sub = new Subscription(
                     type: subType,
-                    status: RefdataValue.getByValueAndCategory('Current', 'Subscription Status'),
                     name: params.newEmptySubName,
                     startDate: startDate,
                     endDate: endDate,
@@ -886,7 +887,6 @@ from License as l where (
                         def cons_sub = new Subscription(
                                             // type: RefdataValue.findByValue("Subscription Taken"),
                                           type: subType,
-                                          status: RefdataValue.getByValueAndCategory('Current', 'Subscription Status'),
                                           name: params.newEmptySubName,
                                           // name: params.newEmptySubName + " (${postfix})",
                                           startDate: startDate,
@@ -986,11 +986,11 @@ from License as l where (
         def user = User.get(springSecurityService.principal.id)
         def org = contextService.getOrg()
 
-        params.asOrgRoleType = params.asOrgRoleType ? [params.asOrgRoleType] : [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType').id.toString()]
+        params.asOrgRoleType = params.asOrgRoleType ? [params.asOrgRoleType] : [RDStore.OR_TYPE_INSTITUTION.id.toString()]
 
 
         if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
-            flash.error = message(code:'myinst.error.noAdmin', args:[org.name]);
+            flash.error = message(code:'myinst.error.noAdmin', args:[org.name])
             response.sendError(401)
             // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
             return;
@@ -1003,7 +1003,6 @@ from License as l where (
                 log.debug("return 401....");
                 flash.error = message(code: 'myinst.newLicense.error', default: 'You do not have permission to view the selected license. Please request access on the profile page');
                 response.sendError(401)
-
             }
             else {
                 def copyLicense = institutionsService.copyLicense(baseLicense, params)
@@ -1032,13 +1031,14 @@ from License as l where (
         }
 
         def license_type = RefdataValue.getByValueAndCategory('Actual', 'License Type')
-        def license_status = RefdataValue.getByValueAndCategory('Current', 'License Status')
 
-        def licenseInstance = new License(type: license_type, status: license_status, reference: params.licenseName ?:null,
+        def licenseInstance = new License(type: license_type, reference: params.licenseName,
                 startDate:params.licenseStartDate ? parseDate(params.licenseStartDate,possible_date_formats) : null,
                 endDate: params.licenseEndDate ? parseDate(params.licenseEndDate,possible_date_formats) : null,)
 
         if (!licenseInstance.save(flush: true)) {
+            flash.error = licenseInstance.errors
+            return
         }
         else {
             log.debug("Save ok");
@@ -1258,14 +1258,14 @@ from License as l where (
         if (filterOtherPlat.contains("all")) filterOtherPlat = null
 
         def limits = (isHtmlOutput) ? [readOnly:true,max: result.max, offset: result.offset] : [offset: 0]
-        def del_sub = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
-        def del_ie =  RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
+        RefdataValue del_sub = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+        RefdataValue del_ie =  RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
 
-        def role_sub        = RDStore.OR_SUBSCRIBER
-        def role_sub_cons   = RDStore.OR_SUBSCRIBER_CONS
+        RefdataValue role_sub        = RDStore.OR_SUBSCRIBER
+        RefdataValue role_sub_cons   = RDStore.OR_SUBSCRIBER_CONS
 
-        def role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIA
-        def role_pkg_consortia = RefdataValue.getByValueAndCategory('Package Consortia', 'Organisational Role')
+        RefdataValue role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIA
+        RefdataValue role_pkg_consortia = RefdataValue.getByValueAndCategory('Package Consortia', 'Organisational Role')
         def roles = [role_sub.id,role_sub_consortia.id,role_pkg_consortia.id]
         
         log.debug("viable roles are: ${roles}")
@@ -1289,14 +1289,18 @@ from License as l where (
         if (filterPvd) {
             sub_qry += "INNER JOIN org_role orgrole on orgrole.or_pkg_fk=tipp.tipp_pkg_fk "
         }
-        sub_qry += "WHERE ie.ie_tipp_fk=tipp.tipp_id and tipp.tipp_ti_fk=ti2.ti_id and ( orole.or_roletype_fk = :role_sub or orole.or_roletype_fk = :role_sub_cons or orole.or_roletype_fk = :role_cons ) "
+        sub_qry += "WHERE ie.ie_tipp_fk=tipp.tipp_id  and tipp.tipp_ti_fk=ti2.ti_id and ( orole.or_roletype_fk = :role_sub or orole.or_roletype_fk = :role_sub_cons or orole.or_roletype_fk = :role_cons ) "
         sub_qry += "AND orole.or_org_fk = :institution "
         sub_qry += "AND (sub.sub_status_rv_fk is null or sub.sub_status_rv_fk != :del_sub) "
         sub_qry += "AND (ie.ie_status_rv_fk is null or ie.ie_status_rv_fk != :del_ie ) "
 
         if (date_restriction) {
-            sub_qry += " AND sub.sub_start_date <= :date_restriction AND sub.sub_end_date >= :date_restriction "
+            sub_qry += " AND ( "
+            sub_qry += "( ie.ie_start_date <= :date_restriction OR (ie.ie_start_date is null AND (sub.sub_start_date <= :date_restriction OR sub.sub_start_date is null) ) ) AND "
+            sub_qry += "( ie.ie_end_date >= :date_restriction OR (ie.ie_end_date is null AND (sub.sub_end_date >= :date_restriction OR sub.sub_end_date is null) ) ) "
+            sub_qry += ") "
             result.date_restriction = date_restriction
+            qry_params.date_restriction = new Timestamp(date_restriction.getTime())
         }
 
         if ((params.filter) && (params.filter.length() > 0)) {
@@ -1329,8 +1333,8 @@ from License as l where (
             qry_params.provider = filterPvd.join(", ")
         }
 
-        def having_clause = params.filterMultiIE ? 'having count(ie.ie_id) > 1' : ''
-        def limits_clause = limits ? " limit :max offset :offset " : ""
+        String having_clause = params.filterMultiIE ? 'having count(ie.ie_id) > 1' : ''
+        String limits_clause = limits ? " limit :max offset :offset " : ""
         
         def order_by_clause = ''
         if (params.order == 'desc') {
@@ -1341,7 +1345,7 @@ from License as l where (
 
         def sql = new Sql(dataSource)
 
-        def queryStr = "tipp.tipp_ti_fk, count(ie.ie_id) ${sub_qry} group by ti.sort_title, tipp.tipp_ti_fk ${having_clause} ".toString()
+        String queryStr = "tipp.tipp_ti_fk, count(ie.ie_id) ${sub_qry} group by ti.sort_title, tipp.tipp_ti_fk ${having_clause} ".toString()
 
         log.debug(" SELECT ${queryStr} ${order_by_clause} ${limits_clause} ")
 
@@ -1359,8 +1363,7 @@ from License as l where (
             result.entitlements = sql.rows(exportQuery,qry_params).collect { IssueEntitlement.get(it.ie_id) }
         } 
 
-
-        def filename = "titles_listing_${result.institution.shortcode}"
+        String filename = "titles_listing_${result.institution.shortcode}"
         withFormat {
             html {
                 result
@@ -1634,7 +1637,18 @@ AND EXISTS (
                 OrgRole.executeUpdate("delete from OrgRole where sub = ? and org = ?",[subscription, inst])
               } else {
                 subscription.status = deletedStatus
-                subscription.save(flush: true);
+                if(subscription.save(flush: true)) {
+                    //delete eventual links, bugfix for ERMS-800 (ERMS-892)
+                    Links.executeQuery('select l from Links as l where l.objectType = :objType and :subscription in (l.source,l.destination)',[objType:Subscription.class.name,subscription:subscription]).each { l ->
+                        DocContext comment = DocContext.findByLink(l)
+                        if(comment) {
+                            Doc commentContent = comment.owner
+                            comment.delete()
+                            commentContent.delete()
+                        }
+                        l.delete()
+                    }
+                }
               }
             } else {
                 flash.error = message(code:'myinst.actionCurrentSubscriptions.error', default:'Unable to delete - The selected license has attached subscriptions')
@@ -2636,7 +2650,7 @@ AND EXISTS (
                 name: old_subname ?: "Unset: Generated by import",
                 startDate: sub_startDate,
                 endDate: sub_endDate,
-                previousSubscription: old_subOID ?: null,
+                //previousSubscription: old_subOID ?: null, previousSubscription oberhauled by Links table entry as of ERMS-800 (ERMS-892) et al.
                 type: Subscription.get(old_subOID)?.type ?: null,
                 isPublic: RefdataValue.getByValueAndCategory('No','YN'),
                 owner: params.subscription.copyLicense ? (Subscription.get(old_subOID)?.owner) : null,
@@ -2655,12 +2669,11 @@ AND EXISTS (
                     roleType: RDStore.OR_SUBSCRIBER
             ).save();
 
-            // Copy any links from SO
-            // db_sub.orgRelations.each { or ->
-            //   if ( or.roleType?.value != 'Subscriber' ) {
-            //     def new_or = new OrgRole(org: or.org, sub: new_subscription, roleType: or.roleType).save();
-            //   }
-            // }
+            // as of ERMS-892: set up new previous/next linking
+            Links prevLink = new Links(source:new_subscription.id,destination:old_subOID,objectType:Subscription.class.name,linkType:RDStore.LINKTYPE_FOLLOWS,owner:contextService.org)
+            if(old_subOID)
+                prevLink.save()
+            else log.error("Problem linking new subscription, ${prevLink.errors}")
         } else {
             log.error("Problem saving new subscription, ${new_subscription.errors}");
         }
@@ -2820,6 +2833,14 @@ AND EXISTS (
 
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        result.announcementOffset = 0
+        result.dashboardDueDatesOffset = 0
+        switch(params.view) {
+            case 'announcementsView': result.announcementOffset = Integer.parseInt(params.offset)
+            break
+            case 'dueDatesView': result.dashboardDueDatesOffset = Integer.parseInt(params.offset)
+            break
+        }
 
         // changes
 
@@ -2831,11 +2852,16 @@ AND EXISTS (
 
         def dcCheck = (new Date()).minus(periodInDays)
 
+        /*
         result.recentAnnouncements = Doc.executeQuery(
                 "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
                 [type: 'Announcement', dcCheck: dcCheck],
-                [max: 10, sort: 'dateCreated', order: 'asc']
+                [max: result.max,offset: result.announcementOffset, sort: 'dateCreated', order: 'asc']
         )
+        result.recentAnnouncementsCount = Doc.executeQuery(
+                "select d from Doc d where d.type.value = :type and d.dateCreated >= :dcCheck",
+                [type: 'Announcement', dcCheck: dcCheck]).size()
+        */
 
         // tasks
 
@@ -2844,23 +2870,22 @@ AND EXISTS (
         def query       = filterService.getTaskQuery(params, sdFormat)
         def contextOrg  = contextService.getOrg()
         result.tasks    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg, query)
+        result.tasksCount    = taskService.getTasksByResponsibles(springSecurityService.getCurrentUser(), contextOrg, query).size()
         def preCon      = taskService.getPreconditions(contextOrg)
         result.enableMyInstFormFields = true // enable special form fields
         result << preCon
 
         def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
-        result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: 10, sort: 'dateCreated', order: 'desc'])
-        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org)
+        result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max,offset:result.announcementOffset, sort: 'dateCreated', order: 'desc'])
+        result.recentAnnouncementsCount = Doc.findAllByType(announcement_type).size()
+        result.dueDates = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org, [max: result.max, offset: result.dashboardDueDatesOffset])
+        result.dueDatesCount = DashboardDueDate.findAllByResponsibleUserAndResponsibleOrg(contextService.user, contextService.org).size()
         result
     }
 
     private getTodoForInst(result, Integer periodInDays){
 
         result.changes = []
-
-        if (! periodInDays) {
-            periodInDays = contextService.getUser().getSettingsValue(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)
-        }
 
         def tsCheck = (new Date()).minus(periodInDays)
 
@@ -2923,14 +2948,16 @@ AND EXISTS (
         def result = setResultGenerics()
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page";
+            flash.error = "You do not have permission to view ${result.institution.name}. Please request access on the profile page"
             response.sendError(401)
             return;
         }
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-        getTodoForInst(result, 365)
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        result.itemsTimeWindow = 365
+        getTodoForInst(result, result.itemsTimeWindow)
 
         result
     }
@@ -2940,16 +2967,12 @@ AND EXISTS (
     def announcements() {
         def result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-
-        def announcement_type = RefdataValue.getByValueAndCategory('Announcement', 'Document Type')
-        result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max, sort: 'dateCreated', order: 'desc'])
+        result.itemsTimeWindow = 365
+        result.recentAnnouncements = Doc.executeQuery(
+                'select d from Doc d where d.type = :type and d.dateCreated >= :tsCheck order by d.dateCreated desc',
+                [type: RefdataValue.getByValueAndCategory('Announcement', 'Document Type'), tsCheck: (new Date()).minus(365)]
+        )
         result.num_announcements = result.recentAnnouncements.size()
-
-        // result.num_sub_rows = Subscription.executeQuery("select count(s) "+base_qry, qry_params )[0]
-        // result.subscriptions = Subscription.executeQuery("select s ${base_qry}", qry_params, [max:result.max, offset:result.offset]);
-
 
         result
     }
@@ -3200,9 +3223,29 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
         def sdFormat = new DateUtil().getSimpleDateFormat_NoTime()
         def query = filterService.getTaskQuery(params, sdFormat)
-        result.taskInstanceList   = taskService.getTasksByResponsibles(result.user, result.institution, query)
+        int offset = params.offset ? Integer.parseInt(params.offset) : 0
+        result.taskInstanceList = taskService.getTasksByResponsibles(result.user, result.institution, query)
+        result.taskInstanceCount = result.taskInstanceList.size()
+        //chop everything off beyond the user's pagination limit
+        if (result.taskInstanceCount > result.user.getDefaultPageSizeTMP()) {
+            try {
+                result.taskInstanceList = result.taskInstanceList.subList(offset, offset + Math.toIntExact(result.user.getDefaultPageSizeTMP()))
+            }
+            catch (IndexOutOfBoundsException e) {
+                result.taskInstanceList = result.taskInstanceList.subList(offset, result.taskInstanceCount)
+            }
+        }
         result.myTaskInstanceList = taskService.getTasksByCreator(result.user, null)
-
+        result.myTaskInstanceCount = result.myTaskInstanceList.size()
+        //chop everything off beyond the user's pagination limit
+        if (result.myTaskInstanceCount > result.user.getDefaultPageSizeTMP()) {
+            try {
+                result.myTaskInstanceList = result.myTaskInstanceList.subList(offset, offset + Math.toIntExact(result.user.getDefaultPageSizeTMP()))
+            }
+            catch (IndexOutOfBoundsException e) {
+                result.myTaskInstanceList = result.myTaskInstanceList.subList(offset, result.myTaskInstanceCount)
+            }
+        }
         result.editable = accessService.checkMinUserOrgRole(result.user, contextService.getOrg(), 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         def preCon = taskService.getPreconditions(contextService.getOrg())
@@ -3464,24 +3507,23 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 tenant: tenant,
         )
 
-        if(!privatePropDef){
+        if(! privatePropDef){
             def rdc
 
             if (params.refdatacategory) {
                 rdc = RefdataCategory.findById( Long.parseLong(params.refdatacategory) )
-                rdc = rdc?.desc
             }
-            privatePropDef = PropertyDefinition.lookupOrCreate(
+            privatePropDef = PropertyDefinition.loc(
                     params.pd_name,
-                    params.pd_type,
                     params.pd_descr,
+                    params.pd_type,
+                    rdc,
                     params.pd_expl,
                     (params.pd_multiple_occurrence ? true : false),
                     (params.pd_mandatory ? true : false),
                     tenant
             )
             privatePropDef.softData = PropertyDefinition.TRUE
-            privatePropDef.refdataCategory = rdc
 
             if (privatePropDef.save(flush: true)) {
                 return message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.name])

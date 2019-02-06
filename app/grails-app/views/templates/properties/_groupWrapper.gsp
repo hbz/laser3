@@ -1,12 +1,12 @@
 <%@ page import="com.k_int.kbplus.License; com.k_int.kbplus.Subscription; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory; com.k_int.properties.*" %>
 <laser:serviceInjection />
-<!-- _propertiesParts -->
+<!-- _groupWrapper -->
 
 <%-- SHOW --%>
 <div class="ui card la-dl-no-table">
     <div class="content">
         <h5 class="ui header">
-            Merkmale: ${propDefGroup.name}
+            ${message(code: 'subscription.properties.public')} ${propDefGroup.name}
 
             <g:if test="${showConsortiaFunctions}">
                 <g:if test="${propDefGroup.ownerType in [License.class.name, Subscription.class.name]}">
@@ -37,4 +37,4 @@
         });
 </r:script>
 
-<!-- _propertiesParts -->
+<!-- _groupWrapper -->

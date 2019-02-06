@@ -6,6 +6,7 @@ import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AuditConfig
 import de.laser.controller.AbstractDebugController
 import de.laser.domain.AbstractI10nTranslatable
+import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import com.k_int.properties.PropertyDefinition
@@ -13,12 +14,13 @@ import com.k_int.properties.PropertyDefinition
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Secured(['permitAll']) // TODO
-class AjaxController extends AbstractDebugController {
+class AjaxController {
 
     def genericOIDService
     def contextService
     def taskService
-    def addressbookService
+    def controlledListService
+    def dataConsistencyService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -504,10 +506,19 @@ class AjaxController extends AbstractDebugController {
 
         queryResult.each { it ->
             def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
-            result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n('name')}"])
+            if (pd.isUsedForLogic) {
+                if (it.isUsedForLogic) {
+                    result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n('name')}"])
+                }
+            }
+            else {
+                if (! it.isUsedForLogic) {
+                    result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n('name')}"])
+                }
+            }
         }
 
-        if (result) {
+        if (result.size() > 1) {
            result.sort{ x,y -> x.text.compareToIgnoreCase y.text }
         }
 
@@ -661,6 +672,98 @@ class AjaxController extends AbstractDebugController {
         render result as JSON
       }
     }
+  }
+
+  @Secured(['ROLE_USER'])
+  def lookupIssueEntitlements() {
+    params.checkView = true
+    render controlledListService.getIssueEntitlements(params) as JSON
+  }
+
+  @Secured(['ROLE_USER'])
+  def lookupSubscriptions() {
+    render controlledListService.getSubscriptions(params) as JSON
+  }
+
+  /**
+   * connects the context subscription with the given pair.
+   *
+   * @return void, redirects to main page
+   */
+  @Secured(['ROLE_USER'])
+  def linkSubscriptions() {
+    //error when no pair is given!
+    if(!params.keySet().each {it.contains("pair_")}) {
+      flash.error = "Bitte Verknüpfungsziel angeben!"
+    }
+    else {
+      Subscription context = genericOIDService.resolveOID(params.context)
+      Doc linkComment = genericOIDService.resolveOID(params.commentID)
+      Links link
+      String commentContent
+      //distinct between insert and update - if a link id exists, then proceed with edit, else create new instance
+      //perspectiveIndex 0: source -> dest, 1: dest -> source
+      if(params.link) {
+        link = genericOIDService.resolveOID(params.link)
+        Subscription pair = genericOIDService.resolveOID(params["pair_${link.id}"])
+        String linkTypeString = params["linkType_${link.id}"].split("§")[0]
+        int perspectiveIndex = Integer.parseInt(params["linkType_${link.id}"].split("§")[1])
+        RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
+        commentContent = params["linkComment_${link.id}"].trim()
+        if(perspectiveIndex == 0) {
+          link.source = context.id
+          link.destination = pair.id
+        }
+        else if(perspectiveIndex == 1) {
+          link.source = pair.id
+          link.destination = context.id
+        }
+        link.linkType = linkType
+        log.debug(linkType)
+      }
+      else {
+        Subscription pair = genericOIDService.resolveOID(params.pair_new)
+        String linkTypeString = params["linkType_new"].split("§")[0]
+        int perspectiveIndex = Integer.parseInt(params["linkType_new"].split("§")[1])
+        RefdataValue linkType = genericOIDService.resolveOID(linkTypeString)
+        commentContent = params.linkComment_new
+        Long source, destination
+        if(perspectiveIndex == 0) {
+          source = context.id
+          destination = pair.id
+        }
+        else if(perspectiveIndex == 1) {
+          source = pair.id
+          destination = context.id
+        }
+        link = new Links(linkType: linkType,source: source, destination: destination,owner: contextService.getOrg(),objectType:Subscription.class.name)
+      }
+      if(link.save(flush:true)) {
+        if(linkComment) {
+          if(commentContent.length() > 0) {
+            linkComment.content = commentContent
+            linkComment.save(true)
+          }
+          else if(commentContent.length() == 0) {
+            DocContext commentContext = DocContext.findByOwner(linkComment)
+            if(commentContext.delete())
+              linkComment.delete()
+          }
+        }
+        else if(!linkComment && commentContent.length() > 0) {
+          RefdataValue typeNote = RefdataValue.getByValueAndCategory('Note','Document Type')
+          linkComment = new Doc([content:commentContent,type:typeNote])
+          if(linkComment.save(true)) {
+            DocContext commentContext = new DocContext([doctype:typeNote,link:link,owner:linkComment])
+            commentContext.save(true)
+          }
+        }
+      }
+      else {
+        log.error(link.errors)
+      }
+    }
+    redirect(url: request.getHeader('referer'))
   }
 
     @Secured(['ROLE_USER'])
@@ -841,17 +944,16 @@ class AjaxController extends AbstractDebugController {
         else {
             if (params.cust_prop_type.equals(RefdataValue.toString())) {
                 if (params.refdatacategory) {
-                    newProp = PropertyDefinition.lookupOrCreate(
+                    newProp = PropertyDefinition.loc(
                             params.cust_prop_name,
-                            params.cust_prop_type,
                             params.cust_prop_desc,
+                            params.cust_prop_type,
+                            RefdataCategory.get(params.refdatacategory),
                             params.cust_prop_expl,
                             params.cust_prop_multiple_occurence,
                             PropertyDefinition.FALSE,
                             null
                     )
-                    def cat = RefdataCategory.get(params.refdatacategory)
-                    newProp.setRefdataCategory(cat.desc)
                     newProp.save(flush: true)
                 }
                 else {
@@ -859,10 +961,11 @@ class AjaxController extends AbstractDebugController {
                 }
             }
             else {
-                newProp = PropertyDefinition.lookupOrCreate(
+                newProp = PropertyDefinition.loc(
                         params.cust_prop_name,
-                        params.cust_prop_type,
                         params.cust_prop_desc,
+                        params.cust_prop_type,
+                        null,
                         params.cust_prop_expl,
                         params.cust_prop_multiple_occurence,
                         PropertyDefinition.FALSE,
@@ -1349,23 +1452,27 @@ class AjaxController extends AbstractDebugController {
   }
 
     def delete() {
-
-        if (params.cmd?.equalsIgnoreCase('deleteAddress')) {
-            def obj = genericOIDService.resolveOID(params.oid)
-            if (obj) {
-                obj.delete()
+      switch(params.cmd) {
+        case 'deletePersonRole': deletePersonRole()
+        break
+        case 'deleteLink': Links obj = genericOIDService.resolveOID(params.oid)
+          if (obj) {
+            DocContext comment = DocContext.findByLink(obj)
+            if(comment) {
+              Doc commentContent = comment.owner
+              comment.delete()
+              commentContent.delete()
             }
-        }
-        if (params.cmd?.equalsIgnoreCase('deleteContact')) {
-            def obj = genericOIDService.resolveOID(params.oid)
-            if (obj) {
-                obj.delete()
-            }
-        }
-        if (params.cmd?.equalsIgnoreCase('deletePersonRole')) {
-            deletePersonRole()
-        }
-        redirect(url: request.getHeader('referer'))
+            obj.delete()
+          }
+        break
+        default: def obj = genericOIDService.resolveOID(params.oid)
+          if (obj) {
+            obj.delete()
+          }
+        break
+      }
+      redirect(url: request.getHeader('referer'))
     }
 
     //TODO: Überprüfuen, ob die Berechtigung korrekt funktioniert.
@@ -1384,7 +1491,49 @@ class AjaxController extends AbstractDebugController {
     if(date) date.delete(flush:true)
     redirect(action:'getTipCoreDates',controller:'ajax',params:params)
   }
-    
+
+  def getProvidersWithPrivateContacts() {
+    def result = [:]
+    def query_params = []
+    String fuzzyString = '%'
+    if(params.sSearch) {
+      fuzzyString+params.sSearch.trim().toLowerCase()+'%'
+    }
+    query_params.add(fuzzyString)
+    query_params.add(RefdataValue.getByValueAndCategory('Deleted', 'OrgStatus'))
+    String countQry = "select count(o) from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?)"
+    String rowQry = "select o from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?) order by o.name asc"
+    def cq = Org.executeQuery(countQry,query_params);
+
+    def rq = Org.executeQuery(rowQry,
+            query_params,
+            [max:params.iDisplayLength?:10,offset:params.iDisplayStart?:0]);
+
+    result.aaData = []
+    result.sEcho = params.sEcho
+    result.iTotalRecords = cq[0]
+    result.iTotalDisplayRecords = cq[0]
+    def currOrg = genericOIDService.resolveOID(params.oid)
+    List<Person> contacts = Person.findAllByContactTypeAndTenant(RefdataValue.getByValueAndCategory('Personal contact','Person Contact Type'),currOrg)
+    LinkedHashMap personRoles = [:]
+    PersonRole.findAll().collect { prs ->
+      personRoles.put(prs.org,prs.prs)
+    }
+      rq.each { it ->
+        def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
+        int ctr = 0;
+        LinkedHashMap row = [:]
+        String name = rowobj["name"]
+        if(personRoles.get(rowobj) && contacts.indexOf(personRoles.get(rowobj)) > -1)
+          name += '<span data-tooltip="Persönlicher Kontakt vorhanden"><i class="address book icon"></i></span>'
+        row["${ctr++}"] = name
+        row["DT_RowId"] = "${rowobj.class.name}:${rowobj.id}"
+        result.aaData.add(row)
+      }
+
+    render result as JSON
+  }
+
   def lookup() {
       // fallback for static refdataFind calls
       params.shortcode  = contextService.getOrg()?.shortcode
@@ -1761,4 +1910,9 @@ class AjaxController extends AbstractDebugController {
         render template:"../templates/notes/modal_edit", model: result
     }
 
+    @Secured(['ROLE_USER'])
+    def consistencyCheck() {
+        def result = dataConsistencyService.ajaxQuery(params.key, params.key2, params.value)
+        render result as JSON
+    }
 }

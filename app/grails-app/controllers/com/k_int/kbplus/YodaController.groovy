@@ -1,5 +1,8 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.Role
+import com.k_int.kbplus.auth.User
+import de.laser.SystemEvent
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugAnnotation
 import grails.converters.JSON
@@ -8,8 +11,8 @@ import grails.util.Holders
 import grails.web.Action
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
-import org.quartz.TriggerKey
 import org.quartz.impl.matchers.GroupMatcher
+import org.quartz.impl.triggers.SimpleTriggerImpl
 
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -26,16 +29,28 @@ class YodaController {
     def globalSourceSyncService
     def contextService
     def dashboardDueDatesService
-    def cronjobUpdateService
+    def subscriptionUpdateService
     def executorService
     def quartzScheduler
 
     static boolean ftupdate_running = false
 
+    @Secured(['ROLE_YODA'])
+    def index() {
+        redirect action: 'dashboard'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def dashboard() {
+        Map result = [:]
+
+        result
+    }
+
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def demo() {
-        def result = [:]
+        Map result = [:]
 
         result.user = springSecurityService.getCurrentUser()
         result.roles = result.user.roles
@@ -66,7 +81,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def appConfig() {
-        def result = [:]
+        Map result = [:]
         //SystemAdmin should only be created once in BootStrap
         result.adminObj = SystemAdmin.list().first()
         result.editable = true
@@ -80,8 +95,9 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def quartzInfo() {
-        def result = [:]
+        Map result = [:]
 
+        result.currentConfig   = grails.util.Holders.config
         result.quartzScheduler = quartzScheduler
 
         def groups = [:]
@@ -93,15 +109,20 @@ class YodaController {
                 def cf  = clazz.configFlags
 
                 def triggers = quartzScheduler.getTriggersOfJob(key)
-                def crx = triggers.collect{ it.cronEx ?: null }
                 def nft = triggers.collect{ it.nextFireTime ?: null }
 
-                group << [
+                Map map = [
                         name: key.getName(),
                         configFlags: cf.join(', '),
-                        cronEx: crx ? crx.get(0) : '',
                         nextFireTime: nft ? nft.get(0).toTimestamp() : ''
                 ]
+
+                def crx = triggers.collect{ it.cronEx ?: null }
+
+                if (crx) {
+                    map << ['cronEx': crx.get(0).cronExpression]
+                }
+                group << map
             }
 
             groups << ["${groupName}" : group.sort{ it.nextFireTime }]
@@ -112,7 +133,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def cacheInfo() {
-        def result = [:]
+        Map result = [:]
 
         result.grailsApp = grailsApplication
         result.appContext = getApplicationContext()
@@ -137,12 +158,19 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
-    def appProfiler() {
-        def result = [:]
+    def profiler() {
+        Map result = [:]
+
+        result.globalCountByUri = [:]
+
+        SystemProfiler.executeQuery(
+        "select sp.uri, sp.ms as count from SystemProfiler sp where sp.context is null and sp.params is null"
+        ).each { it ->
+            result.globalCountByUri["${it[0]}"] = it[1]
+        }
 
         result.byUri =
-                //SystemProfiler.executeQuery("select sp, avg(sp.ms) as ms, count(*), sp.id from SystemProfiler sp group by sp.uri").sort{it[1]}.reverse()
-                SystemProfiler.executeQuery("select sp.uri, avg(sp.ms) as ms, count(sp.id) as count from SystemProfiler sp group by sp.uri").sort{it[1]}.reverse()
+                SystemProfiler.executeQuery("select sp.uri, avg(sp.ms) as ms, count(sp.id) as count from SystemProfiler sp where sp.context is not null group by sp.uri").sort{it[1]}.reverse()
         result.byUriAndContext =
                 SystemProfiler.executeQuery("select sp.uri, org.id, avg(sp.ms) as ms, count(org.id) as count from SystemProfiler sp join sp.context as org group by sp.uri, org.id").sort{it[2]}.reverse()
 
@@ -152,7 +180,7 @@ class YodaController {
     //@Cacheable('message')
     @Secured(['ROLE_ADMIN'])
     def appInfo() {
-        def result = [:]
+        Map result = [:]
 
         result.statsSyncService = [:]
         result.dataloadService = [:]
@@ -172,13 +200,18 @@ class YodaController {
         result.dataloadService.lastIndexUpdate = dataloadService.lastIndexUpdate
         result.esinfos = FTControl.list()
 
+        def dbmQuery = (sessionFactory.currentSession.createSQLQuery(
+                'SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1'
+        )).list()
+        result.dbmVersion = dbmQuery.size() > 0 ? dbmQuery.first() : ['unkown', 'unkown', 'unkown']
+
         result
     }
 
     @Secured(['ROLE_YODA'])
     def appSecurity() {
-        def result = [:]
-        def cList = [:]
+        Map result = [:]
+        Map cList = [:]
 
         grailsApplication.controllerClasses.toList().each { controller ->
             Class controllerClass = controller.clazz
@@ -218,10 +251,27 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    def userMatrix() {
+        Map result = [:]
+
+        result.matrix = [:]
+
+        Role.findAll("from Role order by authority").each { role -> result.matrix[role.authority] = [] }
+
+        User.executeQuery(
+                "SELECT us, ro FROM User us JOIN us.roles usro JOIN usro.role ro GROUP BY ro, us"
+        ).each { usro ->
+            result.matrix[usro[1].authority].add(usro[0])
+        }
+
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
     def pendingChanges() {
 
         // TODO: DEBUG ONLY
-        def result = [:]
+        Map result = [:]
 
         result.pending = PendingChange.executeQuery(
                 "SELECT pc FROM PendingChange pc WHERE pc.status IS NULL ORDER BY pc.id DESC",
@@ -253,7 +303,11 @@ class YodaController {
         if (ftupdate_running == false) {
             try {
                 ftupdate_running = true
+                // TODO: remove due SystemEvent
                 new EventLog(event:'kbplus.fullReset',message:'Full Reset ES Start',tstp:new Date(System.currentTimeMillis())).save(flush:true)
+
+                SystemEvent.createEvent('YODA_ES_RESET_START')
+
                 log.debug("Delete all existing FT Control entries");
                 FTControl.withTransaction {
                     FTControl.executeUpdate("delete FTControl c")
@@ -289,7 +343,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def manageGlobalSources() {
-        def result = [:]
+        Map result = [:]
         log.debug("manageGlobalSources ..")
         result.sources = GlobalRecordSource.list()
 
@@ -298,7 +352,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def manageESSources() {
-        def result = [:]
+        Map result = [:]
         log.debug("manageESSources ..")
         result.sources = ElasticsearchSource.list()
 
@@ -307,7 +361,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def newESSource() {
-        def result=[:]
+        Map result=[:]
         log.debug("manageGlobalSources ..")
 
         /*result.newSource = ElasticsearchSource.findByIdentifier(params.identifier) ?: new ElasticsearchSource(
@@ -329,7 +383,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def newGlobalSource() {
-        def result=[:]
+        Map result=[:]
         log.debug("manageGlobalSources ..")
 
         result.newSource = GlobalRecordSource.findByIdentifier(params.identifier) ?: new GlobalRecordSource(
@@ -350,14 +404,14 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def settings() {
-        def result = [:]
+        Map result = [:]
         result.settings = Setting.list();
         result
     }
 
     @Secured(['ROLE_YODA'])
     def toggleBoolSetting() {
-        def result = [:]
+        Map result = [:]
         def s = Setting.findByName(params.setting)
         if (s) {
             if (s.tp == Setting.CONTENT_TYPE_BOOLEAN) {
@@ -366,6 +420,14 @@ class YodaController {
                 else
                     s.value = 'true'
             }
+
+            if (s.name == "MailSentDisabled") {
+                if (s.value == 'true')
+                    grailsApplication.config.grails.mail.disabled = false
+                else
+                    grailsApplication.config.grails.mail.disabled = true
+            }
+
             s.save(flush:true)
         }
 
@@ -445,7 +507,7 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def manageSystemMessage() {
-        def result = [:]
+        Map result = [:]
         result.user = springSecurityService.currentUser
 
         if(params.create)
@@ -485,24 +547,38 @@ class YodaController {
 
     @Secured(['ROLE_YODA'])
     def dueDates_updateDashboardDB(){
-        flash.message = "Datenbank wird upgedatet"
-        dashboardDueDatesService.takeCareOfDueDates(true, false)
+        flash.message = "DB wird upgedatet...<br/>"
+        dashboardDueDatesService.takeCareOfDueDates(true, false, flash)
         redirect(url: request.getHeader('referer'))
     }
 
     @Secured(['ROLE_YODA'])
     def dueDates_sendAllEmails() {
-        flash.message = "Emails mit fälligen Terminen werden vesandt"
-        def future = executorService.submit({
-            dashboardDueDatesService.takeCareOfDueDates(false, true)
-        } as java.util.concurrent.Callable)
+        flash.message = "Emails mit fälligen Terminen werden vesandt...<br/>"
+        dashboardDueDatesService.takeCareOfDueDates(false, true, flash)
         redirect(url: request.getHeader('referer'))
     }
 
     @Secured(['ROLE_YODA'])
     def subscriptionCheck(){
         flash.message = "Lizenzen werden upgedatet"
-        cronjobUpdateService.subscriptionCheck()
+        subscriptionUpdateService.subscriptionCheck()
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_YODA'])
+    def updateLinks(){
+        int affected = subscriptionUpdateService.updateLinks()
+        flash.message = "Es wurden ${affected} Vor-/Nachfolgebeziehungen neu verknüpft"
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_YODA'])
+    def startDateCheck(){
+        if(subscriptionUpdateService.startDateCheck())
+            flash.message = "Lizenzen ohne Startdatum verlieren ihren Status ..."
+        else
+            flash.message = "Lizenzen ohne Startdatum haben bereits ihren Status verloren!"
         redirect(url: request.getHeader('referer'))
     }
 

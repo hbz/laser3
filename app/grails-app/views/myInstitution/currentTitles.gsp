@@ -174,18 +174,20 @@
                   <g:each in="${title_coverage_info.ies}" var="ie">
                         <i class="icon folder open outline la-list-icon"></i>
                         <g:link controller="subscriptionDetails" action="index" id="${ie.subscription.id}">${ie.subscription.name}</g:link>
-                        <br />
-
+                        &nbsp;
                         <g:if test="${ie.startVolume}">${message(code:'tipp.volume.short', default:'Vol.')} ${ie.startVolume}</g:if>
                         <g:if test="${ie.startIssue}">${message(code:'tipp.issue.short', default:'Iss.')} ${ie.startIssue}</g:if>
                         <g:formatDate format="yyyy" date="${ie.startDate}"/>
-                        -
+
+                        <g:if test="${ie.startVolume || ie.startIssue || ie.startDate || ie.endVolume || ie.endIssue || ie.endDate}"> - </g:if>
+
                         <g:if test="${ie.endVolume}">${message(code:'tipp.volume.short', default:'Vol.')} ${ie.endVolume}</g:if>
                         <g:if test="${ie.endIssue}">${message(code:'tipp.issue.short', default:'Iss.')} ${ie.endIssue}</g:if>
                         <g:formatDate format="yyyy" date="${ie.endDate}"/>
+
                         <br />
                         <g:link controller="issueEntitlement" action="show" id="${ie.id}">${message(code:'myinst.currentTitles.full_ie', default:'Full Issue Entitlement Details')}</g:link>
-
+                        <br />
                   </g:each>
                 </td>
               </tr>

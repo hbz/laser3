@@ -36,7 +36,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
     def contextService
     def addressbookService
     def taskService
-    def alertsService
+    def navigationGenerationService
     def genericOIDService
     def transformerService
     def exportService
@@ -211,8 +211,9 @@ class SubscriptionDetailsController extends AbstractDebugController {
             result.processingpc = true
         }
 
-        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
 
         withFormat {
             html result
@@ -709,8 +710,9 @@ class SubscriptionDetailsController extends AbstractDebugController {
         //    )
         //}
 
-        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
 
         if (params.exportXLS == 'yes') {
 
@@ -997,8 +999,9 @@ class SubscriptionDetailsController extends AbstractDebugController {
             }
         }
 
-        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
 
         result
     }
@@ -1136,8 +1139,9 @@ class SubscriptionDetailsController extends AbstractDebugController {
         if (result.institution) {
             result.subscriber_shortcode = result.institution.shortcode
         }
-        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
         result
     }
 
@@ -1154,8 +1158,9 @@ class SubscriptionDetailsController extends AbstractDebugController {
             result.subscriber_shortcode = result.institution.shortcode
         }
 
-        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
         result
     }
 
@@ -1186,8 +1191,9 @@ class SubscriptionDetailsController extends AbstractDebugController {
         }
         result.taskInstanceList = taskService.getTasksByResponsiblesAndObject(result.user, contextService.getOrg(), result.subscriptionInstance, params)
 
-        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
 
         log.debug(result.taskInstanceList)
         result
@@ -1227,8 +1233,9 @@ class SubscriptionDetailsController extends AbstractDebugController {
             response.sendError(401); return
         }
         result.contextOrg = contextService.getOrg()
-        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
         result
     }
 
@@ -1366,7 +1373,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
         if (params.addType && (params.addType != '')) {
             if (params.gokbApi) {
-                def gri = GlobalRecordInfo.findByIdentifier(params.addId)
+                def gri = params.impId ? GlobalRecordInfo.findByUuid(params.impId) : null
+
+                if (!gri) {
+                  gri = GlobalRecordInfo.findByIdentifier(params.addId)
+                }
 
                 if (!gri) {
                     redirect(url: request.getHeader('referer'))
@@ -1393,13 +1404,14 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                         log.error(grt.errors)
                     }
                 }
-                if (!Package.findByImpId(grt.owner.identifier)) {
+
+                if (!Package.findByImpId(grt.owner.uuid)) {
                     globalSourceSyncService.initialiseTracker(grt);
                     //Update INDEX ES
                     dataloadService.updateFTIndexes();
                 }
 
-                def pkg_to_link = Package.findByImpId(grt.owner.identifier)
+                def pkg_to_link = Package.findByImpId(grt.owner.uuid)
                 def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
                 log.debug("Add package ${params.addType} to subscription ${params}");
 
@@ -1410,8 +1422,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                         pkg_to_link.addToSubscription(it, true)
                     }
 
-                    redirect action: 'index', id: params.id
-                } else if (params.addType == 'Without') {
+                    redirect action:'index', id:params.id
+                }
+                else if ( params.addType == 'Without' ) {
                     pkg_to_link.addToSubscription(result.subscriptionInstance, false)
 
                     sub_instances.each {
@@ -1450,13 +1463,17 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             result.pkgs = []
             if (params.gokbApi) {
                 result.subscriptionInstance.packages.each { sp ->
+                    log.debug("Existing package ${sp.pkg.name} (Adding ImpID: ${sp.pkg.impId})")
                     result.pkgs.add(sp.pkg.impId)
                 }
             } else {
                 result.subscriptionInstance.packages.each { sp ->
+                    log.debug("Existing package ${sp.pkg.name} (Adding ID: ${sp.pkg.id})")
                     result.pkgs.add(sp.pkg.id)
                 }
             }
+        } else {
+          log.debug("Subscription has no linked packages yet")
         }
 
         if (result.institution) {
@@ -1464,7 +1481,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             result.institutional_usage_identifier =
                     OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
         }
-        log.debug("Going for ES")
+        log.debug("Going for GOKB API")
         User user = springSecurityService.getCurrentUser()
         params.max = user?.getDefaultPageSizeTMP() ?: 25
 
@@ -1556,8 +1573,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where className=? and persistedObjectId=? order by id desc", qry_params, [max: result.max, offset: result.offset]);
         result.historyLinesTotal = AuditLogEvent.executeQuery("select e.id from AuditLogEvent as e where className=? and persistedObjectId=?", qry_params).size()
 
-        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
 
         result
     }
@@ -1588,8 +1606,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 baseParams
         )[0]
 
-        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
 
         result
     }
@@ -1683,8 +1702,38 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
         }
 
-        result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-        result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
+        result.navPrevSubscription = links.prevLink
+        result.navNextSubscription = links.nextLink
+
+        // links
+        Long key = Long.parseLong(params.id)
+        def sources = Links.executeQuery('select l from Links as l where l.source = :source and l.objectType = :objectType',[source: key, objectType: Subscription.class.name])
+        def destinations = Links.executeQuery('select l from Links as l where l.destination = :destination and l.objectType = :objectType',[destination: key,objectType: Subscription.class.name])
+        //IN is from the point of view of the context subscription (= params.id)
+        result.links = [:]
+
+        sources.each { link ->
+          Subscription destination = Subscription.get(link.destination)
+          if (destination.isVisibleBy(result.user) && destination.status != RDStore.SUBSCRIPTION_DELETED) {
+            def index = link.linkType.getI10n("value")?.split("\\|")[0]
+            if (result.links[index] == null) {
+              result.links[index] = [link]
+            }
+            else result.links[index].add(link)
+          }
+        }
+        destinations.each { link ->
+          Subscription source = Subscription.get(link.source)
+          if (source.isVisibleBy(result.user) && source.status != RDStore.SUBSCRIPTION_DELETED) {
+            def index = link.linkType.getI10n("value")?.split("\\|")[1]
+            if(result.links[index] == null) {
+              result.links[index] = [link]
+            }
+            else result.links[index].add(link)
+          }
+        }
+
 
         // ---- pendingChanges : start
 
@@ -1860,8 +1909,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
                     def subMember = Subscription.findById(sub)
 
-                    //ChildSub Exisit
-                    if (!Subscription.findAllByPreviousSubscription(subMember)) {
+                    //ChildSub Exist
+                    ArrayList<Links> prevLinks = Links.findAllByDestinationAndLinkTypeAndObjectType(subMember.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+                    if (prevLinks.size() == 0) {
 
                         /* Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
                             [result.subscriptionInstance, it.id])*/
@@ -1876,7 +1926,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                                 /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
                                 identifier: java.util.UUID.randomUUID().toString(),
                                 instanceOf: newSubConsortia?.id,
-                                previousSubscription: subMember?.id,
+                                //previousSubscription: subMember?.id,
                                 isSlaved: subMember.isSlaved,
                                 isPublic: subMember.isPublic,
                                 impId: java.util.UUID.randomUUID().toString(),
@@ -1885,7 +1935,13 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                                 form: newSubConsortia.form ?: null
                         )
                         newSubscription.save(flush: true)
-
+                        //ERMS-892: insert preceding relation in new data model
+                        if(subMember) {
+                            Links prevLink = new Links(source:newSubscription.id,destination:subMember.id,linkType:RDStore.LINKTYPE_FOLLOWS,objectType:Subscription.class.name,owner:contextService.org)
+                            if(!prevLink.save()) {
+                                log.error("Subscription linking failed, please check: ${prevLink.errors}")
+                            }
+                        }
 
                         if (subMember.customProperties) {
                             //customProperties
@@ -2054,7 +2110,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
                 if (params.baseSubscription) {
 
-                    if (Subscription.findAllByPreviousSubscription(baseSub)) {
+                    ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id,Subscription.class.name,RDStore.LINKTYPE_FOLLOWS)
+                    if (previousSubscriptions.size() > 0) {
                         flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
                     } else {
 
@@ -2063,7 +2120,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                                 name: baseSub.name,
                                 startDate: result.newStartDate,
                                 endDate: result.newEndDate,
-                                previousSubscription: baseSub.id,
+                                //previousSubscription: baseSub.id, overhauled as ERMS-800/ERMS-892
                                 identifier: java.util.UUID.randomUUID().toString(),
                                 isPublic: baseSub.isPublic,
                                 isSlaved: baseSub.isSlaved,
@@ -2087,6 +2144,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                                     newOrgRole.sub = newSub
                                     newOrgRole.save(flush: true)
                                 }
+                            }
+                            //link to previous subscription
+                            Links prevLink = new Links(source: newSub.id,destination: baseSub.id,objectType: Subscription.class.name,linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
+                            if(!prevLink.save(flush:true)) {
+                                log.error("Problem linking to previous subscription: ${prevLink.errors}")
                             }
                             if (params.subscription.takeLinks) {
                                 //Package
@@ -2150,9 +2212,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 }
             }
 
-
-            result.navPrevSubscription = result.subscriptionInstance.previousSubscription
-            result.navNextSubscription = Subscription.findByPreviousSubscriptionAndStatusNotEqual(result.subscriptionInstance, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
+            LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(result.subscriptionInstance.class.name,result.subscriptionInstance.id)
+            result.navPrevSubscription = links.prevLink
+            result.navNextSubscription = links.nextLink
 
             // tasks
             def contextOrg = contextService.getOrg()

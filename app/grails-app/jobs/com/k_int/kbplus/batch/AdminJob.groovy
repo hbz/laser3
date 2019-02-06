@@ -1,5 +1,6 @@
 package com.k_int.kbplus.batch
 
+import de.laser.SystemEvent
 import de.laser.quartz.AbstractJob
 
 class AdminJob extends AbstractJob {
@@ -11,7 +12,7 @@ class AdminJob extends AbstractJob {
         // Cron:: Min Hour DayOfMonth Month DayOfWeek Year
         // Example - every 10 mins 0 0/10 * * * ?
         // At 5 past 2am on the first of every month - Sync stats
-        cron name:'AdminTrigger', cronExpression: "30 0 7 * * ?"
+        cron name:'AdminTrigger', cronExpression: "0 0 7 * * ?"
         // cronExpression: "s m h D M W Y"
         //                  | | | | | | `- Year [optional]
         //                  | | | | | `- Day of Week, 1-7 or SUN-SAT, ?
@@ -28,6 +29,8 @@ class AdminJob extends AbstractJob {
         log.debug("Execute::AdminJob");
         if ( grailsApplication.config.hbzMaster == true  && grailsApplication.config.AdminReminderJobActiv == true) {
             log.debug("This server is marked as hbz master");
+            SystemEvent.createEvent('ADM_JOB_START')
+
             AdminReminderService.AdminReminder();
         }
         else {
