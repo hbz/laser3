@@ -64,7 +64,7 @@
     <br />
     <br />
     <br />
-
+    <%--
     <p>TODO: Offene Beitrittsanfragen</p>
 
     <br />
@@ -82,6 +82,7 @@
     <br />
 
     <p>TODO: Cache Memory Information</p>
+    --%>
 
 </body>
 </html>
