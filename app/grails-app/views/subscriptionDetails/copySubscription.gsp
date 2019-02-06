@@ -49,7 +49,10 @@ ${message(code: 'myinst.copySubscription')}: ${subscriptionInstance.name}
             <tr>
                 <th><g:checkBox name="subscription.copyDates" value="${true}" /></th>
                 <th>${message(code:'subscription.copyDates', default:'Copy all Dates from Subscription')}</th>
-                <td><g:formatDate date="${subscription?.startDate}" format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}"/>${subscription?.endDate ? (' - '+formatDate(date:subscription?.endDate, format: message(code:'default.date.format.notime', default:'yyyy-MM-dd'))):''}</td>
+                <td>
+                    ${message(code:'subscription.copyDates.startDate')}:&nbsp<g:if test="${ ! subscription?.startDate}">-</g:if><g:formatDate date="${subscription?.startDate}" format="${message(code:'default.date.format.notime')}"/> &nbsp
+                    ${message(code:'subscription.copyDates.endDate')}:&nbsp<g:if test="${ ! subscription?.endDate}">-</g:if><g:formatDate date="${subscription?.endDate}" format="${message(code:'default.date.format.notime')}"/>
+                </td>
             </tr>
             <tr>
                 <th><g:checkBox name="subscription.copylinktoSubscription" value="${true}" /></th>
