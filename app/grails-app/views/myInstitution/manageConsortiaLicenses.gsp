@@ -18,7 +18,7 @@
 
 <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'menu.institutions.myConsortiaLicenses')} - ${costItems.size()} Treffer</h1>
 
-<h2>SEITE IN ARBEIT</h2>
+<h2>* SEITE IN ARBEIT *</h2>
 
 <semui:messages data="${flash}"/>
 
@@ -44,7 +44,7 @@
                 <g:select class="ui dropdown" name="member"
                               from="${filterConsortiaMembers}"
                               optionKey="id"
-                              optionValue="name"
+                              optionValue="${{ it.sortname + ' (' + it.name + ')'}}"
                               value="${params.member}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
@@ -129,7 +129,8 @@
     <thead>
         <tr>
             <th>${message(code:'sidewide.number')}</th>
-            <th>Name / Teilnehmer / Vertrag</th>
+            <g:sortableColumn property="roleT.org.sortname" params="${params}" title="Teilnehmer" />
+            <th>Name / Vertrag</th>
             <th>Verknüpfte Pakete</th>
             <th>Anbieter</th>
             <th>Laufzeit von / bis</th>
@@ -148,13 +149,15 @@
                     ${ jj + 1 }
                 </td>
                 <td>
+                    <g:link controller="organisations" action="show" id="${subscr.id}">
+                        <g:if test="${subscr.sortname}">${subscr.sortname}</g:if>
+                        (${subscr.name})
+                    </g:link>
+                </td>
+                <td>
                     <div class="la-flexbox">
                         <i class="icon balance scale la-list-icon"></i>
                         <g:link controller="subscriptionDetails" action="show" id="${subCons.id}">${subCons}</g:link>
-                    </div>
-                    <div class="la-flexbox">
-                        <i class="icon university la-list-icon"></i>
-                        <g:link controller="organisations" action="show" id="${subscr.id}">${subscr}</g:link>
                     </div>
                     <g:if test="${subCons.owner}">
                         <div class="la-flexbox">
@@ -186,7 +189,10 @@
                                   format="${message(code:'default.date.format.notime')}"/>
                     </g:if>
                 </td>
-                <td>
+                <td class="costData"
+                    data-costInBillingCurrency="<g:formatNumber number="${ci.costInBillingCurrency}" locale="en" maxFractionDigits="2"/>"
+                    data-billingCurrency="${ci.billingCurrency ?: 'EUR'}"
+                >
                     <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}"
                                     type="currency"
                                     currencySymbol="${ci.billingCurrency ?: 'EUR'}" />

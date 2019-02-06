@@ -3349,7 +3349,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     def manageConsortiaLicenses() {
         def result = setResultGenerics()
 
-        Map fsq = filterService.getOrgComboQuery([:], contextService.getOrg())
+        Map fsq = filterService.getOrgComboQuery([sort: 'o.sortname'], contextService.getOrg())
         result.filterConsortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
 
         result.filterSubTypes = RefdataCategory.getAllRefdataValues('Subscription Type').minus(
@@ -3423,11 +3423,16 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             qarams.put('subTypes', params.list('subTypes').collect{ it -> Long.parseLong(it) })
         }
 
-        log.debug( query )
-        log.debug( qarams )
+        String orderQuery = " order by roleT.org.sortname, subK.name"
+        if (params.sort?.size() > 0) {
+            orderQuery = " order by " + params.sort + " " + params.order
+        }
+
+        // log.debug( query )
+        // log.debug( qarams )
 
         List<CostItem, Subscription, Org> costs = CostItem.executeQuery(
-                query + " and subT.status.value != 'Deleted' order by subK.name, roleT.org.name",
+                query + " and subT.status.value != 'Deleted' " + orderQuery,
                 qarams )
 
         result.costItems = costs
