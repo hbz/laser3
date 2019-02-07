@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.Org
 import com.k_int.kbplus.auth.User
 
 // Semantic UI
@@ -59,7 +60,7 @@ class SemanticUiDropdownTagLib {
 
     }
 
-    // <semui:signedDropdown name="xyz" noSelection="Bitte auswählen .." from="${orgList}" signedIds="${signedOrgIdList}" optionValue='name' />
+    // <semui:signedDropdown name="xyz" noSelection="Bitte auswählen .." from="${orgList}" signedIds="${signedOrgIdList}" />
     def signedDropdown = { attrs, body ->
 
         String id = ''
@@ -74,7 +75,16 @@ class SemanticUiDropdownTagLib {
 
         attrs.from?.each { item ->
             out << '<option value="' + (item.class.name + ':' + item.id) + '">'
-            out << item."${attrs.optionValue}"
+
+            if (item instanceof Org) {
+                out << item.name
+
+                if (item.shortname) {
+                    out << ' (' + item.shortname + ') '
+                }
+            } else {
+                out << item
+            }
 
             if (attrs.signedIds?.contains(item.id)) {
                 out << '&nbsp; &#10004;'
