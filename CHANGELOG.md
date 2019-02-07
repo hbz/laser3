@@ -1,4 +1,8 @@
 
+0.13.1
+
+- fixed start page typo
+
 0.13
 
 - reworked and improved finance handling
