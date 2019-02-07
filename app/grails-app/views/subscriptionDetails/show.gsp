@@ -1,4 +1,4 @@
-<%@ page import="java.math.MathContext; com.k_int.kbplus.Subscription; com.k_int.kbplus.Links" %>
+<%@ page import="de.laser.helper.RDStore; java.math.MathContext; com.k_int.kbplus.Subscription; com.k_int.kbplus.Links; de.laser.interfaces.TemplateSupport" %>
 <%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="com.k_int.properties.PropertyDefinition" %>
 <%@ page import="com.k_int.kbplus.RefdataCategory" %>
@@ -299,33 +299,40 @@
                                         roleRespValue: 'Specific subscription editor',
                                         editmode: editable
                               ]}" />
+
                     <div class="ui la-vertical buttons la-js-hide-this-card">
-                        <g:render template="/templates/links/orgLinksModal"
+
+                        <g:render template="/templates/links/orgLinksSimpleModal"
                                   model="${[linkType: subscriptionInstance?.class?.name,
                                             parent: subscriptionInstance.class.name+':'+subscriptionInstance.id,
                                             property: 'orgs',
                                             recip_prop: 'sub',
-                                            tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'),
-                                            tmplText:'Anbieter hinzufügen',
-                                            tmplID:'ContentProvider',
-                                            tmplButtonText:'Anbieter hinzufügen',
-                                            tmplModalID:'osel_add_modal_anbieter',
-                                            editmode: editable
+                                            tmplRole: RDStore.OR_PROVIDER,
+                                            tmplText:'Anbieter mit dieser Lizenz verknüpfen',
+                                            tmplEntity:'Anbieter',
+                                            tmplButtonText:'Anbieter verknüpfen',
+                                            tmplModalID:'modal_add_provider',
+                                            editmode: editable,
+                                            orgList: availableProviderList,
+                                            signedIdList: existingProviderIdList
                                   ]}" />
 
-                        <g:render template="/templates/links/orgLinksModal"
+                        <g:render template="/templates/links/orgLinksSimpleModal"
                                     model="${[linkType: subscriptionInstance?.class?.name,
-                                        parent: subscriptionInstance.class.name+':'+subscriptionInstance.id,
-                                        property: 'orgs',
-                                        recip_prop: 'sub',
-                                        tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Agency', 'Organisational Role'),
-                                        tmplText:'Lieferant hinzufügen',
-                                        tmplID:'ContentProvider',
-                                        tmplButtonText:'Lieferant hinzufügen',
-                                        tmplModalID:'osel_add_modal_agentur',
-                                        editmode: editable
+                                            parent: subscriptionInstance.class.name+':'+subscriptionInstance.id,
+                                            property: 'orgs',
+                                            recip_prop: 'sub',
+                                            tmplRole: RDStore.OR_AGENCY,
+                                            tmplText:'Lieferanten mit dieser Lizenz verknüpfen',
+                                            tmplEntity:'Lieferanten',
+                                            tmplButtonText:'Lieferant verknüpfen',
+                                            tmplModalID:'modal_add_agency',
+                                            editmode: editable,
+                                            orgList: availableAgencyList,
+                                            signedIdList: existingAgencyIdList
                                     ]}" />
-                    </div>
+
+                    </div><!-- la-js-hide-this-card -->
 
                 <% /*
                <dl>

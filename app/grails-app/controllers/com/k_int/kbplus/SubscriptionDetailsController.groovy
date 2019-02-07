@@ -54,6 +54,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
     def globalSourceSyncService
     def dataloadService
     def GOKbService
+    def providerHelperService
 
     private static String INVOICES_FOR_SUB_HQL =
             'select co.invoice, sum(co.costInLocalCurrency), sum(co.costInBillingCurrency), co from CostItem as co where co.sub = :sub group by co.invoice order by min(co.invoice.startDate) desc';
@@ -1870,6 +1871,24 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 }
             }
         }
+
+        result.availableProviderList = Org.executeQuery(
+                "select o from Org o join o.orgRoleType as rt where rt.value = 'Provider' order by lower(o.sortname), o.name"
+        ).minus( OrgRole.executeQuery(
+                "select o from OrgRole oo join oo.org o where oo.sub.id = :sub and oo.roleType.value = 'Provider'",
+                [sub: result.subscriptionInstance.id]
+        ))
+
+        result.existingProviderIdList = providerHelperService.getCurrentProviders(contextService.getOrg()).collect{ it -> it.id }
+
+        result.availableAgencyList = Org.executeQuery(
+                "select o from Org o join o.orgRoleType as rt where rt.value = 'Agency' order by lower(o.sortname), o.name"
+        ).minus( OrgRole.executeQuery(
+                "select o from OrgRole oo join oo.org o where oo.sub.id = :sub and oo.roleType.value = 'Agency'",
+                [sub: result.subscriptionInstance.id]
+        ))
+
+        result.existingAgencyIdList = providerHelperService.getCurrentAgencies(contextService.getOrg()).collect{ it -> it.id }
 
         result
     }
