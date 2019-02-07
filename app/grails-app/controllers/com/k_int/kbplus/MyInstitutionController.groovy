@@ -3349,6 +3349,9 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     def manageConsortiaLicenses() {
         def result = setResultGenerics()
 
+        result.max    = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
         Map fsq = filterService.getOrgComboQuery([sort: 'o.sortname'], contextService.getOrg())
         result.filterConsortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
 
@@ -3433,9 +3436,10 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
         List<CostItem, Subscription, Org> costs = CostItem.executeQuery(
                 query + " and subT.status.value != 'Deleted' " + orderQuery,
-                qarams )
-
-        result.costItems = costs
+                qarams
+        )
+        result.countCostItems = costs.size()
+        result.costItems = costs.drop((int)result.offset).take((int)result.max)
         result
     }
 
