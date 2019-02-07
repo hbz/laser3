@@ -308,12 +308,13 @@
                                             property: 'orgs',
                                             recip_prop: 'sub',
                                             tmplRole: RDStore.OR_PROVIDER,
-                                            tmplText:'Anbieter hinzufügen',
+                                            tmplText:'Anbieter verknüpfen',
                                             tmplID:'ContentProvider',
-                                            tmplButtonText:'Anbieter hinzufügen',
+                                            tmplButtonText:'Anbieter verknüpfen',
                                             tmplModalID:'modal_add_provider',
                                             editmode: editable,
-                                            orgList: availableProviderList
+                                            orgList: availableProviderList,
+                                            signedIdList: existingProviderIdList
                                   ]}" />
 
                         <g:render template="/templates/links/orgLinksSimpleModal"
@@ -322,12 +323,13 @@
                                             property: 'orgs',
                                             recip_prop: 'sub',
                                             tmplRole: RDStore.OR_AGENCY,
-                                            tmplText:'Lieferant hinzufügen',
+                                            tmplText:'Lieferant verknüpfen',
                                             tmplID:'ContentProvider',
-                                            tmplButtonText:'Lieferant hinzufügen',
+                                            tmplButtonText:'Lieferant verknüpfen',
                                             tmplModalID:'modal_add_agency',
                                             editmode: editable,
-                                            orgList: availableAgencyList
+                                            orgList: availableAgencyList,
+                                            signedIdList: existingAgencyIdList
                                     ]}" />
 
                     </div><!-- la-js-hide-this-card -->

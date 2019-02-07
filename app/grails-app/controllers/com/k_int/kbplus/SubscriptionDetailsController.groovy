@@ -1878,12 +1878,24 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 [sub: result.subscriptionInstance.id]
         ))
 
+        // Hotfix ERMS-986 due missing service
+        result.existingProviderIdList = OrgRole.executeQuery(
+                "select o from OrgRole oo join oo.org o where oo.sub.id = :sub and oo.roleType.value = 'Provider'",
+                [sub: result.subscriptionInstance.id]
+        ).collect{ it -> it.id }
+
         result.availableAgencyList = Org.executeQuery(
                 "select o from Org o join o.orgRoleType as rt where rt.value = 'Agency' order by lower(o.sortname), o.name"
         ).minus( OrgRole.executeQuery(
                 "select o from OrgRole oo join oo.org o where oo.sub.id = :sub and oo.roleType.value = 'Agency'",
                 [sub: result.subscriptionInstance.id]
         ))
+
+        // Hotfix ERMS-986 due missing service
+        result.existingAgencyIdList = OrgRole.executeQuery(
+                "select o from OrgRole oo join oo.org o where oo.sub.id = :sub and oo.roleType.value = 'Agency'",
+                [sub: result.subscriptionInstance.id]
+        ).collect{ it -> it.id }
 
         result
     }

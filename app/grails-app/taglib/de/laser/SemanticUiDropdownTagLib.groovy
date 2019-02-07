@@ -59,6 +59,31 @@ class SemanticUiDropdownTagLib {
 
     }
 
+    // <semui:signedDropdown name="xyz" noSelection="Bitte auswählen .." from="${orgList}" signedIds="${signedOrgIdList}" optionValue='name' />
+    def signedDropdown = { attrs, body ->
+
+        String id = ''
+        if (attrs.name) {
+            id = ' id="' + attrs.name + '" name="' + attrs.name + '" '
+        }
+        out << '<select class="ui fluid labeled search dropdown' + id + '">'
+
+        if (attrs.noSelection) {
+            out << '<option value="">' + attrs.noSelection + '</div>'
+        }
+
+        attrs.from?.each { item ->
+            out << '<option value="' + (item.class.name + ':' + item.id) + '">'
+            out << item."${attrs.optionValue}"
+
+            if (attrs.signedIds?.contains(item.id)) {
+                out << '&nbsp; &#10004;'
+            }
+            out << '</option>'
+        }
+        out << '</select>'
+    }
+
     // <semui:actionsDropdown params="${params}"  />
 
     def actionsDropdown = { attrs, body ->
