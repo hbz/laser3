@@ -5,10 +5,10 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.helper.RDStore
 import de.laser.interfaces.DeleteFlag
-import de.laser.traits.AuditTrait
 import de.laser.domain.AbstractBaseDomain
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.TemplateSupport
+import de.laser.traits.AuditableTrait
 
 import javax.persistence.Transient
 import java.text.Normalizer
@@ -17,7 +17,7 @@ import com.k_int.ClassUtils
 
 class License
         extends AbstractBaseDomain
-        implements TemplateSupport, DeleteFlag, Permissions, Comparable<License>, AuditTrait {
+        implements TemplateSupport, DeleteFlag, Permissions, Comparable<License>, AuditableTrait {
 
     @Transient
     def grailsApplication
@@ -33,7 +33,7 @@ class License
     def changeNotificationService
 
 
-    // AuditTrait
+    // AuditableTrait
     static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
     static controlledProperties = [ 'startDate', 'endDate', 'licenseUrl', 'status', 'type' ]
 

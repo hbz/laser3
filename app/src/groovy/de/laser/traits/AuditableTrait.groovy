@@ -9,7 +9,7 @@ import de.laser.AuditConfig
 
 import javax.persistence.Transient
 
-trait AuditTrait {
+trait AuditableTrait {
 
     /**
      * IMPORTANT:

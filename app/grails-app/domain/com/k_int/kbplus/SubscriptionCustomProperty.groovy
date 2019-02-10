@@ -3,13 +3,12 @@ package com.k_int.kbplus
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.properties.PropertyDefinition
 import com.k_int.kbplus.abstract_domain.CustomProperty
-import de.laser.AuditConfig
-import de.laser.traits.AuditTrait
+import de.laser.traits.AuditableTrait
 import grails.converters.JSON
 
 import javax.persistence.Transient
 
-class SubscriptionCustomProperty extends CustomProperty implements AuditTrait {
+class SubscriptionCustomProperty extends CustomProperty implements AuditableTrait {
 
     @Transient
     def genericOIDService
@@ -20,7 +19,7 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditTrait {
     @Transient
     def pendingChangeService
 
-    // AuditTrait
+    // AuditableTrait
     static auditable = true
     static controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
 
