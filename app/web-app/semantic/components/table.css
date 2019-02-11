@@ -1273,9 +1273,6 @@
 .calendar .ui.table.day tr td {
   border-top: 1px dotted rgba(34, 36, 38, 0.1);
 }
-.la-column-nowrap {
-  white-space: nowrap;
-}
 
 /*--------------
    la-selectable

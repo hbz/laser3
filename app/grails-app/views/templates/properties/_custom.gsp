@@ -24,7 +24,7 @@
         </colgroup>
         <thead>
             <tr>
-                <th class="la-column-nowrap la-js-dont-hide-this-card" >${message(code:'property.table.property')}</th>
+                <th class="la-js-dont-hide-this-card" >${message(code:'property.table.property')}</th>
                 <th>${message(code:'property.table.value')}</th>
                 <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
                     <th>${message(code:'property.table.paragraph')}</th>
