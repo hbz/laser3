@@ -844,6 +844,8 @@ class SubscriptionDetailsController extends AbstractDebugController {
 
                 def subLicense = result.subscriptionInstance.owner
 
+                List<Subscription> synShareTargetList = []
+
                 cons_members.each { cm ->
 
                     def postfix = (cons_members.size() > 1) ? 'Teilnehmervertrag' : (cm.get(0).shortname ?: cm.get(0).name)
@@ -935,11 +937,14 @@ class SubscriptionDetailsController extends AbstractDebugController {
 
                             new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
                             new OrgRole(org: result.institution, sub: cons_sub, roleType: role_sub_cons).save()
+
+                            synShareTargetList.add(cons_sub)
                         }
-
-
                     }
                 }
+
+                result.subscriptionInstance.synAllShares(synShareTargetList)
+
                 redirect controller: 'subscriptionDetails', action: 'members', params: [id: result.subscriptionInstance?.id]
             } else {
                 redirect controller: 'subscriptionDetails', action: 'show', params: [id: result.subscriptionInstance?.id]
@@ -961,6 +966,9 @@ class SubscriptionDetailsController extends AbstractDebugController {
 
         def delSubscription = genericOIDService.resolveOID(params.target)
         def delInstitution = delSubscription?.getSubscriber()
+
+        // todo
+        //delSubscription.
 
         def deletedStatus = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
 

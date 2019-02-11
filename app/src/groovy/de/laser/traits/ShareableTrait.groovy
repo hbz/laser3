@@ -20,22 +20,6 @@ trait ShareableTrait {
 
     // static constraints = { sharedFrom(nullable:true, blank:true); isShared(nullable:true, blank:false, default:false) }
 
-
-    @Transient
-    def onDelete = { oldMap ->
-        log?.debug("onDelete() ${this}")
-    }
-
-    @Transient
-    def onSave = {
-        log?.debug("onSave() ${this}")
-    }
-
-    @Transient
-    def onChange = { oldMap, newMap ->
-        log?.debug("onChange(${this.id}): ${oldMap} => ${newMap}")
-    }
-
     @Transient
     def addShareForTarget(ShareSupport target) {
         log?.debug ("addShareForTarget " + this + " for " + target)
@@ -48,7 +32,18 @@ trait ShareableTrait {
     }
 
     @Transient
-    def deleteAllShares() {
+    def deleteShareForTarget(ShareSupport target) {
+        log?.debug ("deleteShareForTarget " + this + " for " + target)
+
+        if (this instanceof DocContext) {
+            shareService.deleteDocShareForTarget(this, target)
+        }
+
+        log?.debug ( this )
+    }
+
+    @Transient
+    def deleteShare() {
         log?.debug ("deleteAllShares where x.sharedFrom = " + this)
 
         if (this instanceof DocContext) {

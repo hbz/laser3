@@ -4,8 +4,7 @@ import de.laser.traits.ShareableTrait
 
 interface ShareSupport {
 
-    def updateAllShares()
-
     def updateShare(ShareableTrait sharedObject)
 
+    def synAllShares(List<ShareSupport> targets)
 }

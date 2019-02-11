@@ -36,7 +36,9 @@
 
                             </g:link>(${docctx.owner.type.getI10n("value")})
 
-                            <g:link controller="ajax" action="toggleShare" params="${[]}" />
+                            <g:if test="${docctx.isShared}">
+                                [ Wird geteilt ]
+                            </g:if>
 
                             <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip')}">
 
@@ -61,7 +63,8 @@
     </g:each>
 
     <g:if test="${sharedItems}">
-        <hr />
+        <br />
+        <p>Geteilte Dokumente</p>
     </g:if>
 
     <g:each in="${sharedItems}" var="docctx">

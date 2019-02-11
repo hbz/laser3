@@ -2,7 +2,12 @@ package com.k_int.kbplus
 
 import de.laser.traits.ShareableTrait
 
+import javax.persistence.Transient
+
 class DocContext implements ShareableTrait {
+
+    @Transient
+    def shareService
 
     static belongsTo = [
         owner:          Doc,

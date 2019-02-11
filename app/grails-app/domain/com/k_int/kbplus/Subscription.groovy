@@ -159,34 +159,46 @@ class Subscription
         return false
     }
 
-    // TODO: implement
-    @Override
-    def updateAllShares() {
-
-        documents.each{ dc ->
-
-            println "todo :" dc
-        }
-    }
-
-    // TODO: implement
     @Override
     def updateShare(ShareableTrait sharedObject) {
 
-        log.debug('updateShare: ' + sharedObject )
+        log.debug('updateShare: ' + sharedObject)
 
         if (sharedObject instanceof DocContext) {
             if (sharedObject.isShared) {
                 List<Subscription> newTargets = Subscription.findAllByInstanceOfAndStatusNotEqual(this, RDStore.SUBSCRIPTION_DELETED)
                 log.debug('found targets: ' + newTargets)
+
                 newTargets.each{ sub ->
                     log.debug('adding for: ' + sub)
                     sharedObject.addShareForTarget(sub)
                 }
             }
             else {
-                sharedObject.deleteAllShares()
+                sharedObject.deleteShare()
             }
+        }
+    }
+
+    // TODO: implement & test
+    @Override
+    def synAllShares(List<ShareSupport> targets) {
+
+        log.debug('synAllShares: ' + targets)
+
+        documents.each{ sharedObject ->
+
+            targets.each{ sub ->
+                if (sharedObject.isShared) {
+                    log.debug('adding for: ' + sub)
+                    sharedObject.addShareForTarget(sub)
+                }
+                else {
+                    log.debug('deleting for: ' + sub)
+                    sharedObject.deleteShareForTarget(sub)
+                }
+            }
+
         }
     }
 

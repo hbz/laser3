@@ -31,13 +31,18 @@
                     </td>
 
                     <td class="x">
-                        <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon button"><i class="download icon"></i></g:link>
-                            <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button"
-                                    params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${redirect}"]'>
-                                <i class="trash alternate icon"></i>
-                            </g:link>
+                        <g:if test="${docctx.sharedFrom}">
+                            [ Wird geteilt ]
                         </g:if>
+                        <g:else>
+                            <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon button"><i class="download icon"></i></g:link>
+                                <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button"
+                                        params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${redirect}"]'>
+                                    <i class="trash alternate icon"></i>
+                                </g:link>
+                            </g:if>
+                        </g:else>
                     </td>
                 </tr>
             </g:if>

@@ -21,6 +21,7 @@ class ShareService {
         if (share.sharedFrom) {
             return false
         }
+        // todo check existence
 
         DocContext clonedShare = new DocContext(
                 owner:          share.owner ,
@@ -43,7 +44,22 @@ class ShareService {
                 }
             }
         }
+        return false
+    }
 
+    boolean deleteDocShareForTarget(DocContext share, ShareSupport target) {
+
+        String tp =
+                (target instanceof License) ? 'license' :
+                        (target instanceof Subscription) ? 'subscription' :
+                                (target instanceof Package) ? 'pkg' :
+                                        (target instanceof Links) ? 'link' :
+                                                null
+
+        if (tp) {
+            DocContext.executeUpdate('delete from DocContext dc where dc.sharedFrom = :sf and ' + tp + ' = :target', [sf: this, target: target])
+            return true
+        }
         return false
     }
 }
