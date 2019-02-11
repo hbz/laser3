@@ -2542,7 +2542,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.subscription = Subscription.get(params.id)
         result.institution = result.subscription?.subscriber
 
-        result.showConsortiaFunctions = showConsortiaFunctions(result.subscription)
+        result.showConsortiaFunctions = showConsortiaFunctions(contextService.getOrg(), result.subscription)
 
         if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
             if (!result.subscriptionInstance?.isVisibleBy(result.user)) {
@@ -2562,9 +2562,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result
     }
 
-    def showConsortiaFunctions(def subscription) {
-
-        return ((subscription?.getConsortia()?.id == contextService.getOrg()?.id) && !subscription.instanceOf)
+    static boolean showConsortiaFunctions(Org contextOrg, Subscription subscription) {
+        return ((subscription?.getConsortia()?.id == contextOrg?.id) && !subscription.instanceOf)
     }
 
     private def exportOrg(orgs, message, addHigherEducationTitles) {
