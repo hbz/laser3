@@ -182,7 +182,7 @@ class Subscription
 
     // TODO: implement & test
     @Override
-    def synAllShares(List<ShareSupport> targets) {
+    def syncAllShares(List<ShareSupport> targets) {
 
         log.debug('synAllShares: ' + targets)
 

@@ -6,5 +6,5 @@ interface ShareSupport {
 
     def updateShare(ShareableTrait sharedObject)
 
-    def synAllShares(List<ShareSupport> targets)
+    def syncAllShares(List<ShareSupport> targets)
 }

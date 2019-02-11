@@ -943,7 +943,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
                     }
                 }
 
-                result.subscriptionInstance.synAllShares(synShareTargetList)
+                result.subscriptionInstance.syncAllShares(synShareTargetList)
 
                 redirect controller: 'subscriptionDetails', action: 'members', params: [id: result.subscriptionInstance?.id]
             } else {
@@ -967,9 +967,6 @@ class SubscriptionDetailsController extends AbstractDebugController {
         def delSubscription = genericOIDService.resolveOID(params.target)
         def delInstitution = delSubscription?.getSubscriber()
 
-        // todo
-        //delSubscription.
-
         def deletedStatus = RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
 
         if (delSubscription?.hasPerm("edit", result.user)) {
@@ -978,6 +975,9 @@ class SubscriptionDetailsController extends AbstractDebugController {
             if (!derived_subs) {
 
                 if(!CostItem.findAllBySub(delSubscription)) {
+                    // sync shares
+                    delSubscription.instanceOf.syncAllShares([delSubscription])
+
                     if (delSubscription.getConsortia() && delSubscription.getConsortia() != delInstitution) {
                         OrgRole.executeUpdate("delete from OrgRole where sub = ? and org = ?", [delSubscription, delInstitution])
                     }

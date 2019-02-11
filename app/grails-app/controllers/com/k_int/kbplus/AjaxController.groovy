@@ -1264,6 +1264,8 @@ class AjaxController {
         sharedObject.save(flusth:true)
 
         ((ShareSupport) owner).updateShare(sharedObject)
+
+        render(template: '/templates/documents/card', model: [ownobj: owner])
     }
 
     @Secured(['ROLE_USER'])
