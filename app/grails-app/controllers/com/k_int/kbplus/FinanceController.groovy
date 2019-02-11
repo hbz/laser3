@@ -89,7 +89,7 @@ class FinanceController extends AbstractDebugController {
             params.subscriptionFilter = "${params.sub}"
 
             result.fixedSubscription = params.int('sub')? Subscription.get(params.sub) : null
-
+            result.showConsortiaFunctions = SubscriptionDetailsController.showConsortiaFunctions(contextService.getOrg(), result.fixedSubscription)
 
             LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.fixedSubscription.id)
             result.navPrevSubscription = links.prevLink
