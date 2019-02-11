@@ -102,7 +102,7 @@ class GlobalSourceSyncService {
       // Need to parse date...
       def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
       def query_params = []
-      
+
       if (historyEvent.date && historyEvent.date.trim().length() > 0) {
         query_params.add(sdf.parse(historyEvent.date))
         base_query += " the.eventDate = ? "
@@ -112,7 +112,7 @@ class GlobalSourceSyncService {
         if (query_params.size() > 0) {
           base_query += "and"
         }
-        
+
         base_query += " exists ( select p from the.participants as p where p.participant = ? and p.participantRole = 'from' ) "
         query_params.add(it)
       }
@@ -120,7 +120,7 @@ class GlobalSourceSyncService {
         if (query_params.size() > 0) {
           base_query += "and"
         }
-        
+
         base_query += " exists ( select p from the.participants as p where p.participant = ? and p.participantRole = 'to' ) "
         query_params.add(it)
       }
@@ -151,6 +151,19 @@ class GlobalSourceSyncService {
     result.parsed_rec.status = md.gokb.title.status.text()
     result.parsed_rec.medium = md.gokb.title.medium.text()
     result.parsed_rec.type = md.gokb.title.type?.text() ?: null
+
+    //Ebooks Fields
+    result.parsed_rec.editionNumber = md.gokb.title.editionNumber?.text() ?: null
+    result.parsed_rec.editionDifferentiator = md.gokb.title.editionDifferentiator?.text() ?: null
+    result.parsed_rec.editionStatement = md.gokb.title.editionStatement?.text() ?: null
+    result.parsed_rec.volumeNumber = md.gokb.title.volumeNumber?.text() ?: null
+    result.parsed_rec.dateFirstInPrint = md.gokb.title.dateFirstInPrint?.text() ?: null
+    result.parsed_rec.dateFirstOnline = md.gokb.title.dateFirstOnline?.text() ?: null
+
+    //Ebooks Fields
+    result.parsed_rec.firstAuthor = md.gokb.title.firstAuthor?.text() ?: null
+    result.parsed_rec.firstEditor = md.gokb.title.firstEditor?.text() ?: null
+
 
     result.title = md.gokb.title.name.text()
     result.parsed_rec.title = md.gokb.title.name.text()
@@ -1202,6 +1215,19 @@ class GlobalSourceSyncService {
                 return
               }
 
+              if (title_instance instanceof BookInstance)
+              {
+                  title_instance.editionNumber = titleinfo.editionNumber
+                  title_instance.editionDifferentiator = titleinfo.editionDifferentiator
+                  title_instance.editionStatement = titleinfo.editionStatement
+                  title_instance.volume = titleinfo.volumeNumber
+                  title_instance.dateFirstInPrint = titleinfo.dateFirstInPrint
+                  title_instance.dateFirstOnline = titleinfo.dateFirstOnline
+
+                  title_instance.firstAuthor = titleinfo.firstAuthor
+                  title_instance.firstEditor = titleinfo.firstEditor
+              }
+
               if (titleinfo.status == 'Current') {
                 title_instance.status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Current', de: 'Aktuell'])
               } else if (titleinfo.status == 'Retired') {
@@ -1262,7 +1288,7 @@ class GlobalSourceSyncService {
                 // Need to parse date...
                 def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                 def query_params = []
-                
+
                 if (historyEvent.date && historyEvent.date.trim().length() > 0) {
                   query_params.add(sdf.parse(historyEvent.date))
                   base_query += " the.eventDate = ? "
@@ -1272,7 +1298,7 @@ class GlobalSourceSyncService {
                   if (query_params.size() > 0) {
                     base_query += "and"
                   }
-                  
+
                   base_query += " exists ( select p from the.participants as p where p.participant = ? and p.participantRole = 'from' ) "
                   query_params.add(it)
                 }
@@ -1280,7 +1306,7 @@ class GlobalSourceSyncService {
                   if (query_params.size() > 0) {
                     base_query += "and"
                   }
-                  
+
                   base_query += " exists ( select p from the.participants as p where p.participant = ? and p.participantRole = 'to' ) "
                   query_params.add(it)
                 }
