@@ -342,7 +342,7 @@
                             <g:link controller="subscriptionDetails" action="members" params="${[id:s.id]}">
                             ${Subscription.findAllByInstanceOfAndStatusNotEqual(
                                     s,
-                                    RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+                                    RDStore.SUBSCRIPTION_DELETED
                             )?.size()}
                             </g:link>
                         </td>

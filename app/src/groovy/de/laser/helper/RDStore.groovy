@@ -28,6 +28,7 @@ class RDStore {
     static final LICENSE_DELETED            = getRefdataValue('Deleted', 'License Status')
     static final ORG_DELETED                = getRefdataValue('Deleted', 'OrgStatus')
     static final PACKAGE_DELETED            = getRefdataValue('Deleted', 'Package Status')
+    static final IE_DELETED                 = getRefdataValue('Deleted', 'Entitlement Issue Status')
 
     static final SUBSCRIPTION_DELETED       = getRefdataValue('Deleted', 'Subscription Status')
     static final SUBSCRIPTION_CURRENT       = getRefdataValue('Current', 'Subscription Status')
@@ -60,7 +61,10 @@ class RDStore {
     static final CCT_EMAIL                  = getRefdataValue('E-Mail','ContactContentType')
     static final PRS_RESP_SPEC_SUB_EDITOR   = getRefdataValue('Specific subscription editor', 'Person Responsibility')
 
+    static final PENDING_CHANGE_STATUS      = getRefdataValue('Pending', 'PendingChangeStatus')
+
     static final TASK_STATUS_DONE           =  getRefdataValue('Done', 'Task Status')
+
 
     static RefdataValue getRefdataValue(String value, String category) {
         (RefdataValue) GrailsHibernateUtil.unwrapIfProxy( RefdataValue.getByValueAndCategory(value, category))
