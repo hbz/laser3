@@ -18,7 +18,7 @@
                 <g:form action="gasco" controller="public" method="get" class="form-inline ui small form">
 
                     <div class="field">
-                        <label>${message(code: 'gasco.filter.licenceOrProviderSearch')}</label>
+                        <label>${message(code: 'gasco.filter.search')}</label>
 
                         <div class="ui input">
                             <input type="text" name="q"

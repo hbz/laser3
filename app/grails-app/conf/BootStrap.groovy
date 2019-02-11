@@ -428,74 +428,457 @@ class BootStrap {
         def allDescr = [en: PropertyDefinition.LIC_PROP, de: PropertyDefinition.LIC_PROP]
 
         def requiredProps = [
-                [name: [en: "Agreement Date", de: "Abschlussdatum"],                            descr:allDescr, type: OT.Date],
-                [name: [en: "Alumni Access"],                                                   descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                [name: [en: "Change to licensed material", de: "Änderung am Vertragsgegenstand"], descr:allDescr, type: OT.String],
-                [name: [en: "Concurrent Access", de: "Concurrent Access"],                      descr:allDescr, type: OT.Rdv, cat:'ConcurrentAccess'],
-                [name: [en: "Concurrent Users", de: "Concurrent Users"],                        descr:allDescr, type: OT.Int],
-                [name: [en: "Enterprise Access"],                                               descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                [name: [en: "Include in VLE"],                                                  descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                [name: [en: "Invoicing", de: "Rechnungsstellung"],                              descr:allDescr, type: OT.Date],
-                [name: [en: "Metadata delivery"],                                               descr:allDescr, type: OT.String],
-                [name: [en: "Method of Authentication", de: "Authentifizierungsverfahren"],     descr:allDescr, type: OT.String],
-                [name: [en: "Multi Site Access"],                                               descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                [name: [en: "New Underwriter", de: "Aufnahme neuer Teilnehmer"],                descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                [name: [en: "Payment target", de: "Zahlungsziel"],                              descr:allDescr, type: OT.Date],
-                [name: [en: "Partners Access"],                                                 descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                [name: [en: "Permitted Uses"],                                                  descr:allDescr, type: OT.String],
-                [name: [en: "Post Cancellation Access Entitlement"],                            descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                [name: [en: "Regional Restriction", de: "Regionale Einschränkung"],             descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                [name: [en: "Service regulations", de: "Servicestandards"],                     descr:allDescr, type: OT.String],
-                [name: [en: "Signed"],                                                          descr:allDescr, type: OT.Rdv, cat:'YN'],
-                [name: [en: "Usage Statistics", de: "Lieferung von Statistiken"],               descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                [name: [en: "Wifi Access", de: "WLAN-Zugriff"],                                 descr:allDescr, type: OT.Rdv, cat:'YNO'],
+            /*[
+                    name: [en: "Agreement Date", de: "Abschlussdatum"],
+                    expl: [en: "Date, when the agreement has been signed", de: "Abschlussdatum des Vertrags."],
+                    descr:allDescr, type: OT.Date  // TODO: Should be deleted, but is in use
+            ],*/
+            [
+                    name: [en: "All rights reserved indicator", de: "Hinweis auf 'Alle Rechte vorbehalten'"],
+                    expl: [en: "A clause stating that all intellectual property rights not explicitly granted to the licensee are retained by the licensor.", de: ""],
+                    descr:allDescr, type: OT.Rdv, cat:'YNO'
+            ],
+            [
+                    name: [en: "Applicable copyright law", de: "Urheberrechtsgesetz"],
+                    expl: [en: "A clause that specifies the national copyright law agreed to in the contract.", de: "Das anzuwendende Urheberrecht."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Authorized Users", de: "Autorisierte Nutzer"],
+                    expl: [en: "The language in the contract that defines the group of users allowed to use the Electronic Product.", de: "Definition, welche Personenkreise Zugriff erhalten."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            /*[
+                    name: [en: "Authorized user definition", de: "Autorisierte Nutzer, Definition"],
+                    expl: [en: "The language in the contract that defines the group of users allowed to use the Electronic Product.", de: "Definition, welche Personenkreise Zugriff erhalten."],
+                    descr:allDescr, type: OT.String // TODO: Should be deleted, but is in use.
+            ],*/
+            [
+                    name: [en: "Local authorized user defintion", de: "Autorisierte Nutzer, lokale Defintion"],
+                    expl: [en: "The inclusion of an institution-specific preferred authorized user definition", de: "Definition, welcher Personenkreis vor Ort zu den berechtigten Nutzern gezählt wird."],
+                    descr:allDescr, type: OT.String
+            ],
+            [
+                    name: [en: "Walk-in Access", de: "Walk-In User"],
+                    expl: [en: "A group of people who have access to information whithout being e.g. a student at this University Library.", de: "Nutzergruppe, die zwar Zugang zu Informationen erhält, jedoch bspw. nicht Universitätsmitglied ist."],
+                    descr:allDescr, type: OT.Rdv, cat:'Permissions', isUsedForLogic: false
+            ],
+            [
+                    name: [key: "walkinusertermnote", en: "Walk-in User Term Note", de: "Walk-In User Bedingungen"],
+                    expl: [en: "Information which qualifies the status or permitted actions of Walk-In Users", de: "Nutzergruppe, die zwar Zugang zu Informationen erhält, jedoch bspw. nicht Universitätsmitglied ist."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Alumni Access", de: "Alumni Access"],
+                    expl: [en: "Decision whether people who have completed their studies, have access.", de: "Aussage darüber, ob der Zugriff auf die lizenzierten Produkte für Alumni ermöglicht wird."],
+                    descr:allDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Cancellation Allowance", de: "Außerordentliche Kündigung"],
+                    expl: [en: "Defines under which extraordenary circumstances an angreement can be stopped.", de: "Definition, unter welchen besonderen Voraussetzungen eine Kündigung ausgesprochen werden kann."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Change to licensed material", de: "Änderung am Vertragsgegenstand"],
+                    expl: [en: "Defines changes which are allowed or forbidden to be made to the licensed material itself.", de: "Definition über erlaubte oder verbotenen Veränderungen, welche am lizenzierten Material vorgenommen werden dürfen."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Citation requirement detail", de: "Zitier-Regeln Details"],
+                    expl: [en: "A specification of the required or recommended form of citation.", de: ""],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Clickwrap modification", de: "Clickthrough"],
+                    expl: [en: "A clause indicating that the negotiated agreement supersedes any click-through, click-wrap, other user agreement, or terms of use residing on the provider's server that might otherwise function as a contract of adhesion.", de: ""],
+                    descr:allDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Completeness of content clause", de: "Klausel zur Vollständigkeit der Inhalte"],
+                    expl: [en: "The presence of a provision in the contract stating that the licensed electronic materials shall include all content found in the print equivalent.", de: "Aussage darüber, ob das lizenzierte Material alle Inhalte einer gedruckten Fassung beinhaltet, z. B. auch Werbeanzeigen."],
+                    descr:allDescr, type: OT.Rdv, cat:'Existence', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Concurrency with print version", de: "Übereinstimmung mit Druckversion"],
+                    expl: [en: "The presence of a provision in the contract which states that the licensed materials will be available before, or no later than the print equivalent, and/or will be kept current.", de: "Aussage, ob das lizenzierte Material früher als oder zeitgleich mit dem  gedruckten Material zugänglich ist  bzw. ob es aktuell gehalten wird."],
+                    descr:allDescr, type: OT.Rdv, cat:'Existence', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Concurrent Users", de: "Gleichzeitige Nutzer"],
+                    expl: [en: "1. The licensed number of concurrent users for a resource. 2. The number of concurrent users if shared across an interface rather than for a specific resource.", de: "Anzahl der gleichzeitigen Zugriffe auf ein lizenziertes Produkt."],
+                    descr:allDescr, type: OT.Int, isUsedForLogic: false //TODO: OT.String because of 'unlimited'
+            ],
+            [
+                    name: [en: "Concurrent Access", de: "Gleichzeitige Nutzer (Regelung)"],
+                    expl: [en: "The allowance to give access to more than one user at the same time to use s. th.", de: "Erlaubnis, mehrere, zeitlich parallele Zugriffe zu ermöglichen."],
+                    descr:allDescr, type: OT.Rdv, cat:'ConcurrentAccess', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Confidentiality of agreement", de: "Vertraulichkeit der Vereinbarung"],
+                    expl: [en: "The presence or absence of clauses that specify or detail restrictions on the sharing of the terms of the license agreement. The clause may specify terms to be held confidential, or may refer to the entire agreement. This clause may be limited by state law for U.S. public institutions.", de: "Festlegung zur Vertraulichkeit der Vereinbarung."],
+                    descr:allDescr, type: OT.Rdv, cat:'Confidentiality', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Content warranty", de: "Gewährleistung über den Inhalt"],
+                    expl: [en: "A clause that guarantees a remedy to the licensee if the quantity or quality of material contained within the resource is materially diminished. The clause is usually in the form of a pro-rata refund or termination right.", de: "Aussage darüber, inwieweit sich die Qualität und Menge des lizenzierten Materials verändern darf und welche Kompensationszahlungen und Sonderkündigungsrechte möglich sind."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Course pack electronic", de: "Semesterapparat elektronisch"],
+                    expl: [en: "The right to use licensed materials in collections or compilations of materials assembled in an electronic format by faculty members for use by students in a class for purposes of instruction.", de: "Das Recht elektronische Kopien des lizensierten Materials für Semesterapparate zur Verfügung zu stellen."],
+                    descr:allDescr, type: OT.Rdv, cat:'Permissions', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Course pack print", de: "Semesterapparat gedruckt"],
+                    expl: [en: "The right to use licensed materials in collections or compilations of materials assembled in a print format by faculty members for use by students in a class for purposes of instruction, e.g., book chapters, journal articles.", de: "Das Recht lizensiertes Materials in ausgedruckter Form für Semesterapparate zur Verfügung zu stellen."],
+                    descr:allDescr, type: OT.Rdv, cat:'Permissions', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Course pack term note", de: "Notzifeld zu den Bedingungen zur Nutzung elektronischer Skripte"],
+                    expl: [en: "Information which qualifies a permissions statement on Course Packs.", de: "Bedingungen zur Nutzung elektronischer Skripte."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Course reserve electronic/cached", de: "Seminarapparat mit Zugangsbeschränkung elektronisch"],
+                    expl: [en: "The right to make electronic copies of the licensed materials and store them on a secure network, e.g., book chapters, journal articles stored on a secure network, for course reserves and online course websites.", de: ""],
+                    descr:allDescr, type: OT.Rdv, cat:'Permissions', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Course reserve print", de: "Seminarapparat mit Zugangsbeschränkung gedruckt"],
+                    expl: [en: "The right to make print copies of the licensed materials and place them in a controlled circulation area of the library for reserve reading in conjunction with specific courses of instruction.", de: ""],
+                    descr:allDescr, type: OT.Rdv, cat:'Permissions', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Course reserve term note", de: "Notizfeld zu den Bedingungen der Nutzung für Semesterapparate mit Zugangsbeschränkung"],
+                    expl: [en: "Information which qualifies a permissions statement on Course Reserves.", de: ""],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Cure period for breach", de: "Zeitraum der Behebung bei Vertragsbruch"],
+                    expl: [en: "The cure period for an alleged material breach.", de: "Definition der Zeitspanne, in welcher Mängel behoben werden."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false //TODO: OT.Int
+            ],
+            [
+                    name: [en: "Data protection override", de: "Datenschutz aufgehoben"],
+                    expl: [en: "A clause that provides fair use protections within the context of assertions of database protection or additional proprietary rights related to database content not currently covered by U.S. copyright law. Applicable for U.S. libraries but may be of interest for other countries when recording terms for products licensed by U.S. businesses.", de: ""],
+                    descr:allDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false // TODO: cat:'YNU'
+            ],
+            [
+                    name: [en: "General Terms note", de: "Allgemeine Bedingungen"],
+                    expl: [en: "Notes about the terms in the business agreement of the license as a whole.", de: ""],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Governing jurisdiction", de: "Gerichtsstand"],
+                    expl: [en: "The venue or jurisdiction to be used in the event of an alleged breach of the agreement.", de: "Ort des zuständigen Gerichts."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Governing law", de: "Anzuwendendes Recht"],
+                    expl: [en: "A clause specifying the governing law to be used in the event of an alleged breach of the agreement.", de: "Definition über anzuwendendes Recht."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "ILL electronic", de: "Fernleihe elektronisch"],
+                    expl: [en: "The right to provide the licensed materials via interlibrary loan by way of electronic copies.", de: "Aussage darüber, ob die Fernleihe mittels einer elektron. Kopie bedient werden darf."],
+                    descr:allDescr, type: OT.Rdv, cat:'Permissions', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "ILL print or fax", de: "Fernleihe per Papier oder Fax"],
+                    expl: [en: "The right to provide the licensed materials via interlibrary loan by way of print copies or facsimile transmission.", de: "Aussage darüber, ob die Fernleihe mittels  Fax oder gedruckter Kopien bedient werden darf."],
+                    descr:allDescr, type: OT.Rdv, cat:'Permissions', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "ILL secure electronic transmission", de: "Fernleihe über sichere elektronische Übermittlung"],
+                    expl: [en: "The right to provide the licensed materials via interlibrary loan by way of secure electronic transmission.", de: "Aussage darüber, ob die Fernleihe über sichere, elektron. Übermittlungswege bedient werden darf."],
+                    descr:allDescr, type: OT.Rdv, cat:'Permissions', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "ILL record keeping required", de: "Fernleihdatensatz muss gespeichert werden"],
+                    expl: [en: "The requirement to keep records of interlibrary loan activity and provide reports to the licensor at periodic intervals or upon request.", de: "Aussage darüber, ob der Fernleihdatensatz aufbewahrt werden muss."],
+                    descr:allDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false // TODO: cat:'YNU'
+            ],
+            [
+                    name: [en: "ILL term note", de: "Fernleihe Weitere Bedingungen"],
+                    expl: [en: "Additional information related to interlibrary loan.", de: "Weitere Bedingungen zur Fernleihe."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Indemnification by licensor", de: "Entschädigung durch den Lizenzgeber"],
+                    expl: [en: "A clause by which the licensor agrees to indemnify the licensee against a legal claim. This may specifically include intellectual property claims (third party rights), or may be broader in application.", de: "Aussage darüber, inwiefern der Lizenzgeber den Lizenznehmer von juristischen Ansprüchen schadlos hält."],
+                    descr:allDescr, type: OT.Rdv, cat:'Indemnification', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Indemnification by licensee clause indicator", de: "Entschädigung durch den Lizenznehmer"],
+                    expl: [en: "A clause by which the licensee agrees to indemnify the licensor against a legal claim, usually for a breach of agreement by the licensee.", de: "Aussage darüber, inwieweit der Lizenznehmer den Lizenzgeber von juristischen Ansprüchen schadlos hält."],
+                    descr:allDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Invoicing", de: "Rechnungsstellung"],
+                    expl: [en: "Defining who creates and sends out invoices to the participants.", de: "Benennung des Rechnungsstellers."],
+                    descr:allDescr, type: OT.Date, isUsedForLogic: false //TODO: OT.Rdv, cat:'Invoicing'
+            ],
+            [
+                    name: [en: "Licensee termination right", de: "Kündigungsrecht des Lizenznehmers"],
+                    expl: [en: "The ability of the licensee to terminate an acquisition during a contract period.", de: "Aussagen über die Kündigungsrechte des Lizenznehmers."],
+                    descr:allDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Licensee termination condition", de: "Kündigungsrecht des Lizenznehmers Voraussetzung"],
+                    expl: [en: "The conditions that would allow a licensee to terminate acquisition during a contract period.", de: "Aussagen über die notwendigen Voraussetzungen einer Kündigung seitens des Lizenznehmers."],
+                    descr:allDescr, type: OT.Rdv, cat:'Termination Condition', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Licensee termination notice period", de: "Kündigungsfrist des Lizenznehmers"],
+                    expl: [en: "The amount of advance notice required prior to contract termination by the Licensee.", de: "Definition der Kündigungsfrist des Lizenznehmers."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false //TODO: OT.Int
+            ],
+            [
+                    name: [en: "Licensor termination right", de: "Kündigungsrecht des Lizenzgebers"],
+                    expl: [en: "The ability of a Licensor to terminate an acquisition during a contract period.", de: "Aussagen über die Kündigungsrechte des Lizenzgebers."],
+                    descr:allDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Licensor termination condition", de: "Kündigungsrecht des Lizenzgebers Voraussetzung"],
+                    expl: [en: "The conditions that would allow a licensor to terminate acquisition during a contract period.", de: "Aussagen über die notwendigen Voraussetzungen einer Kündigung seitens des Lizenzgebers."],
+                    descr:allDescr, type: OT.Rdv, cat:'Termination Condition', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Licensor termination notice period", de: "Kündigungsfrist des Lizenzgebers"],
+                    expl: [en: "The amount of advance notice required prior to contract termination by the licensor.", de: "Definition der Kündigungsfrist des Lizenzgebers."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false  //TODO: OT.Int
+            ],
+            [
+                    name: [en: "Maintenance window", de: "Wartungsfenster"],
+                    expl: [en: "The recurring period of time reserved by the product provider for technical maintenance activities, during which online access may be unavailable.", de: "Angaben über die Häufigkeit, Dauer und geschaltete Vorabinformationen bei Produktwartungen seitens des Lizenzgebers."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Metadata delivery"],
+                    expl: [en: "Description to whom metadata will be delivered, what kind of standard will be provided.", de: "Aussagen darüber, von wem Metadaten geliefert werden und zur Art des Formats."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Method of Authentication", de: "Authentifizierungsverfahren"],
+                    expl: [en: "", de: "Aussagen darüber, mit welchem Authentifizierungsverfahren Nutzer Zugriff erhalten."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Multi Site Access"],
+                    expl: [en: "", de: "Aussagen darüber, ob mehrere Standorte auf das gleiche Produkt zugreifen dürfen."],
+                    descr:allDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false //TODO: cat:'YNU'
+            ],
+            [
+                    name: [en: "New Underwriter", de: "Aufnahme neuer Teilnehmer"],
+                    expl: [en: "New participant.", de: "Zeitpunkt für die Aufnahme neuer Teilnehmer (z. B. relevant für Rabattermittlung)."],
+                    descr:allDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Partners Access", de:"Partners Access"],
+                    expl: [en: "", de: "Partners Access."],
+                    descr:allDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false //TODO: cat:'YNU'
+            ],
+            [
+                    name: [en: "Uptime guarantee", de: "Gewährleistung einer verfügbaren Betriebszeit"],
+                    expl: [en: "", de: ""],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Digitial copy", de: "Digitalkopie"],
+                    expl: [en: "The right of the licensee and authorized users to download and digitally copy a reasonable portion of the licensed materials.", de: "Aussagen darüber, inwiefern der Lizenznehmer und autorisierte Nutzer lizenziertes Material herunterladen und abspeichern darf."],
+                    descr:allDescr, type: OT.Rdv, cat:'Permissions', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Digitial copy term note", de: "Digitalkopie Bedingungen"],
+                    expl: [en: "Information which qualifies a permissions statement on Digitally Copy", de: "Bedingungen der dititalen Kopie."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Datamining", de: "Datamining"],
+                    expl: [en: "", de: "Aussagen darüber, ob bzw. wie das Material im Kontext des Datamining zu Verfügung steht, ferner Informationen über weiter zu berücksichtigende Aspekte wie Nutzungsbedingungen, Sicherheitserklärungen und Datenvernichtung."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Electronic link", de: "Elektronischer Link"],
+                    expl: [en: "The right to link to the licensed material.", de: "Aussagen darüber, inwiefern auf das lizenzierte Material verlinkt werden darf."],
+                    descr:allDescr, type: OT.Rdv, cat:'Permissions', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Electronic link term note", de: "Elektronischer Link Bedingungen"],
+                    expl: [en: "Information which qualifies a permissions statement on Electronic Links.", de: "Bedingungen für die Nutzung des elektronischen Link"],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Fair use clause indicator", de: "Hinweis auf Klausel über die \'faire Nutzung\'"],
+                    expl: [en: "A clause that affirms statutory fair use rights under U.S. copyright law (17 USC Section 107), or that the agreement does not restrict or abrogate the rights of the licensee or its user community under copyright law. Fair use rights include, but are not limited to, printing, downloading, and copying.", de: "Hinweis auf Klausel über die \'faire Nutzung\'."],
+                    descr:allDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Distance Education", de: "Fernstudium"],
+                    expl: [en: "The right to use licensed materials in distance education.", de: "Aussagen darüber, inwieweit das lizenzierte Material für das Fernstudium genutzt werden darf."],
+                    descr:allDescr, type: OT.Rdv, cat:'Permissions', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Distance education term note", de: "Fernstudium Bedingungen zur Nutzung"],
+                    expl: [en: "Information which qualifies a permissions statement on distance education.", de: "Bedingungen der Nutzung für das Fernstudium."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Print copy", de: "Druckkopie"],
+                    expl: [en: "The right of the licensee and authorized users to print a portion of the licensed materials.", de: "Aussagen darüber, inwiefern der Lizenznehmer und autorisierte Nutzer lizenziertes Material ausdrucken darf."],
+                    descr:allDescr, type: OT.Rdv, cat:'Permissions', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Print copy term note", de: "Druckkopie Bedingungen zur Nutzung"],
+                    expl: [en: "Information which qualifies a permissions statement on Print Copy.", de: "Bedingungen der Druckkopie."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Scholarly sharing", de: "Weitergabe im Rahmen der Lehre"],
+                    expl: [en: "The right of authorized users and/or the licensee to transmit hard copy or an electronic copy of a portion of the licensed materials to a third party for personal, scholarly, educational, scientific or professional use.", de: "Aussagen darüber, inwiefern der Lizenznehmer und autorisierte Nutzer Ausdrucke oder elektron. Kopien an Dritte im Kontext der u. a. privaten oder wissenschaftlichen Nutzung und im Rahmen der Lehre ausgeben darf."],
+                    descr:allDescr, type: OT.Rdv, cat:'Permissions', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Wifi Access", de: "WLAN-Zugriff"],
+                    expl: [en: "Internet is provided without using wires.", de: "Aussagen darüber, inwieweit über WLAN auf das lizenzierte Material zugegriffen werden darf."],
+                    descr:allDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Remote Access", de: "Remote-Zugriff"],
+                    expl: [en: "The right of an authorized user to gain access to an Electronic Product from an offsite location.", de: "Aussagen darüber, inwieweit autorisierte Nutzer über Remote Access auf lizenziertes Material zugreifen dürfen."],
+                    descr:allDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false //TODO: cat:'License.RemoteAccess'
+            ],
+            [
+                    name: [en: "Scholarly sharing term note", de: "Weitergabe im Rahmen der Lehre"],
+                    expl: [en: "Information which qualifies a permissions statement on Scholarly Sharing.", de: "Bedingungen der Weitergabe im Rahmen der Lehre."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Signed"],
+                    expl: [en: "a document has been signed by s.o.", de: "Aussage darüber, ob das Vertragsdokument unterzeichnet worden ist."],
+                    descr:allDescr, type: OT.Rdv, cat:'YN', isUsedForLogic: false //Todo: type: OT.Rdv, cat:'YNU'
+            ],
+            [
+                    name: [en: "Termination requirement note", de: "Kündigungsrecht besondere Anforderung"],
+                    expl: [en: "A clarification of the termination requirements and what certification of the requirement activities is necessary.", de: ""],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [key: "Usage Statistics", en: "Usage Statistics Availability Indicator", de: "Statistik  Lieferung"],
+                    expl: [en: "The availability of usage statistics for the product.", de: "Aussagen über die Lieferung von Nutzungsstatistiken."],
+                    descr:allDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false
+            ],
+            [
+                    name: [key: "statisticsstandardcompliance", en: "Usage Statistics Standard Compliance", de: "Statistikstandard"],
+                    expl: [en: "The official standard to which the statistics conform for more information, see guidelines set forth at http://www.projectcounter.org and http://www.library.yale.edu/consortia/2001webstats.htm.", de: "Aussagen über den Standard, in welchem die Statistiken geliefert werden."],
+                    descr:allDescr, type: OT.Rdv, cat:'License.Statistics.Standards', isUsedForLogic: false
+            ],
+            [
+                    name: [key: "usagestatsdelivery", en: "Usage Statistics Delivery", de: "Statistik Liefermethode"],
+                    expl: [en: "The manner in which statistics are made available.", de: "Aussagen über den Versandweg der Statistiken."],
+                    descr:allDescr, type: OT.Rdv, cat:'License.Statistics.Delivery', isUsedForLogic: false
+            ],
+            [
+                    name: [key: "usagestatsformat", en: "Usage Statistics Format", de: "Statistik Auslieferungsformat"],
+                    expl: [en: "The format(s) in which statistics are made available.", de: "Aussagen über Auslieferformat der Statistiken."],
+                    descr:allDescr, type: OT.Rdv, cat:'License.Statistics.Format', isUsedForLogic: false
+            ],
+            [
+                    name: [key: "usagestatsfrequency", en: "Usage Statistics Frequency", de: "Statistik Auslieferungsfrequenz"],
+                    expl: [en: "The frequency with which statistics are made available.", de: "Aussagen über die Frequenz der Auslieferung der Statistiken."],
+                    descr:allDescr, type: OT.Rdv, cat:'License.Statistics.Frequency', isUsedForLogic: false
+            ],
+            [
+                    name: [key: "usagestatsonlinelocation", en: "Usage Statistics Online Location", de: "Statistik Host"],
+                    expl: [en: "The online location at which statistics can be accessed e.g., URL or file path.", de: "Aussagen über den Ort, an welchem die Statistiken online zu Verfügung stehen."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [key: "usagestatsuserid", en: "Usage Statistics User ID", de: "Statistik Nutzername"],
+                    expl: [en: "The identifier used for online access to the statistics management site or dataset may be same as administrative identifier.", de: "Zugangsdaten."],
+                    descr:allDescr, type: OT.Rdv, cat:'License.Statistics.UserCreds', isUsedForLogic: false
+            ],
+            [
+                    name: [key: "usagestatspassword", en: "Usage Statistics Password", de: "Statistik Passwort"],
+                    expl: [en: "The password used for online access to the statistics management site or dataset may be same as administrative password.", de: "Zugangsdaten."],
+                    descr:allDescr, type: OT.Rdv, cat:'License.Statistics.UserCreds', isUsedForLogic: false
+            ],
+            [
+                    name: [key: "usagestatsaddressee", en: "Usage Statistics Addressee", de: "Statistik Hauptverantwortlicher"],
+                    expl: [en: "The local person to whom statistics are sent.", de: "Aussagen über den Verantwortlichen, welcher die Statistiken zugesandt bekommt."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [key: "usagestatslocallystored", en: "Usage Statistics Online Location", de: "Statistik Links und lokale Daten"],
+                    expl: [en: "Information about and/or links to locally stored data.", de: "Aussagen über bzw. Links zu den lokal gespeicherten Statistiken."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            /*[
+                    name: [en: "User restriction note", de: "Benutzungsbeschränkungen"],
+                    expl: [en: "", de: ""],
+                    descr:allDescr, type: OT.String // TODO: should be deleted, because no ERMI, no ONIX-PL. In use at the moment.
+            ],*/
+            [
+                    name: [key: "accessibilitycompliance", en: "Accessibility compliance", de: "Zugriff für Personen mit Einschränkungen"],
+                    expl: [en: "An agreement that the data is provided in a form compliant with relevant accessibility (disabilities) legislation. For more information, see guidelines set forth by the World Wide Web Consortium at http://www.w3.org/wai/.", de: "Aussagen über Zugriffmöglichkeiten für Personen mit Einschränkungen."],
+                    descr:allDescr, type: OT.Rdv, cat:'YNU', isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Single-site license ", de: "Einzelplatzlizenz"],
+                    expl: [en: "", de: "Angaben über die Nutzung des Produktes über eine Einzelplatzlizenz."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Document delivery service (commercial) ", de: "Dokumentenlieferdienst kommerziell"],
+                    expl: [en: "", de: "Angabe über die Nutzungsmöglichkeit von kommerziellen Dokumentenlieferdiensten wie Subito."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Licensee obligations", de: "Pflichten des Lizenznehmers"],
+                    expl: [en: "", de: "Angaben über die Pflichten des Lizenznehmers, wie Informationspflichten über IP-Rangeänderungen."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Severability Clause", de: "Salvatorische Klausel"],
+                    expl: [en: "", de: "Angaben über die salvatorische Klausel."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            /*[
+                    name: [en: "Payment target", de: "Zahlungsziel"],
+                    expl: [en: "A date until which the payment will be expected.", de: "Definition des spätestens Datums, an welchem die Rechnung beglichen sein muss, z. B. ein festes Datum oder x Tage nach Rechnungseingang."],
+                    descr:allDescr, type: OT.Date // TODO: should be deleted, because no ERMI, no ONIX-PL and not a licence term. In use at the moment.
+            ],*/
+            [
+                    name: [en: "Performance warranty", de: "Gewährleistung einer Systemleistung/Performanz"],
+                    expl: [en: "The specific percentage of up-time guaranteed for the product being licensed, and the context for that percentage, e.g., routine maintenance, excluding routine maintenance, etc.", de: "Zusage der Verfügbarkeit und Leistung des lizenzierten Produktes in Prozent."],
+                    descr:allDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false //TODO: OT.String
+            ],
+            [
+                    name: [en: "Permitted Uses", de: "Permitted Uses"],
+                    expl: [en: "The allowance to use s. th. several times.", de: ""],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [key: "otheruserestriction", en: "Other Use Restriction Note", de: "Zusätzliche Einschränkungen"],
+                    expl: [en: "Additional information about other use restrictions not adequately described elsewhere, e.g., time of day restrictions on Concurrent Users.", de: "Zusätzliche Einschränkungen, z.B. Tageszeit."],
+                    descr:allDescr, type: OT.String, isUsedForLogic: false
+            ],
+            [
+                    name: [en: "Regional Restriction", de: "Regionale Einschränkung"],
+                    expl: [en: "", de: "Aussagen darüber, welche regionalen Einschränkungen zur Teilnahme am Vertrag gelten."],
+                    descr:allDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false
+            ],
+            /*[
+                    name: [en: "Service regulations", de: "Servicestandards"],
+                    expl: [en: "", de: "Aussagen über Servicestandards, die einzuhalten sind"],
+                    descr:allDescr, type: OT.String  // TODO: should be deleted, because no ERMI, no ONIX-PL and doublet with "Performance warranty". In use at the moment.
+            ],*/
+            [
+                    name: [en: "User information confidentiality", de: "Vertraulichkeit der Nutzerdaten"],
+                    expl: [en: "", de: "Aussagen über Servicestandards, die einzuhalten sind"],
+                    descr:allDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false //TODO: cat:'YNU'
+            ],
 
-                // New Properties by FAK / Verde Review
-                [name: [en: "General Terms note", de: "Allgemeine Bedingungen"],                    descr:allDescr, type: OT.String],
-                [name: [en: "User restriction note", de: "Benutzungsbeschränkungen"],               descr:allDescr, type: OT.String],
-                [name: [en: "Authorized user definition", de: "Definition für berechtigte Nutzer"], descr:allDescr, type: OT.String],
-                [name: [en: "Local authorized user defintion", de: "Lokale Definition für berechtigte Nutzer"],      descr:allDescr, type: OT.String],
-                [name: [en: "ILL print or fax", de: "Fernleihe per Papier oder Fax"],           descr:allDescr, type: OT.Rdv, cat:'Permissions'],
-                [name: [en: "ILL secure electronic transmission", de: "Fernleihe über sichere elektonische Übermittlung"], descr:allDescr, type: OT.Rdv, cat:'Permissions'],
-                [name: [en: "ILL electronic", de: "Fernleihe elektronisch"],                    descr:allDescr, type: OT.Rdv, cat:'Permissions'],
-                [name: [en: "ILL record keeping required", de: "Fernleihdatensatz muss gespeichert werden"], descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                [name: [en: "Fair use clause indicator", de: "Hinweis auf Klausel über die 'faire Nutzung'"], descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                [name: [en: "All rights reserved indicator", de: "Hinweis auf 'Alle Rechte vorbehalten'"], descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                [name: [en: "Data protection override", de: "Datenschutz aufgehoben"],          descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                [name: [en: "Citation requirement detail", de: "Details der Zitier-Regeln"],    descr:allDescr, type: OT.String],
-                [name: [en: "Digitial copy", de: "Digitalkopie"],                               descr:allDescr, type: OT.Rdv, cat:'Permissions'],
-                [name: [en: "Print copy", de: "Druckkopie"],                                    descr:allDescr, type: OT.Rdv, cat:'Permissions'],
-                [name: [en: "Scholarly sharing", de: "Weitergabe im Rahmen der Lehre"],         descr:allDescr, type: OT.Rdv, cat:'Permissions'],
-                [name: [en: "Distance Education", de: "Fernstudium"],                           descr:allDescr, type: OT.Rdv, cat:'Permissions'],
-                [name: [en: "Course reserve print", de: "Seminarapparat gedruckt"],             descr:allDescr, type: OT.Rdv, cat:'Permissions'],
-                [name: [en: "Course reserve electronic/cached", de: "Seminarapparat elektronisch"], descr:allDescr, type: OT.Rdv, cat:'Permissions'],
-                [name: [en: "Electronic link", de: "Elektronischer Link"],                      descr:allDescr, type: OT.Rdv, cat:'Permissions'],
-                [name: [en: "Course pack print", de: "Skripte gedruckt"],                       descr:allDescr, type: OT.Rdv, cat:'Permissions'],
-                [name: [en: "Course pack electronic", de: "Skripte elektronisch"],              descr:allDescr, type: OT.Rdv, cat:'Permissions'],
-                [name: [en: "Remote Access", de: "Remote-Zugriff"],                             descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                [name: [en: "Walk-in Access", de: "Vor-Ort-Nutzung"],                           descr:allDescr, type: OT.Rdv, cat:'Permissions'],
-                [name: [en: "Completeness of content clause", de: "Klausel zur Vollständigkeit der Inhalte"], descr:allDescr, type: OT.Rdv, cat:'Existence'],
-                [name: [en: "Concurrency with print version", de: "Gleichzeitigkeit mit Druckversion"], descr:allDescr, type: OT.Rdv, cat:'Existence'],
-                [name: [en: "User information confidentiality", de: "Vertraulichkeit der Nutzerdaten"], descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                [name: [en: "Clickwrap modification", de: "Clickthrough"],                        descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                [name: [en: "Indemnification by licensor", de: "Entschädigung durch den Lizenzgeber"], descr:allDescr, type: OT.Rdv, cat:'Indemnification'],
-                [name: [en: "Indemnification by licensor indicator", de: "Entschädigung durch den Lizenzgeber Anzeiger"], descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                [name: [en: "Confidentiality of agreement", de: "Vertraulichkeit der Vereinbarung"], descr:allDescr, type: OT.Rdv, cat:'Confidentiality'],
-                [name: [en: "Governing law", de: "Anzuwendendes Recht"],                        descr:allDescr, type: OT.String],
-                [name: [en: "Governing jurisdiction", de: "Gerichtsstand"],                     descr:allDescr, type: OT.String],
-                [name: [en: "Applicable copyright law", de: "Maßgebliches Urheberrechtsgesetz"], descr:allDescr, type: OT.String],
-                [name: [en: "Cure period for breach", de: "Zeitraum der Behebung bei Vertragsbruch"], descr:allDescr, type: OT.String],
-                [name: [en: "Content warranty", de: "Gewährleistung über den Inhalt"],          descr:allDescr, type: OT.String],
-                [name: [en: "Performance warranty", de: "Gewährleistung einer Systemleistung/Performanz"], descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                [name: [en: "Uptime guarantee", de: "Gewährleistung einer verfügbaren Betriebszeit"], descr:allDescr, type: OT.String],
-                [name: [en: "Maintenance window", de: "Wartungsfenster"],                       descr:allDescr, type: OT.String],
-                [name: [en: "Licensee termination right", de: "Kündigungsrecht des Lizenznehmers"], descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                [name: [en: "Licensee termination condition", de: "Kündigungsrecht des Lizenznehmers Voraussetzung"], descr:allDescr, type: OT.Rdv, cat:'Termination Condition'],
-                [name: [en: "Licensee termination notice period", de: "Kündigungsfrist des Lizenznehmers"], descr:allDescr, type: OT.String],
-                [name: [en: "Licensor termination right", de: "Kündigungsrecht des Lizenzgebers"], descr:allDescr, type: OT.Rdv, cat:'YNO'],
-                [name: [en: "Licensor termination condition", de: "Kündigungsrecht des Lizenzgebers Voraussetzung"], descr:allDescr, type: OT.Rdv, cat:'Termination Condition'],
-                [name: [en: "Licensor termination notice period", de: "Kündigungsfrist des Lizenzgebers"], descr:allDescr, type: OT.String],
-                [name: [en: "Termination requirement note", de: "Kündigungsrecht besondere Anforderung"], descr:allDescr, type: OT.String]
 
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
@@ -503,26 +886,104 @@ class BootStrap {
         //def allOADescr = [en: PropertyDefinition.LIC_OA_PROP, de: PropertyDefinition.LIC_OA_PROP]
         def allOADescr = [en: PropertyDefinition.LIC_PROP, de: PropertyDefinition.LIC_PROP]
 
-        def requiredOAProps = [
-                [name: [en: "Open Access", de: "Open Access"],                                                              descr: allOADescr, type: OT.Rdv, cat: 'YN'],
-                [name: [en: "Type", de: "Variante"],                                                                        descr: allOADescr, type: OT.Rdv, cat: 'License.OA.Type'],
-                [name: [en: "Electronically Archivable Version", de: "Archivierbare Version"],                              descr: allOADescr, type: OT.Rdv, cat: 'License.OA.eArcVersion'],
-                [name: [en: "Embargo Period", de: "Embargo"],                                                               descr: allOADescr, type: OT.Int],
-                [name: [en: "Receiving Modalities", de: "Bezugsmodalitäten"],                                               descr: allOADescr, type: OT.Rdv, cat: 'License.OA.ReceivingModalities', multiple:true],
-                [name: [en: "Authority", de: "Autorität"],                                                                  descr: allOADescr, type: OT.Rdv, cat:'Authority'],
-                [name: [en: "Repository", de: "Repositorium"],                                                              descr: allOADescr, type: OT.Rdv, cat: 'License.OA.Repository', multiple:true],
-                [name: [en: "APC Discount", de: "Sonderkonditionen für Autoren"],                                           descr: allOADescr, type: OT.String],
-                [name: [en: "Vouchers Free OA Articles", de: "Vouchers"],                                                   descr: allOADescr, type: OT.String],
-                [name: [en: "Corresponding Author Identification", de: "Autorenidentifikation"],                            descr: allOADescr, type: OT.Rdv, cat: 'License.OA.CorrespondingAuthorIdentification', multiple:true],
-                [name: [en: "Branding", de: "Branding"],                                                                    descr: allOADescr, type: OT.String],
-                [name: [en: "Funder", de: "Funder"],                                                                        descr: allOADescr, type: OT.String],
-                [name: [en: "License to Publish", de: "Publikationslizenz"],                                                descr: allOADescr, type: OT.Rdv, cat: 'License.OA.LicenseToPublish', multiple:true],
-                [name: [en: "Offsetting", de: "Offsetting Berechnungsmodell"],                                              descr: allOADescr, type: OT.String],
-                [name: [en: "Publishing Fee", de: "Publishing Fee"],                                                        descr: allOADescr, type: OT.String],
-                [name: [en: "Reading Fee", de: "Reading Fee"],                                                              descr: allOADescr, type: OT.String],
-                [name: [en: "OA First Date", de: "OA Startdatum"],                                                          descr: allOADescr, type: OT.Date],
-                [name: [en: "OA Last Date", de: "OA Enddatum"],                                                             descr: allOADescr, type: OT.Date],
-                [name: [en: "OA Note", de: "OA Bemerkung"],                                                                 descr: allOADescr, type: OT.String]
+        def requiredOAProps
+        requiredOAProps = [
+                [
+                        name : [en: "APC Discount", de: "Sonderkonditionen für Autoren"],
+                        expl : [en: "", de: "Sonderkonditionen für Autoren aus teilnehmenden Einrichtungen.z. B. APC-Rabatt."],
+                        descr: allOADescr, type: OT.String, isUsedForLogic: false
+                ],
+                [
+                        name : [en: "Authority", de: "Zweitveröffentlichungsrecht Verfügungsberechtigter"],
+                        expl : [en: "", de: "Aussage darüber, wer über das Recht zur Zweitveröffentlichung verfügt."],
+                        descr: allOADescr, type: OT.Rdv, cat: 'Authority', isUsedForLogic: false //Todo: neu
+                ],
+                [
+                        name : [en: "Branding", de: "Branding"],
+                        expl : [en: "The availability of a branding feature.", de: "Aussagen über das Wasserzeichen, mit welchem das lizenzierte Material gekennzeichnet wird."],
+                        descr: allOADescr, type: OT.String, isUsedForLogic: false //Todo: OT.Rdv, cat: 'YNU' (DLF-ERMI)
+                ],
+                [
+                        name : [en: "Corresponding Author Identification", de: "Autorenidentifikation"],
+                        expl : [en: "", de: "Aussagen über die Vorgaben zur Autorenidentifikation."],
+                        descr: allOADescr, type: OT.Rdv, cat: 'License.OA.CorrespondingAuthorIdentification', multiple: true, isUsedForLogic: false
+                ],
+                [
+                        name : [en: "Electronically Archivable Version", de: "Zweitveröffentlichungsrecht archivierbare Version"],
+                        expl : [en: "Describes which version can be used for e.g. long-term preservation.", de: "Aussagen über die Möglichkeiten, eine archivierbare Version auf einem Repositorium zu hinterlegen."],
+                        descr: allOADescr, type: OT.Rdv, cat: 'License.OA.eArcVersion', isUsedForLogic: false
+                ],
+                [
+                        name : [en: "Embargo Period", de: "Zweitveröffentlichungsrecht Embargo"],
+                        expl : [en: "The amount of time by which content is intentionally delayed. Refer to developing standards (e.g. ONIX for Serials) for values.", de: "Aussagen über die Zeitspanne, nach welcher auf ein elektron. Dokument ein Zugriff möglich wird."],
+                        descr: allOADescr, type: OT.Int, isUsedForLogic: false
+                ],
+                [
+                        name : [en: "Embargo Period", de: "Zweitveröffentlichungsrecht Embargo"],
+                        expl : [en: "The amount of time by which content is intentionally delayed. Refer to developing standards (e.g. ONIX for Serials) for values.", de: "Aussagen über die Zeitspanne, nach welcher auf ein elektron. Dokument ein Zugriff möglich wird."],
+                        descr: allOADescr, type: OT.Int, isUsedForLogic: false
+                ],
+                [
+                        name : [en: "Funder", de: "Publikationsförderer"],
+                        expl : [en: "S.o. who provides money for s.th.", de: "Aussage über Geldgeber."],
+                        descr: allOADescr, type: OT.String, isUsedForLogic: false
+                ],
+                [
+                        name : [en: "License to Publish", de: "Publikationslizenz"],
+                        expl : [en: "An official sign by the CC which permitts different kind of usage.", de: "Aussagen über die Nutzung der Publikationslizenz (Creative Commons Attribution)."],
+                        descr: allOADescr, type: OT.Rdv, cat: 'License.OA.LicenseToPublish', multiple: true, isUsedForLogic: false
+                ],
+                [
+                        name : [en: "OA First Date", de: "OA Startdatum"],
+                        expl : [en: "Time span start", de: "Aussagen über den zeitlichen Beginn, für welchen Institution/Autor Open Access-Rechte haben."],
+                        descr: allOADescr, type: OT.Date, isUsedForLogic: false
+                ],
+                [
+                        name : [en: "OA Last Date", de: "OA Enddatum"],
+                        expl : [en: "Time span end", de: "Aussagen über den zeitlichen Endpunkt, für welchen Institution/Autor Open Access-Rechte haben.."],
+                        descr: allOADescr, type: OT.Date, isUsedForLogic: false
+                ],
+                [
+                        name : [en: "OA Note", de: "OA Bemerkung"],
+                        expl : [en: "", de: "Weitere Aussagen und Bemerkungen zu Open Access."],
+                        descr: allOADescr, type: OT.String, isUsedForLogic: false
+                ],
+                [
+                        name : [en: "Offsetting", de: "Offsetting Berechnungsmodell"],
+                        expl : [en: "", de: "Aussagen über das Berechnungsmodell."],
+                        descr: allOADescr, type: OT.String, isUsedForLogic: false
+                ],
+                [
+                        name : [key: "Type", en: "Open Access", de: "Open Access (Variante)"],
+                        expl : [en: "", de: "Grundlegendes Merkmal, ob eine Lizenz bzw. ein Titel eine Open Access-Komponente enthält. (gold: OA Publikation; grün: Archivierung von pre-print und post-print; blau: Archiverung von post-print; gelb: Archivierung von pre-print; weiß: Archivierung wird nicht formell unterstützt)."],
+                        descr: allOADescr, type: OT.Rdv, cat: 'License.OA.Type', isUsedForLogic: false
+                ],
+                // [name: [en: "Open Access", de: "Open Access", descr: allOADescr, type: OT.Rdv, cat: 'YN'], // Todo: delete in DB after swapping with "Type"
+                [
+                        name : [en: "Publishing Fee", de: "Publikationsgebür"],
+                        expl : [en: "Share of money which has to be payed by e.g. the author.", de: "Aussagen über die Publikationsgebühren."],
+                        descr: allOADescr, type: OT.String, isUsedForLogic: false
+                ],
+                [
+                        name : [en: "Reading Fee", de: "Reading Fee"],
+                        expl : [en: "Share of money which has to be payed by e.g. the user", de: "Aussagen über die Zugriffsgebühren."],
+                        descr: allOADescr, type: OT.String, isUsedForLogic: false
+                ],
+                [
+                        name : [en: "Receiving Modalities", de: "Zweitveröffentlichungsrecht Bezugsmodalitäten"],
+                        expl : [en: "Defines the way s.th. is delivered.", de: "Aussagen über die Bezugsmodalitäten der archivierbaren Version."],
+                        descr: allOADescr, type: OT.Rdv, cat: 'License.OA.ReceivingModalities', multiple: true, isUsedForLogic: false
+                ],
+                [
+                        name : [en: "Repository", de: "Zweitveröffentlichungsrecht Repositorium"],
+                        expl : [en: "A place where s.th. can be stored and found.", de: "Aussagen über die Art des Repositoriums."],
+                        descr: allOADescr, type: OT.Rdv, cat: 'License.OA.Repository', multiple: true, isUsedForLogic: false
+                ],
+                [
+                        name : [en: "Vouchers Free OA Articles", de: "Vouchers"],
+                        expl : [en: "A piece of e.g. paper that can be used instead of e.g. money.", de: "Aussagen über Vouchers, die der Anbieter der teiln. Einrichtung zur Verfügung stellt und die zur kostenlosen Publikation in einer Hybrid-Zeitschrift berechtigen."],
+                        descr: allOADescr, type: OT.String, isUsedForLogic: false
+                ],
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredOAProps)
 
@@ -530,21 +991,108 @@ class BootStrap {
         def allArcDescr = [en: PropertyDefinition.LIC_PROP, de: PropertyDefinition.LIC_PROP]
 
         def requiredARCProps = [
-                [name: [en: "Post Cancellation Online Access", de: "Zugriffsrechte: Dauerhaft"],                            descr: allArcDescr, type: OT.Rdv, cat: 'YNO'],
-                [name: [en: "Continuing Access: Payment Note", de: "Zugriffsrechte: Kosten"],                               descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.PaymentNote'],
-                [name: [en: "Continuing Access: Restrictions", de: "Zugriffsrechte: Einschränkungen"],                      descr: allArcDescr, type: OT.Rdv, cat: 'YNO'],
-                [name: [en: "Continuing Access: Title Transfer", de: "Zugriffsrechte: Titeltransfer"],                      descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.TitleTransferRegulation'],
-                [name: [en: "Archival Copy: Permission", de: "Archivkopie: Recht"],                                         descr: allArcDescr, type: OT.Rdv, cat: 'YNO'],
-                [name: [en: "Archival Copy Content", de: "Archivkopie Form"],                                               descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.ArchivalCopyContent', multiple:true],
-                [name: [en: "Archival Copy: Cost", de: "Archivkopie: Kosten"],                                              descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.ArchivalCopyCost'],
-                [name: [en: "Archival Copy: Time", de: "Archivkopie: Zeitpunkt"],                                           descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.ArchivalCopyTime'],
-                [name: [en: "Hosting: Permission", de: "Hostingrecht"],                                                     descr: allArcDescr, type: OT.Rdv, cat: 'YNO'],
-                [name: [en: "Hosting: Obligation", de: "Hostingpflicht"],                                                   descr: allArcDescr, type: OT.Rdv, cat: 'YN'],
-                [name: [en: "Hosting Time", de: "Hostingrecht Zeitpunkt"],                                                  descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.HostingTime', multiple:true],
-                [name: [en: "Hosting: Additonal Agreement Necessary", de: "Hostingrecht: Zusatzvereinbarung notwendig"],    descr: allArcDescr, type: OT.Rdv, cat: 'YN'],
-                [name: [en: "Hosting: Authorized", de: "Hostingrecht: Berechtigte"],                                        descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.Authorized', multiple:true],
-                [name: [en: "Hosting: Restriction", de: "Hostingrecht: Einschränkung"],                                     descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.HostingRestriction', multiple:true],
-                [name: [en: "Hosting: Solution", de: "Hostingrecht: Lösung"],                                               descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.HostingSolution', multiple:true],
+                [
+                        name: [en: "Perpetual coverage note", de: "Perpetual coverage note"],
+                        expl: [en: "", de: ""],
+                        descr:allDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false //TODO: cat:'YNU'
+                ],
+                [
+                        name : [en: "Perpetual coverage from", de: "Dauerhafter Zugang Zeitraum von"],
+                        expl : [en: "Time span start.", de: "Definition des Zeitpunktes, ab welchem ein dauerhafter Zugriff ermöglicht wird."],
+                        descr: allArcDescr, type: OT.Date, isUsedForLogic: false
+                ],
+                [
+                        name : [en: "Perpetual coverage to", de: "Dauerhafter Zugang Zeitraum bis"],
+                        expl : [en: "Time span end.", de: "Definition des Zeitpunktes, bis zu welchem ein dauerhafter Zugriff ermöglicht wird."],
+                        descr: allArcDescr, type: OT.Date, isUsedForLogic: false
+                ],
+                [
+                        name : [key: "archivingright", en: "Archiving rights", de: "Archivrechte"],
+                        expl : [en: "The right to permanently retain an electronic copy of the licensed materials.", de: "Aussage, ob ein Archivrecht besteht."],
+                        descr: allArcDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false //TODO: cat:'YNU'  or Permissions
+                ],
+                [
+                        name : [key: "archivingformat", en: "Archiving format", de: "Archivdaten Übermittlungsformat"],
+                        expl : [en: "The format of the archival content. Values should be site-definable (e.g. remote, CD-ROM).", de: ""],
+                        descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.ArchivalCopyTransmissionFormat', isUsedForLogic: false
+                ],
+                [
+                        name : [en: "Archival Copy Content", de: "Archivkopie Form"],
+                        expl : [en: "", de: "Erklärung: Aussagen über den zu erhaltenen Datenträger mit Archivmaterial, z. B. Rohdaten, inkl. Struktur, ohne DRM, inkl. Metadaten, inkl. Software."],
+                        descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.ArchivalCopyContent', isUsedForLogic: false //TODO: String
+                ],
+                [
+                        name : [en: "Archival Copy: Cost", de: "Archivkopie Kosten"],
+                        expl : [en: "", de: "Aussagen über die Kosten der Archivkopieerstellung."],
+                        descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.ArchivalCopyCost', isUsedForLogic: false
+                ],
+                [
+                        name : [en: "Archival Copy: Permission", de: "Archivkopie Recht"],
+                        expl : [en: "", de: "Aussage, ob ein Recht auf eine Archivkopie besteht."],
+                        descr: allArcDescr, type: OT.Rdv, cat: 'YNO', isUsedForLogic: false
+                ],
+                [
+                        name : [en: "Archival Copy: Time", de: "Archivkopie Zeitpunkt"],
+                        expl : [en: "", de: "Aussagen über den Zeitpunkt, an welchem die Archivkopie angefertigt wird."],
+                        descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.ArchivalCopyTime', multiple:true, isUsedForLogic: false
+                ],
+                [
+                        name : [en: "Continuing Access: Payment Note", de: "Zugriffsrechte Kosten"],
+                        expl : [en: "", de: "Aussagen über mögliche laufende Kosten bei fortgesetztem Hosting durch den Anbieter."],
+                        descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.PaymentNote', isUsedForLogic: false
+                ],
+                [
+                        name : [en: "Continuing Access: Restrictions", de: "Zugriffsrechte Einschränkungen"],
+                        expl : [en: "", de: "Aussagen über Einschränkungen des Zugriffs, wenn z. B. im Post-Cancellation-Access nur ein Teil der vorher lizensierten Inhalte verfügbar ist."],
+                        descr: allArcDescr, type: OT.Rdv, cat: 'YNO', isUsedForLogic: false //TODO: cat:'YNU'
+                ],
+                [
+                        name : [en: "Post Cancellation Online Access", de: "Zugriffsrechte dauerhaft"],
+                        expl : [en: "", de: "Aussagen über das dauerhafte Zugriffsrecht nach Kündigung."],
+                        descr: allArcDescr, type: OT.Rdv, cat: 'YNO', isUsedForLogic: false //TODO: cat:'YNU'
+                ],
+                [
+                        name: [en: "Continuing Access: Title Transfer", de: "Zugriffsrechte Titeltransferregeln"],
+                        expl : [en: "", de: "Aussagen über Regeln des Titeltransfers, z. B. Regelung vorhanden, keine Regelung, Transfer Code of Practice."],
+                        descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.TitleTransferRegulation', isUsedForLogic: false //TODO: OT.String
+                ],
+                [
+                        name: [en: "Hosting Time", de: "Hostingrecht Zeitpunkt"],
+                        expl : [en: "", de: "Aussagen über den Zeitpunkt, an welchem das Hostingrecht beginnt."],
+                        descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.HostingTime', multiple:true, isUsedForLogic: false
+                ],
+                [
+                        name: [en: "Hosting: Authorized", de: "Hostingrecht Berechtigte"],
+                        expl : [en: "", de: "Aussage über die zum Hosting Berechtigten."],
+                        descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.Authorized', multiple:true, isUsedForLogic: false
+                ],
+                [
+                        name: [en: "Hosting: Obligation", de: "Hostingpflicht"],
+                        expl : [en: "", de: ""],
+                        descr: allArcDescr, type: OT.Rdv, cat: 'YN', isUsedForLogic: false //TODO: cat:'YNU'
+                ],
+                [
+                        name : [en: "Hosting: Permission", de: "Hostingrecht"],
+                        expl : [en: "", de: ""],
+                        descr: allArcDescr, type: OT.Rdv, cat: 'YNO', isUsedForLogic: false //TODO: cat:'YNU'
+                ],
+                [
+                        name: [en: "Hosting: Restriction", de: "Hostingrecht Einschränkung"],
+                        expl : [en: "", de: ""],
+                        descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.HostingRestriction', multiple:true, isUsedForLogic: false
+                ],
+                [
+                        name: [en: "Hosting: Solution", de: "Hostingrecht: Lösung"],
+                        expl : [en: "", de: "Aussagen, über welche technische Lösung das Material angeboten wird."],
+                        descr: allArcDescr, type: OT.Rdv, cat: 'License.Arc.HostingSolution', multiple:true, isUsedForLogic: false
+                ],
+                [
+                        name: [key: "intellectualpropertywarranty", en: "Intellectual property warranty", de: "Gewährleistung des/zum geistigen Eigentum"],
+                        expl : [en: "A clause in which the licensor warrants that making the licensed materials available does not infringe upon the intellectual property rights of any third parties. This clause, in the form of a warranty, may or may not include an indemnification of licensee.", de: "Aussagen darüber, dass durch die Freigabe des Materials durch den Lizenzgeber keine Rechte Dritter und deren geistiges Eigentum verletzt werden."],
+                        descr: allArcDescr, type: OT.Rdv, cat:'YNO', isUsedForLogic: false //TODO: cat:'YNU'
+                ],
+                //[name: [en: "Hosting: Additonal Agreement Necessary", de: "Hostingrecht: Zusatzvereinbarung notwendig"],descr: allArcDescr, type: OT.Rdv, cat: 'YN'],  //TODO: To be deleted, but in use
+
         ]
         createPropertyDefinitionsWithI10nTranslations(requiredARCProps)
     }
@@ -786,6 +1334,7 @@ class BootStrap {
         // refdata categories
 
         RefdataCategory.loc('YN',                   	                    [en: 'Yes/No', de: 'Ja/Nein'], BOOTSTRAP)
+        RefdataCategory.loc('YNU',                   	                    [en: 'Yes/No/Unknown', de: 'Ja/Nein/Unbekannt'], BOOTSTRAP)
         RefdataCategory.loc('YNO',                  	                    [en: 'Yes/No/Others', de: 'Ja/Nein/Anderes'], BOOTSTRAP)
         RefdataCategory.loc('Permissions',                                  [en: 'Permissions', de: 'Berechtigungen'], BOOTSTRAP)
         RefdataCategory.loc('Existence',                                    [en: 'Existence', de: 'Vorliegen'], BOOTSTRAP)
@@ -806,6 +1355,7 @@ class BootStrap {
         RefdataCategory.loc('Federal State',        	                    [en: 'Federal State', de: 'Bundesland'], BOOTSTRAP)
         RefdataCategory.loc('Funder Type',          	                    [en: 'Funder Type', de: 'Trägerschaft'], BOOTSTRAP)
         RefdataCategory.loc('Gender',               	                    [en: 'Gender', de: 'Geschlecht'], BOOTSTRAP)
+        RefdataCategory.loc('Invoicing',               	                    [en: 'Invoicing', de: 'Rechnungsstellung'], BOOTSTRAP)
         RefdataCategory.loc('Library Network',      	                    [en: 'Library Network', de: 'Verbundzugehörigkeit'], BOOTSTRAP)
         RefdataCategory.loc('Library Type',         	                    [en: 'Library Type', de: 'Bibliothekstyp'], BOOTSTRAP)
         RefdataCategory.loc('OrgSector',            	                    [en: 'OrgSector', de: 'Bereich'], BOOTSTRAP)
@@ -823,6 +1373,7 @@ class BootStrap {
         RefdataCategory.loc('Task Status',          	                    [en: 'Task Status', de: 'Aufgabenstatus'], BOOTSTRAP)
         RefdataCategory.loc('Ticket.Category',          	                  [en: 'Ticket Category', de: 'Kategorie'], BOOTSTRAP)
         RefdataCategory.loc('Ticket.Status',          	                      [en: 'Ticket Status', de: 'Ticketstatus'], BOOTSTRAP)
+        RefdataCategory.loc('License.RemoteAccess',          	                      [en: 'Remote Access', de: 'Remote-Zugriff'], BOOTSTRAP)
         RefdataCategory.loc('License.OA.ReceivingModalities',               [en: 'Receiving Modalities', de: 'Bezugsmodalitäten'], BOOTSTRAP)
         RefdataCategory.loc('License.OA.Repository',                        [en: 'Repository', de: 'Repositorium'], BOOTSTRAP)
         RefdataCategory.loc('License.OA.CorrespondingAuthorIdentification', [en: 'Corresponding Author Identification', de: 'Autorenindentifikation'], BOOTSTRAP)
@@ -832,10 +1383,16 @@ class BootStrap {
 		RefdataCategory.loc('License.Arc.ArchivalCopyCost',                 [en: 'Archival Copy Cost', de: 'Archivkopie Kosten'], BOOTSTRAP)
 		RefdataCategory.loc('License.Arc.ArchivalCopyTime',                 [en: 'Archival Copy Time', de: 'Archivkopie Zeitpunkt'], BOOTSTRAP)
         RefdataCategory.loc('License.Arc.ArchivalCopyContent',              [en: 'Archival Copy Content', de: 'Archivkopie Form'], BOOTSTRAP)
+        RefdataCategory.loc('License.Arc.ArchivalCopyTransmissionFormat',      [en: 'Archival Copy Transmission Format', de: 'Archivkopie Übermittlungsformat'], BOOTSTRAP)
         RefdataCategory.loc('License.Arc.HostingTime',                      [en: 'Hosting Time', de: 'Hostingrecht Zeitpunkt'], BOOTSTRAP)
         RefdataCategory.loc('License.Arc.Authorized',                       [en: 'Hosting Authorized', de: 'Hostingrecht Berechtigte'], BOOTSTRAP)
         RefdataCategory.loc('License.Arc.HostingRestriction',               [en: 'Hosting Restriction', de: 'Hostingrecht Einschränkung'], BOOTSTRAP)
         RefdataCategory.loc('License.Arc.HostingSolution',                  [en: 'Hosting Solution', de: 'Hostingrecht Lösung'], BOOTSTRAP)
+        RefdataCategory.loc('License.Statistics.Standards',                  [en: 'Statistics Standards', de: 'Statistikstandard'], BOOTSTRAP)
+        RefdataCategory.loc('License.Statistics.Delivery',                  [en: 'Statistics Delivery', de: 'Statistik Liefermethode'], BOOTSTRAP)
+        RefdataCategory.loc('License.Statistics.Format',                  [en: 'Statistics Format', de: 'Statistik Auslieferungsformat'], BOOTSTRAP)
+        RefdataCategory.loc('License.Statistics.Frequency',                  [en: 'Statistics Frequency', de: 'Statistik Auslieferungsfrequenz'], BOOTSTRAP)
+        RefdataCategory.loc('License.Statistics.UserCreds',                  [en: 'Statistics User Credentials', de: 'Statistik Nutzeridentifikation'], BOOTSTRAP)
         RefdataCategory.loc('Package Status',                               [en: 'Package Status', de: 'Paketstatus'], BOOTSTRAP)
         RefdataCategory.loc('Number Type',                                  [en: 'Number Type', de: 'Zahlen-Typ'], BOOTSTRAP)
         RefdataCategory.loc('User.Settings.Dashboard.Tab',                  [en: 'Dashboard Tab', de: 'Dashbord Tab'], BOOTSTRAP)
@@ -844,11 +1401,15 @@ class BootStrap {
         RefdataValue.loc('YN',   [en: 'Yes', de: 'Ja'], BOOTSTRAP)
         RefdataValue.loc('YN',   [en: 'No', de: 'Nein'], BOOTSTRAP)
 
+        RefdataValue.loc('YNU',   [en: 'Yes', de: 'Ja'], BOOTSTRAP)
+        RefdataValue.loc('YNU',   [en: 'No', de: 'Nein'], BOOTSTRAP)
+        RefdataValue.loc('YNU',   [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
+
         RefdataValue.loc('YNO',  [en: 'Yes', de: 'Ja'], BOOTSTRAP)
         RefdataValue.loc('YNO',  [en: 'No', de: 'Nein'], BOOTSTRAP)
         RefdataValue.loc('YNO',  [en: 'Not applicable', de: 'Nicht zutreffend'], BOOTSTRAP)
         RefdataValue.loc('YNO',  [en: 'Planed', de: 'Geplant'], BOOTSTRAP)
-        RefdataValue.loc('YNO',  [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
+        RefdataValue.loc('YNO',  [en: 'Unknown', de: 'Unklar'], BOOTSTRAP)
         RefdataValue.loc('YNO',  [en: 'Other', de: 'Andere'], BOOTSTRAP)
 
         RefdataValue.loc('Permissions',  [en: 'Permitted (explicit)', de: 'Ausdrücklich erlaubt'], BOOTSTRAP)
@@ -857,7 +1418,7 @@ class BootStrap {
         RefdataValue.loc('Permissions',  [en: 'Prohibited (interpreted)', de: 'Vermutlich verboten'], BOOTSTRAP)
         RefdataValue.loc('Permissions',  [en: 'Silent', de: 'Stillschweigend'], BOOTSTRAP)
         RefdataValue.loc('Permissions',  [en: 'Not applicable', de: 'Nicht zutreffend'], BOOTSTRAP)
-        RefdataValue.loc('Permissions',  [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
+        RefdataValue.loc('Permissions',  [en: 'Unknown', de: 'Unklar'], BOOTSTRAP)
 
         RefdataValue.loc('Existence',   [en: 'Existent', de: 'Bestehend'], BOOTSTRAP)
         RefdataValue.loc('Existence',   [en: 'Nonexistend', de: 'Fehlend'], BOOTSTRAP)
@@ -865,19 +1426,19 @@ class BootStrap {
         RefdataValue.loc('Indemnification',  [en: 'General', de: 'Generell'], BOOTSTRAP)
         RefdataValue.loc('Indemnification',  [en: 'Intellectual Property Only', de: 'Nur geistiges Eigentum'], BOOTSTRAP)
         RefdataValue.loc('Indemnification',  [en: 'Other', de: 'Andere'], BOOTSTRAP)
-        RefdataValue.loc('Indemnification',  [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
+        RefdataValue.loc('Indemnification',  [en: 'Unknown', de: 'Unklar'], BOOTSTRAP)
 
 
 
         RefdataValue.loc('Confidentiality',  [en: 'All but user terms', de: 'Alles außer Nutzungsbedingungen'], BOOTSTRAP)
         RefdataValue.loc('Confidentiality',  [en: 'Financial only', de: 'Nur Finanzangelegenheiten'], BOOTSTRAP)
         RefdataValue.loc('Confidentiality',  [en: 'No', de: 'Nein'], BOOTSTRAP)
-        RefdataValue.loc('Confidentiality',  [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
+        RefdataValue.loc('Confidentiality',  [en: 'Unknown', de: 'Unklar'], BOOTSTRAP)
 
         RefdataValue.loc('Termination Condition',  [en: 'At will', de: 'Nach Belieben'], BOOTSTRAP)
         RefdataValue.loc('Termination Condition',  [en: 'Breach by Licensor/Licensee', de: 'Wegen Verstoß des Vertragspartners'], BOOTSTRAP)
         RefdataValue.loc('Termination Condition',  [en: 'Other', de: 'Andere Gründe'], BOOTSTRAP)
-        RefdataValue.loc('Termination Condition',  [en: 'Unknown', de: 'Unbekannt'], BOOTSTRAP)
+        RefdataValue.loc('Termination Condition',  [en: 'Unknown', de: 'Unklar'], BOOTSTRAP)
 
         RefdataValue.loc('AddressType', [en: 'Postal address', de: 'Postanschrift'], BOOTSTRAP)
         RefdataValue.loc('AddressType', [en: 'Billing address', de: 'Rechnungsanschrift'], BOOTSTRAP)
@@ -913,16 +1474,265 @@ class BootStrap {
         RefdataValue.loc('Cost configuration',[en:'negative',de:'negativ'],BOOTSTRAP)
         RefdataValue.loc('Cost configuration',[en:'neutral',de:'neutral'],BOOTSTRAP)
 
-        RefdataValue.loc('Country',   [en: 'Germany', de: 'Deutschland'], BOOTSTRAP)
-        RefdataValue.loc('Country',   [en: 'Switzerland', de: 'Schweiz'], BOOTSTRAP)
-        RefdataValue.loc('Country',   [en: 'Austria', de: 'Österreich'], BOOTSTRAP)
-        RefdataValue.loc('Country',   [en: 'France', de: 'Frankreich'], BOOTSTRAP)
-        RefdataValue.loc('Country',   [en: 'Great Britain', de: 'Großbritannien'], BOOTSTRAP)
-        RefdataValue.loc('Country',   [en: 'United States of America', de: 'Vereinigte Staaten von Amerika'], BOOTSTRAP)
-        RefdataValue.loc('Country',   [en: 'Belgium', de: 'Belgien'], BOOTSTRAP)
-        RefdataValue.loc('Country',   [en: 'Italy', de: 'Italien'], BOOTSTRAP)
-        RefdataValue.loc('Country',   [en: 'Netherlands', de: 'Niederlande'], BOOTSTRAP)
-        RefdataValue.loc('Country',   [en: 'Italy', de: 'Italien'], BOOTSTRAP)
+        // RefdataValue.loc('Country',   [en: 'Germany', de: 'Deutschland'], BOOTSTRAP)
+        // RefdataValue.loc('Country',   [en: 'Switzerland', de: 'Schweiz'], BOOTSTRAP)
+        // RefdataValue.loc('Country',   [en: 'Austria', de: 'Österreich'], BOOTSTRAP)
+        // RefdataValue.loc('Country',   [en: 'France', de: 'Frankreich'], BOOTSTRAP)
+        // RefdataValue.loc('Country',   [en: 'Great Britain', de: 'Großbritannien'], BOOTSTRAP)
+        // RefdataValue.loc('Country',   [en: 'United States of America', de: 'Vereinigte Staaten von Amerika'], BOOTSTRAP)
+        // RefdataValue.loc('Country',   [en: 'Belgium', de: 'Belgien'], BOOTSTRAP)
+        // RefdataValue.loc('Country',   [en: 'Italy', de: 'Italien'], BOOTSTRAP)
+        // RefdataValue.loc('Country',   [en: 'Netherlands', de: 'Niederlande'], BOOTSTRAP)
+        // RefdataValue.loc('Country',   [en: 'Italy', de: 'Italien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'AD', en: 'Andorra', de: 'Andorra'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'AE', en: 'United Arab Emirates', de: 'Vereinigte Arabische Emirate'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'AF', en: 'Afghanistan', de: 'Afghanistan'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'AG', en: 'Antigua and Barbuda', de: 'Antigua und Barbuda'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'AI', en: 'Anguilla', de: 'Anguilla'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'AL', en: 'Albania', de: 'Albanien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'AM', en: 'Armenia', de: 'Armenien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'AO', en: 'Angola', de: 'Angola'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'AQ', en: 'Antarctica', de: 'Antarktis'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'AR', en: 'Argentina', de: 'Argentinien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'AS', en: 'American Samoa', de: 'Samoa, amerikanischer Teil'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'AT', en: 'Austria', de: 'Österreich'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'AU', en: 'Australia', de: 'Australien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'AW', en: 'Aruba', de: 'Aruba'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'AX', en: 'Åland Islands', de: 'Åland'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'AZ', en: 'Azerbaijan', de: 'Aserbaidschan'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'BA', en: 'Bosnia and Herzegovina', de: 'Bosnien-Herzegowina'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'BB', en: 'Barbados', de: 'Barbados'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'BD', en: 'Bangladesh', de: 'Bangladesh'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'BE', en: 'Belgium', de: 'Belgien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'BF', en: 'Burkina Faso', de: 'Burkina Faso'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'BG', en: 'Bulgaria', de: 'Bulgarien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'BH', en: 'Bahrain', de: 'Bahrain'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'BI', en: 'Burundi', de: 'Burundi'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'BJ', en: 'Benin', de: 'Benin'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'BL', en: 'Saint Barthélemy', de: 'St. Barthélemy'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'BM', en: 'Bermuda', de: 'Bermuda'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'BN', en: 'Brunei Darussalam', de: 'Brunei'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'BO', en: 'Bolivia, Plurinational State of', de: 'Bolivien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'BQ', en: 'Bonaire, Sint Eustatius and Saba', de: 'Karibische Niederlande'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'BR', en: 'Brazil', de: 'Brasilien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'BS', en: 'Bahamas', de: 'Bahamas'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'BT', en: 'Bhutan', de: 'Bhutan'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'BV', en: 'Bouvet Island', de: 'Bouvet-Insel'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'BW', en: 'Botswana', de: 'Botswana'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'BY', en: 'Belarus', de: 'Belarus'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'BZ', en: 'Belize', de: 'Belize'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'CA', en: 'Canada', de: 'Kanada'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'CC', en: 'Cocos (Keeling) Islands', de: 'Kokos-Insel (Keeling)'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'CD', en: 'Congo, the Democratic Republic of the', de: 'Kongo, demokratische Republik'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'CF', en: 'Central African Republic', de: 'Zentralafrika'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'CG', en: 'Congo', de: 'Kongo (Republik)'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'CH', en: 'Switzerland', de: 'Schweiz'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'CI', en: 'Côte d\'Ivoire', de: 'Elfenbeinküste'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'CK', en: 'Cook Islands', de: 'Cook-Inseln'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'CL', en: 'Chile', de: 'Chile'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'CM', en: 'Cameroon', de: 'Kamerun'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'CN', en: 'China', de: 'China (Volksrepublik)'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'CO', en: 'Colombia', de: 'Kolumbien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'CR', en: 'Costa Rica', de: 'Costa Rica'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'CU', en: 'Cuba', de: 'Kuba'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'CV', en: 'Cape Verde', de: 'Kapverdische Inseln'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'CW', en: 'Curaçao', de: 'Curaçao'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'CX', en: 'Christmas Island', de: 'Weihnachtsinseln (indischer Ozean)'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'CY', en: 'Cyprus', de: 'Zypern'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'CZ', en: 'Czech Republic', de: 'Tschechische Republik'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'DE', en: 'Germany', de: 'Deutschland'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'DJ', en: 'Djibouti', de: 'Djibouti'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'DK', en: 'Denmark', de: 'Dänemark'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'DM', en: 'Dominica', de: 'Dominica'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'DO', en: 'Dominican Republic', de: 'Dominikanische Republik'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'DZ', en: 'Algeria', de: 'Algerien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'EC', en: 'Ecuador', de: 'Ekuador'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'EE', en: 'Estonia', de: 'Estland'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'EG', en: 'Egypt', de: 'Ägypten'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'EH', en: 'Western Sahara', de: 'Westsahara'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'ER', en: 'Eritrea', de: 'Eritrea'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'ES', en: 'Spain', de: 'Spanien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'ET', en: 'Ethiopia', de: 'Äthiopien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'FI', en: 'Finland', de: 'Finnland'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'FJ', en: 'Fiji', de: 'Fidschi'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'FK', en: 'Falkland Islands (Malvinas)', de: 'Falkland-Inseln'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'FM', en: 'Micronesia, Federated States of', de: 'Mikronesien (Föderierte Staaten von)'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'FO', en: 'Faroe Islands', de: 'Färöer-Inseln'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'FR', en: 'France', de: 'Frankreich'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'GA', en: 'Gabon', de: 'Gabun'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'GB', en: 'United Kingdom', de: 'Grossbritannien und Nordirland'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'GD', en: 'Grenada', de: 'Grenada'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'GE', en: 'Georgia', de: 'Georgien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'GF', en: 'French Guiana', de: 'Französisch-Guyana'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'GG', en: 'Guernsey', de: 'Guernsey'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'GH', en: 'Ghana', de: 'Ghana'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'GI', en: 'Gibraltar', de: 'Gibraltar'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'GL', en: 'Greenland', de: 'Grönland'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'GM', en: 'Gambia', de: 'Gambia'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'GN', en: 'Guinea', de: 'Guinea (Republik)'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'GP', en: 'Guadeloupe', de: 'Guadeloupe'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'GQ', en: 'Equatorial Guinea', de: 'Äquatorial-Guinea'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'GR', en: 'Greece', de: 'Griechenland'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'GS', en: 'South Georgia and the South Sandwich Islands', de: 'Südgeorgien und die südlichen Sandwichinseln'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'GT', en: 'Guatemala', de: 'Guatemala'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'GU', en: 'Guam', de: 'Guam'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'GW', en: 'Guinea-Bissau', de: 'Guinea-Bissau'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'GY', en: 'Guyana', de: 'Guyana'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'HK', en: 'Hong Kong', de: 'Hongkong'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'HM', en: 'Heard Island and McDonald Islands', de: 'Heard- und McDonald-Inseln'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'HN', en: 'Honduras', de: 'Honduras'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'HR', en: 'Croatia', de: 'Kroatien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'HT', en: 'Haiti', de: 'Haiti'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'HU', en: 'Hungary', de: 'Ungarn'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'ID', en: 'Indonesia', de: 'Indonesien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'IE', en: 'Ireland', de: 'Irland'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'IL', en: 'Israel', de: 'Israel'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'IM', en: 'Isle of Man', de: 'Man, Insel'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'IN', en: 'India', de: 'Indien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'IO', en: 'British Indian Ocean Territory', de: 'Britisches Territorium im indischen Ozean'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'IQ', en: 'Iraq', de: 'Irak'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'IR', en: 'Iran, Islamic Republic of', de: 'Iran'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'IS', en: 'Iceland', de: 'Island'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'IT', en: 'Italy', de: 'Italien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'JE', en: 'Jersey', de: 'Jersey'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'JM', en: 'Jamaica', de: 'Jamaika'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'JO', en: 'Jordan', de: 'Jordanien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'JP', en: 'Japan', de: 'Japan'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'KE', en: 'Kenya', de: 'Kenia'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'KG', en: 'Kyrgyzstan', de: 'Kirgisistan'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'KH', en: 'Cambodia', de: 'Kambodscha'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'KI', en: 'Kiribati', de: 'Kiribati'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'KM', en: 'Comoros', de: 'Komoren'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'KN', en: 'Saint Kitts and Nevis', de: 'St. Christoph (St. Kitts) und Nevis'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'KP', en: 'Korea, Democratic People\'s Republic of', de: 'Korea, demokratische Volksrepublik (Nordkorea)'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'KR', en: 'Korea, Republic of', de: 'Korea, Republik (Südkorea)'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'KW', en: 'Kuwait', de: 'Kuwait'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'KY', en: 'Cayman Islands', de: 'Cayman'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'KZ', en: 'Kazakhstan', de: 'Kasachstan'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'LA', en: 'Lao People\'s Democratic Republic', de: 'Laos'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'LB', en: 'Lebanon', de: 'Libanon'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'LC', en: 'Saint Lucia', de: 'St. Lucia'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'LI', en: 'Liechtenstein', de: 'Liechtenstein'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'LK', en: 'Sri Lanka', de: 'Sri Lanka'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'LR', en: 'Liberia', de: 'Liberia'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'LS', en: 'Lesotho', de: 'Lesotho'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'LT', en: 'Lithuania', de: 'Litauen'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'LU', en: 'Luxembourg', de: 'Luxemburg'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'LV', en: 'Latvia', de: 'Lettland'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'LY', en: 'Libya', de: 'Libyen'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'MA', en: 'Morocco', de: 'Marokko'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'MC', en: 'Monaco', de: 'Monaco'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'MD', en: 'Moldova, Republic of', de: 'Moldova'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'ME', en: 'Montenegro', de: 'Montenegro, Republik'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'MF', en: 'Saint Martin (French part)', de: 'St. Martin'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'MG', en: 'Madagascar', de: 'Madagaskar'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'MH', en: 'Marshall Islands', de: 'Marshall-Inseln'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'MK', en: 'Macedonia, the Former Yugoslav Republic of', de: 'Mazedonien, ehemalige jugoslawische Republik'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'ML', en: 'Mali', de: 'Mali'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'MM', en: 'Myanmar', de: 'Myanmar (Union)'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'MN', en: 'Mongolia', de: 'Mongolei'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'MO', en: 'Macao', de: 'Macao'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'MP', en: 'Northern Mariana Islands', de: 'Marianen-Inseln'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'MQ', en: 'Martinique', de: 'Martinique'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'MR', en: 'Mauritania', de: 'Mauretanien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'MS', en: 'Montserrat', de: 'Montserrat'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'MT', en: 'Malta', de: 'Malta'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'MU', en: 'Mauritius', de: 'Mauritius, Insel'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'MV', en: 'Maldives', de: 'Malediven'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'MW', en: 'Malawi', de: 'Malawi'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'MX', en: 'Mexico', de: 'Mexiko'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'MY', en: 'Malaysia', de: 'Malaysia'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'MZ', en: 'Mozambique', de: 'Mosambik'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'NA', en: 'Namibia', de: 'Namibia'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'NC', en: 'New Caledonia', de: 'Neukaledonien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'NE', en: 'Niger', de: 'Niger'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'NF', en: 'Norfolk Island', de: 'Norfolk-Insel'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'NG', en: 'Nigeria', de: 'Nigeria'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'NI', en: 'Nicaragua', de: 'Nicaragua'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'NL', en: 'Netherlands', de: 'Niederlande'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'NO', en: 'Norway', de: 'Norwegen'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'NP', en: 'Nepal', de: 'Nepal'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'NR', en: 'Nauru', de: 'Nauru'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'NU', en: 'Niue', de: 'Niue'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'NZ', en: 'New Zealand', de: 'Neuseeland'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'OM', en: 'Oman', de: 'Oman'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'PA', en: 'Panama', de: 'Panama'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'PE', en: 'Peru', de: 'Peru'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'PF', en: 'French Polynesia', de: 'Französisch-Polynesien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'PG', en: 'Papua New Guinea', de: 'Papua-Neuguinea'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'PH', en: 'Philippines', de: 'Philippinen'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'PK', en: 'Pakistan', de: 'Pakistan'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'PL', en: 'Poland', de: 'Polen'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'PM', en: 'Saint Pierre and Miquelon', de: 'St. Pierre und Miquelon'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'PN', en: 'Pitcairn', de: 'Pitcairn'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'PR', en: 'Puerto Rico', de: 'Puerto Rico'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'PS', en: 'Palestine, State of', de: 'Palästina'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'PT', en: 'Portugal', de: 'Portugal'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'PW', en: 'Palau', de: 'Palau'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'PY', en: 'Paraguay', de: 'Paraguay'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'QA', en: 'Qatar', de: 'Qatar'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'RE', en: 'Réunion', de: 'Réunion'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'RO', en: 'Romania', de: 'Rumänien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'RS', en: 'Serbia', de: 'Serbien, Republik'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'RU', en: 'Russian Federation', de: 'Russische Föderation'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'RW', en: 'Rwanda', de: 'Rwanda'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'SA', en: 'Saudi Arabia', de: 'Saudi-Arabien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'SB', en: 'Solomon Islands', de: 'Salomon-Inseln'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'SC', en: 'Seychelles', de: 'Seychellen'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'SD', en: 'Sudan', de: 'Sudan'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'SE', en: 'Sweden', de: 'Schweden'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'SG', en: 'Singapore', de: 'Singapur'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'SH', en: 'Saint Helena, Ascension and Tristan da Cunha', de: 'St. Helena, Ascension und Tristan da Cunha'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'SI', en: 'Slovenia', de: 'Slowenien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'SJ', en: 'Svalbard and Jan Mayen', de: 'Svalbard und Insel Jan Mayen'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'SK', en: 'Slovakia', de: 'Slowakische Republik'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'SL', en: 'Sierra Leone', de: 'Sierra Leone'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'SM', en: 'San Marino', de: 'San Marino'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'SN', en: 'Senegal', de: 'Senegal'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'SO', en: 'Somalia', de: 'Somalia'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'SR', en: 'Suriname', de: 'Suriname'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'SS', en: 'South Sudan', de: 'Südsudan'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'ST', en: 'Sao Tome and Principe', de: 'St. Thomas und Principe'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'SV', en: 'El Salvador', de: 'El Salvador'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'SX', en: 'Sint Maarten (Dutch part)', de: 'St. Maarten'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'SY', en: 'Syrian Arab Republic', de: 'Syrien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'SZ', en: 'Swaziland', de: 'Swasiland'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'TC', en: 'Turks and Caicos Islands', de: 'Turks und Caicos'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'TD', en: 'Chad', de: 'Tschad'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'TF', en: 'French Southern Territories', de: 'Französische Süd- und Antarktisgebiete'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'TG', en: 'Togo', de: 'Togo'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'TH', en: 'Thailand', de: 'Thailand'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'TJ', en: 'Tajikistan', de: 'Tadschikistan'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'TK', en: 'Tokelau', de: 'Tokelau'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'TL', en: 'Timor-Leste', de: 'Timor-Leste'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'TM', en: 'Turkmenistan', de: 'Turkmenistan'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'TN', en: 'Tunisia', de: 'Tunesien'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'TO', en: 'Tonga', de: 'Tonga'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'TR', en: 'Turkey', de: 'Türkei'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'TT', en: 'Trinidad and Tobago', de: 'Trinidad und Tobago'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'TV', en: 'Tuvalu', de: 'Tuvalu'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'TW', en: 'Taiwan, Province of China', de: 'Taiwan (Chinesisches Taipei)'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'TZ', en: 'Tanzania, United Republic of', de: 'Tansania'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'UA', en: 'Ukraine', de: 'Ukraine'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'UG', en: 'Uganda', de: 'Uganda'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'UM', en: 'United States Minor Outlying Islands', de: 'Amerikanische Überseeinseln, kleinere'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'US', en: 'United States', de: 'Vereinigte Staaten von Amerika'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'UY', en: 'Uruguay', de: 'Uruguay'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'UZ', en: 'Uzbekistan', de: 'Usbekistan'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'VA', en: 'Holy See (Vatican City State)', de: 'Vatikan'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'VC', en: 'Saint Vincent and the Grenadines', de: 'St. Vincent und Grenadinen'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'VE', en: 'Venezuela, Bolivarian Republic of', de: 'Venezuela'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'VG', en: 'Virgin Islands, British', de: 'Virginische Inseln, britischer Teil (Tortola)'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'VI', en: 'Virgin Islands, U.S.', de: 'Amerikanische Jungferninseln'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'VN', en: 'Viet Nam', de: 'Vietnam'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'VU', en: 'Vanuatu', de: 'Vanuatu'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'WF', en: 'Wallis and Futuna', de: 'Wallis und Futuna'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'WS', en: 'Samoa', de: 'Samoa, West'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'YE', en: 'Yemen', de: 'Jemen'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'YT', en: 'Mayotte', de: 'Mayotte'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'ZA', en: 'South Africa', de: 'Südafrika'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'ZM', en: 'Zambia', de: 'Sambia'], BOOTSTRAP)
+        RefdataValue.loc('Country', [key: 'ZW', en: 'Zimbabwe', de: 'Zimbabwe'], BOOTSTRAP)
 
         RefdataValue.loc('FactType', [en: 'JR1R4'], BOOTSTRAP)
         RefdataValue.loc('FactType', [en: 'JR1GOAR4'], BOOTSTRAP)
@@ -968,6 +1778,9 @@ class BootStrap {
         RefdataValue.loc('Gender',   [en: 'Female', de: 'Weiblich'], BOOTSTRAP)
         RefdataValue.loc('Gender',   [en: 'Male', de: 'Männlich'], BOOTSTRAP)
 		RefdataValue.loc('Gender',   [en: 'Third Gender', de: 'Inter/Divers'], BOOTSTRAP)
+
+        RefdataValue.loc('Invoicing',   [key: 'Provider', en: 'Provider', de: 'Anbieter'], BOOTSTRAP)
+        RefdataValue.loc('Invoicing',   [key: 'Consortium', en: 'Consortium', de: 'Konsortium'], BOOTSTRAP)
 
         RefdataValue.loc('Library Network',   [en: 'BVB', de: 'BVB'], BOOTSTRAP)
         RefdataValue.loc('Library Network',   [en: 'GBV', de: 'GBV'], BOOTSTRAP)
@@ -1028,15 +1841,17 @@ class BootStrap {
 
         RefdataValue.loc('Person Function',     [en: 'General contact person', de: 'Hauptkontakt'], BOOTSTRAP)
         RefdataValue.loc('Person Function',     [en: 'GASCO-Contact', de: 'GASCO-Kontakt'], BOOTSTRAP)
-        RefdataValue.loc('Person Function',     [en: 'Bestandsaufbau', de: 'Bestandsaufbau'], BOOTSTRAP)
-        RefdataValue.loc('Person Function',     [en: 'Direktion', de: 'Direktion'], BOOTSTRAP)
-        RefdataValue.loc('Person Function',     [en: 'Direktionsassistenz', de: 'Direktionsassistenz'], BOOTSTRAP)
-        RefdataValue.loc('Person Function',     [en: 'Erwerbungsabteilung', de: 'Erwerbungsabteilung'], BOOTSTRAP)
-        RefdataValue.loc('Person Function',     [en: 'Erwerbungsleitung', de: 'Erwerbungsleitung'], BOOTSTRAP)
-        RefdataValue.loc('Person Function',     [en: 'Medienbearbeitung', de: 'Medienbearbeitung'], BOOTSTRAP)
-        RefdataValue.loc('Person Function',     [en: 'Zeitschriftenabteilung', de: 'Zeitschriftenabteilung'], BOOTSTRAP)
-        RefdataValue.loc('Person Function',     [en: 'Fachreferat', de: 'Fachreferat'], BOOTSTRAP)
-        RefdataValue.loc('Person Function',     [en: 'Bereichsbibliotheksleitung', de: 'Bereichsbibliotheksleitung'], BOOTSTRAP)
+        RefdataValue.loc('Person Function',     [en: 'Statistical Support', de: 'Statistischer Support'], BOOTSTRAP) // neu
+        RefdataValue.loc('Person Function',     [en: 'Technichal Support', de: 'Technischer Support'], BOOTSTRAP) // Funktion
+        // RefdataValue.loc('Person Function',     [en: 'Bestandsaufbau', de: 'Bestandsaufbau'], BOOTSTRAP) //Position
+        // RefdataValue.loc('Person Function',     [en: 'Direktion', de: 'Direktion'], BOOTSTRAP) //Position
+        // RefdataValue.loc('Person Function',     [en: 'Direktionsassistenz', de: 'Direktionsassistenz'], BOOTSTRAP) //Position
+        // RefdataValue.loc('Person Function',     [en: 'Erwerbungsabteilung', de: 'Erwerbungsabteilung'], BOOTSTRAP) //Position
+        // RefdataValue.loc('Person Function',     [en: 'Erwerbungsleitung', de: 'Erwerbungsleitung'], BOOTSTRAP) //Position
+        // RefdataValue.loc('Person Function',     [en: 'Medienbearbeitung', de: 'Medienbearbeitung'], BOOTSTRAP) //Position
+        // RefdataValue.loc('Person Function',     [en: 'Zeitschriftenabteilung', de: 'Zeitschriftenabteilung'], BOOTSTRAP) //Position
+        // RefdataValue.loc('Person Function',     [en: 'Fachreferat', de: 'Fachreferat'], BOOTSTRAP) //Position
+        // RefdataValue.loc('Person Function',     [en: 'Bereichsbibliotheksleitung', de: 'Bereichsbibliotheksleitung'], BOOTSTRAP) //Position
 
         RefdataValue.loc('Person Function', [key: 'Functional Contact Postal Address', en: 'Postal address', de: 'Postanschrift'], BOOTSTRAP)
         RefdataValue.loc('Person Function', [key: 'Functional Contact Billing Adress', en: 'Billing contact', de: 'Rechnungskontakt'], BOOTSTRAP)
@@ -1049,7 +1864,16 @@ class BootStrap {
         RefdataValue.loc('Person Position',     [en: 'Library Director', de: 'Bibliotheksdirektor'], BOOTSTRAP)
         RefdataValue.loc('Person Position',     [en: 'Sales Director', de: 'Sales Director'], BOOTSTRAP)
         RefdataValue.loc('Person Position',     [en: 'Sales Support', de: 'Sales Support'], BOOTSTRAP)
-        RefdataValue.loc('Person Position',     [en: 'Technichal Support', de: 'Technischer Support'], BOOTSTRAP)
+        // RefdataValue.loc('Person Position',     [en: 'Technichal Support', de: 'Technischer Support'], BOOTSTRAP) // Funktion
+        RefdataValue.loc('Person Position',     [en: 'Bestandsaufbau', de: 'Bestandsaufbau'], BOOTSTRAP) //Position
+        RefdataValue.loc('Person Position',     [en: 'Direktion', de: 'Direktion'], BOOTSTRAP) //Position
+        RefdataValue.loc('Person Position',     [en: 'Direktionsassistenz', de: 'Direktionsassistenz'], BOOTSTRAP) //Position
+        RefdataValue.loc('Person Position',     [en: 'Erwerbungsabteilung', de: 'Erwerbungsabteilung'], BOOTSTRAP) //Position
+        RefdataValue.loc('Person Position',     [en: 'Erwerbungsleitung', de: 'Erwerbungsleitung'], BOOTSTRAP) //Position
+        RefdataValue.loc('Person Position',     [en: 'Medienbearbeitung', de: 'Medienbearbeitung'], BOOTSTRAP) //Position
+        RefdataValue.loc('Person Position',     [en: 'Zeitschriftenabteilung', de: 'Zeitschriftenabteilung'], BOOTSTRAP) //Position
+        RefdataValue.loc('Person Position',     [en: 'Fachreferat', de: 'Fachreferat'], BOOTSTRAP) //Position
+        RefdataValue.loc('Person Position',     [en: 'Bereichsbibliotheksleitung', de: 'Bereichsbibliotheksleitung'], BOOTSTRAP) //Position
 
         RefdataValue.loc('Person Responsibility',    [en: 'Specific license editor', de: 'Vertragsbearbeiter'], BOOTSTRAP)
         RefdataValue.loc('Person Responsibility',    [en: 'Specific subscription editor', de: 'Lizenzkontakt'], BOOTSTRAP)
@@ -1116,6 +1940,10 @@ class BootStrap {
         RefdataValue.loc('Ticket.Status',      [en: 'Done', de: 'Erledigt'], BOOTSTRAP)
         RefdataValue.loc('Ticket.Status',      [en: 'Deferred', de: 'Zurückgestellt'], BOOTSTRAP)
 
+        RefdataValue.loc('Lincense.RemoteAccess',      [en: 'Yes', de: 'Ja'], BOOTSTRAP)
+        RefdataValue.loc('Lincense.RemoteAccess',      [en: 'No', de: 'Nein'], BOOTSTRAP)
+        RefdataValue.loc('Lincense.RemoteAccess',      [en: 'All but Walk-ins', de: 'Alle außer Walk-In-User'], BOOTSTRAP)
+
         RefdataValue.loc('License.OA.ReceivingModalities',       [en: 'By Author', de: 'Über Autor'], BOOTSTRAP)
         RefdataValue.loc('License.OA.ReceivingModalities',       [en: 'On Demand', de: 'Auf Nachfrage'], BOOTSTRAP)
         RefdataValue.loc('License.OA.ReceivingModalities',       [en: 'From Database', de: 'Aus Datenank'], BOOTSTRAP)
@@ -1123,19 +1951,25 @@ class BootStrap {
         RefdataValue.loc('License.OA.ReceivingModalities',       [en: 'Link by Publisher', de: 'Verlinkung durch Verlag'], BOOTSTRAP)
         
         RefdataValue.loc('License.OA.Repository',                [en: 'Own Choice', de: 'Nach Wahl'], BOOTSTRAP)
-        RefdataValue.loc('License.OA.Repository',                [en: 'Publishers', de: 'Verlagseigenes'], BOOTSTRAP)
-        RefdataValue.loc('License.OA.Repository',                [en: 'Subject specific', de: 'Fachspezifisches'], BOOTSTRAP)
-        RefdataValue.loc('License.OA.Repository',                [en: 'Website of Author', de: 'Website des Autors'], BOOTSTRAP)
-        RefdataValue.loc('License.OA.Repository',                [en: 'Institutional', de: 'Institutionelles'], BOOTSTRAP)
+        RefdataValue.loc('License.OA.Repository',                [en: 'Publishers', de: 'Verlagseigen'], BOOTSTRAP)
+        RefdataValue.loc('License.OA.Repository',                [en: 'Subject specific', de: 'Fachspezifisch'], BOOTSTRAP)
+        RefdataValue.loc('License.OA.Repository',                [en: 'Website of Author', de: 'Webseite'], BOOTSTRAP)
+        RefdataValue.loc('License.OA.Repository',                [en: 'Institutional', de: 'Institutionell'], BOOTSTRAP)
+        RefdataValue.loc('License.OA.Repository',                [en: 'Social Media', de: 'Social Media'], BOOTSTRAP)
+        RefdataValue.loc('License.OA.Repository',                [en: 'Pre-print Server', de: 'Pre-print-Server'], BOOTSTRAP)
         
         RefdataValue.loc('License.OA.CorrespondingAuthorIdentification',    [en: 'IP Range', de: 'Über IP-Bereich'], BOOTSTRAP)
         RefdataValue.loc('License.OA.CorrespondingAuthorIdentification',    [en: 'Email Domain', de: 'E-Mail-Domäne'], BOOTSTRAP)
         RefdataValue.loc('License.OA.CorrespondingAuthorIdentification',    [en: 'Research Institute', de: 'Über Institut'], BOOTSTRAP)
         RefdataValue.loc('License.OA.CorrespondingAuthorIdentification',    [en: 'ORCID', de: 'ORCID'], BOOTSTRAP)
-        
+        RefdataValue.loc('License.OA.CorrespondingAuthorIdentification',    [en: 'Other', de: 'Anderes'], BOOTSTRAP)
+
         RefdataValue.loc('License.OA.LicenseToPublish',          [en: 'CC-BY', de: 'CC-BY'], BOOTSTRAP)
         RefdataValue.loc('License.OA.LicenseToPublish',          [en: 'CC-BY-NC', de: 'CC-BY-NC'], BOOTSTRAP)
         RefdataValue.loc('License.OA.LicenseToPublish',          [en: 'CC-BY-NC-ND', de: 'CC-BY-NC-ND'], BOOTSTRAP)
+        RefdataValue.loc('License.OA.LicenseToPublish',          [en: 'CC-BY-SA', de: 'CC-BY-SA'], BOOTSTRAP)
+        RefdataValue.loc('License.OA.LicenseToPublish',          [en: 'CC-BY-ND', de: 'CC-BY-ND'], BOOTSTRAP)
+        RefdataValue.loc('License.OA.LicenseToPublish',          [en: 'CC-BY-NC-SA', de: 'CC-BY-NC-SA'], BOOTSTRAP)
         
         RefdataValue.loc('License.Arc.PaymentNote',       [en: 'No Hosting fee', de: 'Dauerhaft kostenfrei (keine Hosting Fee)'], BOOTSTRAP)
         RefdataValue.loc('License.Arc.PaymentNote',       [en: 'Hosting fee', de: 'Hosting Fee zu zahlen'], BOOTSTRAP)
@@ -1157,7 +1991,12 @@ class BootStrap {
         RefdataValue.loc('License.Arc.ArchivalCopyContent',      [en: 'With Metadata', de: 'Inkl. Metadaten'], BOOTSTRAP)
         RefdataValue.loc('License.Arc.ArchivalCopyContent',      [en: 'With Software', de: 'Inkl. Software'], BOOTSTRAP)
         RefdataValue.loc('License.Arc.ArchivalCopyContent',      [en: 'DRM-free', de: 'Ohne DRM'], BOOTSTRAP)
-        
+
+        RefdataValue.loc('License.Arc.ArchivalCopyTransmissionFormat',      [en: 'Remote', de: 'Remote'], BOOTSTRAP)
+        RefdataValue.loc('License.Arc.ArchivalCopyTransmissionFormat',      [en: 'CDROM', de: 'CDROM'], BOOTSTRAP)
+        RefdataValue.loc('License.Arc.ArchivalCopyTransmissionFormat',      [en: 'Tape', de: 'Band'], BOOTSTRAP)
+        RefdataValue.loc('License.Arc.ArchivalCopyTransmissionFormat',      [en: 'Unspecified tangible format', de: 'Unspezifizierter Datenträger'], BOOTSTRAP)
+
         RefdataValue.loc('License.Arc.HostingTime',      [en: 'Always', de: 'Immer'], BOOTSTRAP)
         RefdataValue.loc('License.Arc.HostingTime',      [en: 'Exclusive', de: 'Ohne Anbieter'], BOOTSTRAP)
         RefdataValue.loc('License.Arc.HostingTime',      [en: 'From Expiration On', de: 'Ab Vertragsende'], BOOTSTRAP)
@@ -1168,6 +2007,8 @@ class BootStrap {
         RefdataValue.loc('License.Arc.Authorized',      [en: 'SSG-Library', de: 'SSG-Bibliothek'], BOOTSTRAP)
         RefdataValue.loc('License.Arc.Authorized',      [en: 'Contractor', de: 'Vertragspartner'], BOOTSTRAP)
         RefdataValue.loc('License.Arc.Authorized',      [en: 'Contractor With Publisher\'s Assent', de: 'Vertragspartner nach Genehmigung durch Anbieter'], BOOTSTRAP)
+        RefdataValue.loc('License.Arc.Authorized',      [en: 'Former SSG library', de: 'Ehemals SSG-Bibliothek'], BOOTSTRAP)
+        RefdataValue.loc('License.Arc.Authorized',      [en: 'FID library', de: 'FID-Bibliothek'], BOOTSTRAP)
         
         RefdataValue.loc('License.Arc.HostingRestriction',      [en: 'File Format', de: 'Dateiformat'], BOOTSTRAP)
         RefdataValue.loc('License.Arc.HostingRestriction',      [en: 'Year', de: 'Jahrgang'], BOOTSTRAP)
@@ -1182,6 +2023,31 @@ class BootStrap {
         RefdataValue.loc('License.Arc.HostingSolution',      [en: 'LOCKSS', de: 'LOCKSS'], BOOTSTRAP)
         RefdataValue.loc('License.Arc.HostingSolution',      [en: 'CLOCKSS', de: 'CLOCKSS'], BOOTSTRAP)
         RefdataValue.loc('License.Arc.HostingSolution',      [en: 'Portico', de: 'Portico'], BOOTSTRAP)
+
+        RefdataValue.loc('License.Statistics.Standards',      [en: 'COUNTER version 4', de: 'COUNTER version 4'], BOOTSTRAP)
+        RefdataValue.loc('License.Statistics.Standards',      [en: 'COUNTER version 5', de: 'COUNTER version 5'], BOOTSTRAP)
+        RefdataValue.loc('License.Statistics.Standards',      [en: 'ICOLC 1998', de: 'ICOLC 1998'], BOOTSTRAP)
+
+        RefdataValue.loc('License.Statistics.Delivery',      [en: 'Online', de: 'Online'], BOOTSTRAP)
+        RefdataValue.loc('License.Statistics.Delivery',      [en: 'Email', de: 'Email'], BOOTSTRAP)
+        RefdataValue.loc('License.Statistics.Delivery',      [en: 'Paper', de: 'Papier'], BOOTSTRAP)
+
+        RefdataValue.loc('License.Statistics.Format',      [en: 'HTML', de: 'HTML'], BOOTSTRAP)
+        RefdataValue.loc('License.Statistics.Format',      [en: 'Delimited', de: 'Begrenzt (z.B. durch Tab)'], BOOTSTRAP)
+        RefdataValue.loc('License.Statistics.Format',      [en: 'Excel', de: 'Excel'], BOOTSTRAP)
+        RefdataValue.loc('License.Statistics.Format',      [en: 'PDF', de: 'PDF'], BOOTSTRAP)
+        RefdataValue.loc('License.Statistics.Format',      [en: 'CSV', de: 'CSV'], BOOTSTRAP)
+        RefdataValue.loc('License.Statistics.Format',      [en: 'ASCII', de: 'ASCII'], BOOTSTRAP)
+        RefdataValue.loc('License.Statistics.Format',      [en: 'Other', de: 'Sonstiges Format'], BOOTSTRAP)
+
+        RefdataValue.loc('License.Statistics.Frequency',      [en: 'Monthly', de: 'Monatlich'], BOOTSTRAP)
+        RefdataValue.loc('License.Statistics.Frequency',      [en: 'Quarterly', de: 'Quartalsweise'], BOOTSTRAP)
+        RefdataValue.loc('License.Statistics.Frequency',      [en: 'Bi-Annual', de: 'Halbjährlich'], BOOTSTRAP)
+        RefdataValue.loc('License.Statistics.Frequency',      [en: 'User-selectable', de: 'Individuell'], BOOTSTRAP)
+
+        RefdataValue.loc('License.Statistics.UserCreds',      [en: 'None', de: 'Keins'], BOOTSTRAP)
+        RefdataValue.loc('License.Statistics.UserCreds',      [en: 'Same as Admin', de: 'Das gleiche wie Admin'], BOOTSTRAP)
+        RefdataValue.loc('License.Statistics.UserCreds',      [en: 'Other', de: 'Anderes'], BOOTSTRAP)
 
         RefdataValue.loc('Number Type',      [en: 'Students', de: 'Studenten'], BOOTSTRAP)
         RefdataValue.loc('Number Type',      [en: 'Scientific staff', de: 'wissenschaftliches Personal'], BOOTSTRAP)
@@ -1262,6 +2128,7 @@ class BootStrap {
         RefdataValue.loc('Authority', [en: 'Author', de: 'Autor'], BOOTSTRAP)
         RefdataValue.loc('Authority', [en: 'Institution', de: 'Institution'], BOOTSTRAP)
         RefdataValue.loc('Authority', [en: 'Author and Institution', de: 'Autor und Institution'], BOOTSTRAP)
+        RefdataValue.loc('Authority', [en: 'Research Funding Institution', de: 'Forschungsförderer'], BOOTSTRAP)
 
         RefdataCategory.loc('CostItem.Type',
                 [en: 'Type', de: 'Typ'], BOOTSTRAP)
@@ -1385,17 +2252,21 @@ class BootStrap {
         RefdataValue.loc('License.OA.Type', [en: 'No Open Access', de: 'Kein Open-Access'], BOOTSTRAP)
         RefdataValue.loc('License.OA.Type', [en: 'Hybrid', de: 'Hybrid'], BOOTSTRAP)
         RefdataValue.loc('License.OA.Type', [en: 'Green Open Access', de: 'Green Open-Access'], BOOTSTRAP)
-        RefdataValue.loc('License.OA.Type', [en: 'Red Open Access', de: 'Red Open-Access'], BOOTSTRAP)
+        // RefdataValue.loc('License.OA.Type', [en: 'Red Open Access', de: 'Red Open-Access'], BOOTSTRAP) // deleted
+        RefdataValue.loc('License.OA.Type', [en: 'Gold Open Access', de: 'Gold Open-Access'], BOOTSTRAP)
+        RefdataValue.loc('License.OA.Type', [en: 'Blue Open Access', de: 'Blue Open-Access'], BOOTSTRAP)
+        RefdataValue.loc('License.OA.Type', [en: 'Yellow Open Access', de: 'Yellow Open-Access'], BOOTSTRAP)
+        RefdataValue.loc('License.OA.Type', [en: 'White Open Access', de: 'White Open-Access'], BOOTSTRAP)
 
         RefdataCategory.loc('License.OA.eArcVersion',
                 [en: 'License.OA.eArcVersion', de: 'License.OA.eArcVersion'], BOOTSTRAP)
 
         RefdataValue.loc('License.OA.eArcVersion', [en: 'Accepted Author'], BOOTSTRAP)
         RefdataValue.loc('License.OA.eArcVersion', [en: 'Manuscript (AAM)'], BOOTSTRAP)
-        RefdataValue.loc('License.OA.eArcVersion', [en: 'Publisher-PDF', de: 'Verlags-PDF'], BOOTSTRAP)
+        RefdataValue.loc('License.OA.eArcVersion', [en: 'Publisher-PDF', de: 'Verlags-PDF-Datei'], BOOTSTRAP)
         RefdataValue.loc('License.OA.eArcVersion', [en: 'Postprint', de: 'Postprint'], BOOTSTRAP)
         RefdataValue.loc('License.OA.eArcVersion', [en: 'Preprint', de: 'Preprint'], BOOTSTRAP)
-        RefdataValue.loc('License.OA.eArcVersion', [en: 'Preprint with ePrint URL'], BOOTSTRAP)
+        RefdataValue.loc('License.OA.eArcVersion', [en: 'Preprint with ePrint URL', de:'Preprint mit ePrint-URL'], BOOTSTRAP)
 
         RefdataCategory.loc(RefdataCategory.LIC_STATUS,
                 [en: 'License Status', de: 'Lizenzstatus'], BOOTSTRAP)
