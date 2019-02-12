@@ -64,7 +64,7 @@
                     "aTargets": [ 1 ],
                     "mData": "DT_RowId",
                     "mRender": function ( data, type, full ) {
-                        return '<input type="checkbox" name="orm_orgoid" value="' + data + '"/>';
+                        return '<input type="checkbox" name="orm_orgOid" value="' + data + '"/>';
                     }
                 } ],
             "language": {

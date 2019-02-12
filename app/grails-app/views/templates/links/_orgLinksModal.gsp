@@ -6,9 +6,9 @@
 <semui:modal id="${tmplModalID}" text="${tmplText}">
     <g:set var="ajaxID" value="${tmplID ?:'allOrgs'}"/>
     <g:form id="create_org_role_link" class="ui form" url="[controller:'ajax', action:'addOrgRole']" method="post" onsubmit="return validateAddOrgRole();">
-        <input type="hidden" name="parent" value="${parent}"/>
-        <input type="hidden" name="property" value="${property}"/>
-        <input type="hidden" name="recip_prop" value="${recip_prop}"/>
+        <input type="hidden" name="parent" value="${parent}" />
+        <input type="hidden" name="property" value="${property}" />
+        <input type="hidden" name="recip_prop" value="${recip_prop}" />
 
         <div class="field">
             <table id="org_role_tab_${tmplModalID}" class="ui celled la-table la-table-small table">
@@ -25,24 +25,6 @@
         <input type="hidden" name="orm_orgRole" value="${tmplRole?.id}" />
         <input type="hidden" name="linkType" value="${linkType}" />
 
-        <%--<div class="field">
-            <label class="control-label">${message(code:'template.orgLinksModal.role')}</label>
-            <g:set var="varSelectOne" value="${message(code:'default.selectOne.label')}" />
-            <g:if test="${linkType}">
-                <g:select name="orm_orgRole"
-                      noSelection="${['':varSelectOne]}"
-                      from="${com.k_int.kbplus.RefdataValue.findAllByOwnerAndGroup(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'), linkType)}"
-                      optionKey="id"
-                      optionValue="${{it.getI10n('value')}}"/>
-            </g:if>
-            <g:else>
-                <g:select name="orm_orgRole"
-                      noSelection="${['':varSelectOne]}"
-                      from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Organisational Role'))}"
-                      optionKey="id"
-                      optionValue="${{it.getI10n('value')}}"/>
-            </g:else>
-        </div>--%>
     </g:form>
 </semui:modal>
 
@@ -69,7 +51,7 @@
                 "aTargets": [ 1 ],
                 "mData": "DT_RowId",
                 "mRender": function ( data, type, full ) {
-                    return '<input type="checkbox" name="orm_orgoid" value="' + data + '"/>';
+                    return '<input type="checkbox" name="orm_orgOid" value="' + data + '"/>';
                 }
             } ],
             "language": {

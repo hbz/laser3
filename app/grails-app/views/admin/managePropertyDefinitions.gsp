@@ -14,7 +14,7 @@
 
 		<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.admin.managePropertyDefinitions"/></h1>
 
-        <h3 class="ui header">Custom Properties</h3>
+        <h3 class="ui header">${message(code:'license.properties')}</h3>
 
 		<semui:messages data="${flash}" />
 
@@ -30,7 +30,7 @@
 			<g:each in="${propertyDefinitions}" var="entry">
                 <div class="title">
                     <i class="dropdown icon"></i>
-                    <g:message code="propertyDefinition.${entry.key}.label" default="${entry.key}" />
+                    <g:message code="propertyDefinitions.${entry.key}.label" default="${entry.key}" />
                 </div>
                 <div class="content">
                     <table class="ui celled la-table la-table-small table">

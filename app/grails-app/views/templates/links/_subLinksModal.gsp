@@ -1,6 +1,13 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.OrgRole;com.k_int.kbplus.Subscription;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.DocContext;com.k_int.kbplus.Doc" %>
+<%@ page import="com.k_int.kbplus.*;de.laser.helper.RDStore;de.laser.interfaces.TemplateSupport" %>
 <g:if test="${editmode}">
-    <a class="ui button" data-semui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
+    <a class="ui button ${tmplCss}" data-semui="modal" href="#${tmplModalID}">
+        <g:if test="${tmplIcon}">
+            <i class="${tmplIcon} icon"></i>
+        </g:if>
+        <g:if test="${tmplButtonText}">
+            ${tmplButtonText}
+        </g:if>
+    </a>
 </g:if>
 
 <semui:modal id="${tmplModalID}" text="${tmplText}">
@@ -85,13 +92,26 @@
 <g:javascript>
     <g:if test="${pair}">
         <%
-            OrgRole owner = OrgRole.findBySub(pair)
+            LinkedHashMap ownerParams = [sub:pair]
+            switch(pair.getCalculatedType()) {
+                case TemplateSupport.CALCULATED_TYPE_CONSORTIAL: ownerParams.roleType = RDStore.OR_SUBSCRIPTION_CONSORTIA
+                    break
+                case TemplateSupport.CALCULATED_TYPE_LOCAL: ownerParams.roleType = RDStore.OR_SUBSCRIBER
+                    break
+                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION: ownerParams.roleType = RDStore.OR_SUBSCRIBER_CONS
+                    break
+            }
+            OrgRole owner = OrgRole.findWhere(ownerParams)
+            String dateString = ", "
+            if(pair.startDate)
+                dateString += sdf.format(pair.startDate)+"-"
+            if(pair.endDate)
+                dateString += sdf.format(pair.endDate)
             String ownerName = owner.org.name
         %>
         var data = {
                       id: "${pair.class.name}:${pair.id}",
-                      sortKey: "${pair.name}",
-                      text: "#${pair.id}: ${pair.name} (${ownerName})"
+                      text: "${pair.name} (${ownerName}${dateString})"
                     };
     </g:if>
     $("#${selectPair}").select2({
@@ -100,6 +120,7 @@
             data: function(term, page) {
                 return {
                     q: term,
+                    ctx: "${context}",
                     page_limit: 20,
                     baseClass: 'com.k_int.kbplus.Subscription'
                 };

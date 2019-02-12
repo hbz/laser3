@@ -29,7 +29,7 @@ class FinanceController extends AbstractDebugController {
     def navigationGenerationService
 
     private final def ci_count        = 'select count(distinct ci.id) from CostItem as ci '
-    private final def ci_select       = 'select distinct ci from CostItem as ci '
+    private def ci_select       = 'select distinct ci from CostItem as ci '
     private final def user_role        = Role.findByAuthority('INST_USER')
     private final def defaultCurrency = RefdataValue.getByValueAndCategory('EUR', 'Currency')
 
@@ -89,7 +89,7 @@ class FinanceController extends AbstractDebugController {
             params.subscriptionFilter = "${params.sub}"
 
             result.fixedSubscription = params.int('sub')? Subscription.get(params.sub) : null
-
+            result.showConsortiaFunctions = SubscriptionDetailsController.showConsortiaFunctions(contextService.getOrg(), result.fixedSubscription)
 
             LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.fixedSubscription.id)
             result.navPrevSubscription = links.prevLink
@@ -125,10 +125,8 @@ class FinanceController extends AbstractDebugController {
 
                     result.foundMatches_CS = tmp.foundMatches
 
-                    result.cost_items_CS = tmp.cost_items.sort{ x, y ->
-                        def xx = OrgRole.findBySubAndRoleType(x.sub, RDStore.OR_SUBSCRIBER_CONS)
-                        def yy = OrgRole.findBySubAndRoleType(y.sub, RDStore.OR_SUBSCRIBER_CONS)
-                        xx?.org?.sortname <=> yy?.org?.sortname
+                    result.cost_items_CS = tmp.cost_items.collect{ row ->
+                        row[0]
                     }
                     result.cost_item_count_CS = tmp.cost_item_count
                 }
@@ -172,10 +170,8 @@ class FinanceController extends AbstractDebugController {
 
                     result.foundMatches_CS = tmp.foundMatches
 
-                    result.cost_items_CS = tmp.cost_items.sort{ x, y ->
-                        def xx = OrgRole.findBySubAndRoleType(x.sub, RDStore.OR_SUBSCRIBER_CONS)
-                        def yy = OrgRole.findBySubAndRoleType(y.sub, RDStore.OR_SUBSCRIBER_CONS)
-                        xx?.org?.sortname <=> yy?.org?.sortname
+                    result.cost_items_CS = tmp.cost_items.collect{ row ->
+                        row[0]
                     }
                     result.cost_item_count_CS = tmp.cost_item_count
             }
@@ -261,7 +257,7 @@ class FinanceController extends AbstractDebugController {
           result.tab = params.tab
       }
       else if(!params.tab) {
-          if(result.queryMode == MODE_CONS && params.view == "cons")
+          if(result.queryMode == MODE_CONS || params.view == "cons")
               result.tab = 'sc'
       }
 
@@ -326,6 +322,8 @@ class FinanceController extends AbstractDebugController {
         def orderAndSortBy = " ORDER BY ci.${order} ${result.sort}"
 
         if (MODE_CONS == queryMode) {
+            ci_select = "select ci, (select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType.value = 'Subscriber_Consortial') as sortname from CostItem as ci "
+            orderAndSortBy = " ORDER BY sortname asc"
             //ticket ERMS-802: switch for site call - consortia costs should be displayed also when not in fixed subscription mode
             def queryParams = ['roleType':RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst':result.institution, 'status':RefdataValue.getByValueAndCategory('Current','Subscription Status')]
             def memberSubs
@@ -412,7 +410,7 @@ class FinanceController extends AbstractDebugController {
 
         tmp.foundMatches    =  cost_item_qry_params.size() > 1 // [owner:default] ; used for flash
         tmp.cost_items      =  CostItem.executeQuery(ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy, cost_item_qry_params, params)
-        tmp.cost_item_count =  CostItem.executeQuery(ci_count + cost_item_qry + qryOutput.qry_string + " group by ci.id " + orderAndSortBy, cost_item_qry_params).size()
+        tmp.cost_item_count =  CostItem.executeQuery(ci_count + cost_item_qry + qryOutput.qry_string + " group by ci.id ", cost_item_qry_params).size()
 
         log.debug("index(${queryMode})  -- Performed filtering process ${tmp.cost_item_count} result(s) found")
 
@@ -1283,7 +1281,7 @@ class FinanceController extends AbstractDebugController {
               newCostItem.invoiceDate = invoiceDate
 
               newCostItem.includeInSubscription = null //todo Discussion needed, nobody is quite sure of the functionality behind this...
-              newCostItem.reference = params.newReference ? params.newReference.trim()?.toLowerCase() : null
+              newCostItem.reference = params.newReference ? params.newReference.trim() : null
 
 
               if (! newCostItem.validate())
@@ -1346,7 +1344,7 @@ class FinanceController extends AbstractDebugController {
             budgetcodes.split(",").each { c ->
                 def bc = null
                 if (c.startsWith("-1")) { //New code option from select2 UI
-                    bc = new BudgetCode(owner: budgetOwner, value: c.substring(2).toLowerCase()).save(flush: true)
+                    bc = new BudgetCode(owner: budgetOwner, value: c.substring(2)).save(flush: true)
                 }
                 else {
                     bc = BudgetCode.get(c)

@@ -776,31 +776,25 @@ class AjaxController {
         def owner  = genericOIDService.resolveOID(params.parent)
         def rel    = RefdataValue.get(params.orm_orgRole)
 
-
-
-        def orgIds = params.list('orm_orgoid')
+        def orgIds = params.list('orm_orgOid')
         orgIds.each{ oid ->
             def org_to_link = genericOIDService.resolveOID(oid)
             def duplicateOrgRole = false
 
-            if(params.recip_prop == 'sub')
-            {
+            if(params.recip_prop == 'sub') {
                 duplicateOrgRole = OrgRole.findAllBySubAndRoleTypeAndOrg(owner, rel, org_to_link) ? true : false
             }
-            if(params.recip_prop == 'pkg')
-            {
+            else if(params.recip_prop == 'pkg') {
                 duplicateOrgRole = OrgRole.findAllByPkgAndRoleTypeAndOrg(owner, rel, org_to_link) ? true : false
             }
-            if(params.recip_prop == 'lic')
-            {
+            else if(params.recip_prop == 'lic') {
                 duplicateOrgRole = OrgRole.findAllByLicAndRoleTypeAndOrg(owner, rel, org_to_link) ? true : false
             }
-            if(params.recip_prop == 'title')
-            {
+            else if(params.recip_prop == 'title') {
                 duplicateOrgRole = OrgRole.findAllByTitleAndRoleTypeAndOrg(owner, rel, org_to_link) ? true : false
             }
 
-            if(!duplicateOrgRole) {
+            if(! duplicateOrgRole) {
                 def new_link = new OrgRole(org: org_to_link, roleType: rel)
                 new_link[params.recip_prop] = owner
 

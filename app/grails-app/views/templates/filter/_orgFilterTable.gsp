@@ -209,7 +209,11 @@
                             def numberOfSubscriptions = Subscription.executeQuery("select s.id " + base_qry, qry_params).size()
                         %>
                         <g:if test="${actionName == 'manageConsortia'}">
-                            ${numberOfSubscriptions}
+                            <g:link controller="myInstitution" action="manageConsortiaLicenses" params="${[member: org.id, status: RDStore.SUBSCRIPTION_CURRENT.id]}">
+                                <div class="ui circular label">
+                                    ${numberOfSubscriptions}
+                                </div>
+                            </g:link>
                         </g:if>
                         <g:else>
                             <g:link controller="myInstitution" action="currentSubscriptions" params="${[q:org.name]}" title="${message(code: 'org.subscriptions.tooltip', args: [org.name])}">

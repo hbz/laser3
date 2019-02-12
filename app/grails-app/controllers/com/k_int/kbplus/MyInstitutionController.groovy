@@ -1,7 +1,5 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.*
-import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import de.laser.controller.AbstractDebugController
@@ -47,6 +45,7 @@ class MyInstitutionController extends AbstractDebugController {
     def queryService
     def dashboardDueDatesService
     def subscriptionsQueryService
+    def providerHelperService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -470,42 +469,20 @@ from License as l where (
 
         def result = setResultGenerics()
 
-        def role_sub            = RDStore.OR_SUBSCRIBER
-        def role_sub_cons       = RDStore.OR_SUBSCRIBER_CONS
-        def role_sub_consortia  = RDStore.OR_SUBSCRIPTION_CONSORTIA
-        def ogr_provider        = RDStore.OR_PROVIDER
-        def ogr_agency          = RDStore.OR_AGENCY
-
-        result.orgRoles    = [ogr_provider, ogr_agency]
+        result.orgRoles    = [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-        params.sort        = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
-        def mySubs = Subscription.executeQuery( """
-            select s from Subscription as s join s.orgRelations as ogr where
-                ( s.status.value != 'Deleted' ) and
-                ( s = ogr.sub and ogr.org = :subOrg ) and
-                ( ogr.roleType = (:roleSub) or ogr.roleType = (:roleSubCons) or ogr.roleType = (:roleSubConsortia) )
-        """, [subOrg: contextService.getOrg(), roleSub: role_sub, roleSubCons: role_sub_cons, roleSubConsortia: role_sub_consortia])
+        List<Org> providers = providerHelperService.getCurrentProviders( contextService.getOrg())
+        List<Org> agencies   = providerHelperService.getCurrentAgencies( contextService.getOrg())
 
-        def orgListTotal = []
-        // new
-        def providers = OrgRole.findAll("""
-                from OrgRole where sub in (:subscriptions) and (roleType = :provider or roleType = :agency)
-            """, [
-                subscriptions: mySubs,
-                provider: ogr_provider,
-                agency:   ogr_agency
-        ])
+        providers.addAll(agencies)
+        List orgIds = providers.unique().collect{ it2 -> it2.id }
 
-        providers.each { p ->
-            if (! orgListTotal.contains(p.org)) {
-                orgListTotal << p.org
-            }
-        }
 //        result.user = User.get(springSecurityService.principal.id)
-        params.max        = params.max ?: result.user?.getDefaultPageSizeTMP()
+        params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
+        params.max  = params.max ?: result.user?.getDefaultPageSizeTMP()
 
-        def fsq  = filterService.getOrgQuery([constraint_orgIds: orgListTotal.collect{ it2 -> it2.id }] << params)
+        def fsq  = filterService.getOrgQuery([constraint_orgIds: orgIds] << params)
         if (params.filterPropDef) {
             fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
         }
@@ -569,33 +546,17 @@ from License as l where (
 
         if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)) {
             result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
-            result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) ? 'package' : 'institution'
-        }
-
-        Map<Subscription,List> allProviders = [:]
-        OrgRole.findAllByRoleType(RefdataValue.getByValueAndCategory('Provider', 'Organisational Role')).collect { it ->
-            List currProviders = allProviders.get(it.sub)
-            if(currProviders == null)
-                currProviders = [it.org]
-            allProviders.put(it.sub,currProviders)
-        }
-        Map<Subscription,List> allAgencies = [:]
-        OrgRole.findAllByRoleType(RefdataValue.getByValueAndCategory('Agency', 'Organisational Role')).collect { it ->
-            List currAgencies = allAgencies.get(it.sub)
-            if(currAgencies == null)
-                currAgencies = [it.org]
-            allAgencies.put(it.sub,currAgencies)
-        }
-
-        subscriptions.each { s ->
-            s.providers = allProviders.get(s)
-            s.agencies = allAgencies.get(s)
+            result.usageMode = ((RDStore.OR_TYPE_CONSORTIUM.id in result.institution?.getallOrgRoleTypeIds())) ? 'package' : 'institution'
         }
 
         if(params.sort && params.sort.indexOf("§") >= 0) {
             switch(params.sort) {
                 case "orgRole§provider":
-                    subscriptions.sort { x,y -> x.providers.get(0).name.compareToIgnoreCase y.providers.get(0).name }
+                    subscriptions.sort { x,y ->
+                        String a = x.getProviders().size() > 0 ? x.getProviders().first().name : ''
+                        String b = y.getProviders().size() > 0 ? y.getProviders().first().name : ''
+                        a.compareToIgnoreCase b
+                    }
                     if(params.order.equals("desc"))
                         subscriptions.reverse(true)
                 break
@@ -1658,6 +1619,19 @@ AND EXISTS (
                 OrgRole.executeUpdate("delete from OrgRole where sub = ? and org = ?",[subscription, inst])
               } else {
                 subscription.status = deletedStatus
+                
+                if(subscription.save(flush: true)) {
+                    //delete eventual links, bugfix for ERMS-800 (ERMS-892)
+                    Links.executeQuery('select l from Links as l where l.objectType = :objType and :subscription in (l.source,l.destination)',[objType:Subscription.class.name,subscription:subscription]).each { l ->
+                        DocContext comment = DocContext.findByLink(l)
+                        if(comment) {
+                            Doc commentContent = comment.owner
+                            comment.delete()
+                            commentContent.delete()
+                        }
+                        l.delete()
+                    }
+                }
               }
             } else {
                 flash.error = message(code:'myinst.actionCurrentSubscriptions.error', default:'Unable to delete - The selected license has attached subscriptions')
@@ -3367,6 +3341,105 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             return
         }
 
+        result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def manageConsortiaLicenses() {
+        def result = setResultGenerics()
+
+        result.max    = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+
+        Map fsq = filterService.getOrgComboQuery([sort: 'o.sortname'], contextService.getOrg())
+        result.filterConsortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
+
+        result.filterSubTypes = RefdataCategory.getAllRefdataValues('Subscription Type').minus(
+                RefdataValue.getByValueAndCategory('Local Licence', 'Subscription Type')
+        )
+        result.filterPropList =
+                PropertyDefinition.findAllWhere(
+                        descr: PropertyDefinition.SUB_PROP,
+                        tenant: null // public properties
+                ) +
+                PropertyDefinition.findAllWhere(
+                        descr: PropertyDefinition.SUB_PROP,
+                        tenant: contextService.getOrg() // private properties
+                )
+
+        String query = "select ci, subK, roleT.org from CostItem ci join ci.owner orgK join ci.sub subT join subT.instanceOf subK " +
+                "join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
+                "where orgK = :org and orgK = roleK.org and roleK.roleType = :rdvCons " +
+                "and orgK = roleTK.org and roleTK.roleType = :rdvCons " +
+                "and roleT.roleType = :rdvSubscr "
+
+        Map qarams = [ org: result.institution,
+                       rdvCons: RDStore.OR_SUBSCRIPTION_CONSORTIA,
+                       rdvSubscr: RDStore.OR_SUBSCRIBER_CONS ]
+
+        /*if (params.q?.size() > 0) {
+
+        } */
+
+        if (params.member?.size() > 0) {
+            query += " and roleT.org.id = :member "
+            qarams.put('member', params.long('member'))
+        }
+
+        if (params.validOn?.size() > 0) {
+            result.validOn = params.validOn
+
+            query += " and ( "
+            query += "( ci.startDate <= :validOn OR (ci.startDate is null AND (subK.startDate <= :validOn OR subK.startDate is null) ) ) and "
+            query += "( ci.endDate >= :validOn OR (ci.endDate is null AND (subK.endDate >= :validOn OR subK.endDate is null) ) ) "
+            query += ") "
+
+            DateFormat sdf = new DateUtil().getSimpleDateFormat_NoTime()
+            qarams.put('validOn', new Timestamp(sdf.parse(params.validOn).getTime()))
+        }
+
+        if (params.status?.size() > 0) {
+            query += " and subK.status.id = :status "
+            qarams.put('status', params.long('status'))
+        }
+        else {
+            query += " and subK.status.value != 'Deleted' "
+        }
+
+        if (params.filterPropDef?.size() > 0) {
+            def psq = propertyService.evalFilterQuery(params, query, 'subK', qarams)
+            query = psq.query
+            qarams = psq.queryParams
+        }
+
+        if (params.form?.size() > 0) {
+            query += " and subK.form.id = :form "
+            qarams.put('form', params.long('form'))
+        }
+        if (params.resource?.size() > 0) {
+            query += " and subK.resource.id = :resource "
+            qarams.put('resource', params.long('resource'))
+        }
+        if (params.subTypes?.size() > 0) {
+            query += " and subK.type.id in (:subTypes) "
+            qarams.put('subTypes', params.list('subTypes').collect{ it -> Long.parseLong(it) })
+        }
+
+        String orderQuery = " order by roleT.org.sortname, subK.name"
+        if (params.sort?.size() > 0) {
+            orderQuery = " order by " + params.sort + " " + params.order
+        }
+
+        // log.debug( query )
+        // log.debug( qarams )
+
+        List<CostItem, Subscription, Org> costs = CostItem.executeQuery(
+                query + " and subT.status.value != 'Deleted' " + orderQuery,
+                qarams
+        )
+        result.countCostItems = costs.size()
+        result.costItems = costs.drop((int)result.offset).take((int)result.max)
         result
     }
 

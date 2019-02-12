@@ -22,7 +22,7 @@
         </colgroup>
         <thead>
             <tr>
-                <th class="la-column-nowrap" >${message(code:'property.table.property')}</th>
+                <th>${message(code:'property.table.property')}</th>
                 <th>${message(code:'property.table.value')}</th>
                 <g:if test="${propDefGroup.ownerType == License.class.name}">
                     <th>${message(code:'property.table.paragraph')}</th>
@@ -34,9 +34,8 @@
     </g:if>
     <tbody>
         <g:each in="${propDefGroup.getCurrentProperties(ownobj)}" var="prop">
-
                 <tr>
-                    <td class="la-column-nowrap">
+                    <td>
                         <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
                             ${prop.type.getI10n('name')}
                             <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${prop.type.getI10n('expl')}">

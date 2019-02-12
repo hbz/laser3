@@ -56,10 +56,6 @@ class Subscription
   String noticePeriod
   Date dateCreated
   Date lastUpdated
-  @Transient
-  List<Org> providers
-  @Transient
-  List<Org> agencies
 
   License owner
   SortedSet issueEntitlements
@@ -178,6 +174,16 @@ class Subscription
             result = TemplateSupport.CALCULATED_TYPE_LOCAL
         }
         result
+    }
+
+    List<Org> getProviders() {
+        Org.executeQuery("select og.org from OrgRole og where og.sub =:sub and og.roleType = :provider",
+            [sub: this, provider: RDStore.OR_PROVIDER])
+    }
+
+    List<Org> getAgencies() {
+        Org.executeQuery("select og.org from OrgRole og where og.sub =:sub and og.roleType = :agency",
+                [sub: this, agency: RDStore.OR_AGENCY])
     }
 
     // used for views and dropdowns
@@ -505,14 +511,6 @@ class Subscription
   //      name(facility.name)
   //    }
   //  }
-
-  public Date getDerivedAccessStartDate() {
-    startDate ? startDate : null
-  }
-
-  public Date getDerivedAccessEndDate() {
-    endDate ? endDate : null
-  }
 
   public Date getRenewalDate() {
     manualRenewalDate ? manualRenewalDate : null
