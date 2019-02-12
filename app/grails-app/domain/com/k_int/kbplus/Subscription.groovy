@@ -160,6 +160,11 @@ class Subscription
     }
 
     @Override
+    boolean showShareButton() {
+        getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL
+    }
+
+    @Override
     def updateShare(ShareableTrait sharedObject) {
 
         log.debug('updateShare: ' + sharedObject)
@@ -171,11 +176,11 @@ class Subscription
 
                 newTargets.each{ sub ->
                     log.debug('adding for: ' + sub)
-                    sharedObject.addShareForTarget(sub)
+                    sharedObject.addShareForTarget_trait(sub)
                 }
             }
             else {
-                sharedObject.deleteShare()
+                sharedObject.deleteShare_trait()
             }
         }
     }
@@ -191,11 +196,11 @@ class Subscription
             targets.each{ sub ->
                 if (sharedObject.isShared) {
                     log.debug('adding for: ' + sub)
-                    sharedObject.addShareForTarget(sub)
+                    sharedObject.addShareForTarget_trait(sub)
                 }
                 else {
-                    log.debug('deleting for: ' + sub)
-                    sharedObject.deleteShareForTarget(sub)
+                    log.debug('deleting all shares')
+                    sharedObject.deleteShare_trait()
                 }
             }
 

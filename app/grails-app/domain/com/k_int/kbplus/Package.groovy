@@ -1,10 +1,15 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.interfaces.ShareSupport
+import de.laser.traits.ShareableTrait
+
 import java.text.Normalizer
 import javax.persistence.Transient
 
-class Package extends AbstractBaseDomain {
+class Package
+        extends AbstractBaseDomain
+        implements ShareSupport {
 
     // TODO AuditTrail
   static auditable = [ignore:['version','lastUpdated','pendingChanges']]
@@ -104,6 +109,18 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     cancellationAllowances(nullable:true, blank:false)
                   sortName(nullable:true, blank:false)
   }
+
+    boolean showShareButton() {
+        // TODO
+    }
+
+    def updateShare(ShareableTrait sharedObject) {
+        // TODO
+    }
+
+    def syncAllShares(List<ShareSupport> targets) {
+        // TODO
+    }
 
   def getConsortia() {
     def result = null;

@@ -39,7 +39,8 @@
                         [ Wird geteilt ]
                     </g:if>
 
-                    <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip')}">
+                    <g:if test="${instance.showShareButton()}">
+                        <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip')}">
 
                             <g:remoteLink class="js-gost js-no-wait-wheel"
                                           controller="ajax" action="toggleShare"
@@ -47,12 +48,20 @@
                                           onSuccess=""
                                           onComplete=""
                                           update="container-documents">
-                                <button class="ui icon button">
-                                    <i class="alternate share icon"></i>
-                                </button>
+                                <g:if test="${docctx.isShared}">
+                                    <button class="ui mini icon button green">
+                                        <i class="alternate share icon"></i>
+                                    </button>
+                                </g:if>
+                                <g:else>
+                                    <button class="ui mini icon button">
+                                        <i class="alternate share icon"></i>
+                                    </button>
+                                </g:else>
                             </g:remoteLink>
 
-                    </span>
+                        </span>
+                    </g:if>
                 </div>
 
             </div>

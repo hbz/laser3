@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.traits.ShareableTrait
+import org.hibernate.event.spi.PostUpdateEvent
 
 import javax.persistence.Transient
 
@@ -59,4 +60,17 @@ class DocContext implements ShareableTrait {
       sharedFrom(nullable:true, blank:true)
       isShared(nullable:true, blank:false, default:false)
   }
+
+    void afterUpdate(PostUpdateEvent event) {
+        log.debug('afterUpdate')
+
+        if (status?.value?.equalsIgnoreCase('Deleted')) {
+            deleteShare_trait()
+        }
+    }
+
+    void beforeDelete(PostUpdateEvent event) {
+        log.debug('beforeDelete')
+        deleteShare_trait()
+    }
 }

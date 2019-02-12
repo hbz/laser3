@@ -6,6 +6,7 @@ import com.k_int.kbplus.Links
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Subscription
 import de.laser.interfaces.ShareSupport
+import org.hibernate.event.spi.PostUpdateEvent
 
 import javax.persistence.Transient
 
@@ -21,35 +22,29 @@ trait ShareableTrait {
     // static constraints = { sharedFrom(nullable:true, blank:true); isShared(nullable:true, blank:false, default:false) }
 
     @Transient
-    def addShareForTarget(ShareSupport target) {
+    def addShareForTarget_trait(ShareSupport target) {
         log?.debug ("addShareForTarget " + this + " for " + target)
 
         if (this instanceof DocContext) {
             shareService.addDocShareForTarget(this, target)
         }
-
-        log?.debug ( this )
     }
 
     @Transient
-    def deleteShareForTarget(ShareSupport target) {
+    def deleteShareForTarget_trait(ShareSupport target) {
         log?.debug ("deleteShareForTarget " + this + " for " + target)
 
         if (this instanceof DocContext) {
             shareService.deleteDocShareForTarget(this, target)
         }
-
-        log?.debug ( this )
     }
 
     @Transient
-    def deleteShare() {
+    def deleteShare_trait() {
         log?.debug ("deleteAllShares where x.sharedFrom = " + this)
 
         if (this instanceof DocContext) {
             DocContext.executeUpdate('delete from DocContext dc where dc.sharedFrom = :sf', [sf: this])
         }
-
-        log?.debug ( this )
     }
 }
