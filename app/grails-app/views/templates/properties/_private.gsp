@@ -19,17 +19,17 @@
 <table class="ui la-table-small la-table-inCard table">
     <g:if test="${ownobj.privateProperties}">
         <colgroup>
-            <col style="width: 229px;">
+            <col style="width: 129px;">
             <col style="width: 96px;">
             <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
                 <col style="width: 359px;">
             </g:if>
-            <col style="width: 298px;">
+            <col style="width: 148px;">
             <col style="width: 76px;">
         </colgroup>
         <thead>
             <tr>
-                <th class="la-column-nowrap la-js-dont-hide-this-card">${message(code:'property.table.property')}</th>
+                <th class="la-js-dont-hide-this-card">${message(code:'property.table.property')}</th>
                 <th>${message(code:'property.table.value')}</th>
                 <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
                     <th>${message(code:'property.table.paragraph')}</th>
