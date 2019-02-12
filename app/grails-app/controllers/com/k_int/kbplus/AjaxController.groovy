@@ -1265,7 +1265,12 @@ class AjaxController {
 
         ((ShareSupport) owner).updateShare(sharedObject)
 
-        render(template: '/templates/documents/card', model: [ownobj: owner])
+        if (params.reload) {
+            redirect(url: request.getHeader('referer'))
+        }
+        else {
+            render(template: '/templates/documents/card', model: [ownobj: owner, editable: true]) // TODO editable from owner
+        }
     }
 
     @Secured(['ROLE_USER'])

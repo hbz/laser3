@@ -39,19 +39,18 @@
                             <g:if test="${instance.showShareButton()}">
                                 <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip')}">
 
-                                    <g:link controller="ajax" action="toggleShare"
-                                            params='[owner:"${instance.class.name}:${instance.id}", sharedObject:"${docctx.class.name}:${docctx.id}"]'>
-                                        <g:if test="${docctx.isShared}">
-                                            <button class="ui icon button green">
-                                                <i class="alternate share icon"></i>
-                                            </button>
-                                        </g:if>
-                                        <g:else>
-                                            <button class="ui icon button">
-                                                <i class="alternate share icon"></i>
-                                            </button>
-                                        </g:else>
-                                    </g:link>
+                                    <g:if test="${docctx.isShared}">
+                                        <g:link controller="ajax" action="toggleShare" class="ui icon button green"
+                                                params='[owner:"${instance.class.name}:${instance.id}", sharedObject:"${docctx.class.name}:${docctx.id}", reload:true]'>
+                                                    <i class="alternate share icon"></i>
+                                        </g:link>
+                                    </g:if>
+                                    <g:else>
+                                        <g:link controller="ajax" action="toggleShare" class="ui icon button"
+                                                params='[owner:"${instance.class.name}:${instance.id}", sharedObject:"${docctx.class.name}:${docctx.id}", reload:true]'>
+                                            <i class="alternate share icon"></i>
+                                        </g:link>
+                                    </g:else>
 
                                 </span>
                             </g:if>

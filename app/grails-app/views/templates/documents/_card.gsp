@@ -42,23 +42,26 @@
                     <g:if test="${ownobj.showShareButton()}">
                         <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip')}">
 
-                            <g:remoteLink class="js-gost js-no-wait-wheel"
+                            <g:if test="${docctx.isShared}">
+                                <g:remoteLink class="ui mini icon button green js-gost js-no-wait-wheel"
                                           controller="ajax" action="toggleShare"
                                           params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}"]'
                                           onSuccess=""
                                           onComplete=""
                                           update="container-documents">
-                                <g:if test="${docctx.isShared}">
-                                    <button class="ui mini icon button green">
                                         <i class="alternate share icon"></i>
-                                    </button>
-                                </g:if>
-                                <g:else>
-                                    <button class="ui mini icon button">
-                                        <i class="alternate share icon"></i>
-                                    </button>
-                                </g:else>
-                            </g:remoteLink>
+                                </g:remoteLink>
+                            </g:if>
+                            <g:else>
+                                <g:remoteLink class="ui mini icon button js-gost js-no-wait-wheel"
+                                              controller="ajax" action="toggleShare"
+                                              params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}"]'
+                                              onSuccess=""
+                                              onComplete=""
+                                              update="container-documents">
+                                    <i class="alternate share icon"></i>
+                                </g:remoteLink>
+                            </g:else>
 
                         </span>
                     </g:if>
