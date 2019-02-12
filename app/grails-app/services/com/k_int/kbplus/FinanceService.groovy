@@ -121,7 +121,7 @@ class FinanceService {
             List<CostItem> allCostItems = CostItem.findAllByOwnerAndSub(org,sub)
             if(allCostItems.size() > 0) {
                 result.filterLists = assembleFilterLists(allCostItems)
-                result.filterLists.providers = OrgRole.executeQuery('select distinct o.org from OrgRole o where o.roleType = :provider and o.sub = :sub order by o.org.name asc',[sub:sub,provider:RDStore.OR_PROVIDER])
+                result.filterLists.providers = OrgRole.executeQuery('select distinct o.org, o.org.name from OrgRole o where o.roleType = :provider and o.sub = :sub order by o.org.name asc',[sub:sub,provider:RDStore.OR_PROVIDER]).collect{ it -> it[0] }
             }
         }
         result
@@ -220,7 +220,7 @@ class FinanceService {
             List<CostItem> allCostItems = CostItem.findAllByOwner(org)
             if(allCostItems.size() > 0) {
                 result.filterLists = assembleFilterLists(allCostItems)
-                result.filterLists.providers = OrgRole.executeQuery('select distinct o.org from OrgRole o where o.roleType = :provider order by o.org.name asc',[provider:RDStore.OR_PROVIDER])
+                result.filterLists.providers = OrgRole.executeQuery('select distinct o.org, o.org.name from OrgRole o where o.roleType = :provider order by o.org.name asc',[provider:RDStore.OR_PROVIDER]).collect{ it -> it[0] }
             }
             result.filterPresets = filterQueryCons[1]
         }
