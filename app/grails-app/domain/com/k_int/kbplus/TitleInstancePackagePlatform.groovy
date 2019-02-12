@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.*
-import de.laser.traits.AuditTrait
+import de.laser.traits.AuditableTrait
 
 import javax.persistence.Transient
 
@@ -10,7 +10,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 import org.apache.commons.logging.*
 import groovy.time.TimeCategory
 
-class TitleInstancePackagePlatform extends AbstractBaseDomain implements AuditTrait {
+class TitleInstancePackagePlatform extends AbstractBaseDomain implements AuditableTrait {
   @Transient
   def grailsLinkGenerator
 
@@ -22,7 +22,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements AuditTr
 
   static Log static_logger = LogFactory.getLog(TitleInstancePackagePlatform)
 
-    // AuditTrait
+    // AuditableTrait
     static auditable = true
     static controlledProperties = ['status',
                                      'startDate',

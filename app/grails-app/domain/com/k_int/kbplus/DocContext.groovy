@@ -1,13 +1,22 @@
 package com.k_int.kbplus
 
-class DocContext {
+import de.laser.traits.ShareableTrait
+import org.hibernate.event.PostUpdateEvent
 
-  static belongsTo = [
-    owner:Doc ,
-    license : License,
-    subscription : Subscription,
-    pkg : Package,
-    link : Links
+import javax.persistence.Transient
+
+class DocContext implements ShareableTrait {
+
+    @Transient
+    def shareService
+
+    static belongsTo = [
+        owner:          Doc,
+        license:        License,
+        subscription:   Subscription,
+        pkg:            Package,
+        link:           Links,
+        sharedFrom:     DocContext
   ]
 
   RefdataValue status   // RefdataCategory 'Document Context Status'
@@ -15,7 +24,9 @@ class DocContext {
 
   Boolean globannounce=false
 
-  Alert alert
+    Alert alert
+    DocContext sharedFrom
+    Boolean isShared
 
   // We may attach a note to a particular column, in which case, we set domain here as a discriminator
   String domain
@@ -32,6 +43,8 @@ class DocContext {
      globannounce column:'dc_is_global'
            status column:'dc_status_fk'
             alert column:'dc_alert_fk'
+       sharedFrom column:'dc_shared_from_fk'
+         isShared column:'dc_is_shared'
   }
 
   static constraints = {
@@ -44,5 +57,20 @@ class DocContext {
     status(nullable:true, blank:false)
     alert(nullable:true, blank:false)
     globannounce(nullable:true, blank:true)
+      sharedFrom(nullable:true, blank:true)
+      isShared(nullable:true, blank:false, default:false)
   }
+
+    void afterUpdate(PostUpdateEvent event) {
+        log.debug('afterUpdate')
+
+        if (status?.value?.equalsIgnoreCase('Deleted')) {
+            deleteShare_trait()
+        }
+    }
+
+    void beforeDelete(PostUpdateEvent event) {
+        log.debug('beforeDelete')
+        deleteShare_trait()
+    }
 }

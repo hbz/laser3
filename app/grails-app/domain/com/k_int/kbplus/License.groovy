@@ -5,10 +5,12 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.helper.RDStore
 import de.laser.interfaces.DeleteFlag
-import de.laser.traits.AuditTrait
 import de.laser.domain.AbstractBaseDomain
 import de.laser.interfaces.Permissions
+import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.TemplateSupport
+import de.laser.traits.AuditableTrait
+import de.laser.traits.ShareableTrait
 
 import javax.persistence.Transient
 import java.text.Normalizer
@@ -17,7 +19,8 @@ import com.k_int.ClassUtils
 
 class License
         extends AbstractBaseDomain
-        implements TemplateSupport, DeleteFlag, Permissions, Comparable<License>, AuditTrait {
+        implements TemplateSupport, DeleteFlag, Permissions, ShareSupport, Comparable<License>,
+                AuditableTrait {
 
     @Transient
     def grailsApplication
@@ -33,7 +36,7 @@ class License
     def changeNotificationService
 
 
-    // AuditTrait
+    // AuditableTrait
     static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
     static controlledProperties = [ 'startDate', 'endDate', 'licenseUrl', 'status', 'type' ]
 
@@ -154,6 +157,47 @@ class License
     @Override
     def hasTemplate() {
         return instanceOf ? instanceOf.isTemplate() : false
+    }
+
+    boolean showShareButton() {
+        getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL
+    }
+
+    def updateShare(ShareableTrait sharedObject) {
+        log.debug('updateShare: ' + sharedObject)
+
+        if (sharedObject instanceof DocContext) {
+            if (sharedObject.isShared) {
+                List<License> newTargets = License.findAllByInstanceOfAndStatusNotEqual(this, RDStore.LICENSE_DELETED)
+                log.debug('found targets: ' + newTargets)
+
+                newTargets.each{ lic ->
+                    log.debug('adding for: ' + lic)
+                    sharedObject.addShareForTarget_trait(lic)
+                }
+            }
+            else {
+                sharedObject.deleteShare_trait()
+            }
+        }
+    }
+
+    def syncAllShares(List<ShareSupport> targets) {
+        log.debug('synAllShares: ' + targets)
+
+        documents.each{ sharedObject ->
+
+            targets.each{ lic ->
+                if (sharedObject.isShared) {
+                    log.debug('adding for: ' + lic)
+                    sharedObject.addShareForTarget_trait(lic)
+                }
+                else {
+                    log.debug('deleting all shares')
+                    sharedObject.deleteShare_trait()
+                }
+            }
+        }
     }
 
     @Override

@@ -3,7 +3,6 @@ package com.k_int.kbplus
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.properties.PropertyDefinition
-import de.laser.traits.AuditTrait
 
 import javax.persistence.Transient
 
