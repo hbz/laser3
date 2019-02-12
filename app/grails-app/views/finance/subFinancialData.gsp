@@ -16,8 +16,9 @@
         <g:set var="cons" value="${financialData.cons}"/>
         <g:set var="subscr" value="${financialData.subscr}"/>
         <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution.name}" />
-            <semui:crumb class="active" text="${message(code:'menu.institutions.finance')}" />
+            <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}" />
+            <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label')}" />
+            <semui:crumb class="active"  message="${subscription.name}" />
         </semui:breadcrumbs>
 
         <semui:controlButtons>
@@ -29,11 +30,11 @@
                                  data-confirm-term-how="ok"
                                  controller="finance"
                                  action="financialsExport"
-                                 params="${params+[forExport:true]}">${message(code:'default.button.exports.xls', default:'XLS Export')}
+                                 params="${params+[forExport:true,sub:subscription.id]}">${message(code:'default.button.exports.xls', default:'XLS Export')}
                         </g:link>
                     </g:if>
                     <g:else>
-                        <g:link class="item" controller="finance" action="financialsExport" params="${params+[forExport:true]}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
+                        <g:link class="item" controller="finance" action="financialsExport" params="${params+[forExport:true,sub:subscription.id]}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
                     </g:else>
                 </semui:exportDropdownItem>
             <%--
@@ -68,7 +69,32 @@
             <g:set var="totalString" value="${own.count ? own.count : 0} ${message(code:'financials.header.ownCosts')}"/>
         </g:else>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'subscription.details.financials.label')} ${message(code:'default.for')} ${institution.name} <semui:totalNumber total="${totalString}"/></h1>
-        <g:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets]" />
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'subscription.details.financials.label')} ${message(code:'default.for')} ${subscription} <semui:totalNumber total="${totalString}"/>
+            <semui:anualRings mapping="subfinance" object="${subscription}" controller="finance" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+        </h1>
+
+        <g:render template="../subscriptionDetails/nav" model="${[subscriptionInstance:subscription, params:(params << [id:subscription.id])]}"/>
+
+        <g:if test="${showView.equals("consAtSubscr")}">
+            <div class="ui negative message">
+                <div class="header">
+                    <g:message code="myinst.message.attention" />:
+                    <g:message code="myinst.subscriptionDetails.message.ChildView" />
+                    <span class="ui label">${subscription.getAllSubscribers().collect{itOrg -> itOrg.getDesignation()}.join(',')}</span>.
+                </div>
+                <p>
+                    <g:message code="myinst.subscriptionDetails.message.hereLink" />
+                    <g:link controller="subscriptionDetails" action="members" id="${subscription.instanceOf.id}">
+                        <g:message code="myinst.subscriptionDetails.message.backToMembers" />
+                    </g:link>
+                    <g:message code="myinst.subscriptionDetails.message.and" />
+                    <g:link controller="subscriptionDetails" action="show" id="${subscription.instanceOf.id}">
+                        <g:message code="myinst.subscriptionDetails.message.consotialLicence" />
+                    </g:link>.
+                </p>
+            </div>
+        </g:if>
+
+        <g:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,fixedSubscription:subscription]" />
     </body>
 </html>
