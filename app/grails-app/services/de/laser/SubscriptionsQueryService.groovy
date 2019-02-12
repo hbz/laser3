@@ -81,10 +81,12 @@ from Subscription as s where (
 
         if (params.orgRole == 'Subscription Consortia') {
             if (params.actionName == 'manageConsortia') {
-                base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is not null AND s.status.value != 'Deleted' ) "
+                base_qry =  " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
+                            " AND s.instanceOf is not null "
                 qry_params = ['roleType':role_sub_consortia, 'activeInst':contextOrg]
             } else {
-                base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is null AND s.status.value != 'Deleted' ) "
+                base_qry =  " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
+                            " AND s.instanceOf is null "
                 qry_params = ['roleType':role_sub_consortia, 'activeInst':contextOrg]
             }
         }
@@ -156,18 +158,20 @@ from Subscription as s where (
 
         if (params.status) {
 
-            if ((params.status as Long) == RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null','filter.fake.values').id) {
+            if (params.status == 'FETCH_ALL') {
+                // ignore subscription.status
+            }
+            else if ((params.status as Long) == RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null','filter.fake.values').id) {
                 base_qry += " AND s.status is null "
             }
             else {
                 base_qry += " and s.status.id = :status "
                 qry_params.put('status', (params.status as Long))
             }
-
-        } else {
+        }
+        else {
             base_qry += " AND ( s.status.value != 'Deleted' ) "
         }
-
 
         if (params.form) {
             base_qry += "and s.form.id = :form "
