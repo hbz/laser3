@@ -1,91 +1,169 @@
-<!-- _result.gsp -->
-<%@ page import="com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.FinanceController" %>
-<laser:serviceInjection />
+<%@ page import="de.laser.helper.RDStore" %>
 
-<%
-    def tabOwnerActive  = (tab?.equalsIgnoreCase('owner')) ? 'active' : ''
-    def tabSCActive     = (tab?.equalsIgnoreCase('sc')) ? 'active' : ''
-%>
+    <semui:messages data="${flash}" />
 
+    <g:if test="${editable}">
+        <button class="ui button" value="" href="#addBudgetCodeModal" data-semui="modal">${message(code:'budgetCode.create_new.label')}</button>
 
-<div id="financeFilterData" class="ui top attached tabular menu" data-current="${queryMode ? queryMode.minus('MODE_') : ''}">
-    <g:if test="${queryMode != FinanceController.MODE_CONS_AT_SUBSCR}">
-        <div class="item ${tabOwnerActive}" data-tab="OWNER">${message(code:'financials.tab.ownCosts')}</div>
+        <semui:modal id="addBudgetCodeModal" message="budgetCode.create_new.label">
+
+            <g:form class="ui form" url="[controller: 'myInstitution', action: 'budgetCodes']" method="POST">
+                <input type="hidden" name="cmd" value="newBudgetCode"/>
+                <input type="hidden" name="redirect" value="redirect"/>
+
+                <div class="field">
+                    <label>${message(code:'financials.budgetCode.description')}</label>
+                    <input type="text" name="bc"/>
+                </div>
+
+                <div class="field">
+                    <label>${message(code:'financials.budgetCode.usage')}</label>
+                    <textarea name="descr"></textarea>
+                </div>
+
+            </g:form>
+        </semui:modal>
+
     </g:if>
-    <g:if test="${queryMode == FinanceController.MODE_CONS}">
-        <div class="item ${tabSCActive}" data-tab="CONS">${message(code:'financials.tab.consCosts')}</div>
-    </g:if>
-    <g:if test="${queryMode == FinanceController.MODE_CONS_AT_SUBSCR}">
-        <div class="item ${tabOwnerActive}" data-tab="CONS_AT_SUBSCR">${message(code:'financials.tab.consCosts')}</div>
-    </g:if>
-    <g:if test="${queryMode == FinanceController.MODE_SUBSCR}">
-        <div class="item" data-tab="SUBSCR">${message(code:'financials.tab.subscrCosts')}</div>
-    </g:if>
-</div>
 
-<%
-    // WORKAROUND; grouping costitems by subscription
-    def costItemsOwner = ["clean":[]]
-    (ciList?.collect{it.sub}).each{ item ->
-        if (item) {
-            costItemsOwner << ["${item.name}": []]
-        }
-    }
-    cost_items.each{ item ->
-        if (item.sub) {
-            costItemsOwner.get("${item.sub?.name}").add(item)
-        }
-        else {
-            costItemsOwner.get('clean').add(item)
-        }
-    }
-    costItemsOwner = costItemsOwner.findAll{ ! it.value.isEmpty() }
-%>
 
-<g:if test="${queryMode != FinanceController.MODE_CONS_AT_SUBSCR}">
-    <!-- OWNER -->
-    <div class="ui bottom attached tab ${tabOwnerActive}" data-tab="OWNER">
+    <div class="ui grid">
+        <div class="column">
+            <%--<button class="ui button" type="submit" data-semui="modal" href="#recentlyAdded_modal" id="showHideRecent">${message(code:'financials.recentCosts')}</button>--%>
 
-        <%--<g:if test="${! costItemsOwner}">
-            <br />
-            <g:render template="result_tab_owner" model="[editable: editable, cost_items: [], i: 'empty']"></g:render>
-        </g:if>--%>
+            <g:if test="${editable}">
+                <%--<button class="ui button pull-right" type="submit" id="BatchSelectedBtn" title="${g.message(code: 'financials.filtersearch.deleteAll')}" value="remove">Remove Selected</button>--%>
 
-        <br />
-        <g:render template="result_tab_owner" model="${[forSingleSubscription: forSingleSubscription, editable: editable, cost_items: costItemsOwner, cost_items_count: ciCountOwner, i: 'OWNER', ownerOffset: ownerOffset]}"/>
+                <script>
+                    var isClicked = false;
+                    $('#btnAddNewCostItem').on('click', function(event) {
+                        event.preventDefault();
 
-    </div><!-- OWNER -->
-</g:if>
+                        // prevent 2 Clicks open 2 Modals
+                        if (!isClicked) {
+                            isClicked = true;
+                            $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
+                            $('#dynamicModalContainer').empty()
 
-<g:if test="${queryMode == FinanceController.MODE_CONS}">
+                            $.ajax({
+                                url: "<g:createLink controller='finance' action='editCostItem'/>",
+                                data: {
+                                    fixedSub: "${fixedSubscription?.id}",
+                                    currSub: "${currentSubscription?.id}",
+                                    tab: "${params.tab}"
+                                }
+                            }).done(function (data) {
+                                $('#dynamicModalContainer').html(data);
 
-    <div class="ui bottom attached tab ${tabSCActive}" data-tab="CONS">
-        <br />
-        <g:render template="result_tab_cons" model="[forSingleSubscription: forSingleSubscription, editable: editable, cost_items: ciListCons, cost_items_count: ciCountCons, i: 'CONS', consOffset: consOffset]"/>
+                                $('#dynamicModalContainer .ui.modal').modal({
+                                    onVisible: function () {
+                                        r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
+                                        r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
+
+                                        ajaxPostFunc()
+                                    },
+                                    detachable: true,
+                                    closable: false,
+                                    transition: 'scale',
+                                    onApprove: function () {
+                                        $(this).find('.ui.form').submit();
+                                        return false;
+                                    }
+                                }).modal('show');
+                            })
+                            setTimeout(function () {
+                                isClicked = false;
+                            }, 800);
+                        }
+                    })
+                </script>
+
+            </g:if>
+        </div>
     </div>
-</g:if>
-<g:if test="${queryMode == FinanceController.MODE_CONS_AT_SUBSCR}">
 
-    <div class="ui bottom attached tab ${tabOwnerActive}" data-tab="CONS_AT_SUBSCR">
-        <br />
-        <g:render template="result_tab_cons" model="[forSingleSubscription: forSingleSubscription, editable: editable, cost_items: ciListCons, cost_items_count: ciCountCons, i: 'CONS_AT_SUBSCR', consOffset: consOffset]"/>
-    </div>
-</g:if>
-<g:if test="${queryMode == FinanceController.MODE_SUBSCR}">
+        <%--<g:render template="recentlyAddedModal" />--%>
 
-    <div class="ui bottom attached tab" data-tab="SUBSCR">
-        <br />
-        <g:render template="result_tab_subscr" model="[editable: editable, cost_items: ciListSubscr, cost_items_count: ciCountSub, i: 'SUBSCR', subscrOffset: subscrOffset]"/>
-    </div>
-</g:if>
+        <div class="ui grid">
+            <div class="sixteen wide column">
+                <div id="filterTemplateWrapper" class="wrapper">
+                    <div id="filterTemplate">
+                        <%--${financialData}--%>
+                        <g:render template="filter" model="[filterPreset:filterPresets,fixedSubscription:fixedSubscription]"/>
+                        <div id="financeFilterData" class="ui top attached tabular menu" data-current="${showView}">
+                            <g:if test="${!showView.equals("consAtSubscr")}">
+                                <div class="item" data-tab="own">${message(code:'financials.tab.ownCosts')}</div>
+                            </g:if>
+                            <g:if test="${showView.equals("cons") || showView.equals("consAtSubscr")}">
+                                <div class="item" data-tab="cons">${message(code:'financials.tab.consCosts')}</div>
+                            </g:if>
+                            <g:if test="${showView.equals("subscr")}">
+                                <div class="item" data-tab="subscr">${message(code:'financials.tab.subscrCosts')}</div>
+                            </g:if>
+                        </div>
+                        <g:if test="${!showView.equals("consAtSubscr")}">
+                            <!-- OWNER -->
+                            <div data-tab="own" class="ui bottom attached tab">
+                                <br />
+                                <g:render template="result_tab_owner" model="[forSingleSubscription: forSingleSubscription, editable: editable, data: own]"/>
+                            </div><!-- OWNER -->
+                        </g:if>
+                        <g:if test="${showView.equals("cons") || showView.equals("consAtSubscr")}">
+                            <div data-tab="cons" class="ui bottom attached tab">
+                                <br />
+                                <g:render template="result_tab_cons" model="[forSingleSubscription: forSingleSubscription, editable: editable, data: cons, orgRoles: financialData.consSubscribers]"/>
+                            </div>
+                        </g:if>
+                        <g:if test="${showView.equals("subscr")}">
+                            <div data-tab="subscr" class="ui bottom attached tab">
+                                <br />
+                                <g:render template="result_tab_subscr" model="[editable: editable, data:subscr]"/>
+                            </div>
+                        </g:if>
+                    </div>
+                </div>
+            </div><!-- .sixteen -->
+        </div><!-- .grid -->
 
-<r:script>
-    $('#financeFilterData .item').tab({
-        onVisible: function(tabPath) {
-            $('#financeFilterData').attr('data-current', tabPath)
-            console.log(tabPath)
-        }
-    })
-</r:script>
+        <r:script>
+            $(document).ready(function() {
+                var tab = "${showView}";
+                $("[data-tab='"+tab+"']").addClass("active");
+                if(tab === "consAtSubscr")
+                    $("[data-tab='cons']").addClass("active");
 
-<!-- _result.gsp -->
+                $('#financeFilterData .item').tab({
+                    onVisible: function(tabPath) {
+                        $('#financeFilterData').attr('data-current', tabPath);
+                        console.log(tabPath);
+                    }
+                });
+
+                $('table[id^=costTable] .x .trigger-modal').on('click', function(e) {
+                    e.preventDefault();
+
+                    $.ajax({
+                        url: $(this).attr('href')
+                    }).done( function(data) {
+                        $('.ui.dimmer.modals > #costItem_ajaxModal').remove();
+                        $('#dynamicModalContainer').empty().html(data);
+
+                        $('#dynamicModalContainer .ui.modal').modal({
+                            onVisible: function () {
+                                r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
+                                r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
+
+                                ajaxPostFunc()
+                            },
+                            detachable: true,
+                            closable: false,
+                            transition: 'scale',
+                            onApprove : function() {
+                                $(this).find('.ui.form').submit();
+                                return false;
+                            }
+                        }).modal('show');
+                    })
+                });
+            });
+        </r:script>

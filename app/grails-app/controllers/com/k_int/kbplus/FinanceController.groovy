@@ -4,7 +4,7 @@ import com.k_int.kbplus.auth.*
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
-import grails.converters.JSON;
+import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.ss.usermodel.FillPatternType
 import org.apache.poi.ss.usermodel.Row
@@ -27,462 +27,137 @@ class FinanceController extends AbstractDebugController {
     def contextService
     def genericOIDService
     def navigationGenerationService
+    def filterService
+    def financeService
+    def messageSource
 
-    private final def ci_count        = 'select count(distinct ci.id) from CostItem as ci '
-    private final def ci_select       = 'select distinct ci from CostItem as ci '
-    private final def user_role        = Role.findByAuthority('INST_USER')
-    private final def defaultCurrency = RefdataValue.getByValueAndCategory('EUR', 'Currency')
+    private final RefdataValue defaultCurrency = RefdataValue.getByValueAndCategory('EUR', 'Currency')
 
-    final static MODE_OWNER          = 'MODE_OWNER'
-    final static MODE_CONS           = 'MODE_CONS'
-    final static MODE_CONS_AT_SUBSCR = 'MODE_CONS_AT_SUBSCR'
-    final static MODE_SUBSCR         = 'MODE_SUBSCR'
-
-    private boolean userCertified(User user, Org institution)
-    {
-        if (!user.getAuthorizedOrgs().id.contains(institution.id))
-        {
-            log.error("User ${user.id} trying to access financial Org information not privy to ${institution.name}")
-            return false
-        } else
-            return true
-    }
-
-    private boolean isFinanceAuthorised(Org org, User user) {
-
-        accessService.checkMinUserOrgRole(user, org, user_role)
-    }
+    private final static MODE_OWNER          = 'MODE_OWNER'
+    private final static MODE_CONS           = 'MODE_CONS'
+    private final static MODE_CONS_AT_SUBSCR = 'MODE_CONS_AT_SUBSCR'
+    private final static MODE_SUBSCR         = 'MODE_SUBSCR'
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def index() {
-
-        log.debug("FinanceController::index() ${params}");
-
-        def user =  User.get(springSecurityService.principal.id)
-        def dateTimeFormat  = new java.text.SimpleDateFormat(message(code:'default.date.format')) {{setLenient(false)}}
-        def result = [:]
-        def tmp
-      try {
-        result.contextOrg = contextService.getOrg()
-        result.institution = contextService.getOrg()
-
-        if (! isFinanceAuthorised(result.institution, user)) {
-            log.error("Sending 401 - forbidden");
-            flash.error=message(code: 'financials.permission.unauthorised', args: [result.institution? result.institution.name : 'N/A'])
-            response.sendError(401)
+        log.debug("FinanceController::index() ${params}")
+        LinkedHashMap result = setResultGenerics()
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution,'INST_USER')
+        result.max = params.max ? Long.parseLong(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        switch(params.view) {
+            case "own": result.ownOffset = result.offset
+                break
+            case "cons": result.consOffset = result.offset
+                break
+            case "subscr": result.subscrOffset = result.offset
+                break
+            default: log.info("unhandled view: ${params.view}")
+                break
         }
-
-        /*
-        this is the switch for page call: if the controller has been called with the param sub (for subscription), then this flag
-        is being set.
-         */
-        result.inSubMode   = params.sub ? true : false
-
-          result.queryMode = MODE_OWNER
-          def orgRoleCons, orgRoleSubscr
-
-
-        //this is the switch for the cost item fill
-        if (result.inSubMode) {
-            log.info("call from /subscriptionDetails/${params.sub}/finance")
-            params.subscriptionFilter = "${params.sub}"
-
-            result.fixedSubscription = params.int('sub')? Subscription.get(params.sub) : null
-
-
-            LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(Subscription.class.name,result.fixedSubscription.id)
-            result.navPrevSubscription = links.prevLink
-            result.navNextSubscription = links.nextLink
-
-            if (! result.fixedSubscription) {
-                log.error("Financials in FIXED subscription mode, sent incorrect subscription ID: ${params?.sub}")
-                response.sendError(400, "No relevant subscription, please report this error to an administrator")
-            }
-
-            // own costs
-            tmp = financialData(result, params, user, MODE_OWNER)
-            result.foundMatches    = tmp.foundMatches
-            result.cost_items      = tmp.cost_items
-            result.cost_item_count = tmp.cost_item_count
-
-            orgRoleCons = OrgRole.findBySubAndOrgAndRoleType(
-                    result.fixedSubscription,
-                    result.institution,
-                    RDStore.OR_SUBSCRIPTION_CONSORTIA
-            )
-
-            orgRoleSubscr = OrgRole.findBySubAndRoleType(
-                    result.fixedSubscription,
-                    RDStore.OR_SUBSCRIBER_CONS
-            )
-
-            if (orgRoleCons) {
-                // show consortial subscription, but member costs
-                if (! orgRoleSubscr) {
-                    result.queryMode = MODE_CONS
-                    tmp = financialData(result, params, user, MODE_CONS)
-
-                    result.foundMatches_CS = tmp.foundMatches
-
-                    result.cost_items_CS = tmp.cost_items.sort{ x, y ->
-                        def xx = OrgRole.findBySubAndRoleType(x.sub, RDStore.OR_SUBSCRIBER_CONS)
-                        def yy = OrgRole.findBySubAndRoleType(y.sub, RDStore.OR_SUBSCRIBER_CONS)
-                        xx?.org?.sortname <=> yy?.org?.sortname
-                    }
-                    result.cost_item_count_CS = tmp.cost_item_count
-                }
-                // show member subscription as consortia
-                else {
-                    result.queryMode = MODE_CONS_AT_SUBSCR
-                    tmp = financialData(result, params, user, MODE_OWNER)
-
-                    result.foundMatches_CS = tmp.foundMatches
-                    result.cost_items_CS = tmp.cost_items
-                    result.cost_item_count_CS = tmp.cost_item_count
-                }
-            }
-            // show subscription as a member, but viewable costs
-            else if (orgRoleSubscr) {
-                result.queryMode = MODE_SUBSCR
-                tmp = financialData(result, params, user, MODE_SUBSCR)
-
-                result.foundMatches_SUBSCR = tmp.foundMatches
-                result.cost_items_SUBSCR = tmp.cost_items
-                result.cost_item_count_SUBSCR = tmp.cost_item_count
-            }
+        result.financialData = financeService.getCostItems(params,result.max)
+        //replaces the mode check MODE_CONS vs. MODE_SUBSCR
+        if(OrgRole.findByRoleTypeAndOrg(RDStore.OR_SUBSCRIPTION_CONSORTIA,result.institution)) {
+            result.showView = "cons"
+            def fsq = filterService.getOrgComboQuery(params,result.institution)
+            result.subscriptionParticipants = OrgRole.executeQuery(fsq.query,fsq.queryParams)
         }
-        else {
-            log.info("call from /myInstitution/finance")
-            tmp = financialData(result, params, user, MODE_OWNER)
-            result.foundMatches    = tmp.foundMatches
-            result.cost_items      = tmp.cost_items
-            result.cost_item_count = tmp.cost_item_count
-            orgRoleCons = OrgRole.findByOrgAndRoleType(
-                    result.institution,
-                    RDStore.OR_SUBSCRIPTION_CONSORTIA
-            )
-            orgRoleSubscr = OrgRole.findByRoleType(
-                    RDStore.OR_SUBSCRIBER_CONS
-            )
-            if (orgRoleCons) {
-                // show consortial subscription, but member costs
-                    result.queryMode = MODE_CONS
-                    tmp = financialData(result, params, user, MODE_CONS)
-
-                    result.foundMatches_CS = tmp.foundMatches
-
-                    result.cost_items_CS = tmp.cost_items.sort{ x, y ->
-                        def xx = OrgRole.findBySubAndRoleType(x.sub, RDStore.OR_SUBSCRIBER_CONS)
-                        def yy = OrgRole.findBySubAndRoleType(y.sub, RDStore.OR_SUBSCRIBER_CONS)
-                        xx?.org?.sortname <=> yy?.org?.sortname
-                    }
-                    result.cost_item_count_CS = tmp.cost_item_count
-            }
-            // show subscription as a member, but viewable costs
-            else if (orgRoleSubscr) {
-                result.queryMode = MODE_SUBSCR
-                tmp = financialData(result, params, user, MODE_SUBSCR)
-
-                result.foundMatches_SUBSCR = tmp.foundMatches
-                result.cost_items_SUBSCR = tmp.cost_items
-                result.cost_item_count_SUBSCR = tmp.cost_item_count
-            }
+        else if(OrgRole.findByRoleTypeAndOrg(RDStore.OR_SUBSCRIBER_CONS,result.institution))
+            result.showView = "subscr"
+        result.filterPresets = result.financialData.filterPresets
+        if(result.financialData.filterLists) {
+            result.providers = result.financialData.filterLists.providers
+            result.allCISubs = result.financialData.filterLists.subscriptions
+            result.allCISPkgs = result.financialData.filterLists.subPackages
+            result.allCIBudgetCodes = result.financialData.filterLists.budgetCodes
+            result.allCIInvoiceNumbers = result.financialData.filterLists.invoiceNumbers
+            result.allCIOrderNumbers = result.financialData.filterLists.orderNumbers
         }
-
-            flash.error = null
-            flash.message = null
-
-            // TODO: review as of ticket ERMS-761 and ERMS-823
-            if (result.foundMatches || result.foundMatches_CS || result.foundMatches_SUBSCR) {
-                flash.message = "Die aktuelle Filtereinstellung liefert potentielle Treffer. Ggfs. müssen Sie einzelne Felder noch anpassen."
-            }
-            else if (params.get('submit')) {
-                flash.error = "Keine Treffer. Der Filter wird zurückgesetzt."
-            }
-
-          // prepare filter dropdowns
-          //def myCostItems = result.fixedSubscription ?
-          //          CostItem.findAllWhere(owner: result.institution, sub: result.fixedSubscription)
-          //        : CostItem.findAllWhere(owner: result.institution)
-
-          //TODO: Nochmal überdenken
-          def myCostItems = CostItem.findAllWhere(owner: result.institution)
-          switch (result.queryMode)
-          {
-              //own costs
-              case MODE_OWNER:
-                  myCostItems = result.cost_items
-                  break
-              //consortium viewing the subscription from the point of view of subscriber
-              case MODE_CONS_AT_SUBSCR:
-                  myCostItems = result.cost_items_SUBSCR
-                  break
-              //consortium viewing the overall consortium costs
-              case MODE_CONS:
-                  myCostItems = result.cost_items_CS
-                  break
-          }
-
-          result.allCIInvoiceNumbers = (myCostItems.collect{ it -> it?.invoice?.invoiceNumber }).findAll{ it }.unique().sort()
-          result.allCIOrderNumbers   = (myCostItems.collect{ it -> it?.order?.orderNumber }).findAll{ it }.unique().sort()
-          result.allCIBudgetCodes    = (myCostItems.collect{ it -> it?.getBudgetcodes()?.value }).flatten().unique().sort()
-
-          result.allCISPkgs = (myCostItems.collect{ it -> it?.subPkg }).findAll{ it }.unique().sort()
-          if(result.queryMode == MODE_CONS)
-              result.allCISubs  = (myCostItems.findAll{it?.sub?.status == RefdataValue.getByValueAndCategory('Current','Subscription Status')}.collect{ it -> it?.sub?.instanceOf }).findAll{ it }.unique().sort()
-          else
-              result.allCISubs  = (myCostItems.findAll{it?.sub?.status == RefdataValue.getByValueAndCategory('Current','Subscription Status')}.collect{ it -> it?.sub }).findAll{ it }.unique().sort()
-
-          result.isXHR = request.isXhr()
-        //Other than first run, request will always be AJAX...
-        if (result.isXHR) {
-            log.debug("XHR Request");
-            render (template: "filter", model: result)
-        }
-        else
-        {
-            log.debug("HTML Request");
-            //First run, make a date for recently updated costs AJAX operation
-            use(groovy.time.TimeCategory) {
-                result.from = dateTimeFormat.format(new Date() - 3.days)
-            }
-        }
-      }
-      catch ( Exception e ) {
-        log.error("Error processing index",e);
-      }
-      finally {
-        log.debug("finance::index returning");
-      }
-
-      result.tab = 'owner'
-      if(params.tab) {
-          result.tab = params.tab
-      }
-      else if(!params.tab) {
-          if(result.queryMode == MODE_CONS && params.view == "cons")
-              result.tab = 'sc'
-      }
-
-      //result.tab = params.tab ?: result.queryMode == MODE_CONS ? 'sc' : 'owner'
-        result.consOffset = tmp.consOffset
-        result.subscrOffset = tmp.subscrOffset
-        result.ownerOffset = tmp.ownerOffset
-      result
+        result
     }
 
-    /**
-     * Sets up the financial data parameters and performs the relevant DB search
-     * @param result - LinkedHashMap for model data
-     * @param params - Qry data sent from view
-     * @param user   - Currently logged in user object
-     * @return Cost Item count & data / view information for pagination, sorting, etc
-     *
-     * Note - Requests DB requests are cached ONLY if non-hardcoded values are used
-     */
-    private def financialData(result, params, user, queryMode) {
-        def tmp = [ownerOffset:0, subscrOffset:0, consOffset:0]
-
-        result.editable    =  accessService.checkMinUserOrgRole(user, result.institution, user_role)
-        params.orgId       =  result.institution.id
-
-        request.setAttribute("editable", result.editable) //editable Taglib doesn't pick up AJAX request, REQUIRED!
-        result.info        =  [] as List
-        //params.max         =  params.max && params.int('max') ? Math.min(params.int('max'),200) : (user?.defaultPageSize? maxAllowedVals.min{(it-user.defaultPageSize).abs()} : 10)
-        //result.max         =  params.max
-        //result.offset      =  params.int('offset',0)?: 0
-
-        // WORKAROUND: erms-517 (deactivated as erms-802)
-        params.max = params.max ? params.max : user.getDefaultPageSizeTMP()
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    def subFinancialData() {
+        log.debug("FinanceController::subFinancialData() ${params}")
+        LinkedHashMap result = setResultGenerics()
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_USER')
+        result.max = params.max ? Long.parseLong(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        if(result.subscription.instanceOf && result.institution.id == result.subscription.getConsortia().id)
+            params.view = "consAtSubscr"
         switch(params.view) {
-            case "cons": tmp.consOffset = params.offset
-            break
-            case "owner": tmp.ownerOffset = params.offset
-            break
-            case "subscr": tmp.subscrOffset = params.offset
-            break
-            default: log.info("unhandled view: ${params.view}")
-            break
-        }
-
-        /*
-        result.max = 5000
-        result.offset = 0
-        */
-        /*
-        result.max = params.max ? Integer.parseInt(params.max) : ;
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
-        */
-        //Query setup options, ordering, joins, param query data....
-        def order = "id"
-        def gspOrder = "Cost Item#"
-
-        result.order = gspOrder
-        result.sort =  ["desc","asc"].contains(params.sort)? params.sort : "desc" //defaults to sort & order of desc id
-
-        def cost_item_qry_params =  [owner: result.institution]
-        def cost_item_qry        =  " where ci.owner = :owner "
-        def orderAndSortBy = " ORDER BY ci.${order} ${result.sort}"
-
-        if (MODE_CONS == queryMode) {
-            //ticket ERMS-802: switch for site call - consortia costs should be displayed also when not in fixed subscription mode
-            def queryParams = ['roleType':RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst':result.institution, 'status':RefdataValue.getByValueAndCategory('Current','Subscription Status')]
-            def memberSubs
-            if(result.fixedSubscription)
-                memberSubs = Subscription.findAllByInstanceOf(result.fixedSubscription)
-            else
-                memberSubs = Subscription.executeQuery("select s from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) ) AND ( s.instanceOf is not null AND s.status = :status ) ",queryParams)
-
-            cost_item_qry_params = [subs: memberSubs, owner: result.institution]
-            cost_item_qry        = ' WHERE ci.sub IN ( :subs ) AND ci.owner = :owner '
-            //orderAndSortBy       = orderAndSortBy
-            params.offset = tmp.consOffset
-        }
-
-        if (MODE_OWNER == queryMode) {
-            if(params.sub) {
-                cost_item_qry_params = [sub: result.fixedSubscription, owner: result.institution]
-                cost_item_qry        = ' WHERE ci.sub = :sub AND ci.owner = :owner '
-                //orderAndSortBy       = orderAndSortBy
-            }
-            else if(! params.sub){
-                //check if active institution has consortial subscriptions
-                def orgRoleCheck = OrgRole.countByOrgAndRoleType(result.institution,RDStore.OR_SUBSCRIPTION_CONSORTIA)
-                //there are consortial subscriptions for the given institution
-                if(orgRoleCheck > 0) {
-                    def queryParams = ['activeInst':result.institution, 'roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'consortialSubscription':RefdataValue.getByValueAndCategory('Consortial Licence','Subscription Type'), 'status':RefdataValue.getByValueAndCategory('Current','Subscription Status')]
-                    //it may be that the condition whether only not-consortial subscriptions are considered when not as subscription consortia has to be reconsidered! Expect Daniel/Micha about that!
-                    def instSubs = Subscription.executeQuery("select s from Subscription as s where ( (exists ( select o from s.orgRelations as o where o.org = :activeInst and o.roleType = :roleType ) AND s.instanceOf IS NULL) OR (exists (select o from s.orgRelations as o where o.org = :activeInst) AND s.type != :consortialSubscription ) ) AND s.status = :status",queryParams)
-                    if(instSubs.size() > 0) {
-                        cost_item_qry_params = [subs: instSubs, owner: result.institution]
-                        cost_item_qry = ' WHERE (ci.sub IS NULL OR ci.sub IN ( :subs )) AND ci.owner = :owner '
-                    }
-                    else {
-                        cost_item_qry_params = [owner: result.institution]
-                        cost_item_qry = ' WHERE ci.sub IS NULL AND ci.owner = :owner '
-                    }
-                }
-                //we are without consortial subscriptions e.g. the institution is not a consortium whose cost items are going to be checked
-                else {
-                    def queryParams = ['activeInst':result.institution, 'status':RefdataValue.getByValueAndCategory('Current','Subscription Status')]
-                    def instSubs = Subscription.executeQuery("select s from Subscription as s where exists ( select o from s.orgRelations as o where o.org = :activeInst ) AND s.status = :status",queryParams)
-                    if(instSubs.size() > 0) {
-                        cost_item_qry_params = [subs: instSubs, owner: result.institution]
-                        cost_item_qry = ' WHERE (ci.sub IS NULL OR ci.sub IN ( :subs )) AND ci.owner = :owner '
-                    }
-                    else {
-                        cost_item_qry_params = [owner: result.institution]
-                        cost_item_qry = ' WHERE ci.sub IS NULL AND ci.owner = :owner '
-                    }
-                }
-            }
-            params.offset = tmp.ownerOffset
-        }
-
-        // OVERWRITE
-        if (MODE_SUBSCR == queryMode) {
-
-            if(result.fixedSubscription) {
-                cost_item_qry_params =  [sub: result.fixedSubscription, owner: result.institution]
-                cost_item_qry        = ' , OrgRole as ogr WHERE ci.sub = :sub AND ogr.org = :owner AND ci.isVisibleForSubscriber is true ' // (join)? "LEFT OUTER JOIN ${join} AS j WHERE ci.owner = :owner " :"  where ci.owner = :owner "
-                //orderAndSortBy       = orderAndSortBy
-            }
-            else if (!result.fixedSubscription) {
-                def queryParams = ['activeInst':result.institution, 'status':RefdataValue.getByValueAndCategory('Current','Subscription Status')]
-                def instSubs = Subscription.executeQuery("select s from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where o.org = :activeInst ) ) ) AND s.status = :status ",queryParams)
-                if(instSubs.size() > 0) {
-                  cost_item_qry_params = [subs: instSubs, owner: result.institution]
-                  cost_item_qry = ' , OrgRole as ogr WHERE ci.sub IN ( :subs ) AND ogr.org = :owner AND ci.isVisibleForSubscriber is true '
-                }
-            }
-            params.offset = tmp.subscrOffset
-
-       }
-
-        //Filter processing...
-
-        log.debug("index(${queryMode})  -- Performing filtering processing")
-        def qryOutput = filterQuery(result, params, true, queryMode)
-
-        cost_item_qry_params   << qryOutput.fqParams
-
-        //println ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy
-        //println cost_item_qry_params
-
-        tmp.foundMatches    =  cost_item_qry_params.size() > 1 // [owner:default] ; used for flash
-        tmp.cost_items      =  CostItem.executeQuery(ci_select + cost_item_qry + qryOutput.qry_string + orderAndSortBy, cost_item_qry_params, params)
-        tmp.cost_item_count =  CostItem.executeQuery(ci_count + cost_item_qry + qryOutput.qry_string + " group by ci.id " + orderAndSortBy, cost_item_qry_params).size()
-
-        log.debug("index(${queryMode})  -- Performed filtering process ${tmp.cost_item_count} result(s) found")
-
-        //very ugly ... but cleanup needs enormous refactoring
-        switch(params.view) {
-            case "cons": params.offset = tmp.consOffset
+            case "own": result.ownOffset = result.offset
                 break
-            case "owner": params.offset = tmp.ownerOffset
+            case "cons":
+            case "consAtSubscr": result.consOffset = result.offset
                 break
-            case "subscr": params.offset = tmp.subscrOffset
+            case "subscr": result.subscrOffset = result.offset
                 break
             default: log.info("unhandled view: ${params.view}")
                 break
         }
-
-        tmp
+        result.financialData = financeService.getCostItemsForSubscription(result.subscription,params,result.max,result.offset)
+        if(OrgRole.findBySubAndOrgAndRoleType(result.subscription,result.institution,RDStore.OR_SUBSCRIPTION_CONSORTIA)) {
+            result.showView = "cons"
+            if(params.view.equals("consAtSubscr"))
+                result.showView = "consAtSubscr"
+            def fsq = filterService.getOrgComboQuery(params,result.institution)
+            result.subscriptionParticipants = OrgRole.executeQuery(fsq.query,fsq.queryParams)
+        }
+        else if(OrgRole.findBySubAndOrgAndRoleType(result.subscription,result.institution,RDStore.OR_SUBSCRIBER_CONS))
+            result.showView = "subscr"
+        else result.showView = "own"
+        result.filterPresets = result.financialData.filterPresets
+        if(result.financialData.filterLists) {
+            result.providers = result.financialData.filterLists.providers
+            result.allCISubs = result.financialData.filterLists.subscriptions
+            result.allCISPkgs = result.financialData.filterLists.subPackages
+            result.allCIBudgetCodes = result.financialData.filterLists.budgetCodes
+            result.allCIInvoiceNumbers = result.financialData.filterLists.invoiceNumbers
+            result.allCIOrderNumbers = result.financialData.filterLists.orderNumbers
+        }
+        Map navigation = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
+        result.navNextSubscription = navigation.nextLink
+        result.navPrevSubscription = navigation.prevLink
+        result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def financialsExport()  {
         log.debug("Financial Export :: ${params}")
-
-            def result = [:]
-            result.institution =  contextService.getOrg()
-            result.fixedSubscription = params.int('sub')? Subscription.get(params.sub) : null
-            def user           =  User.get(springSecurityService.principal.id)
-
-            if (!isFinanceAuthorised(result.institution, user)) {
-                flash.error=message(code: 'financials.permission.unauthorised', args: [result.institution? result.institution.name : 'N/A'])
-                response.sendError(403)
-                return
-            }
-            //may kill the server, but I must override the pagination ... is very ugly! And hotfix!
-            params.max = 5000
-            params.offset = 0
-
-
-            // I need the consortial data as well ...
-            def orgRoleCons = OrgRole.findByOrgAndRoleType(
-                    result.institution,
-                    RDStore.OR_SUBSCRIPTION_CONSORTIA
-            )
-            def orgRoleSubscr = OrgRole.findByRoleType(
-                    RDStore.OR_SUBSCRIBER_CONS
-            )
-            def tmp = financialData(result, params, user, MODE_OWNER) //Grab the financials!
-            result.cost_item_tabs = [owner:tmp.cost_items]
-            if(orgRoleCons) {
-                tmp = financialData(result,params,user,MODE_CONS)
-                result.cost_item_tabs["cons"] = tmp.cost_items
-            }
-            else if(orgRoleSubscr) {
-                tmp = financialData(result,params,user,MODE_SUBSCR)
-                result.cost_item_tabs["subscr"] = tmp.cost_items
-            }
-            def workbook = processFinancialXLSX(result) //use always header, no batch processing intended
-
-            def filename = result.institution.name
-            response.setHeader("Content-disposition", "attachment; filename=\"${filename}_financialExport.xlsx\"")
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            try {
-                workbook.write(response.outputStream)
-                response.outputStream.flush()
-                response.outputStream.close()
-                workbook.dispose()
-            }
-            catch (IOException e) {
-                log.error("A request was started before the started one was terminated")
-            }
+        Map result = setResultGenerics()
+        if (!accessService.checkMinUserOrgRole(result.user,result.institution,"INST_USER")) {
+            flash.error=message(code: 'financials.permission.unauthorised', args: [result.institution? result.institution.name : 'N/A'])
+            response.sendError(403)
+            return
+        }
+        // I need the consortial data as well ...
+        def orgRoleCons = OrgRole.findByOrgAndRoleType(result.institution,RDStore.OR_SUBSCRIPTION_CONSORTIA)
+        def orgRoleSubscr = OrgRole.findByRoleType(RDStore.OR_SUBSCRIBER_CONS)
+        Map financialData = result.subscription ? financeService.getCostItemsForSubscription(result.subscription,params,Long.MAX_VALUE,0) : financeService.getCostItems(params,Long.MAX_VALUE)
+        result.cost_item_tabs = [own:financialData.own]
+        if(orgRoleCons) {
+            result.cost_item_tabs["cons"] = financialData.cons
+        }
+        else if(orgRoleSubscr) {
+            result.cost_item_tabs["subscr"] = financialData.subscr
+        }
+        SXSSFWorkbook workbook = processFinancialXLSX(result)
+        String filename = result.institution.name
+        response.setHeader("Content-disposition", "attachment; filename=\"${filename}_financialExport.xlsx\"")
+        response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        try {
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
+        }
+        catch (IOException e) {
+            log.error("A request was started before the started one was terminated")
+        }
     }
 
     /**
@@ -490,12 +165,12 @@ class FinanceController extends AbstractDebugController {
      * @param result - passed from index
      * @return
      */
-    def private processFinancialXLSX(result) {
+    SXSSFWorkbook processFinancialXLSX(result) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(message(code: 'default.date.format.notime', default: 'dd.MM.yyyy'))
         XSSFWorkbook workbook = new XSSFWorkbook()
         LinkedHashMap<Subscription,List<Org>> subscribers = [:]
         LinkedHashMap<Subscription,List<Org>> providers = [:]
-        LinkedHashMap costItemGroups = [:]
+        LinkedHashMap<Subscription,BudgetCode> costItemGroups = [:]
         OrgRole.findAllByRoleType(RDStore.OR_SUBSCRIBER_CONS).each { it ->
             List<Org> orgs = subscribers.get(it.sub)
             if(orgs == null)
@@ -510,7 +185,6 @@ class FinanceController extends AbstractDebugController {
             else orgs.add(it.org)
             providers.put(it.sub,orgs)
         }
-        Map<RefdataValue, XSSFCellStyle> cellStyleMap = [:]
         XSSFCellStyle csPositive = workbook.createCellStyle()
         csPositive.setFillForegroundColor(new XSSFColor(new java.awt.Color(198,239,206)))
         csPositive.setFillPattern(FillPatternType.SOLID_FOREGROUND)
@@ -527,7 +201,7 @@ class FinanceController extends AbstractDebugController {
             String sheettitle
             String viewMode = cit.getKey()
             switch(viewMode) {
-                case "owner": sheettitle = message(code:'financials.header.ownCosts')
+                case "own": sheettitle = message(code:'financials.header.ownCosts')
                 break
                 case "cons": sheettitle = message(code:'financials.header.consortialCosts')
                 break
@@ -550,7 +224,7 @@ class FinanceController extends AbstractDebugController {
                            message(code: 'financials.datePaid'), message(code: 'financials.dateFrom'), message(code: 'financials.dateTo'),
                            message(code: 'financials.addNew.costCategory'), message(code: 'financials.costItemStatus'), message(code: 'financials.billingCurrency'),
                            message(code: 'financials.costInBillingCurrency'),"EUR",message(code: 'financials.costInLocalCurrency'), message(code: 'financials.taxRate')])
-            if(["owner","cons"].indexOf(viewMode) > -1)
+            if(["own","cons"].indexOf(viewMode) > -1)
                 titles.addAll([message(code:'financials.billingCurrency'),message(code: 'financials.costInBillingCurrencyAfterTax'),"EUR",message(code: 'financials.costInLocalCurrencyAfterTax')])
             titles.addAll([message(code: 'financials.costItemElement'),message(code: 'financials.newCosts.description'),
                            message(code: 'financials.newCosts.constsReferenceOn'), message(code: 'financials.budgetCode'),
@@ -568,17 +242,13 @@ class FinanceController extends AbstractDebugController {
             int sumTitleCell = -1
             int sumCurrencyCell = -1
             int sumCurrencyAfterTaxCell = -1
-            double localSum = 0.0
-            double localSumAfterTax = 0.0
-            def sumCounters = [:]
-            def sumAfterTaxCounters = [:]
             HashSet<String> currencies = new HashSet<String>()
-            if(cit.getValue().size() > 0) {
-                cit.getValue().each { ci ->
-                    def codes = costItemGroups.get(ci)
-                    def start_date   = ci.startDate ? dateFormat.format(ci?.startDate) : ''
-                    def end_date     = ci.endDate ? dateFormat.format(ci?.endDate) : ''
-                    def paid_date    = ci.datePaid ? dateFormat.format(ci?.datePaid) : ''
+            if(cit.getValue().count > 0) {
+                cit.getValue().costItems.each { ci ->
+                    BudgetCode codes = costItemGroups.get(ci)
+                    String start_date   = ci.startDate ? dateFormat.format(ci?.startDate) : ''
+                    String end_date     = ci.endDate ? dateFormat.format(ci?.endDate) : ''
+                    String paid_date    = ci.datePaid ? dateFormat.format(ci?.datePaid) : ''
                     int cellnum = 0
                     row = sheet.createRow(rownum)
                     //sidewide number
@@ -599,7 +269,7 @@ class FinanceController extends AbstractDebugController {
                             cellA.setCellValue(cellValueA)
                             cellB.setCellValue(cellValueB)
                             cell = row.createCell(cellnum++)
-                            cell.setCellValue(ci.isVisibleForSubscriber ? "sichtbar für Teilnehmer" : "")
+                            cell.setCellValue(ci.isVisibleForSubscriber ? message(code:'financials.isVisibleForSubscriber') : "")
                         }
                     }
                     //cost title
@@ -665,24 +335,18 @@ class FinanceController extends AbstractDebugController {
                     //cost item status
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci?.costItemStatus ? ci.costItemStatus.getI10n("value"):'')
-                    if(["owner","cons"].indexOf(viewMode) > -1) {
+                    if(["own","cons"].indexOf(viewMode) > -1) {
                         //billing currency and value
                         cell = row.createCell(cellnum++)
                         cell.setCellValue(ci?.billingCurrency ? ci.billingCurrency.value : '')
-                        if(currencies.add(ci?.billingCurrency?.value)) {
-                            sumCounters[ci.billingCurrency.value] = 0.0
-                            sumAfterTaxCounters[ci.billingCurrency.value] = 0.0
-                        }
                         sumCurrencyCell = cellnum
                         cell = row.createCell(cellnum++)
                         cell.setCellValue(ci?.costInBillingCurrency ? ci.costInBillingCurrency : 0.0)
                         if(ci.costItemElementConfiguration) {
                             switch(ci.costItemElementConfiguration) {
-                                case RDStore.CIEC_POSITIVE: sumCounters[ci.billingCurrency.value] += ci.costInBillingCurrency
-                                    cell.setCellStyle(csPositive)
+                                case RDStore.CIEC_POSITIVE: cell.setCellStyle(csPositive)
                                 break
-                                case RDStore.CIEC_NEGATIVE: sumCounters[ci.billingCurrency.value] -= ci.costInBillingCurrency
-                                    cell.setCellStyle(csNegative)
+                                case RDStore.CIEC_NEGATIVE: cell.setCellStyle(csNegative)
                                 break
                                 case RDStore.CIEC_NEUTRAL: cell.setCellStyle(csNeutral)
                                 break
@@ -696,11 +360,9 @@ class FinanceController extends AbstractDebugController {
                         cell.setCellValue(ci?.costInLocalCurrency ? ci.costInLocalCurrency : 0.0)
                         if(ci.costItemElementConfiguration) {
                             switch(ci.costItemElementConfiguration) {
-                                case RDStore.CIEC_POSITIVE: localSum += ci.costInLocalCurrency
-                                    cell.setCellStyle(csPositive)
+                                case RDStore.CIEC_POSITIVE: cell.setCellStyle(csPositive)
                                 break
-                                case RDStore.CIEC_NEGATIVE: localSum -= ci.costInLocalCurrency
-                                    cell.setCellStyle(csNegative)
+                                case RDStore.CIEC_NEGATIVE: cell.setCellStyle(csNegative)
                                 break
                                 case RDStore.CIEC_NEUTRAL: cell.setCellStyle(csNeutral)
                                 break
@@ -713,18 +375,14 @@ class FinanceController extends AbstractDebugController {
                     //billing currency and value
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci?.billingCurrency ? ci.billingCurrency.value : '')
-                    if(currencies.add(ci?.billingCurrency?.value))
-                        sumAfterTaxCounters[ci.billingCurrency.value] = 0.0
                     sumCurrencyAfterTaxCell = cellnum
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci?.costInBillingCurrencyAfterTax ? ci.costInBillingCurrencyAfterTax : 0.0)
                     if(ci.costItemElementConfiguration) {
                         switch(ci.costItemElementConfiguration) {
-                            case RDStore.CIEC_POSITIVE: sumAfterTaxCounters[ci.billingCurrency.value] += ci.costInBillingCurrencyAfterTax
-                                cell.setCellStyle(csPositive)
+                            case RDStore.CIEC_POSITIVE: cell.setCellStyle(csPositive)
                             break
-                            case RDStore.CIEC_NEGATIVE: sumAfterTaxCounters[ci.billingCurrency.value] -= ci.costInBillingCurrencyAfterTax
-                                cell.setCellStyle(csNegative)
+                            case RDStore.CIEC_NEGATIVE: cell.setCellStyle(csNegative)
                             break
                             case RDStore.CIEC_NEUTRAL: cell.setCellStyle(csNeutral)
                             break
@@ -738,11 +396,9 @@ class FinanceController extends AbstractDebugController {
                     cell.setCellValue(ci?.costInLocalCurrencyAfterTax ? ci.costInLocalCurrencyAfterTax : 0.0)
                     if(ci.costItemElementConfiguration) {
                         switch(ci.costItemElementConfiguration) {
-                            case RDStore.CIEC_POSITIVE: localSumAfterTax += ci.costInLocalCurrencyAfterTax
-                                cell.setCellStyle(csPositive)
+                            case RDStore.CIEC_POSITIVE: cell.setCellStyle(csPositive)
                             break
-                            case RDStore.CIEC_NEGATIVE: localSumAfterTax -= ci.costInLocalCurrencyAfterTax
-                                cell.setCellStyle(csNegative)
+                            case RDStore.CIEC_NEGATIVE: cell.setCellStyle(csNegative)
                             break
                             case RDStore.CIEC_NEUTRAL: cell.setCellStyle(csNeutral)
                             break
@@ -759,7 +415,7 @@ class FinanceController extends AbstractDebugController {
                     cell.setCellValue(ci?.reference?:'')
                     //budget codes
                     cell = row.createCell(cellnum++)
-                    cell.setCellValue(codes ? codes.toString() : '')
+                    cell.setCellValue(codes ? codes.value : '')
                     //invoice number
                     cell = row.createCell(cellnum++)
                     cell.setCellValue(ci?.invoice ? ci.invoice.invoiceNumber : "")
@@ -772,24 +428,24 @@ class FinanceController extends AbstractDebugController {
                 sheet.createRow(rownum)
                 Row sumRow = sheet.createRow(rownum)
                 cell = sumRow.createCell(sumTitleCell)
-                cell.setCellValue("Summen:")
+                cell.setCellValue(message(code:'financials.export.sums'))
                 if(sumcell > 0) {
                     cell = sumRow.createCell(sumcell)
-                    cell.setCellValue(localSum)
+                    cell.setCellValue(cit.getValue().sums.localSums.localSum)
                 }
                 cell = sumRow.createCell(sumcellAfterTax)
-                cell.setCellValue(localSumAfterTax)
+                cell.setCellValue(cit.getValue().sums.localSums.localSumAfterTax)
                 rownum++
-                currencies.each { currency ->
+                cit.getValue().sums.billingSums.each { entry ->
                     sumRow = sheet.createRow(rownum)
                     cell = sumRow.createCell(sumTitleCell)
-                    cell.setCellValue(currency)
+                    cell.setCellValue(entry.currency)
                     if(sumCurrencyCell > 0) {
                         cell = sumRow.createCell(sumCurrencyCell)
-                        cell.setCellValue(sumCounters.get(currency))
+                        cell.setCellValue(entry.billingSum)
                     }
                     cell = sumRow.createCell(sumCurrencyAfterTaxCell)
-                    cell.setCellValue(sumAfterTaxCounters.get(currency))
+                    cell.setCellValue(entry.billingSumAfterTax)
                     rownum++
                 }
             }
@@ -800,203 +456,20 @@ class FinanceController extends AbstractDebugController {
             }
 
             for(int i = 0; i < titles.size(); i++) {
-                sheet.autoSizeColumn(i)
+                try {
+                    sheet.autoSizeColumn(i)
+                }
+                catch(NullPointerException e) {
+                    log.error("Null value in column ${i}")
+                }
             }
         }
 
         wb
     }
 
-    /**
-     * Method used by index to configure the HQL, check existence, and setup helpful messages
-     * @param result
-     * @param params
-     * @param wildcard
-     * @return
-     */
-    def private filterQuery(LinkedHashMap result, GrailsParameterMap params, boolean wildcard, queryMode) {
-        def fqResult = [:]
-
-        fqResult.qry_string = ""
-        fqResult.fqParams = [owner: result.institution]
-
-        def count =  ci_count + " where ci.owner = :owner "
-        def countCheck = ci_count + " where ci.owner = :owner "
-
-        def hqlCompare = (wildcard) ? " like " : " = "
-
-        // usage:
-        // filterParam = FORM.FIELD.name
-        // hqlVar = DOMAINCLASS.attribute
-        // opt = value | refdata | budgetcode | <generic>
-
-        Closure filterBy = { filterParam, hqlVar, opt ->
-
-            if (params.get(filterParam)) {
-                def _query, _param
-
-                // CostItem.attributes
-                if (opt == 'value') {
-                    _query = " AND ci.${hqlVar} ${hqlCompare} :${hqlVar} "
-                    _param = (wildcard) ? "%${params.get(filterParam)}%" : params.get(filterParam)
-                }
-                // CostItem.refdataValues
-                else if (opt == 'refdata') {
-                    _query = " AND ci.${hqlVar} = :${hqlVar} "
-                    _param = genericOIDService.resolveOID(params.get(filterParam))
-                }
-                // CostItem <- CostItemGroup -> Budgetcodes
-                else if (opt == 'budgetCode') {
-                    _query = " AND exists (select cig from CostItemGroup as cig where cig.costItem = ci and cig.budgetCode.value = :${hqlVar} ) "
-                    _param = params.get(filterParam)
-                }
-                // CostItem.<generic>.attributes
-                else {
-                    //_query = " AND ci.${opt}.${hqlVar} ${hqlCompare} :${hqlVar} "
-                    //_param = (wildcard) ? "%${params.get(filterParam)}%" : params.get(filterParam)
-                    _query = " AND ci.${opt}.${hqlVar} = :${hqlVar} "
-                    _param = params.get(filterParam)
-                }
-
-                def order = CostItem.executeQuery(count + _query, [owner: result.institution, (hqlVar): _param])
-
-                if (order && order.first() > 0) {
-                    fqResult.qry_string += _query
-                    countCheck          += _query
-
-                    fqResult.fqParams << [(hqlVar): _param]
-                }
-                else {
-                    params.remove(filterParam)
-                }
-            }
-        }
-
-        filterBy( 'filterCITitle', 'costTitle', 'value' )
-        filterBy( 'filterCIOrderNumber', 'orderNumber', 'order' )
-        filterBy( 'filterCIInvoiceNumber', 'invoiceNumber', 'invoice' )
-
-        //filterBy( 'filterCICategory', 'costItemCategory', 'refdata' )
-        filterBy( 'filterCIElement', 'costItemElement', 'refdata' )
-        filterBy( 'filterCIStatus', 'costItemStatus', 'refdata' )
-
-        filterBy( 'filterCITaxType', 'taxCode', 'refdata' )
-        filterBy( 'filterCIBudgetCode', 'budgetCode', 'budgetCode' )
-
-        if (params.filterCISub) {
-            if(params.filterCISub instanceof String) {
-              def fSub = genericOIDService.resolveOID(params.filterCISub)
-              if (fSub) {
-                  if(queryMode == MODE_CONS) {
-                      fqResult.qry_string += " AND ci.sub.id = :subId OR ci.sub.instanceOf = :subId "
-                      countCheck          += " AND ci.sub.id = :subId OR ci.sub.instanceOf = :subId "
-                  }
-                  else {
-                      fqResult.qry_string += " AND ci.sub.id = :subId "
-                      countCheck          += " AND ci.sub.id = :subId "
-                  }
-
-                fqResult.fqParams << [subId: fSub.id]
-              }
-            }
-            else if(params.filterCISub.getClass().isArray()) {
-                ArrayList fSubs = new ArrayList()
-                for(int i = 0;i < params.filterCISub.length; i++){
-                    def fSub = genericOIDService.resolveOID(params.filterCISub[i])
-                    if (fSub) {
-                         fSubs.add(fSub.id)
-                    }
-                }
-                if(queryMode == MODE_CONS) {
-                    fqResult.qry_string += " AND ci.sub.id IN :subIds OR ci.sub.instanceOf IN :subIds "
-                    countCheck          += " AND ci.sub.id IN :subIds OR ci.sub.instanceOf IN :subIds "
-                }
-                else {
-                    fqResult.qry_string += " AND ci.sub.id IN :subIds "
-                    countCheck          += " AND ci.sub.id IN :subIds "
-                }
-
-                fqResult.fqParams << [subIds: fSubs]
-            }
-        }
-
-        if (params.filterCISPkg) {
-            if(params.filterCISPkg instanceof String) {
-                def fSPkg = genericOIDService.resolveOID(params.filterCISPkg)
-                if (fSPkg) {
-                    fqResult.qry_string += " AND ci.subPkg.pkg.id = :pkgId"
-                    countCheck          += " AND ci.subPkg.pkg.id = :pkgId"
-
-                    fqResult.fqParams << [pkgId: fSPkg.pkg.id]
-                }
-            }
-            else if(params.filterCISPkg.getClass.isArray()) {
-                ArrayList fSPkgs = new ArrayList()
-                for(int i = 0;i < params.filterCISPkg.length; i++) {
-                    def fSPkg = genericOIDService.resolveOID(params.filterCISPkg[i])
-                    if (fSPkg) {
-                        fSPkgs.add(fSPkg.pkg.id)
-                    }
-                }
-                fqResult.qry_string += " AND ci.subPkg.pkg.id IN :pkgIds "
-                countCheck          += " AND ci.subPkg.pkg.id IN :pkgIds "
-                fqResult.fqParams << [pkgIds:fSPkgs]
-            }
-        }
-
-        def sdf = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
-
-        if (params.filterCIValidOn) {
-            fqResult.qry_string += " AND (ci.startDate <= :validOn OR ci.startDate IS null) AND (ci.endDate >= :validOn OR ci.endDate IS null) "
-            countCheck          += " AND (ci.startDate <= :validOn OR ci.startDate IS null) AND (ci.endDate >= :validOn OR ci.endDate IS null) "
-
-            fqResult.fqParams << [validOn: sdf.parse(params.filterCIValidOn)]
-        }
-
-        if (params.filterCIInvoiceFrom) {
-            // println sdf.parse(params.filterCIInvoiceFrom)
-
-            fqResult.qry_string += " AND (ci.invoiceDate >= :invoiceDateFrom AND ci.invoiceDate IS NOT null) "
-            countCheck          += " AND (ci.invoiceDate >= :invoiceDateFrom AND ci.invoiceDate IS NOT null) "
-
-            fqResult.fqParams << [invoiceDateFrom: sdf.parse(params.filterCIInvoiceFrom)]
-        }
-
-        if (params.filterCIInvoiceTo) {
-            // println sdf.parse(params.filterCIInvoiceTo)
-
-            fqResult.qry_string += " AND (ci.invoiceDate <= :invoiceDateTo AND ci.invoiceDate IS NOT null) "
-            countCheck          += " AND (ci.invoiceDate <= :invoiceDateTo AND ci.invoiceDate IS NOT null) "
-
-            fqResult.fqParams << [invoiceDateTo: sdf.parse(params.filterCIInvoiceTo)]
-        }
-
-        if (params.filterCIPaidFrom) {
-            // println sdf.parse(params.filterCIPaidFrom)
-
-            fqResult.qry_string += " AND (ci.datePaid >= :datePaidFrom AND ci.datePaid IS NOT null) "
-            countCheck          += " AND (ci.datePaid >= :datePaidFrom AND ci.datePaid IS NOT null) "
-
-            fqResult.fqParams << [datePaidFrom: sdf.parse(params.filterCIPaidFrom)]
-        }
-
-        if (params.filterCIPaidTo) {
-            // println sdf.parse(params.filterCIPaidTo)
-
-            fqResult.qry_string += " AND (ci.datePaid <= :datePaidTo AND ci.datePaid IS NOT null) "
-            countCheck          += " AND (ci.datePaid <= :datePaidTo AND ci.datePaid IS NOT null) "
-
-            fqResult.fqParams << [datePaidTo: sdf.parse(params.filterCIPaidTo)]
-        }
-
-        fqResult.filterCount = CostItem.executeQuery(countCheck, fqResult.fqParams).first() // ?
-        log.debug("filterQuery() ${fqResult.qry_string ?: 'NO QUERY BUILD!'}")
-
-        return fqResult
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def editCostItem() {
         def result = [:]
         def costItemElementConfigurations = []
@@ -1031,8 +504,8 @@ class FinanceController extends AbstractDebugController {
         render(template: "/finance/ajaxModal", model: result)
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def copyCostItem() {
         def result = [:]
 
@@ -1090,14 +563,14 @@ class FinanceController extends AbstractDebugController {
         }
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def deleteCostItem() {
         def result = [:]
 
         def user = User.get(springSecurityService.principal.id)
         def institution = contextService.getOrg()
-        if (!isFinanceAuthorised(institution, user)) {
+        if (!accessService.checkMinUserOrgRole(user,institution,"INST_EDITOR")) {
             response.sendError(403)
             return
         }
@@ -1120,8 +593,8 @@ class FinanceController extends AbstractDebugController {
         redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [tab: result.tab])
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def newCostItem() {
 
         def dateFormat      = new java.text.SimpleDateFormat(message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
@@ -1136,7 +609,7 @@ class FinanceController extends AbstractDebugController {
         def user            =  User.get(springSecurityService.principal.id)
         result.error        =  [] as List
 
-        if (!isFinanceAuthorised(result.institution, user))
+        if (!accessService.checkMinUserOrgRole(user,result.institution,"INST_EDITOR"))
         {
             result.error=message(code: 'financials.permission.unauthorised', args: [result.institution? result.institution.name : 'N/A'])
             response.sendError(403)
@@ -1412,8 +885,8 @@ class FinanceController extends AbstractDebugController {
         render(text: builder.toString(), contentType: "text/json", encoding: "UTF-8")
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
         log.debug("FinanceController::delete() ${params}");
 
@@ -1424,7 +897,7 @@ class FinanceController extends AbstractDebugController {
         results.sentIDs    =  JSON.parse(params.del) //comma seperated list
         def user           =  User.get(springSecurityService.principal.id)
         def institution    =  contextService.getOrg()
-        if (!isFinanceAuthorised(institution, user))
+        if (!accessService.checkMinUserOrgRole(user,institution,"INST_EDITOR"))
         {
             response.sendError(403)
             return
@@ -1581,8 +1054,8 @@ class FinanceController extends AbstractDebugController {
         result
     }
 
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def removeBC() {
         log.debug("Financials :: remove budget code - Params: ${params}")
         def result      = [:]
@@ -1620,8 +1093,8 @@ class FinanceController extends AbstractDebugController {
     }
 
     @Deprecated
-    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def createCode() {
         def result      = [:]
         def user        = springSecurityService.currentUser
@@ -1652,4 +1125,14 @@ class FinanceController extends AbstractDebugController {
 
         render result as JSON
     }
+
+    //ex SubscriptionDetailsController
+    private Map setResultGenerics() {
+        LinkedHashMap result          = [:]
+        result.user         = User.get(springSecurityService.principal.id)
+        result.subscription = Subscription.get(params.sub)
+        result.institution  = contextService.getOrg()
+        result
+    }
+
 }
