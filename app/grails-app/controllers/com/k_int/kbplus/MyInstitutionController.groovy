@@ -566,8 +566,13 @@ from License as l where (
 
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
-        if (!params.status && (params.isSiteReloaded!="yes")) {
-            params.status = RefdataValue.getByValueAndCategory('Current','Subscription Status').id
+        if (! params.status) {
+            if (params.isSiteReloaded != "yes") {
+                params.status = RefdataValue.getByValueAndCategory('Current', 'Subscription Status').id
+            }
+            else {
+                params.status = 'FETCH_ALL'
+            }
         }
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
