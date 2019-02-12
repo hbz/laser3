@@ -160,15 +160,44 @@ class License
     }
 
     boolean showShareButton() {
-        // TODO  getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL
+        getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL
     }
 
     def updateShare(ShareableTrait sharedObject) {
-        // TODO
+        log.debug('updateShare: ' + sharedObject)
+
+        if (sharedObject instanceof DocContext) {
+            if (sharedObject.isShared) {
+                List<License> newTargets = License.findAllByInstanceOfAndStatusNotEqual(this, RDStore.LICENSE_DELETED)
+                log.debug('found targets: ' + newTargets)
+
+                newTargets.each{ lic ->
+                    log.debug('adding for: ' + lic)
+                    sharedObject.addShareForTarget_trait(lic)
+                }
+            }
+            else {
+                sharedObject.deleteShare_trait()
+            }
+        }
     }
 
     def syncAllShares(List<ShareSupport> targets) {
-        // TODO
+        log.debug('synAllShares: ' + targets)
+
+        documents.each{ sharedObject ->
+
+            targets.each{ lic ->
+                if (sharedObject.isShared) {
+                    log.debug('adding for: ' + lic)
+                    sharedObject.addShareForTarget_trait(lic)
+                }
+                else {
+                    log.debug('deleting all shares')
+                    sharedObject.deleteShare_trait()
+                }
+            }
+        }
     }
 
     @Override

@@ -6,7 +6,6 @@ import com.k_int.kbplus.Links
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Subscription
 import de.laser.interfaces.ShareSupport
-import org.hibernate.event.spi.PostUpdateEvent
 
 import javax.persistence.Transient
 

@@ -111,15 +111,15 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   }
 
     boolean showShareButton() {
-        // TODO
+        false // NO SHARES
     }
 
     def updateShare(ShareableTrait sharedObject) {
-        // TODO
+        false // NO SHARES
     }
 
     def syncAllShares(List<ShareSupport> targets) {
-        // TODO
+        false // NO SHARES
     }
 
   def getConsortia() {

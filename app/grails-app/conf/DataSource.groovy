@@ -11,9 +11,8 @@ hibernate {
     default_schema                  = "public"
     cache.use_second_level_cache    = true
     cache.use_query_cache           = false // LEGACY
-    cache.region.factory_class      = 'org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory' // hibernate4: CAUTION: USE FOR DB-MIGRATION-PLUGIN
-    //cache.region.factory_class    = 'net.sf.ehcache.hibernate.SingletonEhCacheRegionFactory' // LEGACY: CAUTION: USE FOR DB-MIGRATION-PLUGIN
-    //cache.region.factory_class    = 'org.hibernate.cache.ehcache.EhCacheRegionFactory' // Hibernate 4 .. this is NEW
+    //cache.region.factory_class      = 'org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory' // hibernate4: CAUTION: USE FOR DB-MIGRATION-PLUGIN
+    cache.region.factory_class    = 'net.sf.ehcache.hibernate.SingletonEhCacheRegionFactory' // LEGACY: CAUTION: USE FOR DB-MIGRATION-PLUGIN
 }
 
 // environment specific settings

@@ -1,7 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.traits.ShareableTrait
-import org.hibernate.event.spi.PostUpdateEvent
+import org.hibernate.event.PostUpdateEvent
 
 import javax.persistence.Transient
 

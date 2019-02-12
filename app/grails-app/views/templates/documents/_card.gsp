@@ -39,7 +39,7 @@
                         [ Wird geteilt ]
                     </g:if>
 
-                    <g:if test="${instance.showShareButton()}">
+                    <g:if test="${ownobj.showShareButton()}">
                         <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip')}">
 
                             <g:remoteLink class="js-gost js-no-wait-wheel"

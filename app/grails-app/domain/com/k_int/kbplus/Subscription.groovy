@@ -166,7 +166,6 @@ class Subscription
 
     @Override
     def updateShare(ShareableTrait sharedObject) {
-
         log.debug('updateShare: ' + sharedObject)
 
         if (sharedObject instanceof DocContext) {
@@ -185,10 +184,8 @@ class Subscription
         }
     }
 
-    // TODO: implement & test
     @Override
     def syncAllShares(List<ShareSupport> targets) {
-
         log.debug('synAllShares: ' + targets)
 
         documents.each{ sharedObject ->
@@ -203,7 +200,6 @@ class Subscription
                     sharedObject.deleteShare_trait()
                 }
             }
-
         }
     }
 
