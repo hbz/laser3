@@ -189,7 +189,7 @@ class ChangeNotificationService_en_original {
         log.debug("inside executor task submission... ${changeDocument.OID}");
         def contextObject = genericOIDService.resolveOID(changeDocument.OID);
         log.debug("Context object: ${contextObject}")
-        contextObject?.notifyDependencies(changeDocument)
+        contextObject?.notifyDependencies_trait(changeDocument)
       }
       catch ( Exception e ) {
         log.error("Problem with event transmission for ${changeDocument.OID}",e);

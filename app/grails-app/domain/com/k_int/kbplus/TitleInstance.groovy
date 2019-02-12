@@ -847,8 +847,8 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
 */
 
   @Transient
-  def notifyDependencies(changeDocument) {
-    // static_logger.debug("notifyDependencies(${changeDocument})");
+  def notifyDependencies_trait(changeDocument) {
+    // static_logger.debug("notifyDependencies_trait(${changeDocument})");
 
     def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
     tipps.each { tipp ->

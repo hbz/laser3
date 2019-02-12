@@ -16,7 +16,7 @@ trait AuditableTrait {
      *
      * Declare auditable and controlledProperties in implementing classes.
      *
-     * Overwrite onChange() and/or notifyDependencies() if needed ..
+     * Overwrite onChange() and/or notifyDependencies_trait() if needed ..
      *
      */
 
@@ -41,7 +41,7 @@ trait AuditableTrait {
 
         log?.debug("onChange(${this.id}): ${oldMap} => ${newMap}")
 
-        getWatchedProperties()?.each { cp ->
+        getWatchedProperties_trait()?.each { cp ->
             if (oldMap[cp] != newMap[cp]) {
                 def event
                 def clazz = this."${cp}".getClass().getName()
@@ -124,21 +124,21 @@ trait AuditableTrait {
     }
 
     @Transient
-    def notifyDependencies(changeDocument) {
-        log?.debug("notifyDependencies() not implemented => ${changeDocument}")
+    def notifyDependencies_trait(changeDocument) {
+        log?.debug("notifyDependencies_trait() not implemented => ${changeDocument}")
     }
 
-    def getWatchedProperties() {
+    def getWatchedProperties_trait() {
         def result = []
 
-        if (getAuditConfig(AuditConfig.COMPLETE_OBJECT)) {
+        if (getAuditConfig_trait(AuditConfig.COMPLETE_OBJECT)) {
             this.controlledProperties.each { cp ->
                 result << cp
             }
         }
         else {
             this.controlledProperties.each { cp ->
-                if (getAuditConfig(cp)) {
+                if (getAuditConfig_trait(cp)) {
                     result << cp
                 }
             }
@@ -148,12 +148,12 @@ trait AuditableTrait {
     }
 
     @Transient
-    def getAuditConfig() {
+    def getAuditConfig_trait() {
         AuditConfig.getConfig(this)
     }
 
     @Transient
-    def getAuditConfig(String field) {
+    def getAuditConfig_trait(String field) {
         AuditConfig.getConfig(this, field)
     }
 }

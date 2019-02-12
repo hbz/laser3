@@ -72,8 +72,8 @@ class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
     changeNotificationService.fireEvent(changeDoc)
   }
 
-    def notifyDependencies(changeDocument) {
-        log.debug("notifyDependencies(${changeDocument})")
+    def notifyDependencies_trait(changeDocument) {
+        log.debug("notifyDependencies_trait(${changeDocument})")
 
         if (changeDocument.event.equalsIgnoreCase('LicenseCustomProperty.updated')) {
             // legacy ++

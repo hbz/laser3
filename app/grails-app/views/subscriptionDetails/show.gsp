@@ -37,7 +37,7 @@
                 // TODO: custom tag, if more usages
 
                 if (subscriptionInstance.instanceOf && ! subscriptionInstance.instanceOf.isTemplate()) {
-                    if (subscriptionInstance.instanceOf?.getAuditConfig('name')) {
+                    if (subscriptionInstance.instanceOf?.getAuditConfig_trait('name')) {
                         if (subscriptionInstance.isSlaved?.value?.equalsIgnoreCase('yes')) {
                             out << '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon h1-icon-overwrite thumbtack blue"></i></span>'
                         }
@@ -47,7 +47,7 @@
                     }
                 }
                 else {
-                    if (subscriptionInstance.getAuditConfig('name')) {
+                    if (subscriptionInstance.getAuditConfig_trait('name')) {
                         out << '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon h1-icon-overwrite thumbtack blue"></i></span>'
                     }
                 }

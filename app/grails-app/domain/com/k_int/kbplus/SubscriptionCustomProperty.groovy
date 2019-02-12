@@ -59,8 +59,8 @@ class SubscriptionCustomProperty extends CustomProperty implements AuditableTrai
         changeNotificationService.fireEvent(changeDoc)
     }
 
-    def notifyDependencies(changeDocument) {
-        log.debug("notifyDependencies(${changeDocument})")
+    def notifyDependencies_trait(changeDocument) {
+        log.debug("notifyDependencies_trait(${changeDocument})")
 
         if (changeDocument.event.equalsIgnoreCase('SubscriptionCustomProperty.updated')) {
 

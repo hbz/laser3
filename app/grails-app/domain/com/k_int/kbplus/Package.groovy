@@ -334,7 +334,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   * OPTIONS: startDate, endDate, hideIdent, inclPkgStartDate, hideDeleted
   **/
   @Transient
-  def notifyDependencies(changeDocument) {
+  def notifyDependencies_trait(changeDocument) {
     def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
     if ( changeDocument.event=='Package.created' ) {
       changeNotificationService.broadcastEvent("com.k_int.kbplus.SystemObject:1", changeDocument);

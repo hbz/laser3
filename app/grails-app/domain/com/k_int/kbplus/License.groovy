@@ -440,8 +440,8 @@ class License
 
 
     @Transient
-    def notifyDependencies(changeDocument) {
-        log.debug("notifyDependencies(${changeDocument})")
+    def notifyDependencies_trait(changeDocument) {
+        log.debug("notifyDependencies_trait(${changeDocument})")
 
         def slavedPendingChanges = []
         // Find any licenses derived from this license

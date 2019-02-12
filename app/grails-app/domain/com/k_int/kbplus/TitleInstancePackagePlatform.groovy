@@ -267,8 +267,8 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
   }
 
   @Transient
-  def notifyDependencies(changeDocument) {
-    log.debug("notifyDependencies(${changeDocument})");
+  def notifyDependencies_trait(changeDocument) {
+    log.debug("notifyDependencies_trait(${changeDocument})");
 
     def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
     changeNotificationService.broadcastEvent("com.k_int.kbplus.Package:${pkg.id}", changeDocument);
