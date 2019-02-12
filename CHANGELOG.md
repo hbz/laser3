@@ -1,4 +1,8 @@
 
+0.13.2
+
+- fixed current subscriptions filter
+
 0.13.1
 
 - reworked hardcoded refdata values and categories
