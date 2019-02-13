@@ -1,5 +1,4 @@
 <%@ page import="com.k_int.kbplus.DocContext" %>
-<div id="container-documents">
 
 <%
     List<DocContext> baseItems = []
@@ -35,35 +34,33 @@
 
                     </g:link>(${docctx.owner.type.getI10n("value")})
 
-                    <g:if test="${docctx.isShared}">
-                        [ Wird geteilt ]
-                    </g:if>
-
                     <g:if test="${ownobj.showShareButton()}">
-                        <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip')}">
 
-                            <g:if test="${docctx.isShared}">
+                        <g:if test="${docctx.isShared}">
+                            <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip.on')}">
                                 <g:remoteLink class="ui mini icon button green js-gost js-no-wait-wheel"
                                           controller="ajax" action="toggleShare"
-                                          params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}"]'
+                                          params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}", tmpl:"documents"]'
                                           onSuccess=""
                                           onComplete=""
                                           update="container-documents">
                                         <i class="alternate share icon"></i>
                                 </g:remoteLink>
-                            </g:if>
-                            <g:else>
+                            </span>
+                        </g:if>
+                        <g:else>
+                            <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip.off')}">
                                 <g:remoteLink class="ui mini icon button js-gost js-no-wait-wheel"
                                               controller="ajax" action="toggleShare"
-                                              params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}"]'
+                                              params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}", tmpl:"documents"]'
                                               onSuccess=""
                                               onComplete=""
                                               update="container-documents">
                                     <i class="alternate share icon"></i>
                                 </g:remoteLink>
-                            </g:else>
+                            </span>
+                        </g:else>
 
-                        </span>
                     </g:if>
                 </div>
 
@@ -74,7 +71,7 @@
 </semui:card>
 
 <g:if test="${sharedItems}">
-    <semui:card text="Geteilte Dokumente" class="documents la-js-hideable ${css_class}" editable="${editable}">
+    <semui:card message="license.documents.shared" class="documents la-js-hideable ${css_class}" editable="${editable}">
         <g:each in="${sharedItems}" var="docctx">
 
             <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted'))}">
@@ -100,5 +97,3 @@
         </g:each>
     </semui:card>
 </g:if>
-
-</div>

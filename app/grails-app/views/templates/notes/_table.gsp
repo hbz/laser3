@@ -30,7 +30,30 @@
                             ${docctx.owner.user}
                     </td>
                     <td class="x">
-                        <g:if test="${editable}">
+                        <g:if test="${docctx.sharedFrom}">
+                            [ Wird geteilt ]
+                        </g:if>
+
+                        <g:if test="${instance.showShareButton()}">
+                            <g:if test="${docctx.isShared}">
+                                <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip.on')}">
+                                    <g:link controller="ajax" action="toggleShare" class="ui icon button green"
+                                            params='[owner:"${instance.class.name}:${instance.id}", sharedObject:"${docctx.class.name}:${docctx.id}", reload:true]'>
+                                        <i class="alternate share icon"></i>
+                                    </g:link>
+                                </span>
+                            </g:if>
+                            <g:else>
+                                <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip.off')}">
+                                    <g:link controller="ajax" action="toggleShare" class="ui icon button"
+                                            params='[owner:"${instance.class.name}:${instance.id}", sharedObject:"${docctx.class.name}:${docctx.id}", reload:true]'>
+                                        <i class="alternate share icon"></i>
+                                    </g:link>
+                                </span>
+                            </g:else>
+                        </g:if>
+
+                        <g:if test="${editable && ! docctx.sharedFrom}">
                             <a onclick="noteedit(${docctx.owner.id});" class="ui icon button">
                                 <i class="write icon"></i>
                             </a>

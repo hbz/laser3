@@ -482,13 +482,12 @@
 
                <div class="clear-fix"></div>
             </div>
-        </div>
+        </div><!-- .twelve -->
 
         <aside class="four wide column la-sidekick">
-            <g:render template="/templates/tasks/card" model="${[ownobj:subscriptionInstance, owntp:'subscription', css_class:'hidden']}"  />
-            <g:render template="/templates/documents/card" model="${[ownobj:subscriptionInstance, owntp:'subscription', css_class:'hidden']}" />
-            <g:render template="/templates/notes/card" model="${[ownobj:subscriptionInstance, owntp:'subscription', css_class:'hidden']}" />
+            <g:render template="/templates/aside1" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
         </aside><!-- .four -->
+
     </div><!-- .grid -->
 
 

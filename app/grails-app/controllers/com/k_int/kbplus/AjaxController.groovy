@@ -1268,8 +1268,13 @@ class AjaxController {
         if (params.reload) {
             redirect(url: request.getHeader('referer'))
         }
-        else {
-            render(template: '/templates/documents/card', model: [ownobj: owner, editable: true]) // TODO editable from owner
+        else if (params.tmpl) {
+            if (params.tmpl == 'documents') {
+                render(template: '/templates/documents/card', model: [ownobj: owner, editable: true]) // TODO editable from owner
+            }
+            else if (params.tmpl == 'notes') {
+                render(template: '/templates/notes/card', model: [ownobj: owner, editable: true]) // TODO editable from owner
+            }
         }
     }
 

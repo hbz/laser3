@@ -275,50 +275,11 @@
 
             </div><!-- .twelve -->
 
-            <aside class="four wide column">
-            <%--
-                <semui:card message="license.actions">
-                    <div class="ui form content">
-
-                        <g:if test="${canCopyOrgs}">
-
-                            <div class="field">
-                                <label for="orgShortcode">${message(code:'license.copyLicensefor', default:'Copy license for')}:</label>
-
-                                <g:select from="${canCopyOrgs}" optionValue="name" optionKey="shortcode" name="orgShortcode" id="orgShortcode" class="ui fluid dropdown"/>
-                            </div>
-
-                            <g:link name="copyLicenseBtn" controller="myInstitution" action="actionLicenses" params="${[shortcode:'replaceme', baselicense:license.id, 'copy-license':'Y']}" onclick="return changeLink(this, '${message(code:'license.details.copy.confirm')}')" class="ui button" style="margin-bottom:10px">${message(code:'default.button.copy.label', default:'Copy')}</g:link>
-
-                            <br />
-
-                            <label for="linkSubscription">${message(code:'license.linktoSubscription', default:'Link to Subscription')}:</label>
-
-                            <g:form id="linkSubscription" class="ui form" name="linkSubscription" action="linkToSubscription">
-                                <div class="field">
-                                    <input type="hidden" name="license" value="${license.id}"/>
-                                    <g:select optionKey="id" optionValue="name" from="${availableSubs}" name="subscription" class="ui fluid dropdown"/>
-                                </div>
-                                <input type="submit" class="ui button" value="${message(code:'default.button.link.label', default:'Link')}"/>
-
-                            </g:form>
-
-                            %{--
-                                leave this out for now.. it is a bit confusing.
-                                <g:link name="deletLicenseBtn" controller="myInstitution" action="actionLicenses" onclick="return changeLink(this,${message(code:'license.details.delete.confirm', args[(license.reference?:'** No license reference ** ')]?)" params="${[baselicense:license.id,'delete-license':'Y',shortcode:'replaceme']}" class="ui negative button">${message(code:'default.button.delete.label', default:'Delete')}</g:link> --}%
-                        </g:if>
-                        <g:else>
-                            ${message(code:'license.details.not_allowed', default:'Actions available to editors only')}
-                        </g:else>
-                    </div>
-                </semui:card>
-                --%>
-
-                <g:render template="/templates/tasks/card" model="${[ownobj:license, owntp:'license']}" />
-                <g:render template="/templates/documents/card" model="${[ownobj:license, owntp:'license']}" />
-                <g:render template="/templates/notes/card"  model="${[ownobj:license, owntp:'license']}" />
-
+            <aside class="four wide column la-sidekick">
+                <g:render template="/templates/aside1" model="${[ownobj:license, owntp:'license']}" />
             </aside><!-- .four -->
+
+
         </div><!-- .grid -->
 
     <r:script language="JavaScript">

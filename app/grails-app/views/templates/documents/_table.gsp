@@ -37,27 +37,29 @@
                             </g:if>
 
                             <g:if test="${instance.showShareButton()}">
-                                <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip')}">
 
-                                    <g:if test="${docctx.isShared}">
+                                <g:if test="${docctx.isShared}">
+                                    <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip.on')}">
                                         <g:link controller="ajax" action="toggleShare" class="ui icon button green"
                                                 params='[owner:"${instance.class.name}:${instance.id}", sharedObject:"${docctx.class.name}:${docctx.id}", reload:true]'>
                                                     <i class="alternate share icon"></i>
                                         </g:link>
-                                    </g:if>
-                                    <g:else>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip.off')}">
                                         <g:link controller="ajax" action="toggleShare" class="ui icon button"
                                                 params='[owner:"${instance.class.name}:${instance.id}", sharedObject:"${docctx.class.name}:${docctx.id}", reload:true]'>
                                             <i class="alternate share icon"></i>
                                         </g:link>
-                                    </g:else>
+                                    </span>
+                                </g:else>
 
-                                </span>
                             </g:if>
 
                             <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon button"><i class="download icon"></i></g:link>
 
-                            <g:if test="${! docctx.sharedFrom}">
+                            <g:if test="${editable && ! docctx.sharedFrom}">
                                 <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button"
                                         params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${redirect}"]'>
                                     <i class="trash alternate icon"></i>
