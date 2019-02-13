@@ -72,7 +72,7 @@
         <semui:card message="license.notes.shared" class="documents la-js-hideable ${css_class}" editable="${editable}">
             <g:each in="${sharedItems}" var="docctx">
 
-                <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted'))}">
+                <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') )}">
                     <div class="ui small feed content la-js-dont-hide-this-card">
 
                         <div class="summary">

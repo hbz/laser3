@@ -18,10 +18,20 @@
                 <tr>
                     <%--<g:if test="${editable}"><td><input type="checkbox" name="_deleteflag.${docctx.id}" value="true"/></td></g:if> : REMOVED BULK--%>
                     <td>
-                        <semui:xEditable owner="${docctx.owner}" field="title" id="title" />
+                        <g:if test="${! docctx.sharedFrom}">
+                            <semui:xEditable owner="${docctx.owner}" field="title" id="title" />
+                        </g:if>
+                        <g:else>
+                            ${docctx.owner.title}
+                        </g:else>
                     </td>
                     <td>
-                        <semui:xEditable owner="${docctx.owner}" field="filename" id="filename" validation="notEmpty"/>
+                        <g:if test="${! docctx.sharedFrom}">
+                            <semui:xEditable owner="${docctx.owner}" field="filename" id="filename" validation="notEmpty"/>
+                        </g:if>
+                        <g:else>
+                            ${docctx.owner.filename}
+                        </g:else>
                     </td>
                     <td>
                         ${docctx.owner?.type?.getI10n('value')}
@@ -72,41 +82,5 @@
         </g:each>
         </tbody>
     </table>
-    <%-- <g:if test="${editable}">
-        <div class="well license-documents-options" style="display:none">
-            <button class="ui negative button delete-document" id="delete-doc">${message(code:'template.documents.delete', default:'Delete Selected Documents')}</button>
-            <input type="hidden" name="instanceId" value="${instance.id}"/>
-            <input type="hidden" name="redirectAction" value="${redirect}"/>
-        </div>
-    </g:if> : REMOVED BULK --%>
-
 </g:form>
 
-<!-- JS for show/hide of delete button -->
-<%--
-<r:script type="text/javascript">
-    var showEditButtons =function () {
-        if ($('.license-documents input:checked').length > 0) {
-            $('.license-documents-options').slideDown('fast');
-        } else {
-            $('.license-documents-options').slideUp('fast');
-        }
-    }
-
-    $(document).ready(showEditButtons);
-
-    $('.license-documents input[type="checkbox"]').click(showEditButtons);
-
-    $('.license-documents-options .delete-document').click(function () {
-        if (!confirm('${message(code:'template.documents.delete.confirm', default:'Are you sure you wish to delete these documents?')}')) {
-            $('.license-documents input:checked').attr('checked', false);
-            return false;
-        }
-        $('.license-documents input:checked').each(function () {
-            $(this).parent().parent().fadeOut('slow');
-            $('.license-documents-options').slideUp('fast');
-        });
-    })
-
-</r:script>
-: REMOVED BULK --%>
