@@ -317,7 +317,7 @@ r2d2 = {
             }
             //showOnFocus: false
         });
-        $(ctxSel + ' .la-filter form').attr('autocomplete', 'off');
+        $(ctxSel + ' form').attr('autocomplete', 'off');
         $(ctxSel + ' .la-filter .ui.dropdown').dropdown({
             clearable: true
         });
