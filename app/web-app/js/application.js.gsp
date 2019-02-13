@@ -6,11 +6,14 @@ r2d2 = {
         datepicker : {
             type: 'date',
             onChange: function(date, text, mode) {
-                if (!text) {
-                    $(this).removeClass("la-calendar-selected");
-                } else {
-                    if( ! $(this).hasClass("la-calendar-selected") ) {
-                        $(this).addClass("la-calendar-selected")
+                // deal with colored input field only when in filter context
+                if ($(this).parents('.la-filter').length) {
+                    if (!text) {
+                        $(this).removeClass("la-calendar-selected");
+                    } else {
+                        if( ! $(this).hasClass("la-calendar-selected") ) {
+                            $(this).addClass("la-calendar-selected")
+                        }
                     }
                 }
             },
@@ -314,7 +317,7 @@ r2d2 = {
             }
             //showOnFocus: false
         });
-        $(ctxSel + ' .la-filter form').attr('autocomplete', 'off');
+        $(ctxSel + ' form').attr('autocomplete', 'off');
         $(ctxSel + ' .la-filter .ui.dropdown').dropdown({
             clearable: true
         });
