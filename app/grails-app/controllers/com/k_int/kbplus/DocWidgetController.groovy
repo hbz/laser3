@@ -13,7 +13,6 @@ class DocWidgetController extends AbstractDebugController {
 
   def springSecurityService
   def docstoreService
-  def alertsService
 
   @Secured(['ROLE_USER'])
   def createNote() { 
@@ -32,25 +31,11 @@ class DocWidgetController extends AbstractDebugController {
                                   type:     RefdataValue.getByValueAndCategory('Note', 'Document Type'),
                                   user:     user).save()
 
-        def alert = null;
-        if ( params.licenseNoteShared ) {
-          switch ( params.licenseNoteShared ) {
-            case "0":
-              break;
-            case "1":
-              alert = new Alert(sharingLevel:1, createdBy:user).save();
-              break;
-            case "2":
-              alert = new Alert(sharingLevel:2, createdBy:user).save();
-              break;
-          }
-        }
 
         log.debug("Setting new context type to ${params.ownertp}..");
         def doc_context = new DocContext("${params.ownertp}":instance,
                                          owner:doc_content,
-                                         doctype:RefdataCategory.lookupOrCreate('Document Type',params.doctype),
-                                         alert:alert).save(flush:true);
+                                         doctype:RefdataCategory.lookupOrCreate('Document Type',params.doctype)).save(flush:true);
       }
       else {
         log.debug("no instance");

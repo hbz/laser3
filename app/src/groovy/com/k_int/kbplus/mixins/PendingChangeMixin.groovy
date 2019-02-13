@@ -65,7 +65,6 @@ public class PendingChangeMixin {
 
     if ( this_change_ctx ) {
       log.debug("Delete change context between targetObject and change description document");
-      this_change_ctx.alert.delete();
       this_change_ctx.delete(flush:true);
 
       def remaining_contexts = DocContext.findAllByOwner(pc.doc)

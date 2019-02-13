@@ -1,7 +1,23 @@
-<%@ page import="com.k_int.kbplus.Doc" %>
+<%@ page import="com.k_int.kbplus.Doc;com.k_int.kbplus.DocContext" %>
+<div id="container-notes">
+
+<%
+    List<DocContext> baseItems = []
+    List<DocContext> sharedItems = []
+
+    ownobj.documents.sort{it.owner?.title}.each{ it ->
+        if (it.sharedFrom) {
+            sharedItems << it
+        }
+        else {
+            baseItems << it
+        }
+    }
+%>
+
 <semui:card message="license.notes" class="notes la-js-hideable ${css_class}" href="#modalCreateNote" editable="${editable}">
 
-        <g:each in="${ownobj.documents.sort{it.owner?.title}}" var="docctx">
+        <g:each in="${baseItems}" var="docctx">
             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') )}">
                 <div class="ui small feed content la-js-dont-hide-this-card">
                     <!--<div class="event">-->
@@ -17,24 +33,6 @@
 
                                 ${message(code:'template.notes.created')}
                                 <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${docctx.owner.dateCreated}"/>
-
-                                <g:if test="${docctx.alert}">
-                                    ${message(code:'template.notes.shared')} ${docctx.alert.createdBy.displayName}
-                                    <g:if test="${docctx.alert.sharingLevel == 1}">
-                                        ${message(code:'template.notes.shared_jc')}
-                                    </g:if>
-                                    <g:if test="${docctx.alert.sharingLevel == 2}">
-                                        ${message(code:'template.notes.shared_community')}
-                                    </g:if>
-                                    <div class="comments">
-                                        <a href="#modalComments" class="announce" data-id="${docctx.alert.id}">
-                                            ${docctx.alert?.comments != null ? docctx.alert?.comments?.size() : 0} Comment(s)
-                                        </a>
-                                    </div>
-                                </g:if>
-                                <g:else>
-                                    <!--${message(code:'template.notes.not_shared')}-->
-                                </g:else>
                             </div>
 
                     <!--</div>-->
@@ -42,6 +40,36 @@
             </g:if>
         </g:each>
 </semui:card>
+
+<g:if test="${sharedItems}">
+    <semui:card text="Geteilte Dokumente" class="documents la-js-hideable ${css_class}" editable="${editable}">
+        <g:each in="${sharedItems}" var="docctx">
+
+            <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted'))}">
+                <div class="ui small feed content la-js-dont-hide-this-card">
+
+                    <div class="summary">
+                        <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel">
+                            <g:if test="${docctx.owner?.title}">
+                                ${docctx.owner.title}
+                            </g:if>
+                            <g:elseif test="${docctx.owner?.filename}">
+                                ${docctx.owner.filename}
+                            </g:elseif>
+                            <g:else>
+                                ${message(code:'template.documents.missing', default: 'Missing title and filename')}
+                            </g:else>
+
+                        </g:link>(${docctx.owner.type.getI10n("value")})
+                    </div>
+                </div>
+            </g:if>
+
+        </g:each>
+    </semui:card>
+</g:if>
+
+</div>
 
 <r:script>
     function noteedit(id) {

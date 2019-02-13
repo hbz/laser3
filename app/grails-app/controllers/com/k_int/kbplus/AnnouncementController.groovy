@@ -13,7 +13,6 @@ import java.text.SimpleDateFormat
 class AnnouncementController extends AbstractDebugController {
 
     def springSecurityService
-    def alertsService
     def genericOIDService
 
     @Secured(['ROLE_DATAMANAGER'])

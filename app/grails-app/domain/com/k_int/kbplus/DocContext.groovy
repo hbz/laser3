@@ -24,7 +24,6 @@ class DocContext implements ShareableTrait {
 
   Boolean globannounce=false
 
-    Alert alert
     DocContext sharedFrom
     Boolean isShared
 
@@ -42,7 +41,6 @@ class DocContext implements ShareableTrait {
              link column:'dc_link_fk'
      globannounce column:'dc_is_global'
            status column:'dc_status_fk'
-            alert column:'dc_alert_fk'
        sharedFrom column:'dc_shared_from_fk'
          isShared column:'dc_is_shared'
   }
@@ -55,7 +53,6 @@ class DocContext implements ShareableTrait {
     link(nullable:true, blank:false)
     domain(nullable:true, blank:false)
     status(nullable:true, blank:false)
-    alert(nullable:true, blank:false)
     globannounce(nullable:true, blank:true)
       sharedFrom(nullable:true, blank:true)
       isShared(nullable:true, blank:false, default:false)

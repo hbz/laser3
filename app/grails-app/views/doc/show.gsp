@@ -34,13 +34,6 @@
 
                         </g:if>
 
-                        <g:if test="${docInstance?.alert}">
-                            <dt><g:message code="doc.alert.label" default="Alert" /></dt>
-
-                                <dd><g:link controller="alert" action="show" id="${docInstance?.alert?.id}">${docInstance?.alert}</g:link></dd>
-
-                        </g:if>
-
                         <g:if test="${docInstance?.content}">
                             <dt><g:message code="doc.content.label" default="Content" /></dt>
 

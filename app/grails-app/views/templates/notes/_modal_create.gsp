@@ -15,7 +15,5 @@
 
             <textarea name="licenseNote"></textarea>
         </div>
-
-        <input type="hidden" name="licenseNoteShared" value="0"/>
     </g:form>
 </semui:modal>

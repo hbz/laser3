@@ -523,12 +523,6 @@
 
       $(document).ready(function() {
 
-        $(".announce").click(function(){
-           var id = $(this).data('id');
-           $('#modalComments').load('<g:createLink controller="alert" action="commentsFragment" />/'+id);
-           $('#modalComments').modal('show');
-         });
-
          $('#collapseableSubDetails').on('show', function() {
             $('.hidden-license-details i').removeClass('icon-plus').addClass('icon-minus');
         });
@@ -540,15 +534,6 @@
       });
 
       </g:if>
-      <g:else>
-        $(document).ready(function() {
-          $(".announce").click(function(){
-            var id = $(this).data('id');
-            $('#modalComments').load('<g:createLink controller="alert" action="commentsFragment" />/'+id);
-            $('#modalComments').modal('show');
-          });
-        });
-      </g:else>
 
       <g:if test="${params.asAt && params.asAt.length() > 0}"> $(function() {
         document.body.style.background = "#fcf8e3";

@@ -29,7 +29,6 @@ class MyInstitutionController extends AbstractDebugController {
     def dataSource
     def springSecurityService
     def ESSearchService
-    def alertsService
     def genericOIDService
     def factService
     def exportService
@@ -79,9 +78,6 @@ class MyInstitutionController extends AbstractDebugController {
         log.debug("index for user with id ${springSecurityService.principal.id} :: ${result.user}");
 
         if ( result.user ) {
-          result.userAlerts = alertsService.getAllVisibleAlerts(result.user);
-          //result.staticAlerts = alertsService.getStaticAlerts(request);
-
           if ((result.user.affiliations == null) || (result.user.affiliations.size() == 0)) {
               redirect controller: 'profile', action: 'index'
           }
@@ -150,22 +146,6 @@ class MyInstitutionController extends AbstractDebugController {
         result.tips = results
         result.institution = current_inst
         result.editable = accessService.checkMinUserOrgRole(result.user, current_inst, 'INST_EDITOR')
-        result
-    }
-
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
-    @Deprecated
-    def dashboard_OLD() {
-        // Work out what orgs this user has admin level access to
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.userAlerts = alertsService.getAllVisibleAlerts(result.user);
-        result.staticAlerts = alertsService.getStaticAlerts(request);
-
-        if ((result.user.affiliations == null) || (result.user.affiliations.size() == 0)) {
-            redirect controller: 'profile', action: 'index'
-        }
         result
     }
 

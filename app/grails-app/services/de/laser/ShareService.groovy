@@ -31,7 +31,6 @@ class ShareService {
                 link:           (target instanceof Links) ? target : share.link,
                 doctype:        share.doctype,
                 domain:         share.domain,
-                alert:          share.alert,
                 globannounce:   share.globannounce,
                 sharedFrom:     share,
                 isShared:       false

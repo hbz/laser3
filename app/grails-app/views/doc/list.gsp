@@ -22,8 +22,6 @@
 						
 							<th class="header"><g:message code="doc.type.label" default="Type" /></th>
 						
-							<th class="header"><g:message code="doc.alert.label" default="Alert" /></th>
-						
 							<g:sortableColumn property="content" title="${message(code: 'doc.content.label', default: 'Content')}" />
 						
 							<g:sortableColumn property="uuid" title="${message(code: 'doc.uuid.label', default: 'Uuid')}" />
@@ -40,8 +38,6 @@
 							<td>${fieldValue(bean: docInstance, field: "status")}</td>
 						
 							<td>${fieldValue(bean: docInstance, field: "type")}</td>
-						
-							<td>${fieldValue(bean: docInstance, field: "alert")}</td>
 						
 							<td>${fieldValue(bean: docInstance, field: "content")}</td>
 						

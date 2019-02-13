@@ -18,14 +18,6 @@
 	<g:select id="type" name="type.id" from="${com.k_int.kbplus.RefdataValue.list()}" optionKey="id" value="${docInstance?.type?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
 
-<div class="field fieldcontain ${hasErrors(bean: docInstance, field: 'alert', 'error')} ">
-	<label for="alert">
-		<g:message code="doc.alert.label" default="Alert" />
-		
-	</label>
-	<g:select id="alert" name="alert.id" from="${com.k_int.kbplus.Alert.list()}" optionKey="id" value="${docInstance?.alert?.id}" class="many-to-one" noSelection="['null': '']"/>
-</div>
-
 <div class="field fieldcontain ${hasErrors(bean: docInstance, field: 'content', 'error')} ">
 	<label for="content">
 		<g:message code="doc.content.label" default="Content" />
