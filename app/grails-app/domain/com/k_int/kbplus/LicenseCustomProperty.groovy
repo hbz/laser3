@@ -3,13 +3,12 @@ package com.k_int.kbplus
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.properties.PropertyDefinition
 import com.k_int.kbplus.abstract_domain.CustomProperty
-import de.laser.AuditConfig
-import de.laser.traits.AuditTrait
+import de.laser.traits.AuditableTrait
 import grails.converters.JSON
 
 import javax.persistence.Transient
 
-class LicenseCustomProperty extends CustomProperty implements AuditTrait  {
+class LicenseCustomProperty extends CustomProperty implements AuditableTrait  {
 
     @Transient
     def genericOIDService
@@ -22,7 +21,7 @@ class LicenseCustomProperty extends CustomProperty implements AuditTrait  {
     @Transient
     def pendingChangeService
 
-    // AuditTrait
+    // AuditableTrait
     static auditable = true
     static controlledProperties = ['stringValue','intValue','decValue','refValue','paragraph','note','dateValue']
 
@@ -73,8 +72,8 @@ class LicenseCustomProperty extends CustomProperty implements AuditTrait  {
     changeNotificationService.fireEvent(changeDoc)
   }
 
-    def notifyDependencies(changeDocument) {
-        log.debug("notifyDependencies(${changeDocument})")
+    def notifyDependencies_trait(changeDocument) {
+        log.debug("notifyDependencies_trait(${changeDocument})")
 
         if (changeDocument.event.equalsIgnoreCase('LicenseCustomProperty.updated')) {
             // legacy ++

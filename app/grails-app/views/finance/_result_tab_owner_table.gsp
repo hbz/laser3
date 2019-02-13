@@ -2,34 +2,32 @@
 <laser:serviceInjection />
 
 <g:each in="${cost_items}" var="ci" status="jj">
-        <%
-            def org = contextService.getOrg()
-            def elementSign = 'notSet'
-            def icon = ''
-            def dataTooltip = ""
-            if(ci.costItemElementConfiguration) {
-                elementSign = ci.costItemElementConfiguration
-            }
-            String cieString = "data-elementSign=${elementSign}"
-            switch(elementSign) {
-                case RDStore.CIEC_POSITIVE:
-                    dataTooltip = message(code:'financials.costItemConfiguration.positive')
-                    icon = '<i class="plus green circle icon"></i>'
-                    break
-                case RDStore.CIEC_NEGATIVE:
-                    dataTooltip = message(code:'financials.costItemConfiguration.negative')
-                    icon = '<i class="minus red circle icon"></i>'
-                    break
-                case RDStore.CIEC_NEUTRAL:
-                    dataTooltip = message(code:'financials.costItemConfiguration.neutral')
-                    icon = '<i class="circle yellow icon"></i>'
-                    break
-                default:
-                    dataTooltip = message(code:'financials.costItemConfiguration.notSet')
-                    icon = '<i class="question circle icon"></i>'
-                    break
-            }
-        %>
+    <%
+        String elementSign = 'notSet'
+        String icon = ''
+        String dataTooltip = ""
+        if(ci.costItemElementConfiguration) {
+            elementSign = ci.costItemElementConfiguration
+        }
+        switch(elementSign) {
+            case RDStore.CIEC_POSITIVE:
+                dataTooltip = message(code:'financials.costItemConfiguration.positive')
+                icon = '<i class="plus green circle icon"></i>'
+                break
+            case RDStore.CIEC_NEGATIVE:
+                dataTooltip = message(code:'financials.costItemConfiguration.negative')
+                icon = '<i class="minus red circle icon"></i>'
+                break
+            case RDStore.CIEC_NEUTRAL:
+                dataTooltip = message(code:'financials.costItemConfiguration.neutral')
+                icon = '<i class="circle yellow icon"></i>'
+                break
+            default:
+                dataTooltip = message(code:'financials.costItemConfiguration.notSet')
+                icon = '<i class="question circle icon"></i>'
+                break
+        }
+    %>
     <tr id="bulkdelete-b${ci.id}">
         <td>
             ${ jj + 1 + counterHelper}
@@ -93,7 +91,6 @@
                         <i class="write icon"></i>
                     </g:link>
                 </g:else>
-
             </g:if>
             <g:if test="${editable}">
                 <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ tab:'owner']" class="ui icon negative button" onclick="return confirm('${message(code: 'default.button.confirm.delete')}')">
@@ -101,6 +98,5 @@
                 </g:link>
             </g:if>
         </td>
-
     </tr>
 </g:each>

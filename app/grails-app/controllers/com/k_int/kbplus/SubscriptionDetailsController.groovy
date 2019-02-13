@@ -2,12 +2,10 @@ package com.k_int.kbplus
 
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
-import de.laser.SubscriptionsQueryService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 
 // 2.0
@@ -21,14 +19,12 @@ import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.elasticsearch.client.Client
 
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 
 
 //For Transform
-import static groovyx.net.http.ContentType.*
 
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -57,7 +53,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
     def dataloadService
     def GOKbService
     def navigationGenerationService
-    def financialDataService
+    def financeService
     def providerHelperService
 
     private static String INVOICES_FOR_SUB_HQL =
@@ -844,6 +840,8 @@ class SubscriptionDetailsController extends AbstractDebugController {
 
                 def subLicense = result.subscriptionInstance.owner
 
+                List<Subscription> synShareTargetList = []
+
                 cons_members.each { cm ->
 
                     def postfix = (cons_members.size() > 1) ? 'Teilnehmervertrag' : (cm.get(0).shortname ?: cm.get(0).name)
@@ -935,11 +933,14 @@ class SubscriptionDetailsController extends AbstractDebugController {
 
                             new OrgRole(org: cm, sub: cons_sub, roleType: role_sub).save()
                             new OrgRole(org: result.institution, sub: cons_sub, roleType: role_sub_cons).save()
+
+                            synShareTargetList.add(cons_sub)
                         }
-
-
                     }
                 }
+
+                result.subscriptionInstance.syncAllShares(synShareTargetList)
+
                 redirect controller: 'subscriptionDetails', action: 'members', params: [id: result.subscriptionInstance?.id]
             } else {
                 redirect controller: 'subscriptionDetails', action: 'show', params: [id: result.subscriptionInstance?.id]
@@ -970,6 +971,9 @@ class SubscriptionDetailsController extends AbstractDebugController {
             if (!derived_subs) {
 
                 if(!CostItem.findAllBySub(delSubscription)) {
+                    // sync shares
+                    delSubscription.instanceOf.syncAllShares([delSubscription])
+
                     if (delSubscription.getConsortia() && delSubscription.getConsortia() != delInstitution) {
                         OrgRole.executeUpdate("delete from OrgRole where sub = ? and org = ?", [delSubscription, delInstitution])
                     }
@@ -1898,14 +1902,24 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             }
         }
 
-        //cost items, reactivated as of ERMS-943
-        LinkedHashMap costItems = financialDataService.getCostItems(result.subscription)
-        result.costItemSums = [ownCosts:financialDataService.calculateResults(costItems.ownCosts)]
-        if(costItems.consCosts.size() > 0) {
-            result.costItemSums.consCosts = financialDataService.calculateResults(costItems.consCosts)
+        //determine org role
+        if(result.subscription.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_CONSORTIAL))
+            params.view = "cons"
+        else if(result.subscription.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_PARTICIPATION) && result.subscription.getConsortia().equals(result.institution))
+            params.view = "consAtSubscr"
+        else if(result.subscription.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_PARTICIPATION) && !result.subscription.getConsortia().equals(result.institution))
+            params.view = "subscr"
+        //cost items
+        LinkedHashMap costItems = financeService.getCostItemsForSubscription(result.subscription,params,10,0)
+        result.costItemSums = [:]
+        if(costItems.own.count > 0) {
+            result.costItemSums.ownCosts = costItems.own.sums
         }
-        if(costItems.subscrCosts.size() > 0) {
-            result.costItemSums.subscrCosts = financialDataService.calculateResults(costItems.subscrCosts)
+        if(costItems.cons.count > 0) {
+            result.costItemSums.consCosts = costItems.cons.sums
+        }
+        if(costItems.subscr.count > 0) {
+            result.costItemSums.subscrCosts = costItems.subscr.sums
         }
 
         result.availableProviderList = providerHelperService.getAllWithTypeProvider().minus(

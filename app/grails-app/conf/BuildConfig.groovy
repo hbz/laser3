@@ -64,9 +64,9 @@ grails.project.dependency.resolution = {
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
-        //compile "net.sf.ehcache:ehcache:2.7.0" // LEGACY
-        compile "net.sf.ehcache:ehcache:2.9.0"                     // to hibernate 4
-        compile "org.hibernate:hibernate-ehcache:4.3.10.Final"     // to hibernate 4
+        compile "net.sf.ehcache:ehcache:2.7.0" // LEGACY
+        //compile "net.sf.ehcache:ehcache:2.9.0"                     // to hibernate 4
+        //compile "org.hibernate:hibernate-ehcache:4.3.10.Final"     // to hibernate 4
 
         runtime 'javax.servlet:jstl:1.1.2'
         runtime 'taglibs:standard:1.1.2'
@@ -132,8 +132,8 @@ grails.project.dependency.resolution = {
 
     plugins {
 
-        //runtime ':hibernate:3.6.10.19' // LEGACY
-        runtime ':hibernate4:4.3.10' // hibernate 4
+        runtime ':hibernate:3.6.10.19' // LEGACY
+        //runtime ':hibernate4:4.3.10' // hibernate 4
 
         runtime ":gsp-resources:0.4.4"
         runtime ":resources:1.2.8" // 1.2.14 won't work @ application.js.gsp
@@ -148,7 +148,7 @@ grails.project.dependency.resolution = {
 
         compile ':cache:1.1.8'
 
-        compile "org.grails.plugins:hibernate-filter:0.4.0" // hibernate 4
+        //compile "org.grails.plugins:hibernate-filter:0.4.0" // hibernate 4
 
         compile ':mail:1.0.7', {
            excludes 'spring-test'

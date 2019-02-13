@@ -4,9 +4,8 @@ import com.k_int.kbplus.auth.User
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AuditConfig
-import de.laser.controller.AbstractDebugController
 import de.laser.domain.AbstractI10nTranslatable
-import de.laser.helper.RDStore
+import de.laser.interfaces.ShareSupport
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import com.k_int.properties.PropertyDefinition
@@ -1250,6 +1249,28 @@ class AjaxController {
         }
 
         redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_USER'])
+    def toggleShare() {
+        def owner = genericOIDService.resolveOID( params.owner )
+        def sharedObject = genericOIDService.resolveOID( params.sharedObject )
+
+        if (! sharedObject.isShared) {
+            sharedObject.isShared = true
+        } else {
+            sharedObject.isShared = false
+        }
+        sharedObject.save(flusth:true)
+
+        ((ShareSupport) owner).updateShare(sharedObject)
+
+        if (params.reload) {
+            redirect(url: request.getHeader('referer'))
+        }
+        else {
+            render(template: '/templates/documents/card', model: [ownobj: owner, editable: true]) // TODO editable from owner
+        }
     }
 
     @Secured(['ROLE_USER'])

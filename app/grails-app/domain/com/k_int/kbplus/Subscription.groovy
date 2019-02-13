@@ -5,18 +5,21 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.helper.RDStore
 import de.laser.interfaces.DeleteFlag
-import de.laser.traits.AuditTrait
 import de.laser.domain.AbstractBaseDomain
 import de.laser.interfaces.Permissions
+import de.laser.interfaces.ShareSupport
 import de.laser.interfaces.TemplateSupport
+import de.laser.traits.AuditableTrait
+import de.laser.traits.ShareableTrait
 
 import javax.persistence.Transient
 
 class Subscription
         extends AbstractBaseDomain
-        implements TemplateSupport, DeleteFlag, Permissions, AuditTrait {
+        implements TemplateSupport, DeleteFlag, Permissions, ShareSupport,
+                AuditableTrait {
 
-    // AuditTrait
+    // AuditableTrait
     static auditable            = [ ignore: ['version', 'lastUpdated', 'pendingChanges'] ]
     static controlledProperties = [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'form', 'resource' ]
 
@@ -157,6 +160,50 @@ class Subscription
     }
 
     @Override
+    boolean showShareButton() {
+        getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL
+    }
+
+    @Override
+    def updateShare(ShareableTrait sharedObject) {
+        log.debug('updateShare: ' + sharedObject)
+
+        if (sharedObject instanceof DocContext) {
+            if (sharedObject.isShared) {
+                List<Subscription> newTargets = Subscription.findAllByInstanceOfAndStatusNotEqual(this, RDStore.SUBSCRIPTION_DELETED)
+                log.debug('found targets: ' + newTargets)
+
+                newTargets.each{ sub ->
+                    log.debug('adding for: ' + sub)
+                    sharedObject.addShareForTarget_trait(sub)
+                }
+            }
+            else {
+                sharedObject.deleteShare_trait()
+            }
+        }
+    }
+
+    @Override
+    def syncAllShares(List<ShareSupport> targets) {
+        log.debug('synAllShares: ' + targets)
+
+        documents.each{ sharedObject ->
+
+            targets.each{ sub ->
+                if (sharedObject.isShared) {
+                    log.debug('adding for: ' + sub)
+                    sharedObject.addShareForTarget_trait(sub)
+                }
+                else {
+                    log.debug('deleting all shares')
+                    sharedObject.deleteShare_trait()
+                }
+            }
+        }
+    }
+
+    @Override
     def getCalculatedType() {
         def result = TemplateSupport.CALCULATED_TYPE_UNKOWN
 
@@ -251,6 +298,7 @@ class Subscription
         result
     }
 
+    // TODO: rename
     def getDerivedSubscribers() {
         def result = []
 
@@ -370,8 +418,8 @@ class Subscription
   }
 
     @Transient
-    def notifyDependencies(changeDocument) {
-        log.debug("notifyDependencies(${changeDocument})")
+    def notifyDependencies_trait(changeDocument) {
+        log.debug("notifyDependencies_trait(${changeDocument})")
 
         def slavedPendingChanges = []
         def derived_subscriptions = getNonDeletedDerivedSubscriptions()

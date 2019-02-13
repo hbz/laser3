@@ -1,10 +1,15 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.interfaces.ShareSupport
+import de.laser.traits.ShareableTrait
+
 import java.text.Normalizer
 import javax.persistence.Transient
 
-class Package extends AbstractBaseDomain {
+class Package
+        extends AbstractBaseDomain
+        implements ShareSupport {
 
     // TODO AuditTrail
   static auditable = [ignore:['version','lastUpdated','pendingChanges']]
@@ -104,6 +109,18 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     cancellationAllowances(nullable:true, blank:false)
                   sortName(nullable:true, blank:false)
   }
+
+    boolean showShareButton() {
+        false // NO SHARES
+    }
+
+    def updateShare(ShareableTrait sharedObject) {
+        false // NO SHARES
+    }
+
+    def syncAllShares(List<ShareSupport> targets) {
+        false // NO SHARES
+    }
 
   def getConsortia() {
     def result = null;
@@ -317,7 +334,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   * OPTIONS: startDate, endDate, hideIdent, inclPkgStartDate, hideDeleted
   **/
   @Transient
-  def notifyDependencies(changeDocument) {
+  def notifyDependencies_trait(changeDocument) {
     def changeNotificationService = grailsApplication.mainContext.getBean("changeNotificationService")
     if ( changeDocument.event=='Package.created' ) {
       changeNotificationService.broadcastEvent("com.k_int.kbplus.SystemObject:1", changeDocument);
