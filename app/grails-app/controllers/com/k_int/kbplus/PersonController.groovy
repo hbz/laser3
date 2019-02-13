@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.springframework.dao.DataIntegrityViolationException
@@ -67,6 +68,12 @@ class PersonController extends AbstractDebugController {
             //redirect action: 'list'
             redirect(url: request.getHeader('referer'))
             return
+        }
+        else if(personInstance) {
+            if(contextService.org != personInstance.tenant && !SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+                redirect action: 'list'
+                return
+            }
         }
 
         def result = [
