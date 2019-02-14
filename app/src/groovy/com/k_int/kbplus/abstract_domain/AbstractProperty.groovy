@@ -69,21 +69,18 @@ abstract class AbstractProperty implements Serializable {
             return urlValue.toString()
     }
 
-    def copyInto(AbstractProperty newProp){
-        if(stringValue)
+    def copyInto(newProp){
+        if (type != newProp.type) {
+            throw new IllegalArgumentException("AbstractProperty.copyInto nicht möglich, weil die Typen nicht übereinstimmen.")
+        } else {
             newProp.stringValue = stringValue
-        else if(intValue != null)
-            newProp.intValue = intValue.toInteger()
-        else if(decValue != null)
+            newProp.intValue = intValue
             newProp.decValue = decValue
-        else if(refValue)
             newProp.refValue = refValue
-        else if(dateValue)
             newProp.dateValue = dateValue
-        else if(urlValue)
             newProp.urlValue = urlValue
-
-        newProp.note = note
+            newProp.note = note
+        }
         newProp
     }
 

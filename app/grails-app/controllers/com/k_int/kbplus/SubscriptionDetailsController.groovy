@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.SubscriptionsQueryService
@@ -21,6 +22,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.elasticsearch.client.Client
 
@@ -2319,14 +2321,32 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result
 
     }
-    private getMySubscriptions(){
+    private getMySubscriptions_readRights(){
         def params = [:]
-        def sdf = new DateUtil().getSimpleDateFormat_NoTime()
-        params.validOn = sdf.format(new Date())
-        params.status = RefdataValue.getByValueAndCategory('Current','Subscription Status').id
-
+        List result
+        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+        params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-        Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
+        result = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
+        params.orgRole = RDStore.OR_SUBSCRIBER.value
+        tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+        result << Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])[0]
+        result
+    }
+    private getMySubscriptions_writeRights(){
+        List result
+        Map params = [:]
+        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+        params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+        result = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
+        params = [:]
+        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+        params.orgRole = RDStore.OR_SUBSCRIBER.value
+        params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL_LICENSE.id}"
+        tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+        result << Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])[0]
+        result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -2338,10 +2358,10 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             response.sendError(401); return
         }
 
-//        result.allMySubscriptions = getMySubscriptions()
-        //Nur zum Dropdown testen
-        result.allSubscriptions_readRights = Subscription.findAll()
-        result.allSubscriptions_writeRights = Subscription.findAll()
+        //TODO: Rechte überprüfen
+        result.allSubscriptions_readRights = getMySubscriptions_readRights()
+        result.allSubscriptions_writeRights = getMySubscriptions_writeRights()
+
         if ((RDStore.OR_TYPE_CONSORTIUM?.id in result.institution?.getallOrgRoleTypeIds())) {
             def baseSub = Subscription.get(params.baseSubscription ?: params.id)
 
@@ -2545,12 +2565,14 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
             if (params.workFlowPart == '1') {
                 def newSub = params.targetSubscription ? Subscription.get(Long.parseLong(params.targetSubscription)) : null
+                def isNewSub = ! newSub
+                if (params.subscription.takeCustomProperties) { takeCustomProperties(baseSub, newSub) }
                 if (params.baseSubscription) {
                     ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id,Subscription.class.name,RDStore.LINKTYPE_FOLLOWS)
                     if (! newSub && previousSubscriptions.size() > 0) {
                         flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
                     } else {
-                        if (! newSub) {
+                        if (isNewSub) {
                             newSub = new Subscription(
                                     name: baseSub.name,
                                     startDate: result.newStartDate,
@@ -2560,7 +2582,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                                     isPublic: baseSub.isPublic,
                                     isSlaved: baseSub.isSlaved,
                                     type: baseSub.type,
-                                    status: RefdataValue.loc('Subscription Status', [en: 'Intended', de: 'Geplant']),
+                                    status: RDStore.SUBSCRIPTION_INTENDED,
                                     resource: baseSub.resource ?: null,
                                     form: baseSub.form ?: null)
                         }
@@ -2607,7 +2629,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
                             if (params.subscription.takeEntitlements) {
                                 baseSub.issueEntitlements.each { ie ->
-                                    if (ie.status != RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')) {
+                                    if (ie.status != RDStore.IE_DELETED) {
                                         def properties = ie.properties
                                         properties.globalUID = null
                                         IssueEntitlement newIssueEntitlement = new IssueEntitlement()
@@ -2617,15 +2639,15 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                                     }
                                 }
                             }
-
                             if (params.subscription.takeCustomProperties) {
+                                takeCustomProperties(baseSub, newSub)
                                 //customProperties
-                                for (prop in baseSub.customProperties) {
-                                    def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSub)
-                                    copiedProp = prop.copyInto(copiedProp)
+//                                for (prop in baseSub.customProperties) {
+//                                    def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSub)
+//                                    copiedProp = prop.copyInto(copiedProp)
 //                                    copiedProp.save(flush: true)
                                     //newSub.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
-                                }
+//                                }
                             }
                             if (params.subscription.takePrivateProperties) {
                                 //privatProperties
@@ -2687,6 +2709,22 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         }
         result
     }
+    private void takeCustomProperties(Subscription sourceSub, Subscription targetSub) {
+        //customProperties
+        def targetProp
+        for (sourceProp in sourceSub.customProperties) {
+            targetProp = targetSub.customProperties.find {it.typeId == sourceProp.typeId}
+
+            //TODO bei Mehrfachvergabe nicht ersetzen sondern ergänzen
+            if ( ! targetProp) {
+                targetProp = new SubscriptionCustomProperty(type: sourceProp.type, owner: targetSub)
+            }
+            targetProp = sourceProp.copyInto(targetProp)
+            targetProp.save(flush: true)
+            //sourceSub.addToCustomProperties(targetProp) // ERROR Hibernate: Found two representations of same collection
+        }
+    }
+
 
     def copySubscription() {
 

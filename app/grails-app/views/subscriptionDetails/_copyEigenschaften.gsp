@@ -1,28 +1,24 @@
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription" %>
+<%@ page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription" %>
 <%@ page import="com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore" %>
 <% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<%workFlowPart = 1%>
+<%newSub = newSub ?: Subscription.get(400)%>
 <semui:form>
     <g:form action="copyElementsIntoSubscription" controller="subscriptionDetails"
-            params="[workFlowPart: workflowPart]" method="post" class="ui form newLicence">
+            params="[workFlowPart: workFlowPart]" method="post" class="ui form newLicence">
 
-        %{--TODO wieder entfernen, ist nur für die Entwicklung--}%
-        <%workFlowPart = 1%>
-        <%newSub = newSub ?: Subscription.get(400)%>
-        %{--<%newSub = null%>--}%
-
-        <g:hiddenField name="baseSubscription" value="${params.id}"/>
-        <g:hiddenField name="workFlowPartNext" value="${workFlowPartNext}"/>
-        <div class="four wide column">
-            <label>${message(code: 'subscription.details.copyElementsIntoSubscription.sourceSubscription.name')}: ${subscription?.name}</label>
+        <g:hiddenField name="baseSubscription" value="${params.id}" />
+        <g:hiddenField name="workFlowPartNext" value="${workFlowPartNext}" />
+        <div class="five wide column">
+            <label>${message(code: 'subscription.details.copyElementsIntoSubscription.sourceSubscription.name')}: </label>
             <g:select class="ui search dropdown"
                       name="id"
                       from="${allSubscriptions_readRights}"
                       optionValue="name"
                       optionKey="id"
-                      value="${subscription.id}"
-                      disabled="${(subscription)? true : false}"/>
-            <br>
-            <label>${message(code: 'subscription.details.copyElementsIntoSubscription.targetSubscription.name')}: ${newSub?.name}</label>
+                      />
+                      %{--disabled="${(subscription)? true : false}"/>--}%
+            <label>${message(code: 'subscription.details.copyElementsIntoSubscription.targetSubscription.name')}: </label>
             <g:select class="ui search dropdown"
                       name="targetSubscription"
                       from="${allSubscriptions_writeRights}"
@@ -30,11 +26,12 @@
                       optionKey="id"
                       value="${newSub?.id}"
                       noSelection="${[null: message(code: 'default.select.choose.label')]}"/>
-            <input type="submit" class="ui button" value="Lizenz(en) auswählen" data-semui="modal" href="#modalCreateTask" />
+            <input type="submit" class="ui button" value="Lizenz(en) auswählen" />
         </div>
     </g:form>
-</semui:form>
-<semui:form>
+    <hr>
+%{--</semui:form>--}%
+%{--<semui:form>--}%
     <g:form action="copyElementsIntoSubscription" controller="subscriptionDetails" id="${params.id}"
             params="[workFlowPart: workFlowPart, targetSubscription: newSub?.id]" method="post" class="ui form newLicence">
             %{--<g:if test="${workFlowPart == 2}">--}%
@@ -54,8 +51,8 @@
                     <th>Ziel: ${newSub?.name?: "(keine Lizenz gewählt)"}</th>
                 </tr>
                 <tr>
-                    <th><g:checkBox name="subscription.takeDates" value="${false}" /></th>
-                    <th>${message(code: 'subscription.takeDates')}</th>
+                    <th><g:checkBox name="subscription.takeDates" /></th>
+                    <td>${message(code: 'subscription.takeDates')}</td>
                     <td><g:formatDate date="${subscription.startDate}"
                                       format="${message(code: 'default.date.format.notime')}"/>
                         ${subscription?.endDate ? (' - ' + formatDate(date: subscription.endDate, format: message(code: 'default.date.format.notime'))) : ''}</td>
@@ -65,23 +62,46 @@
                         ${newSub?.endDate ? (' - ' + formatDate(date: newSub?.endDate, format: message(code: 'default.date.format.notime'))) : ''}</td>
                 </tr>
                 <tr>
-                    <th><g:checkBox name="subscription.takeCustomProperties" value="${false}"/></th>
-                    <th>${message(code: 'subscription.takeCustomProperties')}</th>
-
-                    <td>${message(code: 'subscription.properties')}: ${subscription?.customProperties?.size()}<br></td>
+                    <th><g:checkBox name="subscription.takeCustomProperties" /></th>
+                    <td>${message(code: 'subscription.takeCustomProperties')}</td>
+                    <td>
+                    <g:render template="/templates/properties/custom" model="${[
+                            prop_desc: PropertyDefinition.SUB_PROP,
+                            ownobj: subscription,
+                            custom_props_div: "custom_props_div_${contextOrg.id}",
+                            tenant: contextOrg]}"/>
+                    </td>
                     <td><i class="ui icon angle double right"></i></td>
-                    <td><g:if test="${newSub?.customProperties}"> ${message(code: 'subscription.properties')}: ${newSub?.customProperties?.size()}<br></g:if></td>
+                    <td>
+                    <g:render template="/templates/properties/custom" model="${[
+                            prop_desc: PropertyDefinition.SUB_PROP,
+                            ownobj: newSub,
+                            custom_props_div: "custom_props_div_${contextOrg.id}",
+                            tenant: contextOrg]}"/>
+                    </td>
                 </tr>
                 <tr>
-                    <th><g:checkBox name="subscription.takePrivateProperties" value="${false}"/></th>
-                    <th>${message(code: 'subscription.takePrivateProperties')}</th>
-                    <td>${message(code: 'subscription.properties.private')} ${contextOrg?.name}: ${subscription?.privateProperties?.size()}<br></td>
+                    <th><g:checkBox name="subscription.takePrivateProperties" /></th>
+                    <td>${message(code: 'subscription.takePrivateProperties')}</td>
+                    <td>
+                    <g:render template="/templates/properties/private" model="${[
+                            prop_desc: PropertyDefinition.SUB_PROP,
+                            ownobj: subscription,
+                            custom_props_div: "custom_props_div_${contextOrg.id}",
+                            tenant: contextOrg]}"/>
+                    </td>
                     <td><i class="ui icon angle double right"></i></td>
-                    <td><g:if test="${newSub?.privateProperties}"> ${message(code: 'subscription.properties.private')} ${contextOrg?.name}: ${newSub?.privateProperties?.size()}<br></g:if></td>
+                    <td>
+                    <g:render template="/templates/properties/private" model="${[
+                            prop_desc: PropertyDefinition.SUB_PROP,
+                            ownobj: newSub,
+                            custom_props_div: "custom_props_div_${contextOrg.id}",
+                            tenant: contextOrg]}"/>
+                    </td>
                 </tr>
                 <tr>
-                    <th><g:checkBox name="subscription.takeLinks" value="${false}"/></th>
-                    <th>${message(code: 'subscription.takeLinks')}</th>
+                    <th><g:checkBox name="subscription.takeLinks" /></th>
+                    <td>${message(code: 'subscription.takeLinks')}</td>
                     <td>
                         <g:each in="${subscription.packages.sort { it.pkg.name }}" var="sp">
                             <b>${message(code: 'subscription.packages.label')}:</b>
@@ -143,10 +163,11 @@
                 </tr>
 
                 <tr>
-                    <th><g:checkBox name="subscription.takeEntitlements" value="${false}"/></th>
-                    <th>${message(code: 'subscription.takeEntitlements')}</th>
-                    <td><b>${message(code: 'issueEntitlement.countSubscription')} </b>
-                        ${subscription.issueEntitlements?.findAll { it.status != RDStore.IE_DELETED }?.size()}
+                    <th><g:checkBox name="subscription.takeEntitlements" /></th>
+                    <td>${message(code: 'subscription.takeEntitlements')}</td>
+                    <% def sourceIECount = subscription.issueEntitlements?.findAll { it.status != RDStore.IE_DELETED }?.size() %>
+                    <td><g:if test="${sourceIECount}"><b>${message(code: 'issueEntitlement.countSubscription')} </b>
+                        ${sourceIECount}</g:if>
                     </td>
                     <td><i class="ui icon angle double right"></i></td>
                     <% def targetIECount = newSub?.issueEntitlements?.findAll { it.status != RDStore.IE_DELETED }?.size() %>

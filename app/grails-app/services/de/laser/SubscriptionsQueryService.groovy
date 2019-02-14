@@ -8,6 +8,7 @@ import com.k_int.kbplus.Subscription
 import com.k_int.properties.PropertyDefinition
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
+import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.naming.Context
 
@@ -145,8 +146,22 @@ from Subscription as s where (
 
         def subTypes = []
         if (params.containsKey('subTypes')) {
-            params.list('subTypes').each{
-                subTypes.add(Long.parseLong(it))
+            if (params instanceof GrailsParameterMap) {
+                params.list('subTypes').each{
+                    subTypes.add(Long.parseLong(it))
+                }
+            } else { //TODO refactoring this bugfix
+                if (params.subTypes instanceof List<String>) {
+                    params.subTypes.each{
+                        subTypes.add(Long.parseLong(it))
+                    }
+                } else {
+                    if (params.subTypes instanceof List<Long>) {
+                        subTypes = params.subTypes
+                    } else {
+                        subTypes = [params.subTypes instanceof Long ?: Long.parseLong(params.subTypes)]
+                    }
+                }
             }
             if (subTypes) {
                 base_qry += " and s.type.id in (:subTypes) "

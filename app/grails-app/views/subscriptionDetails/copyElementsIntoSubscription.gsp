@@ -55,8 +55,8 @@ ${message(code: 'subscription.details.copyElementsIntoSubscription.label', args:
 %{--<semui:form>--}%
     %{--<g:form action="renewSubscriptionConsortia" controller="subscriptionDetails" id="${params.id}"--}%
             %{--params="[workFlowPart: workFlowPart]" method="post" class="ui form newLicence">--}%
-        <g:hiddenField name="baseSubscription" value="${params.id}"/>
-        <g:hiddenField name="workFlowPartNext" value="${workFlowPartNext}"/>
+        <g:hiddenField name="baseSubscription" value="${params.id}" />
+        <g:hiddenField name="workFlowPartNext" value="${workFlowPartNext}" />
 
             %{--<g:if test="${workFlowPart == 2}">--}%
                 %{--<br><b>${message(code: 'subscription.renewSubscriptionConsortia.success', default: 'The license has been renewed. You can now apply more license properties to the extended license from the old license.')}</b><br>--}%
