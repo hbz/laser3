@@ -1,49 +1,102 @@
-<%@ page import="com.k_int.kbplus.Doc" %>
-<semui:card message="license.notes" class="notes la-js-hideable ${css_class}" href="#modalCreateNote" editable="${editable}">
+<%@ page import="com.k_int.kbplus.Doc;com.k_int.kbplus.DocContext" %>
 
-        <g:each in="${ownobj.documents.sort{it.owner?.title}}" var="docctx">
+<%
+    List<DocContext> baseItems = []
+    List<DocContext> sharedItems = []
+
+    ownobj.documents.sort{it.owner?.title}.each{ it ->
+        if (it.sharedFrom) {
+            sharedItems << it
+        }
+        else {
+            baseItems << it
+        }
+    }
+%>
+
+    <semui:card message="license.notes" class="notes la-js-hideable ${css_class}" href="#modalCreateNote" editable="${editable}">
+
+        <g:each in="${baseItems}" var="docctx">
             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') )}">
                 <div class="ui small feed content la-js-dont-hide-this-card">
                     <!--<div class="event">-->
 
-                            <div class="summary">
-                                <g:if test="${docctx.owner.title}">
-                                    <a onclick="noteedit(${docctx.owner.id});">${docctx.owner.title}</a>
-                                </g:if>
-                                <g:else>
-                                    <a onclick="noteedit(${docctx.owner.id});">Ohne Titel</a>
-                                </g:else>
-                                <br/>
+                        <div class="summary">
+                            <g:if test="${docctx.owner.title}">
+                                <a onclick="noteedit(${docctx.owner.id});">${docctx.owner.title}</a>
+                            </g:if>
+                            <g:else>
+                                <a onclick="noteedit(${docctx.owner.id});">Ohne Titel</a>
+                            </g:else>
+                            <br/>
 
-                                ${message(code:'template.notes.created')}
-                                <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${docctx.owner.dateCreated}"/>
+                            ${message(code:'template.notes.created')}
+                            <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${docctx.owner.dateCreated}"/>
+                        </div>
 
-                                <g:if test="${docctx.alert}">
-                                    ${message(code:'template.notes.shared')} ${docctx.alert.createdBy.displayName}
-                                    <g:if test="${docctx.alert.sharingLevel == 1}">
-                                        ${message(code:'template.notes.shared_jc')}
-                                    </g:if>
-                                    <g:if test="${docctx.alert.sharingLevel == 2}">
-                                        ${message(code:'template.notes.shared_community')}
-                                    </g:if>
-                                    <div class="comments">
-                                        <a href="#modalComments" class="announce" data-id="${docctx.alert.id}">
-                                            ${docctx.alert?.comments != null ? docctx.alert?.comments?.size() : 0} Comment(s)
-                                        </a>
-                                    </div>
-                                </g:if>
-                                <g:else>
-                                    <!--${message(code:'template.notes.not_shared')}-->
-                                </g:else>
-                            </div>
+                        <g:if test="${ownobj.showShareButton()}">
+                            <g:if test="${docctx.isShared}">
+                                <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip.on')}">
+                                    <g:remoteLink class="ui mini icon button green js-gost js-no-wait-wheel"
+                                                  controller="ajax" action="toggleShare"
+                                                  params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}", tmpl:"notes"]'
+                                                  onSuccess=""
+                                                  onComplete=""
+                                                  update="container-notes">
+                                        <i class="alternate share icon"></i>
+                                    </g:remoteLink>
+                                </span>
+                            </g:if>
+                            <g:else>
+                                <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip.off')}">
+                                    <g:remoteLink class="ui mini icon button js-gost js-no-wait-wheel"
+                                                  controller="ajax" action="toggleShare"
+                                                  params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}", tmpl:"notes"]'
+                                                  onSuccess=""
+                                                  onComplete=""
+                                                  update="container-notes">
+                                        <i class="alternate share icon"></i>
+                                    </g:remoteLink>
+                                </span>
+                            </g:else>
+
+                        </g:if>
 
                     <!--</div>-->
                 </div>
             </g:if>
         </g:each>
-</semui:card>
+    </semui:card>
 
-<r:script>
+    <g:if test="${sharedItems}">
+        <semui:card message="license.notes.shared" class="documents la-js-hideable ${css_class}" editable="${editable}">
+            <g:each in="${sharedItems}" var="docctx">
+
+                <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') )}">
+                    <div class="ui small feed content la-js-dont-hide-this-card">
+
+                        <div class="summary">
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel">
+                                <g:if test="${docctx.owner?.title}">
+                                    ${docctx.owner.title}
+                                </g:if>
+                                <g:elseif test="${docctx.owner?.filename}">
+                                    ${docctx.owner.filename}
+                                </g:elseif>
+                                <g:else>
+                                    ${message(code:'template.documents.missing', default: 'Missing title and filename')}
+                                </g:else>
+
+                            </g:link>(${docctx.owner.type.getI10n("value")})
+                        </div>
+                    </div>
+                </g:if>
+
+            </g:each>
+        </semui:card>
+    </g:if>
+
+    <script>
     function noteedit(id) {
 
         $.ajax({
@@ -57,4 +110,4 @@
             }
         });
     }
-</r:script>
+    </script>

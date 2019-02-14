@@ -1,7 +1,4 @@
 package com.k_int.kbplus.abstract_domain
-
-import de.laser.traits.AuditTrait
-
 /**
  * Created by ioannis on 26/06/2014.
  * Custom properties must always follow the naming convention: Owner + CustomProperty, where owner is the
@@ -11,9 +8,9 @@ import de.laser.traits.AuditTrait
  * customProperties. See PendingChangeController@120 (CustomPropertyChange)
  */
 
-abstract class CustomProperty extends AbstractProperty /* implements AuditTrait */ {
+abstract class CustomProperty extends AbstractProperty /* implements AuditableTrait */ {
 
-    // AuditTrait
+    // AuditableTrait
     // static controlledProperties = ['stringValue','intValue','decValue','refValue','note','dateValue']
 
 }

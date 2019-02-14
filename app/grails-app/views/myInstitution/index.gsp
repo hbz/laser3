@@ -50,9 +50,7 @@
                         ${n.owner.content}<br/>
 
                         <div class="pull-right"><i>${n.owner.type?.value} (
-                        <g:if test="${n.alert.sharingLevel == 2}">Shared with KB+ Community</g:if>
-                        <g:elseif test="${n.alert.sharingLevel == 1}">JC Only</g:elseif>
-                        <g:else>Private</g:else>
+                        Private
                         ) By ${n.owner.user?.displayName} on <g:formatDate formatName="default.date.format.notime"
                                                                            date="${n.alert.createTime}"/></i></div>
                     </td>

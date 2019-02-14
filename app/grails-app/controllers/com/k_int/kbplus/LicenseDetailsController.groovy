@@ -18,7 +18,6 @@ class LicenseDetailsController extends AbstractDebugController {
     def springSecurityService
     def taskService
     def docstoreService
-    def alertsService
     def genericOIDService
     def transformerService
     def exportService
@@ -907,7 +906,6 @@ from Subscription as s where
                                         blobContent: dctx.owner.blobContent,
                                         status: dctx.owner.status,
                                         type: dctx.owner.type,
-                                        alert: dctx.owner.alert,
                                         content: dctx.owner.content,
                                         uuid: dctx.owner.uuid,
                                         contentType: dctx.owner.contentType,
@@ -935,7 +933,6 @@ from Subscription as s where
                                         blobContent: dctx.owner.blobContent,
                                         status: dctx.owner.status,
                                         type: dctx.owner.type,
-                                        alert: dctx.owner.alert,
                                         content: dctx.owner.content,
                                         uuid: dctx.owner.uuid,
                                         contentType: dctx.owner.contentType,

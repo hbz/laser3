@@ -210,7 +210,7 @@
         </div><!-- .twelve -->
 
 
-        <aside class="four wide column">
+        <aside class="four wide column la-sidekick">
 
             <semui:card message="package.show.addToSub" class="notes">
                 <div class="content">
@@ -241,9 +241,8 @@
                 </div>
             </semui:card>
 
-          <g:render template="/templates/tasks/card" model="${[ownobj:packageInstance, owntp:'pkg']}" />
-          <g:render template="/templates/documents/card" model="${[ownobj:packageInstance, owntp:'pkg']}" />
-          <g:render template="/templates/notes/card"  model="${[ownobj:packageInstance, owntp:'pkg']}" />
+            <g:render template="/templates/aside1" model="${[ownobj:packageInstance, owntp:'pkg']}" />
+
         </aside><!-- .four -->
 
     </div><!-- .grid -->

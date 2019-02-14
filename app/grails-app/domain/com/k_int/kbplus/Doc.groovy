@@ -23,7 +23,6 @@ class Doc {
 
   RefdataValue status       // RefdataCategory unkown !
   RefdataValue type
-  Alert alert
 
   String title
   String filename
@@ -43,7 +42,6 @@ class Doc {
            version column:'doc_version'
             status column:'doc_status_rv_fk'
               type column:'doc_type_rv_fk', index:'doc_type_idx'
-             alert column:'doc_alert_fk'
        contentType column:'doc_content_type'
               uuid column:'doc_docstore_uuid', index:'doc_uuid_idx'
              title column:'doc_title'
@@ -58,7 +56,6 @@ class Doc {
   static constraints = {
     status    (nullable:true, blank:false)
     type      (nullable:true, blank:false)
-    alert     (nullable:true, blank:false)
     content   (nullable:true, blank:false)
     blobContent(nullable:true, blank:false, maxSize:MAX_SIZE)
     uuid      (nullable:true, blank:false)

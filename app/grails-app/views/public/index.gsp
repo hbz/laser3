@@ -79,7 +79,7 @@
                         <br />
 
                         Als erstes allgemein nutzbares Zusatzfeature ist ab sofort der GASCO-Monitor unter
-                        <a href="https://laser.hbz-nrw.de/gasco">https://laser.hbz-nrw.de/gasco verfügbar</a> verfügbar,
+                        <a href="https://laser.hbz-nrw.de/gasco">https://laser.hbz-nrw.de/gasco</a> verfügbar,
                         <br/>
 
                         der aus den Eintragungen der projektbeteiligten Konsortialstellen und der GASCO-Teilnehmer automatisiert einen Index

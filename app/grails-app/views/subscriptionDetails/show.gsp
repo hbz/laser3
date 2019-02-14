@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; java.math.MathContext; com.k_int.kbplus.Subscription; com.k_int.kbplus.Links; de.laser.interfaces.TemplateSupport" %>
+<%@ page import="de.laser.helper.RDStore; java.math.MathContext; com.k_int.kbplus.Subscription; com.k_int.kbplus.Links" %>
 <%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="com.k_int.properties.PropertyDefinition" %>
 <%@ page import="com.k_int.kbplus.RefdataCategory" %>
@@ -37,7 +37,7 @@
                 // TODO: custom tag, if more usages
 
                 if (subscriptionInstance.instanceOf && ! subscriptionInstance.instanceOf.isTemplate()) {
-                    if (subscriptionInstance.instanceOf?.getAuditConfig('name')) {
+                    if (subscriptionInstance.instanceOf?.getAuditConfig_trait('name')) {
                         if (subscriptionInstance.isSlaved?.value?.equalsIgnoreCase('yes')) {
                             out << '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon h1-icon-overwrite thumbtack blue"></i></span>'
                         }
@@ -47,7 +47,7 @@
                     }
                 }
                 else {
-                    if (subscriptionInstance.getAuditConfig('name')) {
+                    if (subscriptionInstance.getAuditConfig_trait('name')) {
                         out << '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon h1-icon-overwrite thumbtack blue"></i></span>'
                     }
                 }
@@ -366,68 +366,22 @@
 
                 <%-- FINANCE, to be reactivated as of ERMS-943 --%>
                 <%-- assemble data on server side --%>
-                <g:if test="${costItemSums}">
-                    <g:each in="${costItemSums}" var="view">
-                        <%
-                            String keyString
-                            switch(view.getKey()) {
-                                case "ownCosts": keyString = message(code:'financials.tab.ownCosts')
-                                    break
-                                case "consCosts": keyString = message(code:'financials.tab.consCosts')
-                                    break
-                                case "subscrCosts": keyString = message(code:'financials.tab.subscrCosts')
-                                    break
-                            }
-                        %>
-                        <div class="ui card la-dl-no-table la-js-hideable">
-                            <div class="content">
-                                <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${keyString}</h5>
-                                <g:if test="${view.getValue().currencies.size() > 0}">
-                                    <table class="ui la-table-small la-table-inCard table">
-                                        <thead>
-                                            <tr>
-                                                <th>${message(code:'financials.costInBillingCurrency')}</th>
-                                                <th>${message(code:'financials.billingCurrency')}</th>
-                                                <th>${message(code:'financials.newCosts.valueInEuro')}</th>
-                                                <g:if test="${subscriptionInstance.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_CONSORTIAL)}">
-                                                    <th>${message(code:'financials.costInBillingCurrencyAfterTax')}</th>
-                                                    <th>${message(code:'financials.billingCurrency')}</th>
-                                                    <th>${message(code:'financials.newCosts.valueInEuro')}</th>
-                                                </g:if>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <g:set var="sums" value="${view.getValue()}" />
-                                            <g:each in="${sums.currencies}" var="sum">
-                                                <g:set var="currency" value="${sum.getValue()}" />
-                                                <tr>
-                                                    <g:if test="${subscriptionInstance.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_CONSORTIAL)}">
-                                                        <td><g:formatNumber number="${currency.billing}" type="currency" currencySymbol=""/></td>
-                                                        <td>${sum.getKey()}</td>
-                                                        <td><g:formatNumber number="${sums.local}" type="currency" currencySymbol=""/></td>
-                                                        <td><g:formatNumber number="${currency.billingAfterTax}" type="currency" currencySymbol=""/></td>
-                                                        <td>${sum.getKey()}</td>
-                                                        <td><g:formatNumber number="${sums.localAfterTax}" type="currency" currencyCode="EUR" currencySymbol=""/></td>
-                                                    </g:if>
-                                                    <g:else>
-                                                        <td><g:formatNumber number="${currency.billingAfterTax}" type="currency" currencySymbol=""/></td>
-                                                        <td>${sum.getKey()}</td>
-                                                        <td><g:formatNumber number="${sums.localAfterTax}" type="currency" currencyCode="EUR" currencySymbol=""/></td>
-                                                    </g:else>
-                                                </tr>
-                                            </g:each>
-                                        </tbody>
-                                    </table>
-                                </g:if>
-                                <g:else>
-                                    <dl>
-                                        <dd>${message(code:'financials.noCostsConsidered')}</dd>
-                                    </dl>
-                                </g:else>
-                            </div>
-                        </div>
-                    </g:each>
-                </g:if>
+                <div class="ui card la-dl-no-table la-js-hideable">
+                    <div class="content">
+                        <g:if test="${costItemSums.ownCosts}">
+                            <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.ownCosts')}</h5>
+                            <g:render template="financials" model="[data:costItemSums.ownCosts]"/>
+                        </g:if>
+                        <g:if test="${costItemSums.consCosts}">
+                            <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.consCosts')}</h5>
+                            <g:render template="financials" model="[data:costItemSums.consCosts]"/>
+                        </g:if>
+                        <g:elseif test="${costItemSums.subscrCosts}">
+                            <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.subscrCosts')}</h5>
+                            <g:render template="financials" model="[data:costItemSums.subscrCosts]"/>
+                        </g:elseif>
+                    </div>
+                </div>
                 <g:if test="${usage}">
                     <div class="ui card la-dl-no-table la-js-hideable hidden">
                         <div class="content">
@@ -528,13 +482,12 @@
 
                <div class="clear-fix"></div>
             </div>
-        </div>
+        </div><!-- .twelve -->
 
         <aside class="four wide column la-sidekick">
-            <g:render template="/templates/tasks/card" model="${[ownobj:subscriptionInstance, owntp:'subscription', css_class:'hidden']}"  />
-            <g:render template="/templates/documents/card" model="${[ownobj:subscriptionInstance, owntp:'subscription', css_class:'hidden']}" />
-            <g:render template="/templates/notes/card" model="${[ownobj:subscriptionInstance, owntp:'subscription', css_class:'hidden']}" />
+            <g:render template="/templates/aside1" model="${[ownobj:subscriptionInstance, owntp:'subscription']}" />
         </aside><!-- .four -->
+
     </div><!-- .grid -->
 
 
@@ -569,12 +522,6 @@
 
       $(document).ready(function() {
 
-        $(".announce").click(function(){
-           var id = $(this).data('id');
-           $('#modalComments').load('<g:createLink controller="alert" action="commentsFragment" />/'+id);
-           $('#modalComments').modal('show');
-         });
-
          $('#collapseableSubDetails').on('show', function() {
             $('.hidden-license-details i').removeClass('icon-plus').addClass('icon-minus');
         });
@@ -586,15 +533,6 @@
       });
 
       </g:if>
-      <g:else>
-        $(document).ready(function() {
-          $(".announce").click(function(){
-            var id = $(this).data('id');
-            $('#modalComments').load('<g:createLink controller="alert" action="commentsFragment" />/'+id);
-            $('#modalComments').modal('show');
-          });
-        });
-      </g:else>
 
       <g:if test="${params.asAt && params.asAt.length() > 0}"> $(function() {
         document.body.style.background = "#fcf8e3";

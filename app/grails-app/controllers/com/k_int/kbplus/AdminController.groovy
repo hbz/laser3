@@ -353,20 +353,6 @@ class AdminController extends AbstractDebugController {
   }
 
   @Secured(['ROLE_ADMIN'])
-  def allNotes() {
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    def sc = DocContext.createCriteria()
-    result.alerts = sc.list {
-      alert {
-        gt('sharingLevel', -1)
-      }
-    }
-
-    result
-  }
-
-  @Secured(['ROLE_ADMIN'])
   def eventLog() {
     def result = [:]
 

@@ -1,4 +1,3 @@
-
 0.14 PRE
 
 TODO
@@ -8,6 +7,19 @@ TODO
 
 TODO
 
+
+0.13.2
+
+- fixed current subscriptions filter
+
+0.13.1
+
+- reworked hardcoded refdata values and categories
+- reworked hardcoded property definitions
+- fixed adding providers/agencies modal for subscriptions
+- fixed missing member navigation at subcription finance view
+- fixed start page typo
+- fixed gasco page typo
 
 0.13
 
