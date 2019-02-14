@@ -2577,10 +2577,25 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 }
             }
 
+            if (params.workFlowPart == '4') {
+                def newSub = params.targetSubscription ? Subscription.get(Long.parseLong(params.targetSubscription)) : null
+                if (baseSub && newSub) {
+                    if (params?.subscription?.takeCustomProperties) {
+                        takeCustomProperties(baseSub, newSub)
+                    }
+                    if (params?.subscription?.takePrivateProperties) {
+                        takePrivateProperties(baseSub, newSub)
+                    }
+                }
+                result.newSub = newSub
+                result.subscription = baseSub
+            }
+
             if (params.workFlowPart == '1') {
                 def newSub = params.targetSubscription ? Subscription.get(Long.parseLong(params.targetSubscription)) : null
                 def isNewSub = ! newSub
                 if (params.subscription.takeCustomProperties) { takeCustomProperties(baseSub, newSub) }
+                if (params.subscription.takePrivateProperties) { takePrivateProperties(baseSub, newSub) }
                 if (params.baseSubscription) {
                     ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id,Subscription.class.name,RDStore.LINKTYPE_FOLLOWS)
                     if (! newSub && previousSubscriptions.size() > 0) {
@@ -2653,29 +2668,23 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                                     }
                                 }
                             }
-                            if (params.subscription.takeCustomProperties) {
-                                takeCustomProperties(baseSub, newSub)
-                                //customProperties
-//                                for (prop in baseSub.customProperties) {
-//                                    def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSub)
-//                                    copiedProp = prop.copyInto(copiedProp)
-//                                    copiedProp.save(flush: true)
-                                    //newSub.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
-//                                }
-                            }
-                            if (params.subscription.takePrivateProperties) {
+//                            if (params.subscription.takeCustomProperties) {
+//                                takeCustomProperties(baseSub, newSub)
+//                            }
+//                            if (params.subscription.takePrivateProperties) {
+//                                takePrivateProperties(baseSub, newSub)
                                 //privatProperties
-                                def contextOrg = contextService.getOrg()
-
-                                baseSub.privateProperties.each { prop ->
-                                    if (prop.type?.tenant?.id == contextOrg?.id) {
-                                        def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSub)
-                                        copiedProp = prop.copyInto(copiedProp)
+//                                def contextOrg = contextService.getOrg()
+//
+//                                baseSub.privateProperties.each { prop ->
+//                                    if (prop.type?.tenant?.id == contextOrg?.id) {
+//                                        def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSub)
+//                                        copiedProp = prop.copyInto(copiedProp)
 //                                        copiedProp.save(flush: true)
                                         //newSub.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
-                                    }
-                                }
-                            }
+//                                    }
+//                                }
+//                            }
 
                             params.workFlowPart = 2
                             params.workFlowPartNext = 3
@@ -2724,13 +2733,12 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result
     }
     private void takeCustomProperties(Subscription sourceSub, Subscription targetSub) {
-        //customProperties
         def targetProp
         for (sourceProp in sourceSub.customProperties) {
             targetProp = targetSub.customProperties.find {it.typeId == sourceProp.typeId}
 
-            //TODO bei Mehrfachvergabe nicht ersetzen sondern ergänzen
-            if ( ! targetProp) {
+            boolean isAddNewProp = targetProp && targetProp.type?.multipleOccurrence
+            if ( (! targetProp) || isAddNewProp) {
                 targetProp = new SubscriptionCustomProperty(type: sourceProp.type, owner: targetSub)
             }
             targetProp = sourceProp.copyInto(targetProp)
@@ -2738,6 +2746,25 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             //sourceSub.addToCustomProperties(targetProp) // ERROR Hibernate: Found two representations of same collection
         }
     }
+    private void takePrivateProperties(Subscription sourceSub, Subscription targetSub) {
+        def contextOrg = contextService.getOrg()
+        def targetProp
+
+        sourceSub.privateProperties.each { sourceProp ->
+            if (sourceProp.type?.tenant?.id == contextOrg?.id) {
+                targetProp = targetSub.privateProperties.find {it.typeId == sourceProp.typeId}
+
+                boolean isAddNewProp = targetProp && targetProp.type?.multipleOccurrence
+                if ( (! targetProp) || isAddNewProp) {
+                    targetProp = new SubscriptionPrivateProperty(type: sourceProp.type, owner: targetSub)
+                }
+                targetProp = sourceProp.copyInto(targetProp)
+                targetProp.save(flush: true)
+                //newSub.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
+            }
+        }
+    }
+
 
 
     def copySubscription() {

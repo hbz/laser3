@@ -13,12 +13,12 @@
 <g:render template="breadcrumb" model="${[params: params]}"/>
 
 <h1 class="ui left aligned icon header"><semui:headerIcon />
-${message(code: 'subscription.details.copyElementsIntoSubscription.label', args: [subscription?.name])}
+${message(code: 'subscription.details.copyElementsIntoSubscription.label')}
 </h1>
 
 <semui:messages data="${flash}"/>
 %{--TODO wieder entfernen, ist nur für die Entwicklung--}%
-<%workFlowPart = 1%>
+<%workFlowPart = 4%>
 
 <div class="ui tablet stackable steps">
     <div class="${workFlowPart == 1 ? 'active' : 'disabled'} step">
@@ -26,7 +26,6 @@ ${message(code: 'subscription.details.copyElementsIntoSubscription.label', args:
             <div class="title">Auswahl Eigenschaften</div>
             <div class="description">
                 <i class="calendar alternate outline icon"></i>Datum
-                <i class="tags icon"></i>Merkmale
                 <i class="university icon"></i>Organisationen
                 <i class="newspaper icon"></i>Titel
             </div>
@@ -47,6 +46,14 @@ ${message(code: 'subscription.details.copyElementsIntoSubscription.label', args:
             <div class="title">Ausahl Teilnehmer</div>
             <div class="description">
                 <i class="university circle icon"></i>Teilnehmer
+            </div>
+        </div>
+    </div>
+    <div class="${workFlowPart == 4 ? 'active' : 'disabled'} step">
+        <div class="content">
+            <div class="title">Auswahl Merkmale</div>
+            <div class="description">
+                <i class="tags icon"></i>Merkmale
             </div>
         </div>
     </div>
@@ -140,6 +147,11 @@ ${message(code: 'subscription.details.copyElementsIntoSubscription.label', args:
 %{--------------------------------------------------------------------------------------------------------------------}%
             <g:if test="${workFlowPart == 3}">
                 <g:render template="copyTeilnehmer" model="${[validSubChilds: validSubChilds]}"/>
+            </g:if>
+%{--------------------------------------------------------------------------------------------------------------------}%
+%{--------------------------------------------------------------------------------------------------------------------}%
+            <g:if test="${workFlowPart == 4}">
+                <g:render template="copyProperties" model="${[validSubChilds: validSubChilds]}"/>
             </g:if>
 %{--------------------------------------------------------------------------------------------------------------------}%
             %{--</tbody>--}%
