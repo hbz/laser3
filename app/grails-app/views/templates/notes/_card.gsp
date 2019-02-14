@@ -76,18 +76,13 @@
                     <div class="ui small feed content la-js-dont-hide-this-card">
 
                         <div class="summary">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel">
-                                <g:if test="${docctx.owner?.title}">
-                                    ${docctx.owner.title}
-                                </g:if>
-                                <g:elseif test="${docctx.owner?.filename}">
-                                    ${docctx.owner.filename}
-                                </g:elseif>
-                                <g:else>
-                                    ${message(code:'template.documents.missing', default: 'Missing title and filename')}
-                                </g:else>
-
-                            </g:link>(${docctx.owner.type.getI10n("value")})
+                            <g:if test="${docctx.owner.title}">
+                                <a onclick="noteread(${docctx.owner.id});">${docctx.owner.title}</a>
+                            </g:if>
+                            <g:else>
+                                <a onclick="noteread(${docctx.owner.id});">Ohne Titel</a>
+                            </g:else>
+                            (${docctx.owner.type.getI10n("value")})
                         </div>
                     </div>
                 </g:if>
@@ -97,17 +92,28 @@
     </g:if>
 
     <script>
-    function noteedit(id) {
+        function noteedit(id) {
+            $.ajax({
+                url: '<g:createLink controller="ajax" action="NoteEdit"/>?id='+id,
+                success: function(result){
+                    $("#dynamicModalContainer").empty();
+                    $("#modalEditNote").remove();
 
-        $.ajax({
-            url: '<g:createLink controller="ajax" action="NoteEdit"/>?id='+id,
-            success: function(result){
-                $("#dynamicModalContainer").empty();
-                $("#modalEditNote").remove();
+                    $("#dynamicModalContainer").html(result);
+                    $("#dynamicModalContainer .ui.modal").modal('show');
+                }
+            });
+        }
+        function noteread(id) {
+            $.ajax({
+                url: '<g:createLink controller="ajax" action="readNote"/>?id='+id,
+                success: function(result){
+                    $("#dynamicModalContainer").empty();
+                    $("#modalEditNote").remove();
 
-                $("#dynamicModalContainer").html(result);
-                $("#dynamicModalContainer .ui.modal").modal('show');
-            }
-        });
-    }
+                    $("#dynamicModalContainer").html(result);
+                    $("#dynamicModalContainer .ui.modal").modal('show');
+                }
+            });
+        }
     </script>

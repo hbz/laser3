@@ -1932,7 +1932,16 @@ class AjaxController {
         result.params = params
         result.noteInstance = Doc.get(params.id)
 
-        render template:"../templates/notes/modal_edit", model: result
+        render template:"/templates/notes/modal_edit", model: result
+    }
+
+    @Secured(['ROLE_USER'])
+    def readNote() {
+        def result = [:]
+        result.params = params
+        result.noteInstance = Doc.get(params.id)
+
+        render template:"/templates/notes/modal_read", model: result
     }
 
     @Secured(['ROLE_USER'])

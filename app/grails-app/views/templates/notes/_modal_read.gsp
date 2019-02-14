@@ -1,6 +1,6 @@
-<semui:modal id="modalEditNote" text="${message(code:'template.editNote')}" editmodal="true">
+<semui:modal id="modalEditNote" text="${message(code:'template.readNote')}" hideSubmitButton="true">
 
-    <g:form id="edit_note" class="ui form"  url="[controller:'doc', action:'editNote', id:noteInstance?.id]" method="post">
+    <g:form id="edit_note" class="ui form"  url="[controller:'doc', action:'show', id:noteInstance?.id]" method="post">
 
         <div class="field fieldcontain">
             <label>${message(code:'template.addNote.title')}:</label>
