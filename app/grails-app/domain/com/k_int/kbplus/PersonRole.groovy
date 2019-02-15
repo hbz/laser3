@@ -4,6 +4,9 @@ package com.k_int.kbplus
 class PersonRole implements Comparable<PersonRole>{
     private static final String REFDATA_GENERAL_CONTACT_PRS = "General contact person"
 
+    static TYPE_FUNCTION = 'functionType'
+    static TYPE_POSITION = 'positionType'
+
     RefdataValue    positionType        // 'Person Position'; exclusive with other types
     RefdataValue    functionType        // 'Person Function'; exclusive with other types
     RefdataValue    responsibilityType  // 'Person Responsibility'; exclusive other types

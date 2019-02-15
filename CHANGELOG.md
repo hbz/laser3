@@ -2,6 +2,7 @@
 
 TODO
  
+- improved pagination
 - upgrade to hibernate 4.3.10
 - ehcache upgrade
 
