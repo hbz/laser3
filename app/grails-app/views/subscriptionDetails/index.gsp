@@ -114,68 +114,56 @@
           <table class="ui sortable celled la-table table ignore-floatThead la-bulk-header">
             <thead>
                 <tr>
-                  <th rowspan="2"></th>
-                  <th rowspan="2">${message(code:'sidewide.number')}</th>
-                  <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
-                  <th rowspan="2">${message(code:'subscription.details.print-electronic')}</th>
-                  <g:sortableColumn params="${params}" property="startDate" title="${message(code:'subscription.details.startDate', default:'Earliest date')}" />
-              <% /*
-                  <g:sortableColumn params="${params}" property="core_status" title="${message(code:'subscription.details.core_status', default:'Core Status')}" />
-              */ %>
-                  <th rowspan="2">${message(code:'default.actions.label', default:'Actions')}</th>
+                    <th></th>
+                    <th>${message(code:'sidewide.number')}</th>
+                    <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
+                    <th>${message(code:'subscription.details.print-electronic')}</th>
+                    <th colspan="2">${message(code:'subscription.details.coverage_dates')}</th>
+                    <th colspan="2">${message(code:'subscription.details.access_dates', default:'Access')}</th>
+                    <th>${message(code:'default.actions.label', default:'Actions')}</th>
                 </tr>
-
                 <tr>
-
-                  <th>${message(code:'subscription.details.access_dates', default:'Access Dates')}</th>
-                  <g:sortableColumn params="${params}" property="endDate" title="${message(code:'subscription.details.endDate', default:'Latest Date')}" />
-                  <% /*<th> ${message(code:'subscription.details.core_medium', default:'Core Medium')} </th>*/ %>
+                    <th colspan="4"></th>
+                    <g:sortableColumn params="${params}" property="startDate" title="${message(code:'default.from', default:'Earliest date')}" />
+                    <g:sortableColumn params="${params}" property="endDate" title="${message(code:'default.to', default:'Latest Date')}" />
+                    <g:sortableColumn params="${params}" property="accessStartDate" title="${message(code:'default.from', default:'Earliest date')}" />
+                    <g:sortableColumn params="${params}" property="accessEndDate" title="${message(code:'default.to', default:'Latest Date')}" />
+                    <th></th>
                 </tr>
-
                 <tr>
                     <g:if test="${editable}">
-
-                      <th style="vertical-align:middle;">
-                        <input id="select-all" type="checkbox" name="chkall" onClick="javascript:selectAll();"/>
-                      </th>
-
-                      <th colspan="2">
-                        <g:set var="selected_label" value="${message(code:'default.selected.label')}" />
-<%--
-                            <div class="ui radio checkbox">
-                                <input name="bulkOperation" value="edit" tabindex="0" class="hidden" type="radio">
-                                <label>${message(code:'default.edit.label', args:[selected_label], default:'Edit Selected')}</label>
-                            </div>
-                            <div class="ui radio checkbox">
-                                <input name="bulkOperation" value="remove" tabindex="0" class="hidden" type="radio">
-                                <label>${message(code:'default.remove.label', args:[selected_label], default:'Remove Selected')}</label>
-                            </div>
---%>
-                          <select id="bulkOperationSelect" name="bulkOperation" style="width:50%; float:left">
-                            <option value="edit">${message(code:'default.edit.label', args:[selected_label], default:'Edit Selected')}</option>
-                            <option value="remove">${message(code:'default.remove.label', args:[selected_label], default:'Remove Selected')}</option>
-                          </select>
-
-                          <input type="Submit" value="${message(code:'default.button.apply_batch.label', default:'Apply Batch Changes')}" onClick="return confirmSubmit()" class="ui button"/>
-                      </th>
-
-                      <th>
-                          <g:simpleHiddenRefdata id="bulk_medium" name="bulk_medium" refdataCategory="IEMedium"/>
-                      </th>
-
-                      <th> <semui:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>  <br/>
-                           <semui:simpleHiddenValue id="bulk_end_date" name="bulk_end_date" type="date"/>
-                      </th>
-                        <% /*
-                      <th>
-                        <g:simpleHiddenRefdata id="bulk_coreStatus" name="bulk_coreStatus" refdataCategory="CoreStatus"/> <br/>
-                      </th>
-                      */ %>
+                        <th>
+                            <input id="select-all" type="checkbox" name="chkall" onClick="javascript:selectAll();"/>
+                        </th>
+                        <th colspan="2">
+                            <g:set var="selected_label" value="${message(code:'default.selected.label')}" />
+                            <select id="bulkOperationSelect" name="bulkOperation">
+                                <option value="edit">${message(code:'default.edit.label', args:[selected_label], default:'Edit Selected')}</option>
+                                <option value="remove">${message(code:'default.remove.label', args:[selected_label], default:'Remove Selected')}</option>
+                            </select>
+                        </th>
+                        <th>
+                            <g:simpleHiddenRefdata id="bulk_medium" name="bulk_medium" refdataCategory="IEMedium"/>
+                        </th>
+                        <th>
+                            <semui:datepicker id="bulk_start_date" name="bulk_start_date"/>
+                        </th>
+                        <th>
+                            <semui:datepicker id="bulk_end_date" name="bulk_end_date"/>
+                        </th>
+                        <th>
+                            <semui:datepicker id="bulk_access_start_date" name="bulk_access_start_date"/>
+                        </th>
+                        <th>
+                            <semui:datepicker id="bulk_access_end_date" name="bulk_access_end_date"/>
+                        </th>
+                        <th>
+                            <input type="Submit" value="${message(code:'default.button.apply_batch.label', default:'Apply Batch Changes')}" onClick="return confirmSubmit()" class="ui button"/>
+                        </th>
                     </g:if>
                     <g:else>
-                        <th colspan="7">  </th>
+                        <th colspan="9">  </th>
                     </g:else>
-                    <th></th>
                 </tr>
             </thead>
          <tbody>
@@ -209,14 +197,10 @@
                     </g:if>
                     <g:else>${message(code:'default.unknown')}</g:else>
                    <g:if test="${ie.availabilityStatus?.value=='Expected'}">
-                     ${message(code:'default.on', default:'on')} <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ie.accessStartDate}"/>
+                     ${message(code:'default.on', default:'on')} <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessStartDate}"/>
                    </g:if>
                    <g:if test="${ie.availabilityStatus?.value=='Expired'}">
-                     ${message(code:'default.on', default:'on')} <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ie.accessEndDate}"/>
-                   </g:if>
-                   <g:if test="${params.mode=='advanced' && editable}">
-                     <br/> ${message(code:'subscription.details.access_start', default:'Access Start')}: <semui:xEditable owner="${ie}" type="date" field="accessStartDate" /> (${message(code:'subscription.details.access_start.note', default:'Leave empty to default to sub start date')})
-                     <br/> ${message(code:'subscription.details.access_end', default:'Access End')}: <semui:xEditable owner="${ie}" type="date" field="accessEndDate" /> (${message(code:'subscription.details.access_end.note', default:'Leave empty to default to sub end date')})
+                     ${message(code:'default.on', default:'on')} <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessEndDate}"/>
                    </g:if>
 
                 </td>
@@ -225,17 +209,19 @@
                   <semui:xEditableRefData owner="${ie}" field="medium" config='IEMedium'/>
                 </td>
                 <td>
-                    <semui:xEditable owner="${ie}" type="date" field="startDate" /><br/>
-                    <semui:xEditable owner="${ie}" type="date" field="endDate" />
+                    ${message(code:'default.date.label')}: <semui:xEditable owner="${ie}" type="date" field="startDate" /><br>
+                    ${message(code:'tipp.volume')}: <semui:xEditable owner="${ie}" field="startVolume"/> ${message(code:'tipp.issue')}:  <semui:xEditable owner="${ie}" field="startIssue"/>
                 </td>
-                <% /*
-                <td>
-                <g:render template="/templates/coreStatus" model="${['issueEntitlement': ie, 'date': params.asAt]}"/>
-               <br/>
-
-               <semui:xEditableRefData owner="${ie}" field="coreStatus" config='CoreStatus'/>
-                </td>
-                */ %>
+                  <td>
+                      ${message(code:'default.date.label')}: <semui:xEditable owner="${ie}" type="date" field="endDate" /><br>
+                      ${message(code:'tipp.volume')}: <semui:xEditable owner="${ie}" field="endVolume"/> ${message(code:'tipp.issue')}: <semui:xEditable owner="${ie}" field="endIssue"/>
+                  </td>
+                  <td>
+                      <semui:xEditable owner="${ie}" type="date" field="accessStartDate" /> (${message(code:'subscription.details.access_start.note', default:'Leave empty to default to sub start date')})
+                  </td>
+                  <td>
+                      <semui:xEditable owner="${ie}" type="date" field="accessEndDate" /> (${message(code:'subscription.details.access_end.note', default:'Leave empty to default to sub end date')})
+                  </td>
                 <td class="x">
                   <g:if test="${editable}">
                       <g:link action="removeEntitlement" class="ui icon negative button" params="${[ieid:ie.id, sub:subscriptionInstance.id]}" onClick="return confirm(${message(code:'subscription.details.removeEntitlement.confirm', default:'Are you sure you wish to delete this entitlement?')});">

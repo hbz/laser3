@@ -12,6 +12,8 @@ import com.k_int.properties.PropertyDefinition
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+import java.text.SimpleDateFormat
+
 @Secured(['permitAll']) // TODO
 class AjaxController {
 
@@ -256,7 +258,7 @@ class AjaxController {
               result=of.format(value);
             }
             else {
-              def of = new java.text.SimpleDateFormat(session.sessionPreferences?.globalDateFormat)
+              def of = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))
               result=of.format(value)
             }
           }
@@ -1447,7 +1449,7 @@ class AjaxController {
     log.debug("ajax::coreExtend:: ${params}")
     def tipID = params.tipID
     try{
-      def sdf = new java.text.SimpleDateFormat(session.sessionPreferences?.globalDateFormat)
+      def sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
       def startDate = sdf.parse(params.coreStartDate)
       def endDate = params.coreEndDate? sdf.parse(params.coreEndDate) : null
       if(tipID && startDate){

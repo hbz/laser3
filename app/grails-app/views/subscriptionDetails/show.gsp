@@ -3,7 +3,7 @@
 <%@ page import="com.k_int.properties.PropertyDefinition" %>
 <%@ page import="com.k_int.kbplus.RefdataCategory" %>
 <%
-  def dateFormater = new SimpleDateFormat(session.sessionPreferences?.globalDateFormat)
+  def dateFormater = new SimpleDateFormat(message(code:'default.date.format.notime'))
 %>
 
 <r:require module="annotations" />

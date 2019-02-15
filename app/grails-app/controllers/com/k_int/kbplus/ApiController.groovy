@@ -9,6 +9,8 @@ import de.laser.helper.Constants
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
+import java.text.SimpleDateFormat
+
 @Secured(['permitAll']) // TODO
 class ApiController extends AbstractDebugController {
 
@@ -195,7 +197,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         and jusp_institution_id.identifier.ns.ns='jusplogin' order by jusp_institution_id.identifier.value 
      """)
 
-        def date = new java.text.SimpleDateFormat(session.sessionPreferences?.globalDateFormat)
+        def date = new SimpleDateFormat(message(code:'default.date.format.notime'))
         date = date.format(new Date())
         response.setHeader("Content-disposition", "attachment; filename=\"kbplus_jusp_export_${date}.csv\"")
         response.contentType = "text/csv"

@@ -69,18 +69,24 @@
             <table class="ui celled stripped table">
               <thead>
                 <tr>
-                  <th style="vertical-align:middle;">
+                  <th rowspan="2" style="vertical-align:middle;">
                     <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" onClick="javascript:selectAll();"/></g:if>
                   </th>
-                    <th>${message(code:'sidewide.number')}</th>
-                  <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
-                  <th>ISSN</th>
-                  <th>eISSN</th>
-                  <g:sortableColumn params="${params}" property="startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
-                  <g:sortableColumn params="${params}" property="endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
-                  <th>${message(code:'tipp.embargo', default:'Embargo')}</th>
-                  <th>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
-                  <th>${message(code:'tipp.coverageNote', default:'Coverage Note')}</th>
+                  <th rowspan="2">${message(code:'sidewide.number')}</th>
+                  <g:sortableColumn rowspan="2" params="${params}" property="title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
+                  <th rowspan="2">ISSN</th>
+                  <th rowspan="2">eISSN</th>
+                  <th colspan="2">${message(code:'tipp.coverage')}</th>
+                  <th colspan="2">${message(code:'tipp.access')}</th>
+                  <th rowspan="2">${message(code:'tipp.embargo', default:'Embargo')}</th>
+                  <th rowspan="2">${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
+                  <th rowspan="2">${message(code:'tipp.coverageNote', default:'Coverage Note')}</th>
+                </tr>
+                <tr>
+                    <g:sortableColumn params="${params}" property="startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
+                    <g:sortableColumn params="${params}" property="endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
+                    <g:sortableColumn params="${params}" property="accessStartDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
+                    <g:sortableColumn params="${params}" property="accessEndDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
                 </tr>
               </thead>
               <tbody>
@@ -101,8 +107,10 @@
                     </td>
                     <td style="white-space: nowrap;">${tipp?.title?.getIdentifierValue('ISSN')}</td>
                     <td style="white-space: nowrap;">${tipp?.title?.getIdentifierValue('eISSN')}</td>
-                    <td style="white-space: nowrap;"><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${tipp.startDate}"/></td>
-                    <td style="white-space: nowrap;"><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${tipp.endDate}"/></td>
+                    <td style="white-space: nowrap;"><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.startDate}"/></td>
+                    <td style="white-space: nowrap;"><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.endDate}"/></td>
+                    <td></td>
+                    <td></td>
                     <td>${tipp.embargo}</td>
                     <td>${tipp.coverageDepth}</td>
                     <td>${tipp.coverageNote}</td>

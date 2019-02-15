@@ -166,7 +166,7 @@
                 <td style="white-space:nowrap">${ti.getIdentifierValue('ISSN')}</td>
                 <td style="white-space:nowrap">${ti.getIdentifierValue('eISSN')}</td>
 
-                <g:set var="title_coverage_info" value="${ti.getInstitutionalCoverageSummary(institution, session.sessionPreferences?.globalDateFormat, date_restriction)}" />
+                <g:set var="title_coverage_info" value="${ti.getInstitutionalCoverageSummary(institution, message(code:'default.date.format.notime'), date_restriction)}" />
 
                 <td  style="white-space:nowrap">${title_coverage_info.earliest}</td>
                 <td  style="white-space:nowrap">${title_coverage_info.latest ?: message(code:'myinst.currentTitles.to_current', default:'To Current')}</td>
@@ -231,8 +231,8 @@
 	                    <td>${ie.tipp.title.title}</td>
 	                    <td>${ie.tipp.title.getIdentifierValue('ISSN')}</td>
 	                    <td>${ie.tipp.title.getIdentifierValue('eISSN')}</td>
-	                    <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ie.startDate}"/></td>
-	                    <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ie.endDate}"/></td>
+	                    <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.startDate}"/></td>
+	                    <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.endDate}"/></td>
 	                    <td>${ie.subscription.name}</td>
 	                    <td>
 	                      <g:each in="${ie.tipp.pkg.orgs}" var="role">

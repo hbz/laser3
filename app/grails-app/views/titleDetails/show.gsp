@@ -154,10 +154,10 @@
                   <tbody>
                   <g:each in="${ti.tipps}" var="t">
                       <tr>
-                          <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${t.startDate}"/></td>
+                          <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${t.startDate}"/></td>
                           <td>${t.startVolume}</td>
                           <td>${t.startIssue}</td>
-                          <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${t.endDate}"/></td>
+                          <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${t.endDate}"/></td>
                           <td>${t.endVolume}</td>
                           <td>${t.endIssue}</td>
                           <td>${t.coverageDepth}</td>
@@ -176,6 +176,8 @@
                     <tr>
                   %{--<th rowspan="2"></th> BULK_REMOVE --}%
                       <th>${message(code:'tipp.platform')}</th><th>${message(code:'tipp.package')}</th>
+                      <th>${message(code:'tipp.start')}</th>
+                      <th>${message(code:'tipp.end')}</th>
                       <th>${message(code:'tipp.start')}</th>
                       <th>${message(code:'tipp.end')}</th>
                       <th>${message(code:'tipp.coverageDepth')}</th>
@@ -265,10 +267,10 @@
                         </div>
                     </td>
   
-                    <td>${message(code:'title.show.history.date')}: <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${t.startDate}"/><br/>
+                    <td>${message(code:'title.show.history.date')}: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${t.startDate}"/><br/>
                     ${message(code:'tipp.volume')}: ${t.startVolume}<br/>
                     ${message(code:'tipp.issue')}: ${t.startIssue}</td>
-                    <td>${message(code:'title.show.history.date')}: <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${t.endDate}"/><br/>
+                    <td>${message(code:'title.show.history.date')}: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${t.endDate}"/><br/>
                     ${message(code:'tipp.volume')}: ${t.endVolume}<br/>
                     ${message(code:'tipp.issue')}: ${t.endIssue}</td>
                     <td>${t.coverageDepth}</td>

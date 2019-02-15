@@ -51,7 +51,7 @@
                     <dt><g:message code="tipp.hybridOA" default="TIPP Hybrid OA" /></dt>
                     <dd>${issueEntitlementInstance?.tipp.hybridOA?.value}</dd>
                     <dt><g:message code="tipp.show.accessStart" default="Date Title Joined Package" /></dt>
-                    <dd><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${issueEntitlementInstance.tipp.accessStartDate}"/></dd>
+                    <dd><g:formatDate format="${message(code:'default.date.format.notime')}" date="${issueEntitlementInstance.tipp.accessStartDate}"/></dd>
             </g:if>
 
                 <g:if test="${issueEntitlementInstance?.tipp.title?.ids}">
@@ -145,10 +145,10 @@
   </thead>
   <tbody>
       <tr>
-        <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${issueEntitlementInstance.tipp.startDate}"/></td>
+        <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${issueEntitlementInstance.tipp.startDate}"/></td>
         <td>${issueEntitlementInstance.tipp.startVolume}</td>
         <td>${issueEntitlementInstance.tipp.startIssue}</td>
-        <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${issueEntitlementInstance.tipp.endDate}"/></td>
+        <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${issueEntitlementInstance.tipp.endDate}"/></td>
         <td>${issueEntitlementInstance.tipp.endVolume}</td>
         <td>${issueEntitlementInstance.tipp.endIssue}</td>
       </tr>

@@ -92,10 +92,10 @@
                 <tbody>
                     <g:each in="${ti.tipps}" var="t">
                         <tr>
-                            <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${t.startDate}"/></td>
+                            <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${t.startDate}"/></td>
                         <td>${t.startVolume}</td>
                         <td>${t.startIssue}</td>
-                        <td><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${t.endDate}"/></td>
+                        <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${t.endDate}"/></td>
                         <td>${t.endVolume}</td>
                         <td>${t.endIssue}</td>
                         <td>${t.coverageDepth}</td>

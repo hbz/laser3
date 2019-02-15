@@ -182,7 +182,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
-            base_qry += "order by lower(ie.${params.sort}) ${params.order} "
+            base_qry += "order by ie.${params.sort} ${params.order} "
         } else {
             base_qry += "order by lower(ie.tipp.title.title) asc"
         }
@@ -529,7 +529,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
         }
 
         // def formatter = new java.text.SimpleDateFormat("MM/dd/yyyy")
-        def formatter = new java.text.SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
+        SimpleDateFormat formatter = new SimpleDateFormat(message(code: 'default.date.format.notime', default: 'yyyy-MM-dd'))
 
         // def subscriptionInstance = Subscription.get(params.id)
         // def user = User.get(springSecurityService.principal.id)
@@ -553,22 +553,16 @@ class SubscriptionDetailsController extends AbstractDebugController {
                         ie.endDate = formatter.parse(params.bulk_end_date)
                     }
 
-                    if (params.bulk_core_start && (params.bulk_core_start.trim().length() > 0)) {
-                        ie.coreStatusStart = formatter.parse(params.bulk_core_start)
+                    if (params.bulk_access_start_date && (params.bulk_access_start_date.trim().length() > 0)) {
+                        ie.accessStartDate = formatter.parse(params.bulk_access_start_date)
                     }
 
-                    if (params.bulk_core_end && (params.bulk_core_end.trim().length() > 0)) {
-                        ie.coreStatusEnd = formatter.parse(params.bulk_core_end)
+                    if (params.bulk_access_end_date && (params.bulk_access_end_date.trim().length() > 0)) {
+                        ie.accessEndDate = formatter.parse(params.bulk_access_end_date)
                     }
 
                     if (params.bulk_embargo && (params.bulk_embargo.trim().length() > 0)) {
                         ie.embargo = params.bulk_embargo
-                    }
-
-                    if (params.bulk_coreStatus && params.bulk_coreStatus.trim().length() > 0) {
-                        def selected_refdata = genericOIDService.resolveOID(params.bulk_coreStatus.trim())
-                        log.debug("Selected core status is ${selected_refdata}");
-                        ie.coreStatus = selected_refdata
                     }
 
                     if (params.bulk_medium.trim().length() > 0) {
@@ -581,16 +575,14 @@ class SubscriptionDetailsController extends AbstractDebugController {
                         ie.coverageDepth = params.bulk_coverage
                     }
 
-                    if (ie.save(flush: true)) {
-                    } else {
+                    if (!ie.save(flush: true)) {
                         log.error("Problem saving ${ie.errors}")
                     }
                 } else if (params.bulkOperation == "remove") {
                     log.debug("Updating ie ${ie.id} status to deleted");
                     def deleted_ie = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
                     ie.status = deleted_ie;
-                    if (ie.save(flush: true)) {
-                    } else {
+                    if (!ie.save(flush: true)) {
                         log.error("Problem saving ${ie.errors}")
                     }
                 }
