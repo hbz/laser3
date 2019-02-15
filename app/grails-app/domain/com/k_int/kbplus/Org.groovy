@@ -474,7 +474,25 @@ class Org
         name
     }
 
-    def getPublicPersons() {
+    List<Person> getGeneralContactPersons(boolean onlyPublic) {
+
+        if (onlyPublic) {
+            Person.executeQuery(
+                    "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic.value != 'No' and pr.org = :org and pr.functionType = :gcp",
+                    [org: this, gcp: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
+            )
+        }
+        else {
+            Org ctxOrg = contextService.getOrg()
+            Person.executeQuery(
+                    "select distinct p from Person as p inner join p.roleLinks pr where pr.org = :org and pr.functionType = :gcp " +
+                    " and ( (p.isPublic.value = 'No' and p.tenant = :ctx) or (p.isPublic.value != 'No') )",
+                    [org: this, gcp: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, ctx: ctxOrg]
+            )
+        }
+    }
+
+    List<Person> getPublicPersons() {
         Person.executeQuery(
                 "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic.value != 'No' and pr.org = :org",
                 [org: this]

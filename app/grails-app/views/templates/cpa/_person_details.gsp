@@ -29,7 +29,7 @@
 
         </g:if>
 
-        <g:if test="${! personRole}">
+        <g:if test="${! personRole && ! tmplHideLinkToAddressbook}">
 
             <g:each in="${person?.roleLinks}" var="role">
                 <div class="item">

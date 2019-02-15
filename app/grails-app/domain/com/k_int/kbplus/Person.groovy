@@ -72,6 +72,7 @@ class Person extends AbstractBaseDomain {
         ((title ?: '') + ' ' + (last_name ?: ' ') + (first_name ? ', ' + first_name : '') + ' ' + (middle_name ?: '')).trim()
     }
 
+    /*
     static def lookup(firstName, lastName, tenant, isPublic, contactType) {
 
         def person
@@ -87,6 +88,7 @@ class Person extends AbstractBaseDomain {
         }
         person
     }
+    */
 
     static def lookup(firstName, lastName, tenant, isPublic, contactType, org, functionType) {
 

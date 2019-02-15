@@ -4,8 +4,10 @@ package com.k_int.kbplus
 class PersonRole implements Comparable<PersonRole>{
     private static final String REFDATA_GENERAL_CONTACT_PRS = "General contact person"
 
-    RefdataValue    functionType        // 'Person Function'; exclusive with responsibilityType
-    RefdataValue    responsibilityType  // 'Person Responsibility'; exclusive with functionType
+    RefdataValue    positionType        // 'Person Position'; exclusive with other types
+    RefdataValue    functionType        // 'Person Function'; exclusive with other types
+    RefdataValue    responsibilityType  // 'Person Responsibility'; exclusive other types
+
     License         lic
     Cluster         cluster
     Package         pkg
@@ -22,8 +24,9 @@ class PersonRole implements Comparable<PersonRole>{
     static mapping = {
         id          column:'pr_id'
         version     column:'pr_version'
-        functionType        column:'pr_function_type_rv_fk'
-        responsibilityType  column:'pr_responsibility_type_rv_fk'
+        positionType            column:'pr_position_type_rv_fk'
+        functionType            column:'pr_function_type_rv_fk'
+        responsibilityType      column:'pr_responsibility_type_rv_fk'
         prs         column:'pr_prs_fk',     index: 'pr_prs_org_idx'
         lic         column:'pr_lic_fk'
         org         column:'pr_org_fk',     index: 'pr_prs_org_idx'
@@ -36,6 +39,7 @@ class PersonRole implements Comparable<PersonRole>{
     }
     
     static constraints = {
+        positionType        (nullable:true)
         functionType        (nullable:true)
         responsibilityType  (nullable:true)
         prs         (nullable:false)
@@ -75,6 +79,7 @@ class PersonRole implements Comparable<PersonRole>{
         RefdataCategory.getAllRefdataValues(category).sort {it.getI10n("value")}
     }
 
+    /*
     static def lookup(prs, lic, org, cluster, pkg, sub, title, start_date, end_date, functionType) {
 
         def personRole
@@ -97,6 +102,7 @@ class PersonRole implements Comparable<PersonRole>{
 
         personRole
     }
+    */
 
     static def getByPersonAndOrgAndRespValue(Person prs, Org org, def resp) {
 
