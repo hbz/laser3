@@ -213,8 +213,7 @@
                     </g:each>
                 </td>
                 <td>
-                    <g:if test="${ci.id}">
-                        <%-- existing cost item --%>
+                    <g:if test="${ci.id}"> <%-- only existing cost item --%>
                         <g:if test="${ci.getDerivedStartDate()}">
                             <g:formatDate date="${ci.getDerivedStartDate()}" format="${message(code:'default.date.format.notime')}"/>
                             <br />
@@ -225,9 +224,11 @@
                     </g:if>
                 </td>
                 <td>
-                    <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}"
+                    <g:if test="${ci.id}"> <%-- only existing cost item --%>
+                        <g:formatNumber number="${ci.costInBillingCurrencyAfterTax ?: 0.0}"
                                     type="currency"
                                     currencySymbol="${ci.billingCurrency ?: 'EUR'}" />
+                    </g:if>
                 </td>
 
                 <%  // TODO .. copied from finance/_result_tab_cons.gsp
