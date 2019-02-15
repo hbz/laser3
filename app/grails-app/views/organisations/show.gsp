@@ -238,7 +238,7 @@
                             <dd>
                                 <%-- <div class="ui divided middle aligned selection list la-flex-list"> --%>
                                     <g:each in="${orgInstance?.prsLinks?.toSorted()}" var="pl">
-                                        <g:if test="${pl?.functionType?.value && pl?.prs?.isPublic?.value!='No'}">
+                                        <g:if test="${(pl?.functionType || pl?.positionType) && pl?.prs?.isPublic?.value!='No'}">
                                             <g:render template="/templates/cpa/person_details" model="${[
                                                     personRole: pl,
                                                     tmplShowDeleteButton: true,
@@ -269,24 +269,6 @@
                         </dl>
                     </div>
                 </div><!-- .card -->
-                <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in orgInstance.orgRoleType)}">
-                %{--<div class="ui card">
-                    <div class="content">
-                        <dl>
-                            <dt><g:message code="org.fteStudents.label" default="Fte Students" /></dt>
-                            <dd>
-                                <semui:xEditable owner="${orgInstance}" field="fteStudents"/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><g:message code="org.fteStaff.label" default="Fte Staff" /></dt>
-                            <dd>
-                                <semui:xEditable owner="${orgInstance}" field="fteStaff"/>
-                            </dd>
-                        </dl>
-                    </div>
-                </div><!--.card-->--}%
-                </g:if>
 
                     <g:if test="${orgInstance?.outgoingCombos && ((orgInstance.id == contextService.getOrg().id) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                         <g:if test="${orgInstance.id == contextService.getOrg().id}">

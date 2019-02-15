@@ -20,7 +20,7 @@
                     ${message(code:'person.organisation.label')}
                 </g:if>
                 <g:else>
-                    Funktion
+                    Funktion / Position
                 </g:else>
             </th>
 			<th>${message(code:'person.contacts.label')}</th>
@@ -49,14 +49,20 @@
                             </div>
                             <div>
                                 <g:if test="${role.functionType}">
-                                    (${role.functionType?.getI10n('value')})
+                                    (${role.functionType?.getI10n('value')}) <br />
+                                </g:if>
+                                <g:if test="${role.positionType}">
+                                    (${role.positionType?.getI10n('value')})
                                 </g:if>
                             </div>
                         </g:if>
                         <g:else>
                             <div>
                                 <g:if test="${role.functionType}">
-                                    ${role.functionType?.getI10n('value')}
+                                    ${role.functionType?.getI10n('value')} <br />
+                                </g:if>
+                                <g:if test="${role.positionType}">
+                                    ${role.positionType?.getI10n('value')}
                                 </g:if>
                             </div>
                         </g:else>
