@@ -3682,7 +3682,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
             result
         }
-        render (template: "../templates/filter/orgFilterTable", model: [orgList: result.cons_members, tmplShowCheckbox: true])
+        render (template: "../templates/filter/orgFilterTable", model: [orgList: result.cons_members, tmplShowCheckbox: true, tmplConfigShow: ['sortname', 'name']])
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
