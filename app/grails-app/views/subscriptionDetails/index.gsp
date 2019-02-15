@@ -217,10 +217,20 @@
                       ${message(code:'tipp.volume')}: <semui:xEditable owner="${ie}" field="endVolume"/> ${message(code:'tipp.issue')}: <semui:xEditable owner="${ie}" field="endIssue"/>
                   </td>
                   <td>
-                      <semui:xEditable owner="${ie}" type="date" field="accessStartDate" /> (${message(code:'subscription.details.access_start.note', default:'Leave empty to default to sub start date')})
+                      <g:if test="${editable}">
+                          <semui:xEditable owner="${ie}" type="date" field="accessStartDate" /> (${message(code:'subscription.details.access_start.note', default:'Leave empty to default to sub start date')})
+                      </g:if>
+                      <g:else>
+                          <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessStartDate}"/>
+                      </g:else>
                   </td>
                   <td>
-                      <semui:xEditable owner="${ie}" type="date" field="accessEndDate" /> (${message(code:'subscription.details.access_end.note', default:'Leave empty to default to sub end date')})
+                      <g:if test="${editable}">
+                          <semui:xEditable owner="${ie}" type="date" field="accessEndDate" /> (${message(code:'subscription.details.access_end.note', default:'Leave empty to default to sub end date')})
+                      </g:if>
+                      <g:else>
+                          <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessEndDate}"/>
+                      </g:else>
                   </td>
                 <td class="x">
                   <g:if test="${editable}">
