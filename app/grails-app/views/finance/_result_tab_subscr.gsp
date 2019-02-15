@@ -83,36 +83,7 @@
         </g:else>
     </tbody>
     <tfoot>
-        <tr>
-            <th colspan="7">
-                ${message(code:'financials.totalCostOnPage')}
-            </th>
-        </tr>
-        <g:if test="${data.count > 0 && data.pageSums.billingSums}">
-            <g:each in="${data.pageSums.billingSums}" var="entry">
-                <tr>
-                    <td colspan="2">
-                        ${message(code:'financials.sum.billing')} ${entry.currency}<br>
-                    </td>
-                    <td class="la-exposed-bg">
-                        <g:formatNumber number="${entry.billingSumAfterTax}" type="currency" currencySymbol="${entry.currency}"/>
-                    </td>
-                    <td colspan="4">
-
-                    </td>
-                </tr>
-            </g:each>
-            <tr>
-                <td colspan="3">
-                    ${message(code:'financials.sum.local')}
-                </td>
-                <td class="la-exposed-bg">
-                    <g:formatNumber number="${data.pageSums.localSums.localSumAfterTax}" type="currency" currencySymbol="EUR"/>
-                </td>
-                <td colspan="3">
-
-                </td>
-            </tr>
+        <g:if test="${data.count > 0 && data.sums.billingSums}">
             <tr>
                 <th colspan="7">
                     ${message(code:'financials.totalCost')}
@@ -143,7 +114,7 @@
                 </td>
             </tr>
         </g:if>
-        <g:elseif test="${data.count > 0 && !data.pageSums.billingSums}">
+        <g:elseif test="${data.count > 0 && !data.sums.billingSums}">
             <tr>
                 <td colspan="7">
                     ${message(code:'financials.noCostsConsidered')}
