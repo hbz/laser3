@@ -57,7 +57,6 @@ class FinanceService {
         }
         result.own.count = ownCostItems.size()
         if(result.own.count > 0) {
-            result.own.pageSums = calculateResults(result.own.costItems)
             result.own.sums = calculateResults(ownCostItems)
         }
         switch(sub.getCalculatedType()) {
@@ -77,7 +76,6 @@ class FinanceService {
                 }
                 result.cons.count = consCostItems.size()
                 if(result.cons.count > 0){
-                    result.cons.pageSums = calculateResults(result.cons.costItems)
                     result.cons.sums = calculateResults(consCostItems)
                 }
                 break
@@ -97,22 +95,18 @@ class FinanceService {
                     costItems.add(subscrCostItems[i])
                 }
                 int count = subscrCostItems.size()
-                Map pageSums = [:]
                 Map sums = [:]
                 if(count > 0) {
-                    pageSums = calculateResults(costItems)
                     sums = calculateResults(subscrCostItems)
                 }
-                if(params.view.equals("subscr")) {
+                if(params.view.equals("subscr") || !params.view) {
                     result.subscr.costItems = costItems
                     result.subscr.count = count
-                    result.subscr.pageSums = pageSums
                     result.subscr.sums = sums
                 }
                 else if(params.view.equals("consAtSubscr")) {
                     result.cons.costItems = costItems
                     result.cons.count = count
-                    result.cons.pageSums = pageSums
                     result.cons.sums = sums
                 }
                 break
@@ -169,7 +163,6 @@ class FinanceService {
         result.own.count = ownSubscriptionCostItems.size()
         if(result.own.count > 0) {
             result.own.sums = calculateResults(ownSubscriptionCostItems)
-            result.own.pageSums = calculateResults(result.own.costItems)
         }
         //get consortial costs
         List<CostItem> consortialSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci ' +
@@ -192,7 +185,6 @@ class FinanceService {
         result.cons.count = consortialSubscriptionCostItems.size()
         if(result.cons.count > 0) {
             result.cons.sums = calculateResults(consortialSubscriptionCostItems)
-            result.cons.pageSums = calculateResults(result.cons.costItems)
         }
         //get membership costs
         List<CostItem> consortialMemberSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci '+
@@ -214,7 +206,6 @@ class FinanceService {
         result.subscr.count = consortialMemberSubscriptionCostItems.size()
         if(result.subscr.count > 0) {
             result.subscr.sums = calculateResults(consortialMemberSubscriptionCostItems)
-            result.subscr.pageSums = calculateResults(result.subscr.costItems)
         }
         if(!params.forExport) {
             List<CostItem> allCostItems = CostItem.findAllByOwner(org)
