@@ -60,7 +60,16 @@
 
           </g:form>
       </semui:filter>
-
+            <g:set var="zdbIds" value="${identifiers.zdbIds}"/>
+            <g:set var="onlineIds" value="${identifiers.onlineIds}"/>
+            <g:set var="printIds" value="${identifiers.printIds}"/>
+            <div>
+                ${identifiers}
+            </div>
+          <g:form controller="subscriptionDetails" action="addEntitlements" params="${[id:subscriptionInstance.id]}" method="post" enctype="multipart/form-data">
+              <input type="file" id="kbartPreselect" name="kbartPreselect" accept="text/tab-separated-values"/>
+              <input type="submit" value="${message(code:'subscription.details.addEntitlements.preselect', default:'Preselect Entitlements per KBART-File')}" class="ui button"/>
+          </g:form>
           <g:form action="processAddEntitlements">
             <input type="hidden" name="siid" value="${subscriptionInstance.id}"/>
               <div class="paginateButtons" style="text-align:center">
@@ -96,6 +105,7 @@
                   <%
                       String serial
                       String electronicSerial
+                      boolean selected = false
                       if(tipp.title.type.equals(RDStore.TITLE_TYPE_EBOOK)) {
                           serial = tipp.title.getIdentifierValue('ISBN')
                           electronicSerial = tipp?.title?.getIdentifierValue('eISBN')
@@ -104,9 +114,18 @@
                           serial = tipp?.title?.getIdentifierValue('ISSN')
                           electronicSerial = tipp?.title?.getIdentifierValue('eISSN')
                       }
+                      if(zdbIds.indexOf(tipp.title.getIdentifierValue('zdb')) > -1) {
+                          selected = true
+                      }
+                      else if(onlineIds.indexOf(electronicSerial) > -1) {
+                          selected = true
+                      }
+                      else if(printIds.indexOf(serial) > -1) {
+                          selected = true
+                      }
                   %>
                   <tr>
-                    <td><input type="checkbox" name="_bulkflag.${tipp.id}" class="bulkcheck"/></td>
+                    <td><input type="checkbox" name="_bulkflag.${tipp.id}" class="bulkcheck" checked="${selected}"/></td>
                     <td>${counter++}</td>
                     <td>
                       ${tipp.title.type.getI10n("value")} –
