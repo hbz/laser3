@@ -2,7 +2,7 @@
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_xxx"); --}%
 
-<%@ page import="com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; java.net.URL" %>
+<%@ page import="com.k_int.kbplus.abstract_domain.PrivateProperty; com.k_int.kbplus.abstract_domain.CustomProperty; com.k_int.kbplus.RefdataValue; com.k_int.properties.PropertyDefinition; java.net.URL; com.k_int.kbplus.License; de.laser.AuditConfig; com.k_int.kbplus.GenericOIDService" %>
 <laser:serviceInjection />
 
 <!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->
@@ -18,14 +18,15 @@
 </g:if>
 
 <table class="ui la-table-small la-table-inCard table">
-    <g:if test="${ownobj.privateProperties}">
+    <g:set var="properties" value="${showPropClass == PrivateProperty.class? ownobj.privateProperties : ownobj.customProperties}" />
+    <g:if test="${properties}">
         <colgroup>
             <g:if test="${show_checkboxes}">
                 <col style="width: 5px;">
             </g:if>
             <col style="width: 129px;">
             <col style="width: 96px;">
-            <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+            <g:if test="${ownobj instanceof License}">
                 <col style="width: 359px;">
             </g:if>
             <col style="width: 148px;">
@@ -37,7 +38,7 @@
                 </g:if>
                 <th class="la-js-dont-hide-this-card">${message(code:'property.table.property')}</th>
                 <th>${message(code:'property.table.value')}</th>
-                <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                <g:if test="${ownobj instanceof License}">
                     <th>${message(code:'property.table.paragraph')}</th>
                 </g:if>
                 <th>${message(code:'property.table.notes')}</th>
@@ -45,11 +46,19 @@
         </thead>
     </g:if>
     <tbody>
-        <g:each in="${ownobj.privateProperties.sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
-            <g:if test="${prop.type?.tenant?.id == tenant?.id}">
-                <tr data-prop-type="${prop.type.getI10n('name')}">
+        <g:each in="${properties.sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
+            <g:if test="${showPropClass == CustomProperty.class || ( showPropClass == PrivateProperty.class && prop.type?.tenant?.id == tenant?.id)}">
+                <g:if test="${showCopyConflicts}">
+                    <tr data-prop-type="${prop.type.getI10n('name')}">
+                </g:if><g:else>
+                    <tr>
+                </g:else>
                     <g:if test="${show_checkboxes}">
-                        <td><g:checkBox name="subscription.takeProperty" data-prop-type="${prop.type.getI10n('name')}"/></td>
+                        <g:if test="${prop.type.multipleOccurrence}">
+                            <td><g:checkBox name="subscription.takeProperty" value="${genericOIDService.getOID(prop)}" checked="false"/></td>
+                        </g:if><g:else>
+                            <td><g:checkBox name="subscription.takeProperty" value="${genericOIDService.getOID(prop)}" data-prop-type="${prop.type.getI10n('name')}" checked="false"/></td>
+                        </g:else>
                     </g:if>
                     <td>
                         <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
@@ -61,7 +70,24 @@
                         <g:else>
                             ${prop.type.getI10n('name')}
                         </g:else>
-                        <g:if test="${prop.type.mandatory}">
+                        <%
+                            if (showPropClass == CustomProperty.class) {
+                                if (AuditConfig.getConfig(prop)) {
+                                    println '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
+                                }
+
+                                if (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) {
+                                    if (ownobj.isSlaved?.value?.equalsIgnoreCase('yes')) {
+                                        println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
+                                    }
+                                    else {
+                                        println '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                                    }
+                                }
+                            }
+                        %>
+
+                        <g:if test="${showPropClass == CustomProperty.class && prop.type.mandatory}">
                             <span data-position="top right" data-tooltip="${message(code:'default.mandatory.tooltip')}">
                                 <i class="star icon yellow"></i>
                             </span>
@@ -92,7 +118,7 @@
                             <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}" />
                         </g:elseif>
                     </td>
-                    <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                    <g:if test="${ownobj instanceof License}">
                         <td>
                             <semui:xEditable owner="${prop}" type="textarea" field="paragraph"/>
                         </td>
@@ -104,59 +130,21 @@
             </g:if>
         </g:each>
     </tbody>
-
-    <g:if test="${overwriteEditable}">
-        <tfoot>
-            <tr>
-                <td colspan="4">
-                    <g:formRemote url="[controller: 'ajax', action: 'addPrivatePropertyValue']" method="post"
-                                  name="cust_prop_add_value"
-                                  class="ui form"
-                                  update="${custom_props_div}"
-                                  onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}', ${tenant?.id})"
-                                  onComplete="c3po.loadJsAfterAjax()"
-                    >
-                    <input type="hidden" name="propIdent"  data-desc="${prop_desc}" class="customPropSelect"/>
-                    <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>
-                    <input type="hidden" name="tenantId"   value="${tenant?.id}"/>
-                    <input type="hidden" name="editable"   value="${editable}"/>
-                    <input type="hidden" name="ownerClass" value="${ownobj?.class}"/>
-                    <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
-                </g:formRemote>
-            </td>
-        </tr>
-    </tfoot>
-</g:if>
 </table>
 <r:script>
-    // $('.table tr').mouseover( function(){
-    //     var dPropType = $(this).attr('data-prop-type')
-    //
-    //     if (dPropType) {
-    //         $('.table tr[data-prop-type="' + dPropType + '"]').addClass('trHover')
-    //     }
-    // })
-    //
-    // $('.table tr').mouseout( function(){
-    //     $('.table tr').removeClass('trHover')
-    // })
-
-
     $('input:checkbox').change( function(event) {
         if (this.checked) {
-            // alert("IS checked")
             var dPropType = $(this).attr('data-prop-type');
             $('.table tr[data-prop-type="' + dPropType + '"]').addClass('trHover')
         } else {
-            // alert("NOT checked")
-            $('.table tr').removeClass('trHover')
+            var dPropType = $(this).attr('data-prop-type');
+            $('.table tr[data-prop-type="' + dPropType + '"]').removeClass('trHover')
         }
     })
-
 </r:script>
 <style>
 table tr.trHover td {
-    background-color:red !important;
+    background-color:tomato !important;
 }
 table tr.trHover td[data-uri]:hover,
 table tr.trHover td[data-context]:hover {
