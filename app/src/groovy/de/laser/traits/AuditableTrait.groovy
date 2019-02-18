@@ -27,6 +27,9 @@ trait AuditableTrait {
     // static controlledProperties = ['name', 'date', 'etc']
 
     @Transient
+    def auditService
+
+    @Transient
     def onDelete = { oldMap ->
         log?.debug("onDelete() ${this}")
     }
@@ -41,7 +44,8 @@ trait AuditableTrait {
 
         log?.debug("onChange(${this.id}): ${oldMap} => ${newMap}")
 
-        getWatchedProperties_trait()?.each { cp ->
+        List<String> gwp = auditService.getWatchedProperties(this)
+        gwp?.each { cp ->
             if (oldMap[cp] != newMap[cp]) {
                 def event
                 def clazz = this."${cp}".getClass().getName()
@@ -50,7 +54,7 @@ trait AuditableTrait {
 
                 if (this instanceof CustomProperty) {
 
-                    if (AuditConfig.getConfig(this)) {
+                    if (auditService.getAuditConfig(this)) {
 
                         def old_oid, new_oid
                         if (oldMap[cp] instanceof RefdataValue ) {
@@ -80,7 +84,7 @@ trait AuditableTrait {
 
                     def isSubOrLic = (this instanceof Subscription || this instanceof License)
 
-                    if ( ! isSubOrLic || (isSubOrLic && AuditConfig.getConfig(this, cp)) ) {
+                    if ( ! isSubOrLic || (isSubOrLic && auditService.getAuditConfig(this, cp)) ) {
 
                         if (clazz.equals("com.k_int.kbplus.RefdataValue")) {
 
@@ -112,6 +116,8 @@ trait AuditableTrait {
                     }
                 }
 
+                log?.debug(event)
+
                 if (event) {
                     if (! changeNotificationService) {
                         log?.error("changeNotificationService not implemented @ ${it}")
@@ -121,39 +127,5 @@ trait AuditableTrait {
                 }
             }
         }
-    }
-
-    @Transient
-    def notifyDependencies_trait(changeDocument) {
-        log?.debug("notifyDependencies_trait() not implemented => ${changeDocument}")
-    }
-
-    def getWatchedProperties_trait() {
-        def result = []
-
-        if (getAuditConfig_trait(AuditConfig.COMPLETE_OBJECT)) {
-            this.controlledProperties.each { cp ->
-                result << cp
-            }
-        }
-        else {
-            this.controlledProperties.each { cp ->
-                if (getAuditConfig_trait(cp)) {
-                    result << cp
-                }
-            }
-        }
-
-        result
-    }
-
-    @Transient
-    def getAuditConfig_trait() {
-        AuditConfig.getConfig(this)
-    }
-
-    @Transient
-    def getAuditConfig_trait(String field) {
-        AuditConfig.getConfig(this, field)
     }
 }

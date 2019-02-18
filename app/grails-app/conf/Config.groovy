@@ -612,7 +612,10 @@ grails.plugin.springsecurity.controllerAnnotations.staticRules = [
 ]
 
 auditLog {
-  logFullClassName = true
+    logFullClassName = true
+    stampEnabled = false // 1.1.3
+    stampAlways = false // 1.1.3
+    cacheDisabled = true // 1.1.3
 
   actorClosure = { request, session ->
 

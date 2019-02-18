@@ -1134,7 +1134,7 @@ class AjaxController {
 
                     members.each { m ->
                         m.setProperty(prop, owner.getProperty(prop))
-                        m.save(flush: true)
+                        //m.save(flush:true)
                     }
                 }
             }
@@ -1173,7 +1173,11 @@ class AjaxController {
                 def prop   = q[1]
 
                 member.setProperty(prop, null)
-                member.save(flush: true)
+                //member.save(flush:true)
+            }
+
+            members.each { m ->
+                m.save(flush:true) // only one save
             }
         }
 
@@ -1190,7 +1194,7 @@ class AjaxController {
         } else {
             sharedObject.isShared = false
         }
-        sharedObject.save(flusth:true)
+        sharedObject.save(flush:true)
 
         ((ShareSupport) owner).updateShare(sharedObject)
 
