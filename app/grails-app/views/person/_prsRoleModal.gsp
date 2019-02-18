@@ -1,9 +1,9 @@
 <%@ page import="com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole" %>
 <laser:serviceInjection />
 
-<semui:modal id="personRoleFormModal" text="${message(code: 'person.function_new.label')}">
+<semui:modal id="${tmplId}" message="${message}">
 
-    <g:form class="ui form" id="create_personRole" url="[controller: 'person', action: 'addPersonRole', params: [id: personInstance.id]]" method="POST">
+    <g:form class="ui form" url="[controller: 'person', action: 'addPersonRole', params: [id: personInstance.id]]" method="POST">
 
         <div class="field">
             <label>Einrichtung</label>
@@ -17,12 +17,14 @@
         </div>
 
         <div class="field">
-            <label>Funktion</label>
+            <label>${tmplRoleType}</label>
             <laser:select class="ui dropdown search"
                           name="newPrsRoleType"
-                          from="${PersonRole.getAllRefdataValues('Person Function')}"
+                          from="${roleTypeValues}"
                           optionKey="id"
                           optionValue="value" />
+
+            <input type="hidden" name="roleType" value="${roleType}" />
         </div>
     </g:form>
 </semui:modal>

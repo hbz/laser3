@@ -174,9 +174,17 @@ class SemanticUiNavigationTagLib {
                 linkTagAttrs.class = "item nextLink"
             }
             def nextLinkAttrs = linkTagAttrs.clone()
-
             nextLinkAttrs += [title: (attrs.next ? attrs.next : messageSource.getMessage('paginate.next', null, messageSource.getMessage('default.paginate.next', null, 'Next', locale), locale))]
+
             out << link(nextLinkAttrs, '<i class="angle right icon"></i>')
+
+            def allLinkAttrs = linkTagAttrs.clone()
+
+            allLinkAttrs.params.remove('offset')
+            allLinkAttrs.params.max = 100000; // TODO replace by constant and refactoring calls
+            allLinkAttrs += [title: messageSource.getMessage('default.paginate.all', null, 'Show all', locale)]
+
+            out << link(allLinkAttrs, '<i class="list icon"></i>')
         }
 
         out << '</div>'

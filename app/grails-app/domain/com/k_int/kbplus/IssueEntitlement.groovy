@@ -81,11 +81,11 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
   }
 
   Date getDerivedAccessStartDate() {
-    accessStartDate ? accessStartDate : subscription.startDate
+    accessStartDate ? accessStartDate : subscription?.startDate
   }
 
   Date getDerivedAccessEndDate() {
-    accessEndDate ? accessEndDate : subscription.endDate
+    accessEndDate ? accessEndDate : subscription?.endDate
   }
 
   public RefdataValue getAvailabilityStatus() {

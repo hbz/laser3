@@ -621,6 +621,7 @@ class SemanticUiTagLib {
         }
         out << '</div>'
     }
+
     def totalNumber = { attrs, body ->
 
         def total = attrs.total

@@ -349,11 +349,11 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
   }
 
   public Date getDerivedAccessStartDate() {
-    accessStartDate ? accessStartDate : pkg.startDate
+    accessStartDate ? accessStartDate : pkg?.startDate
   }
 
   public Date getDerivedAccessEndDate() {
-    accessEndDate ? accessEndDate : pkg.endDate
+    accessEndDate ? accessEndDate : pkg?.endDate
   }
 
   public RefdataValue getAvailabilityStatus() {

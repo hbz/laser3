@@ -278,6 +278,13 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
+    def userRoleDefinitions() {
+        Map result = [:]
+        result.matrix = [:]
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
     def pendingChanges() {
 
         // TODO: DEBUG ONLY

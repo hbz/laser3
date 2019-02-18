@@ -165,8 +165,6 @@ ${personInstance}
                                                             <i class="trash alternate icon"></i>
                                                         </g:link>
                                                     </div>
-
-
                                                </g:if>
                                            </div>
                                        </div>
@@ -175,10 +173,52 @@ ${personInstance}
                            </div>
 
                            <g:if test="${editable}">
-                               <a href="#personRoleFormModal" data-semui="modal" class="ui button">${message('code':'default.button.add.label')}</a>
+                               <a href="#prFunctionModal" data-semui="modal" class="ui button">${message('code':'default.button.add.label')}</a>
                            </g:if>
                        </dd>
                    </dl>
+
+                    <dl><dt><g:message code="person.positions.label" default="Positions"/></dt>
+                        <dd>
+                            <div class="ui divided middle aligned selection list la-flex-list">
+                                <g:each in="${personInstance.roleLinks}" var="link">
+                                    <g:if test="${link.positionType}">
+                                        <div class="ui item address-details">
+                                            <span data-tooltip="${message(code:'org.label')}" data-position="top right" data-variation="tiny">
+                                                <i class="ui icon university la-list-icon"></i>
+                                            </span>
+
+                                            <div class="content la-space-right">
+                                                <div class="header">
+                                                    ${link.positionType?.getI10n('value')}
+                                                </div>
+                                                <g:link controller="organisations" action="show" id="${link.org?.id}">${link.org?.name}</g:link>
+                                            </div>
+
+                                            <div class="content">
+                                                <g:if test="${editable}">
+                                                    <div class="ui mini icon buttons">
+                                                        <g:set var="oid" value="${link.class.name}:${link.id}" />
+                                                        <g:link class="ui negative button js-open-confirm-modal"
+                                                                data-confirm-term-what="function"
+                                                                data-confirm-term-what-detail="${link.positionType?.getI10n('value')}"
+                                                                data-confirm-term-how="delete"
+                                                                controller="person" action="deletePersonRole" id="${personInstance.id}"  params="[oid: oid]">
+                                                            <i class="trash alternate icon"></i>
+                                                        </g:link>
+                                                    </div>
+                                                </g:if>
+                                            </div>
+                                        </div>
+                                    </g:if>
+                                </g:each>
+                            </div>
+
+                            <g:if test="${editable}">
+                                <a href="#prPositionModal" data-semui="modal" class="ui button">${message('code':'default.button.add.label')}</a>
+                            </g:if>
+                        </dd>
+                    </dl>
 
                    <dl><dt><g:message code="person.responsibilites.label" default="Responsibilites"/></dt>
                        <dd>
@@ -296,7 +336,19 @@ ${personInstance}
 
 </div><!-- .grid -->
 
-<g:render template="prsRoleModal" model="[]" />
+<g:render template="prsRoleModal" model="[
+        tmplId: 'prFunctionModal',
+        tmplRoleType: 'Funktion',
+        roleType: PersonRole.TYPE_FUNCTION,
+        roleTypeValues: PersonRole.getAllRefdataValues('Person Function'),
+        message:'person.function_new.label']" />
+
+<g:render template="prsRoleModal" model="[
+        tmplId: 'prPositionModal',
+        tmplRoleType: 'Position',
+        roleType: PersonRole.TYPE_POSITION,
+        roleTypeValues: PersonRole.getAllRefdataValues('Person Position'),
+        message:'person.position_new.label']" />
 
 </body>
 </html>

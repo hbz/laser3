@@ -178,7 +178,7 @@
         </g:else>
     </tbody>
     <tfoot>
-        <g:if test="${data.count > 0 && data.pageSums.billingSums}">
+        <g:if test="${data.count > 0 && data.sums.billingSums}">
             <%
                 int colspan1 = 5
                 int colspan2 = 7
@@ -187,49 +187,6 @@
                     colspan2 = 6
                 }
             %>
-            <tr>
-                <th colspan="13">
-                    ${message(code:'financials.totalCostOnPage')}
-                </th>
-            </tr>
-            <g:each in="${data.pageSums.billingSums}" var="entry">
-                <tr>
-                    <td colspan="${colspan1}">
-
-                    </td>
-                    <td>
-                        ${message(code:'financials.sum.billing')} ${entry.currency}
-                    </td>
-                    <td class="la-exposed-bg">
-                        <g:formatNumber number="${entry.billingSum}" type="currency" currencySymbol="${entry.currency}"/>
-                    </td>
-                    <td>
-                        ${message(code:'financials.sum.billingAfterTax')}
-                    </td>
-                    <td class="la-exposed-bg">
-                        <g:formatNumber number="${entry.billingSumAfterTax}" type="currency" currencySymbol="${entry.currency}"/>
-                    </td>
-                    <td colspan="4">
-
-                    </td>
-                </tr>
-            </g:each>
-            <tr>
-                <td colspan="${colspan2}">
-
-                </td>
-                <td colspan="2">
-                    ${message(code:'financials.sum.local')}<br>
-                    ${message(code:'financials.sum.localAfterTax')}
-                </td>
-                <td class="la-exposed-bg">
-                    <g:formatNumber number="${data.pageSums.localSums.localSum}" type="currency" currencySymbol="" currencyCode="EUR"/><br>
-                    <g:formatNumber number="${data.pageSums.localSums.localSumAfterTax}" type="currency" currencySymbol="" currencyCode="EUR"/>
-                </td>
-                <td colspan="4">
-
-                </td>
-            </tr>
             <tr>
                 <th colspan="13">
                     ${message(code:'financials.totalCost')}
@@ -274,7 +231,7 @@
                 </td>
             </tr>
         </g:if>
-        <g:elseif test="${data.count > 0 && !data.pageSums.billingSums}">
+        <g:elseif test="${data.count > 0 && !data.sums.billingSums}">
             <tr>
                 <td colspan="13">
                     ${message(code:'financials.noCostsConsidered')}

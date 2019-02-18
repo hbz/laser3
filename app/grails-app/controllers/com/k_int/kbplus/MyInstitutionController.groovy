@@ -3334,7 +3334,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     def manageConsortiaLicenses() {
         def result = setResultGenerics()
 
-        result.max    = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         Map fsq = filterService.getOrgComboQuery([sort: 'o.sortname'], contextService.getOrg())
@@ -3348,24 +3348,33 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                         descr: PropertyDefinition.SUB_PROP,
                         tenant: null // public properties
                 ) +
-                PropertyDefinition.findAllWhere(
-                        descr: PropertyDefinition.SUB_PROP,
-                        tenant: contextService.getOrg() // private properties
-                )
+                        PropertyDefinition.findAllWhere(
+                                descr: PropertyDefinition.SUB_PROP,
+                                tenant: contextService.getOrg() // private properties
+                        )
 
-        String query = "select ci, subK, roleT.org from CostItem ci join ci.owner orgK join ci.sub subT join subT.instanceOf subK " +
+        /*
+        String query = "select ci, subT, roleT.org from CostItem ci join ci.owner orgK join ci.sub subT join subT.instanceOf subK " +
                 "join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
                 "where orgK = :org and orgK = roleK.org and roleK.roleType = :rdvCons " +
                 "and orgK = roleTK.org and roleTK.roleType = :rdvCons " +
                 "and roleT.roleType = :rdvSubscr "
+        */
 
-        Map qarams = [ org: result.institution,
-                       rdvCons: RDStore.OR_SUBSCRIPTION_CONSORTIA,
-                       rdvSubscr: RDStore.OR_SUBSCRIBER_CONS ]
+        // CostItem ci
 
-        /*if (params.q?.size() > 0) {
+        String query = "select ci, subT, roleT.org " +
+                " from CostItem ci right outer join ci.sub subT join subT.instanceOf subK " +
+                " join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
+                " where roleK.org = :org and roleK.roleType = :rdvCons " +
+                " and roleTK.org = :org and roleTK.roleType = :rdvCons " +
+                " and roleT.roleType = :rdvSubscr " +
+                " and ( ci is null or ci.owner = :org )"
 
-        } */
+
+        Map qarams = [org      : result.institution,
+                      rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
+                      rdvSubscr: RDStore.OR_SUBSCRIBER_CONS]
 
         if (params.member?.size() > 0) {
             query += " and roleT.org.id = :member "
@@ -3376,8 +3385,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             result.validOn = params.validOn
 
             query += " and ( "
-            query += "( ci.startDate <= :validOn OR (ci.startDate is null AND (subK.startDate <= :validOn OR subK.startDate is null) ) ) and "
-            query += "( ci.endDate >= :validOn OR (ci.endDate is null AND (subK.endDate >= :validOn OR subK.endDate is null) ) ) "
+            query += "( ci.startDate <= :validOn OR (ci.startDate is null AND (subT.startDate <= :validOn OR subT.startDate is null) ) ) and "
+            query += "( ci.endDate >= :validOn OR (ci.endDate is null AND (subT.endDate >= :validOn OR subT.endDate is null) ) ) "
             query += ") "
 
             DateFormat sdf = new DateUtil().getSimpleDateFormat_NoTime()
@@ -3385,46 +3394,65 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
 
         if (params.status?.size() > 0) {
-            query += " and subK.status.id = :status "
+            query += " and subT.status.id = :status "
             qarams.put('status', params.long('status'))
-        }
-        else {
-            query += " and subK.status.value != 'Deleted' "
+        } else {
+            query += " and subT.status.value != 'Deleted' "
         }
 
         if (params.filterPropDef?.size() > 0) {
-            def psq = propertyService.evalFilterQuery(params, query, 'subK', qarams)
+            def psq = propertyService.evalFilterQuery(params, query, 'subT', qarams)
             query = psq.query
             qarams = psq.queryParams
         }
 
         if (params.form?.size() > 0) {
-            query += " and subK.form.id = :form "
+            query += " and subT.form.id = :form "
             qarams.put('form', params.long('form'))
         }
         if (params.resource?.size() > 0) {
-            query += " and subK.resource.id = :resource "
+            query += " and subT.resource.id = :resource "
             qarams.put('resource', params.long('resource'))
         }
         if (params.subTypes?.size() > 0) {
-            query += " and subK.type.id in (:subTypes) "
-            qarams.put('subTypes', params.list('subTypes').collect{ it -> Long.parseLong(it) })
+            query += " and subT.type.id in (:subTypes) "
+            qarams.put('subTypes', params.list('subTypes').collect { it -> Long.parseLong(it) })
         }
 
-        String orderQuery = " order by roleT.org.sortname, subK.name"
+        String orderQuery = " order by roleT.org.sortname, subT.name"
         if (params.sort?.size() > 0) {
             orderQuery = " order by " + params.sort + " " + params.order
         }
 
-        // log.debug( query )
+        log.debug( query + " " + orderQuery )
         // log.debug( qarams )
 
         List<CostItem, Subscription, Org> costs = CostItem.executeQuery(
-                query + " and subT.status.value != 'Deleted' " + orderQuery,
-                qarams
+                query + " " + orderQuery, qarams
         )
         result.countCostItems = costs.size()
-        result.costItems = costs.drop((int)result.offset).take((int)result.max)
+        result.costItems = costs.drop((int) result.offset).take((int) result.max)
+
+        result.finances = {
+            Map entries = [:]
+            result.costItems.each { obj ->
+                if (obj[0]) {
+                    CostItem ci = obj[0]
+                    if (!entries."${ci.billingCurrency}") {
+                        entries."${ci.billingCurrency}" = 0.0
+                    }
+
+                    if (ci.costItemElementConfiguration == RDStore.CIEC_POSITIVE) {
+                        entries."${ci.billingCurrency}" += ci.costInBillingCurrencyAfterTax
+                    }
+                    else if (ci.costItemElementConfiguration == RDStore.CIEC_NEGATIVE) {
+                        entries."${ci.billingCurrency}" -= ci.costInBillingCurrencyAfterTax
+                    }
+                }
+            }
+            entries
+        }()
+
         result
     }
 
@@ -3654,7 +3682,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
             result
         }
-        render (template: "../templates/filter/orgFilterTable", model: [orgList: result.cons_members, tmplShowCheckbox: true])
+        render (template: "../templates/filter/orgFilterTable", model: [orgList: result.cons_members, tmplShowCheckbox: true, tmplConfigShow: ['sortname', 'name']])
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
