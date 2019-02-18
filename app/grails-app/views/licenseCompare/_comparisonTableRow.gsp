@@ -1,6 +1,6 @@
 <%@page import="de.laser.helper.RDStore;com.k_int.kbplus.*" %>
 <%
-    String unknownString = raw("<span data-tooltip=\"${RDStore.PERM_UNKNOWN.getI10n("value")}\"><i class=\"question circle icon large\"></i></span>")
+    String unknownString = raw("<span data-tooltip=\"${RDStore.PERM_UNKNOWN.getI10n("value")}\"><i class=\"question circle icon huge\"></i></span>")
 %>
 <tr>
     <th>${key}</th>
@@ -35,30 +35,30 @@
                                 case RefdataCategory.findByDesc("YNO"):
                                     switch(propValue.refValue) {
                                         case RDStore.YN_YES:
-                                        case RDStore.YNO_YES: value = raw(spanOpen+'<i class="green thumbs up icon large"></i></span>')
+                                        case RDStore.YNO_YES: value = raw(spanOpen+'<i class="green thumbs up icon huge"></i></span>')
                                             break
                                         case RDStore.YN_NO:
-                                        case RDStore.YNO_NO: value = raw(spanOpen+'<i class="red thumbs down icon large"></i></span>')
+                                        case RDStore.YNO_NO: value = raw(spanOpen+'<i class="red thumbs down icon huge"></i></span>')
                                             break
-                                        case RDStore.YNO_OTHER: value = raw(spanOpen+'<i class="yellow dot circle large"></i></span>')
+                                        case RDStore.YNO_OTHER: value = raw(spanOpen+'<i class="yellow dot circle huge"></i></span>')
                                             break
                                     }
                                     break
                                 case RefdataCategory.findByDesc("Permissions"):
                                     switch(propValue.refValue){
-                                        case RDStore.PERM_PERM_EXPL: value = raw(spanOpen+'<i class="green check circle icon large"></i></span>')
+                                        case RDStore.PERM_PERM_EXPL: value = raw(spanOpen+'<i class="green check circle icon huge"></i></span>')
                                             break
-                                        case RDStore.PERM_PERM_INTERP: value = raw(spanOpen+'<i class="green check circle outline icon large"></i></span>')
+                                        case RDStore.PERM_PERM_INTERP: value = raw(spanOpen+'<i class="green check circle outline icon huge"></i></span>')
                                             break
-                                        case RDStore.PERM_PROH_EXPL: value = raw(spanOpen+'<i class="red times circle icon large"></i></span>')
+                                        case RDStore.PERM_PROH_EXPL: value = raw(spanOpen+'<i class="red times circle icon huge"></i></span>')
                                             break
-                                        case RDStore.PERM_PROH_INTERP: value = raw(spanOpen+'<i class="red times circle outline icon large"></i></span>')
+                                        case RDStore.PERM_PROH_INTERP: value = raw(spanOpen+'<i class="red times circle outline icon huge"></i></span>')
                                             break
-                                        case RDStore.PERM_SILENT: value = raw(spanOpen+'<i class="hand point up large"></i></span>')
+                                        case RDStore.PERM_SILENT: value = raw(spanOpen+'<i class="hand point up huge"></i></span>')
                                             break
-                                        case RDStore.PERM_NOT_APPLICABLE: value = raw(spanOpen+'<i class="exclamation large"></i></span>')
+                                        case RDStore.PERM_NOT_APPLICABLE: value = raw(spanOpen+'<i class="exclamation huge"></i></span>')
                                             break
-                                        case RDStore.PERM_UNKNOWN: value = raw(spanOpen+'<i class="question circle icon large"></i></span>')
+                                        case RDStore.PERM_UNKNOWN: value = raw(spanOpen+'<i class="question circle icon huge"></i></span>')
                                             break
                                     }
                                     break
@@ -70,17 +70,15 @@
                                 break
                         }
                     }
-                    else if(propValue.paragraph)
-                        value = propValue.paragraph
                     else value = unknownString
                 %>
                 <td>
-                    ${value}
+                    ${value} <div class="ui circular massive label la-long-tooltip" data-tooltip="${propValue.paragraph}">§</div>
                 </td>
             </g:if>
             <g:else>
                 <td>
-                    ${unknownString}
+                    ${unknownString} <div class="ui circular massive label la-long-tooltip" data-tooltip="${propValue.paragraph}">§</div>
                 </td>
             </g:else>
         </g:each>
