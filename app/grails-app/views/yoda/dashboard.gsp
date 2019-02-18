@@ -22,11 +22,11 @@
                         <g:link controller="yoda" action="manageSystemMessage">${message(code: 'menu.admin.systemMessage')}</g:link>
                     </div>
                     <div class="item">
-                        <g:link controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</g:link>
+                        <g:link controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</g:link>
+
                     </div>
                     <div class="item">
-                        <br />
-                        <%--<g:link controller="admin" action="manageAffiliationRequests">${message(code: "menu.institutions.affiliation_requests")}</g:link>--%>
+                        <g:link controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</g:link>
                     </div>
                 </div>
             </div>
@@ -34,13 +34,13 @@
             <div class="column">
                 <div class="ui divided relaxed list">
                     <div class="item">
-                        <g:link controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</g:link>
-                    </div>
-                    <div class="item">
                         <g:link controller="yoda" action="appSecurity">${message(code:'menu.yoda.security')}</g:link>
                     </div>
                     <div class="item">
                         <g:link controller="yoda" action="userMatrix">${message(code:'menu.yoda.userMatrix')}</g:link>
+                    </div>
+                    <div class="item">
+                        <g:link class="item" controller="yoda" action="userRoleDefinitions">${message(code:'menu.yoda.userRoleDefinitions')}</g:link>
                     </div>
                 </div>
             </div>
@@ -51,10 +51,10 @@
                         <g:link controller="yoda" action="profiler">${message(code:'menu.yoda.profiler')}</g:link>
                     </div>
                     <div class="item">
-                        <g:link controller="yoda" action="cacheInfo">${message(code:'menu.yoda.cacheInfo')}</g:link>
+                        <g:link controller="yoda" action="quartzInfo">${message(code:'menu.yoda.quartzInfo')}</g:link>
                     </div>
                     <div class="item">
-                        <g:link controller="yoda" action="quartzInfo">${message(code:'menu.yoda.quartzInfo')}</g:link>
+                        <g:link controller="yoda" action="cacheInfo">${message(code:'menu.yoda.cacheInfo')}</g:link>
                     </div>
                 </div>
             </div>
