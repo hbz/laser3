@@ -60,15 +60,18 @@
 
           </g:form>
       </semui:filter>
-            <g:if test="${identifiers}">
-                <g:set var="zdbIds" value="${identifiers.zdbIds}"/>
-                <g:set var="onlineIds" value="${identifiers.onlineIds}"/>
-                <g:set var="printIds" value="${identifiers.printIds}"/>
-            </g:if>
-            <div>
-                ${identifiers}
-            </div>
-          <g:form controller="subscriptionDetails" action="addEntitlements" params="${[id:subscriptionInstance.id]}" method="post" enctype="multipart/form-data">
+            <%
+                List zdbIds = []
+                List onlineIds = []
+                List printIds = []
+                if(identifiers) {
+                    zdbIds = identifiers.zdbIds
+                    onlineIds = identifiers.onlineIds
+                    printIds = identifiers.printIds
+                    params.identifiers = identifiers
+                }
+            %>
+          <g:form controller="subscriptionDetails" action="addEntitlements" params="${params+[id:subscriptionInstance.id]}" method="post" enctype="multipart/form-data">
               <input type="file" id="kbartPreselect" name="kbartPreselect" accept="text/tab-separated-values"/>
               <input type="submit" value="${message(code:'subscription.details.addEntitlements.preselect', default:'Preselect Entitlements per KBART-File')}" class="ui button"/>
           </g:form>

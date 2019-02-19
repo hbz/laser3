@@ -658,7 +658,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
             result.tipps = IssueEntitlement.executeQuery("select tipp ${basequery}", qry_params, [max: result.max, offset: result.offset])
             LinkedHashMap identifiers = [zdbIds:[],onlineIds:[],printIds:[],unidentified:[]]
 
-            if(params.kbartPreselect) {
+            if(params.kbartPreselect && params.kbartPreselect instanceof CommonsMultipartFile) {
                 CommonsMultipartFile kbartFile = params.kbartPreselect
                 InputStream stream = kbartFile.getInputStream()
                 ArrayList<String> rows = stream.text.split('\n')
@@ -691,10 +691,13 @@ class SubscriptionDetailsController extends AbstractDebugController {
                     if(((zdbCol >= 0 && cols[zdbCol].trim().isEmpty()) || zdbCol < 0) &&
                        ((onlineIdentifierCol >= 0 && cols[onlineIdentifierCol].trim().isEmpty()) || onlineIdentifierCol < 0) &&
                        ((printIdentifierCol >= 0 && cols[printIdentifierCol].trim().isEmpty()) || printIdentifierCol < 0)) {
-                        identifiers.unidentified.add(cols[0])
+                        identifiers.unidentified.add('"'+cols[0]+'"')
                     }
                 }
                 result.identifiers = identifiers
+            }
+            else if(params.identifiers) {
+                result.identifiers = JSON.parse(params.identifiers)
             }
         } else {
             result.num_sub_rows = 0;
