@@ -60,9 +60,11 @@
 
           </g:form>
       </semui:filter>
-            <g:set var="zdbIds" value="${identifiers.zdbIds}"/>
-            <g:set var="onlineIds" value="${identifiers.onlineIds}"/>
-            <g:set var="printIds" value="${identifiers.printIds}"/>
+            <g:if test="${identifiers}">
+                <g:set var="zdbIds" value="${identifiers.zdbIds}"/>
+                <g:set var="onlineIds" value="${identifiers.onlineIds}"/>
+                <g:set var="printIds" value="${identifiers.printIds}"/>
+            </g:if>
             <div>
                 ${identifiers}
             </div>
@@ -105,7 +107,7 @@
                   <%
                       String serial
                       String electronicSerial
-                      boolean selected = false
+                      String checked = ""
                       if(tipp.title.type.equals(RDStore.TITLE_TYPE_EBOOK)) {
                           serial = tipp.title.getIdentifierValue('ISBN')
                           electronicSerial = tipp?.title?.getIdentifierValue('eISBN')
@@ -114,18 +116,20 @@
                           serial = tipp?.title?.getIdentifierValue('ISSN')
                           electronicSerial = tipp?.title?.getIdentifierValue('eISSN')
                       }
-                      if(zdbIds.indexOf(tipp.title.getIdentifierValue('zdb')) > -1) {
-                          selected = true
-                      }
-                      else if(onlineIds.indexOf(electronicSerial) > -1) {
-                          selected = true
-                      }
-                      else if(printIds.indexOf(serial) > -1) {
-                          selected = true
+                      if(identifiers) {
+                          if(zdbIds.indexOf(tipp.title.getIdentifierValue('zdb')) > -1) {
+                              checked = "checked"
+                          }
+                          else if(onlineIds.indexOf(electronicSerial) > -1) {
+                              checked = "checked"
+                          }
+                          else if(printIds.indexOf(serial) > -1) {
+                              checked = "checked"
+                          }
                       }
                   %>
                   <tr>
-                    <td><input type="checkbox" name="_bulkflag.${tipp.id}" class="bulkcheck" checked="${selected}"/></td>
+                    <td><input type="checkbox" name="_bulkflag.${tipp.id}" class="bulkcheck" ${checked}/></td>
                     <td>${counter++}</td>
                     <td>
                       ${tipp.title.type.getI10n("value")} –
