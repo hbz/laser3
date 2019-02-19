@@ -58,7 +58,7 @@
 
                 <div class="field">
                     <label>Steuerbar</label>
-                    <laser:select class="ui dropdown" name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCateogry')}"
+                    <laser:select class="ui dropdown" name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCategory')}"
                               from="${taxType}"
                               optionKey="id"
                               optionValue="value"

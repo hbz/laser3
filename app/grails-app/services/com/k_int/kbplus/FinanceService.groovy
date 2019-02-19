@@ -71,17 +71,17 @@ class FinanceService {
             b) owner = contextOrg (which is consortium) and sub.instanceOf = contextSub
          */
             case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
-                List consCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner = :owner and ci.sub in (select s from Subscription as s join s.orgRelations orgRoles where s.instanceOf = :sub '+filterConsQuery[0],[owner:org,sub:sub]+filterConsQuery[1])
+                List consCostItems = CostItem.executeQuery("select ci, (select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType.value = 'Subscriber_Consortial') as sortname from CostItem as ci where ci.owner = :owner and ci.sub in (select s from Subscription as s join s.orgRelations orgRoles where s.instanceOf = :sub "+filterConsQuery[0]+" order by sortname asc",[owner:org,sub:sub]+filterConsQuery[1])
                 result.cons.costItems = []
                 limit = consOffset+max
                 if(limit > consCostItems.size())
                     limit = consCostItems.size()
                 for(int i = consOffset;i < limit;i++) {
-                    result.cons.costItems.add(consCostItems[i])
+                    result.cons.costItems.add(consCostItems[i][0])
                 }
                 result.cons.count = consCostItems.size()
                 if(result.cons.count > 0){
-                    result.cons.sums = calculateResults(consCostItems)
+                    result.cons.sums = calculateResults(consCostItems.collect { row -> row[0]})
                 }
                 break
         /*
@@ -91,7 +91,10 @@ class FinanceService {
          */
             case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
                 Org subscrCons = Org.executeQuery("select o.org from OrgRole as o where o.sub = :sub and o.roleType = :cons",[sub:sub,cons: RDStore.OR_SUBSCRIPTION_CONSORTIA]).get(0)
-                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner = :owner and ci.sub = :sub and ci.isVisibleForSubscriber = true'+filterSubscrQuery[0],[owner:subscrCons,sub:sub]+filterSubscrQuery[1])
+                String visibility = ""
+                if(!subscrCons.equals(org))
+                    visibility = " and ci.isVisibleForSubscriber = true"
+                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner = :owner and ci.sub = :sub'+visibility+filterSubscrQuery[0],[owner:subscrCons,sub:sub]+filterSubscrQuery[1])
                 List costItems = []
                 limit = subscrOffset+max
                 if(limit > subscrCostItems.size())
