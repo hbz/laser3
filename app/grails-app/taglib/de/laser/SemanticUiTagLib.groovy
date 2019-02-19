@@ -3,6 +3,7 @@ package de.laser
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.UserSettings
+import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
 import org.codehaus.groovy.grails.plugins.web.taglib.ValidationTagLib
@@ -630,7 +631,57 @@ class SemanticUiTagLib {
         out << total
         out << '</div>'
     }
+    def dropdown = { attrs, body ->
+        if (!attrs.name) {
+            throwTagError("Tag [semui:dropdown] is missing required attribute [name]")
+        }
+        if (!attrs.containsKey('from')) {
+            throwTagError("Tag [semui:dropdown] is missing required attribute [from]")
+        }
 
+        def name = attrs.name
+        def id = attrs.id
+        def cssClass = attrs.class
+        def from = attrs.from
+        def optionKey = attrs.optionKey
+        def optionValue = attrs.optionValue
+        def iconWhich = attrs.iconWhich
+
+
+        def noSelection = attrs.noSelection
+
+        out << "<div class='ui fluid search selection dropdown ${cssClass}'>"
+
+        out << "<input type='hidden' name='${name}' id='${id}'>"
+        out << ' <i class="dropdown icon"></i>'
+        out << ' <div class="default text">'
+        out << "${noSelection}"
+
+        out << '</div>'
+        out << ' <div class="menu">'
+
+        from.eachWithIndex { el, i ->
+            out << '<div class="item" data-value="'
+            //out <<    el.toString().encodeAsHTML()
+            if (optionKey) {
+                out << optionKey(el)
+            }
+            out <<  '">'
+            out <<  optionValue(el).toString().encodeAsHTML()
+            if (el.tenant!= null){
+                out <<  " <i class='${iconWhich} icon'></i>"
+            }
+            out <<  '</div>'
+        }
+        // close <div class="menu">
+        out <<  '</div>'
+
+        // close <div class="ui fluid search selection dropdown">
+        out << '</div>'
+
+
+    println ('-----------------------------' + iconWhich)
+    }
     public SemanticUiTagLib() {}
 
 }

@@ -400,7 +400,7 @@
 
     <r:script type="text/javascript">
         $(document).ready(function(){
-              // initialize the form an fields
+              // initialize the form and fields
               $('.ui.form')
               .form();
             var val = "${params.dateBeforeFilter}";
