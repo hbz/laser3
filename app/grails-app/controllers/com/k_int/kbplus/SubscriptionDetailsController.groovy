@@ -6,6 +6,7 @@ import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
+import grails.doc.internal.StringEscapeCategory
 import grails.plugin.springsecurity.annotation.Secured
 
 // 2.0
@@ -596,7 +597,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def addEntitlements() {
-        log.debug("addEntitlements ..")
+        log.debug("addEntitlements .. params: ${params}")
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
@@ -658,8 +659,9 @@ class SubscriptionDetailsController extends AbstractDebugController {
             result.tipps = IssueEntitlement.executeQuery("select tipp ${basequery}", qry_params, [max: result.max, offset: result.offset])
             LinkedHashMap identifiers = [zdbIds:[],onlineIds:[],printIds:[],unidentified:[]]
 
-            if(params.kbartPreselect && params.kbartPreselect instanceof CommonsMultipartFile) {
+            if(params.kbartPreselect && !params.pagination) {
                 CommonsMultipartFile kbartFile = params.kbartPreselect
+                identifiers.filename = kbartFile.originalFilename
                 InputStream stream = kbartFile.getInputStream()
                 ArrayList<String> rows = stream.text.split('\n')
                 int zdbCol = -1, onlineIdentifierCol = -1, printIdentifierCol = -1
@@ -695,9 +697,14 @@ class SubscriptionDetailsController extends AbstractDebugController {
                     }
                 }
                 result.identifiers = identifiers
+                params.remove("kbartPreselct")
             }
             else if(params.identifiers) {
                 result.identifiers = JSON.parse(params.identifiers)
+            }
+            if(result.identifiers && result.identifiers.unidentified.size() > 0) {
+                String unidentifiedTitles = result.identifiers.unidentified.join(", ")
+                flash.error = g.message(code:'subscription.details.addEntitlements.unidentified',args:[StringEscapeCategory.encodeAsHtml(result.identifiers.filename), unidentifiedTitles])
             }
         } else {
             result.num_sub_rows = 0;

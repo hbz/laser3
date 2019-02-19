@@ -68,10 +68,12 @@
                     zdbIds = identifiers.zdbIds
                     onlineIds = identifiers.onlineIds
                     printIds = identifiers.printIds
-                    params.identifiers = identifiers
                 }
             %>
-          <g:form controller="subscriptionDetails" action="addEntitlements" params="${params+[id:subscriptionInstance.id]}" method="post" enctype="multipart/form-data">
+          <g:if test="${flash.error}">
+              <semui:messages data="${flash}"/>
+          </g:if>
+          <g:form controller="subscriptionDetails" action="addEntitlements" params="${[identifiers:identifiers,sort:params.sort,order:params.order,filter:params.filter,pkgFilter:params.pkgfilter,startsBefore:params.startsBefore,endsAfter:params.endAfter,id:subscriptionInstance.id]}" method="post" enctype="multipart/form-data">
               <input type="file" id="kbartPreselect" name="kbartPreselect" accept="text/tab-separated-values"/>
               <input type="submit" value="${message(code:'subscription.details.addEntitlements.preselect', default:'Preselect Entitlements per KBART-File')}" class="ui button"/>
           </g:form>
@@ -169,9 +171,12 @@
 
 
               <g:if test="${tipps}" >
+                <%
+                    params.remove("kbartPreselect")
+                %>
                 <semui:paginate controller="subscriptionDetails"
                                   action="addEntitlements" 
-                                  params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}"
+                                  params="${params+[identifiers:identifiers,pagination:true]}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}"
                                   max="${max}" 
                                   total="${num_tipp_rows}" />
               </g:if>
