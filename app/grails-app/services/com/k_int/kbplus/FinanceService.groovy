@@ -36,23 +36,28 @@ class FinanceService {
         int subscrOffset = 0
         switch(params.view) {
             case "own": ownOffset = offset
+                if(params.max) max = Long.parseLong(params.max)
                 break
             case "cons":
             case "consAtSubscr": consOffset = offset
+                if(params.max) max =  Long.parseLong(params.max)
                 break
             case "subscr": subscrOffset = offset
+                if(params.max) max = Long.parseLong(params.max)
                 break
             default: log.info("unhandled view: ${params.view}")
                 break
         }
-        List filterQuery = processFilterParams(params,params.view,true)
-        result.filterPresets = filterQuery[1]
-        List ownCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :owner and ci.sub = :sub and ci.sub.instanceOf is null '+filterQuery[0],[owner:org,sub:sub]+filterQuery[1])
+        List filterOwnQuery = processFilterParams(params,"own",true)
+        List filterConsQuery = processFilterParams(params,"cons",true)
+        List filterSubscrQuery = processFilterParams(params,"subscr",true)
+        result.filterPresets = filterConsQuery[1]
+        List ownCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :owner and ci.sub = :sub '+filterOwnQuery[0],[owner:org,sub:sub]+filterOwnQuery[1])
         result.own.costItems = []
         long limit = ownOffset+max
         if(limit > ownCostItems.size())
             limit = ownCostItems.size()
-        for(int i = 0;i < limit;i++) {
+        for(int i = ownOffset;i < limit;i++) {
             result.own.costItems.add(ownCostItems[i])
         }
         result.own.count = ownCostItems.size()
@@ -66,12 +71,12 @@ class FinanceService {
             b) owner = contextOrg (which is consortium) and sub.instanceOf = contextSub
          */
             case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
-                List consCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner = :owner and ci.sub in (select s from Subscription as s where s.instanceOf = :sub)'+filterQuery[0],[owner:org,sub:sub]+filterQuery[1])
+                List consCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner = :owner and ci.sub in (select s from Subscription as s join s.orgRelations orgRoles where s.instanceOf = :sub '+filterConsQuery[0],[owner:org,sub:sub]+filterConsQuery[1])
                 result.cons.costItems = []
                 limit = consOffset+max
                 if(limit > consCostItems.size())
                     limit = consCostItems.size()
-                for(int i = 0;i < limit;i++) {
+                for(int i = consOffset;i < limit;i++) {
                     result.cons.costItems.add(consCostItems[i])
                 }
                 result.cons.count = consCostItems.size()
@@ -86,12 +91,12 @@ class FinanceService {
          */
             case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
                 Org subscrCons = Org.executeQuery("select o.org from OrgRole as o where o.sub = :sub and o.roleType = :cons",[sub:sub,cons: RDStore.OR_SUBSCRIPTION_CONSORTIA]).get(0)
-                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner = :owner and ci.sub = :sub and ci.isVisibleForSubscriber = true'+filterQuery[0],[owner:subscrCons,sub:sub]+filterQuery[1])
+                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner = :owner and ci.sub = :sub and ci.isVisibleForSubscriber = true'+filterSubscrQuery[0],[owner:subscrCons,sub:sub]+filterSubscrQuery[1])
                 List costItems = []
                 limit = subscrOffset+max
                 if(limit > subscrCostItems.size())
                     limit = subscrCostItems.size()
-                for(int i = 0;i < limit;i++) {
+                for(int i = subscrOffset;i < limit;i++) {
                     costItems.add(subscrCostItems[i])
                 }
                 int count = subscrCostItems.size()
@@ -153,6 +158,7 @@ class FinanceService {
         ownSubscriptionCostItems.addAll(CostItem.executeQuery('select ci from CostItem ci join ci.sub sub join sub.orgRelations orgRoles where ' +
                 'ci.owner = :org and orgRoles.org = :org and orgRoles.roleType in :nonConsTypes and sub.status != :deleted'+filterQueryOwn[0]+' order by sub.name asc',
                 [org:org,nonConsTypes:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS],deleted:RDStore.SUBSCRIPTION_DELETED]+filterQueryOwn[1]))
+        ownSubscriptionCostItems.addAll(CostItem.executeQuery('select ci from CostItem ci where ci.owner = :org and ci.sub is null',[org:org]))
         result.own.costItems = []
         long limit = ownOffset+max
         if(limit > ownSubscriptionCostItems.size())
@@ -266,6 +272,10 @@ class FinanceService {
             filterQuery += " and sub.status = :filterSubStatus "
             queryParams.filterSubStatus = RDStore.SUBSCRIPTION_CURRENT
             params.filterSubStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
+        }
+        //the bracket from the subquery has to be closed when in subscription mode and for single subscription
+        if(filterView.equals("cons") && forSingleSubscription) {
+            filterQuery += ") "
         }
         //cost item filter settings
         //cost item title

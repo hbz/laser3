@@ -39,15 +39,14 @@
         </g:if>
 
         <!--
-        Sub.Mode: ${inSubMode}
-        Ctx.Sub: ${fixedSubscription}
+        Ctx.Sub: ${sub}
         CI.Sub: ${costItem?.sub}
         CI.SubPkg: ${costItem?.subPkg}
         -->
 
         <div class="fields">
             <div class="nine wide field">
-                <g:if test="${OrgRole.findBySubAndOrgAndRoleType(fixedSubscription, contextService.getOrg(), RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role')) || OrgRole.findBySubAndOrgAndRoleType(currentSubscription, contextService.getOrg(), RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role')) }">
+                <g:if test="${OrgRole.findBySubAndOrgAndRoleType(sub, contextService.getOrg(), RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role'))}">
                     <div class="two fields la-fields-no-margin-button">
                         <div class="field">
                             <label>${message(code:'financials.newCosts.costTitle')}</label>
@@ -277,17 +276,17 @@
                                value="${'com.k_int.kbplus.Subscription:' + costItem.sub.id}" />
                     </g:if>
                     <g:else>
-                        <g:if test="${inSubMode}">
+                        <g:if test="${sub}">
                             <input class="la-full-width la-select2-fixed-width"
                                    readonly='readonly'
-                                   value="${fixedSubscription?.getName()}" />
+                                   value="${sub.getName()}" />
                             <input name="newSubscription" id="pickedSubscription"
                                    type="hidden"
-                                   value="${'com.k_int.kbplus.Subscription:' + fixedSubscription?.id}" />
+                                   value="${'com.k_int.kbplus.Subscription:' + sub.id}" />
                         </g:if>
                         <g:else>
                             <input name="newSubscription" id="newSubscription" class="la-full-width select2 la-select2-fixed-width"
-                                   data-filterMode="${'com.k_int.kbplus.Subscription:' + fixedSubscription?.id}"
+                                   data-filterMode="${'com.k_int.kbplus.Subscription:' + sub.id}"
                                    data-subfilter=""
                                    placeholder="${message(code:'financials.newCosts.newLicence')}" />
                         </g:else>
@@ -296,10 +295,10 @@
 
                 <div class="field">
 
-                    <g:if test="${inSubMode}">
+                    <g:if test="${sub}">
                         <%
                             def validSubChilds = com.k_int.kbplus.Subscription.findAllByInstanceOfAndStatusNotEqual(
-                                    fixedSubscription,
+                                    sub,
                                     com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
                             )
                         %>
@@ -347,9 +346,9 @@
                                   noSelection="['':'']"
                                   value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}" />
                     </g:if>
-                    <g:elseif test="${inSubMode}">
+                    <g:elseif test="${sub}">
                         <g:select name="newPackage" id="newPackage" class="ui dropdown"
-                                  from="${[{}] + fixedSubscription?.packages}"
+                                  from="${[{}] + sub.packages}"
                                   optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
                                   optionKey="${{"com.k_int.kbplus.SubscriptionPackage:" + it?.id}}"
                                   noSelection="['':'']"
@@ -360,14 +359,14 @@
                     </g:else>
 
 
-                    <%-- the distinction between subMode (= fixedSubscription) and general view is done already in the controller! --%>
+                    <%-- the distinction between subMode (= sub) and general view is done already in the controller! --%>
                     <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
                     <input name="newIe" id="newIE" class="select2 la-select2-fixed-width" />
-                    <%--<g:if test="${! inSubMode}">
+                    <%--<g:if test="${!sub}">
                         <input name="newIe" id="newIE" data-subFilter="" data-disableReset="true" class="la-full-width" value="${params.newIe}">
                     </g:if>
                     <g:else>
-                        <input name="newIe" id="newIE" data-subFilter="${fixedSubscription?.id}" data-disableReset="true" class="select2 la-full-width" value="${params.newIe}">
+                        <input name="newIe" id="newIE" data-subFilter="${sub.id}" data-disableReset="true" class="select2 la-full-width" value="${params.newIe}">
                     </g:else>--%>
 
                 </div><!-- .field -->
@@ -505,7 +504,7 @@
 
             console.log( "ajaxPostFunc")
 
-            <g:if test="${! inSubMode}">
+            <g:if test="${!sub}">
 
             $('#costItem_ajaxModal #newSubscription').select2({
                 placeholder: "${message(code:'financials.newCosts.enterSubName')}",
@@ -553,7 +552,7 @@
                 },--%>
                 global: false,
                 ajax: {
-                    url: "<g:createLink controller='ajax' action='lookupIssueEntitlements' params='${params}'/>",
+                    url: "<g:createLink controller='ajax' action='lookupIssueEntitlements'/>",
                     data: function (term, page) {
                         return {
                             hideDeleted: 'true',
