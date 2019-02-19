@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Subscription" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Subscription" %>
 <!doctype html>
 <html>
   <head>
@@ -69,43 +69,69 @@
             <table class="ui celled stripped table">
               <thead>
                 <tr>
-                  <th style="vertical-align:middle;">
+                  <th rowspan="2" style="vertical-align:middle;">
                     <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" onClick="javascript:selectAll();"/></g:if>
                   </th>
-                    <th>${message(code:'sidewide.number')}</th>
-                  <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
-                  <th>ISSN</th>
-                  <th>eISSN</th>
-                  <g:sortableColumn params="${params}" property="startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
-                  <g:sortableColumn params="${params}" property="endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
-                  <th>${message(code:'tipp.embargo', default:'Embargo')}</th>
-                  <th>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
-                  <th>${message(code:'tipp.coverageNote', default:'Coverage Note')}</th>
+                  <th rowspan="2">${message(code:'sidewide.number')}</th>
+                  <g:sortableColumn rowspan="2" params="${params}" property="title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
+                  <th rowspan="2">ZDB-ID</th>
+                  <th rowspan="2">ISSN / ISBN</th>
+                  <th rowspan="2">eISSN / eISBN</th>
+                  <th colspan="2">${message(code:'tipp.coverage')}</th>
+                  <th colspan="2">${message(code:'tipp.access')}</th>
+                  <th rowspan="2">${message(code:'tipp.embargo', default:'Embargo')}</th>
+                  <th rowspan="2">${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
+                  <th rowspan="2">${message(code:'tipp.coverageNote', default:'Coverage Note')}</th>
+                  <th rowspan="2">${message(code:'default.actions.label')}</th>
+                </tr>
+                <tr>
+                    <g:sortableColumn params="${params}" property="startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
+                    <g:sortableColumn params="${params}" property="endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
+                    <g:sortableColumn params="${params}" property="accessStartDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
+                    <g:sortableColumn params="${params}" property="accessEndDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
                 </tr>
               </thead>
               <tbody>
                 <g:each in="${tipps}" var="tipp">
+                  <%
+                      String serial
+                      String electronicSerial
+                      if(tipp.title.type.equals(RDStore.TITLE_TYPE_EBOOK)) {
+                          serial = tipp.title.getIdentifierValue('ISBN')
+                          electronicSerial = tipp?.title?.getIdentifierValue('eISBN')
+                      }
+                      else if(tipp.title.type.equals(RDStore.TITLE_TYPE_JOURNAL)) {
+                          serial = tipp?.title?.getIdentifierValue('ISSN')
+                          electronicSerial = tipp?.title?.getIdentifierValue('eISSN')
+                      }
+                  %>
                   <tr>
                     <td><input type="checkbox" name="_bulkflag.${tipp.id}" class="bulkcheck"/></td>
                     <td>${counter++}</td>
                     <td>
+                      ${tipp.title.type.getI10n("value")} –
                       <g:link controller="tipp" id="${tipp.id}" action="show">${tipp.title.title}</g:link>
                       <br/>
                       <span class="pull-right">
                         <g:if test="${tipp?.hostPlatformURL}"><a href="${tipp?.hostPlatformURL.contains('http') ?:'http://'+tipp?.hostPlatformURL}" TITLE="${tipp?.hostPlatformURL}">${message(code:'tipp.hostPlatformURL', default:'Host Link')}</a>
-                            <a href="${tipp?.hostPlatformURL.contains('http') ?:'http://'+tipp?.hostPlatformURL}" TITLE="${tipp?.hostPlatformURL} (In new window)" target="_blank"><i class="icon-share-alt"></i></a> &nbsp;| &nbsp;</g:if>
-                            <g:link action="processAddEntitlements" 
-                                    params="${[siid:subscriptionInstance.id,('_bulkflag.'+tipp.id):'Y']}"
-                                    class="pull-right">${message(code:'subscription.details.addEntitlements.add_now', default:'Add now')}</g:link>
+                            <a href="${tipp?.hostPlatformURL.contains('http') ?:'http://'+tipp?.hostPlatformURL}" TITLE="${tipp?.hostPlatformURL} (In new window)" target="_blank"><i class="icon-share-alt"></i></a></g:if>
                       </span>
                     </td>
-                    <td style="white-space: nowrap;">${tipp?.title?.getIdentifierValue('ISSN')}</td>
-                    <td style="white-space: nowrap;">${tipp?.title?.getIdentifierValue('eISSN')}</td>
-                    <td style="white-space: nowrap;"><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${tipp.startDate}"/></td>
-                    <td style="white-space: nowrap;"><g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${tipp.endDate}"/></td>
+                    <td style="white-space: nowrap;">${tipp.title.getIdentifierValue('zdb')}</td>
+                    <td style="white-space: nowrap;">${serial}</td>
+                    <td style="white-space: nowrap;">${electronicSerial}</td>
+                    <td style="white-space: nowrap;"><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.startDate}"/></td>
+                    <td style="white-space: nowrap;"><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.endDate}"/></td>
+                    <td style="white-space: nowrap;"><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.accessStartDate}"/></td>
+                    <td style="white-space: nowrap;"><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.accessEndDate}"/></td>
                     <td>${tipp.embargo}</td>
                     <td>${tipp.coverageDepth}</td>
                     <td>${tipp.coverageNote}</td>
+                    <td>
+                        <g:link class="ui icon positive button" action="processAddEntitlements" params="${[siid:subscriptionInstance.id,('_bulkflag.'+tipp.id):'Y']}" data-tooltip="${message(code:'subscription.details.addEntitlements.add_now', default:'Add now')}">
+                            <i class="plus icon"></i>
+                        </g:link>
+                    </td>
                   </tr>
                 </g:each>
               </tbody>
