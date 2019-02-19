@@ -139,7 +139,7 @@ class PackageDetailsController extends AbstractDebugController {
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
-            base_qry += " order by lower(p.${params.sort}) ${params.order}"
+            base_qry += " order by p.${params.sort} ${params.order}"
         } else {
             base_qry += " order by lower(p.name) asc"
         }

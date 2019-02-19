@@ -50,15 +50,13 @@
 			      <tr>
 			      	<td><strong>Start Date</strong> <br/><strong> End Date</strong></td>
 			      	<td>
-<g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${sourceTIPPObj.startDate}"/>
-			      	 <br/>
-<g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${sourceTIPPObj.endDate}"/>
- </td>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sourceTIPPObj.startDate}"/><br>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sourceTIPPObj.endDate}"/>
+                    </td>
   			      	<td>
-  <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${targetTIPPObj.startDate}"/>
- <br/>
- <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${targetTIPPObj.endDate}"/>
-</td>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${targetTIPPObj.startDate}"/><br>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${targetTIPPObj.endDate}"/>
+                    </td>
 			      </tr>
 			      <tr>
 			      	<td><strong> Number of IEs</strong></td>
