@@ -7,6 +7,19 @@
     if (root != null && root != exception && root.message != exception.message) {
         causedby = "Cause: " + root.message
     }
+
+    String nl = "%0D%0A"
+
+    String mailString   = "mailto:laser_support@hbz-nrw.de?subject=Fehlerbericht - ${grailsApplication.config.laserSystemId}" +
+                        "&body=Ihre Fehlerbeschreibung (bitte angeben): " + nl + nl +
+                        "URI: ${request.forwardURI} " + nl +
+                        "Zeitpunkt: ${new Date()} " + nl +
+                        "System: ${grailsApplication.config?.laserSystemId} " + nl +
+                        "Branch: ${grailsApplication.metadata['repository.branch']} " + nl +
+                        "Commit: ${grailsApplication.metadata['repository.revision.number']} " + nl +
+                        "Class: ${root?.getClass()?.name ?: exception.getClass().name} " + nl +
+                        "Message: ${exception.message} " + nl +
+                        "${causedby}" + nl
 %>
 <!doctype html>
 <html>
@@ -34,7 +47,7 @@
                 <p>${exception.message}</p>
                 <br/>
                 <p>
-                    <a href="mailto:laser_support@hbz-nrw.de?subject=Server Error - ${grailsApplication.config.laserSystemId}&body=Ihre detaillierte Beschreibung des Fehlers (Wie?, Wodurch?): %0D%0AZeitpunkt: ${new Date()} %0D%0ACommit:${grailsApplication.metadata['repository.revision.number']}%0D%0ABranch:${grailsApplication.metadata['repository.branch']}%0D%0AURI: ${request.forwardURI} %0D%0AClass: ${root?.getClass()?.name ?: exception.getClass().name} %0D%0AMessage: ${exception.message} %0D%0A${causedby}">
+                    <a href="mailto:laser_support@hbz-nrw.de?${mailString}">
                         E-Mail an Support verschicken
                     </a>
                 </p>

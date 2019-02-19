@@ -41,14 +41,19 @@ class AuditConfig {
     }
 
     static void addConfig(Object obj, String field) {
-        new AuditConfig (
-            referenceId: obj.getId(),
-            referenceClass: obj.getClass().name,
-            referenceField: field
-        ).save(flush: true)
+        if (obj) {
+            new AuditConfig(
+                    referenceId: obj.getId(),
+                    referenceClass: obj.getClass().name,
+                    referenceField: field
+            ).save(flush: true)
+        }
     }
 
     static AuditConfig getConfig(Object obj, String field) {
+        if (! obj)
+            return null
+
         AuditConfig.findWhere(
             referenceId: obj.getId(),
             referenceClass: obj.getClass().name,
@@ -57,17 +62,21 @@ class AuditConfig {
     }
 
     static void removeConfig(Object obj, String field) {
-        AuditConfig.findAllWhere(
-                referenceId: obj.getId(),
-                referenceClass: obj.getClass().name,
-                referenceField: field
-        ).each{ it.delete() }
+        if (obj) {
+            AuditConfig.findAllWhere(
+                    referenceId: obj.getId(),
+                    referenceClass: obj.getClass().name,
+                    referenceField: field
+            ).each { it.delete() }
+        }
     }
 
     static void removeAllConfigs(Object obj) {
-        AuditConfig.findAllWhere(
-                referenceId: obj.getId(),
-                referenceClass: obj.getClass().name
-        ).each{ it.delete() }
+        if (obj) {
+            AuditConfig.findAllWhere(
+                    referenceId: obj.getId(),
+                    referenceClass: obj.getClass().name
+            ).each { it.delete() }
+        }
     }
 }
