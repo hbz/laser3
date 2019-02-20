@@ -32,8 +32,8 @@ class UsageController extends AbstractDebugController {
         // criteria and totalCount for PageResultList Object seems to be problematic with projections and aggregation
         // use extra hql query for now, TODO only use hql base query and move the query out of this method
 
-        def hql = "select stc.supplierId, stc.customerId, stc.haveUpTo, stc.factType.id from StatsTripleCursor as stc"
-        def groupCondition = " group by stc.supplierId, stc.customerId, stc.haveUpTo, stc.factType.id"
+        def hql = "select stc.supplierId, stc.customerId, max(stc.haveUpTo), stc.factType.id from StatsTripleCursor as stc"
+        def groupCondition = " group by stc.supplierId, stc.customerId, stc.factType.id"
         def whereConditions = []
         def queryParams = [:]
         if (params.supplier){
@@ -62,8 +62,8 @@ class UsageController extends AbstractDebugController {
             projections {
                 groupProperty('supplierId', 'supplierId')
                 groupProperty('customerId', 'customerId')
-                groupProperty('haveUpTo', 'haveUpTo')
                 groupProperty('factType', 'factType')
+                max('haveUpTo', 'haveUpTo')
                 sum('numFacts', 'numFacts')
             }
             if (params.supplier) {
