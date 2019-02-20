@@ -59,7 +59,6 @@
                     </g:each>
                 </td>
                 <td>
-                    ÜBERPRÜFEN:<br>
                     <g:each in="${targetSubscription?.packages?.sort { it.pkg.name }}" var="sp">
                         <b>${message(code: 'subscription.packages.label')}:</b>
                         <g:link controller="packageDetails" action="show" target="_blank" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
@@ -74,14 +73,6 @@
                         </g:link>
                         <br><br>
                     </g:if>
-<%
-def target_visibleOrgRelations = []
-targetSubscription?.orgRelations?.each { or ->
-    if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
-        target_visibleOrgRelations << or
-    }
-}
-%>
                     <g:each in="${target_visibleOrgRelations?.sort { it.roleType?.getI10n("value") }}" var="role">
                         <g:if test="${role.org}">
                             <b>${role?.roleType?.getI10n("value")}:</b>

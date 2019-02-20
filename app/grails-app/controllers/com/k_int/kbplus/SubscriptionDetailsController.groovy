@@ -2550,6 +2550,15 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             }
         }
         result.visibleOrgRelations.sort { it.org.sortname }
+
+        result.target_visibleOrgRelations = []
+        result.targetSubscription?.orgRelations?.each { or ->
+            if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                result.target_visibleOrgRelations << or
+            }
+        }
+        result.target_visibleOrgRelations.sort { it.org.sortname }
+
         result.modalPrsLinkRole = RDStore.PRS_RESP_SPEC_SUB_EDITOR
         result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
         result.visiblePrsLinks = []
