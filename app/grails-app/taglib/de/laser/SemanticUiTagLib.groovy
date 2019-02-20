@@ -680,8 +680,6 @@ class SemanticUiTagLib {
         // close <div class="ui fluid search selection dropdown">
         out << '</div>'
 
-
-    println ('-----------------------------' + iconWhich)
     }
     public SemanticUiTagLib() {}
 
