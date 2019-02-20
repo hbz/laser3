@@ -506,7 +506,7 @@ from License as l where (
 
         if (! params.status) {
             if (params.isSiteReloaded != "yes") {
-                params.status = RefdataValue.getByValueAndCategory('Current', 'Subscription Status').id
+                params.status = RDStore.SUBSCRIPTION_CURRENT.id
             }
             else {
                 params.status = 'FETCH_ALL'
@@ -514,20 +514,11 @@ from License as l where (
         }
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-        result.num_sub_rows = Subscription.executeQuery("select s.id " + tmpQ[0], tmpQ[1]).size()
         List subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]) //,[max: result.max, offset: result.offset]
+        result.num_sub_rows = subscriptions.size()
 
         result.date_restriction = date_restriction;
-
-        result.propList =
-                PropertyDefinition.findAllWhere(
-                    descr: PropertyDefinition.SUB_PROP,
-                    tenant: null // public properties
-                ) +
-                PropertyDefinition.findAllWhere(
-                    descr: PropertyDefinition.SUB_PROP,
-                    tenant: contextService.getOrg() // private properties
-                )
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
 
         if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)) {
             result.statsWibid = result.institution.getIdentifierByType('wibid')?.value

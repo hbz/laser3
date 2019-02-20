@@ -342,7 +342,7 @@
                             <g:link controller="subscriptionDetails" action="members" params="${[id:s.id]}">
                             ${Subscription.findAllByInstanceOfAndStatusNotEqual(
                                     s,
-                                    RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
+                                    RDStore.SUBSCRIPTION_DELETED
                             )?.size()}
                             </g:link>
                         </td>
@@ -400,7 +400,7 @@
 
     <r:script type="text/javascript">
         $(document).ready(function(){
-              // initialize the form an fields
+              // initialize the form and fields
               $('.ui.form')
               .form();
             var val = "${params.dateBeforeFilter}";
