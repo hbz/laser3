@@ -2796,7 +2796,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 }
             }
             result.visibleOrgRelations.sort { it.org.sortname }
-            result.modalPrsLinkRole = RefdataValue.findByValue('Specific subscription editor')
+            result.modalPrsLinkRole = RDStore.PRS_RESP_SPEC_SUB_EDITOR
             result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
             result.visiblePrsLinks = []
             result.subscriptionInstance.prsLinks.each { pl ->

@@ -64,7 +64,7 @@ ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}
 
 %{--------------------------------------------------------------------------------------------------------------------}%
             <g:if test="${workFlowPart == 1}">
-                <g:render template="copyEigenschaften" model="${[validSubChilds: validSubChilds]}"/>
+                <g:render template="copyElements" model="${[validSubChilds: validSubChilds]}"/>
             </g:if>
 %{--------------------------------------------------------------------------------------------------------------------}%
             %{--<g:if test="${workFlowPart == 2}">--}%
@@ -137,7 +137,7 @@ ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}
             %{--</g:if>--}%
 %{--------------------------------------------------------------------------------------------------------------------}%
             <g:if test="${workFlowPart == 3}">
-                <g:render template="copyTeilnehmer" model="${[validSubChilds: validSubChilds]}"/>
+                <g:render template="copySubscriber" model="${[validSubChilds: validSubChilds]}"/>
             </g:if>
 %{--------------------------------------------------------------------------------------------------------------------}%
             <g:if test="${workFlowPart == 4}">
