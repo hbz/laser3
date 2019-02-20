@@ -6,6 +6,7 @@ import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
+import grails.doc.internal.StringEscapeCategory
 import grails.plugin.springsecurity.annotation.Secured
 
 // 2.0
@@ -19,6 +20,7 @@ import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -595,7 +597,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def addEntitlements() {
-        log.debug("addEntitlements ..")
+        log.debug("addEntitlements .. params: ${params}")
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
@@ -654,7 +656,56 @@ class SubscriptionDetailsController extends AbstractDebugController {
             log.debug("Query ${basequery} ${qry_params}");
 
             result.num_tipp_rows = IssueEntitlement.executeQuery("select tipp.id " + basequery, qry_params).size()
-            result.tipps = IssueEntitlement.executeQuery("select tipp ${basequery}", qry_params, [max: result.max, offset: result.offset]);
+            result.tipps = IssueEntitlement.executeQuery("select tipp ${basequery}", qry_params, [max: result.max, offset: result.offset])
+            LinkedHashMap identifiers = [zdbIds:[],onlineIds:[],printIds:[],unidentified:[]]
+
+            if(params.kbartPreselect && !params.pagination) {
+                CommonsMultipartFile kbartFile = params.kbartPreselect
+                identifiers.filename = kbartFile.originalFilename
+                InputStream stream = kbartFile.getInputStream()
+                ArrayList<String> rows = stream.text.split('\n')
+                int zdbCol = -1, onlineIdentifierCol = -1, printIdentifierCol = -1
+                //read off first line of KBART file
+                rows[0].split('\t').eachWithIndex { headerCol, int c ->
+                    switch(headerCol) {
+                        case "zdb_id": zdbCol = c
+                            break
+                        case "print_identifier": printIdentifierCol = c
+                            break
+                        case "online_identifier": onlineIdentifierCol = c
+                            break
+                    }
+                }
+                //after having read off the header row, pop the first row
+                rows.remove(0)
+                //now, assemble the identifiers available to highlight
+                rows.each { row ->
+                    ArrayList<String> cols = row.split('\t')
+                    if(zdbCol >= 0 && cols[zdbCol]) {
+                        identifiers.zdbIds.add(cols[zdbCol])
+                    }
+                    if(onlineIdentifierCol >= 0 && cols[onlineIdentifierCol]) {
+                        identifiers.onlineIds.add(cols[onlineIdentifierCol])
+                    }
+                    if(printIdentifierCol >= 0 && cols[printIdentifierCol]) {
+                        identifiers.printIds.add(cols[printIdentifierCol])
+                    }
+                    if(((zdbCol >= 0 && cols[zdbCol].trim().isEmpty()) || zdbCol < 0) &&
+                       ((onlineIdentifierCol >= 0 && cols[onlineIdentifierCol].trim().isEmpty()) || onlineIdentifierCol < 0) &&
+                       ((printIdentifierCol >= 0 && cols[printIdentifierCol].trim().isEmpty()) || printIdentifierCol < 0)) {
+                        identifiers.unidentified.add('"'+cols[0]+'"')
+                    }
+                }
+                result.identifiers = identifiers
+                params.remove("kbartPreselct")
+            }
+            else if(params.identifiers) {
+                result.identifiers = JSON.parse(params.identifiers)
+            }
+            if(result.identifiers && result.identifiers.unidentified.size() > 0) {
+                String unidentifiedTitles = result.identifiers.unidentified.join(", ")
+                flash.error = g.message(code:'subscription.details.addEntitlements.unidentified',args:[StringEscapeCategory.encodeAsHtml(result.identifiers.filename), unidentifiedTitles])
+            }
         } else {
             result.num_sub_rows = 0;
             result.tipps = []

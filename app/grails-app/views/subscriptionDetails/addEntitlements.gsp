@@ -60,7 +60,23 @@
 
           </g:form>
       </semui:filter>
-
+            <%
+                List zdbIds = []
+                List onlineIds = []
+                List printIds = []
+                if(identifiers) {
+                    zdbIds = identifiers.zdbIds
+                    onlineIds = identifiers.onlineIds
+                    printIds = identifiers.printIds
+                }
+            %>
+          <g:if test="${flash.error}">
+              <semui:messages data="${flash}"/>
+          </g:if>
+          <g:form controller="subscriptionDetails" action="addEntitlements" params="${[identifiers:identifiers,sort:params.sort,order:params.order,filter:params.filter,pkgFilter:params.pkgfilter,startsBefore:params.startsBefore,endsAfter:params.endAfter,id:subscriptionInstance.id]}" method="post" enctype="multipart/form-data">
+              <input type="file" id="kbartPreselect" name="kbartPreselect" accept="text/tab-separated-values"/>
+              <input type="submit" value="${message(code:'subscription.details.addEntitlements.preselect', default:'Preselect Entitlements per KBART-File')}" class="ui button"/>
+          </g:form>
           <g:form action="processAddEntitlements">
             <input type="hidden" name="siid" value="${subscriptionInstance.id}"/>
               <div class="paginateButtons" style="text-align:center">
@@ -96,6 +112,7 @@
                   <%
                       String serial
                       String electronicSerial
+                      String checked = ""
                       if(tipp.title.type.equals(RDStore.TITLE_TYPE_EBOOK)) {
                           serial = tipp.title.getIdentifierValue('ISBN')
                           electronicSerial = tipp?.title?.getIdentifierValue('eISBN')
@@ -104,9 +121,20 @@
                           serial = tipp?.title?.getIdentifierValue('ISSN')
                           electronicSerial = tipp?.title?.getIdentifierValue('eISSN')
                       }
+                      if(identifiers) {
+                          if(zdbIds.indexOf(tipp.title.getIdentifierValue('zdb')) > -1) {
+                              checked = "checked"
+                          }
+                          else if(onlineIds.indexOf(electronicSerial) > -1) {
+                              checked = "checked"
+                          }
+                          else if(printIds.indexOf(serial) > -1) {
+                              checked = "checked"
+                          }
+                      }
                   %>
                   <tr>
-                    <td><input type="checkbox" name="_bulkflag.${tipp.id}" class="bulkcheck"/></td>
+                    <td><input type="checkbox" name="_bulkflag.${tipp.id}" class="bulkcheck" ${checked}/></td>
                     <td>${counter++}</td>
                     <td>
                       ${tipp.title.type.getI10n("value")} –
@@ -143,9 +171,12 @@
 
 
               <g:if test="${tipps}" >
+                <%
+                    params.remove("kbartPreselect")
+                %>
                 <semui:paginate controller="subscriptionDetails"
                                   action="addEntitlements" 
-                                  params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}"
+                                  params="${params+[identifiers:identifiers,pagination:true]}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}"
                                   max="${max}" 
                                   total="${num_tipp_rows}" />
               </g:if>
