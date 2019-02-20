@@ -136,7 +136,7 @@
 
                     <td class="x">
                         <g:link controller="subscriptionDetails" action="show" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
-                        <g:if test="${editable && i<1}">
+                        <g:if test="${editable}">
                             <g:each in="${sub.getAllSubscribers()}" var="subscr">
                                 <g:link class="ui icon negative button js-open-confirm-modal"
                                         data-confirm-term-what="membershipSubscription"
