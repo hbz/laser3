@@ -2534,7 +2534,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             default:  workFlowPart1(); break;
         }
 
-        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(result.subscriptionInstance.class.name,result.subscriptionInstance.id)
+        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(result.subscriptionInstance.class.name, result.subscriptionInstance.id)
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 
@@ -2542,6 +2542,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         def contextOrg = contextService.getOrg()
         result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
         result.contextOrg = contextOrg
+
         // restrict visible for templates/links/orgLinksAsList
         result.visibleOrgRelations = []
         result.subscriptionInstance.orgRelations?.each { or ->
@@ -2903,7 +2904,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             }
             boolean isAddNewProp = sourceProp.type?.multipleOccurrence
             if ( (! targetProp) || isAddNewProp) {
-                targetProp = new SubscriptionPrivateProperty(type: sourceProp.type, owner: targetSub)
+                if (sourceProp instanceof CustomProperty) {
+                    targetProp = new SubscriptionCustomProperty(type: sourceProp.type, owner: targetSub)
+                } else {
+                    targetProp = new SubscriptionPrivateProperty(type: sourceProp.type, owner: targetSub)
+                }
             }
             targetProp = sourceProp.copyInto(targetProp)
             if (targetProp.save(flush: true)){
@@ -2911,7 +2916,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 return true
             } else {
                 log.error("Problem saving property ${targetProp.errors}")
-                flash.error("Es ist ein Fehler aufgetreten.")
+                flash.error += "Es ist ein Fehler beim Speichern von ${sourceProp.value} aufgetreten."
                 return false
             }
             //newSub.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
