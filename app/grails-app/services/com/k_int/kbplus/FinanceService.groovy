@@ -137,11 +137,11 @@ class FinanceService {
         int consOffset = 0
         int subscrOffset = 0
         switch(params.view) {
-            case "own": ownOffset = Integer.parseInt(params.offset)
+            case "own": ownOffset = params.offset ? Integer.parseInt(params.offset) : 0
                 break
-            case "cons": consOffset = Integer.parseInt(params.offset)
+            case "cons": consOffset = params.offset ? Integer.parseInt(params.offset) : 0
                 break
-            case "subscr": subscrOffset = Integer.parseInt(params.offset)
+            case "subscr": subscrOffset = params.offset ? Integer.parseInt(params.offset) : 0
                 break
             default: log.info("unhandled view: ${params.view}")
                 break
