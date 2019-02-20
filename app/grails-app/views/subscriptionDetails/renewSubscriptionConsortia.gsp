@@ -19,7 +19,37 @@ ${message(code: 'subscription.details.renewalsConsortium.label')}: ${subscriptio
 
 <semui:messages data="${flash}"/>
 
-<h3>${message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps', default: 'Steps: {0} of {1}', args: [workFlowPart, 3])}</h3>
+<div class="ui tablet stackable steps">
+    <div class="${workFlowPart == 1 ? 'active' : 'disabled'} step">
+        <div class="content">
+            <div class="title">Auswahl Eigenschaften</div>
+            <div class="description">
+                <i class="calendar alternate outline icon"></i>Datum
+                <i class="tags icon"></i>Merkmale
+                <i class="university icon"></i>Organisationen
+                <i class="newspaper icon"></i>Titel
+            </div>
+        </div>
+    </div>
+    <div class="${workFlowPart == 2 ? 'active' : 'disabled'} step">
+        <div class="content">
+            <div class="title">Weitere Lizenzeigenschaften</div>
+            <div class="description">
+                <i class="checked calendar icon"></i>Aufgaben
+                <i class="file outline icon"></i>Dokumente
+                <i class="sticky note outline icon"></i>Anmerkungen
+            </div>
+        </div>
+    </div>
+    <div class="${workFlowPart == 3 ? 'active' : 'disabled'} step">
+        <div class="content">
+            <div class="title">Ausahl Teilnehmer</div>
+            <div class="description">
+                <i class="university circle icon"></i>Teilnehmer
+            </div>
+        </div>
+    </div>
+</div>
 
 <semui:form>
     <g:form action="renewSubscriptionConsortia" controller="subscriptionDetails" id="${params.id}"
