@@ -48,8 +48,7 @@
                             $.ajax({
                                 url: "<g:createLink controller='finance' action='editCostItem'/>",
                                 data: {
-                                    fixedSub: "${fixedSubscription?.id}",
-                                    currSub: "${currentSubscription?.id}",
+                                    sub: "${fixedSubscription?.id}",
                                     tab: "${params.tab}"
                                 }
                             }).done(function (data) {
@@ -105,19 +104,19 @@
                             <!-- OWNER -->
                             <div data-tab="own" class="ui bottom attached tab">
                                 <br />
-                                <g:render template="result_tab_owner" model="[forSingleSubscription: forSingleSubscription, editable: editable, data: own]"/>
+                                <g:render template="result_tab_owner" model="[fixedSubscription: fixedSubscription, editable: editable, data: own]"/>
                             </div><!-- OWNER -->
                         </g:if>
                         <g:if test="${showView.equals("cons") || showView.equals("consAtSubscr")}">
                             <div data-tab="cons" class="ui bottom attached tab">
                                 <br />
-                                <g:render template="result_tab_cons" model="[forSingleSubscription: forSingleSubscription, editable: editable, data: cons, orgRoles: financialData.consSubscribers]"/>
+                                <g:render template="result_tab_cons" model="[fixedSubscription: fixedSubscription, editable: editable, data: cons, orgRoles: financialData.consSubscribers]"/>
                             </div>
                         </g:if>
                         <g:if test="${showView.equals("subscr")}">
                             <div data-tab="subscr" class="ui bottom attached tab">
                                 <br />
-                                <g:render template="result_tab_subscr" model="[editable: editable, data:subscr]"/>
+                                <g:render template="result_tab_subscr" model="[fixedSubscription: fixedSubscription, editable: editable, data:subscr]"/>
                             </div>
                         </g:if>
                     </div>

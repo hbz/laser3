@@ -51,11 +51,7 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
            embargo column:'ie_embargo'
      coverageDepth column:'ie_coverage_depth'
       coverageNote column:'ie_coverage_note',type: 'text'
-         // coreTitle column:'ie_core_title'
           ieReason column:'ie_reason'
-   // coreStatusStart comumn:'ie_core_status_start'
-   //   coreStatusEnd comumn:'ie_core_status_end'
-   //      coreStatus comumn:'ie_core_status_rv_fk'
    accessStartDate column:'ie_access_start_date'
      accessEndDate column:'ie_access_end_date'
             medium column:'ie_medium_rv_fk'
@@ -75,7 +71,6 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
     embargo       (nullable:true, blank:true)
     coverageDepth (nullable:true, blank:true)
     coverageNote  (nullable:true, blank:true)
-    // coreTitle(nullable:true, blank:true)
     ieReason      (nullable:true, blank:true)
     coreStatusStart(nullable:true, blank:true)
     coreStatusEnd (nullable:true, blank:true)
@@ -86,11 +81,11 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
   }
 
   Date getDerivedAccessStartDate() {
-    accessStartDate ? accessStartDate : subscription.startDate
+    accessStartDate ? accessStartDate : subscription?.startDate
   }
 
   Date getDerivedAccessEndDate() {
-    accessEndDate ? accessEndDate : subscription.endDate
+    accessEndDate ? accessEndDate : subscription?.endDate
   }
 
   public RefdataValue getAvailabilityStatus() {

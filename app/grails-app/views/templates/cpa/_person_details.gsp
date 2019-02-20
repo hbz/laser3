@@ -29,7 +29,7 @@
 
         </g:if>
 
-        <g:if test="${! personRole}">
+        <g:if test="${! personRole && ! tmplHideLinkToAddressbook}">
 
             <g:each in="${person?.roleLinks}" var="role">
                 <div class="item">
@@ -58,6 +58,9 @@
                 </h5>
                 <g:if test="${personRole?.functionType}">
                      (${personRole?.functionType?.getI10n('value')})
+                </g:if>
+                <g:if test="${personRole?.positionType}">
+                    (${personRole?.positionType?.getI10n('value')})
                 </g:if>
                 <g:if test="${personRole?.responsibilityType}">
                     (${personRole?.responsibilityType?.getI10n('value')})

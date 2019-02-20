@@ -400,11 +400,16 @@
                             <g:link class="item" controller="yoda" action="settings">System Settings</g:link>
                             <g:link class="item" controller="yoda" action="manageSystemMessage">${message(code: 'menu.admin.systemMessage', default: 'System Message')}</g:link>
                             <g:link class="item" controller="yoda" action="appConfig">App Config</g:link>
-                            <g:link class="item" controller="yoda" action="appSecurity">Security</g:link>
-                            <g:link class="item" controller="yoda" action="userMatrix">User Matrix</g:link>
+
+
                             <g:link class="item" controller="yoda" action="profiler">${message(code:'menu.yoda.profiler')}</g:link>
-                            <g:link class="item" controller="yoda" action="cacheInfo">${message(code:'menu.yoda.cacheInfo')}</g:link>
                             <g:link class="item" controller="yoda" action="quartzInfo">${message(code:'menu.yoda.quartzInfo')}</g:link>
+                            <g:link class="item" controller="yoda" action="cacheInfo">${message(code:'menu.yoda.cacheInfo')}</g:link>
+
+                            <g:link class="item" controller="yoda" action="appSecurity">Security</g:link>
+                            <g:link class="item" controller="yoda" action="userMatrix">${message(code:'menu.yoda.userMatrix')}</g:link>
+                            <g:link class="item" controller="yoda" action="userRoleDefinitions">${message(code:'menu.yoda.userRoleDefinitions')}</g:link>
+
                             <%--<a class="item" href="${g.createLink(uri:'/monitoring')}">App Monitoring</a>--%>
 
                             <div class="divider"></div>

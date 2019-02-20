@@ -2,6 +2,8 @@ package com.k_int.kbplus
 
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RDStore
+import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.springframework.dao.DataIntegrityViolationException
@@ -67,6 +69,12 @@ class PersonController extends AbstractDebugController {
             //redirect action: 'list'
             redirect(url: request.getHeader('referer'))
             return
+        }
+        else if(personInstance && personInstance.isPublic.equals(RDStore.YN_NO)) {
+            if(contextService.org != personInstance.tenant && !SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+                redirect action: 'list'
+                return
+            }
         }
 
         def result = [
@@ -321,17 +329,23 @@ class PersonController extends AbstractDebugController {
                 def org = Org.get(params.newPrsRoleOrg)
                 def rdv = RefdataValue.get(params.newPrsRoleType)
 
-                if (PersonRole.find("from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.functionType = ${rdv.id}")) {
-                    log.debug("ignore adding PersonRole because of existing duplicate")
-                }
-                else {
-                    result = new PersonRole(prs: prs, functionType: rdv, org: org)
+                def prAttr = params.roleType ?: PersonRole.TYPE_FUNCTION
 
-                    if (result.save(flush: true)) {
-                        log.debug("adding PersonRole ${result}")
+                if (prAttr in [PersonRole.TYPE_FUNCTION, PersonRole.TYPE_POSITION]) {
+
+                    if (PersonRole.find("from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.${prAttr} = ${rdv.id}")) {
+                        log.debug("ignore adding PersonRole because of existing duplicate")
                     }
                     else {
-                        log.error("problem saving new PersonRole ${result}")
+                        result = new PersonRole(prs: prs, org: org)
+                        result."${prAttr}" = rdv
+
+                        if (result.save(flush: true)) {
+                            log.debug("adding PersonRole ${result}")
+                        }
+                        else {
+                            log.error("problem saving new PersonRole ${result}")
+                        }
                     }
                 }
             }
@@ -363,13 +377,32 @@ class PersonController extends AbstractDebugController {
         if (params.functionType) {
             def result
 
-            def roleRdv = RefdataValue.get(params.functionType) ?: RefdataValue.getByValueAndCategory('General contact person', 'Person Function')
-            def org = Org.get(params.functionOrg)
+            def functionRdv = RefdataValue.get(params.functionType) ?: RefdataValue.getByValueAndCategory('General contact person', 'Person Function')
+            def functionOrg = Org.get(params.functionOrg)
 
-            if (roleRdv && org) {
-                result = new PersonRole(prs: prs, functionType: roleRdv, org: org)
+            if (functionRdv && functionOrg) {
+                result = new PersonRole(prs: prs, functionType: functionRdv, org: functionOrg)
 
-                if (PersonRole.find("from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${org.id} and PR.functionType = ${roleRdv.id}")) {
+                if (PersonRole.find("from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${functionOrg.id} and PR.functionType = ${functionRdv.id}")) {
+                    log.debug("ignore adding PersonRole because of existing duplicate")
+                }
+                else if (result) {
+                    if (result.save(flush: true)) {
+                        log.debug("adding PersonRole ${result}")
+                    }
+                    else {
+                        log.error("problem saving new PersonRole ${result}")
+                    }
+                }
+            }
+
+            def positionRdv = params.positionType ? RefdataValue.get(params.positionType) : null
+            def positionOrg = Org.get(params.positionOrg)
+
+            if (positionRdv && positionOrg) {
+                result = new PersonRole(prs: prs, positionType: positionRdv, org: positionOrg)
+
+                if (PersonRole.find("from PersonRole as PR where PR.prs = ${prs.id} and PR.org = ${positionOrg.id} and PR.positionType = ${positionRdv.id}")) {
                     log.debug("ignore adding PersonRole because of existing duplicate")
                 }
                 else if (result) {

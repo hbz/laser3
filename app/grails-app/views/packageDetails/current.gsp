@@ -185,14 +185,20 @@
             <table class="ui celled la-table table">
                 <thead>
                     <tr>
-                        <th>&nbsp;</th>
-                        <th>&nbsp;</th>
-                        <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
-                        <th style="">${message(code:'tipp.platform', default:'Platform')}</th>
-                        <th style="">${message(code:'identifier.plural', default:'Identifiers')}</th>
-                        <th style="">${message(code:'tipp.coverage_start', default:'Coverage Start')}</th>
-                        <th style="">${message(code:'tipp.coverage_end', default:'Coverage End')}</th>
-                        <th style="">${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
+                        <th rowspan="2">&nbsp;</th>
+                        <th rowspan="2">&nbsp;</th>
+                        <g:sortableColumn rowspan="2" params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
+                        <th rowspan="2">${message(code:'tipp.platform', default:'Platform')}</th>
+                        <th rowspan="2">${message(code:'identifier.plural', default:'Identifiers')}</th>
+                        <th colspan="2">${message(code:'tipp.coverage')}</th>
+                        <th colspan="2">${message(code:'tipp.access')}</th>
+                        <th rowspan="2">${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
+                    </tr>
+                    <tr>
+                        <th>${message(code:'default.from')}</th>
+                        <th>${message(code:'default.to')}</th>
+                        <th>${message(code:'default.from')}</th>
+                        <th>${message(code:'default.to')}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -210,11 +216,7 @@
                    <g:link controller="tipp" action="show" id="${t.id}">${message(code:'tipp.label', default:'TIPP')}</g:link><br/>
                    <span title="${t.availabilityStatusExplanation}">${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.getI10n('value')}</span><br/>
                     <span>${message(code:'title.type.label')}: ${t.title.type.getI10n('value')}</span>
-                   <g:if test="${params.mode=='advanced'}">
-                     <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: <semui:xEditableRefData owner="${t}" field="status" config="TIPP Status"/>
-                     <br/> ${message(code:'tipp.accessStartDate', default:'Access Start')}: <semui:xEditable owner="${t}" type="date" field="accessStartDate" />
-                     <br/> ${message(code:'tipp.accessEndDate', defauKlt:'Access End')}: <semui:xEditable owner="${t}" type="date" field="accessEndDate" />
-                   </g:if>
+                    ${message(code:'subscription.details.record_status', default:'Record Status')}: <semui:xEditableRefData owner="${t}" field="status" config="TIPP Status"/>
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
                    <g:if test="${t.hostPlatformURL}">
@@ -237,16 +239,21 @@
                   </g:each>
                 </td>
 
-                <td style="white-space: nowrap">
-                  ${message(code:'default.date.label', default:'Date')}: <semui:xEditable owner="${t}" type="date" field="startDate" /><br/>
-                  ${message(code:'tipp.volume', default:'Volume')}: <semui:xEditable owner="${t}" field="startVolume" /><br/>
-                  ${message(code:'tipp.issue', default:'Issue')}: <semui:xEditable owner="${t}" field="startIssue" />
+                <td>
+                    ${message(code:'default.date.label', default:'Date')}: <semui:xEditable owner="${t}" type="date" field="startDate" /><br/>
+                    ${message(code:'tipp.volume', default:'Volume')}: <semui:xEditable owner="${t}" field="startVolume" /><br>
+                    ${message(code:'tipp.issue', default:'Issue')}: <semui:xEditable owner="${t}" field="startIssue" />
                 </td>
-
-                <td style="white-space: nowrap"> 
-                   ${message(code:'default.date.label', default:'Date')}: <semui:xEditable owner="${t}" type="date" field="endDate" /><br/>
-                   ${message(code:'tipp.volume', default:'Volume')}: <semui:xEditable owner="${t}" field="endVolume" /><br/>
-                   ${message(code:'tipp.issue', default:'Issue')}: <semui:xEditable owner="${t}" field="endIssue" />
+                <td>
+                    ${message(code:'default.date.label', default:'Date')}: <semui:xEditable owner="${t}" type="date" field="endDate" /><br/>
+                    ${message(code:'tipp.volume', default:'Volume')}: <semui:xEditable owner="${t}" field="endVolume" /><br>
+                    ${message(code:'tipp.issue', default:'Issue')}: <semui:xEditable owner="${t}" field="endIssue" />
+                </td>
+                <td>
+                    ${message(code:'default.date.label', default:'Date')}: <semui:xEditable owner="${t}" type="date" field="accessStartDate" />
+                </td>
+                <td>
+                    ${message(code:'default.date.label', default:'Date')}: <semui:xEditable owner="${t}" type="date" field="accessEndDate" />
                 </td>
                 <td>
                   <semui:xEditable owner="${t}" field="coverageDepth" />

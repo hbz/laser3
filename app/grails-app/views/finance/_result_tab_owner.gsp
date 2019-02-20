@@ -7,7 +7,7 @@
         <tr>
             <th>${message(code:'sidewide.number')}</th>
             <th>${message(code:'financials.newCosts.costTitle')}</th>
-            <g:if test="${!forSingleSubscription}">
+            <g:if test="${!fixedSubscription}">
                 <th>${message(code:'financials.newCosts.subscriptionHeader')}</th>
             </g:if>
             <th><span data-tooltip="${message(code:'financials.costItemConfiguration')}" data-position="top center"><i class="money bill alternate icon"></i></span></th>
@@ -67,7 +67,7 @@
                     <td>
                         <semui:xEditable emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costTitle" />
                     </td>
-                    <g:if test="${!forSingleSubscription}">
+                    <g:if test="${!fixedSubscription}">
                         <td>
                             <g:if test="${ci.sub}">${ci.sub} (${formatDate(date:ci.sub.startDate,format:message(code: 'default.date.format.notime'))} - ${formatDate(date: ci.sub.endDate, format: message(code: 'default.date.format.notime'))})</g:if>
                             <g:else>${message(code:'financials.clear')}</g:else>
@@ -99,24 +99,29 @@
                     </td>
                     <td class="x">
                         <g:if test="${editable}">
-                            <g:if test="${forSingleSubcription}">
-                                <g:link mapping="subfinanceEditCI" params='[fixedSub:"${fixedSubscription?.id}", id:"${ci.id}", tab:"owner"]' class="ui icon button trigger-modal">
+                            <g:if test="${fixedSubcription}">
+                                <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", tab:"own"]' class="ui icon button trigger-modal">
                                     <i class="write icon"></i>
                                 </g:link>
                                 <span data-position="top right" data-tooltip="${message(code:'financials.costItem.copy.tooltip')}">
-                                    <g:link mapping="subfinanceCopyCI" params='[fixedSub:"${fixedSubscription?.id}", id:"${ci.id}", tab:"owner"]' class="ui icon button trigger-modal">
+                                    <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", tab:"own"]' class="ui icon button trigger-modal">
                                         <i class="copy icon"></i>
                                     </g:link>
                                 </span>
                             </g:if>
                             <g:else>
-                                <g:link controller="finance" action="editCostItem" id="${ci.id}" class="ui icon button trigger-modal">
+                                <g:link controller="finance" action="editCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", tab:"own"]' class="ui icon button trigger-modal">
                                     <i class="write icon"></i>
                                 </g:link>
+                                <span data-position="top right" data-tooltip="${message(code:'financials.costItem.copy.tooltip')}">
+                                    <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", tab:"own"]' class="ui icon button trigger-modal">
+                                        <i class="copy icon"></i>
+                                    </g:link>
+                                </span>
                             </g:else>
                         </g:if>
                         <g:if test="${editable}">
-                            <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ tab:'owner']" class="ui icon negative button" onclick="return confirm('${message(code: 'default.button.confirm.delete')}')">
+                            <g:link controller="finance" action="deleteCostItem" id="${ci.id}" params="[ tab:'own']" class="ui icon negative button" onclick="return confirm('${message(code: 'default.button.confirm.delete')}')">
                                 <i class="trash alternate icon"></i>
                             </g:link>
                         </g:if>
@@ -126,52 +131,13 @@
         </g:else>
     </tbody>
     <tfoot>
-        <g:if test="${data.count > 0 && data.pageSums.billingSums}">
+        <g:if test="${data.count > 0 && data.sums.billingSums}">
             <%
                 int colspan = 2
-                if(forSingleSubscription) {
+                if(fixedSubscription) {
                     colspan = 1
                 }
             %>
-            <tr>
-                <th colspan="10">
-                    ${message(code:'financials.totalCostOnPage')}
-                </th>
-            </tr>
-            <g:each in="${data.pageSums.billingSums}" var="entry">
-                <tr>
-                    <td colspan="${colspan}">
-
-                    </td>
-                    <td colspan="2">
-                        ${message(code:'financials.sum.billing')} ${entry.currency}<br>
-                        ${message(code:'financials.sum.billingAfterTax')}
-                    </td>
-                    <td class="la-exposed-bg">
-                        <g:formatNumber number="${entry.billingSum}" type="currency" currencySymbol="${entry.currency}"/><br>
-                        <g:formatNumber number="${entry.billingSumAfterTax}" type="currency" currencySymbol="${entry.currency}"/>
-                    </td>
-                    <td colspan="5">
-
-                    </td>
-                </tr>
-            </g:each>
-            <tr>
-                <td colspan="${colspan}">
-
-                </td>
-                <td colspan="3">
-                    ${message(code:'financials.sum.local')}<br>
-                    ${message(code:'financials.sum.localAfterTax')}
-                </td>
-                <td class="la-exposed-bg">
-                    <g:formatNumber number="${data.pageSums.localSums.localSum}" type="currency" currencySymbol="EUR"/><br>
-                    <g:formatNumber number="${data.pageSums.localSums.localSumAfterTax}" type="currency" currencySymbol="EUR"/>
-                </td>
-                <td colspan="4">
-
-                </td>
-            </tr>
             <tr>
                 <th colspan="10">
                     ${message(code:'financials.totalCost')}
@@ -212,7 +178,7 @@
                 </td>
             </tr>
         </g:if>
-        <g:elseif test="${data.count > 0 && !data.pageSums.billingSums}">
+        <g:elseif test="${data.count > 0 && !data.sums.billingSums}">
             <tr>
                 <td colspan="10">
                     ${message(code:'financials.noCostsConsidered')}
@@ -241,8 +207,8 @@
     </tfoot>
 </table>
 <g:if test="${data.costItems}">
-    <g:if test="${inSubMode}">
-        <semui:paginate mapping="subfinance" action="index" controller="finance" params="${params+[view:'owner']}"
+    <g:if test="${fixedSubcription}">
+        <semui:paginate mapping="subfinance" params="${params+[view:'owner']}"
                         next="${message(code: 'default.paginate.next', default: 'Next')}"
                         prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
                         max="${max}" offset="${ownerOffset ? ownerOffset : 1}" total="${data.count}"/>

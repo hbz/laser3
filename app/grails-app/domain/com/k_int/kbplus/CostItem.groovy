@@ -225,11 +225,11 @@ class CostItem
     }
 
     Date getDerivedStartDate() {
-        startDate ? startDate : sub.startDate
+        startDate ? startDate : sub?.startDate
     }
 
     Date getDerivedEndDate() {
-        endDate ? endDate : sub.endDate
+        endDate ? endDate : sub?.endDate
     }
 
 }

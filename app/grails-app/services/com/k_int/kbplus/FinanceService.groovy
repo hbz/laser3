@@ -36,28 +36,32 @@ class FinanceService {
         int subscrOffset = 0
         switch(params.view) {
             case "own": ownOffset = offset
+                if(params.max) max = Long.parseLong(params.max)
                 break
             case "cons":
             case "consAtSubscr": consOffset = offset
+                if(params.max) max =  Long.parseLong(params.max)
                 break
             case "subscr": subscrOffset = offset
+                if(params.max) max = Long.parseLong(params.max)
                 break
             default: log.info("unhandled view: ${params.view}")
                 break
         }
-        List filterQuery = processFilterParams(params,params.view,true)
-        result.filterPresets = filterQuery[1]
-        List ownCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :owner and ci.sub = :sub and ci.sub.instanceOf is null '+filterQuery[0],[owner:org,sub:sub]+filterQuery[1])
+        List filterOwnQuery = processFilterParams(params,"own",true)
+        List filterConsQuery = processFilterParams(params,"cons",true)
+        List filterSubscrQuery = processFilterParams(params,"subscr",true)
+        result.filterPresets = filterConsQuery[1]
+        List ownCostItems = CostItem.executeQuery('select ci from CostItem ci where ci.owner = :owner and ci.sub = :sub '+filterOwnQuery[0],[owner:org,sub:sub]+filterOwnQuery[1])
         result.own.costItems = []
         long limit = ownOffset+max
         if(limit > ownCostItems.size())
             limit = ownCostItems.size()
-        for(int i = 0;i < limit;i++) {
+        for(int i = ownOffset;i < limit;i++) {
             result.own.costItems.add(ownCostItems[i])
         }
         result.own.count = ownCostItems.size()
         if(result.own.count > 0) {
-            result.own.pageSums = calculateResults(result.own.costItems)
             result.own.sums = calculateResults(ownCostItems)
         }
         switch(sub.getCalculatedType()) {
@@ -67,18 +71,17 @@ class FinanceService {
             b) owner = contextOrg (which is consortium) and sub.instanceOf = contextSub
          */
             case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
-                List consCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner = :owner and ci.sub in (select s from Subscription as s where s.instanceOf = :sub)'+filterQuery[0],[owner:org,sub:sub]+filterQuery[1])
+                List consCostItems = CostItem.executeQuery("select ci, (select oo.org.sortname from OrgRole oo where ci.sub = oo.sub and oo.roleType.value = 'Subscriber_Consortial') as sortname from CostItem as ci where ci.owner = :owner and ci.sub in (select s from Subscription as s join s.orgRelations orgRoles where s.instanceOf = :sub "+filterConsQuery[0]+" order by sortname asc",[owner:org,sub:sub]+filterConsQuery[1])
                 result.cons.costItems = []
                 limit = consOffset+max
                 if(limit > consCostItems.size())
                     limit = consCostItems.size()
-                for(int i = 0;i < limit;i++) {
-                    result.cons.costItems.add(consCostItems[i])
+                for(int i = consOffset;i < limit;i++) {
+                    result.cons.costItems.add(consCostItems[i][0])
                 }
                 result.cons.count = consCostItems.size()
                 if(result.cons.count > 0){
-                    result.cons.pageSums = calculateResults(result.cons.costItems)
-                    result.cons.sums = calculateResults(consCostItems)
+                    result.cons.sums = calculateResults(consCostItems.collect { row -> row[0]})
                 }
                 break
         /*
@@ -88,31 +91,30 @@ class FinanceService {
          */
             case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
                 Org subscrCons = Org.executeQuery("select o.org from OrgRole as o where o.sub = :sub and o.roleType = :cons",[sub:sub,cons: RDStore.OR_SUBSCRIPTION_CONSORTIA]).get(0)
-                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner = :owner and ci.sub = :sub and ci.isVisibleForSubscriber = true'+filterQuery[0],[owner:subscrCons,sub:sub]+filterQuery[1])
+                String visibility = ""
+                if(!subscrCons.equals(org))
+                    visibility = " and ci.isVisibleForSubscriber = true"
+                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner = :owner and ci.sub = :sub'+visibility+filterSubscrQuery[0],[owner:subscrCons,sub:sub]+filterSubscrQuery[1])
                 List costItems = []
                 limit = subscrOffset+max
                 if(limit > subscrCostItems.size())
                     limit = subscrCostItems.size()
-                for(int i = 0;i < limit;i++) {
+                for(int i = subscrOffset;i < limit;i++) {
                     costItems.add(subscrCostItems[i])
                 }
                 int count = subscrCostItems.size()
-                Map pageSums = [:]
                 Map sums = [:]
                 if(count > 0) {
-                    pageSums = calculateResults(costItems)
                     sums = calculateResults(subscrCostItems)
                 }
-                if(params.view.equals("subscr")) {
+                if(params.view.equals("subscr") || !params.view) {
                     result.subscr.costItems = costItems
                     result.subscr.count = count
-                    result.subscr.pageSums = pageSums
                     result.subscr.sums = sums
                 }
                 else if(params.view.equals("consAtSubscr")) {
                     result.cons.costItems = costItems
                     result.cons.count = count
-                    result.cons.pageSums = pageSums
                     result.cons.sums = sums
                 }
                 break
@@ -143,11 +145,11 @@ class FinanceService {
         int consOffset = 0
         int subscrOffset = 0
         switch(params.view) {
-            case "own": ownOffset = Integer.parseInt(params.offset)
+            case "own": ownOffset = params.offset ? Integer.parseInt(params.offset) : 0
                 break
-            case "cons": consOffset = Integer.parseInt(params.offset)
+            case "cons": consOffset = params.offset ? Integer.parseInt(params.offset) : 0
                 break
-            case "subscr": subscrOffset = Integer.parseInt(params.offset)
+            case "subscr": subscrOffset = params.offset ? Integer.parseInt(params.offset) : 0
                 break
             default: log.info("unhandled view: ${params.view}")
                 break
@@ -159,6 +161,7 @@ class FinanceService {
         ownSubscriptionCostItems.addAll(CostItem.executeQuery('select ci from CostItem ci join ci.sub sub join sub.orgRelations orgRoles where ' +
                 'ci.owner = :org and orgRoles.org = :org and orgRoles.roleType in :nonConsTypes and sub.status != :deleted'+filterQueryOwn[0]+' order by sub.name asc',
                 [org:org,nonConsTypes:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS],deleted:RDStore.SUBSCRIPTION_DELETED]+filterQueryOwn[1]))
+        ownSubscriptionCostItems.addAll(CostItem.executeQuery('select ci from CostItem ci where ci.owner = :org and ci.sub is null',[org:org]))
         result.own.costItems = []
         long limit = ownOffset+max
         if(limit > ownSubscriptionCostItems.size())
@@ -169,7 +172,6 @@ class FinanceService {
         result.own.count = ownSubscriptionCostItems.size()
         if(result.own.count > 0) {
             result.own.sums = calculateResults(ownSubscriptionCostItems)
-            result.own.pageSums = calculateResults(result.own.costItems)
         }
         //get consortial costs
         List<CostItem> consortialSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci ' +
@@ -192,7 +194,6 @@ class FinanceService {
         result.cons.count = consortialSubscriptionCostItems.size()
         if(result.cons.count > 0) {
             result.cons.sums = calculateResults(consortialSubscriptionCostItems)
-            result.cons.pageSums = calculateResults(result.cons.costItems)
         }
         //get membership costs
         List<CostItem> consortialMemberSubscriptionCostItems = CostItem.executeQuery('select ci from CostItem ci '+
@@ -214,7 +215,6 @@ class FinanceService {
         result.subscr.count = consortialMemberSubscriptionCostItems.size()
         if(result.subscr.count > 0) {
             result.subscr.sums = calculateResults(consortialMemberSubscriptionCostItems)
-            result.subscr.pageSums = calculateResults(result.subscr.costItems)
         }
         if(!params.forExport) {
             List<CostItem> allCostItems = CostItem.findAllByOwner(org)
@@ -275,6 +275,10 @@ class FinanceService {
             filterQuery += " and sub.status = :filterSubStatus "
             queryParams.filterSubStatus = RDStore.SUBSCRIPTION_CURRENT
             params.filterSubStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
+        }
+        //the bracket from the subquery has to be closed when in subscription mode and for single subscription
+        if(filterView.equals("cons") && forSingleSubscription) {
+            filterQuery += ") "
         }
         //cost item filter settings
         //cost item title

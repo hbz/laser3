@@ -68,14 +68,14 @@
                                     <a href="${ie.tipp?.hostPlatformURL}" TITLE="${ie.tipp?.hostPlatformURL} (${message(code:'default.new_window', default:'In new window')})" target="_blank"><i class="icon-share-alt"></i></a>)</g:if> <br/>
                                 ${message(code:'default.access.label', default:'Access')}: ${ie.availabilityStatus?.value}
                                 <g:if test="${ie.availabilityStatus?.value=='Expected'}">
-                                    ${message(code:'default.on', default:'on')} <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ie.accessStartDate}"/>
+                                    ${message(code:'default.on', default:'on')} <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessStartDate}"/>
                                 </g:if>
                                 <g:if test="${ie.availabilityStatus?.value=='Expired'}">
-                                    ${message(code:'default.on', default:'on')} <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ie.accessEndDate}"/>
+                                    ${message(code:'default.on', default:'on')} <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessEndDate}"/>
                                 </g:if>
                                 <br/> ${message(code:'subscription.details.record_status', default:'Record Status')}: ${ie.status}
-                                <br/> ${message(code:'subscription.details.access_start', default:'Access Start')}: <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ie.accessStartDate}"/>
-                                <br/> ${message(code:'subscription.details.access_end', default:'Access End')}: <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ie.accessEndDate}"/>
+                                <br/> ${message(code:'subscription.details.access_start', default:'Access Start')}: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessStartDate}"/>
+                                <br/> ${message(code:'subscription.details.access_end', default:'Access End')}: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessEndDate}"/>
 
                             </td>
                             <td>
@@ -85,12 +85,12 @@
                             <td>
                                 ${ie.coreStatus}
                             <td>
-                                <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ie.startDate}"/> <br/>
-                                <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ie.endDate}"/>
+                                <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.startDate}"/> <br/>
+                                <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.endDate}"/>
                             </td>
                             <td>
-                                <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ie.coreStatusStart}"/> <br/>
-                                <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ie.coreStatusEnd}"/>
+                                <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.coreStatusStart}"/> <br/>
+                                <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.coreStatusEnd}"/>
                             </td>
                             <td>
 <!--  Review for LAS:eR usage

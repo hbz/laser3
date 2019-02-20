@@ -64,6 +64,10 @@ class RDStore {
     static final PERM_NOT_APPLICABLE        = getRefdataValue('Not applicable','Permissions')
     static final PERM_UNKNOWN               = getRefdataValue('Unknown','Permissions')
 
+    static final TITLE_TYPE_EBOOK           = getRefdataValue('EBook','Title Type')
+    static final TITLE_TYPE_JOURNAL         = getRefdataValue('Journal','Title Type')
+    static final TITLE_TYPE_DATABASE        = getRefdataValue('Database','Title Type')
+
     static final PRS_FUNC_GENERAL_CONTACT_PRS = getRefdataValue('General contact person', 'Person Function')
     static final CCT_EMAIL                  = getRefdataValue('E-Mail','ContactContentType')
     static final PRS_RESP_SPEC_SUB_EDITOR   = getRefdataValue('Specific subscription editor', 'Person Responsibility')

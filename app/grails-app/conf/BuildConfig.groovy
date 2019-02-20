@@ -169,7 +169,7 @@ grails.project.dependency.resolution = {
         //compile ':spring-security-shibboleth-native-sp:1.0.3'
 
         runtime ":jquery:1.11.1"
-        runtime ":audit-logging:1.0.3"
+        runtime ":audit-logging:1.0.3" // 1.0.3
         runtime ":executor:0.3"
         runtime ":markdown:1.1.1"
         runtime ":quartz:1.0.2"

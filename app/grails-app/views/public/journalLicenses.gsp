@@ -44,8 +44,8 @@
                       <g:each in="${lic_entry.getValue()}" var="ie">
                         ${ie.tipp.title.title}
                         <br/>
-                        Start: <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ie.startDate}"/>, 
-                        End: <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${ie.endDate}"/>
+                        Start: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.startDate}"/>,
+                        End: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.endDate}"/>
                         <br/>
                       </g:each>
                     </span>

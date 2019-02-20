@@ -12,6 +12,8 @@ import com.k_int.properties.PropertyDefinition
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+import java.text.SimpleDateFormat
+
 @Secured(['permitAll']) // TODO
 class AjaxController {
 
@@ -99,77 +101,6 @@ class AjaxController {
     ]
   ]
 
-    /* --- TODO: NOT USED ???
-  @Secured(['ROLE_USER'])
-  def setValue() {
-    // [id:1, value:JISC_Collections_NESLi2_Lic_IOP_Institute_of_Physics_NESLi2_2011-2012_01012011-31122012.., type:License, action:inPlaceSave, controller:ajax
-    // def clazz=grailsApplication.domainClasses.findByFullName(params.type)
-    // log.debug("setValue ${params}");
-    def domain_class=grailsApplication.getArtefact('Domain',"com.k_int.kbplus.${params.type}")
-    if ( domain_class ) {
-      def instance = domain_class.getClazz().get(params.id) 
-      if ( instance ) {
-        // log.debug("Got instance ${instance}");
-        def binding_properties = [ "${params.elementid}":params.value ]
-        // log.debug("Merge: ${binding_properties}");
-        // see http://grails.org/doc/latest/ref/Controllers/bindData.html
-        if ( binding_properties[params.elementid] == '__NULL__' ) {
-          binding_properties[params.elementid] = null;
-        }
-        bindData(instance, binding_properties)
-        instance.save(flush:true);
-      }
-      else {
-        log.debug("no instance");
-      }
-    }
-    else {
-      log.debug("no type");
-    }
-
-    response.setContentType('text/plain')
-    def outs = response.outputStream
-    outs << params.value
-    outs.flush()
-    outs.close()
-  }*/
-
-    /* --- TODO: NOT USED ???
-  @Secured(['ROLE_USER'])
-  def setRef() {
-    def rdv = RefdataCategory.lookupOrCreate(params.cat, params.value)
-    def domain_class=grailsApplication.getArtefact('Domain',"com.k_int.kbplus.${params.type}")
-    if ( domain_class ) {
-      def instance = domain_class.getClazz().get(params.id)
-      if ( instance ) {
-        // log.debug("Got instance ${instance}");
-        // Lookup refdata value
-        def binding_properties = [ "${params.elementid}":rdv ]
-        // see http://grails.org/doc/latest/ref/Controllers/bindData.html
-        bindData(instance, binding_properties)
-        instance.save(flush:true);
-      }
-      else {
-        log.debug("no instance");
-      }
-    }
-    else {
-      log.debug("no type");
-    }
-
-    response.setContentType('text/plain')
-    def outs = response.outputStream
-    if ( rdv.icon ) {
-      outs << "<span class=\"select-icon ${rdv.icon}\">&nbsp;</span><span>${rdv.value}</span>"
-    }
-    else {
-      outs << "<span>${params.value}</span>"
-    }
-    outs.flush()
-    outs.close()
-
-  }*/
-
   @Secured(['ROLE_USER'])
   def setFieldNote() {
     def domain_class=grailsApplication.getArtefact('Domain',"com.k_int.kbplus.${params.type}")
@@ -256,7 +187,7 @@ class AjaxController {
               result=of.format(value);
             }
             else {
-              def of = new java.text.SimpleDateFormat(session.sessionPreferences?.globalDateFormat)
+              def of = new java.text.SimpleDateFormat(message(code:'default.date.format.notime'))
               result=of.format(value)
             }
           }
@@ -452,7 +383,7 @@ class AjaxController {
 
       def rq = Org.executeQuery(config.rowQry,
                                 query_params,
-                                [max:params.iDisplayLength?:10,offset:params.iDisplayStart?:0]);
+                                [max:params.iDisplayLength?:1000,offset:params.iDisplayStart?:0]);
 
       if ( config.format=='map' ) {
         result.aaData = []
@@ -565,7 +496,7 @@ class AjaxController {
         def cq = RefdataValue.executeQuery(config.countQry, query_params);
         def rq = RefdataValue.executeQuery(config.rowQry,
                 query_params,
-                [max:params.iDisplayLength?:100, offset:params.iDisplayStart?:0]);
+                [max:params.iDisplayLength?:1000, offset:params.iDisplayStart?:0]);
 
         rq.each { it ->
             def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
@@ -637,7 +568,7 @@ class AjaxController {
       def cq = RefdataValue.executeQuery(config.countQry,query_params);
       def rq = RefdataValue.executeQuery(config.rowQry,
                                 query_params,
-                                [max:params.iDisplayLength?:100,offset:params.iDisplayStart?:0]);
+                                [max:params.iDisplayLength?:1000,offset:params.iDisplayStart?:0]);
 
       rq.each { it ->
         def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
@@ -1205,7 +1136,7 @@ class AjaxController {
 
                     members.each { m ->
                         m.setProperty(prop, owner.getProperty(prop))
-                        m.save(flush: true)
+                        //m.save(flush:true)
                     }
                 }
             }
@@ -1244,7 +1175,11 @@ class AjaxController {
                 def prop   = q[1]
 
                 member.setProperty(prop, null)
-                member.save(flush: true)
+                //member.save(flush:true)
+            }
+
+            members.each { m ->
+                m.save(flush:true) // only one save
             }
         }
 
@@ -1261,7 +1196,7 @@ class AjaxController {
         } else {
             sharedObject.isShared = false
         }
-        sharedObject.save(flusth:true)
+        sharedObject.save(flush:true)
 
         ((ShareSupport) owner).updateShare(sharedObject)
 
@@ -1447,7 +1382,7 @@ class AjaxController {
     log.debug("ajax::coreExtend:: ${params}")
     def tipID = params.tipID
     try{
-      def sdf = new java.text.SimpleDateFormat(session.sessionPreferences?.globalDateFormat)
+      def sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
       def startDate = sdf.parse(params.coreStartDate)
       def endDate = params.coreEndDate? sdf.parse(params.coreEndDate) : null
       if(tipID && startDate){
@@ -1532,7 +1467,7 @@ class AjaxController {
 
     def rq = Org.executeQuery(rowQry,
             query_params,
-            [max:params.iDisplayLength?:10,offset:params.iDisplayStart?:0]);
+            [max:params.iDisplayLength?:1000,offset:params.iDisplayStart?:0]);
 
     result.aaData = []
     result.sEcho = params.sEcho
@@ -1932,7 +1867,16 @@ class AjaxController {
         result.params = params
         result.noteInstance = Doc.get(params.id)
 
-        render template:"../templates/notes/modal_edit", model: result
+        render template:"/templates/notes/modal_edit", model: result
+    }
+
+    @Secured(['ROLE_USER'])
+    def readNote() {
+        def result = [:]
+        result.params = params
+        result.noteInstance = Doc.get(params.id)
+
+        render template:"/templates/notes/modal_read", model: result
     }
 
     @Secured(['ROLE_USER'])

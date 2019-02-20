@@ -20,19 +20,6 @@
                                   noSelection="['': '']"
                                   />
                 </div>
-                <%--
-                <div id="roleType" class="field fieldcontain ${hasErrors(bean: personInstance, field: 'roleType', 'error')}">
-                    <label for="roleType">
-                        ${com.k_int.kbplus.RefdataCategory.findByDesc('Person Position')?.getI10n('desc')}
-                    </label>
-                    <laser:select class="ui dropdown" id="roleType" name="roleType"
-                                  from="${com.k_int.kbplus.Person.getAllRefdataValues('Person Position')}"
-                                  optionKey="id"
-                                  optionValue="value"
-                                  value="${personInstance?.roleType?.id}"
-                                  noSelection="['': '']"/>
-                </div>
-                --%>
             </div>
         </div>
 
@@ -122,10 +109,9 @@
                 <div class="person-role-function-manager">
 
                     <div class="field">
-
                         <div class="two fields">
                             <div class="field">
-                                <label for="org">
+                                <label for="functionOrg">
                                     <g:message code="person.function.label" default="Function"/>
                                 </label>
                                 <laser:select class="ui dropdown values"
@@ -137,7 +123,7 @@
                             </div>
                             <div class="field">
                                 <g:if test="${institution}">
-                                        <label for="org">
+                                        <label for="functionOrg">
                                             <g:message code="contact.belongesTo.label"  />
                                         </label>
                                         <g:select class="ui search dropdown"
@@ -148,15 +134,55 @@
                                                   optionValue="" />
                                 </g:if>
                                 <g:else>
-                                        <label for="org">
+                                        <label for="functionOrg">
                                             <g:message code="contact.belongesTo.label"  />
                                         </label>
                                         <i class="icon university la-list-icon"></i>${org?.name}
-                                        <input id="org" name="functionOrg" type="hidden" value="${org?.id}" />
+                                        <input id="functionOrg" name="functionOrg" type="hidden" value="${org?.id}" />
                                 </g:else>
                             </div>
                         </div>
-                    </div>
+                    </div><!-- .field -->
+
+                    <div class="field js-positionTypeWrapper">
+                        <div class="two fields">
+                            <div class="field">
+                                <label for="positionOrg">
+                                    <g:message code="person.position.label" default="Position"/>
+                                </label>
+                                <laser:select class="ui dropdown values"
+                                              name="positionType"
+                                              from="${PersonRole.getAllRefdataValues('Person Position')}"
+                                              optionKey="id"
+                                              value="${presetPositionType?.id}"
+                                              optionValue="value"
+                                              noSelection="${['':'']}"
+                                />
+                            </div>
+                            <div class="field">
+                                <g:if test="${institution}">
+                                    <label for="positionOrg">
+                                        <g:message code="contact.belongesTo.label"  />
+                                    </label>
+                                    <g:select class="ui search dropdown"
+                                              name="positionOrg"
+                                              from="${Org.getAll()}"
+                                              value="${org?.id}"
+                                              optionKey="id"
+                                              optionValue="" />
+                                </g:if>
+                                <g:else>
+                                    <label for="positionOrg">
+                                        <g:message code="contact.belongesTo.label"  />
+                                    </label>
+                                    <i class="icon university la-list-icon"></i>${org?.name}
+                                    <input id="positionOrg" name="positionOrg" type="hidden" value="${org?.id}" />
+                                </g:else>
+                            </div>
+                        </div>
+                    </div><!-- .field -->
+
+
                 </div>
 
 
@@ -195,9 +221,9 @@
         })
 
         function changeForm(hide) {
-            var group1 = $("#roleType, #person_middle_name, #person_first_name, #person_title, #person_gender")
-            var group2 = $("#roleType .dropdown, #person_gender .dropdown")
-            var group3 = $("#roleType select, #person_gender select")
+            var group1 = $("#person_middle_name, #person_first_name, #person_title, #person_gender, .js-positionTypeWrapper")
+            var group2 = $("#person_gender .dropdown, #person_gender select")
+            var group3 = $("#positionType, #positionOrg")
             var group4 = $("#person_middle_name input, #person_first_name input, #person_title input")
 
             if (hide) {
