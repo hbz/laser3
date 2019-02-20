@@ -143,8 +143,8 @@
     </tfoot>
 </table>
 <g:if test="${data.costItems}">
-    <g:if test="${inSubMode}">
-        <semui:paginate mapping="subfinance" action="index" controller="finance" params="${params+[view:'subscr']}"
+    <g:if test="${fixedSubscription}">
+        <semui:paginate mapping="subfinance" params="${params+[view:'subscr']}"
                         next="${message(code: 'default.paginate.next', default: 'Next')}"
                         prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
                         max="${max}" offset="${subscrOffset ? subscrOffset : 1}" total="${data.count}"/>

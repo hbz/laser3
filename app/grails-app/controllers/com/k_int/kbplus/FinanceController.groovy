@@ -6,6 +6,7 @@ import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import org.apache.commons.lang.StringUtils
 import org.apache.poi.ss.usermodel.FillPatternType
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Cell
@@ -476,13 +477,8 @@ class FinanceController extends AbstractDebugController {
         def orgConfigurations = []
         result.tab = params.tab
 
-        result.inSubMode = params.fixedSub ? true : false
-        if (result.inSubMode) {
-            result.fixedSubscription = params.int('fixedSub') ? Subscription.get(params.fixedSub) : null
-        }
-        else if(params.currSub) {
-            result.currentSubscription = params.int('currSub') ? Subscription.get(params.currSub) : null
-        }
+        if(!params.sub.isEmpty() && StringUtils.isNumeric(params.sub))
+            result.sub = Subscription.get(Long.parseLong(params.sub))
         result.costItem = CostItem.findById(params.id)
         if(result.costItem)
           result.issueEntitlement = result.costItem.issueEntitlement
@@ -499,8 +495,8 @@ class FinanceController extends AbstractDebugController {
 
         result.costItemElementConfigurations = costItemElementConfigurations
         result.orgConfigurations = orgConfigurations
-        result.formUrl = g.createLink(controller:'finance', action:'newCostItem', params:[tab:result.tab])
-
+        result.formUrl = g.createLink(controller:'finance', action:'newCostItem', params:[tab:result.tab,mode:"edit"])
+        result.mode = "edit"
         render(template: "/finance/ajaxModal", model: result)
     }
 
@@ -510,57 +506,30 @@ class FinanceController extends AbstractDebugController {
         def result = [:]
 
         result.id = params.id
-        result.fixedSub = params.fixedSub
-        result.currSub = params.currSub
-        result.inSubMode = params.fixedSub ? true : false
 
         result.tab = params.tab
-
-        if (result.inSubMode) {
-            result.fixedSubscription = params.int('fixedSub') ? Subscription.get(params.fixedSub) : null
-        }
-        else {
-            result.currentSubscription = params.int('currSub') ? Subscription.get(params.currSub) : null
+        if(params.sub != null && StringUtils.isNumeric(params.sub)) {
+            result.sub = Subscription.get(Long.parseLong(params.sub))
         }
 
         def ci = CostItem.findById(params.id)
         result.costItem = ci
-
-        if (ci && params.process) {
-            params.list('newLicenseeTargets')?.each{ target ->
-
-                def newSub = genericOIDService.resolveOID(target)
-
-                CostItem newCostItem = new CostItem()
-                InvokerHelper.setProperties(newCostItem, ci.properties)
-                newCostItem.globalUID = null
-                newCostItem.sub = newSub
-
-                if (! newCostItem.validate())
-                {
-                    result.error = newCostItem.errors.allErrors.collect {
-                        log.error("Field: ${it.properties.field}, user input: ${it.properties.rejectedValue}, Reason! ${it.properties.code}")
-                        message(code:'finance.addNew.error', args:[it.properties.field])
-                    }
-                }
-                else {
-                    if ( newCostItem.save(flush: true) ) {
-                        ci.getBudgetcodes().each{ bc ->
-                            if (! CostItemGroup.findByCostItemAndBudgetCode(newCostItem, bc)) {
-                                new CostItemGroup(costItem: newCostItem, budgetCode: bc).save(flush: true)
-                            }
-                        }
-                    }
-                }
-            }
-
-            redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [tab: result.tab])
+        List costItemElementConfigurations = []
+        List orgConfigurations = []
+        //format for dropdown: (o)id:value
+        def ciecs = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('Cost configuration'))
+        ciecs.each { ciec ->
+            costItemElementConfigurations.add([id:ciec.class.name+":"+ciec.id,value:ciec.getI10n('value')])
         }
-        else {
-            result.formUrl = g.createLink(mapping:"subfinanceCopyCI", params:[sub:result.sub, id:result.id, tab:result.tab])
-
-            render(template: "/finance/copyModal", model: result)
+        def orgConf = CostItemElementConfiguration.findAllByForOrganisation(contextService.org)
+        orgConf.each { oc ->
+            orgConfigurations.add([id:oc.costItemElement.id,value:oc.elementSign.class.name+":"+oc.elementSign.id])
         }
+        result.costItemElementConfigurations = costItemElementConfigurations
+        result.orgConfigurations = orgConfigurations
+        result.formUrl = g.createLink(controller:"finance",action:"newCostItem",params:[tab:result.tab,mode:"copy"])
+        result.mode = "copy"
+        render(template: "/finance/ajaxModal", model: result)
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')

@@ -89,7 +89,7 @@
                     </g:link>
                     <g:message code="myinst.subscriptionDetails.message.and" />
                     <g:link controller="subscriptionDetails" action="show" id="${subscription.instanceOf.id}">
-                        <g:message code="myinst.subscriptionDetails.message.consotialLicence" />
+                        <g:message code="myinst.subscriptionDetails.message.consortialLicence" />
                     </g:link>.
                 </p>
             </div>
