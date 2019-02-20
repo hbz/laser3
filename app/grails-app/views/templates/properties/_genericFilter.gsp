@@ -5,25 +5,14 @@
     <label>${message(code: 'subscription.property.search')}
         <i class="question circle icon la-popup"></i>
         <div class="ui  popup ">
-            ${message(code: 'subscription.properties.my')} <i class="shield alternate icon"></i>
+            <i class="shield alternate icon"></i> = ${message(code: 'subscription.properties.my')}
         </div>
     </label>
-<r:script>
-    $(".la-popup").popup({
-    });
-</r:script>
+    <r:script>
+        $(".la-popup").popup({
+        });
+    </r:script>
     <%-- value="${params.filterPropDef}" --%>
-    <%--
-                            <g:select id="filterPropDef" name="filterPropDef" class="ui search selection dropdown"
-
-                                      from="${propList?.toSorted()}" optionKey="${{
-                                        it.refdataCategory ?
-                                                  "com.k_int.properties.PropertyDefinition:${it.id}\" data-rdc=\"com.k_int.kbplus.RefdataCategory:${RefdataCategory.findByDesc(it.refdataCategory)?.id}"
-                                                : "com.k_int.properties.PropertyDefinition:${it.id}" }}" optionValue="${{ it.getI10n('name') }}"
-                                      noSelection="['':message(code:'default.select.choose.label', default:'Please Choose...')]"
-                            />
-    --%>
-
     <semui:dropdown id="filterPropDef" name="filterPropDef"
 
                     class="la-filterPropDef"
@@ -49,6 +38,7 @@
 
 
 <script type="text/javascript">
+
 
     $(function () {
 
@@ -89,25 +79,23 @@
             init: function () {
 
                 /*
-             // register change event
-             $('#filterPropDef').change(function (event) {
-                 //var selOpt = $('option:selected', this);
-                 var selOpt = $( event.target ).closest( '.dropdown' );
-
-                 if (selOpt.attr('class')) {
-                     alert("ja")
-                 }
-
-                 propertyFilterController.updateProp(selOpt);
-
-             });
+                // register change event
+                $('#filterPropDef').change(function (e) {
+                    var selOpt = $('option:selected', this);
+                    propertyFilterController.updateProp(selOpt);
+                });
              */
                 $(document).ready(function() {
                     $(".la-filterPropDef").dropdown({
                         clearable: true,
                         onChange: function (value, text, $selectedItem) {
-                            var selOpt = $selectedItem;
-                            propertyFilterController.updateProp(selOpt);
+                            if ((typeof $selectedItem != 'undefined')){
+                                var selOpt = $selectedItem;
+                                propertyFilterController.updateProp(selOpt);
+                            }
+                            else {
+                                $('#filterProp').dropdown ('clear', true)
+                            }
 
                         }
                     });
