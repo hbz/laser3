@@ -45,13 +45,13 @@
                                <td>${tipp.platform.name}</td>
 
                                <td style="white-space: nowrap">
-                                 Date: <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${tipp.startDate}"/><br/>
+                                 Date: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.startDate}"/><br/>
                                  Volume: ${tipp.startVolume}<br/>
                                  Issue: ${tipp.startIssue}
                                </td>
 
                                <td style="white-space: nowrap">
-                                  Date: <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${tipp.endDate}"/><br/>
+                                  Date: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.endDate}"/><br/>
                                   Volume: ${tipp.endVolume}<br/>
                                   Issue: ${tipp.endIssue}
                                </td>

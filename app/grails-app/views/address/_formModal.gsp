@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Address" %>
+<%@ page import="com.k_int.kbplus.Address;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory" %>
 
 <semui:modal id="addressFormModal" text="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}">
 
@@ -26,7 +26,7 @@
                         <g:message code="address.state.label" default="State" />
                     </label>
                     <laser:select class="ui dropdown" id="state" name="state.id"
-                                  from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Federal State'))}"
+                                  from="${RefdataCategory.getAllRefdataValues('Federal State')}"
                                   optionKey="id"
                                   optionValue="value"
                                   value="${addressInstance?.state?.id}"
@@ -56,7 +56,7 @@
                         <g:message code="address.country.label" default="Country" />
                     </label>
                     <laser:select class="ui dropdown" id="country" name="country.id"
-                                  from="${com.k_int.kbplus.RefdataValue.findAllByOwner(com.k_int.kbplus.RefdataCategory.findByDesc('Country'))}"
+                                  from="${RefdataCategory.getAllRefdataValues('Country')}"
                                   optionKey="id"
                                   optionValue="value"
                                   value="${addressInstance?.country?.id}"

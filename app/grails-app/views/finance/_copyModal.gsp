@@ -12,18 +12,18 @@
 
         <div class="field">
 
-            <g:if test="${inSubMode}">
+            <g:if test="${sub}">
 
-                <g:if test="${costItem?.sub?.id == fixedSubscription?.id}">
+                <g:if test="${costItem?.sub?.id == sub.id}">
                     <label>Für folgende Lizenz kopieren</label>
-                    <input type="text" readonly="readonly" value="${fixedSubscription?.name}" />
-                    <input type="hidden" name="newLicenseeTargets" value="${'com.k_int.kbplus.Subscription:' + fixedSubscription?.id}" />
+                    <input type="text" readonly="readonly" value="${sub.name}" />
+                    <input type="hidden" name="newLicenseeTargets" value="${'com.k_int.kbplus.Subscription:' + sub.id}" />
                 </g:if>
 
                 <g:else>
                     <%
                         def validSubChilds = com.k_int.kbplus.Subscription.findAllByInstanceOfAndStatusNotEqual(
-                                fixedSubscription,
+                                sub,
                                 com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
                         )
                     %>

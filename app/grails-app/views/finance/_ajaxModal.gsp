@@ -5,20 +5,29 @@
 <g:render template="vars" /><%-- setting vars --%>
 
 <g:set var="modalText" value="${message(code:'financials.addNewCost')}" />
+<g:set var="submitButtonLabel" value="${message(code:'default.button.create_new.label')}" />
 <g:set var="org" value="${contextService.getOrg()}" />
 
 <%
     if (costItem) {
-        modalText = g.message(code: 'financials.editCost')
+        if(mode && mode.equals("edit")) {
+            modalText = g.message(code: 'financials.editCost')
+            submitButtonLabel = g.message(code:'default.button.edit.label')
+        }
+        else if(mode && mode.equals("copy")) {
+            modalText = g.message(code: 'financials.costItem.copy.tooltip')
+            submitButtonLabel = g.message(code:'default.button.copy.label')
+        }
 
         def subscriberExists = OrgRole.findBySubAndRoleType(costItem.sub, RefdataValue.getByValueAndCategory('Subscriber_Consortial', 'Organisational Role'));
         if ( subscriberExists ) {
             modalText = subscriberExists.org?.toString()
         }
     }
+
 %>
 
-<semui:modal id="costItem_ajaxModal" text="${modalText}">
+<semui:modal id="costItem_ajaxModal" text="${modalText}" msgSave="${submitButtonLabel}">
     <g:if test="${costItem?.globalUID}">
         <g:if test="${costItem?.isVisibleForSubscriber}">
             <div class="ui orange ribbon label">
@@ -34,20 +43,19 @@
     <g:form class="ui small form" id="editCost" url="${formUrl}">
 
         <g:hiddenField name="shortcode" value="${contextService.getOrg()?.shortcode}" />
-        <g:if test="${costItem}">
+        <g:if test="${costItem && (mode && mode.equals("edit"))}">
             <g:hiddenField name="oldCostItem" value="${costItem.class.getName()}:${costItem.id}" />
         </g:if>
 
         <!--
-        Sub.Mode: ${inSubMode}
-        Ctx.Sub: ${fixedSubscription}
+        Ctx.Sub: ${sub}
         CI.Sub: ${costItem?.sub}
         CI.SubPkg: ${costItem?.subPkg}
         -->
 
         <div class="fields">
             <div class="nine wide field">
-                <g:if test="${OrgRole.findBySubAndOrgAndRoleType(fixedSubscription, contextService.getOrg(), RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role')) || OrgRole.findBySubAndOrgAndRoleType(currentSubscription, contextService.getOrg(), RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role')) }">
+                <g:if test="${OrgRole.findBySubAndOrgAndRoleType(sub, contextService.getOrg(), RefdataValue.getByValueAndCategory('Subscription Consortia', 'Organisational Role'))}">
                     <div class="two fields la-fields-no-margin-button">
                         <div class="field">
                             <label>${message(code:'financials.newCosts.costTitle')}</label>
@@ -58,7 +66,7 @@
                             <g:set var="newIsVisibleForSubscriberValue" value="${costItem?.isVisibleForSubscriber ? RefdataValue.getByValueAndCategory('Yes', 'YN').id : RefdataValue.getByValueAndCategory('No', 'YN').id}" />
                             <laser:select name="newIsVisibleForSubscriber" class="ui dropdown"
                                       id="newIsVisibleForSubscriber"
-                                      from="${RefdataValue.findAllByOwner(RefdataCategory.findByDesc('YN'))}"
+                                      from="${RefdataCategory.getAllRefdataValues('YN')}"
                                       optionKey="id"
                                       optionValue="value"
                                       noSelection="${['':'']}"
@@ -82,7 +90,7 @@
                                     <option selected="selected" value="${bc.class.name}:${bc.id}">${bc.value}</option>
                                 </g:if>
                                 <g:else>
-                                    <option value="${bc.class.name}:${bc.id}">${bc.value}</option>
+                                    <option value="${BudgetCode.class.name}:${bc.id}">${bc.value}</option>
                                 </g:else>
                             </g:each>
                         </select>
@@ -148,7 +156,7 @@
                 <div class="two fields la-fields-no-margin-button">
                     <div class="field">
                         <label>${message(code:'financials.newCosts.controllable')}</label>
-                        <laser:select name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCateogry')}" class="ui dropdown"
+                        <laser:select name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCategory')}" class="ui dropdown"
                                       from="${taxType}"
                                       optionKey="id"
                                       optionValue="value"
@@ -277,17 +285,16 @@
                                value="${'com.k_int.kbplus.Subscription:' + costItem.sub.id}" />
                     </g:if>
                     <g:else>
-                        <g:if test="${inSubMode}">
+                        <g:if test="${sub}">
                             <input class="la-full-width la-select2-fixed-width"
                                    readonly='readonly'
-                                   value="${fixedSubscription?.getName()}" />
+                                   value="${sub.getName()}" />
                             <input name="newSubscription" id="pickedSubscription"
                                    type="hidden"
-                                   value="${'com.k_int.kbplus.Subscription:' + fixedSubscription?.id}" />
+                                   value="${'com.k_int.kbplus.Subscription:' + sub.id}" />
                         </g:if>
                         <g:else>
                             <input name="newSubscription" id="newSubscription" class="la-full-width select2 la-select2-fixed-width"
-                                   data-filterMode="${'com.k_int.kbplus.Subscription:' + fixedSubscription?.id}"
                                    data-subfilter=""
                                    placeholder="${message(code:'financials.newCosts.newLicence')}" />
                         </g:else>
@@ -296,10 +303,10 @@
 
                 <div class="field">
 
-                    <g:if test="${inSubMode}">
+                    <g:if test="${sub}">
                         <%
                             def validSubChilds = com.k_int.kbplus.Subscription.findAllByInstanceOfAndStatusNotEqual(
-                                    fixedSubscription,
+                                    sub,
                                     com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
                             )
                         %>
@@ -347,9 +354,9 @@
                                   noSelection="['':'']"
                                   value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}" />
                     </g:if>
-                    <g:elseif test="${inSubMode}">
+                    <g:elseif test="${sub}">
                         <g:select name="newPackage" id="newPackage" class="ui dropdown"
-                                  from="${[{}] + fixedSubscription?.packages}"
+                                  from="${[{}] + sub.packages}"
                                   optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
                                   optionKey="${{"com.k_int.kbplus.SubscriptionPackage:" + it?.id}}"
                                   noSelection="['':'']"
@@ -360,14 +367,14 @@
                     </g:else>
 
 
-                    <%-- the distinction between subMode (= fixedSubscription) and general view is done already in the controller! --%>
+                    <%-- the distinction between subMode (= sub) and general view is done already in the controller! --%>
                     <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
                     <input name="newIe" id="newIE" class="select2 la-select2-fixed-width" />
-                    <%--<g:if test="${! inSubMode}">
+                    <%--<g:if test="${!sub}">
                         <input name="newIe" id="newIE" data-subFilter="" data-disableReset="true" class="la-full-width" value="${params.newIe}">
                     </g:if>
                     <g:else>
-                        <input name="newIe" id="newIE" data-subFilter="${fixedSubscription?.id}" data-disableReset="true" class="select2 la-full-width" value="${params.newIe}">
+                        <input name="newIe" id="newIE" data-subFilter="${sub.id}" data-disableReset="true" class="select2 la-full-width" value="${params.newIe}">
                     </g:else>--%>
 
                 </div><!-- .field -->
@@ -505,7 +512,7 @@
 
             console.log( "ajaxPostFunc")
 
-            <g:if test="${! inSubMode}">
+            <g:if test="${!sub}">
 
             $('#costItem_ajaxModal #newSubscription').select2({
                 placeholder: "${message(code:'financials.newCosts.enterSubName')}",
@@ -515,7 +522,7 @@
                 },
                 global: false,
                 ajax: {
-                    url: "<g:createLink controller='ajax' action='lookup'/>",
+                    url: "<g:createLink controller='ajax' action='lookupSubscriptions'/>",
                     dataType: 'json',
                     data: function (term, page) {
                         return {
@@ -553,7 +560,7 @@
                 },--%>
                 global: false,
                 ajax: {
-                    url: "<g:createLink controller='ajax' action='lookupIssueEntitlements' params='${params}'/>",
+                    url: "<g:createLink controller='ajax' action='lookupIssueEntitlements'/>",
                     data: function (term, page) {
                         return {
                             hideDeleted: 'true',

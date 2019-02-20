@@ -92,10 +92,10 @@
                   </td>
                   <g:each in="${crosstab[t.position]}" var="tipp">
                     <g:if test="${tipp}">
-                      <td>${message(code:'platform.show.from', default:'from')}: <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${tipp.startDate}"/>
+                      <td>${message(code:'platform.show.from', default:'from')}: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.startDate}"/>
                             <g:if test="${tipp.startVolume}"> / ${message(code:'tipp.volume', default:'volume')}: ${tipp.startVolume} </g:if>
                             <g:if test="${tipp.startIssue}"> / ${message(code:'tipp.issue', default:'issue')}: ${tipp.startIssue} </g:if> <br/>
-                          ${message(code:'platform.show.to', default:'to')}:  <g:formatDate format="${session.sessionPreferences?.globalDateFormat}" date="${tipp.endDate}"/>
+                          ${message(code:'platform.show.to', default:'to')}:  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.endDate}"/>
                             <g:if test="${tipp.endVolume}"> / ${message(code:'tipp.volume', default:'volume')}: ${tipp.endVolume}</g:if>
                             <g:if test="${tipp.endIssue}"> / ${message(code:'tipp.issue', default:'issue')}: ${tipp.endIssue}</g:if> <br/>
                           ${message(code:'tipp.coverageDepth', default:'coverage Depth')}: ${tipp.coverageDepth}</br>
