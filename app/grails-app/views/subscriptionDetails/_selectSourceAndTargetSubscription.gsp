@@ -24,6 +24,6 @@
                   optionKey="id"
                   value="${targetSubscription?.id}"
                   noSelection="${[null: message(code: 'default.select.choose.label')]}"/>
-        <input type="submit" class="ui button" value="Lizenz(en) auswählen" />
+        <input type="submit" class="ui button" value="Lizenzen auswählen" />
     </div>
 </g:form>
