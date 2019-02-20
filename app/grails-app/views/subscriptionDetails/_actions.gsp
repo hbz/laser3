@@ -52,9 +52,13 @@
             <semui:actionsDropdownItem controller="myInstitution" action="renewalsUpload"
                                    message="menu.institutions.imp_renew"/>
         </g:if>
+
         <g:if test="${subscriptionInstance?.type == RefdataValue.getByValueAndCategory("Consortial Licence", "Subscription Type") && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgRoleTypeIds()) && !previousSubscriptions}">
             <semui:actionsDropdownItem controller="subscriptionDetails" action="renewSubscriptionConsortia"
                                        params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>
+
+            <semui:actionsDropdownItem controller="subscriptionDetails" action="linkLicenseConsortia"
+                                       params="${[id: params.id]}" message="subscription.details.linkLicenseConsortium.label"/>
         </g:if>
 
         <g:if test="${actionName == 'members'}">

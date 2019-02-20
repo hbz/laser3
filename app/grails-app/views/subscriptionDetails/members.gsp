@@ -66,6 +66,7 @@
                 <th>${message(code:'subscriptionDetails.members.members')}</th>
                 <th>${message(code:'default.startDate.label')}</th>
                 <th>${message(code:'default.endDate.label')}</th>
+                <th>${message(code: 'subscription.linktoLicense')}</th>
                 <th>${message(code:'subscription.details.status')}</th>
                 <th></th>
             </tr>
@@ -122,11 +123,20 @@
 
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
+                    <td class="center aligned">
+                        <g:if test="${sub?.owner?.id}">
+                            <g:link controller="licenseDetails" action="show" id="${sub?.owner?.id}"><i class=" inverted circular balance scale green link icon"></i></g:link>
+                        </g:if>
+                        <g:else>
+                            <g:link controller="subscriptionDetails" action="linkLicenseConsortia" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                        </g:else>
+
+                    </td>
                     <td>${sub.status.getI10n('value')}</td>
 
                     <td class="x">
                         <g:link controller="subscriptionDetails" action="show" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
-                        <g:if test="${editable && i<1}">
+                        <g:if test="${editable}">
                             <g:each in="${sub.getAllSubscribers()}" var="subscr">
                                 <g:link class="ui icon negative button js-open-confirm-modal"
                                         data-confirm-term-what="membershipSubscription"

@@ -23,7 +23,7 @@
         <semui:controlButtons>
             <semui:exportDropdown>
                 <semui:exportDropdownItem>
-                    <g:if test="${params.submit || params.filterSubStatus}">
+                    <g:if test="${(params.submit && params.filterSubStatus) || params.filterSubStatus}">
                         <g:link  class="item js-open-confirm-modal"
                                  data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial', default: 'Achtung!  Dennoch fortfahren?')}"
                                  data-confirm-term-how="ok"
