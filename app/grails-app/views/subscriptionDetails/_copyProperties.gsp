@@ -1,89 +1,81 @@
-<%@ page import="com.k_int.properties.PropertyDefinition; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription" %>
+<%@ page import="com.k_int.kbplus.abstract_domain.PrivateProperty; com.k_int.kbplus.abstract_domain.CustomProperty; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription" %>
 <%@ page import="com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
+<% def contextService = grailsApplication.mainContext.getBean("contextService");
+   def contextOrg = contextService.org%>
 <semui:form>
-    <g:form action="copyElementsIntoSubscription" controller="subscriptionDetails" id="${params.id}" params="[workFlowPart: 4]" method="post" class="ui form newLicence">
-
-        <g:hiddenField name="baseSubscription" value="${params.id}" />
-        <g:hiddenField name="workFlowPartNext" value="${workFlowPartNext}" />
-        <div class="five wide column">
-            <label>${message(code: 'subscription.details.copyElementsIntoSubscription.sourceSubscription.name')}: </label>
-            <g:select class="ui search dropdown"
-                      name="id"
-                      from="${allSubscriptions_readRights}"
-                      optionValue="name"
-                      optionKey="id"
-                      value="${subscription?.id}"
-                      />
-                      %{--disabled="${(subscription)? true : false}"/>--}%
-            <label>${message(code: 'subscription.details.copyElementsIntoSubscription.targetSubscription.name')}: </label>
-            <g:select class="ui search dropdown"
-                      name="targetSubscription"
-                      from="${allSubscriptions_writeRights}"
-                      optionValue="name"
-                      optionKey="id"
-                      value="${newSub?.id}"
-                      noSelection="${[null: message(code: 'default.select.choose.label')]}"/>
-            <input type="submit" class="ui button" value="Lizenz(en) auswählen" />
-        </div>
-    </g:form>
+    <g:render template="selectSourceAndTargetSubscription" model="[
+            sourceSubscription: sourceSubscription,
+            targetSubscription: targetSubscription,
+            allSubscriptions_readRights: allSubscriptions_readRights,
+            allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
     <hr>
-    <g:form action="copyElementsIntoSubscription" controller="subscriptionDetails" id="${params.id}"
-            params="[workFlowPart: 4, targetSubscription: newSub?.id]" method="post" class="ui form newLicence">
+    <g:form action="copyElementsIntoSubscription" controller="subscriptionDetails" id="${params.id ?: params.sourceSubscriptionId}"
+            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId]" method="post" class="ui form newLicence">
         <table class="ui celled table">
             <tbody>
                 <tr>
-                    <th>${message(code: 'default.select.label')}</th>
                     <td>Quelle:
-                    <g:if test="${subscription}"><g:link controller="subscriptionDetails" action="show" id="${subscription?.id}">${subscription?.name}</g:link></g:if>
-                    <g:else>(keine Lizenz gewählt)</g:else>
+                    <g:if test="${sourceSubscription}"><g:link controller="subscriptionDetails" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
                     </td>
                     <td>Ziel:
-                        <g:if test="${newSub}"><g:link controller="subscriptionDetails" action="show" id="${newSub?.id}">${newSub?.name}</g:link></g:if>
-                        <g:else>(keine Lizenz gewählt)</g:else>
+                        <g:if test="${targetSubscription}"><g:link controller="subscriptionDetails" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
                     </td>
                 </tr>
                 <tr>
-                    <th><g:checkBox name="subscription.takeCustomProperties" /></th>
                     <td>
-                        <g:if test="${subscription}">
+                        <g:if test="${sourceSubscription}">
                             ${message(code: 'subscription.takeCustomProperties')}
-                            <g:render template="/templates/properties/custom" model="${[
-                                prop_desc: PropertyDefinition.SUB_PROP,
-                                ownobj: subscription,
-                                custom_props_div: "custom_props_div_${contextOrg.id}",
-                                tenant: contextOrg]}"/>
+                            <g:render template="/templates/properties/selectableProperties" model="${[
+                                    show_checkboxes: true,
+                                    showCopyConflicts: false,
+                                    prop_desc: PropertyDefinition.SUB_PROP,
+                                    ownobj: sourceSubscription,
+                                    showPropClass: CustomProperty.class,
+                                    forced_not_editable: true,
+                                    custom_props_div: "custom_props_div_${contextOrg.id}",
+                                    tenant: contextOrg]}"/>
                         </g:if>
                     </td>
                     <td>
-                        <g:if test="${newSub}">
+                        <g:if test="${targetSubscription}">
                             ${message(code: 'subscription.takeCustomProperties')}
-                            <g:render template="/templates/properties/custom" model="${[
-                                prop_desc: PropertyDefinition.SUB_PROP,
-                                ownobj: newSub,
-                                custom_props_div: "custom_props_div_${contextOrg.id}",
-                                tenant: contextOrg]}"/>
+                            <g:render template="/templates/properties/selectableProperties" model="${[
+                                    show_checkboxes: false,
+                                    showCopyConflicts: true,
+                                    prop_desc: PropertyDefinition.SUB_PROP,
+                                    ownobj: targetSubscription,
+                                    showPropClass: CustomProperty.class,
+                                    forced_not_editable: true,
+                                    custom_props_div: "custom_props_div_${contextOrg.id}",
+                                    tenant: contextOrg]}"/>
                         </g:if>
                     </td>
                 </tr>
                 <tr>
-                    <th><g:checkBox name="subscription.takePrivateProperties" /></th>
                     <td>
-                        <g:if test="${subscription}">
+                        <g:if test="${sourceSubscription}">
                             ${message(code: 'subscription.takePrivateProperties')}
-                            <g:render template="/templates/properties/private" model="${[
+                            <g:render template="/templates/properties/selectableProperties" model="${[
+                                show_checkboxes: true,
+                                showCopyConflicts: false,
                                 prop_desc: PropertyDefinition.SUB_PROP,
-                                ownobj: subscription,
+                                ownobj: sourceSubscription,
+                                showPropClass: PrivateProperty.class,
+                                forced_not_editable: true,
                                 custom_props_div: "custom_props_div_${contextOrg.id}",
                                 tenant: contextOrg]}"/>
                         </g:if>
                     </td>
                     <td>
-                        <g:if test="${newSub}">
+                        <g:if test="${targetSubscription}">
                             ${message(code: 'subscription.takePrivateProperties')}
-                            <g:render template="/templates/properties/private" model="${[
+                            <g:render template="/templates/properties/selectableProperties" model="${[
+                                show_checkboxes: false,
+                                showCopyConflicts: true,
                                 prop_desc: PropertyDefinition.SUB_PROP,
-                                ownobj: newSub,
+                                ownobj: targetSubscription,
+                                showPropClass: PrivateProperty.class,
+                                forced_not_editable: true,
                                 custom_props_div: "custom_props_div_${contextOrg.id}",
                                 tenant: contextOrg]}"/>
                         </g:if>

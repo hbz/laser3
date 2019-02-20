@@ -12,7 +12,7 @@
 		<div class="four wide column">
 			<label>${message(code: 'subscription.details.copyElementsIntoSubscription.sourceSubscription.name')}: ${subscription?.name}</label>
 				<g:select class="ui search dropdown"
-						  name="sourceSubscription"
+						  name="sourceSubscriptionId"
 						  from="${allSubscriptions_readRights}"
 						  optionValue="name"
 						  value="${subscription}"
@@ -21,7 +21,7 @@
             <g:if test="${validSubChilds}">
             <label>${message(code: 'subscription.details.copyElementsIntoSubscription.targetSubscription.name')}: ${newSub?.name}</label>
             <g:select class="ui search dropdown"
-                      name="targetSubscription"
+                      name="targetSubscriptionId"
                       from="${allSubscriptions_writeRights}"
                       value="null"
                       optionValue="name"

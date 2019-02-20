@@ -1,6 +1,8 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.kbplus.abstract_domain.CustomProperty
+import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.controller.AbstractDebugController
@@ -2344,7 +2346,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
         params.orgRole = RDStore.OR_SUBSCRIBER.value
         tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-        result << Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])[0]
+        result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
         result
     }
     private getMySubscriptions_writeRights(){
@@ -2359,7 +2361,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         params.orgRole = RDStore.OR_SUBSCRIBER.value
         params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL_LICENSE.id}"
         tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-        result << Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])[0]
+        result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
         result
     }
 
@@ -2367,22 +2369,25 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def copyElementsIntoSubscription() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        flash.error = ""
+        result.sourceSubscriptionId = params?.sourceSubscriptionId ?: params?.id
+        if (params?.targetSubscriptionId) { result.targetSubscriptionId = params?.targetSubscriptionId}
+        result.sourceSubscription = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): params.id)
+        if (params.targetSubscriptionId){ result.targetSubscription =Subscription.get(Long.parseLong(params.targetSubscriptionId))}
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): params.id)
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(Long.parseLong(params.targetSubscriptionId)) : null
+        result.workFlowPart = params?.workFlowPart
+        result.workFlowPartNext = params?.workFlowPartNext
 
-        if (!(result || (RDStore.OR_TYPE_CONSORTIUM?.id in contextService.getOrg()?.getallOrgRoleTypeIds()))) {
+//        if (!(result || (RDStore.OR_TYPE_CONSORTIUM?.id in contextService.getOrg()?.getallOrgRoleTypeIds()))) {
+        if (!result) {
             response.sendError(401); return
         }
 
-        //TODO: Rechte überprüfen
         result.allSubscriptions_readRights = getMySubscriptions_readRights()
         result.allSubscriptions_writeRights = getMySubscriptions_writeRights()
 
-        if ((RDStore.OR_TYPE_CONSORTIUM?.id in result.institution?.getallOrgRoleTypeIds())) {
-            def baseSub = Subscription.get(params.baseSubscription ?: params.id)
-
-            use(TimeCategory) {
-                result.newStartDate = baseSub.startDate ? baseSub.startDate + 1.year : null
-                result.newEndDate = baseSub.endDate ? baseSub.endDate + 1.year : null
-            }
+//        if ((RDStore.OR_TYPE_CONSORTIUM?.id in result.institution?.getallOrgRoleTypeIds())) {
 
             if (params.workFlowPart == '3') {
 
@@ -2578,46 +2583,20 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             }
 
             if (params.workFlowPart == '4') {
-                def newSub = params.targetSubscription ? Subscription.get(Long.parseLong(params.targetSubscription)) : null
-                if (baseSub && newSub) {
-                    if (params?.subscription?.takeCustomProperties) {
-                        takeCustomProperties(baseSub, newSub)
-                    }
-                    if (params?.subscription?.takePrivateProperties) {
-                        takePrivateProperties(baseSub, newSub)
-                    }
-                }
-                result.newSub = newSub
-                result.subscription = baseSub
+                workFlowPart4()
             }
 
             if (params.workFlowPart == '1') {
-                def newSub = params.targetSubscription ? Subscription.get(Long.parseLong(params.targetSubscription)) : null
-                def isNewSub = ! newSub
-                if (params.subscription.takeCustomProperties) { takeCustomProperties(baseSub, newSub) }
-                if (params.subscription.takePrivateProperties) { takePrivateProperties(baseSub, newSub) }
-                if (params.baseSubscription) {
-                    ArrayList<Links> previousSubscriptions = Links.findAllByDestinationAndObjectTypeAndLinkType(baseSub.id,Subscription.class.name,RDStore.LINKTYPE_FOLLOWS)
-                    if (! newSub && previousSubscriptions.size() > 0) {
-                        flash.error = message(code: 'subscription.renewSubExist', default: 'The Subscription is already renewed!')
+                if (params?.subscription?.takeDates) {
+                    if (baseSub && newSub) {
+                        takeDates(baseSub, newSub)
                     } else {
-                        if (isNewSub) {
-                            newSub = new Subscription(
-                                    name: baseSub.name,
-                                    startDate: result.newStartDate,
-                                    endDate: result.newEndDate,
-                                    //previousSubscription: baseSub.id, overhauled as ERMS-800/ERMS-892
-                                    identifier: java.util.UUID.randomUUID().toString(),
-                                    isPublic: baseSub.isPublic,
-                                    isSlaved: baseSub.isSlaved,
-                                    type: baseSub.type,
-                                    status: RDStore.SUBSCRIPTION_INTENDED,
-                                    resource: baseSub.resource ?: null,
-                                    form: baseSub.form ?: null)
-                        }
-
-                        if (params.subscription.takeLinks) {
-                            //License
+                        if ( ! baseSub) flash.error += message(code: 'subscription.details.copyElementsIntoSubscription.noSubscriptionSource')
+                        if ( ! newSub) flash.error += message(code: 'subscription.details.copyElementsIntoSubscription.noSubscriptionTarget')
+                    }
+                }
+                if (params?.baseSubscription) {
+                        if (params?.subscription.takeLinks) {
                             newSub.owner = baseSub.owner ?: null
                         }
 
@@ -2628,69 +2607,32 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 //                            log.debug("Save ok");
                             //Copy References
                             //OrgRole
-                            baseSub.orgRelations?.each { or ->
-                                if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || params.subscription.takeLinks) {
-                                    OrgRole newOrgRole = new OrgRole()
-                                    InvokerHelper.setProperties(newOrgRole, or.properties)
-                                    newOrgRole.sub = newSub
-//                                    newOrgRole.save(flush: true)
-                                }
-                            }
+//                            baseSub.orgRelations?.each { or ->
+//                                if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || params?.subscription.takeLinks) {
+//                                    OrgRole newOrgRole = new OrgRole()
+//                                    InvokerHelper.setProperties(newOrgRole, or.properties)
+//                                    newOrgRole.sub = newSub
+////                                    newOrgRole.save(flush: true)
+//                                }
+//                            }
                             //link to previous subscription
                             Links prevLink = new Links(source: newSub.id,destination: baseSub.id,objectType: Subscription.class.name,linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
 //                            if(!prevLink.save(flush:true)) {
 //                                log.error("Problem linking to previous subscription: ${prevLink.errors}")
 //                            }
-                            if (params.subscription.takeLinks) {
-                                //Package
-                                baseSub.packages?.each { pkg ->
-                                    SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
-                                    InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
-                                    newSubscriptionPackage.subscription = newSub
-//                                    newSubscriptionPackage.save(flush: true)
-                                }
-                                // fixed hibernate error: java.util.ConcurrentModificationException
-                                // change owner before first save
-                                //License
-                                //newSub.owner = baseSub.owner ?: null
-                                //newSub.save(flush: true)
+                            if (params?.subscription.takeLinks) {
+                                takeLinks(sourceSub, targetSub)
                             }
 
-                            if (params.subscription.takeEntitlements) {
-                                baseSub.issueEntitlements.each { ie ->
-                                    if (ie.status != RDStore.IE_DELETED) {
-                                        def properties = ie.properties
-                                        properties.globalUID = null
-                                        IssueEntitlement newIssueEntitlement = new IssueEntitlement()
-                                        InvokerHelper.setProperties(newIssueEntitlement, properties)
-                                        newIssueEntitlement.subscription = newSub
-//                                        newIssueEntitlement.save(flush: true)
-                                    }
-                                }
+                            if (params?.subscription.takeEntitlements) {
+                                takeEntitlements(sourceSub, targetSub)
                             }
-//                            if (params.subscription.takeCustomProperties) {
-//                                takeCustomProperties(baseSub, newSub)
-//                            }
-//                            if (params.subscription.takePrivateProperties) {
-//                                takePrivateProperties(baseSub, newSub)
-                                //privatProperties
-//                                def contextOrg = contextService.getOrg()
-//
-//                                baseSub.privateProperties.each { prop ->
-//                                    if (prop.type?.tenant?.id == contextOrg?.id) {
-//                                        def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSub)
-//                                        copiedProp = prop.copyInto(copiedProp)
-//                                        copiedProp.save(flush: true)
-                                        //newSub.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
-//                                    }
-//                                }
-//                            }
-
-                            params.workFlowPart = 2
-                            params.workFlowPartNext = 3
+                            params?.workFlowPart = 1
+                            params?.workFlowPartNext = 2
                             result.newSub = newSub
+                            result.subscription = baseSub
 //                        }
-                    }
+//                    }
                 }
             }
 
@@ -2727,45 +2669,98 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     }
                 }
             }
-            result.workFlowPart = params.workFlowPart ?: 1
-            result.workFlowPartNext = params.workFlowPartNext ?: 2
-        }
+            result.workFlowPart = params?.workFlowPart ?: 1
+            result.workFlowPartNext = params?.workFlowPartNext ?: 2
+//        }
         result
     }
-    private void takeCustomProperties(Subscription sourceSub, Subscription targetSub) {
-        def targetProp
-        for (sourceProp in sourceSub.customProperties) {
-            targetProp = targetSub.customProperties.find {it.typeId == sourceProp.typeId}
-
-            boolean isAddNewProp = targetProp && targetProp.type?.multipleOccurrence
-            if ( (! targetProp) || isAddNewProp) {
-                targetProp = new SubscriptionCustomProperty(type: sourceProp.type, owner: targetSub)
+    private workFlowPart4() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        flash.error = ""
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+        List<AbstractProperty> propertiesToTake = params?.list('subscription.takeProperty').collect{ genericOIDService.resolveOID(it)}
+        if (propertiesToTake) {
+            if (baseSub && newSub) {
+                takeProperties(propertiesToTake, newSub)
+            } else {
+                if ( ! baseSub) flash.error += message(code: 'subscription.details.copyElementsIntoSubscription.noSubscriptionSource')
+                if ( ! newSub) flash.error += message(code: 'subscription.details.copyElementsIntoSubscription.noSubscriptionTarget')
             }
-            targetProp = sourceProp.copyInto(targetProp)
-            targetProp.save(flush: true)
-            //sourceSub.addToCustomProperties(targetProp) // ERROR Hibernate: Found two representations of same collection
+        }
+        result.sourceSubscription = baseSub
+        result.targetSubscription = newSub
+        params.workFlowPart = 4
+        params.workFlowPartNext = 4
+        return result
+    }
+    private boolean takeEntitlements(Subscription sourceSub, Subscription targetSub) {
+        sourceSub.issueEntitlements.each { ie ->
+            if (ie.status != RDStore.IE_DELETED) {
+                def properties = ie.properties
+                properties.globalUID = null
+                IssueEntitlement newIssueEntitlement = new IssueEntitlement()
+                InvokerHelper.setProperties(newIssueEntitlement, properties)
+                newIssueEntitlement.subscription = targetSub
+                newIssueEntitlement.save(flush: true)
+            }
         }
     }
-    private void takePrivateProperties(Subscription sourceSub, Subscription targetSub) {
+
+    private boolean takeDates(Subscription sourceSub, Subscription targetSub) {
+        targetSub.setStartDate(sourceSub.getStartDate())
+        targetSub.setEndDate(sourceSub.getEndDate())
+        if (targetSub.save(flush: true)) {
+            log.debug("Save ok")
+            return true
+        } else {
+            log.error("Problem saving subscription ${targetSub.errors}")
+            flash.error("Es ist ein Fehler aufgetreten.")
+            return false
+        }
+    }
+    private boolean takeLinks(Subscription sourceSub, Subscription targetSub) {
+        //Package
+        sourceSub.packages?.each { pkg ->
+            SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
+            InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
+            newSubscriptionPackage.subscription = targetSub
+//                                    newSubscriptionPackage.save(flush: true)
+        }
+        // fixed hibernate error: java.util.ConcurrentModificationException
+        // change owner before first save
+        //License
+        targetSub.owner = sourceSub.owner ?: null
+        targetSub.save(flush: true)
+    }
+
+    private boolean takeProperties(List<AbstractProperty> properties, Subscription targetSub){
         def contextOrg = contextService.getOrg()
         def targetProp
 
-        sourceSub.privateProperties.each { sourceProp ->
-            if (sourceProp.type?.tenant?.id == contextOrg?.id) {
-                targetProp = targetSub.privateProperties.find {it.typeId == sourceProp.typeId}
-
-                boolean isAddNewProp = targetProp && targetProp.type?.multipleOccurrence
-                if ( (! targetProp) || isAddNewProp) {
-                    targetProp = new SubscriptionPrivateProperty(type: sourceProp.type, owner: targetSub)
-                }
-                targetProp = sourceProp.copyInto(targetProp)
-                targetProp.save(flush: true)
-                //newSub.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
+        properties?.each { sourceProp ->
+            if (sourceProp instanceof CustomProperty) {
+                targetProp = targetSub.customProperties.find { it.typeId == sourceProp.typeId }
             }
+            if (sourceProp instanceof PrivateProperty && sourceProp.type?.tenant?.id == contextOrg?.id) {
+                targetProp = targetSub.privateProperties.find { it.typeId == sourceProp.typeId }
+            }
+            boolean isAddNewProp = sourceProp.type?.multipleOccurrence
+            if ( (! targetProp) || isAddNewProp) {
+                targetProp = new SubscriptionPrivateProperty(type: sourceProp.type, owner: targetSub)
+            }
+            targetProp = sourceProp.copyInto(targetProp)
+            if (targetProp.save(flush: true)){
+                log.debug("Save ok")
+                return true
+            } else {
+                log.error("Problem saving property ${targetProp.errors}")
+                flash.error("Es ist ein Fehler aufgetreten.")
+                return false
+            }
+            //newSub.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
         }
     }
-
-
 
     def copySubscription() {
 

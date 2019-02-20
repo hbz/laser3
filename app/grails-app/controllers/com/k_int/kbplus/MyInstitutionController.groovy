@@ -506,7 +506,7 @@ from License as l where (
 
         if (! params.status) {
             if (params.isSiteReloaded != "yes") {
-                params.status = RefdataValue.getByValueAndCategory('Current', 'Subscription Status').id
+                params.status = RDStore.SUBSCRIPTION_CURRENT.id
             }
             else {
                 params.status = 'FETCH_ALL'

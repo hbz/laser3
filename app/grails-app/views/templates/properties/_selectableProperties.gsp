@@ -49,7 +49,7 @@
         <g:each in="${properties.sort{a, b -> a.type.getI10n('name').compareToIgnoreCase b.type.getI10n('name')}}" var="prop">
             <g:if test="${showPropClass == CustomProperty.class || ( showPropClass == PrivateProperty.class && prop.type?.tenant?.id == tenant?.id)}">
                 <g:if test="${showCopyConflicts}">
-                    <tr data-prop-type="${prop.type.getI10n('name')}">
+                    <tr data-prop-type="${prop.class.simpleName + prop.type.name}">
                 </g:if><g:else>
                     <tr>
                 </g:else>
@@ -57,19 +57,16 @@
                         <g:if test="${prop.type.multipleOccurrence}">
                             <td><g:checkBox name="subscription.takeProperty" value="${genericOIDService.getOID(prop)}" checked="false"/></td>
                         </g:if><g:else>
-                            <td><g:checkBox name="subscription.takeProperty" value="${genericOIDService.getOID(prop)}" data-prop-type="${prop.type.getI10n('name')}" checked="false"/></td>
+                            <td><g:checkBox name="subscription.takeProperty" value="${genericOIDService.getOID(prop)}" data-prop-type="${prop.class.simpleName + prop.type.name}" checked="false"/></td>
                         </g:else>
                     </g:if>
                     <td>
+                        ${prop.type.getI10n('name')}
                         <g:if test="${prop.type.getI10n('expl') != null && !prop.type.getI10n('expl').contains(' °')}">
-                            ${prop.type.getI10n('name')}
                             <span class="la-long-tooltip" data-position="right center" data-variation="tiny" data-tooltip="${prop.type.getI10n('expl')}">
                                 <i class="question circle icon"></i>
                             </span>
                         </g:if>
-                        <g:else>
-                            ${prop.type.getI10n('name')}
-                        </g:else>
                         <%
                             if (showPropClass == CustomProperty.class) {
                                 if (AuditConfig.getConfig(prop)) {
