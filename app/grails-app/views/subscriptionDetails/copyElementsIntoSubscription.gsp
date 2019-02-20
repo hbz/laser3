@@ -18,12 +18,16 @@ ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}
 
 %{--TODO wieder entfernen, nur fürs Testen gedacht--}%
 <% workFlowPart ?: 4 %>
+<% Map params = [id: params.id];
+    if (sourceSubscriptionId) params << [sourceSubscriptionId: sourceSubscriptionId];
+    if (targetSubscriptionId) params << [targetSubscriptionId: targetSubscriptionId];
+%>
 
 <div class="ui tablet stackable steps">
-    <div class="${workFlowPart == 1 ? 'active' : 'disabled'} step">
+    <div class="${workFlowPart == 1 ? 'active' : ''} step">
         <div class="content">
             <div class="title">
-                <g:link controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${[id: params.id, workFlowPart: 1]}" message="myinst.copyElementsIntoSubscription" >
+                <g:link controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 1]}" message="myinst.copyElementsIntoSubscription" >
                     Auswahl Eigenschaften
                 </g:link>
             </div>
@@ -54,16 +58,15 @@ ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}
         <i class="tags icon"></i>
         <div class="content">
             <div class="title">
-                <g:link controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${[id: params.id, workFlowPart: 4]}" message="myinst.copyElementsIntoSubscription" >
+                <g:link controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 4]}" message="myinst.copyElementsIntoSubscription" >
                     Merkmale
                 </g:link>
             </div>
         </div>
     </div>
 </div>
-
 %{--------------------------------------------------------------------------------------------------------------------}%
-            <g:if test="${workFlowPart == 1}">
+            <g:if test="${workFlowPart == '1'}">
                 <g:render template="copyElements" model="${[validSubChilds: validSubChilds]}"/>
             </g:if>
 %{--------------------------------------------------------------------------------------------------------------------}%
@@ -136,11 +139,11 @@ ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}
                 %{--</g:each>--}%
             %{--</g:if>--}%
 %{--------------------------------------------------------------------------------------------------------------------}%
-            <g:if test="${workFlowPart == 3}">
+            <g:if test="${workFlowPart == '3'}">
                 <g:render template="copySubscriber" model="${[validSubChilds: validSubChilds]}"/>
             </g:if>
 %{--------------------------------------------------------------------------------------------------------------------}%
-            <g:if test="${workFlowPart == 4}">
+            <g:if test="${workFlowPart == '4'}">
                 <g:render template="copyProperties" model="${[validSubChilds: validSubChilds]}"/>
             </g:if>
 %{--------------------------------------------------------------------------------------------------------------------}%
