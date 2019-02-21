@@ -17,32 +17,33 @@
                       from="${rdvAllPersonFunctions}"
                       optionKey="id"
                       optionValue="value"
-                      value="${rdvGeneralContactPrs.id}"/>
+                      />
     </div>
-    <br>    <div class="field">
+    <br>
+    <div class="field">
         <label>Position</label>
         <laser:select class="ui dropdown search"
                       name="roleTypeMultiSelect"
                       multiple=""
-                      from="${rdvAllPersonPosition}"
+                      from="${rdvAllPersonPositions}"
                       optionKey="id"
                       optionValue="value"
                       />
     </div>
     <br><br>
-    <g:set var="generalContactPrsMap" value="${new HashMap()}"/>
+    <g:set var="functionEmailsMap" value="${new HashMap()}"/>
     <g:each in="${rdvAllPersonFunctions}" var="prsFunction" status="counter">
-        <% allEmailAddresses = ""; %>
+        <% Set allEmailAddresses = new TreeSet(); %>
         <g:each in="${orgList}" var="org">
             <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(prsFunction, org).prs}" var="person">
                 <g:if test="${(person?.isPublic?.value=='Yes') || (person?.isPublic?.value=='No' && person?.tenant?.id == contextService.getOrg()?.id)}">
                     <g:each in ="${Contact.findAllByPrsAndContentType(person, rdvEmail)}" var="email">
-                        <% allEmailAddresses += email?.content?.trim() + "; "%>
+                        <% allEmailAddresses.add( email?.content?.trim() )%>
                     </g:each>
                 </g:if>
             </g:each>
         </g:each>
-        <% generalContactPrsMap.put(prsFunction.id, allEmailAddresses)%>
+        <% functionEmailsMap.put(prsFunction.id, allEmailAddresses)%>
     </g:each>
     <div class="ui form">
         <div class="field">
@@ -69,17 +70,29 @@
             }).modal('show')
         });
 
-        var jsonEmailMap = <%=groovy.json.JsonOutput.toJson((Map)generalContactPrsMap)%>;
+        var jsonEmailMap = <%=groovy.json.JsonOutput.toJson((Map)functionEmailsMap)%>;
 
         $('#roleTypeMultiSelect').change(function() { updateTextArea(); });
 
         function updateTextArea() {
             var selectedRoleTypIds = $("#roleTypeMultiSelect").val();
-            var emailsForSelectedRoleTypes = ""
+            var emailsForSelectedRoleTypes = new Array();
             for (var i = 0; i<selectedRoleTypIds.length; i++) {
-                emailsForSelectedRoleTypes += jsonEmailMap[selectedRoleTypIds[i]]
+                var selRoleType = selectedRoleTypIds[i];
+                var tmpEmailArray = jsonEmailMap[selRoleType];
+                for (var j = 0; j<tmpEmailArray.length; j++) {
+                    var email = tmpEmailArray[j].trim();
+                    console.log("Liste: " + emailsForSelectedRoleTypes);
+                    console.log("Gibts mich schon? " + email + "? " + emailsForSelectedRoleTypes.includes(email));
+                    if ( ! emailsForSelectedRoleTypes.includes(email)) {
+                        emailsForSelectedRoleTypes.push(email);
+                    } else {
+                        console.log("Duplikat gefunden: " + email);
+                    }
+                }
             }
-            $('#emailAddressesTextArea').val(emailsForSelectedRoleTypes);
+            var emailsAsString = Array.from(emailsForSelectedRoleTypes).sort().join('; ');
+            $('#emailAddressesTextArea').val(emailsAsString);
         }
     </g:javascript>
 
