@@ -12,7 +12,7 @@
     <div class="field">
         <label>Funktion</label>
         <laser:select class="ui dropdown search"
-                      name="roleTypeMultiSelect"
+                      name="prsFunctionMultiSelect"
                       multiple=""
                       from="${rdvAllPersonFunctions}"
                       optionKey="id"
@@ -23,7 +23,7 @@
     <div class="field">
         <label>Position</label>
         <laser:select class="ui dropdown search"
-                      name="roleTypeMultiSelect"
+                      name="prsPositionMultiSelect"
                       multiple=""
                       from="${rdvAllPersonPositions}"
                       optionKey="id"
@@ -44,6 +44,19 @@
             </g:each>
         </g:each>
         <% functionEmailsMap.put(prsFunction.id, allEmailAddresses)%>
+    </g:each>
+    <g:each in="${rdvAllPersonPositions}" var="prsPosition" status="counter">
+        <% allEmailAddresses = new TreeSet(); %>
+        <g:each in="${orgList}" var="org">
+            <g:each in ="${PersonRole.findAllByPositionTypeAndOrg(prsPosition, org).prs}" var="person">
+                <g:if test="${(person?.isPublic?.value=='Yes') || (person?.isPublic?.value=='No' && person?.tenant?.id == contextService.getOrg()?.id)}">
+                    <g:each in ="${Contact.findAllByPrsAndContentType(person, rdvEmail)}" var="email">
+                        <% allEmailAddresses.add( email?.content?.trim() )%>
+                    </g:each>
+                </g:if>
+            </g:each>
+        </g:each>
+        <% functionEmailsMap.put(prsPosition.id, allEmailAddresses)%>
     </g:each>
     <div class="ui form">
         <div class="field">
@@ -72,10 +85,12 @@
 
         var jsonEmailMap = <%=groovy.json.JsonOutput.toJson((Map)functionEmailsMap)%>;
 
-        $('#roleTypeMultiSelect').change(function() { updateTextArea(); });
+        $('#prsFunctionMultiSelect').change(function() { updateTextArea(); });
+        $('#prsPositionMultiSelect').change(function() { updateTextArea(); });
 
         function updateTextArea() {
-            var selectedRoleTypIds = $("#roleTypeMultiSelect").val();
+            var selectedRoleTypIds = $("#prsFunctionMultiSelect").val();
+            var selectedRoleTypIds = selectedRoleTypIds.concat( $("#prsPositionMultiSelect").val() );
             var emailsForSelectedRoleTypes = new Array();
             for (var i = 0; i<selectedRoleTypIds.length; i++) {
                 var selRoleType = selectedRoleTypIds[i];
