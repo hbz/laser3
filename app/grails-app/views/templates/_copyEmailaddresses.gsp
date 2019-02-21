@@ -7,6 +7,7 @@
     <g:set var="rdvEmail"               value="${RDStore.CCT_EMAIL}"/>
     <g:set var="rdvGeneralContactPrs"   value="${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS}"/>
     <g:set var="rdvAllPersonFunctions"  value="${PersonRole.getAllRefdataValues('Person Function')}"/>
+    <g:set var="rdvAllPersonPositions"  value="${PersonRole.getAllRefdataValues('Person Position')}"/>
 
     <div class="field">
         <label>Funktion</label>
@@ -17,6 +18,16 @@
                       optionKey="id"
                       optionValue="value"
                       value="${rdvGeneralContactPrs.id}"/>
+    </div>
+    <br>    <div class="field">
+        <label>Position</label>
+        <laser:select class="ui dropdown search"
+                      name="roleTypeMultiSelect"
+                      multiple=""
+                      from="${rdvAllPersonPosition}"
+                      optionKey="id"
+                      optionValue="value"
+                      />
     </div>
     <br><br>
     <g:set var="generalContactPrsMap" value="${new HashMap()}"/>
