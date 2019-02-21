@@ -13,13 +13,14 @@
             <th>${message(code:'financials.costItemElement')}</th>
             <th>${message(code:'financials.forSubscription')}</th>
             <th>${message(code:'financials.forPackage')}</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
         %{--Empty result set--}%
         <g:if test="${data.count == 0}">
             <tr>
-                <td colspan="7" style="text-align:center">
+                <td colspan="8" style="text-align:center">
                     <br />
                     <g:if test="${msg}">${msg}</g:if>
                     <g:else>${message(code:'finance.result.filtered.empty')}</g:else>
@@ -78,6 +79,22 @@
                     <td>
                         <g:link controller="packageDetails" action="show" id="${ci.subPkg?.pkg?.id}">${ci.subPkg?.pkg}</g:link>
                     </td>
+                    <td class="x">
+                        <g:if test="${fixedSubscription}">
+                            <span data-position="top right" data-tooltip="${message(code:'financials.costItem.transfer.tooltip')}">
+                                <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", tab:"subscr"]' class="ui icon button trigger-modal">
+                                    <i class="copy icon"></i>
+                                </g:link>
+                            </span>
+                        </g:if>
+                        <g:else>
+                            <span data-position="top right" data-tooltip="${message(code:'financials.costItem.transfer.tooltip')}">
+                                <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", tab:"subscr"]' class="ui icon button trigger-modal">
+                                    <i class="copy icon"></i>
+                                </g:link>
+                            </span>
+                        </g:else>
+                    </td>
                 </tr>
             </g:each>
         </g:else>
@@ -85,7 +102,7 @@
     <tfoot>
         <g:if test="${data.count > 0 && data.sums.billingSums}">
             <tr>
-                <th colspan="7">
+                <th colspan="8">
                     ${message(code:'financials.totalCost')}
                 </th>
             </tr>
@@ -97,7 +114,7 @@
                     <td class="la-exposed-bg">
                         <g:formatNumber number="${entry.billingSumAfterTax}" type="currency" currencySymbol="${entry.currency}"/>
                     </td>
-                    <td colspan="4">
+                    <td colspan="5">
 
                     </td>
                 </tr>
@@ -109,20 +126,20 @@
                 <td class="la-exposed-bg">
                     <g:formatNumber number="${data.sums.localSums.localSumAfterTax}" type="currency" currencySymbol="EUR"/>
                 </td>
-                <td colspan="3">
+                <td colspan="4">
 
                 </td>
             </tr>
         </g:if>
         <g:elseif test="${data.count > 0 && !data.sums.billingSums}">
             <tr>
-                <td colspan="7">
+                <td colspan="8">
                     ${message(code:'financials.noCostsConsidered')}
                 </td>
             </tr>
         </g:elseif>
         <tr>
-            <td colspan="7">
+            <td colspan="8">
                 <div class="ui fluid accordion">
                     <div class="title">
                         <i class="dropdown icon"></i>
