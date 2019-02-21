@@ -37,6 +37,7 @@
         <div class="divider"></div>
 
         <semui:actionsDropdownItem controller="subscriptionDetails" action="copySubscription" params="${[id: params.id]}" message="myinst.copySubscription" />
+        <semui:actionsDropdownItem controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${[id: params.id, workFlowPart: 4]}" message="myinst.copyElementsIntoSubscription" />
 
         <semui:actionsDropdownItem controller="subscriptionDetails" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
         <semui:actionsDropdownItem controller="subscriptionDetails" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
@@ -52,9 +53,16 @@
             <semui:actionsDropdownItem controller="myInstitution" action="renewalsUpload"
                                    message="menu.institutions.imp_renew"/>
         </g:if>
+
         <g:if test="${subscriptionInstance?.type == RefdataValue.getByValueAndCategory("Consortial Licence", "Subscription Type") && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgRoleTypeIds()) && !previousSubscriptions}">
             <semui:actionsDropdownItem controller="subscriptionDetails" action="renewSubscriptionConsortia"
-                                       params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>
+                                       params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>      
+        </g:if>
+        
+          <g:if test="${subscriptionInstance?.type == RefdataValue.getByValueAndCategory("Consortial Licence", "Subscription Type") && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in contextService.getOrg()?.getallOrgRoleTypeIds())}">
+            <semui:actionsDropdownItem controller="subscriptionDetails" action="linkLicenseConsortia"
+                                       params="${[id: params.id]}"
+                                       message="subscription.details.linkLicenseConsortium.label"/>
         </g:if>
 
         <g:if test="${actionName == 'members'}">

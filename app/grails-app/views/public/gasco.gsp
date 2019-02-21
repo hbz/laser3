@@ -62,7 +62,7 @@
                         </fieldset>
                     </div>
                     <div class="field" id="js-consotial-authority">
-                        <label>${message(code: 'gasco.filter.consotialAuthority')}</label>
+                        <label>${message(code: 'gasco.filter.consortialAuthority')}</label>
 
                         <g:select from="${allConsortia}" class="ui fluid search selection dropdown"
                             optionKey="${{ "com.k_int.kbplus.Org:" + it.id }}"
