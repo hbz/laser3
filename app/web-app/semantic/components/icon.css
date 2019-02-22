@@ -4797,6 +4797,15 @@ i.icon.chain.broken {
 i.icon.chain {
   font-family: 'icomoon';
 }
+i.icon.share-unslash {
+  font-family: 'icomoon';
+}
+i.icon.share-slash {
+  font-family: 'icomoon';
+}
+i.icon.copy-send {
+  font-family: 'icomoon';
+}
 i.icon.hand.pointer.outline.slash:before {
   content: "\e900";
 }
