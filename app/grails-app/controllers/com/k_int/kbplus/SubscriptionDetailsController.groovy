@@ -2540,7 +2540,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
         // tasks
         def contextOrg = contextService.getOrg()
-        result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
+        result.sourceTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.sourceSubscription)
+        result.targetTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.targetSubscription)
         result.contextOrg = contextOrg
 
         // restrict visible for templates/links/orgLinksAsList
