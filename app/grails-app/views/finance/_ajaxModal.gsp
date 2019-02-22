@@ -136,7 +136,7 @@
                         <label>${message(code:'financials.costItemConfiguration')}</label>
                         <%
                             def ciec = null
-                            if(costItem) {
+                            if(costItem && !tab.equals("subscr")) {
                                 if(costItem.costItemElementConfiguration)
                                     ciec = costItem.costItemElementConfiguration.class.name+":"+costItem.costItemElementConfiguration.id
                                 else if(!costItem.costItemElementConfiguration && costItem.costItemElement) {
@@ -189,7 +189,7 @@
                         <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="number" class="calc" style="width:50%"
                                name="newCostInBillingCurrency" id="newCostInBillingCurrency"
                                placeholder="${g.message(code:'financials.invoice_total')}"
-                               value="${costItem?.costInBillingCurrency}" step="0.01"/>
+                               value="${consCostTransfer ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}" step="0.01"/>
 
                         <div class="ui icon button" id="costButton3" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
@@ -205,7 +205,7 @@
                         <label>Endpreis</label>
                         <input title="Rechnungssumme nach Steuer (in EUR)" type="text" readonly="readonly"
                                name="newCostInBillingCurrencyAfterTax" id="newCostInBillingCurrencyAfterTax"
-                               value="${costItem?.costInBillingCurrencyAfterTax}" step="0.01"/>
+                               value="${consCostTransfer ? 0.0 : costItem?.costInBillingCurrencyAfterTax}" step="0.01"/>
 
                     </div><!-- .field -->
                     <!-- TODO -->
@@ -246,7 +246,7 @@
                         <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="number" class="calc"
                                name="newCostInLocalCurrency" id="newCostInLocalCurrency"
                                placeholder="${message(code:'financials.newCosts.valueInEuro')}"
-                               value="${costItem?.costInLocalCurrency}" step="0.01"/>
+                               value="${consCostTransfer ? costItem?.costInLocalCurrencyAfterTax : costItem?.costInLocalCurrency}" step="0.01"/>
 
                         <div class="ui icon button" id="costButton1" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
@@ -256,7 +256,7 @@
                         <label>Endpreis (in EUR)</label>
                         <input title="Wert nach Steuer (in EUR)" type="text" readonly="readonly"
                                name="newCostInLocalCurrencyAfterTax" id="newCostInLocalCurrencyAfterTax"
-                               value="${costItem?.costInLocalCurrencyAfterTax}" step="0.01"/>
+                               value="${consCostTransfer ? 0.0 : costItem?.costInLocalCurrencyAfterTax}" step="0.01"/>
                     </div><!-- .field -->
                 </div>
 
@@ -311,15 +311,19 @@
                             )
                         %>
 
-                        <g:if test="${validSubChilds && ! costItem}">
+                        <g:if test="${validSubChilds}">
                             <label>Teilnehmer</label>
-                            <g:select name="newLicenseeTarget" id="newLicenseeTarget" class="ui dropdown"
-                                      from="${[[id:'forConsortia', label:'Gilt für die Konsortiallizenz'], [id:'forAllSubscribers', label:'Für alle Teilnehmer']] + validSubChilds}"
-                                      optionValue="${{it?.name ? it.getAllSubscribers().join(', ') : it.label}}"
-                                      optionKey="${{"com.k_int.kbplus.Subscription:" + it?.id}}"
-                                      noSelection="['':'']"
-                                      value="${'com.k_int.kbplus.Subscription:' + it?.id}" />
-
+                            <g:if test="${sub && sub.instanceOf()}">
+                                <input class="la-full-width" readonly="readonly" value="${modalText}" />
+                            </g:if>
+                            <g:else>
+                                <g:select name="newLicenseeTarget" id="newLicenseeTarget" class="ui dropdown"
+                                          from="${[[id:'forConsortia', label:'Gilt für die Konsortiallizenz'], [id:'forAllSubscribers', label:'Für alle Teilnehmer']] + validSubChilds}"
+                                          optionValue="${{it?.name ? it.getAllSubscribers().join(', ') : it.label}}"
+                                          optionKey="${{"com.k_int.kbplus.Subscription:" + it?.id}}"
+                                          noSelection="['':'']"
+                                          value="${'com.k_int.kbplus.Subscription:' + costItem?.sub?.id}" />
+                            </g:else>
                             <script>
                                 $(function() {
                                     $('#newLicenseeTarget').on('change', function () {

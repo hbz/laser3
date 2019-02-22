@@ -122,7 +122,7 @@ class FinanceService {
         if(!params.forExport) {
             List<CostItem> allCostItems = CostItem.findAllByOwnerAndSub(org,sub)
             if(allCostItems.size() > 0) {
-                result.filterLists = assembleFilterLists(allCostItems)
+                result.filterLists = assembleFilterLists()
                 result.filterLists.providers = OrgRole.executeQuery('select distinct o.org, o.org.name from OrgRole o where o.roleType = :provider and o.sub = :sub order by o.org.name asc',[sub:sub,provider:RDStore.OR_PROVIDER]).collect{ it -> it[0] }
             }
         }
@@ -219,7 +219,7 @@ class FinanceService {
         if(!params.forExport) {
             List<CostItem> allCostItems = CostItem.findAllByOwner(org)
             if(allCostItems.size() > 0) {
-                result.filterLists = assembleFilterLists(allCostItems)
+                result.filterLists = assembleFilterLists()
                 result.filterLists.providers = OrgRole.executeQuery('select distinct o.org, o.org.name from OrgRole o where o.roleType = :provider order by o.org.name asc',[provider:RDStore.OR_PROVIDER]).collect{ it -> it[0] }
             }
             result.filterPresets = filterQueryCons[1]
@@ -498,17 +498,15 @@ class FinanceService {
         return ret
     }
 
-    Map assembleFilterLists(List costItemList) {
+    Map assembleFilterLists() {
         log.info("assembling filter lists")
-        List testSubscriptions = CostItem.executeQuery("select ci.sub from CostItem ci where ci in (:costItemList)",[costItemList:costItemList])
-        List testSubscriptionPackages = CostItem.executeQuery("select ci.subPkg from CostItem ci where ci in (:costItemList)",[costItemList:costItemList])
-        List testIssueEntitlements = CostItem.executeQuery("select ci.issueEntitlement from CostItem ci where ci in (:costItemList)",[costItemList: costItemList])
-        List testBudgetCodes = BudgetCode.executeQuery("select distinct cig.budgetCode from CostItemGroup cig where cig.costItem in (:costItemList)",[costItemList:costItemList])
-        List testInvoiceNumbers = CostItem.executeQuery("select ci.invoice.invoiceNumber from CostItem ci where ci in (:costItemList)",[costItemList:costItemList])
-        List testOrderNumbers = CostItem.executeQuery("select ci.order.orderNumber from CostItem ci where ci in (:costItemList)",[costItemList:costItemList])
-        return [subscriptions: controlledListService.buildSelectList(testSubscriptions,Subscription.class.name),
-                subPackages: controlledListService.buildSelectList(testSubscriptionPackages,SubscriptionPackage.class.name),
-                budgetCodes: testBudgetCodes,invoiceNumbers: testInvoiceNumbers,orderNumbers: testOrderNumbers]
+        Org org = contextService.getOrg()
+        List budgetCodes = BudgetCode.executeQuery("select bc from BudgetCode bc where owner = :org",[org:org])
+        List invoiceNumbers = Invoice.executeQuery("select i.invoiceNumber from Invoice i where i.owner = :org",[org:org])
+        List orderNumbers = Order.executeQuery("select ord.orderNumber from Order ord where ord.owner = :org",[org:org])
+        return [subscriptions: controlledListService.getSubscriptions([status:RDStore.SUBSCRIPTION_CURRENT]).values,
+                subPackages: controlledListService.getSubscriptionPackages([status:RDStore.SUBSCRIPTION_CURRENT]).values,
+                budgetCodes: budgetCodes,invoiceNumbers: invoiceNumbers,orderNumbers: orderNumbers]
     }
 
 }
