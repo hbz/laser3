@@ -31,9 +31,9 @@
     </div>
     <br><br>
     <g:set var="functionEmailsMap" value="${new HashMap()}"/>
-    <g:set var="functionAllEmailsSet" value="${new HashSet<String>()}"/>
+    <g:set var="functionAllEmailsSet" value="${new HashSet()}"/>
     <g:each in="${rdvAllPersonFunctions}" var="prsFunction" >
-        <% Set emailsForFunction = new ArrayList(); %>
+        <% Set<String> emailsForFunction = new HashSet(); %>
         <g:each in="${orgList}" var="org">
             <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(prsFunction, org).prs}" var="person">
                 <g:if test="${(person?.isPublic?.value=='Yes') || (person?.isPublic?.value=='No' && person?.tenant?.id == contextService.getOrg()?.id)}">
@@ -47,7 +47,7 @@
         <% functionEmailsMap.put(prsFunction.id, emailsForFunction) %>
     </g:each>
     <g:each in="${rdvAllPersonPositions}" var="prsPosition" >
-        <% Set emailsForPosition = new ArrayList(); %>
+        <% Set<String> emailsForPosition = new HashSet(); %>
         <g:each in="${orgList}" var="org">
             <g:each in ="${PersonRole.findAllByPositionTypeAndOrg(prsPosition, org).prs}" var="person">
                 <g:if test="${(person?.isPublic?.value=='Yes') || (person?.isPublic?.value=='No' && person?.tenant?.id == contextService.getOrg()?.id)}">
