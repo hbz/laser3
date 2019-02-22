@@ -36,28 +36,29 @@
                     <div class="center aligned four wide column">
                         <g:if test="${ownobj.showShareButton()}">
                             <g:if test="${docctx.isShared}">
-                                <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip.on')}">
                                     <g:remoteLink class="ui mini icon button green js-gost js-no-wait-wheel "
                                               controller="ajax" action="toggleShare"
                                               params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}", tmpl:"documents"]'
                                               onSuccess=""
                                               onComplete=""
-                                              update="container-documents">
+                                              update="container-documents"
+                                              data-position="top right" data-tooltip="${message(code:'property.share.tooltip.on')}"
+                                    >
                                             <i class="share-unslash icon"></i>
                                     </g:remoteLink>
-                                </span>
+
                             </g:if>
                             <g:else>
-                                <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip.off')}">
                                     <g:remoteLink class="ui mini icon button js-gost js-no-wait-wheel"
                                                   controller="ajax" action="toggleShare"
                                                   params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}", tmpl:"documents"]'
                                                   onSuccess=""
                                                   onComplete=""
-                                                  update="container-documents">
+                                                  update="container-documents"
+                                                  data-position="top right" data-tooltip="${message(code:'property.share.tooltip.off')}"
+                                    >
                                         <i class="share-slash icon"></i>
                                     </g:remoteLink>
-                                </span>
                             </g:else>
                         </g:if>
                     </div>
