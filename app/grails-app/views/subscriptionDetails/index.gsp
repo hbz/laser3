@@ -114,13 +114,13 @@
           <table class="ui sortable celled la-table table ignore-floatThead la-bulk-header">
             <thead>
                 <tr>
-                    <th></th>
-                    <th>${message(code:'sidewide.number')}</th>
-                    <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
-                    <th>${message(code:'subscription.details.print-electronic')}</th>
-                    <th>${message(code:'subscription.details.coverage_dates')}</th>
-                    <th>${message(code:'subscription.details.access_dates', default:'Access')}</th>
-                    <th>${message(code:'default.actions.label', default:'Actions')}</th>
+                    <th ></th>
+                    <th >${message(code:'sidewide.number')}</th>
+                    <g:sortableColumn class="three wide" params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
+                    <th class="one wide">${message(code:'subscription.details.print-electronic')}</th>
+                    <th class="five wide">${message(code:'subscription.details.coverage_dates')}</th>
+                    <th class="five wide">${message(code:'subscription.details.access_dates', default:'Access')}</th>
+                    <th class="one wide"></th>
                 </tr>
                 <tr>
                     <th rowspan="2" colspan="4"></th>
@@ -216,10 +216,11 @@
                 <td>
                     <!-- von --->
                      <semui:xEditable owner="${ie}" type="date" field="startDate" />
-                    ${message(code:'tipp.volume')}: <semui:xEditable owner="${ie}" field="startVolume"/> ${message(code:'tipp.issue')}:  <semui:xEditable owner="${ie}" field="startIssue"/>
+                    <b>${message(code:'tipp.volume')}:</b> <semui:xEditable owner="${ie}" field="startVolume"/> <b>${message(code:'tipp.issue')}:</b>  <semui:xEditable owner="${ie}" field="startIssue"/>
+                    <br><br>
                     <!-- bis -->
-                      <semui:xEditable owner="${ie}" type="date" field="endDate" /><br>
-                      ${message(code:'tipp.volume')}: <semui:xEditable owner="${ie}" field="endVolume"/> ${message(code:'tipp.issue')}: <semui:xEditable owner="${ie}" field="endIssue"/>
+                      <semui:xEditable owner="${ie}" type="date" field="endDate" />
+                    <b>${message(code:'tipp.volume')}:</b> <semui:xEditable owner="${ie}" field="endVolume"/> <b>${message(code:'tipp.issue')}:</b> <semui:xEditable owner="${ie}" field="endIssue"/>
                   </td>
                   <td>
                       <!-- von --->
@@ -229,6 +230,7 @@
                       <g:else>
                           <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessStartDate}"/>
                       </g:else>
+                      <br><br>
                       <!-- bis -->
                       <g:if test="${editable}">
                           <semui:xEditable owner="${ie}" type="date" field="accessEndDate" /> (${message(code:'subscription.details.access_end.note', default:'Leave empty to default to sub end date')})
