@@ -30,7 +30,10 @@
                       />
     </div>
     <br><br>
+    %{--Create Collections of EmailAdresses, that will be shown by javascript acconding to the dropdown selection--}%
+    %{--Create a map with EmailAdresses for each Element in the dropdownmenu--}%
     <g:set var="functionEmailsMap" value="${new HashMap()}"/>
+    %{--Create a set with all EmailAdresses, in case no dropdown Element is selected--}%
     <g:set var="functionAllEmailsSet" value="${new HashSet()}"/>
     <g:each in="${rdvAllPersonFunctions}" var="prsFunction" >
         <g:set var="emailsForFunction" value="${new HashSet()}"/>
@@ -97,14 +100,13 @@
             if (selectedRoleTypIds.length == 0) {
                 emailsForSelectedRoleTypes = jsonAllEmailSet;
             } else {
+                // Collect selected EmailAdresses from Map without duplicates
                 for (var i = 0; i<selectedRoleTypIds.length; i++) {
                     var tmpEmailArray = jsonEmailMap[selectedRoleTypIds[i]];
                     for (var j = 0; j<tmpEmailArray.length; j++) {
                         var email = tmpEmailArray[j].trim();
                         if ( ! emailsForSelectedRoleTypes.includes(email)) {
                             emailsForSelectedRoleTypes.push(email);
-                        } else {
-                            console.log("Duplikat gefunden: " + email);
                         }
                     }
                 }
