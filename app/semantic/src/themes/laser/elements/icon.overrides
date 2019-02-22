@@ -1727,6 +1727,15 @@ i.icon.chain.broken {
 i.icon.chain {
   font-family: 'icomoon';
 }
+i.icon.share-unslash {
+  font-family: 'icomoon';
+}
+i.icon.share-slash {
+  font-family: 'icomoon';
+}
+i.icon.copy-send {
+  font-family: 'icomoon';
+}
 // to turn off all the buttons on a side
 // the other part of the button is the SEMANTIC UI Icon: 'hand pointer outline'
 

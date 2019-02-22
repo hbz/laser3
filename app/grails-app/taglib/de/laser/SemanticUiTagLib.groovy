@@ -116,20 +116,28 @@ class SemanticUiTagLib {
         def title = (text && message) ? text + " - " + message : text + message
 
         out << '<div class="ui card ' + attrs.class + '">'
-        out << '<div class="content">'
+        out << '    <div class="content">'
+
 
         if (title) {
-            //out << '<div class="content">'
-            out << '<div class="header" style="display: inline">' + title + '</div>'
+            out << '    <div class="header">'
+            out << '        <div class="ui grid">'
+            out << '            <div class="twelve wide column">'
+            out <<                title
+            out << '            </div>'
             if (attrs.editable && attrs.href) {
-                out << '<button type="button" class="ui right floated  icon button editable-cancel" data-semui="modal" href="' + attrs.href + '" ><i class="plus icon"></i></button>'
+                out << '        <div class="center aligned four wide column">'
+                out << '            <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" href="' + attrs.href + '" ><i class="plus icon"></i></button>'
+                out << '        </div>'
             }
-            //out << '</div>'
+            out << '        </div>'
+            out << '   </div>'
+
         }
 
         out << body()
 
-        out << '</div>'
+        out << '    </div>'
         out << '</div>'
 
     }
