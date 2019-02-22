@@ -1,6 +1,12 @@
 <%@ page import="de.laser.SubscriptionsQueryService; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; de.laser.helper.RDStore" %>
 <laser:serviceInjection />
 <semui:form>
+	<g:render template="selectSourceAndTargetSubscription" model="[
+			sourceSubscription: sourceSubscription,
+			targetSubscription: targetSubscription,
+			allSubscriptions_readRights: allSubscriptions_readRights,
+			allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
+	<hr>
 	<g:form action="copyElementsIntoSubscription" controller="subscriptionDetails" id="${params.id}"
 			params="[workFlowPart: workFlowPart]" method="post" class="ui form newLicence">
 		<g:hiddenField name="baseSubscription" value="${params.id}"/>
@@ -9,27 +15,9 @@
 		<g:set var="rdvGcpI10n" value="${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}"/>
 		<g:set var="rdvSseI10n" value="${RDStore.PRS_RESP_SPEC_SUB_EDITOR.getI10n('value')}"/>
 
-		<div class="four wide column">
-			<label>${message(code: 'subscription.details.copyElementsIntoSubscription.sourceSubscription.name')}: ${subscription?.name}</label>
-				<g:select class="ui search dropdown"
-						  name="sourceSubscriptionId"
-						  from="${allSubscriptions_readRights}"
-						  optionValue="name"
-						  value="${subscription}"
-						  disabled="${(subscription)? true : false}"/>
-            <br>
-            <g:if test="${validSubChilds}">
-            <label>${message(code: 'subscription.details.copyElementsIntoSubscription.targetSubscription.name')}: ${newSub?.name}</label>
-            <g:select class="ui search dropdown"
-                      name="targetSubscriptionId"
-                      from="${allSubscriptions_writeRights}"
-                      value="null"
-                      optionValue="name"
-                      noSelection="${[null: message(code: 'default.select.choose.label')]}"/>
-		</div>
-		<hr>
 		<table class="ui celled table">
 			<tbody>
+			<g:if test="${validSubChilds}">
 				<br><b>${message(code: 'subscription.renewSubscriptionConsortia.addMembers')}</b><br>
 				<g:each in="${[validSubChilds]}" status="i" var="outerLoop">
 					<table class="ui celled la-table table">

@@ -32,7 +32,7 @@
                     ${targetSubscription?.endDate ? (' - ' + formatDate(date: targetSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}</td>
             </tr>
             <tr>
-                <th><g:checkBox name="subscription.takeLinks" /></th>
+                <th><g:checkBox name="subscription.takeLinks" disabled=""/></th>
                 <td>${message(code: 'subscription.takeLinks')}</td>
                 <td>
                     <g:each in="${sourceSubscription?.packages?.sort { it.pkg.name }}" var="sp">
@@ -85,7 +85,7 @@
             </tr>
 
             <tr>
-                <th><g:checkBox name="subscription.takeEntitlements" /></th>
+                <th><g:checkBox name="subscription.takeEntitlements" disabled=""/></th>
                 <td>${message(code: 'subscription.takeEntitlements')}</td>
                 <% def sourceIECount = sourceSubscription?.issueEntitlements?.findAll { it.status != RDStore.IE_DELETED }?.size() %>
                 <td><g:if test="${sourceIECount}"><b>${message(code: 'issueEntitlement.countSubscription')} </b>
@@ -100,6 +100,6 @@
             </tbody>
         </table>
         <input type="submit" class="ui button js-click-control"
-               value="Ausgewählte Eigenschaften kopieren/überschreiben" disabled/>
+               value="Ausgewählte Eigenschaften kopieren/überschreiben" />
     </g:form>
 </semui:form>

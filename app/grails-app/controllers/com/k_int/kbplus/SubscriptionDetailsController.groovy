@@ -2596,49 +2596,16 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 if (!newSub) flash.error += message(code: 'subscription.details.copyElementsIntoSubscription.noSubscriptionTarget')
             }
         }
-        if (params?.baseSubscription) {
-            if (params?.subscription.takeLinks) {
-                newSub.owner = baseSub.owner ?: null
-            }
-
-//                        if (!newSub.save(flush: true)) {
-//                            log.error("Problem saving subscription ${newSub.errors}");
-//                            return newSub
-//                        } else {
-//                            log.debug("Save ok");
-            //Copy References
-            //OrgRole
-//                            baseSub.orgRelations?.each { or ->
-//                                if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || params?.subscription.takeLinks) {
-//                                    OrgRole newOrgRole = new OrgRole()
-//                                    InvokerHelper.setProperties(newOrgRole, or.properties)
-//                                    newOrgRole.sub = newSub
-////                                    newOrgRole.save(flush: true)
-//                                }
-//                            }
-            //link to previous subscription
-//                Links prevLink = new Links(source: newSub.id, destination: baseSub.id, objectType: Subscription.class.name, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.org)
-//                            if(!prevLink.save(flush:true)) {
-//                                log.error("Problem linking to previous subscription: ${prevLink.errors}")
-//                            }
-            if (params?.subscription.takeLinks) {
-                takeLinks(sourceSub, targetSub)
-            }
-
-            if (params?.subscription.takeEntitlements) {
-                takeEntitlements(sourceSub, targetSub)
-            }
-            params?.workFlowPart = '1'
-            params?.workFlowPartNext = '2'
-            result.newSub = newSub
-            result.subscription = baseSub
-//                        }
-//                    }
-        }
+        params?.workFlowPart = '1'
+        params?.workFlowPartNext = '2'
+        result.newSub = newSub
+        result.subscription = baseSub
     }
 
     private workFlowPart2() {
-        def newSub2 = Subscription.get(params.newSubscription)
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
         //Copy Docs
         def toCopyDocs = []
@@ -2649,7 +2616,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         params.list('subscription.takeAnnouncements').each { announcement ->
             toCopyAnnouncements << Long.valueOf(announcement)
         }
-        if (newSub2.documents.size() == 0) {
+        if (newSub?.documents?.size() == 0) {
             baseSub.documents?.each { dctx ->
 
                 //Copy Docs
@@ -2662,7 +2629,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
                         DocContext newDocContext = new DocContext()
                         InvokerHelper.setProperties(newDocContext, dctx.properties)
-                        newDocContext.subscription = newSub2
+                        newDocContext.subscription = newSub
                         newDocContext.owner = newDoc
                         newDocContext.save(flush: true)
                     }
@@ -2676,14 +2643,14 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
                         DocContext newDocContext = new DocContext()
                         InvokerHelper.setProperties(newDocContext, dctx.properties)
-                        newDocContext.subscription = newSub2
+                        newDocContext.subscription = newSub
                         newDocContext.owner = newDoc
                         newDocContext.save(flush: true)
                     }
                 }
             }
         }
-        if (!Task.findAllBySubscription(newSub2)) {
+        if (!Task.findAllBySubscription(newSub)) {
             //Copy Tasks
             params.list('subscription.takeTasks').each { tsk ->
 
@@ -2692,16 +2659,17 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     if (task.status != RefdataValue.loc('Task Status', [en: 'Done', de: 'Erledigt'])) {
                         Task newTask = new Task()
                         InvokerHelper.setProperties(newTask, task.properties)
-                        newTask.subscription = newSub2
+                        newTask.subscription = newSub
                         newTask.save(flush: true)
                     }
 
                 }
             }
         }
-        params.workFlowPart = '3'
-        params.workFlowPartNext = '4'
-        result.newSub = newSub2
+        result.sourceSubscription = baseSub
+        result.targetSubscription = newSub
+        params.workFlowPart = '2'
+        params.workFlowPartNext = '3'
 
         //if orgrole ist subconsortia
         def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(baseSub, RDStore.SUBSCRIPTION_DELETED)
@@ -2827,7 +2795,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 }
             }
         }
-        redirect controller: 'subscriptionDetails', action: 'show', params: [id: newSubConsortia?.id]
+//        redirect controller: 'subscriptionDetails', action: 'show', params: [id: newSubConsortia?.id]
     }
 
     private workFlowPart4() {
