@@ -166,7 +166,7 @@
                                                     <g:link controller="subscriptionDetails" action="show" id="${pair.id}">
                                                         ${pair.name}
                                                     </g:link><br>
-                                                    ${sdf.format(pair.startDate)}–${pair.endDate ? sdf.format(pair.endDate) : ""}
+                                                    ${pair.startDate ? sdf.format(pair.startDate) : ""}–${pair.endDate ? sdf.format(pair.endDate) : ""}
                                                 </td>
                                                 <td class="right aligned">
                                                     <div class="ui icon buttons">

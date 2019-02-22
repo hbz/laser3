@@ -8,6 +8,9 @@ import groovyx.net.http.*
 
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
+import java.time.YearMonth
+import java.time.format.DateTimeFormatter
+
 import static groovyx.net.http.ContentType.*
 import groovyx.gpars.GParsPool
 
@@ -260,7 +263,12 @@ class StatsSyncService {
                     csr.numFacts = 0
                 }
                 if ((csr.haveUpTo == null) || (csr.haveUpTo < mostRecentClosedPeriod)) {
-                    def fromPeriod = csr.haveUpTo ?: SYNC_STATS_FROM
+                    def fromPeriod = SYNC_STATS_FROM
+                    if (csr.haveUpTo){
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern('yyyy-MM')
+                        YearMonth localDate = YearMonth.parse(csr.haveUpTo, formatter)
+                        fromPeriod = localDate.plusMonths(1).toString()
+                    }
                     try {
                         def beginDate = "${fromPeriod}-01"
                         def endDate = getLastDayOfMonth(mostRecentClosedPeriod)
@@ -300,6 +308,7 @@ class StatsSyncService {
                                     }
                                     def usageMap = getPeriodUsageMap(itemPerformances)
                                     def cal = new GregorianCalendar()
+
                                     usageMap.each { key, countPerMetric ->
                                         def fact = [:]
                                         countPerMetric.each { metric, count ->
@@ -319,6 +328,8 @@ class StatsSyncService {
                                             if (factService.registerFact(fact)) {
                                                 ++factCount
                                                 ++newFactCount
+                                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd')
+                                                csr.haveUpTo = YearMonth.parse(key, formatter).toString()
                                             }
                                         }
                                     }
@@ -343,8 +354,7 @@ class StatsSyncService {
                             csr.jerror = jsonError
                         }
                     }
-                    csr.haveUpTo = mostRecentClosedPeriod
-                    csr.numFacts = factCount
+                    csr.numFacts = (csr.numFacts) ? csr.numFacts + factCount : factCount
                     try {
                         csr.save(flush: true)
                     } catch (Exception e) {
