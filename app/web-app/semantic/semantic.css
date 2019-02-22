@@ -30890,6 +30890,10 @@ a.ui.card:hover,
 /*******************************
          Theme Overrides
 *******************************/
+
+.ui.feed {
+  margin: 0;
+}
 /*!
  * # Semantic UI 2.3.1 - Item
  * http://github.com/semantic-org/semantic-ui/
