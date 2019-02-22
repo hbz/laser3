@@ -5,12 +5,11 @@
 <semui:modal id="copyEmailaddresses_ajaxModal" text="${message(code:'menu.institutions.copy_emailaddresses')}" hideSubmitButton="true">
 
     <g:set var="rdvEmail"               value="${RDStore.CCT_EMAIL}"/>
-    <g:set var="rdvGeneralContactPrs"   value="${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS}"/>
     <g:set var="rdvAllPersonFunctions"  value="${PersonRole.getAllRefdataValues('Person Function')}"/>
     <g:set var="rdvAllPersonPositions"  value="${PersonRole.getAllRefdataValues('Person Position')}"/>
 
     <div class="field">
-        <label>Funktion</label>
+        <label><g:message code="person.function.label" default="Function"/></label>&nbsp
         <laser:select class="ui dropdown search"
                       name="prsFunctionMultiSelect"
                       multiple=""
@@ -21,7 +20,7 @@
     </div>
     <br>
     <div class="field">
-        <label>Position</label>
+        <label><g:message code="person.position.label" default="Position"/></label>&nbsp
         <laser:select class="ui dropdown search"
                       name="prsPositionMultiSelect"
                       multiple=""
@@ -32,31 +31,34 @@
     </div>
     <br><br>
     <g:set var="functionEmailsMap" value="${new HashMap()}"/>
-    <g:each in="${rdvAllPersonFunctions}" var="prsFunction" status="counter">
-        <% Set allEmailAddresses = new TreeSet(); %>
+    <g:set var="functionAllEmailsSet" value="${new HashSet<String>()}"/>
+    <g:each in="${rdvAllPersonFunctions}" var="prsFunction" >
+        <% Set emailsForFunction = new ArrayList(); %>
         <g:each in="${orgList}" var="org">
             <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(prsFunction, org).prs}" var="person">
                 <g:if test="${(person?.isPublic?.value=='Yes') || (person?.isPublic?.value=='No' && person?.tenant?.id == contextService.getOrg()?.id)}">
                     <g:each in ="${Contact.findAllByPrsAndContentType(person, rdvEmail)}" var="email">
-                        <% allEmailAddresses.add( email?.content?.trim() )%>
+                        <%  emailsForFunction.add( email?.content?.trim() )
+                            functionAllEmailsSet.add( email?.content?.trim() ) %>
                     </g:each>
                 </g:if>
             </g:each>
         </g:each>
-        <% functionEmailsMap.put(prsFunction.id, allEmailAddresses)%>
+        <% functionEmailsMap.put(prsFunction.id, emailsForFunction) %>
     </g:each>
-    <g:each in="${rdvAllPersonPositions}" var="prsPosition" status="counter">
-        <% allEmailAddresses = new TreeSet(); %>
+    <g:each in="${rdvAllPersonPositions}" var="prsPosition" >
+        <% Set emailsForPosition = new ArrayList(); %>
         <g:each in="${orgList}" var="org">
             <g:each in ="${PersonRole.findAllByPositionTypeAndOrg(prsPosition, org).prs}" var="person">
                 <g:if test="${(person?.isPublic?.value=='Yes') || (person?.isPublic?.value=='No' && person?.tenant?.id == contextService.getOrg()?.id)}">
                     <g:each in ="${Contact.findAllByPrsAndContentType(person, rdvEmail)}" var="email">
-                        <% allEmailAddresses.add( email?.content?.trim() )%>
+                        <%  emailsForPosition.add( email?.content?.trim() )
+                        functionAllEmailsSet.add( email?.content?.trim() ) %>
                     </g:each>
                 </g:if>
             </g:each>
         </g:each>
-        <% functionEmailsMap.put(prsPosition.id, allEmailAddresses)%>
+        <% functionEmailsMap.put(prsPosition.id, emailsForPosition)%>
     </g:each>
     <div class="ui form">
         <div class="field">
@@ -84,29 +86,34 @@
         });
 
         var jsonEmailMap = <%=groovy.json.JsonOutput.toJson((Map)functionEmailsMap)%>;
+        var jsonAllEmailSet = <%=groovy.json.JsonOutput.toJson((Set)functionAllEmailsSet)%>;
 
         $('#prsFunctionMultiSelect').change(function() { updateTextArea(); });
         $('#prsPositionMultiSelect').change(function() { updateTextArea(); });
 
         function updateTextArea() {
-            var selectedRoleTypIds = $("#prsFunctionMultiSelect").val();
-            var selectedRoleTypIds = selectedRoleTypIds.concat( $("#prsPositionMultiSelect").val() );
+            var selectedRoleTypIds = $("#prsFunctionMultiSelect").val().concat( $("#prsPositionMultiSelect").val() );
             var emailsForSelectedRoleTypes = new Array();
-            for (var i = 0; i<selectedRoleTypIds.length; i++) {
-                var selRoleType = selectedRoleTypIds[i];
-                var tmpEmailArray = jsonEmailMap[selRoleType];
-                for (var j = 0; j<tmpEmailArray.length; j++) {
-                    var email = tmpEmailArray[j].trim();
-                    console.log("Liste: " + emailsForSelectedRoleTypes);
-                    console.log("Gibts mich schon? " + email + "? " + emailsForSelectedRoleTypes.includes(email));
-                    if ( ! emailsForSelectedRoleTypes.includes(email)) {
-                        emailsForSelectedRoleTypes.push(email);
-                    } else {
-                        console.log("Duplikat gefunden: " + email);
+            if (selectedRoleTypIds.length == 0) {
+                emailsForSelectedRoleTypes = jsonAllEmailSet;
+            } else {
+                for (var i = 0; i<selectedRoleTypIds.length; i++) {
+                    var tmpEmailArray = jsonEmailMap[selectedRoleTypIds[i]];
+                    for (var j = 0; j<tmpEmailArray.length; j++) {
+                        var email = tmpEmailArray[j].trim();
+                        if ( ! emailsForSelectedRoleTypes.includes(email)) {
+                            emailsForSelectedRoleTypes.push(email);
+                        } else {
+                            console.log("Duplikat gefunden: " + email);
+                        }
                     }
                 }
             }
-            var emailsAsString = Array.from(emailsForSelectedRoleTypes).sort().join('; ');
+            var emailsAsString = Array.from(emailsForSelectedRoleTypes);
+            emailsAsString.sort(function(a, b) {
+                return a.toLowerCase().localeCompare(b.toLowerCase());
+            });
+            emailsAsString = emailsAsString.join('; ');
             $('#emailAddressesTextArea').val(emailsAsString);
         }
     </g:javascript>
