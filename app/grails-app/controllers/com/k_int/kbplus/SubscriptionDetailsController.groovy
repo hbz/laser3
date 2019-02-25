@@ -2517,12 +2517,12 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             response.sendError(401); return
         }
         flash.error = ""
-        result.sourceSubscriptionId = params?.sourceSubscriptionId ?: params?.id
-        if (params?.targetSubscriptionId) { result.targetSubscriptionId = params?.targetSubscriptionId}
+//        result.sourceSubscriptionId = params?.sourceSubscriptionId ?: params?.id
+//        if (params?.targetSubscriptionId) { result.targetSubscriptionId = params?.targetSubscriptionId}
         result.sourceSubscription = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): params.id)
         if (params.targetSubscriptionId){ result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))}
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): params.id)
-        Subscription newSub = params.targetSubscriptionId ? Subscription.get(Long.parseLong(params.targetSubscriptionId)) : null
+//        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): params.id)
+//        Subscription newSub = params.targetSubscriptionId ? Subscription.get(Long.parseLong(params.targetSubscriptionId)) : null
 
         result.allSubscriptions_readRights = getMySubscriptions_readRights()
         result.allSubscriptions_writeRights = getMySubscriptions_writeRights()
@@ -2605,65 +2605,62 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
     private workFlowPart2() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
-        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
+        Subscription newSub = null
+        if (params.targetSubscriptionId){
+            newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
 
-        //Copy Docs
-        def toCopyDocs = []
-        params.list('subscription.takeDocs').each { doc -> toCopyDocs << Long.valueOf(doc) }
+            //Copy Docs
+            def toCopyDocs = []
+            params.list('subscription.takeDocs').each { doc -> toCopyDocs << Long.valueOf(doc) }
 
-        //Copy Announcements
-        def toCopyAnnouncements = []
-        params.list('subscription.takeAnnouncements').each { announcement ->
-            toCopyAnnouncements << Long.valueOf(announcement)
-        }
-        if (newSub?.documents?.size() == 0) {
-            baseSub.documents?.each { dctx ->
-
-                //Copy Docs
-                if (dctx.id in toCopyDocs) {
-                    if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status?.value != 'Deleted')) {
-
-                        Doc newDoc = new Doc()
-                        InvokerHelper.setProperties(newDoc, dctx.owner.properties)
-                        newDoc.save(flush: true)
-
-                        DocContext newDocContext = new DocContext()
-                        InvokerHelper.setProperties(newDocContext, dctx.properties)
-                        newDocContext.subscription = newSub
-                        newDocContext.owner = newDoc
-                        newDocContext.save(flush: true)
-                    }
-                }
-                //Copy Announcements
-                if (dctx.id in toCopyAnnouncements) {
-                    if ((dctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
-                        Doc newDoc = new Doc()
-                        InvokerHelper.setProperties(newDoc, dctx.owner.properties)
-                        newDoc.save(flush: true)
-
-                        DocContext newDocContext = new DocContext()
-                        InvokerHelper.setProperties(newDocContext, dctx.properties)
-                        newDocContext.subscription = newSub
-                        newDocContext.owner = newDoc
-                        newDocContext.save(flush: true)
-                    }
-                }
+            //Copy Announcements
+            def toCopyAnnouncements = []
+            params.list('subscription.takeAnnouncements').each { announcement ->
+                toCopyAnnouncements << Long.valueOf(announcement)
             }
-        }
-        if (!Task.findAllBySubscription(newSub)) {
-            //Copy Tasks
-            params.list('subscription.takeTasks').each { tsk ->
-
-                def task = Task.findBySubscriptionAndId(baseSub, Long.valueOf(tsk))
-                if (task) {
-                    if (task.status != RefdataValue.loc('Task Status', [en: 'Done', de: 'Erledigt'])) {
-                        Task newTask = new Task()
-                        InvokerHelper.setProperties(newTask, task.properties)
-                        newTask.subscription = newSub
-                        newTask.save(flush: true)
+    //        if (newSub?.documents?.size() == 0) {//?
+                baseSub.documents?.each { dctx ->
+                    //Copy Docs
+                    if (dctx.id in toCopyDocs) {
+                        if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status?.value != 'Deleted')) {
+                            Doc newDoc = new Doc()
+                            InvokerHelper.setProperties(newDoc, dctx.owner.properties)
+                            newDoc.save(flush: true)
+                            DocContext newDocContext = new DocContext()
+                            InvokerHelper.setProperties(newDocContext, dctx.properties)
+                            newDocContext.subscription = newSub
+                            newDocContext.owner = newDoc
+                            newDocContext.save(flush: true)
+                        }
                     }
-
+                    //Copy Announcements
+                    if (dctx.id in toCopyAnnouncements) {
+                        if ((dctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
+                            Doc newDoc = new Doc()
+                            InvokerHelper.setProperties(newDoc, dctx.owner.properties)
+                            newDoc.save(flush: true)
+                            DocContext newDocContext = new DocContext()
+                            InvokerHelper.setProperties(newDocContext, dctx.properties)
+                            newDocContext.subscription = newSub
+                            newDocContext.owner = newDoc
+                            newDocContext.save(flush: true)
+                        }
+                    }
+                }
+    //        }
+            if (!Task.findAllBySubscription(newSub)) {
+                //Copy Tasks
+                params.list('subscription.takeTasks').each { tsk ->
+                    def task = Task.findBySubscriptionAndId(baseSub, Long.valueOf(tsk))
+                    if (task) {
+                        if (task.status != RefdataValue.loc('Task Status', [en: 'Done', de: 'Erledigt'])) {
+                            Task newTask = new Task()
+                            InvokerHelper.setProperties(newTask, task.properties)
+                            newTask.subscription = newSub
+                            newTask.save(flush: true)
+                        }
+                    }
                 }
             }
         }

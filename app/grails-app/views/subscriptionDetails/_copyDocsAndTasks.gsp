@@ -9,8 +9,12 @@
             allSubscriptions_readRights: allSubscriptions_readRights,
             allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
     <hr>
+    <% def params = "[workFlowPart: workFlowPart]"
+    if (sourceSubscriptionId) params << [sourceSubscriptionId: sourceSubscriptionId]
+    if (targetSubscriptionId) params << [targetSubscriptionId: targetSubscriptionId]
+    %>
     <g:form action="copyElementsIntoSubscription" controller="subscriptionDetails" id="${params.id}"
-            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscription?.id]" method="post" class="ui form newLicence">
+            params="${params}" method="post" class="ui form newLicence">
         <table class="ui celled table">
         <tbody>
         <tr>
@@ -48,25 +52,27 @@
                 </g:each>
             </td>
             <td>
-                <g:each in="${targetSubscription.documents.sort { it.owner?.title }}" var="docctx">
-                    <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && (docctx.status?.value != 'Deleted'))}">
-                        <p>
-                            <g:link controller="docstore" id="${docctx.owner.uuid}">
-                                <g:if test="${docctx.owner?.title}">
-                                    ${docctx.owner.title}
-                                </g:if>
-                                <g:else>
-                                    <g:if test="${docctx.owner?.filename}">
-                                        ${docctx.owner.filename}
+                <g:if test="${targetSubscription}">
+                    <g:each in="${targetSubscription?.documents.sort { it.owner?.title }}" var="docctx">
+                        <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && (docctx.status?.value != 'Deleted'))}">
+                            <p>
+                                <g:link controller="docstore" id="${docctx.owner.uuid}">
+                                    <g:if test="${docctx.owner?.title}">
+                                        ${docctx.owner.title}
                                     </g:if>
                                     <g:else>
-                                        ${message(code: 'template.documents.missing', default: 'Missing title and filename')}
+                                        <g:if test="${docctx.owner?.filename}">
+                                            ${docctx.owner.filename}
+                                        </g:if>
+                                        <g:else>
+                                            ${message(code: 'template.documents.missing', default: 'Missing title and filename')}
+                                        </g:else>
                                     </g:else>
-                                </g:else>
-                            </g:link>(${docctx.owner.type.getI10n("value")})
-                        </p>
-                    </g:if>
-                </g:each>
+                                </g:link>(${docctx.owner.type.getI10n("value")})
+                            </p>
+                        </g:if>
+                    </g:each>
+                </g:if>
             </td>
         </tr>
 
@@ -93,23 +99,25 @@
                 </g:each>
             </td>
             <td>
-                <g:each in="${targetSubscription.documents.sort { it.owner?.title }}" var="docctx">
-                    <g:if test="${((docctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted'))}">
-                        <p>
-                            <g:if test="${docctx.owner.title}">
-                                <b>${docctx.owner.title}</b>
-                            </g:if>
-                            <g:else>
-                                <b>Ohne Titel</b>
-                            </g:else>
-                            (${message(code: 'template.notes.created')}
-                            <g:formatDate
-                                    format="${message(code: 'default.date.format.notime')}"
-                                    date="${docctx.owner.dateCreated}"/>)
-                            <br/>
-                        </p>
-                    </g:if>
-                </g:each>
+                <g:if test="${targetSubscription}">
+                    <g:each in="${targetSubscription?.documents.sort { it.owner?.title }}" var="docctx">
+                        <g:if test="${((docctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted'))}">
+                            <p>
+                                <g:if test="${docctx.owner.title}">
+                                    <b>${docctx.owner.title}</b>
+                                </g:if>
+                                <g:else>
+                                    <b>Ohne Titel</b>
+                                </g:else>
+                                (${message(code: 'template.notes.created')}
+                                <g:formatDate
+                                        format="${message(code: 'default.date.format.notime')}"
+                                        date="${docctx.owner.dateCreated}"/>)
+                                <br/>
+                            </p>
+                        </g:if>
+                    </g:each>
+                </g:if>
             </td>
         </tr>
 
@@ -120,7 +128,7 @@
                 <p>
                     <g:each in="${sourceTasks}" var="tsk">
                         <p>
-                            <g:checkBox name="subscription.takeTasks" value="${tsk.id}"  />&nbsp
+                            <g:checkBox name="subscription.takeTasks" value="${tsk?.id}"  />&nbsp
                             <b>${tsk?.title}</b> (${message(code: 'task.endDate.label')}
                             <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tsk.endDate}"/>)<br/>
                         </p>
@@ -131,7 +139,7 @@
                 <g:each in="${targetTasks}" var="tsk">
                     <p>
                         <b>${tsk?.title}</b> (${message(code: 'task.endDate.label')}
-                        <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tsk.endDate}"/>)<br/>
+                        <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tsk?.endDate}"/>)<br/>
                     </p>
                 </g:each>
             </td>
