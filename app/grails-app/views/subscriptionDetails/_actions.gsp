@@ -1,4 +1,7 @@
 <%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.RefdataValue;com.k_int.kbplus.Links;com.k_int.kbplus.Subscription" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes" %>
+
 <laser:serviceInjection />
 
 <g:if test="${actionName == 'index'}">
@@ -37,7 +40,10 @@
         <div class="divider"></div>
 
         <semui:actionsDropdownItem controller="subscriptionDetails" action="copySubscription" params="${[id: params.id]}" message="myinst.copySubscription" />
-        <semui:actionsDropdownItem controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${[id: params.id, workFlowPart: 4]}" message="myinst.copyElementsIntoSubscription" />
+        %{--Todo Remove ifAnyGranted wenn Task erms-776 fertig ist!--}%
+        <sec:ifAnyGranted roles="ROLE_YODA,ROLE_ADMIN,ROLE_DATAMANAGER">
+            <semui:actionsDropdownItem controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${[id: params.id, workFlowPart: 4]}" message="myinst.copyElementsIntoSubscription" />
+        </sec:ifAnyGranted>
 
         <semui:actionsDropdownItem controller="subscriptionDetails" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
         <semui:actionsDropdownItem controller="subscriptionDetails" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
