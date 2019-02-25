@@ -287,3 +287,6 @@
          Theme Overrides
 *******************************/
 
+.ui.feed {
+  margin: 0;
+}
