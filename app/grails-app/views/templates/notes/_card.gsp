@@ -46,7 +46,7 @@
                                                   update="container-notes"
                                                   data-position="top right" data-tooltip="${message(code:'property.share.tooltip.on')}"
                                     >
-                                        <i class="alternate share icon"></i>
+                                        <i class="share-unslash icon"></i>
                                     </g:remoteLink>
                             </g:if>
                             <g:else>
@@ -58,7 +58,7 @@
                                                   update="container-notes"
                                                   data-position="top right" data-tooltip="${message(code:'property.share.tooltip.off')}"
                                     >
-                                        <i class="alternate share icon"></i>
+                                        <i class="share-slash icon"></i>
                                     </g:remoteLink>
                             </g:else>
 
@@ -119,8 +119,9 @@
                 }
             });
         }
-
-        if (r2d2) {
-            r2d2.initDynamicSemuiStuff('#container-notes');
-        }
+        $( document ).ready(function() {
+            if (r2d2) {
+                r2d2.initDynamicSemuiStuff('#container-notes');
+            }
+        });
     </script>

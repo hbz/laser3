@@ -114,21 +114,24 @@
           <table class="ui sortable celled la-table table ignore-floatThead la-bulk-header">
             <thead>
                 <tr>
-                    <th></th>
-                    <th>${message(code:'sidewide.number')}</th>
-                    <g:sortableColumn params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
-                    <th>${message(code:'subscription.details.print-electronic')}</th>
-                    <th colspan="2">${message(code:'subscription.details.coverage_dates')}</th>
-                    <th colspan="2">${message(code:'subscription.details.access_dates', default:'Access')}</th>
-                    <th>${message(code:'default.actions.label', default:'Actions')}</th>
+                    <th ></th>
+                    <th >${message(code:'sidewide.number')}</th>
+                    <g:sortableColumn class="three wide" params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
+                    <th class="one wide">${message(code:'subscription.details.print-electronic')}</th>
+                    <th class="five wide">${message(code:'subscription.details.coverage_dates')}</th>
+                    <th class="five wide">${message(code:'subscription.details.access_dates', default:'Access')}</th>
+                    <th class="one wide"></th>
                 </tr>
                 <tr>
-                    <th colspan="4"></th>
-                    <g:sortableColumn params="${params}" property="startDate" title="${message(code:'default.from', default:'Earliest date')}" />
-                    <g:sortableColumn params="${params}" property="endDate" title="${message(code:'default.to', default:'Latest Date')}" />
-                    <g:sortableColumn params="${params}" property="accessStartDate" title="${message(code:'default.from', default:'Earliest date')}" />
-                    <g:sortableColumn params="${params}" property="accessEndDate" title="${message(code:'default.to', default:'Latest Date')}" />
-                    <th></th>
+                    <th rowspan="2" colspan="4"></th>
+                    <g:sortableColumn  class="la-smaller-table-head" params="${params}" property="startDate" title="${message(code:'default.from', default:'Earliest date')}" />
+                    <g:sortableColumn class="la-smaller-table-head" params="${params}" property="accessStartDate" title="${message(code:'default.from', default:'Earliest date')}" />
+
+                    <th rowspan="2"></th>
+                </tr>
+                <tr>
+                    <g:sortableColumn class="la-smaller-table-head" property="endDate" title="${message(code:'default.to', default:'Latest Date')}" />
+                    <g:sortableColumn class="la-smaller-table-head" params="${params}" property="accessEndDate" title="${message(code:'default.to', default:'Latest Date')}" />
                 </tr>
                 <tr>
                     <g:if test="${editable}">
@@ -147,18 +150,20 @@
                         </th>
                         <th>
                             <semui:datepicker id="bulk_start_date" name="bulk_start_date"/>
-                        </th>
-                        <th>
+
+
                             <semui:datepicker id="bulk_end_date" name="bulk_end_date"/>
                         </th>
                         <th>
                             <semui:datepicker id="bulk_access_start_date" name="bulk_access_start_date"/>
-                        </th>
-                        <th>
+
+
                             <semui:datepicker id="bulk_access_end_date" name="bulk_access_end_date"/>
                         </th>
                         <th>
-                            <input type="Submit" value="${message(code:'default.button.apply_batch.label', default:'Apply Batch Changes')}" onClick="return confirmSubmit()" class="ui button"/>
+
+                            <button data-position="top right" data-tooltip="${message(code:'default.button.apply_batch.label', default:'Apply Batch Changes')}" type="submit" onClick="return confirmSubmit()" class="ui icon button"><i class="check icon"></i></button>
+
                         </th>
                     </g:if>
                     <g:else>
@@ -209,22 +214,24 @@
                   <semui:xEditableRefData owner="${ie}" field="medium" config='IEMedium'/>
                 </td>
                 <td>
-                    ${message(code:'default.date.label')}: <semui:xEditable owner="${ie}" type="date" field="startDate" /><br>
-                    ${message(code:'tipp.volume')}: <semui:xEditable owner="${ie}" field="startVolume"/> ${message(code:'tipp.issue')}:  <semui:xEditable owner="${ie}" field="startIssue"/>
-                </td>
-                  <td>
-                      ${message(code:'default.date.label')}: <semui:xEditable owner="${ie}" type="date" field="endDate" /><br>
-                      ${message(code:'tipp.volume')}: <semui:xEditable owner="${ie}" field="endVolume"/> ${message(code:'tipp.issue')}: <semui:xEditable owner="${ie}" field="endIssue"/>
+                    <!-- von --->
+                     <semui:xEditable owner="${ie}" type="date" field="startDate" />
+                    <b>${message(code:'tipp.volume')}:</b> <semui:xEditable owner="${ie}" field="startVolume"/> <b>${message(code:'tipp.issue')}:</b>  <semui:xEditable owner="${ie}" field="startIssue"/>
+                    <br><br>
+                    <!-- bis -->
+                      <semui:xEditable owner="${ie}" type="date" field="endDate" />
+                    <b>${message(code:'tipp.volume')}:</b> <semui:xEditable owner="${ie}" field="endVolume"/> <b>${message(code:'tipp.issue')}:</b> <semui:xEditable owner="${ie}" field="endIssue"/>
                   </td>
                   <td>
+                      <!-- von --->
                       <g:if test="${editable}">
                           <semui:xEditable owner="${ie}" type="date" field="accessStartDate" /> (${message(code:'subscription.details.access_start.note', default:'Leave empty to default to sub start date')})
                       </g:if>
                       <g:else>
                           <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessStartDate}"/>
                       </g:else>
-                  </td>
-                  <td>
+                      <br><br>
+                      <!-- bis -->
                       <g:if test="${editable}">
                           <semui:xEditable owner="${ie}" type="date" field="accessEndDate" /> (${message(code:'subscription.details.access_end.note', default:'Leave empty to default to sub end date')})
                       </g:if>

@@ -3,7 +3,7 @@
     <a class="ui button" data-semui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
 </g:if>
 
-<semui:modal id="${tmplModalID}" text="${tmplText}">
+<semui:modal id="${tmplModalID}" text="${tmplText}"  editmodal="editmodal">
     <g:set var="ajaxID" value="${tmplID ?:'allOrgs'}"/>
     <g:form id="create_org_role_link" class="ui form" url="[controller:'ajax', action:'addOrgRole']" method="post" onsubmit="return validateAddOrgRole();">
         <input type="hidden" name="parent" value="${parent}" />
