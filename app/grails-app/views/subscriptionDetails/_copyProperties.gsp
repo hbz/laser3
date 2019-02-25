@@ -22,7 +22,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>
+                    <td style="vertical-align: top">
                         <g:if test="${sourceSubscription}">
                             ${message(code: 'subscription.takeCustomProperties')}
                             <g:render template="/templates/properties/selectableProperties" model="${[
@@ -36,7 +36,7 @@
                                     tenant: contextOrg]}"/>
                         </g:if>
                     </td>
-                    <td>
+                    <td style="vertical-align: top">
                         <g:if test="${targetSubscription}">
                             ${message(code: 'subscription.takeCustomProperties')}
                             <g:render template="/templates/properties/selectableProperties" model="${[
@@ -52,7 +52,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>
+                    <td style="vertical-align: top">
                         <g:if test="${sourceSubscription}">
                             ${message(code: 'subscription.takePrivateProperties')}
                             <g:render template="/templates/properties/selectableProperties" model="${[
@@ -66,7 +66,7 @@
                                 tenant: contextOrg]}"/>
                         </g:if>
                     </td>
-                    <td>
+                    <td style="vertical-align: top">
                         <g:if test="${targetSubscription}">
                             ${message(code: 'subscription.takePrivateProperties')}
                             <g:render template="/templates/properties/selectableProperties" model="${[
