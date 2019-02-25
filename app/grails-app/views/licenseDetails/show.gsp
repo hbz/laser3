@@ -250,9 +250,9 @@
                                             property: 'orgLinks',
                                             recip_prop: 'lic',
                                             tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Licensor', 'Organisational Role'),
-                                            tmplText:'Lizenzgeber hinzufügen',
+                                            tmplText:'Lizenzgeber mit diesem Vertrag verknüpfen',
                                             tmplID:'CommercialOrgs',
-                                            tmplButtonText: 'Lizenzgeber hinzufügen',
+                                            tmplButtonText: 'Änderungen speichern',
                                             tmplModalID:'osel_add_modal_lizenzgeber',
                                             editmode: editable
                                   ]}" />
