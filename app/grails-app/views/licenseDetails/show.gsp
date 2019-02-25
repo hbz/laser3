@@ -252,9 +252,10 @@
                                             tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Licensor', 'Organisational Role'),
                                             tmplText:'Lizenzgeber mit diesem Vertrag verknüpfen',
                                             tmplID:'CommercialOrgs',
-                                            tmplButtonText: 'Änderungen speichern',
+                                            tmplButtonText: 'Lizenzgeber verknüpfen',
                                             tmplModalID:'osel_add_modal_lizenzgeber',
                                             editmode: editable
+
                                   ]}" />
 
                         </div>
