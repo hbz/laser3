@@ -17,14 +17,13 @@ ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}
 <semui:messages data="${flash}"/>
 
 %{--TODO wieder entfernen, nur fürs Testen gedacht--}%
-<% workFlowPart ?: 4 %>
+<% workFlowPart ?: 2 %>
 <% Map params = [id: params.id];
     if (sourceSubscriptionId) params << [sourceSubscriptionId: sourceSubscriptionId];
     if (targetSubscriptionId) params << [targetSubscriptionId: targetSubscriptionId];
 %>
-
-<div class="ui tablet stackable steps">
-    <div class="${workFlowPart == 1 ? 'active' : ''} step">
+<div class="ui steps">
+    <div class="${workFlowPart == '1' ? 'active' : ''} step">
         <div class="content">
             <div class="title">
                 <g:link controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 1]}" message="myinst.copyElementsIntoSubscription" >
@@ -38,7 +37,7 @@ ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}
             </div>
         </div>
     </div>
-    <div class="${workFlowPart == 2 ? 'active' : ''} step">
+    <div class="${workFlowPart == '2' ? 'active' : ''} step" >
         <div class="content">
             <div class="title">
                 <g:link controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 2]}" message="myinst.copyElementsIntoSubscription" >
@@ -52,7 +51,7 @@ ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}
             </div>
         </div>
     </div>
-    <div class="${workFlowPart == 3 ? 'active' : ''} step">
+    <div class="${workFlowPart == '3' ? 'active' : ''} step">
         <i class="university icon"></i>
         <div class="content">
             <div class="title">
@@ -62,7 +61,7 @@ ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}
             </div>
         </div>
     </div>
-    <div class="${workFlowPart == 4 ? 'active' : ''} step">
+    <div class="${workFlowPart == '4' ? 'active' : ''} step">
         <i class="tags icon"></i>
         <div class="content">
             <div class="title">

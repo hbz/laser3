@@ -9,12 +9,8 @@
             allSubscriptions_readRights: allSubscriptions_readRights,
             allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
     <hr>
-    <% def params = "[workFlowPart: workFlowPart]"
-    if (sourceSubscriptionId) params << [sourceSubscriptionId: sourceSubscriptionId]
-    if (targetSubscriptionId) params << [targetSubscriptionId: targetSubscriptionId]
-    %>
-    <g:form action="copyElementsIntoSubscription" controller="subscriptionDetails" id="${params.id}"
-            params="${params}" method="post" class="ui form newLicence">
+    <g:form action="copyElementsIntoSubscription" controller="subscriptionDetails" id="${params.id ?: params.sourceSubscriptionId}"
+            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId]" method="post" class="ui form newLicence">
         <table class="ui celled table">
         <tbody>
         <tr>
@@ -33,7 +29,7 @@
                 <g:each in="${sourceSubscription.documents.sort { it.owner?.title }}" var="docctx">
                     <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && (docctx.status?.value != 'Deleted'))}">
                         <p>
-                            <g:checkBox name="subscription.takeDocs" value="${docctx.id}"  />&nbsp
+                            <g:checkBox name="subscription.takeDocs" value="${docctx.id}" checked="${false}" />&nbsp
                             <g:link controller="docstore" id="${docctx.owner.uuid}">
                                 <g:if test="${docctx.owner?.title}">
                                     ${docctx.owner.title}
@@ -83,7 +79,7 @@
                 <g:each in="${sourceSubscription.documents.sort { it.owner?.title }}" var="docctx">
                     <g:if test="${((docctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted'))}">
                         <p>
-                            <g:checkBox name="subscription.takeAnnouncements" value="${docctx.id}"  />&nbsp
+                            <g:checkBox name="subscription.takeAnnouncements" value="${docctx.id}" checked="${false}" />&nbsp
                             <g:if test="${docctx.owner.title}">
                                 <b>${docctx.owner.title}</b>
                             </g:if>
@@ -128,7 +124,7 @@
                 <p>
                     <g:each in="${sourceTasks}" var="tsk">
                         <p>
-                            <g:checkBox name="subscription.takeTasks" value="${tsk?.id}"  />&nbsp
+                            <g:checkBox name="subscription.takeTasks" value="${tsk?.id}" checked="${false}" />&nbsp
                             <b>${tsk?.title}</b> (${message(code: 'task.endDate.label')}
                             <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tsk.endDate}"/>)<br/>
                         </p>
@@ -146,6 +142,6 @@
         </tr>
         </tbody>
         </table>
-        <input type="submit" class="ui button js-click-control" value="Ausgewählte Eigenschaften in Ziellizenz kopieren" />
+        <input type="submit" class="ui button js-click-control" value="Ausgewählte Elemente in Ziellizenz kopieren" />
     </g:form>
 </semui:form>

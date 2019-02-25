@@ -83,6 +83,6 @@
                 </tr>
             </tbody>
         </table>
-        <input type="submit" class="ui button js-click-control" value="Ausgewählte Eigenschaften kopieren/überschreiben" />
+        <input type="submit" class="ui button js-click-control" value="Ausgewählte Eigenschaften in Ziellizenz kopieren" />
     </g:form>
 </semui:form>

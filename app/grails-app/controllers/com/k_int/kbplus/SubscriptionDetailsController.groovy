@@ -2517,67 +2517,68 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             response.sendError(401); return
         }
         flash.error = ""
-//        result.sourceSubscriptionId = params?.sourceSubscriptionId ?: params?.id
-//        if (params?.targetSubscriptionId) { result.targetSubscriptionId = params?.targetSubscriptionId}
+        result.sourceSubscriptionId = params?.sourceSubscriptionId ?: params?.id
+        if (params?.targetSubscriptionId) { result.targetSubscriptionId = params?.targetSubscriptionId}
+//        obsolet?
         result.sourceSubscription = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): params.id)
         if (params.targetSubscriptionId){ result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))}
-//        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): params.id)
-//        Subscription newSub = params.targetSubscriptionId ? Subscription.get(Long.parseLong(params.targetSubscriptionId)) : null
 
         result.allSubscriptions_readRights = getMySubscriptions_readRights()
         result.allSubscriptions_writeRights = getMySubscriptions_writeRights()
 
         switch (params.workFlowPart) {
-            case '2': workFlowPart2(); break;
-            case '3': workFlowPart3(); break;
-            case '4': workFlowPart4(); break;
-            default:  workFlowPart1(); break;
-        }
-
-        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(result.subscriptionInstance.class.name, result.subscriptionInstance.id)
-        result.navPrevSubscription = links.prevLink
-        result.navNextSubscription = links.nextLink
-
-        // tasks
-        def contextOrg = contextService.getOrg()
-        result.sourceTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.sourceSubscription)
-        result.targetTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.targetSubscription)
-        result.contextOrg = contextOrg
-
-        // restrict visible for templates/links/orgLinksAsList
-        result.visibleOrgRelations = []
-        result.subscriptionInstance.orgRelations?.each { or ->
-            if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
-                result.visibleOrgRelations << or
-            }
-        }
-        result.visibleOrgRelations.sort { it.org.sortname }
-
-        result.target_visibleOrgRelations = []
-        result.targetSubscription?.orgRelations?.each { or ->
-            if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
-                result.target_visibleOrgRelations << or
-            }
-        }
-        result.target_visibleOrgRelations.sort { it.org.sortname }
-
-        result.modalPrsLinkRole = RDStore.PRS_RESP_SPEC_SUB_EDITOR
-        result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
-        result.visiblePrsLinks = []
-        result.subscriptionInstance.prsLinks.each { pl ->
-            if (!result.visiblePrsLinks.contains(pl.prs)) {
-                if (pl.prs.isPublic?.value != 'No') {
-                    result.visiblePrsLinks << pl
-                } else {
-                    // nasty lazy loading fix
-                    result.user.authorizedOrgs.each { ao ->
-                        if (ao.getId() == pl.prs.tenant.getId()) {
-                            result.visiblePrsLinks << pl
-                        }
+            case '2': workFlowPart2();
+                // tasks
+                def contextOrg = contextService.getOrg()
+                result.sourceTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.sourceSubscription)
+                result.targetTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.targetSubscription)
+                result.contextOrg = contextOrg
+                break;
+            case '3': workFlowPart3();
+                break;
+            case '4': workFlowPart4();
+                break;
+            default:  workFlowPart1();
+                // restrict visible for templates/links/orgLinksAsList
+                result.visibleOrgRelations = []
+                result.subscriptionInstance.orgRelations?.each { or ->
+                    if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                        result.visibleOrgRelations << or
                     }
                 }
-            }
+                result.visibleOrgRelations.sort { it.org.sortname }
+
+                result.target_visibleOrgRelations = []
+                result.targetSubscription?.orgRelations?.each { or ->
+                    if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                        result.target_visibleOrgRelations << or
+                    }
+                }
+                result.target_visibleOrgRelations.sort { it.org.sortname }
+                break;
         }
+
+//        TODO: Unusede? Entf?
+//        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(result.subscriptionInstance.class.name, result.subscriptionInstance.id)
+//        result.navPrevSubscription = links.prevLink
+//        result.navNextSubscription = links.nextLink
+//        result.modalPrsLinkRole = RDStore.PRS_RESP_SPEC_SUB_EDITOR
+//        result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
+//        result.visiblePrsLinks = []
+//        result.subscriptionInstance.prsLinks.each { pl ->
+//            if (!result.visiblePrsLinks.contains(pl.prs)) {
+//                if (pl.prs.isPublic?.value != 'No') {
+//                    result.visiblePrsLinks << pl
+//                } else {
+//                    // nasty lazy loading fix
+//                    result.user.authorizedOrgs.each { ao ->
+//                        if (ao.getId() == pl.prs.tenant.getId()) {
+//                            result.visiblePrsLinks << pl
+//                        }
+//                    }
+//                }
+//            }
+//        }
         result.workFlowPart = params?.workFlowPart ?: '1'
         result.workFlowPartNext = params?.workFlowPartNext ?: '2'
         result
@@ -2610,72 +2611,23 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         if (params.targetSubscriptionId){
             newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
 
-            //Copy Docs
-            def toCopyDocs = []
-            params.list('subscription.takeDocs').each { doc -> toCopyDocs << Long.valueOf(doc) }
-
-            //Copy Announcements
-            def toCopyAnnouncements = []
-            params.list('subscription.takeAnnouncements').each { announcement ->
-                toCopyAnnouncements << Long.valueOf(announcement)
-            }
-    //        if (newSub?.documents?.size() == 0) {//?
-                baseSub.documents?.each { dctx ->
-                    //Copy Docs
-                    if (dctx.id in toCopyDocs) {
-                        if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status?.value != 'Deleted')) {
-                            Doc newDoc = new Doc()
-                            InvokerHelper.setProperties(newDoc, dctx.owner.properties)
-                            newDoc.save(flush: true)
-                            DocContext newDocContext = new DocContext()
-                            InvokerHelper.setProperties(newDocContext, dctx.properties)
-                            newDocContext.subscription = newSub
-                            newDocContext.owner = newDoc
-                            newDocContext.save(flush: true)
-                        }
-                    }
-                    //Copy Announcements
-                    if (dctx.id in toCopyAnnouncements) {
-                        if ((dctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
-                            Doc newDoc = new Doc()
-                            InvokerHelper.setProperties(newDoc, dctx.owner.properties)
-                            newDoc.save(flush: true)
-                            DocContext newDocContext = new DocContext()
-                            InvokerHelper.setProperties(newDocContext, dctx.properties)
-                            newDocContext.subscription = newSub
-                            newDocContext.owner = newDoc
-                            newDocContext.save(flush: true)
-                        }
-                    }
-                }
-    //        }
-            if (!Task.findAllBySubscription(newSub)) {
-                //Copy Tasks
-                params.list('subscription.takeTasks').each { tsk ->
-                    def task = Task.findBySubscriptionAndId(baseSub, Long.valueOf(tsk))
-                    if (task) {
-                        if (task.status != RefdataValue.loc('Task Status', [en: 'Done', de: 'Erledigt'])) {
-                            Task newTask = new Task()
-                            InvokerHelper.setProperties(newTask, task.properties)
-                            newTask.subscription = newSub
-                            newTask.save(flush: true)
-                        }
-                    }
-                }
-            }
+            takeDoks(baseSub, newSub)
+            takeAnnouncements(baseSub, newSub)
+            takeTasks(baseSub, newSub)
         }
         result.sourceSubscription = baseSub
         result.targetSubscription = newSub
         params.workFlowPart = '2'
         params.workFlowPartNext = '3'
 
+        //TODO entf? nur für WF3
         //if orgrole ist subconsortia
-        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(baseSub, RDStore.SUBSCRIPTION_DELETED)
-        result.validSubChilds = validSubChilds.sort { a, b ->
-            def sa = a.getSubscriber()
-            def sb = b.getSubscriber()
-            (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
-        }
+//        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(baseSub, RDStore.SUBSCRIPTION_DELETED)
+//        result.validSubChilds = validSubChilds.sort { a, b ->
+//            def sa = a.getSubscriber()
+//            def sb = b.getSubscriber()
+//            (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
+//        }
     }
 
     private workFlowPart3() {
@@ -2829,6 +2781,49 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             }
         }
     }
+    private boolean takeTasks(Subscription sourceSub, Subscription targetSub) {
+//        if (!Task.findAllBySubscription(targetSub)) {
+            //Copy Tasks
+            params.list('subscription.takeTasks').each { tsk ->
+
+                def task = Task.findBySubscriptionAndId(sourceSub, Long.valueOf(tsk))
+                if (task) {
+                    if (task.status != RDStore.TASK_STATUS_DONE) {
+                        Task newTask = new Task()
+                        InvokerHelper.setProperties(newTask, task.properties)
+                        newTask.subscription = targetSub
+                        newTask.save(flush: true)
+                    }
+
+                }
+            }
+ //       }
+    }
+
+    private boolean takeAnnouncements(Subscription sourceSub, Subscription targetSub) {
+        //Copy Announcements
+        def toCopyAnnouncements = []
+        params.list('subscription.takeAnnouncements').each { announcement ->
+            toCopyAnnouncements << Long.valueOf(announcement)
+        }
+        //        if (targetSub?.documents?.size() == 0) {//?
+        sourceSub.documents?.each { dctx ->
+            //Copy Announcements
+            if (dctx.id in toCopyAnnouncements) {
+                if ((dctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
+                    Doc newDoc = new Doc()
+                    InvokerHelper.setProperties(newDoc, dctx.owner.properties)
+                    newDoc.save(flush: true)
+                    DocContext newDocContext = new DocContext()
+                    InvokerHelper.setProperties(newDocContext, dctx.properties)
+                    newDocContext.subscription = targetSub
+                    newDocContext.owner = newDoc
+                    newDocContext.save(flush: true)
+                }
+            }
+        }
+        //        }
+    }
 
     private boolean takeDates(Subscription sourceSub, Subscription targetSub) {
         targetSub.setStartDate(sourceSub.getStartDate())
@@ -2842,6 +2837,30 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             return false
         }
     }
+    private boolean takeDoks(Subscription sourceSub, Subscription targetSub) {
+        //Copy Docs
+        def toCopyDocs = []
+        params.list('subscription.takeDocs').each { doc -> toCopyDocs << Long.valueOf(doc) }
+
+        //        if (targetSub?.documents?.size() == 0) {//?
+        sourceSub.documents?.each { dctx ->
+            //Copy Docs
+            if (dctx.id in toCopyDocs) {
+                if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status?.value != 'Deleted')) {
+                    Doc newDoc = new Doc()
+                    InvokerHelper.setProperties(newDoc, dctx.owner.properties)
+                    newDoc.save(flush: true)
+                    DocContext newDocContext = new DocContext()
+                    InvokerHelper.setProperties(newDocContext, dctx.properties)
+                    newDocContext.subscription = targetSub
+                    newDocContext.owner = newDoc
+                    newDocContext.save(flush: true)
+                }
+            }
+        }
+        //        }
+    }
+
     private boolean takeLinks(Subscription sourceSub, Subscription targetSub) {
         //Package
         sourceSub.packages?.each { pkg ->
