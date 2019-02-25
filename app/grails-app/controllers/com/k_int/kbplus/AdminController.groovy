@@ -989,7 +989,7 @@ class AdminController extends AbstractDebugController {
             def rdv = genericOIDService.resolveOID(params.rdv)
 
             if (rdv) {
-                if (rdv.softData) {
+                if (! rdv.hardData) {
                     try {
                         rdv.delete(flush:true)
                         flash.message = "${params.rdv} wurde gelöscht."
@@ -1002,19 +1002,40 @@ class AdminController extends AbstractDebugController {
         }
         else if (params.cmd == 'replaceRefdataValue') {
             if (SpringSecurityUtils.ifAnyGranted('ROLE_YODA')) {
-                def rdvFrom = genericOIDService.resolveOID(params.xcgRdvFrom)
-                def rdvTo = genericOIDService.resolveOID(params.xcgRdvTo)
+                RefdataValue rdvFrom = genericOIDService.resolveOID(params.xcgRdvFrom)
+                RefdataValue rdvTo = genericOIDService.resolveOID(params.xcgRdvTo)
 
-                if (rdvFrom && rdvTo && rdvFrom.owner == rdvTo.owner) {
+                boolean check = false
 
+                if (! rdvFrom) {
+                    check = false
+                }
+                else if (rdvTo && rdvTo.owner == rdvFrom.owner) {
+                    check = true
+                }
+                else if (! rdvTo && params.xcgRdvGlobalTo) {
+
+                    List<String> pParts = params.xcgRdvGlobalTo.split(':')
+                    if (pParts.size() == 2) {
+                        RefdataCategory rdvToCat = RefdataCategory.findByDesc(pParts[0].trim())
+                        RefdataValue rdvToRdv = RefdataValue.getByValueAndCategory(pParts[1].trim(), pParts[0].trim())
+
+                        if (rdvToRdv && rdvToRdv.owner == rdvToCat ) {
+                            rdvTo = rdvToRdv
+                            check = true
+                        }
+                    }
+                }
+
+                if (check) {
                     try {
                         def count = refdataService.replaceRefdataValues(rdvFrom, rdvTo)
 
-                        flash.message = "${count} Vorkommen von ${params.xcgRdvFrom} wurden durch ${params.xcgRdvTo} ersetzt."
+                        flash.message = "${count} Vorkommen von ${params.xcgRdvFrom} wurden durch ${params.xcgRdvTo}${params.xcgRdvGlobalTo} ersetzt."
                     }
                     catch (Exception e) {
                         log.error(e)
-                        flash.error = "${params.xcgRdvFrom} konnte nicht durch ${params.xcgRdvTo} ersetzt werden."
+                        flash.error = "${params.xcgRdvFrom} konnte nicht durch ${params.xcgRdvTo}${params.xcgRdvGlobalTo} ersetzt werden."
                     }
 
                 }

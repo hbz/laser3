@@ -11,10 +11,10 @@ class RefdataService {
     def genericOIDService
 
     def getUsageDetails() {
-        def usedRdvList = []
         def detailsMap = [:]
+        def usedRdvList = []
 
-        def fortytwo = [:]
+        def allDcs = [:]
 
         grailsApplication.getArtefacts("Domain").toList().each { dc ->
             def dcFields = []
@@ -28,19 +28,18 @@ class RefdataService {
                 )
                 cls = cls.getSuperclass()
             }
-            fortytwo << ["${dc.clazz.simpleName}" : dcFields.sort()]
+            allDcs << ["${dc.clazz.simpleName}" : dcFields.sort()]
         }
 
-        fortytwo.each { dcName, dcFields ->
-            def dcMap = [:]
-            //log.debug("${dcName} : ${dcFields}")
+        // inspect classes and fields
+
+        allDcs.each { dcName, dcFields ->
+            def dfMap = [:]
 
             dcFields.each { df ->
+                def rdvs = SystemAdmin.executeQuery("SELECT DISTINCT ${df.name} FROM ${dcName}")
 
-                def query = "SELECT DISTINCT ${df.name} FROM ${dcName}"
-                def rdvs = SystemAdmin.executeQuery(query)
-
-                dcMap << ["${df.name}": rdvs.collect { it -> "${it.id}:${it.value}" }.sort()]
+                dfMap << ["${df.name}": rdvs.collect { it -> "${it.id}:${it.value}" }.sort()]
 
                 // ids of used refdata values
                 rdvs.each { it ->
@@ -48,8 +47,8 @@ class RefdataService {
                 }
             }
 
-            if (! dcMap.isEmpty()) {
-                detailsMap << ["${dcName}": dcMap]
+            if (! dfMap.isEmpty()) {
+                detailsMap << ["${dcName}": dfMap]
             }
         }
 

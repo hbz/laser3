@@ -18,8 +18,6 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
     //For cases were we want to present a specific group of values, eg License/Sub related
     String group
 
-    // indicates this object is created via front-end
-    boolean softData
     // indicates this object is created via current bootstrap
     boolean hardData
 
@@ -56,7 +54,6 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
                  value column: 'rdv_value', index: 'rdv_entry_idx'
                   icon column: 'rdv_icon'
                  group column: 'rdv_group'
-              softData column: 'rdv_soft_data'
               hardData column: 'rdv_hard_data'
               order    column: 'rdv_order'
 
@@ -65,7 +62,6 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
     static constraints = {
         icon     (nullable:true)
         group    (nullable:true,  blank:false)
-        softData (nullable:false, blank:false, default:false)
         hardData (nullable:false, blank:false, default:false)
         order    (nullable:true,  blank: false)
     }
@@ -99,10 +95,6 @@ class RefdataValue extends AbstractI10nTranslatable implements Comparable<Refdat
             result = new RefdataValue(owner: cat, value: rdvValue)
         }
         result.hardData = hardData
-        if (hardData) {
-            // set to false if value is meanwhile in bootstrap
-            result.softData = false
-        }
         result.save(flush: true)
 
         I10nTranslation.createOrUpdateI10n(result, 'value', i10n)

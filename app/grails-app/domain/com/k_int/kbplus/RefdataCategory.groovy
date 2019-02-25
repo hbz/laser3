@@ -39,8 +39,6 @@ class RefdataCategory extends AbstractI10nTranslatable {
 
     String desc
 
-    // indicates this object is created via front-end
-    boolean softData
     // indicates this object is created via current bootstrap
     boolean hardData
 
@@ -48,12 +46,10 @@ class RefdataCategory extends AbstractI10nTranslatable {
               id column: 'rdc_id'
          version column: 'rdc_version'
             desc column: 'rdc_description', index:'rdc_description_idx'
-        softData column: 'rdv_soft_data'
         hardData column: 'rdv_hard_data'
     }
 
     static constraints = {
-        softData (nullable:false, blank:false, default:false)
         hardData (nullable:false, blank:false, default:false)
     }
 
@@ -74,10 +70,6 @@ class RefdataCategory extends AbstractI10nTranslatable {
             result = new RefdataCategory(desc:category_name)
         }
         result.hardData = hardData
-        if (hardData) {
-            // set to false if value is meanwhile in bootstrap
-            result.softData = false
-        }
         result.save(flush: true)
 
         I10nTranslation.createOrUpdateI10n(result, 'desc', i10n)
