@@ -33,91 +33,43 @@ class ControlledListService {
         SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,LocaleContextHolder.getLocale()))
         Org org = contextService.getOrg()
         LinkedHashMap result = [values:[]]
-        String ownQueryString = 'select new map(s as sub,orgRoles.org as org) from Subscription s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in ( :orgRoles ) and s.status != :deleted'
-        String consQueryString = 'select new map(s as sub,orgRoles.org as org) from Subscription s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType = :orgRole  and s.status != :deleted and s.instanceOf = null'
-        String childQueryString = 'select new map(s as sub,roleM.org as org) from Subscription s join s.instanceOf subC join subC.orgRelations roleC join s.orgRelations roleMC join s.orgRelations roleM where roleC.org = :org and roleC.roleType = :consType and roleMC.roleType = :consType and roleM.roleType = :subscrType and s.status != :deleted and subC.status != :deleted'
-        LinkedHashMap filter = [org:org,deleted:RDStore.SUBSCRIPTION_DELETED]
+        String queryString = 'select distinct s, orgRoles.org.sortname from Subscription s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in ( :orgRoles ) and s.status != :deleted'
+        LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER],deleted:RDStore.SUBSCRIPTION_DELETED]
         //may be generalised later - here it is where to expand the query filter
         if(params.q && params.q.length() > 0) {
             filter.put("query","%"+params.q+"%")
-            ownQueryString += " and s.name like :query"
-            consQueryString += " and s.name like :query"
-            childQueryString += " and s.name like :query"
+            queryString += " and s.name like :query"
         }
         if(params.ctx) {
             Subscription ctx = genericOIDService.resolveOID(params.ctx)
             filter.ctx = ctx
-            ownQueryString += " and s != :ctx"
-            consQueryString += " and s != :ctx"
-            childQueryString += " and s != :ctx"
+            queryString += " and s != :ctx"
         }
-        List<Map> ownSubscriptions = Subscription.executeQuery(ownQueryString,filter+[orgRoles:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS]])
-        List<Map> consSubscriptions = Subscription.executeQuery(consQueryString,filter+[orgRole:RDStore.OR_SUBSCRIPTION_CONSORTIA])
-        List<Map> childSubscriptions = Subscription.executeQuery(childQueryString,filter+[consType:RDStore.OR_SUBSCRIPTION_CONSORTIA,subscrType:RDStore.OR_SUBSCRIBER_CONS])
-        List subscriptions = []
-        subscriptions.addAll(ownSubscriptions)
-        subscriptions.addAll(consSubscriptions)
-        subscriptions.addAll(childSubscriptions)
-        subscriptions.each { entry ->
-            Subscription s = entry.sub
-            Org owner = entry.org
+        if(params.status) {
+            filter.status = params.status
+            queryString += " and s.status = :status "
+        }
+        List subscriptions = Subscription.executeQuery(queryString+" order by s.name asc, s.startDate asc, s.endDate asc, orgRoles.org.sortname asc",filter)
+        subscriptions.each { row ->
+            Subscription s = (Subscription) row[0]
+            String tenant
+            if(s.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION && s.getConsortia().id == org.id) {
+                tenant = s.getAllSubscribers().get(0).name
+            }
+            else {
+                tenant = org.name
+            }
             if ((params.checkView && s.isVisibleBy(contextService.getUser())) || !params.checkView) {
                 String dateString = ", "
                 if (s.startDate)
                     dateString += sdf.format(s.startDate) + "-"
                 if (s.endDate)
                     dateString += sdf.format(s.endDate)
-                result.values.add([id:s.class.name + ":" + s.id,text:"${s.name} (${owner.name}${dateString})"])
+                result.values.add([id:s.class.name + ":" + s.id,text:"${s.name} (${tenant}${dateString})"])
             }
         }
-        result.values.sort { x,y -> x.text.compareToIgnoreCase y.text }
+        /*result.values.sort { x,y -> x.text.compareToIgnoreCase y.text }*/
         result
-    }
-
-    /**
-     * Builds from the given list of objects a formatted list
-     * @param objects - a list of objects to retrieve details from
-     * @return a list which is formatted for dropdown menus
-     */
-    List buildSelectList(Collection objects,String className) {
-        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,LocaleContextHolder.getLocale()))
-        List result = []
-        objects.each { entry ->
-            Subscription sub
-            String packageString = ""
-            String key
-            switch(className) {
-                case Subscription.class.name:
-                    sub = (Subscription) entry
-                    key = className + ":" + sub.id
-                    break
-                case SubscriptionPackage.class.name:
-                    SubscriptionPackage sp = (SubscriptionPackage) entry
-                    sub = (Subscription) sp.subscription
-                    packageString = sp.pkg.name+"/"
-                    key = className + ":" + sp.id
-                    break
-            }
-            RefdataValue ownerType
-            switch(sub.getCalculatedType()) {
-                case TemplateSupport.CALCULATED_TYPE_CONSORTIAL: ownerType = RDStore.OR_SUBSCRIPTION_CONSORTIA
-                    break
-                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION: ownerType = RDStore.OR_SUBSCRIBER_CONS
-                    break
-                default: ownerType = RDStore.OR_SUBSCRIBER
-                    break
-            }
-            OrgRole owner = sub.orgRelations.find {org -> org.roleType.equals(ownerType)}
-            String dateString = ", "
-            if (sub.startDate)
-                dateString += sdf.format(sub.startDate) + "-"
-            if (sub.endDate)
-                dateString += sdf.format(sub.endDate)
-            result.add([id:key,text:packageString+sub.name+" ("+owner.org.name+dateString+")"])
-            //log.info("${packageString}${sub.name} (${owner.org.name}${dateString})")
-        }
-        result.sort { x,y -> x.text.compareToIgnoreCase y.text }
-        //result
     }
 
     /**
@@ -126,7 +78,7 @@ class ControlledListService {
      * @return a map containing a list of issue entitlements, an empty one if no issue entitlements match the filter
      * The map is necessary for the Select2 processing afterwards
      */
-    Map getIssueEntitlements(GrailsParameterMap params) {
+    Map getIssueEntitlements(Map params) {
         Org org = contextService.getOrg()
         LinkedHashMap issueEntitlements = [values:[]]
         List<IssueEntitlement> result = []
@@ -155,7 +107,7 @@ class ControlledListService {
      * @return a map containing licenses, an empty one if no licenses match the filter
      * The map is necessary for the Select2 processing afterwards
      */
-    Map getLicenses(GrailsParameterMap params) {
+    Map getLicenses(Map params) {
         Org org = contextService.getOrg()
         LinkedHashMap licenses = [values:[]]
         List<License> result = []
@@ -177,4 +129,53 @@ class ControlledListService {
         licenses
     }
 
+    /**
+     * Retrieves a list of issue entitlements owned by the context organisation matching given parameters
+     * @param params - eventual request params
+     * @return a map containing a sorted list of issue entitlements, an empty one if no issue entitlements match the filter
+     * The map is necessary for the Select2 processing afterwards
+     */
+    Map getSubscriptionPackages(Map params) {
+        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,LocaleContextHolder.getLocale()))
+        Org org = contextService.getOrg()
+        LinkedHashMap result = [values:[]]
+        String queryString = 'select distinct s, orgRoles.org.sortname from Subscription s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in ( :orgRoles ) and s.status != :deleted'
+        LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER],deleted:RDStore.SUBSCRIPTION_DELETED]
+        //may be generalised later - here it is where to expand the query filter
+        if(params.q && params.q.length() > 0) {
+            filter.put("query","%"+params.q+"%")
+            queryString += " and s.name like :query"
+        }
+        if(params.ctx) {
+            Subscription ctx = genericOIDService.resolveOID(params.ctx)
+            filter.ctx = ctx
+            queryString += " and s != :ctx"
+        }
+        if(params.status) {
+            filter.status = params.status
+            queryString += " and s.status = :status "
+        }
+        List subscriptions = Subscription.executeQuery(queryString+" order by s.name asc, orgRoles.org.sortname asc, s.startDate asc, s.endDate asc",filter)
+        subscriptions.each { row ->
+            Subscription s = (Subscription) row[0]
+            String tenant
+            if(s.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION && s.getConsortia().id == org.id) {
+                tenant = s.getAllSubscribers().get(0).name
+            }
+            else {
+                tenant = org.name
+            }
+            if ((params.checkView && s.isVisibleBy(contextService.getUser())) || !params.checkView) {
+                s.packages.each { sp ->
+                    String dateString = ", "
+                    if (s.startDate)
+                        dateString += sdf.format(s.startDate) + "-"
+                    if (s.endDate)
+                        dateString += sdf.format(s.endDate)
+                    result.values.add([id:sp.class.name + ":" + sp.id,text:"${sp.pkg.name}/${s.name} (${tenant}${dateString})"])
+                }
+            }
+        }
+        result
+    }
 }

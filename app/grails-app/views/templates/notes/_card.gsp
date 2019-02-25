@@ -21,7 +21,8 @@
                 <div class="ui small feed content la-js-dont-hide-this-card">
                     <!--<div class="event">-->
 
-                        <div class="summary">
+                    <div class="ui grid summary">
+                        <div class="twelve wide column">
                             <g:if test="${docctx.owner.title}">
                                 <a onclick="noteedit(${docctx.owner.id});">${docctx.owner.title}</a>
                             </g:if>
@@ -33,35 +34,37 @@
                             ${message(code:'template.notes.created')}
                             <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${docctx.owner.dateCreated}"/>
                         </div>
+                        <div class="center aligned four wide column">
 
-                        <g:if test="${ownobj.showShareButton()}">
+                            <g:if test="${ownobj.showShareButton()}">
                             <g:if test="${docctx.isShared}">
-                                <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip.on')}">
                                     <g:remoteLink class="ui mini icon button green js-gost js-no-wait-wheel"
                                                   controller="ajax" action="toggleShare"
                                                   params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}", tmpl:"notes"]'
                                                   onSuccess=""
                                                   onComplete=""
-                                                  update="container-notes">
-                                        <i class="alternate share icon"></i>
+                                                  update="container-notes"
+                                                  data-position="top right" data-tooltip="${message(code:'property.share.tooltip.on')}"
+                                    >
+                                        <i class="share-unslash icon"></i>
                                     </g:remoteLink>
-                                </span>
                             </g:if>
                             <g:else>
-                                <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip.off')}">
                                     <g:remoteLink class="ui mini icon button js-gost js-no-wait-wheel"
                                                   controller="ajax" action="toggleShare"
                                                   params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}", tmpl:"notes"]'
                                                   onSuccess=""
                                                   onComplete=""
-                                                  update="container-notes">
-                                        <i class="alternate share icon"></i>
+                                                  update="container-notes"
+                                                  data-position="top right" data-tooltip="${message(code:'property.share.tooltip.off')}"
+                                    >
+                                        <i class="share-slash icon"></i>
                                     </g:remoteLink>
-                                </span>
                             </g:else>
 
                         </g:if>
-
+                        </div>
+                    </div>
                     <!--</div>-->
                 </div>
             </g:if>
@@ -115,5 +118,9 @@
                     $("#dynamicModalContainer .ui.modal").modal('show');
                 }
             });
+        }
+
+        if (r2d2) {
+            r2d2.initDynamicSemuiStuff('#container-notes');
         }
     </script>
