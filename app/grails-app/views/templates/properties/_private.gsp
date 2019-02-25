@@ -35,7 +35,7 @@
                     <th>${message(code:'property.table.paragraph')}</th>
                 </g:if>
                 <th>${message(code:'property.table.notes')}</th>
-                <th>${message(code:'property.table.delete')}</th>
+                <th></th>
             </tr>
         </thead>
     </g:if>
