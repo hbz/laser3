@@ -119,8 +119,9 @@
                 }
             });
         }
-
-        if (r2d2) {
-            r2d2.initDynamicSemuiStuff('#container-notes');
-        }
+        $( document ).ready(function() {
+            if (r2d2) {
+                r2d2.initDynamicSemuiStuff('#container-notes');
+            }
+        });
     </script>
