@@ -124,22 +124,6 @@ r2d2 = {
         $('.modal .table').floatThead('destroy');
         $('.table.ignore-floatThead').floatThead('destroy');
 
-        // modals
-        $("*[data-semui='modal']").click(function() {
-            $($(this).attr('href') + '.ui.modal').modal({
-                onVisible: function() {
-                    $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
-                },
-                detachable: true,
-                autofocus: false,
-                closable: false,
-                transition: 'scale',
-                onApprove : function() {
-                    $(this).find('.ui.form').submit();
-                    return false;
-                }
-            }).modal('show')
-        });
     },
 
 
@@ -167,6 +151,7 @@ r2d2 = {
 
         // TODO $.fn.datepicker.defaults.language = gspLocale
     },
+
 
     initDynamicXEditableStuff : function(ctxSel) {
         console.log("r2d2.initDynamicXEditableStuff( " + ctxSel + " )");
@@ -272,6 +257,7 @@ r2d2 = {
         });
     },
 
+
     initDynamicSemuiStuff : function(ctxSel) {
         console.log("r2d2.initDynamicSemuiStuff( " + ctxSel + " )")
         if (! ctxSel) {
@@ -281,6 +267,7 @@ r2d2 = {
         $("a[href], input.js-wait-wheel").not("a[href^='#'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-tooltip], a.la-ctrls , .close, .js-no-wait-wheel, .trigger-modal").click(function() {
             $("html").css("cursor", "wait");
         });
+
         // selectable table to avoid button is showing when focus after modal closed
         $(ctxSel + ' .la-selectable').hover(function() {
             $( ".button" ).blur();
@@ -290,6 +277,23 @@ r2d2 = {
         $(ctxSel + ' .close.icon').click(function() {
             $(this).parent().hide();
             $(".table").trigger('reflow');
+        });
+
+        // modals
+        $(ctxSel + " *[data-semui='modal']").click(function() {
+            $($(this).attr('href') + '.ui.modal').modal({
+                onVisible: function() {
+                    $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
+                },
+                detachable: true,
+                autofocus: false,
+                closable: false,
+                transition: 'scale',
+                onApprove : function() {
+                    $(this).find('.ui.form').submit();
+                    return false;
+                }
+            }).modal('show')
         });
 
         // accordions
@@ -317,7 +321,9 @@ r2d2 = {
             }
             //showOnFocus: false
         });
+
         $(ctxSel + ' form').attr('autocomplete', 'off');
+
         $(ctxSel + ' .la-filter .ui.dropdown').dropdown({
             clearable: true
         });
@@ -327,7 +333,6 @@ r2d2 = {
             clearable: true
         });
 
-
         // dropdowns escape
         $(ctxSel + ' .la-filter .ui.dropdown').on('keydown', function(e) {
             if(['Escape','Backspace','Delete'].includes(event.key)) {
@@ -335,7 +340,6 @@ r2d2 = {
                 $(this).dropdown('clear').dropdown('hide').removeClass("la-filter-dropdown-selected");
             }
         });
-
 
         function toggleFilterDropdown(that) {
             $( that ).find("div.text").hasClass("default")? $(that).removeClass("la-filter-dropdown-selected") : $(that).addClass("la-filter-dropdown-selected");
@@ -380,8 +384,8 @@ r2d2 = {
                 }
             }
             $(this).data("lastClicked", e.timeStamp);
-
         });
+
         // confirmation modal
         var buildConfirmationModal =
             function(that){
@@ -548,11 +552,13 @@ r2d2 = {
                     .modal('show')
                 ;
             }
+
         // for links and submit buttons
         $(ctxSel + ' .js-open-confirm-modal').click(function(e) {
             e.preventDefault();
             buildConfirmationModal(this);
         });
+
         // for remote links = ajax calls
         $(ctxSel + ' .js-open-confirm-modal-copycat').click(function(e) {
             var onclickString = $(this).next('.js-gost').attr("onclick");

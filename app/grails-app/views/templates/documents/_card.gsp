@@ -95,3 +95,9 @@
         </g:each>
     </semui:card>
 </g:if>
+
+<script>
+    if (r2d2) {
+        r2d2.initDynamicSemuiStuff('#container-documents');
+    }
+</script>
