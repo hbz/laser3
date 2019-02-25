@@ -1591,13 +1591,13 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     }
                 }
 
-                if (!Package.findByImpId(grt.owner.uuid)) {
+                if (!Package.findByGokbId(grt.owner.uuid)) {
                     globalSourceSyncService.initialiseTracker(grt);
                     //Update INDEX ES
                     dataloadService.updateFTIndexes();
                 }
 
-                def pkg_to_link = Package.findByImpId(grt.owner.uuid)
+                def pkg_to_link = Package.findByGokbId(grt.owner.uuid)
                 def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
                 log.debug("Add package ${params.addType} to subscription ${params}");
 
@@ -1648,8 +1648,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             result.pkgs = []
             if (params.gokbApi) {
                 result.subscriptionInstance.packages.each { sp ->
-                    log.debug("Existing package ${sp.pkg.name} (Adding ImpID: ${sp.pkg.impId})")
-                    result.pkgs.add(sp.pkg.impId)
+                    log.debug("Existing package ${sp.pkg.name} (Adding ImpID: ${sp.pkg.gokbId})")
+                    result.pkgs.add(sp.pkg.gokbId)
                 }
             } else {
                 result.subscriptionInstance.packages.each { sp ->

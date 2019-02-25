@@ -14,9 +14,9 @@ documentStorageLocation = '/tmp/laser'
 
 globalDataSync = [
   "replaceLocalImpIds": [
-    "Org": false,
+    "Org": true,
     "TitleInstance": true,
-    "Platform": false,
+    "Platform": true,
     "Package": true,
     "TIPP": true
   ]

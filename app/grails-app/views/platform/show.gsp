@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Platform" %>
+<%@ page import="com.k_int.kbplus.ApiSource; com.k_int.kbplus.Platform" %>
 <r:require module="annotations" />
 <!doctype html>
 <html>
@@ -37,6 +37,19 @@
 
                 <dt>${message(code:'platform.name', default:'Platform Name')}</dt>
                 <dd><semui:xEditable owner="${platformInstance}" field="name"/></dd>
+
+                <dt>${message(code:'platform.gokbId', default:'GOKb ID')}</dt>
+                <dd>
+                    ${platformInstance?.gokbId}
+
+                    <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}" var="gokbAPI">
+                        <g:if test="${platformInstance?.gokbId}">
+                            <a target="_blank"
+                               href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/resource/show/' + platformInstance?.gokbId : '#'}"><i
+                                    title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
+                        </g:if>
+                    </g:each>
+                </dd>
 
                 <dt>${message(code:'platform.primaryUrl', default:'Primary URL')}</dt>
                 <dd><semui:xEditable owner="${platformInstance}" field="primaryUrl"/></dd>

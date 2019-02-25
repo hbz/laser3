@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
+import de.laser.GOKbService
 import de.laser.SystemEvent
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
@@ -35,6 +36,7 @@ class AdminController extends AbstractDebugController {
   def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
   def executorService
   def ESSearchService
+  def GOKbService
 
   @Secured(['ROLE_ADMIN'])
   def index() { }
@@ -1082,14 +1084,19 @@ class AdminController extends AbstractDebugController {
       }
     }
 
+    def gokbRecords = []
 
-    result.putAll(ESSearchService.search(params))
+    ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { api ->
+      gokbRecords << GOKbService.getPackagesMap(api, params.q, false).records
+    }
+
+    result.records = gokbRecords ? gokbRecords.flatten().sort() : null
 
     result.tippsNotEqual = []
-    result.hits.each{ hit ->
+    result.records.each{ hit ->
 
-        if(com.k_int.kbplus.Package.findByImpId(hit.id)) {
-              if(com.k_int.kbplus.Package.findByImpId(hit.id)?.tipps?.size() != hit.getSource().tippsCountCurrent && hit.getSource().tippsCountCurrent != 0)
+        if(com.k_int.kbplus.Package.findByGokbId(hit.uuid)) {
+              if(com.k_int.kbplus.Package.findByGokbId(hit.uuid)?.tipps?.size() != hit.titleCount && hit.titleCount != 0)
               {
                 result.tippsNotEqual << hit.id
               }

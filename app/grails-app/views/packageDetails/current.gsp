@@ -53,6 +53,10 @@
               &nbsp;<a href="${forum_url}">Discuss this package in forums</a> <a href="${forum_url}" title="Discuss this package in forums (new Window)" target="_blank"><i class="icon-share-alt"></i></a>
             </g:if>
 
+    <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_PACKAGE_EDITOR">
+        <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges, 'flash':flash, 'model':packageInstance]}"/>
+    </sec:ifAnyGranted>
+
 
   <semui:messages data="${flash}" />
 
@@ -215,8 +219,8 @@
                     <br>
                    <g:link controller="tipp" action="show" id="${t.id}">${message(code:'tipp.label', default:'TIPP')}</g:link><br/>
                    <span title="${t.availabilityStatusExplanation}">${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.getI10n('value')}</span><br/>
-                    <span>${message(code:'title.type.label')}: ${t.title.type.getI10n('value')}</span>
-                    ${message(code:'subscription.details.record_status', default:'Record Status')}: <semui:xEditableRefData owner="${t}" field="status" config="TIPP Status"/>
+                    <span>${message(code:'title.type.label')}: ${t.title.type.getI10n('value')}</span><br/>
+                    <span>${message(code:'default.status.label', default:'Status')}: <semui:xEditableRefData owner="${t}" field="status" config="TIPP Status"/></span>
                 </td>
                 <td style="white-space: nowrap;vertical-align:top;">
                    <g:if test="${t.hostPlatformURL}">
