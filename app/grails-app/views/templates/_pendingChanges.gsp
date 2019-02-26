@@ -32,14 +32,16 @@
         <table class="ui celled la-table la-table-small table">
           <thead>
             <tr>
+                <th></th>
               <th>${message(code:'default.info.label', default:'Info')}</th>
                 <th>${message(code: 'event.timestamp', default: 'Timestamp')}</th>
               <th>${message(code:'default.actions.label', default:'Action')}</th>
             </tr>
           </thead>
           <tbody>
-            <g:each in="${pendingChanges}" var="pc">
+            <g:each in="${pendingChanges}" var="pc" status="i">
               <tr>
+                <td>${i+1}</td>
                 <td>
                     <g:if test="${pc.msgToken}">
                         <g:message code="${pc.msgToken}" args="${pc.getParsedParams()}" default="${pc.desc}" />

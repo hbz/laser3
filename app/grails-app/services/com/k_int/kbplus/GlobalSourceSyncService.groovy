@@ -38,8 +38,9 @@ class GlobalSourceSyncService {
       return
     }
 
-    if (grailsApplication.config.globalDataSync.replaceLocalImpIds.TitleInstance && newtitle.impId) {
+    if (grailsApplication.config.globalDataSync.replaceLocalImpIds.TitleInstance && newtitle.gokbID) {
       title_instance.impId = newtitle.impId
+      title_instance.gokbId = newtitle.gokbID
     }
 
     title_instance.status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Deleted', de: 'Gelöscht'])
@@ -172,6 +173,10 @@ class GlobalSourceSyncService {
       result.parsed_rec.impId = md.gokb.title.'@uuid'.text()
     }
 
+    if (md.gokb.title.'@uuid'?.text()) {
+      result.parsed_rec.gokbID = md.gokb.title.'@uuid'.text()
+    }
+
     md.gokb.title.publishers?.publisher.each{ pub ->
       def publisher = [:]
       publisher.name = pub.name.text()
@@ -236,7 +241,7 @@ class GlobalSourceSyncService {
     log.debug(result);
     result
   }
-
+  //tracker, old_rec_info, new_record_info)
   def packageReconcile = { grt ,oldpkg, newpkg ->
     def pkg = null;
     boolean auto_accept_flag = false
@@ -267,16 +272,23 @@ class GlobalSourceSyncService {
       }
 
       if( pkg ) {
-        if (newpkg.impId && newpkg.impId != pkg.impId) {
+        if (newpkg.gokbId && newpkg.gokbId != pkg.gokbId) {
           if(pkg.impId.startsWith('org.gokb.cred')) {
             pkg.impId = newpkg.impId
+            pkg.gokbId = newpkg.gokbId
           }
           else {
             log.warn("Record tracker ${grt.id} for ${newpkg.name} pointed to a record with another import uuid: ${grt.localOid}!")
 
             if(grailsApplication.config.globalDataSync.replaceLocalImpIds.Package) {
               pkg.impId = newpkg.impId
+              pkg.gokbId = newpkg.gokbId
             }
+          }
+        }else {
+          if(grailsApplication.config.globalDataSync.replaceLocalImpIds.Package) {
+            pkg.impId = newpkg.impId
+            pkg.gokbId = newpkg.gokbId
           }
         }
 
@@ -284,6 +296,16 @@ class GlobalSourceSyncService {
           log.debug("Checking package has ${it.namespace}:${it.value}");
           pkg.checkAndAddMissingIdentifier(it.namespace, it.value);
         }
+
+        if ( newpkg.packageProvider && grailsApplication.config.globalDataSync.replaceLocalImpIds.Org) {
+
+          def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
+          def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
+          def orgRole = RefdataValue.loc('Organisational Role',  [en: 'Content Provider', de: 'Anbieter']);
+          def provider = Org.lookupOrCreate2(newpkg.packageProvider , orgSector , null, [:], null, orgRoleType, newpkg.packageProviderUuid?: null)
+
+        }
+
       }
       //oldpkg is the pkg in Laser
       oldpkg = pkg ? pkg.toComparablePackage() : oldpkg;
@@ -307,7 +329,7 @@ class GlobalSourceSyncService {
       pkg = new Package(
               identifier: grt.identifier,
               name: grt.name,
-              impId: grt.owner.uuid ?: grt.owner.identifier,
+              gokbId: grt.owner.uuid ?: grt.owner.identifier,
               autoAccept: false,
               packageType: null,
               packageStatus: packageStatus,
@@ -333,7 +355,7 @@ class GlobalSourceSyncService {
           def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
           def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
           def orgRole = RefdataValue.loc('Organisational Role',  [en: 'Content Provider', de: 'Anbieter']);
-          def provider = Org.lookupOrCreate2(newpkg.packageProvider , orgSector , null, [:], null, orgRoleType)
+          def provider = Org.lookupOrCreate2(newpkg.packageProvider , orgSector , null, [:], null, orgRoleType, newpkg.packageProviderUuid?: null)
 
           OrgRole.assertOrgPackageLink(provider, pkg, orgRole)
         }
@@ -350,9 +372,21 @@ class GlobalSourceSyncService {
       log.debug("new tipp: ${tipp}");
       log.debug("identifiers: ${tipp.title.identifiers}");
 
+      def title_instance = TitleInstance.findByGokbId(tipp.title.gokbId)
 
-      def title_instance = TitleInstance.lookupOrCreate(tipp.title.identifiers,tipp.title.name, tipp.title.titleType, tipp.title.impId)
+      if(!title_instance) {
+        title_instance = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name, tipp.title.titleType, tipp.title.gokbId)
+      }
       println("Result of lookup or create for ${tipp.title.name} with identifiers ${tipp.title.identifiers} is ${title_instance}");
+
+      /*if (grailsApplication.config.globalDataSync.replaceLocalImpIds.TitleInstance &&
+              title_instance &&  tipp.title.gokbId &&
+              (title_instance.gokbId !=  tipp.title.gokbId || !title_instance.gokbId)) {
+        title_instance.impId = tipp.title.gokbId
+        title_instance.gokbId = tipp.title.gokbId
+        title_instance.save(flush: true)
+      }*/
+
       def origin_uri = null
       tipp.title.identifiers.each { i ->
         if (i.namespace.toLowerCase() == 'uri') {
@@ -361,7 +395,7 @@ class GlobalSourceSyncService {
       }
       updatedTitleafterPackageReconcile(grt, origin_uri, title_instance.id)
 
-      def plat_instance = Platform.lookupOrCreatePlatform([name:tipp.platform, impId: tipp.platformUuid]);
+      def plat_instance = Platform.lookupOrCreatePlatform([name:tipp.platform, gokbId: tipp.platformUuid]);
       def tipp_status_str = tipp.status ? tipp.status.capitalize():'Current'
       def tipp_status = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS,tipp_status_str);
 
@@ -372,6 +406,7 @@ class GlobalSourceSyncService {
         new_tipp.title = title_instance;
         new_tipp.status = tipp_status;
         new_tipp.impId = tipp.tippUuid ?: tipp.tippId;
+        new_tipp.gokbId = tipp.tippUuid ?: null;
 
         // We rely upon there only being 1 coverage statement for now, it seems likely this will need
         // to change in the future.
@@ -410,6 +445,7 @@ class GlobalSourceSyncService {
                 platform     : [id: plat_instance.id],
                 title        : [id: title_instance.id],
                 impId        : tipp.tippUuid ?: tipp.tippId,
+                gokbId       : tipp.tippUuid ?: null,
                 status       : [id: tipp_status.id],
                 startDate    : ((cov.startDate != null) && (cov.startDate.length() > 0)) ? sdf.parse(cov.startDate) : null,
                 startVolume  : cov.startVolume,
@@ -440,12 +476,40 @@ class GlobalSourceSyncService {
       log.debug("updated tipp, ctx = ${ctx.toString()}");
 
       // Find title with ID tipp... in package ctx
-      def title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers,tipp.title.name,tipp.title.type,tipp.title.impId)
+
+      def title_of_tipp_to_update = TitleInstance.findByGokbId(tipp.title.gokbId)
+
+      if(!title_of_tipp_to_update) {
+        title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name, tipp.title.type, tipp.title.gokbId)
+      }
+
+      /*if (grailsApplication.config.globalDataSync.replaceLocalImpIds.TitleInstance &&
+              title_of_tipp_to_update &&  tipp.title.gokbId &&
+              (title_of_tipp_to_update?.gokbId !=  tipp.title.gokbId || !title_of_tipp_to_update?.gokbId))
+      {
+        title_of_tipp_to_update.impId = tipp.title.gokbId
+        title_of_tipp_to_update.gokbId = tipp.title.gokbId
+        title_of_tipp_to_update.save(flush: true)
+      }*/
+
+
+      def origin_uri = null
+      tipp.title.identifiers.each { i ->
+        if (i.namespace.toLowerCase() == 'uri') {
+          origin_uri = i.value
+        }
+      }
+      updatedTitleafterPackageReconcile(grt, origin_uri, title_of_tipp_to_update.id)
 
       def db_tipp = null
 
       if(tipp.tippUuid) {
+        db_tipp = ctx.tipps.find { it.gokbId == tipp.tippUuid }
+      }
+
+      if(!db_tipp) {
         db_tipp = ctx.tipps.find { it.impId == tipp.tippUuid}
+
       }
 
       if(!db_tipp) {
@@ -462,11 +526,6 @@ class GlobalSourceSyncService {
           tippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Retired', de: 'im Ruhestand'])
         }
 
-        if(grailsApplication.config.globalDataSync.replaceLocalImpIds.TIPP && tipp.tippUuid && db_tipp.impId != tipp.tippUuid) {
-          db_tipp.impId = tipp.tippUuid
-          db_tipp.save(flush:true, failOnError:true)
-        }
-
         def changetext
         def change_doc = [:]
 
@@ -478,16 +537,19 @@ class GlobalSourceSyncService {
         changes.each { chg ->
 
           if ("${chg.field}" == "accessStart") {
-            changetext = changetext ? changetext + ", accessStartDate: ${tipp.accessStart}" : "accessStartDate: ${tipp.accessStart}"
+            changetext = changetext ? changetext + ", accessStartDate: (vorher: ${oldtipp?.accessStart}, nachher: ${tipp?.accessStart})" : "accessStartDate: (vorher: ${oldtipp?.accessStart}, nachher: ${tipp?.accessStart})"
             change_doc.put("accessStartDate", tipp.accessStart)
           }
           if ("${chg.field}" == "accessEnd") {
-            changetext = changetext ? changetext + ", accessEndDate: ${tipp.accessEnd}" : "accessEndDate: ${tipp.accessEnd}"
+            changetext = changetext ? changetext + ", accessEndDate: (vorher: ${oldtipp?.accessEnd}, nachher: ${tipp?.accessEnd})" : "accessEndDate: (vorher: ${oldtipp?.accessEnd}, nachher: ${tipp?.accessEnd})"
             change_doc.put("accessEndDate", tipp.accessEnd)
 
           }
           if ("${chg.field}" == "coverage") {
-            changetext = changetext ? changetext + ", Coverage: (Start Date:${tipp.coverage[0].startDate}, Start Volume:${tipp.coverage[0].startVolume}, Start Issue:${tipp.coverage[0].startIssue}, End Date:${tipp.coverage[0].endDate} , End Volume:${tipp.coverage[0].endVolume}, End Issue:${tipp.coverage[0].endIssue}, Embargo:${tipp.coverage[0].embargo}, Coverage Depth:${tipp.coverage[0].coverageDepth}, Coverage Note:${tipp.coverage[0].coverageNote})" : "Coverage: (Start Date:${tipp.coverage[0].startDate}, Start Volume:${tipp.coverage[0].startVolume}, Start Issue:${tipp.coverage[0].startIssue}, End Date:${tipp.coverage[0].endDate} , End Volume:${tipp.coverage[0].endVolume}, End Issue:${tipp.coverage[0].endIssue}, Embargo:${tipp.coverage[0].embargo}, Coverage Depth:${tipp.coverage[0].coverageDepth}, Coverage Note:${tipp.coverage[0].coverageNote})"
+            changetext = changetext ?
+                    changetext + ", Coverage: (Start Date:${tipp.coverage[0].startDate}, Start Volume:${tipp.coverage[0].startVolume}, Start Issue:${tipp.coverage[0].startIssue}, End Date:${tipp.coverage[0].endDate} " +
+                            ", End Volume:${tipp.coverage[0].endVolume}, End Issue:${tipp.coverage[0].endIssue}, Embargo:${tipp.coverage[0].embargo}, Coverage Depth:${tipp.coverage[0].coverageDepth}, Coverage Note:${tipp.coverage[0].coverageNote})" :
+                            "Coverage: (Start Date:${tipp.coverage[0].startDate}, Start Volume:${tipp.coverage[0].startVolume}, Start Issue:${tipp.coverage[0].startIssue}, End Date:${tipp.coverage[0].endDate} , End Volume:${tipp.coverage[0].endVolume}, End Issue:${tipp.coverage[0].endIssue}, Embargo:${tipp.coverage[0].embargo}, Coverage Depth:${tipp.coverage[0].coverageDepth}, Coverage Note:${tipp.coverage[0].coverageNote})"
             change_doc.put("startDate", tipp.coverage[0].startDate)
             change_doc.put("startVolume", tipp.coverage[0].startVolume)
             change_doc.put("startIssue", tipp.coverage[0].startIssue)
@@ -499,7 +561,7 @@ class GlobalSourceSyncService {
             change_doc.put("coverageNote", tipp.coverage[0].coverageNote)
           }
           if ("${chg.field}" == "hostPlatformURL") {
-            changetext = changetext ? changetext + ", Url: ${tipp.url}" : "Url: ${tipp.url}"
+            changetext = changetext ? changetext + ", URL: (vorher: ${oldtipp.url}, nachher: ${tipp.url})" : "URL: (vorher: ${oldtipp.url}, nachher: ${tipp.url})"
             change_doc.put("hostPlatformURL", tipp.url)
 
           }
@@ -545,19 +607,37 @@ class GlobalSourceSyncService {
     def onDeletedTipp = { ctx, tipp, auto_accept ->
 
       // Find title with ID tipp... in package ctx
-      def title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name,tipp.title.type, tipp.title.impId)
+
+      def title_of_tipp_to_update = TitleInstance.findByGokbId(tipp.title.impId)
+
+      if(!title_of_tipp_to_update) {
+        title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name, tipp.title.type, tipp.title.gokbId)
+      }
+
+      /*if (grailsApplication.config.globalDataSync.replaceLocalImpIds.TitleInstance &&
+              title_of_tipp_to_update &&  tipp.title.gokbId &&
+              (title_of_tipp_to_update?.gokbId !=  tipp.title.gokbId || !title_of_tipp_to_update?.gokbId)) {
+        title_of_tipp_to_update.impId = tipp.title.gokbId
+        title_of_tipp_to_update.gokbId = tipp.title.gokbId
+        title_of_tipp_to_update.save(flush: true)
+      }*/
 
       def TippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])
 
       if (tipp.status == 'Retired') {
-        TippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Retired', de: 'im Ruhestand'])
+          TippStatus = RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Retired', de: 'im Ruhestand'])
       }
 
       def db_tipp = null
 
       if(tipp.tippUuid) {
-        db_tipp = ctx.tipps.find { it.impId == tipp.tippUuid }
-      }else {
+        db_tipp = ctx.tipps.find { it.gokbId == tipp.tippUuid }
+      }
+      if(!db_tipp) {
+        db_tipp = ctx.tipps.find { it.impId == tipp.tippUuid}
+
+      }
+      if(!db_tipp) {
         db_tipp = ctx.tipps.find { it.impId == tipp.tippId }
       }
 
@@ -569,7 +649,7 @@ class GlobalSourceSyncService {
                 PendingChange.PROP_PKG,
                 ctx,
                 // pendingChange.message_GS03
-                "Eine Änderung des Status der Verknüpfung (TIPP) für den Titel \"${title_of_tipp_to_update.title}\", Status: ${TippStatus}",
+                "Eine Statusänderung für den TIPP mit dem Titel \"${title_of_tipp_to_update.title}\", Status: ${TippStatus}",
                 null,
                 [
                         changeTarget: "com.k_int.kbplus.TitleInstancePackagePlatform:${db_tipp.id}",
@@ -681,7 +761,9 @@ class GlobalSourceSyncService {
     result.parsed_rec.packageName = md.gokb.package.name.text()
     result.parsed_rec.packageId = md.gokb.package.'@id'.text()
     result.parsed_rec.impId = md.gokb.package.'@uuid'?.text() ?: null
-    result.parsed_rec.packageProvider = md.gokb.package.nominalProvider.text()
+    result.parsed_rec.gokbId = md.gokb.package.'@uuid'?.text() ?: null
+    result.parsed_rec.packageProvider = md.gokb.package.nominalProvider.name.text()
+    result.parsed_rec.packageProviderUuid = md.gokb.package.nominalProvider.'@uuid'?.text() ?: null
     result.parsed_rec.tipps = []
     result.parsed_rec.identifiers = []
     result.parsed_rec.status = md.gokb.package.status.text()
@@ -692,7 +774,9 @@ class GlobalSourceSyncService {
     result.parsed_rec.fixed = md.gokb.package.fixed.text()
     result.parsed_rec.global = md.gokb.package.global.text()
     result.parsed_rec.paymentType = md.gokb.package.paymentType.text()
-    result.parsed_rec.nominalPlatform = md.gokb.package.nominalPlatform.text()
+    result.parsed_rec.nominalPlatform = md.gokb.package.nominalPlatform.name.text()
+    result.parsed_rec.nominalPlatformUuid = md.gokb.package.nominalPlatform.'@uuid'?.text() ?: null
+    result.parsed_rec.nominalPlatformPrimaryUrl = md.gokb.package.nominalPlatform.primaryUrl.text() ?: null
 
     md.gokb.package.identifiers.identifier.each { id ->
       result.parsed_rec.identifiers.add([namespace:id.'@namespace'.text(), value:id.'@value'.text()])
@@ -708,6 +792,7 @@ class GlobalSourceSyncService {
                       name       : tip.title.name.text(),
                       identifiers: [],
                       impId: tip.title.'@uuid'?.text() ?: null,
+                      gokbId: tip.title.'@uuid'?.text() ?: null,
                       titleType: title_simplename ?: null
               ],
               status      : tip.status?.text() ?: 'Current',
@@ -1353,7 +1438,7 @@ class GlobalSourceSyncService {
       out.close()
 
       gli.record = baos.toByteArray()
-      gli.uuid = gli.uuid ?: newrecord?.parsed_rec.impId
+      gli.uuid = gli.uuid ?: newrecord?.parsed_rec.gokbId
       gli.save()
     }
 

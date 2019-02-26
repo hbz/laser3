@@ -26,6 +26,9 @@ class ApiOrg {
             case 'impId':
                 result = Org.findAllWhere(impId: value)
                 break
+            case 'gokbId':
+                result = Org.findAllWhere(gokbId: value)
+                break
             case 'ns:identifier':
                 result = Identifier.lookupObjectsByIdentifierString(new Org(), value)
                 break
