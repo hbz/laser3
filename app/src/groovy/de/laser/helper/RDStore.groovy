@@ -11,16 +11,20 @@ class RDStore {
     static final OR_LICENSING_CONSORTIUM    = getRefdataValue('Licensing Consortium', 'Organisational Role')
     static final OR_LICENSEE                = getRefdataValue('Licensee','Organisational Role')
     static final OR_LICENSEE_CONS           = getRefdataValue('Licensee_Consortial','Organisational Role')
+
     static final OR_SUBSCRIPTION_CONSORTIA  = getRefdataValue('Subscription Consortia','Organisational Role')
     static final OR_SUBSCRIBER              = getRefdataValue('Subscriber','Organisational Role')
     static final OR_SUBSCRIBER_CONS         = getRefdataValue('Subscriber_Consortial','Organisational Role')
-    static final OR_PROVIDER                = getRefdataValue('Provider', 'Organisational Role')
+
     static final OR_AGENCY                  = getRefdataValue('Agency', 'Organisational Role')
+    static final OR_LICENSOR                = getRefdataValue('Licensor','Organisational Role')
+    static final OR_PROVIDER                = getRefdataValue('Provider', 'Organisational Role')
 
     static final OR_TYPE_CONSORTIUM         = getRefdataValue('Consortium', 'OrgRoleType')
     static final OR_TYPE_INSTITUTION        = getRefdataValue('Institution', 'OrgRoleType')
-    static final OR_TYPE_PROVIDER           = getRefdataValue('Provider', 'OrgRoleType')
     static final OR_TYPE_AGENCY             = getRefdataValue('Agency', 'OrgRoleType')
+    static final OR_TYPE_LICENSOR           = getRefdataValue('Licensor', 'OrgRoleType')
+    static final OR_TYPE_PROVIDER           = getRefdataValue('Provider', 'OrgRoleType')
 
     static final O_SECTOR_HIGHER_EDU        = getRefdataValue('Higher Education', 'OrgSector')
     static final O_SECTOR_PUBLISHER         = getRefdataValue('Publisher', 'OrgSector')

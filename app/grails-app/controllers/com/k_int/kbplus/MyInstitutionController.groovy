@@ -44,7 +44,7 @@ class MyInstitutionController extends AbstractDebugController {
     def queryService
     def dashboardDueDatesService
     def subscriptionsQueryService
-    def providerHelperService
+    def orgTypeService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -452,8 +452,8 @@ from License as l where (
         result.orgRoles    = [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
-        List<Org> providers = providerHelperService.getCurrentProviders( contextService.getOrg())
-        List<Org> agencies   = providerHelperService.getCurrentAgencies( contextService.getOrg())
+        List<Org> providers = orgTypeService.getCurrentProviders( contextService.getOrg())
+        List<Org> agencies   = orgTypeService.getCurrentAgencies( contextService.getOrg())
 
         providers.addAll(agencies)
         List orgIds = providers.unique().collect{ it2 -> it2.id }

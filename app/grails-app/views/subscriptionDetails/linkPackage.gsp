@@ -125,9 +125,9 @@
                             <g:else>
                                 <tr>
                                     <td>
-                                        <g:if test="${com.k_int.kbplus.Package.findByImpId(hit.uuid)}">
+                                        <g:if test="${com.k_int.kbplus.Package.findByGokbId(hit.uuid)}">
                                             <g:link controller="packageDetails" target="_blank" action="show"
-                                                    id="${com.k_int.kbplus.Package.findByImpId(hit.uuid).id}">${hit.name}</g:link>
+                                                    id="${com.k_int.kbplus.Package.findByGokbId(hit.uuid).id}">${hit.name}</g:link>
                                         </g:if>
                                         <g:else>
                                             ${hit.name} <a target="_blank"
@@ -137,14 +137,14 @@
                                         <br><b>(${hit.titleCount ?: '0'} ${message(code: 'title.plural', default: 'Titles')})</b>
                                     </td>
 
-                                    <td><g:if test="${com.k_int.kbplus.Org.findByName(hit.providerName)}"><g:link
+                                    <td><g:if test="${com.k_int.kbplus.Org.findByGokbId(hit.providerUuid)}"><g:link
                                             controller="organisations" action="show"
-                                            id="${com.k_int.kbplus.Org.findByName(hit.providerName).id}">${hit.providerName}</g:link></g:if>
+                                            id="${com.k_int.kbplus.Org.findByGokbId(hit.providerUuid).id}">${hit.providerName}</g:link></g:if>
                                     <g:else>${hit.providerName}</g:else>
                                     </td>
-                                    <td><g:if test="${com.k_int.kbplus.Platform.findByName(hit.platformName)}"><g:link
+                                    <td><g:if test="${com.k_int.kbplus.Platform.findByGokbId(hit.platformUuid)}"><g:link
                                             controller="platform" action="show"
-                                            id="${com.k_int.kbplus.Platform.findByName(hit.platformName).id}">${hit.platformName}</g:link></g:if>
+                                            id="${com.k_int.kbplus.Platform.findByGokbId(hit.platformUuid).id}">${hit.platformName}</g:link></g:if>
                                         <g:else>${hit.platformName}</g:else></td>
 
                                     <td class="right aligned">
@@ -167,7 +167,7 @@
 
                                                 <div class="ui icon negative buttons">
                                                     <button class="ui button la-selectable-button"
-                                                            onclick="unlinkPackage(${com.k_int.kbplus.Package.findByImpId(hit.uuid)?.id})">
+                                                            onclick="unlinkPackage(${com.k_int.kbplus.Package.findByGokbId(hit.uuid)?.id})">
                                                         <i class="unlink icon"></i>
                                                     </button>
                                                 </div>

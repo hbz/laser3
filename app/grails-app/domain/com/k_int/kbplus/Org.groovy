@@ -37,12 +37,14 @@ class Org
     Date lastImportDate
 
     String impId
+    String gokbId
     String comment
     String ipRange
     String scope
     Date dateCreated
     Date lastUpdated
     String categoryId
+
 
     int fteStudents
     int fteStaff
@@ -105,6 +107,7 @@ class Org
          shortcode          column:'org_shortcode', index:'org_shortcode_idx'
              scope          column:'org_scope'
         categoryId          column:'org_cat'
+        gokbId              column:'org_gokb_id', type:'text'
            orgType          column:'org_type_rv_fk'
             sector          column:'org_sector_rv_fk'
             status          column:'org_status_rv_fk'
@@ -155,6 +158,7 @@ class Org
       lastImportDate(nullable:true, blank:true)
       costConfigurationPreset(nullable:true, blank:false)
         orgRoleType(nullable:true, blank:true)
+        gokbId (nullable:true, blank:true)
     }
 
     @Override
@@ -312,10 +316,16 @@ class Org
       def result = []
 
       if (uuid?.size() > 0) {
-        def uuid_match = Org.findByImpId(uuid)
+        def oldUuid_match = Org.findByImpId(uuid)
 
-        if(uuid_match) {
-          result << uuid_match
+        def newUuid_match = Org.findByGokbId(uuid)
+
+        if(newUuid_match) {
+          result << newUuid_match
+        }else {
+            if(oldUuid_match) {
+                result << oldUuid_match
+            }
         }
       }
 
@@ -382,7 +392,8 @@ class Org
                            name:name,
                            sector:sector,
                            ipRange:iprange,
-                           impId: imp_uuid?.length() > 0 ? imp_uuid : java.util.UUID.randomUUID().toString()
+                           impId: null,
+                           gokbId: imp_uuid?.length() > 0 ? imp_uuid : null
           ).save()
           if(orgRoleTyp) {
               result.addToOrgRoleType(orgRoleTyp).save()
@@ -411,8 +422,10 @@ class Org
                                      type: RefdataValue.getByValueAndCategory('Consortium','Combo Type')
             ).save()
           }
-        } else if (Holders.config.globalDataSync.replaceLocalImpIds.Org && imp_uuid && imp_uuid != result.impId){
+        } else if (Holders.config.globalDataSync.replaceLocalImpIds.Org && result && imp_uuid && imp_uuid != result.gokbId){
+          result.gokbId = imp_uuid
           result.impId = imp_uuid
+          result.save()
         }
  
         result

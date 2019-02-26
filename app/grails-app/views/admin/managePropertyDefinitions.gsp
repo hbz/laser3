@@ -58,8 +58,8 @@
                                             </span>
                                         </g:if>
 
-                                        <g:if test="${! usedPdList?.contains(pd.id)}">
-                                            <span data-position="top left" data-tooltip="Dieser Wert wird bisher nicht verwendet (ID:${pd.id})">
+                                        <g:if test="${usedPdList?.contains(pd.id)}">
+                                            <span data-position="top left" data-tooltip="${message(code:'default.dataIsUsed.tooltip', args:[pd.id])}">
                                                 <i class="info circle icon blue"></i>
                                             </span>
                                         </g:if>

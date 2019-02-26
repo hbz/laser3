@@ -215,50 +215,66 @@ class ChangeNotificationService {
 
         def desc = legacyDesc?.toString() // freeze string before altering referenced values
 
-
         // WTF !?
 
-      // JSON converts in UTC,
-      // we now add timezone delta to dates
-      // so that changedoc entries can be interpreted as local timezone entries
+        // JSON converts in UTC,
+        // we now add timezone delta to dates
+        // so that changedoc entries can be interpreted as local timezone entries
 
-      TimeZone currentTz = Calendar.getInstance().getTimeZone()
-      TimeZone utcTz = TimeZone.getTimeZone('UTC')
+        TimeZone currentTz = Calendar.getInstance().getTimeZone()
+        TimeZone utcTz = TimeZone.getTimeZone('UTC')
 
         // WTF !?
-      def deltaTz = 0 // (currentTz.getRawOffset() + currentTz.getDSTSavings()) - (utcTz.getRawOffset() + utcTz.getDSTSavings())
+        def deltaTz = 0
+        // (currentTz.getRawOffset() + currentTz.getDSTSavings()) - (utcTz.getRawOffset() + utcTz.getDSTSavings())
 
-      changeMap.changeDoc.each { k, v ->
-          if (k in ['old', 'new']) {
-              if (v instanceof Date || v instanceof Timestamp) {
-                  v.setTime(v.getTime() + deltaTz)
-              }
-          }
-      }
-
-        def new_pending_change = new PendingChange(
-                desc:     desc,
-                oid:      "${target.class.name}:${target.id}",
-                owner:    objowner,
-                msgToken: msgToken,
-                ts:       new Date()
-        )
-
-    new_pending_change[prop] = target;
-
-    def jsonChangeDocument = changeMap as JSON
-    new_pending_change.changeDoc = jsonChangeDocument.toString();
-
-        def jsonMsgParams = msgParams as JSON
-        new_pending_change.msgParams = msgParams ? jsonMsgParams.toString() : null
-
-        if (new_pending_change.save(flush:true)) {
-            return new_pending_change
+        changeMap.changeDoc.each { k, v ->
+            if (k in ['old', 'new']) {
+                if (v instanceof Date || v instanceof Timestamp) {
+                    v.setTime(v.getTime() + deltaTz)
+                }
+            }
         }
-        else {
-            log.error("Problem saving pending change: ${new_pending_change.errors}")
+        def existsPendingChange = null
+        //IF PENDING Change for PKG exists
+        if (prop == PendingChange.PROP_PKG) {
+            def jsonChangeDocument = changeMap as JSON
+            def changeDocNew = jsonChangeDocument.toString();
+
+            existsPendingChange = PendingChange.findWhere(
+                    desc: desc,
+                    oid: "${target.class.name}:${target.id}",
+                    owner: objowner,
+                    msgToken: msgToken,
+                    msgParams: null,
+                    pkg: target,
+                    changeDoc: changeDocNew,
+            )
         }
+        if (!existsPendingChange) {
+            def new_pending_change = new PendingChange(
+                    desc: desc,
+                    oid: "${target.class.name}:${target.id}",
+                    owner: objowner,
+                    msgToken: msgToken,
+                    ts: new Date()
+            )
+
+            new_pending_change[prop] = target;
+
+            def jsonChangeDocument = changeMap as JSON
+            new_pending_change.changeDoc = jsonChangeDocument.toString();
+
+            def jsonMsgParams = msgParams as JSON
+            new_pending_change.msgParams = msgParams ? jsonMsgParams.toString() : null
+
+            if (new_pending_change.save(flush: true)) {
+                return new_pending_change
+            } else {
+                log.error("Problem saving pending change: ${new_pending_change.errors}")
+            }
             return null
+        }
     }
 
 }

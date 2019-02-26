@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
 import de.laser.traits.AuditableTrait
+import grails.util.Holders
 
 import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
@@ -29,6 +30,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   String keyTitle
   String sortTitle
   String impId
+  String gokbId
   RefdataValue status       // RefdataCategory 'TitleInstanceStatus'
   RefdataValue type
   Date dateCreated
@@ -58,6 +60,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
      keyTitle column:'ti_key_title', type:'text'
       version column:'ti_version'
         impId column:'ti_imp_id', index:'ti_imp_id_idx'
+        gokbId column:'ti_gokb_id', type:'text'
        status column:'ti_status_rv_fk'
          type column:'ti_type_rv_fk'
         tipps sort:'startDate', order: 'asc'
@@ -74,6 +77,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
         sortTitle(nullable:true, blank:false,maxSize:2048);
         keyTitle(nullable:true, blank:false,maxSize:2048);
         creators(nullable:true, blank:false);
+        gokbId (nullable:true, blank:false);
     }
 
   String getIdentifierValue(idtype) {
@@ -215,6 +219,11 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
 
     if (imp_uuid) {
       result = TitleInstance.findByImpId(imp_uuid)
+
+      def newresult = TitleInstance.findByGokbId(imp_uuid)
+
+      result = newresult ?: result
+
       if (result) valid_match = true
     }
 
@@ -350,12 +359,15 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
       result.impId = imp_uuid
     }
 
+
+    //TODO: Import ID ersetzen
     if (!valid_match && !skip_creation) {
       static_logger.debug("No valid match - creating new title");
       def ti_status = RefdataValue.loc(RefdataCategory.TI_STATUS, [en: 'Current', de: 'Aktuell'])
       //result = new TitleInstance(title:title, impId:java.util.UUID.randomUUID().toString(), status:ti_status);
-      result = ((titletyp=='BookInstance') ? new BookInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'EBook', de: 'EBook'])) :
-              (titletyp=='DatabaseInstance' ? new DatabaseInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de: 'Database'])) : new JournalInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Journal', de: 'Journal']))))
+      result = ((titletyp=='BookInstance') ? new BookInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'EBook', de: 'EBook'])) :
+              (titletyp=='DatabaseInstance' ? new DatabaseInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Database', de: 'Database'])) :
+                      new JournalInstance(title:title, impId:imp_uuid ?: java.util.UUID.randomUUID().toString(), gokbId: imp_uuid ?: null, status:ti_status, type: RefdataValue.loc(RefdataCategory.TI_TYPE, [en: 'Journal', de: 'Journal']))))
       result.save(flush:true, failOnError: true);
 
       result.ids=[]

@@ -156,6 +156,7 @@ class ApiReader {
         result.forumId          = pkg.forumId
         result.identifier       = pkg.identifier
         result.impId            = pkg.impId
+        result.gokbId            = pkg.gokbId
         result.lastUpdated      = pkg.lastUpdated
         result.name             = pkg.name
         result.identifier       = pkg.identifier

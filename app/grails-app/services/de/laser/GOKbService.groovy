@@ -62,24 +62,28 @@ class GOKbService {
                     }
 
                     pkg.titleCount = r.titleCount
-                    pkg.scope = r.scope
-                    pkg.name = r.name
-                    pkg.sortname = r.sortname
+                    pkg.scope = r.scope ?: ''
+                    pkg.name = r.name ?: ''
+                    pkg.sortname = r.sortname ?: ''
                     //pkg.fixed = r.fixed
-                    pkg.platformName = r.platformName
+                    pkg.platformName = r.platformName ?: ''
+                    pkg.platformUuid = r.platformUuid ?: ''
                     //pkg.breakable = r.breakable
-                    pkg.providerName = r.cpname
+                    pkg.providerName = r.cpname ?: ''
                     pkg.provider = r.provider
-                    pkg.status = r.status
-                    pkg.description = r.description
-                    pkg.descriptionURL = r.descriptionURL
+                    pkg.providerUuid = r.providerUuid ?: ''
+                    pkg.status = r.status ?: ''
+                    pkg.description = r.description ?: ''
+                    pkg.descriptionURL = r.descriptionURL ?: ''
 
                     pkg.lastUpdatedDisplay = r.lastUpdatedDisplay
 
                     pkg.url = apiSource.baseUrl
 
 
-                    result.records << pkg
+                    if(r.uuid) {
+                        result.records << pkg
+                    }
                 }
             }
             if (json?.warning?.records) {
@@ -117,30 +121,35 @@ class GOKbService {
                     }
 
                     pkg.titleCount = r.titleCount
-                    pkg.scope = r.scope
-                    pkg.name = r.name
-                    pkg.sortname = r.sortname
+                    pkg.scope = r.scope ?: ''
+                    pkg.name = r.name ?: ''
+                    pkg.sortname = r.sortname ?: ''
                     //pkg.fixed = r.fixed
-                    pkg.platformName = r.platformName
+                    pkg.platformName = r.platformName ?: ''
+                    pkg.platformUuid = r.platformUuid ?: ''
                     //pkg.breakable = r.breakable
-                    pkg.providerName = r.cpname
+                    pkg.providerName = r.cpname ?: ''
                     pkg.provider = r.provider
-                    pkg.status = r.status
-                    pkg.description = r.description
-                    pkg.descriptionURL = r.descriptionURL
+                    pkg.providerUuid = r.providerUuid ?: ''
+                    pkg.status = r.status ?: ''
+                    pkg.description = r.description ?: ''
+                    pkg.descriptionURL = r.descriptionURL ?: ''
 
                     pkg.lastUpdatedDisplay = r.lastUpdatedDisplay
 
                     pkg.url = apiSource.baseUrl
 
 
-                    result.records << pkg
+                    if(r.uuid) {
+                        result.records << pkg
+                    }
                 }
             }
 
         } catch (Exception e) {
             log.error(e.getMessage())
         }
+
         result
     }
 

@@ -805,7 +805,7 @@ class AjaxController {
             log.debug(error)
         }
         else {
-            newRefdataValue = new RefdataValue(value: params.refdata_value, owner: rdc, softData: true)
+            newRefdataValue = new RefdataValue(value: params.refdata_value, owner: rdc)
             newRefdataValue.save(flush: true)
 
             if (newRefdataValue?.hasErrors()) {
@@ -838,7 +838,7 @@ class AjaxController {
             log.debug(error)
         }
         else {
-            newRefdataCategory = new RefdataCategory(desc: params.refdata_category, softData: true)
+            newRefdataCategory = new RefdataCategory(desc: params.refdata_category)
             newRefdataCategory.save(flush: true)
 
             if (newRefdataCategory?.hasErrors()) {

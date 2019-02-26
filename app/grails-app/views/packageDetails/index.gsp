@@ -183,9 +183,12 @@
                         <tr>
                             <td>${(params.int('offset') ?: 0) + jj + 1}</td>
                             <td>
-                                <g:if test="${com.k_int.kbplus.Package.findByImpId(record.uuid)}">
+                                <!--${record} -->
+                                <!--UUID: ${record.uuid} -->
+                                <!--Package: ${com.k_int.kbplus.Package.findByGokbId(record.uuid)} -->
+                                <g:if test="${com.k_int.kbplus.Package.findByGokbId(record.uuid)}">
                                     <g:link controller="packageDetails" action="show"
-                                            id="${com.k_int.kbplus.Package.findByImpId(record.uuid).id}">${record.name}</g:link>
+                                            id="${com.k_int.kbplus.Package.findByGokbId(record.uuid).id}">${record.name}</g:link>
                                 </g:if>
                                 <g:else>
                                     ${record.name} <a target="_blank"
@@ -197,18 +200,18 @@
                             <td>
                                 <g:if test="${record.titleCount}">
                                     <g:if test="${record.titleCount == 1}">
-                                        <g:if test="${com.k_int.kbplus.Package.findByImpId(record.uuid)}">
+                                        <g:if test="${com.k_int.kbplus.Package.findByGokbId(record.uuid)}">
                                             <g:link controller="packageDetails" action="current"
-                                                    id="${com.k_int.kbplus.Package.findByImpId(record.uuid).id}">${message(code: 'packageDetails.index.result.titles.single')}</g:link>
+                                                    id="${com.k_int.kbplus.Package.findByGokbId(record.uuid).id}">${message(code: 'packageDetails.index.result.titles.single')}</g:link>
                                         </g:if>
                                         <g:else>
                                             ${message(code: 'packageDetails.index.result.titles.single')}
                                         </g:else>
                                     </g:if>
                                     <g:else>
-                                        <g:if test="${com.k_int.kbplus.Package.findByImpId(record.uuid)}">
+                                        <g:if test="${com.k_int.kbplus.Package.findByGokbId(record.uuid)}">
                                             <g:link controller="packageDetails" action="current"
-                                                    id="${com.k_int.kbplus.Package.findByImpId(record.uuid).id}">${message(code: 'packageDetails.index.result.titles', args: [record.titleCount])}</g:link>
+                                                    id="${com.k_int.kbplus.Package.findByGokbId(record.uuid).id}">${message(code: 'packageDetails.index.result.titles', args: [record.titleCount])}</g:link>
                                         </g:if>
                                         <g:else>
                                             ${message(code: 'packageDetails.index.result.titles', args: [record.titleCount])}
@@ -220,14 +223,14 @@
                                     ${message(code: 'packageDetails.index.result.titles.unknown', default: 'Unknown number of TIPPs')}
                                 </g:else>
                             </td>
-                            <td><g:if test="${com.k_int.kbplus.Org.findByName(record.providerName)}"><g:link
+                            <td><g:if test="${com.k_int.kbplus.Org.findByGokbId(record.providerUuid)}"><g:link
                                     controller="organisations" action="show"
-                                    id="${com.k_int.kbplus.Org.findByName(record.providerName).id}">${record.providerName}</g:link></g:if>
+                                    id="${com.k_int.kbplus.Org.findByGokbId(record.providerUuid).id}">${record.providerName}</g:link></g:if>
                             <g:else>${record.providerName}</g:else>
                             </td>
-                            <td><g:if test="${com.k_int.kbplus.Platform.findByName(record.platformName)}"><g:link
+                            <td><g:if test="${com.k_int.kbplus.Platform.findByGokbId(record.platformUuid)}"><g:link
                                     controller="platform" action="show"
-                                    id="${com.k_int.kbplus.Platform.findByName(record.platformName).id}">${record.platformName}</g:link></g:if>
+                                    id="${com.k_int.kbplus.Platform.findByGokbId(record.platformUuid).id}">${record.platformName}</g:link></g:if>
                                 <g:else>${record.platformName}</g:else></td>
                             <td>${record.scope}</td>
                         </tr>

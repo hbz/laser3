@@ -161,8 +161,10 @@ class OrganisationsController extends AbstractDebugController {
 
                 def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
                 def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
+                def orgRoleType2 = RefdataValue.getByValueAndCategory('Agency','OrgRoleType')
                 def orgInstance = new Org(name: params.provider, sector: orgSector.id)
                 orgInstance.addToOrgRoleType(orgRoleType)
+                orgInstance.addToOrgRoleType(orgRoleType2)
 
                 if ( orgInstance.save(flush:true) ) {
                     flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])

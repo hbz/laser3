@@ -29,6 +29,7 @@ class LicenseDetailsController extends AbstractDebugController {
     def addressbookService
     def filterService
     def selectListQueryService
+    def orgTypeService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -165,6 +166,12 @@ class LicenseDetailsController extends AbstractDebugController {
       //inject here: all picked entries
         result.availableSubs = Subscription.executeQuery("${subscrQuery} order by LOWER(s.name) asc", [co: contextService.getOrg()])
 
+        result.availableLicensorList = orgTypeService.getOrgsForTypeLicensor().minus(
+                OrgRole.executeQuery(
+                        "select o from OrgRole oo join oo.org o where oo.lic.id = :lic and oo.roleType.value = 'Licensor'",
+                        [lic: result.license.id]
+                ))
+        result.existingLicensorIdList = orgTypeService.getCurrentLicensors(contextService.getOrg()).collect { it -> it.id }
 
         withFormat {
       html result

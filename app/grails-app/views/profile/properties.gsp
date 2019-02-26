@@ -51,8 +51,8 @@
                                 </g:else>
                             </td>
                             <td>
-                                <g:if test="${! usedPdList?.contains(pd.id)}">
-                                    <span data-position="top right" data-tooltip="Dieser Wert wird bisher nicht verwendet (ID:${pd.id})">
+                                <g:if test="${usedPdList?.contains(pd.id)}">
+                                    <span data-position="top right" data-tooltip="${message(code:'default.dataIsUsed.tooltip', args:[pd.id])}">
                                         <i class="info circle icon blue"></i>
                                     </span>
                                 </g:if>
@@ -106,11 +106,6 @@
                         <strong>${rdcI10n.valueEn}</strong>
                     </td>
                     <td>
-                        <g:if test="${rdc.softData}">
-                            <span data-position="top right" data-tooltip="${message(code:'default.softData.tooltip')}">
-                                <i class="tint icon teal"></i>
-                            </span>
-                        </g:if>
                     </td>
                 </tr>
 
@@ -123,15 +118,9 @@
                             ${I10nTranslation.createI10nOnTheFly(rdv, 'value').valueEn}
                         </td>
                         <td>
-                            <g:if test="${! usedRdvList?.contains(rdv.id)}">
-                                <span data-position="top right" data-tooltip="Dieser Wert wird bisher nicht verwendet (ID:${rdv.id})">
+                            <g:if test="${usedRdvList?.contains(rdv.id)}">
+                                <span data-position="top right" data-tooltip="${message(code:'default.dataIsUsed.tooltip', args:[rdv.id])}">
                                     <i class="info circle icon blue"></i>
-                                </span>
-                            </g:if>
-
-                            <g:if test="${rdv.softData}">
-                                <span data-position="top right" data-tooltip="${message(code:'default.softData.tooltip')}">
-                                    <i class="tint icon teal"></i>
                                 </span>
                             </g:if>
                         </td>

@@ -22,6 +22,7 @@ class Package
   String name
   String sortName
   String impId
+  String gokbId
   String vendorURL
   String cancellationAllowances
   RefdataValue packageType
@@ -69,6 +70,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     name column:'pkg_name'
                 sortName column:'pkg_sort_name'
                    impId column:'pkg_imp_id', index:'pkg_imp_id_idx'
+                  gokbId column:'pkg_gokb_id', type:'text'
              packageType column:'pkg_type_rv_fk'
            packageStatus column:'pkg_status_rv_fk'
        packageListStatus column:'pkg_list_status_rv_fk'
@@ -105,6 +107,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
               packageScope(nullable:true, blank:false)
                    forumId(nullable:true, blank:false)
                      impId(nullable:true, blank:false)
+                    gokbId(nullable:true, blank:false)
                  vendorURL(nullable:true, blank:false)
     cancellationAllowances(nullable:true, blank:false)
                   sortName(nullable:true, blank:false)
@@ -391,6 +394,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     result.packageName = this.name
     result.packageId = this.identifier
     result.impId = this.impId
+    result.gokbId = this.gokbId
 
     result.tipps = []
     this.tipps.each { tip ->
