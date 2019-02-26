@@ -70,7 +70,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     name column:'pkg_name'
                 sortName column:'pkg_sort_name'
                    impId column:'pkg_imp_id', index:'pkg_imp_id_idx'
-                  gokbId column:'pkg_gokbId', type:'text'
+                  gokbId column:'pkg_gokb_id', type:'text'
              packageType column:'pkg_type_rv_fk'
            packageStatus column:'pkg_status_rv_fk'
        packageListStatus column:'pkg_list_status_rv_fk'

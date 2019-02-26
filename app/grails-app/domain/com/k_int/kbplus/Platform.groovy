@@ -38,7 +38,7 @@ class Platform extends AbstractBaseDomain {
          globalUID column:'plat_guid'
            version column:'plat_version'
              impId column:'plat_imp_id', index:'plat_imp_id_idx'
-            gokbId column:'plat_gokbId', type:'text'
+            gokbId column:'plat_gokb_id', type:'text'
               name column:'plat_name'
           normname column:'plat_normalised_name'
         provenance column:'plat_data_provenance'

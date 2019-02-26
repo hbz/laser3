@@ -131,7 +131,12 @@
                 <div class="field">
                     <label>${message(code: 'profile.reminderPeriod')}</label>
                     <g:set var="US_DASHBOARD_REMINDER_PERIOD" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}" />
+                    <div class="ui right labeled input">
                     <input type="number" name="dashboardReminderPeriod" value="${US_DASHBOARD_REMINDER_PERIOD.strValue}"/>
+                        <div class="ui basic label">
+                            ${message(code: 'profile.reminderDaysbeforeData')}
+                        </div>
+                    </div>
                     %{--TODO: strValue überprüfen--}%
                 </div>
 

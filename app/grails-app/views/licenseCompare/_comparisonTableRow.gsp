@@ -73,12 +73,12 @@
                     else value = unknownString
                 %>
                 <td>
-                    ${value} <div class="ui circular massive label la-long-tooltip" data-tooltip="${propValue.paragraph}">§</div>
+                    ${value} <div class="ui circular massive label la-long-tooltip" data-tooltip="${propValue?.paragraph}">§</div>
                 </td>
             </g:if>
             <g:else>
                 <td>
-                    ${unknownString} <div class="ui circular massive label la-long-tooltip" data-tooltip="${propValue.paragraph}">§</div>
+                    ${unknownString} <div class="ui circular massive label la-long-tooltip" data-tooltip="${propValue?.paragraph}">§</div>
                 </td>
             </g:else>
         </g:each>

@@ -95,7 +95,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
      coverageDepth column:'tipp_coverage_depth'
       coverageNote column:'tipp_coverage_note',type: 'text'
              impId column:'tipp_imp_id', index: 'tipp_imp_id_idx'
-            gokbId column: 'tipp_gokbId', type:'text'
+            gokbId column:'tipp_gokb_id', type:'text'
             status column:'tipp_status_rv_fk'
          delayedOA column:'tipp_delayedoa_rv_fk'
           hybridOA column:'tipp_hybridoa_rv_fk'

@@ -36,7 +36,8 @@
                     <div class="center aligned four wide column">
                         <g:if test="${ownobj.showShareButton()}">
                             <g:if test="${docctx.isShared}">
-                                    <g:remoteLink class="ui mini icon button green js-gost js-no-wait-wheel "
+
+                                    <g:remoteLink class="ui mini icon button green js-no-wait-wheel"
                                               controller="ajax" action="toggleShare"
                                               params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}", tmpl:"documents"]'
                                               onSuccess=""
@@ -44,20 +45,27 @@
                                               update="container-documents"
                                               data-position="top right" data-tooltip="${message(code:'property.share.tooltip.on')}"
                                     >
-                                            <i class="share-unslash icon"></i>
+                                        <i class="share-unslash icon"></i>
                                     </g:remoteLink>
 
                             </g:if>
                             <g:else>
-                                    <g:remoteLink class="ui mini icon button js-gost js-no-wait-wheel"
+                                <button class="ui mini icon button js-open-confirm-modal-copycat js-no-wait-wheel">
+                                    <i class="share-slash icon"></i>
+                                </button>
+                                    <g:remoteLink class="js-gost"
                                                   controller="ajax" action="toggleShare"
                                                   params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}", tmpl:"documents"]'
                                                   onSuccess=""
                                                   onComplete=""
                                                   update="container-documents"
                                                   data-position="top right" data-tooltip="${message(code:'property.share.tooltip.off')}"
+
+                                                  data-confirm-term-what="element"
+                                                  data-confirm-term-what-detail="${docctx.owner.title}"
+                                                  data-confirm-term-where="member"
+                                                  data-confirm-term-how="share"
                                     >
-                                        <i class="share-slash icon"></i>
                                     </g:remoteLink>
                             </g:else>
                         </g:if>

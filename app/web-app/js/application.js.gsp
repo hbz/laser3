@@ -392,6 +392,7 @@ r2d2 = {
                 var dataAttr = that.getAttribute("data-confirm-id")? that.getAttribute("data-confirm-id")+'_form':false;
                 var what = that.getAttribute("data-confirm-term-what")? that.getAttribute("data-confirm-term-what"):"";
                 var whatDetail = that.getAttribute("data-confirm-term-what-detail")? that.getAttribute("data-confirm-term-what-detail"):false;
+
                 var where = that.getAttribute("data-confirm-term-where")? that.getAttribute("data-confirm-term-where"):false;
                 var whereDetail = that.getAttribute("data-confirm-term-where-detail")? that.getAttribute("data-confirm-term-where-detail"):false;
                 var how = that.getAttribute("data-confirm-term-how") ? that.getAttribute("data-confirm-term-how"):"delete";
@@ -404,6 +405,9 @@ r2d2 = {
                         break;
                     case "unlink":
                         messageHow = "aufheben";
+                        break;
+                    case "share":
+                        messageHow = "teilen";
                         break;
                     case "inherit":
                         messageHow = "ändern";
@@ -453,6 +457,23 @@ r2d2 = {
                     switch (where) {
                         case "organisation":
                             var messageWhere = "mit der Organisation";
+                            break;
+                        default:
+                            var messageWhere = where;
+                    }
+                }
+                // SHARE BUTTON
+                if (how == "share"){
+                    switch (what) {
+                        case "element":
+                            var messageWhat = "das Element";
+                            break;
+                        default:
+                            var messageWhat = "das Element";
+                    }
+                    switch (where) {
+                        case "member":
+                            var messageWhere = "mit den Teilnehmern";
                             break;
                         default:
                             var messageWhere = where;
@@ -524,6 +545,9 @@ r2d2 = {
                         break;
                     case "unlink":
                         $('#js-confirmation-button').html('Aufheben<i class="chain broken icon"></i>');
+                        break;
+                    case "share":
+                        $('#js-confirmation-button').html('Teilen<i class="share-unslash icon"></i>');
                         break;
                     case "inherit":
                         $('#js-confirmation-button').html('Vererbung ändern<i class="thumbtack icon"></i>');

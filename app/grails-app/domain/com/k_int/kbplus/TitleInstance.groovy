@@ -60,7 +60,7 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
      keyTitle column:'ti_key_title', type:'text'
       version column:'ti_version'
         impId column:'ti_imp_id', index:'ti_imp_id_idx'
-        gokbId column: 'ti_gokbId', type:'text'
+        gokbId column:'ti_gokb_id', type:'text'
        status column:'ti_status_rv_fk'
          type column:'ti_type_rv_fk'
         tipps sort:'startDate', order: 'asc'
