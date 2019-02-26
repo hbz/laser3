@@ -38,31 +38,31 @@ databaseChangeLog = {
 
 	changeSet(author: "kloberd (generated)", id: "1551166000616-7") {
 		addColumn(schemaName: "public", tableName: "title_instance") {
-			column(name: "bk_editionDifferentiator", type: "varchar(255)")
+			column(name: "bk_edition_differentiator", type: "varchar(255)")
 		}
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1551166000616-8") {
 		addColumn(schemaName: "public", tableName: "title_instance") {
-			column(name: "bk_editionNumber", type: "int4")
+			column(name: "bk_edition_number", type: "int4")
 		}
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1551166000616-9") {
 		addColumn(schemaName: "public", tableName: "title_instance") {
-			column(name: "bk_editionStatement", type: "varchar(255)")
+			column(name: "bk_edition_statement", type: "varchar(255)")
 		}
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1551166000616-10") {
 		addColumn(schemaName: "public", tableName: "title_instance") {
-			column(name: "bk_firstAuthor", type: "varchar(255)")
+			column(name: "bk_first_author", type: "varchar(255)")
 		}
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1551166000616-11") {
 		addColumn(schemaName: "public", tableName: "title_instance") {
-			column(name: "bk_firstEditor", type: "varchar(255)")
+			column(name: "bk_first_editor", type: "varchar(255)")
 		}
 	}
 

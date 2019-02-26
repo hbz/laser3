@@ -21,15 +21,15 @@ class BookInstance extends TitleInstance {
     static mapping = {
         includes TitleInstance.mapping
 
-        dateFirstInPrint column:'bk_dateFirstInPrint'
-        dateFirstOnline column:'bk_dateFirstOnline'
-        summaryOfContent column:'bk_summaryOfContent'
+        dateFirstInPrint column:'bk_datefirstinprint'
+        dateFirstOnline column:'bk_datefirstonline'
+        summaryOfContent column:'bk_summaryofcontent'
         volume column:'bk_volume'
-        firstEditor column: 'bk_firstEditor'
-        firstAuthor column: 'bk_firstAuthor'
-        editionNumber column: 'bk_editionNumber'
-        editionStatement column: 'bk_editionStatement'
-        editionDifferentiator column: 'bk_editionDifferentiator'
+        firstEditor column: 'bk_first_editor'
+        firstAuthor column: 'bk_first_author'
+        editionNumber column: 'bk_edition_number'
+        editionStatement column: 'bk_edition_statement'
+        editionDifferentiator column: 'bk_edition_differentiator'
 
 
     }
