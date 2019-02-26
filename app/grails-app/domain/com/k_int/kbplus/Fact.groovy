@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RefdataAnnotation
+
 class Fact {
 
   Date factFrom
@@ -8,7 +10,9 @@ class Fact {
   String factUid
   Long reportingYear
   Long reportingMonth
+    @RefdataAnnotation(cat = '?')
   RefdataValue factType
+    @RefdataAnnotation(cat = '?')
   RefdataValue factMetric
 
   TitleInstance relatedTitle

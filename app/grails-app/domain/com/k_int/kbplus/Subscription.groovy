@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.helper.RDStore
+import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
 import de.laser.domain.AbstractBaseDomain
 import de.laser.interfaces.Permissions
@@ -36,10 +37,24 @@ class Subscription
     @Transient
     def springSecurityService
 
-  RefdataValue status       // RefdataCatagory 'Subscription Status'
-  RefdataValue type         // RefdataCatagory 'Subscription Type'
-  RefdataValue form         // RefdataCatagory 'Subscription Form'
-  RefdataValue resource     // RefdataCatagory 'Subscription Resource'
+    @RefdataAnnotation(cat = 'Subscription Status')
+    RefdataValue status
+
+    @RefdataAnnotation(cat = 'Subscription Type')
+    RefdataValue type
+
+    @RefdataAnnotation(cat = 'Subscription Form')
+    RefdataValue form
+
+    @RefdataAnnotation(cat = 'Subscription Resource')
+    RefdataValue resource
+
+    @RefdataAnnotation(cat = 'YN')
+    RefdataValue isPublic
+
+    // If a subscription is slaved then any changes to instanceOf will automatically be applied to this subscription
+    @RefdataAnnotation(cat = 'YN')
+    RefdataValue isSlaved
 
   String name
   String identifier
@@ -53,16 +68,12 @@ class Subscription
   Subscription instanceOf
   Subscription previousSubscription //deleted as ERMS-800
 
-  // If a subscription is slaved then any changes to instanceOf will automatically be applied to this subscription
-  RefdataValue isSlaved // RefdataCategory 'YN'
-
   String noticePeriod
   Date dateCreated
   Date lastUpdated
 
   License owner
   SortedSet issueEntitlements
-  RefdataValue isPublic     // RefdataCategory 'YN'
 
   static transients = [ 'subscriber', 'providers', 'agencies', 'consortia' ]
 

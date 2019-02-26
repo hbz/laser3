@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.*
+import de.laser.helper.RefdataAnnotation
 import de.laser.traits.AuditableTrait
 
 import javax.persistence.Transient
@@ -52,13 +53,26 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
   String coverageNote
   String impId
   String gokbId
-  RefdataValue status       // RefdataCategory 'TIPP Status'
-  RefdataValue option
-  RefdataValue delayedOA
-  RefdataValue hybridOA
-  RefdataValue statusReason   // RefdataCategory unkown !
-  RefdataValue payment
-  String hostPlatformURL
+
+    @RefdataAnnotation(cat = 'TIPP Status')
+    RefdataValue status
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue option
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue delayedOA
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue hybridOA
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue statusReason
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue payment
+
+    String hostPlatformURL
   Date coreStatusStart
   Date coreStatusEnd
 

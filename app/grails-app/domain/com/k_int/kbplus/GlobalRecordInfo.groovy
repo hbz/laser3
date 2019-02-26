@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RefdataAnnotation
+
 import javax.persistence.Transient
 
 class GlobalRecordInfo {
@@ -13,7 +15,11 @@ class GlobalRecordInfo {
   Date ts
   Set trackers 
   byte[] record
-  RefdataValue kbplusCompliant
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue kbplusCompliant
+
+    @RefdataAnnotation(cat = '?')
     RefdataValue globalRecordInfoStatus // RefdataCategory unkown, 'Package Status' ?
 
   static hasMany = [ trackers : GlobalRecordTracker ]

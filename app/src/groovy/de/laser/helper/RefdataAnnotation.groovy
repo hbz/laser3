@@ -5,10 +5,12 @@ import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
 import java.lang.annotation.Target
 
-@Target([ElementType.METHOD, ElementType.TYPE])
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 
-@interface DebugAnnotation {
+@interface RefdataAnnotation {
 
-    String test() default 'n/a'
+    static final String GENERIC = 'GENERIC'
+
+    String cat() default 'n/a'
 }

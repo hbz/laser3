@@ -4,6 +4,7 @@ import com.k_int.kbplus.GenericOIDService
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
 import de.laser.domain.I10nTranslation
+import de.laser.helper.RefdataAnnotation
 import groovy.util.logging.Log4j
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
@@ -18,7 +19,8 @@ class PropertyDefinitionGroup {
     Org    tenant
     String ownerType // PropertyDefinition.[LIC_PROP, SUB_PROP, ORG_PROP]
 
-    RefdataValue visible // RefdataCategory 'YN' ; default value: will be overwritten by existing bindings
+    @RefdataAnnotation(cat = 'YN')
+    RefdataValue visible // default value: will be overwritten by existing bindings
 
     static hasMany = [
             items: PropertyDefinitionGroupItem,

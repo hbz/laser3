@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.User
 import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RDStore
+import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
 import de.laser.interfaces.TemplateSupport
 
@@ -21,15 +22,27 @@ class CostItem
 
     Boolean isVisibleForSubscriber
 
-    RefdataValue type               // RefdataCategory 'CostItem.Type'
+    @RefdataAnnotation(cat = 'CostItem.Type')
+    RefdataValue type
 
-    //Status & Costing Values...
-    RefdataValue costItemStatus     // RefdataCategory 'CostItemStatus' : cost est,actual,etc
-    RefdataValue costItemCategory   // RefdataCategory 'CostItemCategory'
+    @RefdataAnnotation(cat = 'CostItemStatus')
+    RefdataValue costItemStatus
+
+    @RefdataAnnotation(cat = 'CostItemCategory')
+    RefdataValue costItemCategory
+
+    @RefdataAnnotation(cat = 'ClusterType')
     RefdataValue billingCurrency    // GDP,USD,etc
-    RefdataValue costItemElement    // RefdataCategory 'CostItemElement'
-    RefdataValue costItemElementConfiguration // RefdataCategory 'Cost configuration'
-    RefdataValue taxCode            // RefdataCategory 'TaxType'
+
+    @RefdataAnnotation(cat = 'CostItemElement')
+    RefdataValue costItemElement
+
+    @RefdataAnnotation(cat = 'Cost configuration')
+    RefdataValue costItemElementConfiguration
+
+    @RefdataAnnotation(cat = 'TaxType')
+    RefdataValue taxCode
+
     Boolean includeInSubscription //include in sub details page
 
     Double costInBillingCurrency   //The actual amount - new cost ex tax

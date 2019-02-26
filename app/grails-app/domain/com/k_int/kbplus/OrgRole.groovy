@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RefdataAnnotation
+
 import javax.persistence.Column
 import javax.persistence.Transient
 
@@ -9,6 +11,7 @@ class OrgRole {
     org:Org
   ]
 
+    @RefdataAnnotation(cat = 'Organisational Role')
   RefdataValue roleType
 
   // For polymorphic joins based on "Target Context"

@@ -5,6 +5,7 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RDStore
+import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
 import groovy.sql.Sql
 import org.apache.commons.lang3.StringUtils
@@ -45,20 +46,38 @@ class Org
     Date lastUpdated
     String categoryId
 
-
     int fteStudents
     int fteStaff
 
-    RefdataValue orgType                 // RefdataCategory 'OrgType' OLD -> NEW: orgRoleType
+    @RefdataAnnotation(cat = 'OrgType')
+    RefdataValue orgType // RefdataCategory 'OrgType' OLD -> NEW: orgRoleType
+
+    @RefdataAnnotation(cat = '?')
     RefdataValue sector
-    RefdataValue status                  // RefdataCategory 'OrgStatus'
+
+    @RefdataAnnotation(cat = 'OrgStatus')
+    RefdataValue status
+
+    @RefdataAnnotation(cat = '?')
     RefdataValue membership
-    RefdataValue country                 // RefdataCategory 'Country'
-    RefdataValue federalState            // RefdataCategory 'Federal State'
-    RefdataValue libraryNetwork          // RefdataCategory 'Library Network'
-    RefdataValue funderType              // RefdataCategory 'Funder Type'
-    RefdataValue libraryType             // RefdataCategory 'Library Type'
-    RefdataValue costConfigurationPreset // RefdataCategory 'Cost configuration'
+
+    @RefdataAnnotation(cat = 'Country')
+    RefdataValue country
+
+    @RefdataAnnotation(cat = 'Federal State')
+    RefdataValue federalState
+
+    @RefdataAnnotation(cat = 'Library Network')
+    RefdataValue libraryNetwork
+
+    @RefdataAnnotation(cat = 'Funder Type')
+    RefdataValue funderType
+
+    @RefdataAnnotation(cat = 'Library Type')
+    RefdataValue libraryType
+
+    @RefdataAnnotation(cat = 'Cost configuration')
+    RefdataValue costConfigurationPreset
 
     Set ids = []
 

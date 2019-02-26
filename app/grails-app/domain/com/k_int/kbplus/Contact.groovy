@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RefdataAnnotation
 import groovy.util.logging.Log4j
 import org.apache.commons.logging.LogFactory
 
@@ -12,10 +13,14 @@ class Contact implements Comparable<Contact>{
     private static final String REFDATA_URL =   "Url"
 
     String       content
-    RefdataValue contentType    // RefdataCategory 'ContactContentType'
-    RefdataValue type           // RefdataCategory 'ContactType'
     Person       prs            // person related contact; exclusive with org
     Org          org            // org related contact; exclusive with prs
+
+    @RefdataAnnotation(cat = 'ContactContentType')
+    RefdataValue contentType
+
+    @RefdataAnnotation(cat = 'ContactType')
+    RefdataValue type
     
     static mapping = {
         id          column:'ct_id'

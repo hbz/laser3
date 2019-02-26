@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RefdataAnnotation
 import de.laser.traits.ShareableTrait
 import org.hibernate.event.PostUpdateEvent
 
@@ -19,11 +20,13 @@ class DocContext implements ShareableTrait {
         sharedFrom:     DocContext
   ]
 
-  RefdataValue status   // RefdataCategory 'Document Context Status'
-  RefdataValue doctype
+    @RefdataAnnotation(cat = 'Document Context Status')
+    RefdataValue status
 
-  Boolean globannounce=false
+    @RefdataAnnotation(cat = '?')
+    RefdataValue doctype
 
+    Boolean globannounce = false
     DocContext sharedFrom
     Boolean isShared
 

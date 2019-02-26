@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RefdataAnnotation
 
 import javax.persistence.Transient
 import com.k_int.ClassUtils
@@ -19,10 +20,19 @@ class Platform extends AbstractBaseDomain {
   String normname
   String primaryUrl
   String provenance
+
+  @RefdataAnnotation(cat = '?')
   RefdataValue type
-  RefdataValue status             // RefdataValue 'Platform Status'; TODO: not in Bootstrap
+
+  @RefdataAnnotation(cat = 'Platform Status')
+  RefdataValue status // TODO: not in Bootstrap
+
+  @RefdataAnnotation(cat = '?')
   RefdataValue serviceProvider
+
+  @RefdataAnnotation(cat = '?')
   RefdataValue softwareProvider
+
   Date dateCreated
   Date lastUpdated
 

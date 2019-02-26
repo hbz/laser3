@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RefdataAnnotation
+
 import java.util.List
 
 import groovy.util.logging.Log4j
@@ -20,9 +22,14 @@ class Address {
     String pobZipcode
     String pobCity
 
-    RefdataValue state      // RefdataCategory 'Federal State'
-    RefdataValue country    // RefdataCategory 'Country'
-    RefdataValue type       // RefdataCategory 'AddressType'
+    @RefdataAnnotation(cat = 'Federal State')
+    RefdataValue state
+
+    @RefdataAnnotation(cat = 'Country')
+    RefdataValue country
+
+    @RefdataAnnotation(cat = 'AddressType')
+    RefdataValue type
 
     String name
     String additionFirst
