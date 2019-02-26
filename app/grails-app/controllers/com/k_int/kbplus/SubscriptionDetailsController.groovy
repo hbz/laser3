@@ -6,7 +6,6 @@ import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.controller.AbstractDebugController
-import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
@@ -23,7 +22,6 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
@@ -61,7 +59,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
     def GOKbService
     def navigationGenerationService
     def financeService
-    def providerHelperService
+    def orgTypeService
     def subscriptionsQueryService
 
     private static String INVOICES_FOR_SUB_HQL =
@@ -2073,19 +2071,19 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             result.costItemSums.subscrCosts = costItems.subscr.sums
         }
 
-        result.availableProviderList = providerHelperService.getAllWithTypeProvider().minus(
+        result.availableProviderList = orgTypeService.getOrgsForTypeProvider().minus(
                 OrgRole.executeQuery(
                         "select o from OrgRole oo join oo.org o where oo.sub.id = :sub and oo.roleType.value = 'Provider'",
                         [sub: result.subscriptionInstance.id]
                 ))
-        result.existingProviderIdList = providerHelperService.getCurrentProviders(contextService.getOrg()).collect { it -> it.id }
+        result.existingProviderIdList = orgTypeService.getCurrentProviders(contextService.getOrg()).collect { it -> it.id }
 
-        result.availableAgencyList = providerHelperService.getAllWithTypeAgency().minus(
+        result.availableAgencyList = orgTypeService.getOrgsForTypeAgency().minus(
                 OrgRole.executeQuery(
                         "select o from OrgRole oo join oo.org o where oo.sub.id = :sub and oo.roleType.value = 'Agency'",
                         [sub: result.subscriptionInstance.id]
                 ))
-        result.existingAgencyIdList = providerHelperService.getCurrentAgencies(contextService.getOrg()).collect { it -> it.id }
+        result.existingAgencyIdList = orgTypeService.getCurrentAgencies(contextService.getOrg()).collect { it -> it.id }
 
         result
     }

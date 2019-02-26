@@ -1,6 +1,6 @@
+<%@ page import="de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition" %>
 <!doctype html>
 <r:require module="annotations" />
-<%@ page import="com.k_int.properties.PropertyDefinition" %>
 <laser:serviceInjection />
 
 <html>
@@ -244,20 +244,20 @@
                                             editmode: editable
                                   ]}" />
 
-                        <g:render template="/templates/links/orgLinksModal"
+                        <g:render template="/templates/links/orgLinksSimpleModal"
                                   model="${[linkType: license?.class?.name,
-                                            parent: license.class.name+':'+license.id,
+                                            parent: license.class.name + ':' + license.id,
                                             property: 'orgLinks',
                                             recip_prop: 'lic',
-                                            tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Licensor', 'Organisational Role'),
-                                            tmplText:'Lizenzgeber mit diesem Vertrag verknüpfen',
-                                            tmplID:'CommercialOrgs',
+                                            tmplRole: RDStore.OR_LICENSOR,
+                                            tmplEntity: 'Lizenzgeber',
+                                            tmplText: 'Lizenzgeber mit diesem Vertrag verknüpfen',
                                             tmplButtonText: 'Lizenzgeber verknüpfen',
                                             tmplModalID:'osel_add_modal_lizenzgeber',
-                                            editmode: editable
-
+                                            editmode: editable,
+                                            orgList: availableLicensorList,
+                                            signedIdList: existingLicensorIdList
                                   ]}" />
-
                         </div>
                     </div>
 
