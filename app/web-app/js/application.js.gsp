@@ -222,7 +222,12 @@ r2d2 = {
         $(ctxSel + ' .xEditableManyToOne').editable({
             tpl: '<select class="ui dropdown"></select>'
         }).on('shown', function() {
-            $(".table").trigger('reflow')
+            $(".table").trigger('reflow');
+            $('.ui.dropdown')
+                .dropdown({
+                    clearable: true
+                })
+            ;
         }).on('hidden', function() {
             $(".table").trigger('reflow')
         });
