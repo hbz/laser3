@@ -14,13 +14,13 @@ databaseChangeLog = {
 
 	changeSet(author: "kloberd (generated)", id: "1551166000616-3") {
 		addColumn(schemaName: "public", tableName: "org") {
-			column(name: "org_gokbId", type: "text")
+			column(name: "org_gokb_id", type: "text")
 		}
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1551166000616-4") {
 		addColumn(schemaName: "public", tableName: "package") {
-			column(name: "pkg_gokbId", type: "text")
+			column(name: "pkg_gokb_id", type: "text")
 		}
 	}
 
@@ -32,7 +32,7 @@ databaseChangeLog = {
 
 	changeSet(author: "kloberd (generated)", id: "1551166000616-6") {
 		addColumn(schemaName: "public", tableName: "platform") {
-			column(name: "plat_gokbId", type: "text")
+			column(name: "plat_gokb_id", type: "text")
 		}
 	}
 
@@ -68,13 +68,13 @@ databaseChangeLog = {
 
 	changeSet(author: "kloberd (generated)", id: "1551166000616-12") {
 		addColumn(schemaName: "public", tableName: "title_instance") {
-			column(name: "ti_gokbId", type: "text")
+			column(name: "ti_gokb_id", type: "text")
 		}
 	}
 
 	changeSet(author: "kloberd (generated)", id: "1551166000616-13") {
 		addColumn(schemaName: "public", tableName: "title_instance_package_platform") {
-			column(name: "tipp_gokbId", type: "text")
+			column(name: "tipp_gokb_id", type: "text")
 		}
 	}
 

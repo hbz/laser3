@@ -107,7 +107,7 @@ class Org
          shortcode          column:'org_shortcode', index:'org_shortcode_idx'
              scope          column:'org_scope'
         categoryId          column:'org_cat'
-        gokbId              column: 'org_gokbId', type:'text'
+        gokbId              column:'org_gokb_id', type:'text'
            orgType          column:'org_type_rv_fk'
             sector          column:'org_sector_rv_fk'
             status          column:'org_status_rv_fk'
