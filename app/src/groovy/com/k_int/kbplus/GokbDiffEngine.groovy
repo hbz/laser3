@@ -131,8 +131,10 @@ public class GokbDiffEngine {
             }
 
             def plat_instance = Platform.lookupOrCreatePlatform([name: newTipp.platform, gokbId: newTipp.platformUuid, primaryUrl: primaryUrl]);
-            plat_instance.primaryUrl = (plat_instance.primaryUrl == primaryUrl) ? plat_instance.primaryUrl : primaryUrl
-            plat_instance.save(flush: true)
+            if(plat_instance) {
+                plat_instance.primaryUrl = (plat_instance?.primaryUrl == primaryUrl) ? plat_instance?.primaryUrl : primaryUrl
+                plat_instance.save(flush: true)
+            }
 
             def title_of_tipp_to_update = TitleInstance.findByGokbId(newTipp.title.gokbId)
             if (!title_of_tipp_to_update) {
