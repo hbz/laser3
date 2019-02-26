@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Package" %>
+<%@ page import="com.k_int.kbplus.ApiSource; com.k_int.kbplus.Package" %>
 <!doctype html>
 <html>
     <head>
@@ -217,8 +217,19 @@
                     <semui:listIcon type="${t.title.type.getI10n('value')}"/>
                    <strong><g:link controller="titleDetails" action="show" id="${t.title.id}">${t.title.title}</g:link></strong>
                     <br>
-                   <g:link controller="tipp" action="show" id="${t.id}">${message(code:'tipp.label', default:'TIPP')}</g:link><br/>
-                   <span title="${t.availabilityStatusExplanation}">${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.getI10n('value')}</span><br/>
+                   <g:link controller="tipp" action="show" id="${t.id}">${message(code:'tipp.label', default:'TIPP')}</g:link>
+                    &nbsp;
+                    <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
+                            var="gokbAPI">
+                        <g:if test="${t?.gokbId}">
+                            <a target="_blank" href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/resource/show/' + t?.gokbId : '#'}"><i
+                                    title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
+                        </g:if>
+                    </g:each>
+
+                    <br/>
+
+                    <span title="${t.availabilityStatusExplanation}">${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.getI10n('value')}</span><br/>
                     <span>${message(code:'title.type.label')}: ${t.title.type.getI10n('value')}</span><br/>
                     <span>${message(code:'default.status.label', default:'Status')}: <semui:xEditableRefData owner="${t}" field="status" config="TIPP Status"/></span>
                 </td>
