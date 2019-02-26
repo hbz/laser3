@@ -183,13 +183,16 @@
                         <tr>
                             <td>${(params.int('offset') ?: 0) + jj + 1}</td>
                             <td>
+                                <!--${record} -->
+                                <!--UUID: ${record.uuid} -->
+                                <!--Package: ${com.k_int.kbplus.Package.findByGokbId(record.uuid)} -->
                                 <g:if test="${com.k_int.kbplus.Package.findByGokbId(record.uuid)}">
                                     <g:link controller="packageDetails" action="show"
                                             id="${com.k_int.kbplus.Package.findByGokbId(record.uuid).id}">${record.name}</g:link>
                                 </g:if>
                                 <g:else>
                                     ${record.name} <a target="_blank"
-                                                      href="${record.url ? record.url + '/gokb/resource/show/' + record.id : '#'}"><i
+                                                      href="${record.url ? record.url + '/gokb/public/packageContent/' + record.id : '#'}"><i
                                             title="GOKB Link" class="external alternate icon"></i></a>
                                 </g:else>
                             </td>

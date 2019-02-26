@@ -131,7 +131,7 @@
                                         </g:if>
                                         <g:else>
                                             ${hit.name} <a target="_blank"
-                                                           href="${hit.url ? hit.url + '/gokb/resource/show/' + hit.id : '#'}"><i
+                                                           href="${hit.url ? hit.url + '/gokb/public/packageContent/' + hit.id : '#'}"><i
                                                     title="GOKB Link" class="external alternate icon"></i></a>
                                         </g:else>
                                         <br><b>(${hit.titleCount ?: '0'} ${message(code: 'title.plural', default: 'Titles')})</b>
