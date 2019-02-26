@@ -13,10 +13,15 @@
     <g:set var="dashboard_last_update" value="${DashboardDueDate.executeQuery("select max(lastUpdated) from DashboardDueDate ")[0]}" />
     <g:if test="${dashboard_last_update != null}" >
         <div class="pull-right">
-            <g:if test="${ ! SqlDateUtils.isYesterdayOrToday(dashboard_last_update)}"><i class="exclamation triangle icon" ></i></g:if>
+            <g:if test="${ ! SqlDateUtils.isYesterdayOrToday(dashboard_last_update)}"><i class="exclamation triangle icon" id="noData" data-content="${message(code:'myinst.dash.due_dates.tooltip')}"></i></g:if>
             ${message(code:'myinst.dash.due_dates.lastUpdate')}&nbsp<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${dashboard_last_update}"/>&nbsp
         </div>
     </g:if>
+<r:script>
+    $('#noData')
+            .popup()
+    ;
+</r:script>
 
     <br />
     <br />
