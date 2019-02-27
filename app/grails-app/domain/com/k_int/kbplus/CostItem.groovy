@@ -31,7 +31,7 @@ class CostItem
     @RefdataAnnotation(cat = 'CostItemCategory')
     RefdataValue costItemCategory
 
-    @RefdataAnnotation(cat = 'ClusterType')
+    @RefdataAnnotation(cat = 'Currency')
     RefdataValue billingCurrency    // GDP,USD,etc
 
     @RefdataAnnotation(cat = 'CostItemElement')

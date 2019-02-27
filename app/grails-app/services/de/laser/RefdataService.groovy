@@ -3,9 +3,7 @@ package de.laser
 import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.SystemAdmin
-import com.k_int.kbplus.abstract_domain.AbstractProperty
 import de.laser.helper.RefdataAnnotation
-import org.codehaus.groovy.grails.web.util.WebUtils
 
 class RefdataService {
 
@@ -136,7 +134,7 @@ class RefdataService {
                 )
 
                 if (tmp) {
-                    checkResult << ["${cls.name}": tmp]
+                    checkResult << ["${cls.simpleName}": tmp]
                 }
                 cls = cls.getSuperclass()
             }

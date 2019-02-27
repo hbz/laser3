@@ -27,6 +27,7 @@
         <table class="ui celled la-table table">
             <thead>
                 <tr>
+                    <th>Status</th>
                     <th class="header"><g:message code="ticket.created.label" default="Created" /></th>
                     <th class="header"><g:message code="ticket.title.label" default="Title" /></th>
                     <th class="header"><g:message code="ticket.author.label" default="Author" /></th>
@@ -36,12 +37,7 @@
             <tbody>
                 <g:each in="${tickets}" var="ticket">
                     <tr class="ticket-row-${ticket.id}">
-
                         <td>
-                            <g:formatDate date="${ticket.dateCreated}" format="${message(code: 'default.date.format.notime')}"/>
-
-                            &nbsp;
-
                             <g:if test="${ticket.status.value == 'New'}">
                                 <div class="ui label">${ticket.status.getI10n('value')}</div>
                             </g:if>
@@ -57,8 +53,11 @@
                             <g:if test="${ticket.status.value == 'Deferred'}">
                                 <div class="ui grey label">${ticket.status.getI10n('value')}</div>
                             </g:if>
-
                         </td>
+                        <td>
+                            <g:formatDate date="${ticket.dateCreated}" format="${message(code: 'default.date.format.notime')}"/>
+                        </td>
+
                         <td>
                             ${fieldValue(bean: ticket, field: "title")}
                         </td>

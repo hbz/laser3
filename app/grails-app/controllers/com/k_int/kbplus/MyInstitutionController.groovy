@@ -3232,7 +3232,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 Map map = [
                         toOrg: result.institution,
                         fromOrg: Org.findById( Long.parseLong(soId)),
-                        type: RefdataValue.findByValue('Consortium')
+                        type: RefdataValue.getByValueAndCategory('Consortium','Combo Type')
                 ]
                 if (! Combo.findWhere(map)) {
                     def cmb = new Combo(map)
