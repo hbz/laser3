@@ -14458,6 +14458,14 @@ i.icon.copy-send {
   font-family: 'icomoon';
 }
 
+i.icon.la-notebook {
+  font-family: 'icomoon';
+}
+
+i.icon.la-books {
+  font-family: 'icomoon';
+}
+
 i.icon.hand.pointer.outline.slash:before {
   content: "\e900";
 }
@@ -14492,6 +14500,14 @@ i.icon.share-slash:before {
 
 i.icon.copy-send:before {
   content: "\e908";
+}
+
+i.icon.la-notebook:before {
+  content: "\e909";
+}
+
+i.icon.la-books:before {
+  content: "\e910";
 }
 
 /*******************************
