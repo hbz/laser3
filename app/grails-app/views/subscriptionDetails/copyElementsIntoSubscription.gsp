@@ -51,7 +51,7 @@ ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}
             </div>
         </div>
     </div>
-    <div class="${workFlowPart == '3' ? 'active' : ''} step">
+    <div class="${workFlowPart == '3' ? 'active' : 'disabled'} step">
         <i class="university icon"></i>
         <div class="content">
             <div class="title">
@@ -76,7 +76,7 @@ ${message(code: 'subscription.details.copyElementsIntoSubscription.label')}
 </table>
 %{--------------------------------------------------------------------------------------------------------------------}%
             <g:if test="${workFlowPart == '1'}">
-                <g:render template="copyElements" model="${[validSubChilds: validSubChilds]}"/>
+                <g:render template="copyElements" model="${[source_validSubChilds: source_validSubChilds, target_validSubChilds: target_validSubChilds]}"/>
             </g:if>
 %{--------------------------------------------------------------------------------------------------------------------}%
             <g:if test="${workFlowPart == '2'}">

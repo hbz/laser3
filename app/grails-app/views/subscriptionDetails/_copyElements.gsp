@@ -1,6 +1,4 @@
 <%@ page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription" %>
-<%@ page import="com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 <br>
 <semui:form>
     <g:render template="selectSourceAndTargetSubscription" model="[
@@ -16,10 +14,10 @@
             <tr>
                 <th>${message(code: 'default.select.label')}</th>
                 <th>${message(code: 'subscription.property')}</th>
-                <td>Quelle:
+                <td><b>${message(code: 'subscription.details.copyElementsIntoSubscription.sourceSubscription.name')}:</b>
                 <g:if test="${sourceSubscription}"><g:link controller="subscriptionDetails" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
                 </td>
-                <td>Ziel:
+                <td><b>${message(code: 'subscription.details.copyElementsIntoSubscription.targetSubscription.name')}:</b>
                 <g:if test="${targetSubscription}"><g:link controller="subscriptionDetails" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
                 </td>
             </tr>
@@ -49,11 +47,11 @@
                         </g:link>
                         <br><br>
                     </g:if>
-                    <g:each in="${visibleOrgRelations?.sort { it.roleType?.getI10n("value") }}" var="role">
-                        <g:if test="${role.org}">
-                            <b>${role?.roleType?.getI10n("value")}:</b>
-                            <g:link controller="Organisations" action="show" target="_blank" id="${role.org.id}">
-                                ${role?.org?.name}
+                    <g:each in="${source_visibleOrgRelations}" var="source_role">
+                        <g:if test="${source_role.org}">
+                            <b>${source_role?.roleType?.getI10n("value")}:</b>
+                            <g:link controller="Organisations" action="show" target="_blank" id="${source_role.org.id}">
+                                ${source_role?.org?.name}
                             </g:link><br>
                         </g:if>
                     </g:each>
@@ -73,11 +71,11 @@
                         </g:link>
                         <br><br>
                     </g:if>
-                    <g:each in="${target_visibleOrgRelations?.sort { it.roleType?.getI10n("value") }}" var="role">
-                        <g:if test="${role.org}">
-                            <b>${role?.roleType?.getI10n("value")}:</b>
-                            <g:link controller="Organisations" action="show" target="_blank" id="${role.org.id}">
-                                ${role?.org?.name}
+                    <g:each in="${target_visibleOrgRelations}" var="target_role">
+                        <g:if test="${target_role.org}">
+                            <b>${target_role?.roleType?.getI10n("value")}:</b>
+                            <g:link controller="Organisations" action="show" target="_blank" id="${target_role.org.id}">
+                                ${target_role?.org?.name}
                             </g:link><br>
                         </g:if>
                     </g:each>
@@ -86,7 +84,7 @@
 
             <tr>
                 <th><g:checkBox name="subscription.takeEntitlements" disabled=""/></th>
-                <td>${message(code: 'subscription.takeEntitlements')}</td>
+                <td>${message(code: 'subscription.takeEntitlements')} <br>COMING SOON</td>
                 <% def sourceIECount = sourceSubscription?.issueEntitlements?.findAll { it.status != RDStore.IE_DELETED }?.size() %>
                 <td><g:if test="${sourceIECount}"><b>${message(code: 'issueEntitlement.countSubscription')} </b>
                     ${sourceIECount}</g:if>
@@ -99,7 +97,6 @@
             </tr>
             </tbody>
         </table>
-        <input type="submit" class="ui button js-click-control"
-               value="Ausgewählte Eigenschaften kopieren/überschreiben" />
+        <input type="submit" class="ui button js-click-control" value="Ausgewählte Elemente kopieren/überschreiben" />
     </g:form>
 </semui:form>

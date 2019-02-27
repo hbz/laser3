@@ -1,6 +1,4 @@
 <%@ page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription" %>
-<%@ page import="com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 <br>
 <semui:form>
     <g:render template="selectSourceAndTargetSubscription" model="[
@@ -14,11 +12,10 @@
         <table class="ui celled table">
         <tbody>
         <tr>
-            %{--<th>${message(code: 'default.select.label', default: 'Select')}</th>--}%
-            <td>Quelle:
+            <td><b>${message(code: 'subscription.details.copyElementsIntoSubscription.sourceSubscription.name')}:</b>
             <g:if test="${sourceSubscription}"><g:link controller="subscriptionDetails" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
             </td>
-            <td>Ziel:
+            <td><b>${message(code: 'subscription.details.copyElementsIntoSubscription.targetSubscription.name')}:</b>
             <g:if test="${targetSubscription}"><g:link controller="subscriptionDetails" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
             </td>
         </tr>

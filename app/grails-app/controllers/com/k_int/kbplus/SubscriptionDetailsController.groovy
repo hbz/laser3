@@ -2452,7 +2452,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 }
             }
             result.visibleOrgRelations.sort { it.org.sortname }
-
+            result.visibleOrgRelations =  getVisibleOrgRelations(result.subscriptionInstance)
 
             result.modalPrsLinkRole = RefdataValue.findByValue('Specific subscription editor')
             result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
@@ -2527,34 +2527,17 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.allSubscriptions_writeRights = getMySubscriptions_writeRights()
 
         switch (params.workFlowPart) {
-            case '2': workFlowPart2();
-                // tasks
-                def contextOrg = contextService.getOrg()
-                result.sourceTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.sourceSubscription)
-                result.targetTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.targetSubscription)
-                result.contextOrg = contextOrg
+            case '2':
+                result << workFlowPart2();
                 break;
-            case '3': workFlowPart3();
+            case '3':
+                result << workFlowPart3();
                 break;
-            case '4': workFlowPart4();
+            case '4':
+                result << workFlowPart4();
                 break;
-            default:  workFlowPart1();
-                // restrict visible for templates/links/orgLinksAsList
-                result.visibleOrgRelations = []
-                result.subscriptionInstance.orgRelations?.each { or ->
-                    if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
-                        result.visibleOrgRelations << or
-                    }
-                }
-                result.visibleOrgRelations.sort { it.org.sortname }
-
-                result.target_visibleOrgRelations = []
-                result.targetSubscription?.orgRelations?.each { or ->
-                    if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
-                        result.target_visibleOrgRelations << or
-                    }
-                }
-                result.target_visibleOrgRelations.sort { it.org.sortname }
+            default:
+                result << workFlowPart1();
                 break;
         }
 
@@ -2583,6 +2566,16 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.workFlowPartNext = params?.workFlowPartNext ?: '2'
         result
     }
+    private List getVisibleOrgRelations(Subscription subscription) {
+        // restrict visible for templates/links/orgLinksAsList
+        List visibleOrgRelations = []
+        subscription?.orgRelations?.each { or ->
+            if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                visibleOrgRelations << or
+            }
+        }
+        visibleOrgRelations.sort { it.org?.name.toLowerCase() }
+    }
 
     private workFlowPart1() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -2598,10 +2591,15 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 if (!newSub) flash.error += message(code: 'subscription.details.copyElementsIntoSubscription.noSubscriptionTarget')
             }
         }
+        // restrict visible for templates/links/orgLinksAsList
+        result.source_visibleOrgRelations = getVisibleOrgRelations(baseSub)
+        result.target_visibleOrgRelations = getVisibleOrgRelations(newSub)
+
         params?.workFlowPart = '1'
         params?.workFlowPartNext = '2'
         result.newSub = newSub
         result.subscription = baseSub
+        result
     }
 
     private workFlowPart2() {
@@ -2617,6 +2615,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         }
         result.sourceSubscription = baseSub
         result.targetSubscription = newSub
+        result.sourceTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.sourceSubscription)
+        result.targetTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.targetSubscription)
+
         params.workFlowPart = '2'
         params.workFlowPartNext = '3'
 
@@ -2628,20 +2629,16 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 //            def sb = b.getSubscriber()
 //            (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
 //        }
+        result
     }
 
     private workFlowPart3() {
-
         def newSubConsortia = Subscription.get(params.newSubscription)
         def subMembers = []
 
-        params.list('selectedSubs').each { it ->
-            subMembers << Long.valueOf(it)
-        }
+        params.list('selectedSubs').each { it -> subMembers << Long.valueOf(it) }
 
-
-        subMembers.each { sub ->
-            def subMember = Subscription.findById(sub)
+        subMembers.each { sub -> def subMember = Subscription.findById(sub)
 
             //ChildSub Exist
             ArrayList<Links> prevLinks = Links.findAllByDestinationAndLinkTypeAndObjectType(subMember.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
@@ -2745,7 +2742,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 }
             }
         }
-//        redirect controller: 'subscriptionDetails', action: 'show', params: [id: newSubConsortia?.id]
+//        redirect controller: 'subscriptionDetails', action: 'show', params: [id: newSubConsortia?.id]#
+        result
     }
 
     private workFlowPart4() {
@@ -2766,7 +2764,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.targetSubscription = newSub
         params.workFlowPart = '4'
         params.workFlowPartNext = '4'
-        return result
+        result
     }
 
     private boolean takeEntitlements(Subscription sourceSub, Subscription targetSub) {
