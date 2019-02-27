@@ -372,7 +372,7 @@ class GlobalSourceSyncService {
       log.debug("new tipp: ${tipp}");
       log.debug("identifiers: ${tipp.title.identifiers}");
 
-      def title_instance = TitleInstance.findByGokbId(tipp.title.gokbId)
+      def title_instance = TitleInstance.findByGokbId(tipp.title?.gokbId)
 
       if(!title_instance) {
         title_instance = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name, tipp.title.titleType, tipp.title.gokbId)
@@ -442,8 +442,8 @@ class GlobalSourceSyncService {
         def cov = tipp.coverage[0]
         def change_doc = [
                 pkg          : [id: ctx.id],
-                platform     : [id: plat_instance.id],
-                title        : [id: title_instance.id],
+                platform     : [id: plat_instance?.id],
+                title        : [id: title_instance?.id],
                 impId        : tipp.tippUuid ?: tipp.tippId,
                 gokbId       : tipp.tippUuid ?: null,
                 status       : [id: tipp_status.id],
