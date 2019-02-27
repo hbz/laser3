@@ -104,7 +104,7 @@
                         <div class="content">
                             <dl>
                                 <semui:dtAuditCheck message="subscription.details.status" auditable="[subscriptionInstance, 'status']"/>
-                                <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status' /></dd>
+                                <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status' constraint="removeValue_deleted" /></dd>
                             </dl>
                             <dl>
                                 <semui:dtAuditCheck message="subscription.details.type" auditable="[subscriptionInstance, 'type']"/>
