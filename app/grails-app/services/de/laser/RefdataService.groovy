@@ -1,9 +1,9 @@
 package de.laser
 
+import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.SystemAdmin
-import com.k_int.kbplus.abstract_domain.AbstractProperty
-import org.codehaus.groovy.grails.web.util.WebUtils
+import de.laser.helper.RefdataAnnotation
 
 class RefdataService {
 
@@ -94,6 +94,55 @@ class RefdataService {
             }
         }
         count
+    }
+
+    Map integrityCheck() {
+        Map checkResult = [:]
+
+        grailsApplication.getArtefacts("Domain").toList().each { dc ->
+            def cls = dc.clazz
+
+            // find all rdv_fk from superclasses
+            while (cls != Object.class) {
+                List tmp = []
+                tmp.addAll( cls.getDeclaredFields()
+                        .findAll { it -> !it.synthetic }
+                        .findAll { it -> it.type.name == 'com.k_int.kbplus.RefdataValue' }
+                        .collect { it ->
+
+                            RefdataAnnotation anno = it.getAnnotation(RefdataAnnotation)
+                            if (anno && ! [RefdataAnnotation.GENERIC, RefdataAnnotation.UNKOWN].contains(anno.cat()) ) {
+                                List fieldCats = RefdataValue.executeQuery(
+                                        "SELECT DISTINCT dummy.${it.name}, rdc FROM ${cls.simpleName} dummy JOIN dummy.${it.name}.owner rdc",
+                                )
+                                Map fieldCheck = [:]
+
+                                fieldCats.each { it2 ->
+                                    if (it2[1].id == RefdataCategory.findByDesc(anno.cat())?.id) {
+                                        fieldCheck << ["${it2[0]}": true]
+                                    }
+                                    else {
+                                        fieldCheck << ["${it2[0]}": it2[1]]
+                                    }
+                                }
+                                return [field: it.name, cat: anno.cat(), rdc: RefdataCategory.findByDesc(anno.cat()), check: fieldCheck]
+                            }
+                            else {
+                                return [field: it.name, cat: anno?.cat(), rdc: null, check: [:]]
+                            }
+                        }
+                )
+
+                if (tmp) {
+                    checkResult << ["${cls.simpleName}": tmp]
+                }
+                cls = cls.getSuperclass()
+            }
+        }
+
+        log.debug(checkResult)
+
+        checkResult.sort()
     }
 }
 

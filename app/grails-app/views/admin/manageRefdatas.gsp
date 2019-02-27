@@ -6,6 +6,11 @@
 		<title>${message(code: 'menu.admin.manageRefdatas')}</title>
 	</head>
 
+        <semui:debugInfo>
+            <g:render template="/templates/refdata/integrityCheck" model="[result: integrityCheckResult]" />
+        </semui:debugInfo>
+
+
 		<semui:breadcrumbs>
 			<semui:crumb message="menu.admin.dash" controller="admin" action="index" />
 			<semui:crumb message="menu.admin.manageI10n" class="active"/>

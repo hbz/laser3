@@ -13,7 +13,7 @@ class Task {
     String          title
     String          description
 
-    @RefdataAnnotation(cat = 'YN')
+    @RefdataAnnotation(cat = 'Task Status')
     RefdataValue    status
 
     User            creator
