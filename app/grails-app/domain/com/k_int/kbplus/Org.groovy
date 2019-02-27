@@ -81,6 +81,9 @@ class Org
 
     Set ids = []
 
+    @Transient
+    def documents
+
     static mappedBy = [
         ids:              'org',
         outgoingCombos:   'fromOrg',

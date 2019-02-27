@@ -1881,6 +1881,11 @@ class BootStrap {
         RefdataValue.loc('Person Responsibility',    [en: 'Specific cluster editor', de: 'Gruppenkontakt'], BOOTSTRAP)
         RefdataValue.loc('Person Responsibility',    [en: 'Specific title editor', de: 'Titelbearbeiter'], BOOTSTRAP)
 
+        RefdataValue.loc('Share Configuration', [en: 'only for creator',de:'nur für Autor'], BOOTSTRAP)
+        RefdataValue.loc('Share Configuration', [en: 'only for author organisation',de:'nur für Organisation des Autors'], BOOTSTRAP)
+        RefdataValue.loc('Share Configuration', [en: 'only for author and target organisation',de:'nur für Organisation des Autors und der Zielorganisation'], BOOTSTRAP)
+        RefdataValue.loc('Share Configuration', [en: 'everyone',de:'alle'], BOOTSTRAP)
+
         RefdataValue.loc('Subscription Form',      [key: 'test', en: 'Test', de: 'Test'], BOOTSTRAP)
         RefdataValue.loc('Subscription Form',      [key: 'offer', en: 'Offer', de: 'Angebot'], BOOTSTRAP)
         RefdataValue.loc('Subscription Form',      [key: 'license', en: 'License', de: 'Lizenz'], BOOTSTRAP)
