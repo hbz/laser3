@@ -10,6 +10,7 @@ import java.lang.annotation.Target
 
 @interface RefdataAnnotation {
 
+    static final String UNKOWN = '?'
     static final String GENERIC = 'GENERIC'
 
     String cat() default 'n/a'

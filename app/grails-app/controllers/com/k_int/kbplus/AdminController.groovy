@@ -7,11 +7,17 @@ import de.laser.GOKbService
 import de.laser.SystemEvent
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RefdataAnnotation
 import grails.plugin.springsecurity.SpringSecurityUtils;
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import au.com.bytecode.opencsv.CSVReader
 import com.k_int.properties.PropertyDefinition
+import grails.web.Action
+
+import java.lang.reflect.Field
+import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController extends AbstractDebugController {
@@ -1049,11 +1055,14 @@ class AdminController extends AbstractDebugController {
 
         def (usedRdvList, attrMap) = refdataService.getUsageDetails()
 
+        def integrityCheckResult = refdataService.integrityCheck()
+
         render view: 'manageRefdatas', model: [
                 editable    : true,
                 rdCategories: RefdataCategory.where{}.sort('desc'),
                 attrMap     : attrMap,
-                usedRdvList : usedRdvList
+                usedRdvList : usedRdvList,
+                integrityCheckResult : integrityCheckResult
         ]
   }
 
