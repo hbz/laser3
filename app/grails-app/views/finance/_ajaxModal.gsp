@@ -29,16 +29,16 @@
 
 <semui:modal id="costItem_ajaxModal" text="${modalText}" msgSave="${submitButtonLabel}">
     <g:if test="${costItem?.globalUID}">
-        <g:if test="${costItem?.isVisibleForSubscriber}">
+        <g:if test="${costItem?.isVisibleForSubscriber && tab == "cons"}">
             <div class="ui orange ribbon label">
                 <strong>${message(code:'financials.isVisibleForSubscriber')}</strong>
             </div>
         </g:if>
-        <g:else><%--
+        <g:elseif test="${costItem?.isVisibleForSubscriber && tab == "subscr"}">
             <div class="ui blue ribbon label">
-                <strong>${message(code:'financials.newCosts.UID')}: </strong>${costItem?.globalUID}
-            </div>--%>
-        </g:else>
+                <strong>${message(code:'financials.transferConsortialCosts')}: </strong>
+            </div>
+        </g:elseif>
     </g:if>
     <g:form class="ui small form" id="editCost" url="${formUrl}">
 
@@ -102,7 +102,7 @@
                     </div><!-- .field -->
 
                     <div class="field">
-                        <label>Reference/Codes</label>
+                        <label>${message(code:'financials.referenceCodes')}</label>
                         <input type="text" name="newReference" id="newCostItemReference" placeholder="" value="${costItem?.reference}"/>
                     </div><!-- .field -->
                 </div>
@@ -231,11 +231,16 @@
                     </div><!-- .field -->
                     <div class="field">
                         <label>Steuersatz (in %)</label>
+                        <%
+                            int taxRate = 0
+                            if(costItem?.taxRate && tab == "cons")
+                                taxRate = costItem.taxRate
+                        %>
                         <g:select class="ui dropdown calc" name="newTaxRate" title="TaxRate"
                               from="${CostItem.TAX_RATES}"
                               optionKey="${{it}}"
                               optionValue="${{it}}"
-                              value="${costItem?.taxRate}" />
+                              value="${taxRate}" />
 
                     </div><!-- .field -->
                 </div>
@@ -303,17 +308,23 @@
 
                 <div class="field">
 
-                    <g:if test="${sub}">
+                    <g:if test="${tab == "cons" && (sub || costItem.sub)}">
                         <%
-                            def validSubChilds = com.k_int.kbplus.Subscription.findAllByInstanceOfAndStatusNotEqual(
-                                    sub,
-                                    com.k_int.kbplus.RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')
-                            )
+                            def validSubChilds
+                            Subscription contextSub
+                            if(costItem.sub) contextSub = costItem.sub
+                            else if(sub) contextSub = sub
+                            //consortial subscription
+                            if(!contextSub.instanceOf)
+                                validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(contextSub, RDStore.SUBSCRIPTION_DELETED)
+                            //consortial member subscription
+                            else if(contextSub.instanceOf)
+                                validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(contextSub.instanceOf, RDStore.SUBSCRIPTION_DELETED)
                         %>
 
                         <g:if test="${validSubChilds}">
                             <label>Teilnehmer</label>
-                            <g:if test="${sub && sub.instanceOf()}">
+                            <g:if test="${contextSub && contextSub.instanceOf()}">
                                 <input class="la-full-width" readonly="readonly" value="${modalText}" />
                             </g:if>
                             <g:else>
@@ -322,7 +333,7 @@
                                           optionValue="${{it?.name ? it.getAllSubscribers().join(', ') : it.label}}"
                                           optionKey="${{"com.k_int.kbplus.Subscription:" + it?.id}}"
                                           noSelection="['':'']"
-                                          value="${'com.k_int.kbplus.Subscription:' + costItem?.sub?.id}" />
+                                          value="${'com.k_int.kbplus.Subscription:' + contextSub.id}" />
                             </g:else>
                             <script>
                                 $(function() {
