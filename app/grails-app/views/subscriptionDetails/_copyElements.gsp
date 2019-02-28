@@ -30,7 +30,7 @@
                     ${targetSubscription?.endDate ? (' - ' + formatDate(date: targetSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}</td>
             </tr>
             <tr>
-                <th><g:checkBox name="subscription.takeLinks" disabled=""/></th>
+                <th><g:checkBox name="subscription.takeLinks" /></th>
                 <td>${message(code: 'subscription.takeLinks')}</td>
                 <td>
                     <g:each in="${sourceSubscription?.packages?.sort { it.pkg.name }}" var="sp">

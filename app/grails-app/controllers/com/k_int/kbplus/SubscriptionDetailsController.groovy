@@ -2531,7 +2531,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 result << workFlowPart2();
                 break;
             case '3':
-                result << workFlowPart3();
+//                result << workFlowPart3();
                 break;
             case '4':
                 result << workFlowPart4();
@@ -2591,6 +2591,17 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 if (!newSub) flash.error += message(code: 'subscription.details.copyElementsIntoSubscription.noSubscriptionTarget')
             }
         }
+
+        if (params?.subscription?.takeLinks) {
+            if (baseSub && newSub) {
+                takeLinks(baseSub, newSub)
+            } else {
+                if (!baseSub) flash.error += message(code: 'subscription.details.copyElementsIntoSubscription.noSubscriptionSource')
+                if (!newSub) flash.error += message(code: 'subscription.details.copyElementsIntoSubscription.noSubscriptionTarget')
+            }
+        }
+
+
         // restrict visible for templates/links/orgLinksAsList
         result.source_visibleOrgRelations = getVisibleOrgRelations(baseSub)
         result.target_visibleOrgRelations = getVisibleOrgRelations(newSub)
@@ -2860,18 +2871,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
     }
 
     private boolean takeLinks(Subscription sourceSub, Subscription targetSub) {
-        //Package
-        sourceSub.packages?.each { pkg ->
-            SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
-            InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
-            newSubscriptionPackage.subscription = targetSub
-//                                    newSubscriptionPackage.save(flush: true)
-        }
-        // fixed hibernate error: java.util.ConcurrentModificationException
-        // change owner before first save
-        //License
-        targetSub.owner = sourceSub.owner ?: null
-        targetSub.save(flush: true)
+        NOT IMPLEMENTED YET
     }
 
     private boolean takeProperties(List<AbstractProperty> properties, Subscription targetSub){
