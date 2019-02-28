@@ -116,23 +116,22 @@
                 <tr>
                     <th ></th>
                     <th >${message(code:'sidewide.number')}</th>
-                    <g:sortableColumn class="three wide" params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
-                    <th class="one wide">${message(code:'subscription.details.print-electronic')}</th>
-                    <th class="five wide">${message(code:'subscription.details.coverage_dates')}</th>
-                    <th class="five wide">${message(code:'subscription.details.access_dates', default:'Access')}</th>
+                    <g:sortableColumn class="seven wide" params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
+                    <th >${message(code:'subscription.details.print-electronic')}</th>
+                    <th colspan="2" class="two wide">${message(code:'subscription.details.coverage_dates')}</th>
+                    <th colspan="2" class="two wide">${message(code:'subscription.details.access_dates', default:'Access')}</th>
                     <th class="one wide"></th>
                 </tr>
                 <tr>
-                    <th rowspan="2" colspan="4"></th>
+                    <th colspan="4"></th>
                     <g:sortableColumn  class="la-smaller-table-head" params="${params}" property="startDate" title="${message(code:'default.from', default:'Earliest date')}" />
-                    <g:sortableColumn class="la-smaller-table-head" params="${params}" property="accessStartDate" title="${message(code:'default.from', default:'Earliest date')}" />
-
-                    <th rowspan="2"></th>
-                </tr>
-                <tr>
                     <g:sortableColumn class="la-smaller-table-head" property="endDate" title="${message(code:'default.to', default:'Latest Date')}" />
+
+                    <g:sortableColumn class="la-smaller-table-head" params="${params}" property="accessStartDate" title="${message(code:'default.from', default:'Earliest date')}" />
                     <g:sortableColumn class="la-smaller-table-head" params="${params}" property="accessEndDate" title="${message(code:'default.to', default:'Latest Date')}" />
+                    <th ></th>
                 </tr>
+
                 <tr>
                     <g:if test="${editable}">
                         <th>
@@ -151,12 +150,14 @@
                         <th>
                             <semui:datepicker id="bulk_start_date" name="bulk_start_date"/>
 
-
-                            <semui:datepicker id="bulk_end_date" name="bulk_end_date"/>
+                        </th>
+                        <th>
+                            <semui:datepicker style="width: 80px" id="bulk_end_date" name="bulk_end_date"/>
                         </th>
                         <th>
                             <semui:datepicker id="bulk_access_start_date" name="bulk_access_start_date"/>
-
+                        </th>
+                        <th>
 
                             <semui:datepicker id="bulk_access_end_date" name="bulk_access_end_date"/>
                         </th>
@@ -185,18 +186,21 @@
 
                         <a href="${ie.tipp?.hostPlatformURL}" TITLE="${ie.tipp?.hostPlatformURL}" target="_blank">${message(code:'tipp.hostPlatformURL', default:'Host Link')}  <i class="ui icon share square"></i></a>
 
-                    </g:if> <br/>
+                    </g:if>
                   <g:each in="${ie?.tipp?.title?.ids.sort{it.identifier.ns.ns}}" var="title_id">
                     <g:if test="${title_id.identifier.ns.ns.toLowerCase() != 'originediturl'}">
-                      ${title_id.identifier.ns.ns}: <strong>${title_id.identifier.value}</strong>
+                        <span class="ui tiny teal image label">
+                            ${title_id.identifier.ns.ns}: <div class="detail">${title_id.identifier.value}</div>
+                        </span>
                     </g:if>
                   </g:each>
                   <br/>
 <!--                  ISSN:<strong>${ie?.tipp?.title?.getIdentifierValue('ISSN') ?: ' - '}</strong>,
                   eISSN:<strong>${ie?.tipp?.title?.getIdentifierValue('eISSN') ?: ' - '}</strong><br/>-->
-                   ${message(code:'default.access.label', default:'Access')}: ${ie.availabilityStatus?.getI10n('value')}<br/>
-                   ${message(code:'tipp.coverageNote', default:'Coverage Note')}: ${ie.coverageNote?:(ie.tipp?.coverageNote ?: '')}<br/>
-                    ${message(code:'tipp.platform', default:'Platform')}:
+                    <div class="ui list">
+                    <div class="item"><b>${message(code:'default.access.label', default:'Access')}:</b> ${ie.availabilityStatus?.getI10n('value')}</div>
+                    <div class="item"><b>${message(code:'tipp.coverageNote', default:'Coverage Note')}:</b> ${ie.coverageNote?:(ie.tipp?.coverageNote ?: '')}</div>
+                    <div class="item"><b>${message(code:'tipp.platform', default:'Platform')}:</b>
                     <g:if test="${ie.tipp?.platform.name}">
                         <g:link controller="platform" action="show" id="${ie.tipp?.platform.id}">${ie.tipp?.platform.name}</g:link>
                     </g:if>
@@ -207,33 +211,40 @@
                    <g:if test="${ie.availabilityStatus?.value=='Expired'}">
                      ${message(code:'default.on', default:'on')} <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessEndDate}"/>
                    </g:if>
-
+                    </div>
+                </div>
                 </td>
               
                 <td>
                   <semui:xEditableRefData owner="${ie}" field="medium" config='IEMedium'/>
                 </td>
                 <td>
-                    <!-- von --->
-                     <semui:xEditable owner="${ie}" type="date" field="startDate" />
-                    <b>${message(code:'tipp.volume')}:</b> <semui:xEditable owner="${ie}" field="startVolume"/> <b>${message(code:'tipp.issue')}:</b>  <semui:xEditable owner="${ie}" field="startIssue"/>
-                    <br><br>
-                    <!-- bis -->
-                      <semui:xEditable owner="${ie}" type="date" field="endDate" />
-                    <b>${message(code:'tipp.volume')}:</b> <semui:xEditable owner="${ie}" field="endVolume"/> <b>${message(code:'tipp.issue')}:</b> <semui:xEditable owner="${ie}" field="endIssue"/>
-                  </td>
+                                        <!-- von --->
+                                 <semui:xEditable owner="${ie}" type="date" field="startDate" />
+                                <b>${message(code:'tipp.volume')}:</b> <semui:xEditable owner="${ie}" field="startVolume"/> <b>${message(code:'tipp.issue')}:</b>  <semui:xEditable owner="${ie}" field="startIssue"/>
+                </td>
+                <td>
+                                <!-- bis -->
+                                  <semui:xEditable owner="${ie}" type="date" field="endDate" />
+                                <b>${message(code:'tipp.volume')}:</b> <semui:xEditable owner="${ie}" field="endVolume"/> <b>${message(code:'tipp.issue')}:</b> <semui:xEditable owner="${ie}" field="endIssue"/>
+
+
+                </td>
                   <td>
                       <!-- von --->
                       <g:if test="${editable}">
-                          <semui:xEditable owner="${ie}" type="date" field="accessStartDate" /> (${message(code:'subscription.details.access_start.note', default:'Leave empty to default to sub start date')})
+                          <semui:xEditable owner="${ie}" type="date" field="accessStartDate" />
+                          <i class="question circle icon" data-content="${message(code:'subscription.details.access_start.note', default:'Leave empty to default to sub start date')}"></i>
                       </g:if>
                       <g:else>
                           <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessStartDate}"/>
                       </g:else>
-                      <br><br>
+                  </td>
+                    <td>
                       <!-- bis -->
                       <g:if test="${editable}">
-                          <semui:xEditable owner="${ie}" type="date" field="accessEndDate" /> (${message(code:'subscription.details.access_end.note', default:'Leave empty to default to sub end date')})
+                          <semui:xEditable owner="${ie}" type="date" field="accessEndDate" />
+                          <i class="question circle icon" data-content="${message(code:'subscription.details.access_end.note', default:'Leave empty to default to sub end date')}"></i>
                       </g:if>
                       <g:else>
                           <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessEndDate}"/>
@@ -308,7 +319,11 @@
       <g:if test="${params.asAt && params.asAt.length() > 0}"> $(function() {
         document.body.style.background = "#fcf8e3";
       });</g:if>
-      
+
+        $('.question.circle.icon')
+                .popup()
+        ;
+
     </r:script>
   </body>
 </html>
