@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.*
 import de.laser.SystemEvent
+import de.laser.interfaces.TemplateSupport
 import org.hibernate.ScrollMode
 import java.nio.charset.Charset
 import java.util.GregorianCalendar
@@ -200,8 +201,17 @@ class DataloadService {
             result._id = lic.globalUID
             result.dbId = lic.id
             result.guid = lic.globalUID ?:''
-            //TODO: Überarbeiten availableToOrgs
-            result.availableToOrgs = lic.orgLinks.find{it.roleType?.value in ["Licensee", "Licensee_Consortial", "Licensing Consortium"]}?.org?.id
+            switch(lic.getCalculatedType()) {
+                case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
+                    result.availableToOrgs = lic.orgLinks.findAll{it.roleType?.value in ["Licensing Consortium"]}?.org?.id
+                    break
+                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
+                    result.availableToOrgs = lic.orgLinks.findAll{it.roleType?.value in ["Licensee_Consortial"]}?.org?.id
+                    break
+                default:
+                    result.availableToOrgs = lic.orgLinks.findAll{it.roleType?.value in ["Licensee"]}?.org?.id
+                    break
+            }
             result.name = lic.reference
             result.rectype = 'License'
             result.status = lic.status?.value
@@ -233,8 +243,17 @@ class DataloadService {
             result._id = sub.globalUID
             result.dbId = sub.id
             result.guid = sub.globalUID ?:''
-
-            result.availableToOrgs = sub.orgRelations.find{it.roleType?.value in ["Subscriber", "Subscriber_Consortial", "Subscription Consortia"] }?.org?.id
+            switch(sub.getCalculatedType()) {
+                case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
+                    result.availableToOrgs = sub.orgRelations.find{it.roleType?.value in ["Subscription Consortia"] }?.org?.id
+                    break
+                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
+                    result.availableToOrgs = sub.orgRelations.find{it.roleType.value in ["Subscriber_Consortial"] }?.org?.id
+                    break
+                default:
+                    result.availableToOrgs = sub.orgRelations.find{it.roleType?.value in ["Subscriber", "Subscriber_Consortial", "Subscription Consortia"] }?.org?.id
+                    break
+            }
             result.consortiaId = sub.getConsortia()?.id
             result.consortiaName = sub.getConsortia()?.name
             result.name = sub.name
