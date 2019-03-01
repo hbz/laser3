@@ -117,6 +117,16 @@
 
             <div class="three fields">
                 <div class="field fieldcontain">
+                    <label for="filterCIReference">${message(code:'financials.referenceCodes')}</label>
+                    <g:select id="filterCIReference" class="ui dropdown search selection"
+                              name="filterCIReference"
+                              from="${allCIReferences}"
+                              value="${params.filterCIReference}"
+                              noSelection="${['':'Alle ..']}"
+                    />
+                </div>
+
+                <div class="field fieldcontain">
                     <label for="filterCIElement">${message(code:'financials.costItemElement')}</label>
                     <laser:select id="filterCIElement" class="ui dropdown selection"
                                   name="filterCIElement"
@@ -137,7 +147,10 @@
                                   value="${params.filterCIStatus}"
                                   noSelection="${['':'Alle ..']}"/>
                 </div>
-                <div class="field fieldcontain"><!--NEW -->
+            </div><!-- .three -->
+
+            <div class="three fields">
+                <div class="field fieldcontain"><!-- here comes the new field for tax rate, see ERMS-1046 -->
                 <%--
                 <label for="filterCICategory">${message(code:'financials.costItemCategory')}</label>
                 <laser:select id="filterCICategory" class="ui dropdown selection"
@@ -147,7 +160,7 @@
                               optionValue="value"
                               value="${params.filterCICategory}"
                               noSelection="${['':'Alle ..']}"/>
-                              --%>
+
                     <label for="filterCITaxType">${message(code:'financials.newCosts.controllable')}</label>
                     <% println params.taxType %>
                     <laser:select id="filterCITaxType" class="ui dropdown selection"
@@ -156,14 +169,7 @@
                                   optionKey="${{it.class.getName() + ":" + it.id}}"
                                   optionValue="value"
                                   value="${params.taxType}"
-                                  noSelection="${['':'Alle ..']}"/>
-                </div>
-            </div><!-- .three -->
-
-            <div class="three fields">
-                <div class="field">
-                    <semui:datepicker label="default.valid_on.label" name="filterCIValidOn" placeholder="filter.placeholder"
-                                      value="${params.filterCIValidOn}"/>
+                                  noSelection="${['':'Alle ..']}"/>--%>
                 </div>
 
                 <div class="field">
@@ -179,6 +185,11 @@
 
             <div class="three fields">
                 <div class="field">
+                    <semui:datepicker label="default.valid_on.label" name="filterCIValidOn" placeholder="filter.placeholder"
+                                      value="${params.filterCIValidOn}"/>
+                </div>
+
+                <div class="field">
                     <semui:datepicker label="financials.paid_from" name="filterCIPaidFrom" placeholder="filter.placeholder"
                                       value="${params.filterCIPaidFrom}"/>
                 </div>
@@ -187,8 +198,10 @@
                     <semui:datepicker label="financials.paid_to" name="filterCIPaidTo" placeholder="filter.placeholder"
                                       value="${params.filterCIPaidTo}"/>
                 </div>
+            </div>
 
-                <div class="field la-field-right-aligned ">
+            <div class="three fields">
+                <div class="field la-field-left-aligned ">
                     <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
                     <input type="submit" name="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
                 </div>
