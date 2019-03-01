@@ -8,6 +8,8 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 @CompileStatic
 class RDStore {
 
+    static final GENERIC_NULL_VALUE         = getRefdataValue('generic.null.value','filter.fake.values')
+
     static final OR_LICENSING_CONSORTIUM    = getRefdataValue('Licensing Consortium', 'Organisational Role')
     static final OR_LICENSEE                = getRefdataValue('Licensee','Organisational Role')
     static final OR_LICENSEE_CONS           = getRefdataValue('Licensee_Consortial','Organisational Role')

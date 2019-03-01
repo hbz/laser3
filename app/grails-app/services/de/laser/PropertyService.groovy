@@ -4,6 +4,7 @@ import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.SystemAdmin
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.properties.PropertyDefinition
+import de.laser.helper.RDStore
 
 class PropertyService {
 
@@ -26,22 +27,28 @@ class PropertyService {
 
         if (params.filterPropDef) {
             def pd = genericOIDService.resolveOID(params.filterPropDef)
-            
+
+            String propGroup
             if (pd.tenant) {
-                base_qry += " and exists ( select gProp from ${hqlVar}.privateProperties as gProp where gProp.type = :propDef "
+                propGroup = "privateProperties"
             } else {
-                base_qry += " and exists ( select gProp from ${hqlVar}.customProperties as gProp where gProp.type = :propDef "
+                propGroup = "customProperties"
             }
+            base_qry += " and ( exists ( select gProp from ${hqlVar}.${propGroup} as gProp where gProp.type = :propDef "
             base_qry_params.put('propDef', pd)
             
             if (params.filterProp) {
 
                 switch (pd.type) {
                     case RefdataValue.toString():
-                        base_qry += " and gProp.refValue= :prop "
                         def pdValue = genericOIDService.resolveOID(params.filterProp)
-                        base_qry_params.put('prop', pdValue)
-
+                        if(genericOIDService.resolveOID(params.filterProp) == RDStore.GENERIC_NULL_VALUE) {
+                            base_qry += " and gProp.refValue = null ) or not exists ( select gProp from ${hqlVar}.${propGroup} as gProp where gProp.type = :propDef ) "
+                        }
+                        else {
+                            base_qry += " and gProp.refValue = :prop ) "
+                            base_qry_params.put('prop', pdValue)
+                        }
                         break
                     case Integer.toString():
                         base_qry += " and gProp.intValue = :prop "
