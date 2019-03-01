@@ -83,14 +83,14 @@
                         <g:if test="${fixedSubscription}">
                             <span data-position="top right" data-tooltip="${message(code:'financials.costItem.transfer.tooltip')}">
                                 <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", tab:"subscr"]' class="ui icon button trigger-modal">
-                                    <i class="copy icon"></i>
+                                    <i class="copy-send icon"></i>
                                 </g:link>
                             </span>
                         </g:if>
                         <g:else>
                             <span data-position="top right" data-tooltip="${message(code:'financials.costItem.transfer.tooltip')}">
                                 <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", tab:"subscr"]' class="ui icon button trigger-modal">
-                                    <i class="copy icon"></i>
+                                    <i class="copy-send icon"></i>
                                 </g:link>
                             </span>
                         </g:else>
