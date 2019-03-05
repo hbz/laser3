@@ -3608,7 +3608,6 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                     (params.pd_mandatory ? true : false),
                     tenant
             )
-            privatePropDef.softData = PropertyDefinition.TRUE
 
             if (privatePropDef.save(flush: true)) {
                 return message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.name])

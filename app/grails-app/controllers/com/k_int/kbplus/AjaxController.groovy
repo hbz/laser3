@@ -915,7 +915,7 @@ class AjaxController {
             }
             else {
                 msg = message(code: 'ajax.addCustPropertyType.success')
-                newProp.softData = true
+                //newProp.softData = true
                 newProp.save(flush: true)
 
                 if (params.autoAdd == "on" && newProp) {
