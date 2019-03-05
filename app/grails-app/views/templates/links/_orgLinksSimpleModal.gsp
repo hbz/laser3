@@ -15,8 +15,10 @@
             <g:if test="${orgList.size() > 0}">
                 <p>
                     Es wurden ${orgList.size()} verfügbare ${tmplEntity} gefunden.
+                    <%--
                     <br />
                     Bereits von Ihnen verwendete ${tmplEntity} sind durch ein Symbol (&#10004;) gekennzeichnet.
+                    --%>
                 </p>
                 <g:set var="varSelectOne" value="${message(code:'default.selectOne.label')}" />
 

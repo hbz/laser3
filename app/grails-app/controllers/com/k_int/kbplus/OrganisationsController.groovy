@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
 import grails.converters.JSON
 import org.apache.poi.hssf.usermodel.HSSFRichTextString
@@ -193,12 +194,17 @@ class OrganisationsController extends AbstractDebugController {
     def show() {
         def result = [:]
 
+        DebugUtil du = new DebugUtil()
+        du.setBenchMark('1')
+
         def orgInstance = Org.get(params.id)
         def user = contextService.getUser()
 
         def link_vals = RefdataCategory.getAllRefdataValues("Organisational Role")
         def sorted_links = [:]
         def offsets = [:]
+
+        du.setBenchMark('orgRoles')
 
         if ( SpringSecurityUtils.ifAnyGranted("ROLE_YODA") ||
              (orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADMIN'))
@@ -236,6 +242,8 @@ class OrganisationsController extends AbstractDebugController {
             return
         }
 
+        du.setBenchMark('editable')
+
         result.sorted_links = sorted_links
 
         result.user = User.get(springSecurityService.principal.id)
@@ -247,8 +255,10 @@ class OrganisationsController extends AbstractDebugController {
         //IF ORG is a Provider
         if(orgInstance.sector == orgSector || orgRoleType?.id in orgInstance?.getallOrgRoleTypeIds())
         {
+            du.setBenchMark('editable2')
             result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_COM_EDITOR,ROLE_ORG_EDITOR')
         }else {
+            du.setBenchMark('editable2')
             result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
         }
         
@@ -257,6 +267,8 @@ class OrganisationsController extends AbstractDebugController {
         redirect action: 'list'
         return
       }
+
+        du.setBenchMark('properties')
 
         // -- private properties
 
@@ -285,7 +297,11 @@ class OrganisationsController extends AbstractDebugController {
         }
 
         // -- private properties
-      
+
+        List bm = du.stopBenchMark()
+        result.benchMark = bm
+        log.debug (bm)
+
       result
     }
 
