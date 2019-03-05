@@ -6,14 +6,14 @@ import grails.converters.JSON
 
 abstract class AbstractDebugController {
 
-    protected DebugUtil debugUtil = new DebugUtil()
+    protected DebugUtil debugUtil = new DebugUtil(DebugUtil.CK_PREFIX_GLOBAL_INTERCEPTOR)
 
     def beforeInterceptor = {
-        debugUtil.startBench(this.class.simpleName + ' ' + session.id)
+        debugUtil.startSimpleBench(this.class.simpleName + ' ' + session.id)
     }
 
     def afterInterceptor = {
-        def delta = debugUtil.stopBench(this.class.simpleName + ' ' + session.id)
+        def delta = debugUtil.stopSimpleBench(this.class.simpleName + ' ' + session.id)
 
         if (delta >= SystemProfiler.THRESHOLD_MS) {
             def json = (params as JSON)

@@ -11,6 +11,10 @@
 
 <body>
 
+<semui:debugInfo>
+    <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+</semui:debugInfo>
+
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb message="menu.institutions.myConsortiaLicenses" class="active"/>

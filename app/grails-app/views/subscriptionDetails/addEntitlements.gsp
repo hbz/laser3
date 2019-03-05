@@ -82,7 +82,7 @@
               <div class="paginateButtons" style="text-align:center">
                   <input type="submit" value="${message(code:'subscription.details.addEntitlements.add_selected', default:'Add Selected Entitlements')}" class="ui button"/>
               </div>
-            <table class="ui celled stripped table">
+              <table class="ui celled sortable table table-tworow la-table">
               <thead>
                 <tr>
                   <th rowspan="2" style="vertical-align:middle;">
@@ -137,7 +137,7 @@
                     <td><input type="checkbox" name="_bulkflag.${tipp.id}" class="bulkcheck" ${checked}/></td>
                     <td>${counter++}</td>
                     <td>
-                      ${tipp.title.type.getI10n("value")} –
+                        <semui:listIcon type="${tipp.title.type.getI10n("value")}"/>
                       <g:link controller="tipp" id="${tipp.id}" action="show">${tipp.title.title}</g:link>
                       <br/>
                       <span class="pull-right">

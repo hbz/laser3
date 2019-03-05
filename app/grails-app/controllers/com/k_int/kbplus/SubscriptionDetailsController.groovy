@@ -7,6 +7,7 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
 import grails.doc.internal.StringEscapeCategory
@@ -1860,10 +1861,16 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def show() {
+
+        DebugUtil du = new DebugUtil()
+        du.setBenchMark('1')
+
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
+
+        du.setBenchMark('2')
 
         // unlink license
 
@@ -1876,6 +1883,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             }
         }
 
+        du.setBenchMark('3')
+
         //if (!result.institution) {
         //    result.institution = result.subscriptionInstance.subscriber ?: result.subscriptionInstance.consortia
         //}
@@ -1884,6 +1893,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             result.institutional_usage_identifier =
                     OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
         }
+
+        du.setBenchMark('links')
 
         LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
         result.navPrevSubscription = links.prevLink
@@ -1915,6 +1926,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             }
         }
 
+        du.setBenchMark('pending changes')
+
         // ---- pendingChanges : start
 
         if (executorWrapperService.hasRunningProcess(result.subscriptionInstance)) {
@@ -1945,6 +1958,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
         // ---- pendingChanges : end
 
+        du.setBenchMark('tasks')
+
         // tasks
         def contextOrg = contextService.getOrg()
         result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
@@ -1959,6 +1974,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             }
         }
         result.visibleOrgRelations.sort { it.org.sortname }
+
+        du.setBenchMark('properties')
 
         // -- private properties
 
@@ -2007,6 +2024,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 }
             }
         }
+
+        du.setBenchMark('usage')
+
         // usage
         def suppliers = result.subscriptionInstance.issueEntitlements?.tipp.pkg.contentProvider?.id.unique()
 
@@ -2051,6 +2071,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             }
         }
 
+        du.setBenchMark('costs')
+
         //determine org role
         if (result.subscription.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_CONSORTIAL))
             params.view = "cons"
@@ -2059,6 +2081,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         else if (result.subscription.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_PARTICIPATION) && !result.subscription.getConsortia().equals(result.institution))
             params.view = "subscr"
         //cost items
+        params.forExport = true
         LinkedHashMap costItems = financeService.getCostItemsForSubscription(result.subscription, params, 10, 0)
         result.costItemSums = [:]
         if (costItems.own.count > 0) {
@@ -2071,19 +2094,25 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             result.costItemSums.subscrCosts = costItems.subscr.sums
         }
 
+        du.setBenchMark('provider & agency filter')
+
         result.availableProviderList = orgTypeService.getOrgsForTypeProvider().minus(
                 OrgRole.executeQuery(
                         "select o from OrgRole oo join oo.org o where oo.sub.id = :sub and oo.roleType.value = 'Provider'",
                         [sub: result.subscriptionInstance.id]
                 ))
-        result.existingProviderIdList = orgTypeService.getCurrentProviders(contextService.getOrg()).collect { it -> it.id }
+        result.existingProviderIdList = [] // performance problems: orgTypeService.getCurrentProviders(contextService.getOrg()).collect { it -> it.id }
 
         result.availableAgencyList = orgTypeService.getOrgsForTypeAgency().minus(
                 OrgRole.executeQuery(
                         "select o from OrgRole oo join oo.org o where oo.sub.id = :sub and oo.roleType.value = 'Agency'",
                         [sub: result.subscriptionInstance.id]
                 ))
-        result.existingAgencyIdList = orgTypeService.getCurrentAgencies(contextService.getOrg()).collect { it -> it.id }
+        result.existingAgencyIdList = [] // performance problems: orgTypeService.getCurrentAgencies(contextService.getOrg()).collect { it -> it.id }
+
+        List bm = du.stopBenchMark()
+        result.benchMark = bm
+        log.debug (bm)
 
         result
     }

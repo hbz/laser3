@@ -4,6 +4,7 @@ import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
 import grails.converters.*
 import com.k_int.kbplus.auth.*;
@@ -34,6 +35,9 @@ class LicenseDetailsController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def show() {
+        DebugUtil du = new DebugUtil()
+        du.setBenchMark('1')
+
         log.debug("licenseDetails: ${params}");
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -52,6 +56,8 @@ class LicenseDetailsController extends AbstractDebugController {
       result.onixplLicense = result.license.onixplLicense;
 
         // ---- pendingChanges : start
+
+        du.setBenchMark('pending changes')
 
       if (executorWrapperService.hasRunningProcess(result.license)) {
           log.debug("PendingChange processing in progress")
@@ -94,6 +100,8 @@ class LicenseDetailsController extends AbstractDebugController {
 
       //result.availableSubs = getAvailableSubscriptions(result.license, result.user)
 
+        du.setBenchMark('tasks')
+
       // tasks
       def contextOrg = contextService.getOrg()
       result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.license)
@@ -108,6 +116,8 @@ class LicenseDetailsController extends AbstractDebugController {
             }
         }
         result.visibleOrgLinks.sort{ it.org.sortname }
+
+        du.setBenchMark('properties')
 
       // -- private properties
 
@@ -158,6 +168,8 @@ class LicenseDetailsController extends AbstractDebugController {
           }
       }
 
+        du.setBenchMark('licensor filter')
+
         def licensee = result.license.getLicensee();
         def consortia = result.license.getLicensingConsortium();
       //a new query builder service for selection lists has been introduced
@@ -171,7 +183,11 @@ class LicenseDetailsController extends AbstractDebugController {
                         "select o from OrgRole oo join oo.org o where oo.lic.id = :lic and oo.roleType.value = 'Licensor'",
                         [lic: result.license.id]
                 ))
-        result.existingLicensorIdList = orgTypeService.getCurrentLicensors(contextService.getOrg()).collect { it -> it.id }
+        result.existingLicensorIdList = [] // performance problems: orgTypeService.getCurrentLicensors(contextService.getOrg()).collect { it -> it.id }
+
+        List bm = du.stopBenchMark()
+        result.benchMark = bm
+        log.debug (bm)
 
         withFormat {
       html result

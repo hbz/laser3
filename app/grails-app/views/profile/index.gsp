@@ -122,7 +122,7 @@
 
         <div class="ui segment">
 
-            <g:form action="updateReminderSettings" class="ui form">
+            <g:form action="updateReminderSettings" class="ui form updateReminderSettings">
 
                 <h4 class="ui dividing header">
                     ${message(code: 'profile.reminder.label')}
@@ -519,6 +519,22 @@
                                 ]
                             }
                          }
+                    });
+                    $('.updateReminderSettings')
+                        .form({
+                        on: 'blur',
+                        inline: true,
+                        fields: {
+                            dashboardReminderPeriod: {
+                                identifier  : 'dashboardReminderPeriod',
+                                rules: [
+                                    {
+                                        type   : 'regExp[/^[0-9]/]',
+                                        prompt : '{name} <g:message code="validation.onlyInteger" default=" darf nur aus Ziffern bestehen" />'
+                                    }
+                                ]
+                            }
+                        }
                     });
         $('#passwordToggler').on('change', function(e) {
             $('input.pw').attr('type', ($(this).is(":checked") ? 'text' : 'password'))

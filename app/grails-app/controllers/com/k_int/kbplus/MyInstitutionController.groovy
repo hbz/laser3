@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
 import de.laser.helper.DateUtil
 import grails.converters.JSON
@@ -3325,11 +3326,16 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     def manageConsortiaLicenses() {
         def result = setResultGenerics()
 
+        DebugUtil du = new DebugUtil()
+        du.setBenchMark('filterService')
+
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         Map fsq = filterService.getOrgComboQuery([sort: 'o.sortname'], contextService.getOrg())
         result.filterConsortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
+
+        du.setBenchMark('filterSubTypes & filterPropList')
 
         result.filterSubTypes = RefdataCategory.getAllRefdataValues('Subscription Type').minus(
                 RefdataValue.getByValueAndCategory('Local Licence', 'Subscription Type')
@@ -3353,6 +3359,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         */
 
         // CostItem ci
+
+        du.setBenchMark('filter query')
 
         String query = "select ci, subT, roleT.org " +
                 " from CostItem ci right outer join ci.sub subT join subT.instanceOf subK " +
@@ -3418,6 +3426,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         log.debug( query + " " + orderQuery )
         // log.debug( qarams )
 
+        du.setBenchMark('costs')
+
         List<CostItem, Subscription, Org> costs = CostItem.executeQuery(
                 query + " " + orderQuery, qarams
         )
@@ -3443,6 +3453,10 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
             entries
         }()
+
+        List bm = du.stopBenchMark()
+        result.benchMark = bm
+        log.debug (bm)
 
         result
     }
@@ -3594,7 +3608,6 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                     (params.pd_mandatory ? true : false),
                     tenant
             )
-            privatePropDef.softData = PropertyDefinition.TRUE
 
             if (privatePropDef.save(flush: true)) {
                 return message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.name])

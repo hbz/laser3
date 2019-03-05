@@ -72,6 +72,7 @@ class FinanceController extends AbstractDebugController {
             result.allCISubs = result.financialData.filterLists.subscriptions
             result.allCISPkgs = result.financialData.filterLists.subPackages
             result.allCIBudgetCodes = result.financialData.filterLists.budgetCodes
+            result.allCIReferences = result.financialData.filterLists.references
             result.allCIInvoiceNumbers = result.financialData.filterLists.invoiceNumbers
             result.allCIOrderNumbers = result.financialData.filterLists.orderNumbers
         }
@@ -116,6 +117,7 @@ class FinanceController extends AbstractDebugController {
             result.allCISubs = result.financialData.filterLists.subscriptions
             result.allCISPkgs = result.financialData.filterLists.subPackages
             result.allCIBudgetCodes = result.financialData.filterLists.budgetCodes
+            result.allCIReferences = result.financialData.filterLists.references
             result.allCIInvoiceNumbers = result.financialData.filterLists.invoiceNumbers
             result.allCIOrderNumbers = result.financialData.filterLists.orderNumbers
         }

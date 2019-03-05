@@ -57,6 +57,11 @@
                                                 <i class="check circle icon green"></i>
                                             </span>
                                         </g:if>
+                                        <g:if test="${pd.multipleOccurrence}">
+                                            <span data-position="top right" data-tooltip="${message(code:'default.multipleOccurrence.tooltip')}">
+                                                <i class="redo icon orange"></i>
+                                            </span>
+                                        </g:if>
 
                                         <g:if test="${usedPdList?.contains(pd.id)}">
                                             <span data-position="top left" data-tooltip="${message(code:'default.dataIsUsed.tooltip', args:[pd.id])}">
@@ -105,16 +110,6 @@
                                         </g:else>
                                     </td>
                                     <td class="x">
-                                        <g:if test="${pd.softData}">
-                                            <span data-position="top right" data-tooltip="${message(code:'default.softData.tooltip')}">
-                                                <i class="tint icon teal"></i>
-                                            </span>
-                                        </g:if>
-                                        <g:if test="${pd.multipleOccurrence}">
-                                            <span data-position="top right" data-tooltip="${message(code:'default.multipleOccurrence.tooltip')}">
-                                                <i class="redo icon orange"></i>
-                                            </span>
-                                        </g:if>
 
                                         <sec:ifAnyGranted roles="ROLE_YODA">
                                             <g:if test="${usedPdList?.contains(pd.id)}">

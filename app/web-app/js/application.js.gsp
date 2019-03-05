@@ -222,7 +222,12 @@ r2d2 = {
         $(ctxSel + ' .xEditableManyToOne').editable({
             tpl: '<select class="ui dropdown"></select>'
         }).on('shown', function() {
-            $(".table").trigger('reflow')
+            $(".table").trigger('reflow');
+            $('.ui.dropdown')
+                .dropdown({
+                    clearable: true
+                })
+            ;
         }).on('hidden', function() {
             $(".table").trigger('reflow')
         });
@@ -446,7 +451,7 @@ r2d2 = {
                             var messageWhat = "die Verknüpfung des Kontakts";
                             break;
                         case "membershipSubscription" :
-                            var messageWhat = "die Teilnahme der";
+                            var messageWhat = "die Teilnahme von";
                             break;
                         case "subscription":
                             var messageWhat = "die Verknüpfung der Lizenz";
