@@ -623,8 +623,38 @@ class AjaxController {
   }
 
   @Secured(['ROLE_USER'])
+  def lookupSubscriptionPackages() {
+      render controlledListService.getSubscriptionPackages(params) as JSON
+  }
+
+  @Secured(['ROLE_USER'])
   def lookupLicenses() {
     render controlledListService.getLicenses(params) as JSON
+  }
+
+  @Secured(['ROLE_USER'])
+  def lookupProviders() {
+      render controlledListService.getProviders(params) as JSON
+  }
+
+  @Secured(['ROLE_USER'])
+  def lookupBudgetCodes() {
+      render controlledListService.getBudgetCodes(params) as JSON
+  }
+
+  @Secured(['ROLE_USER'])
+  def lookupInvoiceNumbers() {
+      render controlledListService.getInvoiceNumbers(params) as JSON
+  }
+
+  @Secured(['ROLE_USER'])
+  def lookupOrderNumbers() {
+      render controlledListService.getOrderNumbers(params) as JSON
+  }
+
+  @Secured(['ROLE_USER'])
+  def lookupReferences() {
+      render controlledListService.getReferences(params) as JSON
   }
 
   /**
