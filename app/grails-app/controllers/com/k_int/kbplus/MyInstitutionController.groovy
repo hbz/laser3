@@ -1590,7 +1590,10 @@ AND EXISTS (
         if (subscription.hasPerm("edit", result.user)) {
             def derived_subs = Subscription.findByInstanceOfAndStatusNotEqual(subscription, deletedStatus)
 
-            if (!derived_subs) {
+            if (CostItem.findBySub(subscription)) {
+                flash.error = message(code: 'subscription.delete.existingCostItems')
+
+            } else if (! derived_subs) {
               log.debug("Current Institution is ${inst}, sub has consortium ${subscription.consortia}")
               if( subscription.consortia && subscription.consortia != inst ) {
                 OrgRole.executeUpdate("delete from OrgRole where sub = ? and org = ?",[subscription, inst])
