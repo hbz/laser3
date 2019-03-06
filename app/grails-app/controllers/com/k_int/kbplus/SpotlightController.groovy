@@ -13,7 +13,7 @@ class SpotlightController extends AbstractDebugController {
   def ESSearchService
   def springSecurityService
   def dataloadService
-
+  def contextService
 
   def g = new org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib()
 
@@ -128,7 +128,8 @@ class SpotlightController extends AbstractDebugController {
       }
       params.q = query
       //From the available orgs, see if any belongs to a consortium, and add consortium ID too
-      params.availableToOrgs = getAvailableOrgs(result.user.getAuthorizedOrgs())
+      //TMP Bugfix, restrict for now to context org! A proper solution has to be found later!
+      params.availableToOrgs = [contextService.org.id]
 
       if(query.startsWith("\$")){
         if( query.length()> 2){

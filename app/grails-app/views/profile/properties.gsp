@@ -56,12 +56,6 @@
                                         <i class="info circle icon blue"></i>
                                     </span>
                                 </g:if>
-
-                                <g:if test="${pd.softData}">
-                                    <span data-position="top right" data-tooltip="${message(code:'default.softData.tooltip')}">
-                                        <i class="tint icon teal"></i>
-                                    </span>
-                                </g:if>
                                 <g:if test="${pd.multipleOccurrence}">
                                     <span data-position="top right" data-tooltip="${message(code:'default.multipleOccurrence.tooltip')}">
                                         <i class="redo icon orange"></i>

@@ -71,6 +71,7 @@
                 def fakeList = []
                 fakeList.addAll(RefdataCategory.getAllRefdataValues('Subscription Status'))
                 fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
+                fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
             %>
 
             <div class="field fieldcontain">

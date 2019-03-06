@@ -321,6 +321,13 @@ class FinanceService {
             queryParams.filterCIBudgetCode = filterBudgetCodes
             log.info(queryParams.filterCIBudgetCode)
         }
+        //reference/code
+        if(params.filterCIReference) {
+            filterQuery += " and ci.reference in (:filterCIReference) "
+            List<String> filterReferences = params.list("filterCIReference")
+            queryParams.filterCIReference = filterReferences
+            log.info(queryParams.filterCIReference)
+        }
         //invoice number
         if(params.filterCIInvoiceNumber) {
             filterQuery += " and ci.invoice.invoiceNumber in (:filterCIInvoiceNumber) "
@@ -504,9 +511,10 @@ class FinanceService {
         List budgetCodes = BudgetCode.executeQuery("select bc from BudgetCode bc where owner = :org",[org:org])
         List invoiceNumbers = Invoice.executeQuery("select i.invoiceNumber from Invoice i where i.owner = :org",[org:org])
         List orderNumbers = Order.executeQuery("select ord.orderNumber from Order ord where ord.owner = :org",[org:org])
+        List references = CostItem.executeQuery("select distinct ci.reference from CostItem ci where ci.owner = :org and ci.reference is not null order by ci.reference asc",[org:org])
         return [subscriptions: controlledListService.getSubscriptions([status:RDStore.SUBSCRIPTION_CURRENT]).values,
                 subPackages: controlledListService.getSubscriptionPackages([status:RDStore.SUBSCRIPTION_CURRENT]).values,
-                budgetCodes: budgetCodes,invoiceNumbers: invoiceNumbers,orderNumbers: orderNumbers]
+                references: references, budgetCodes: budgetCodes,invoiceNumbers: invoiceNumbers,orderNumbers: orderNumbers]
     }
 
 }
