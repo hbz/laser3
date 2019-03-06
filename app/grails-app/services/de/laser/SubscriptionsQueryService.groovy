@@ -1,17 +1,10 @@
 package de.laser
 
-import com.k_int.kbplus.Combo
 import com.k_int.kbplus.Org
-import com.k_int.kbplus.OrgCustomProperty
 import com.k_int.kbplus.RefdataValue
-import com.k_int.kbplus.Subscription
-import com.k_int.properties.PropertyDefinition
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
-
-import javax.naming.Context
-
 
 class SubscriptionsQueryService {
     def propertyService
@@ -56,7 +49,7 @@ class SubscriptionsQueryService {
         def qry_params
 
         if (! params.orgRole) {
-            if ((RDStore.OR_TYPE_CONSORTIUM?.id in contextOrg?.getallOrgRoleTypeIds())) {
+            if ((RDStore.OR_TYPE_CONSORTIUM?.id in contextOrg?.getallOrgTypeIds())) {
                 params.orgRole = 'Subscription Consortia'
             }
             else {

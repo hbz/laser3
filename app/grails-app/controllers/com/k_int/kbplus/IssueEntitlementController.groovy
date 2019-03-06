@@ -4,12 +4,8 @@ import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import com.k_int.properties.PropertyDefinition
 import org.springframework.dao.DataIntegrityViolationException
-import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured
-import grails.converters.*
-import groovy.xml.MarkupBuilder
 import com.k_int.kbplus.auth.*
-import com.k_int.kbplus.OrgCustomProperty
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class IssueEntitlementController extends AbstractDebugController {
@@ -83,7 +79,7 @@ class IssueEntitlementController extends AbstractDebugController {
                   OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), org)
           if (result.institutional_usage_identifier && fsresult.usage) {
               result.statsWibid = org.getIdentifierByType('wibid')?.value
-              result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in org?.getallOrgRoleTypeIds())) ? 'package' : 'institution'
+              result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in org?.getallOrgTypeIds())) ? 'package' : 'institution'
               result.usage = fsresult?.usage
               result.x_axis_labels = fsresult?.x_axis_labels
               result.y_axis_labels = fsresult?.y_axis_labels

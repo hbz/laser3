@@ -25,15 +25,15 @@
 
             <g:if test="${field.equalsIgnoreCase('type')}">
                 <div class="field">
-                    <label>${message(code: 'org.orgRoleType.label')}</label>
-                    <g:if test="${orgRoleTypes == null || orgRoleTypes.isEmpty()}">
-                        <g:set var="orgRoleTypes" value="${RefdataCategory.getAllRefdataValues('OrgRoleType')}"/>
+                    <label>${message(code: 'org.orgType.label')}</label>
+                    <g:if test="${orgTypes == null || orgTypes.isEmpty()}">
+                        <g:set var="orgTypes" value="${RefdataCategory.getAllRefdataValues('OrgRoleType')}"/>
                     </g:if>
-                    <laser:select class="ui dropdown" name="orgRoleType"
-                                  from="${orgRoleTypes}"
+                    <laser:select class="ui dropdown" name="orgType"
+                                  from="${orgTypes}"
                                   optionKey="id"
                                   optionValue="value"
-                                  value="${params.orgRoleType}"
+                                  value="${params.orgType}"
                                   noSelection="${['':message(code:'default.select.choose.label', default:'Please Choose...')]}"/>
                 </div>
             </g:if>
@@ -124,8 +124,8 @@
 
 <g:set var="allFields" value="${tmplConfigShow.flatten()}" />
 
-<g:if test="${! allFields.contains('type') && params.orgRoleType}">
-    <input type="hidden" name="orgRoleType" value="${params.orgRoleType}" />
+<g:if test="${! allFields.contains('type') && params.orgType}">
+    <input type="hidden" name="orgType" value="${params.orgType}" />
 </g:if>
 <g:if test="${! allFields.contains('role') && params.orgRole}">
     <input type="hidden" name="orgRole" value="${params.orgRole}" />

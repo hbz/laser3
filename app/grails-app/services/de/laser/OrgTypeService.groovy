@@ -11,29 +11,29 @@ class OrgTypeService {
     def contextService
 
     /**
-     * @return List<Org> with orgRoleType 'Agency'; generic
+     * @return List<Org> with orgType 'Agency'; generic
      */
     def getOrgsForTypeAgency() {
         Org.executeQuery(
-                "select o from Org o join o.orgRoleType as rt where rt.value = 'Agency' order by lower(o.sortname), o.name"
+                "select o from Org o join o.orgType as rt where rt.value = 'Agency' order by lower(o.sortname), o.name"
         )
     }
 
     /**
-     * @return List<Org> with orgRoleType 'Provider'; generic
+     * @return List<Org> with orgType 'Provider'; generic
      */
     def getOrgsForTypeProvider() {
         Org.executeQuery(
-                "select o from Org o join o.orgRoleType as rt where rt.value = 'Provider' order by lower(o.sortname), o.name"
+                "select o from Org o join o.orgType as rt where rt.value = 'Provider' order by lower(o.sortname), o.name"
         )
     }
 
     /**
-     * @return List<Org> with orgRoleType in ('Agency, Broker, Content Provider, Provider, Vendor'); generic
+     * @return List<Org> with orgType in ('Agency, Broker, Content Provider, Provider, Vendor'); generic
      */
     def getOrgsForTypeLicensor() {
         Org.executeQuery(
-                "select o from Org o join o.orgRoleType as rt where rt.value in ('Agency', 'Broker', 'Content Provider', 'Provider', 'Vendor') order by lower(o.sortname), o.name"
+                "select o from Org o join o.orgType as rt where rt.value in ('Agency', 'Broker', 'Content Provider', 'Provider', 'Vendor') order by lower(o.sortname), o.name"
         )
     }
 

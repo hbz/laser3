@@ -162,7 +162,7 @@
 
 
                         <div class="field">
-                            <g:if test="${(RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgRoleTypeIds())}">
+                            <g:if test="${(RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgTypeIds())}">
                             <%--
                             <g:if test="${params.orgRole == 'Subscriber'}">
                                 <input id="radioSubscriber" type="hidden" value="Subscriber" name="orgRole" tabindex="0" class="hidden">

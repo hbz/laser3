@@ -119,7 +119,7 @@
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.institutions.myTitles" />
 
-                            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgRoleTypeIds())}">
+                            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgTypeIds())}">
                                 <div class="divider"></div>
 
                                 <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.myConsortia" />
@@ -197,7 +197,7 @@
                             <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageAffiliationRequests" message="menu.institutions.affiliation_requests" newAffiliationRequests="${newAffiliationRequests1}" />
 
 
-                            %{--<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgRoleTypeIds())}">--}%
+                            %{--<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgTypeIds())}">--}%
                                 %{--<semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.manage_consortia" />--}%
                             %{--</g:if>--}%
 

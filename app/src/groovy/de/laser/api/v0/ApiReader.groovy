@@ -215,7 +215,7 @@ class ApiReader {
         // RefdataValues
 
         result.sector       = org.sector?.value
-        result.type         = org.orgType?.value
+        //result.type         = org.orgType?.value
         result.status       = org.status?.value
 
         // References

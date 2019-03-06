@@ -495,7 +495,7 @@ class YodaController {
                     costItem.owner.name = it.name
                     costItem.owner.shortname = it.shortname
                     costItem.owner.sortname = it.sortname
-                    costItem.owner.ownerType = it.orgType?.value
+                    //costItem.owner.ownerType = it.orgType?.value
                     costItem.owner.libraryType = it.libraryType?.value
                 }
 

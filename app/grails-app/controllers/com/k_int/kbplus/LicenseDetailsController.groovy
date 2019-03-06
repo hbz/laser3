@@ -249,7 +249,7 @@ class LicenseDetailsController extends AbstractDebugController {
             log.debug( 'ignored setting.cons_members because: LCurrent.instanceOf (LParent.noTemplate)')
         }
         else {
-            if ((RDStore.OR_TYPE_CONSORTIUM?.id in result.institution?.getallOrgRoleTypeIds())) {
+            if ((RDStore.OR_TYPE_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
 
                 def consMembers = Org.executeQuery(
                         'select o from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :inst and c.type.value = :cons',
@@ -303,16 +303,16 @@ class LicenseDetailsController extends AbstractDebugController {
         }
         result.institution = contextService.getOrg()
 
-        def orgRoleType       = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType').id.toString()]
-        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) {
-            orgRoleType = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString()]
+        def orgType       = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType').id.toString()]
+        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) {
+            orgType = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString()]
         }
         def role_lic      = RDStore.OR_LICENSEE_CONS
         def role_lic_cons = RDStore.OR_LICENSING_CONSORTIUM
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
-            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) {
+            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) {
                 def cons_members = []
                 def licenseCopy
 
@@ -329,7 +329,7 @@ class LicenseDetailsController extends AbstractDebugController {
                         def licenseParams = [
                                 lic_name: "${result.license.reference} (${postfix})",
                                 isSlaved: params.isSlaved,
-                                asOrgRoleType: orgRoleType,
+                                asOrgType: orgType,
                                 copyStartEnd: true
                         ]
 

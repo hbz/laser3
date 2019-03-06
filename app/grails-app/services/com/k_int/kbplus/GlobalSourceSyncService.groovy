@@ -300,9 +300,9 @@ class GlobalSourceSyncService {
         if ( newpkg.packageProvider && grailsApplication.config.globalDataSync.replaceLocalImpIds.Org) {
 
           def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
-          def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
+          def orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
           def orgRole = RefdataValue.loc('Organisational Role',  [en: 'Content Provider', de: 'Anbieter']);
-          def provider = Org.lookupOrCreate2(newpkg.packageProvider , orgSector , null, [:], null, orgRoleType, newpkg.packageProviderUuid?: null)
+          def provider = Org.lookupOrCreate2(newpkg.packageProvider , orgSector , null, [:], null, orgType, newpkg.packageProviderUuid?: null)
 
         }
 
@@ -353,9 +353,9 @@ class GlobalSourceSyncService {
         if ( newpkg.packageProvider ) {
 
           def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
-          def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
+          def orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
           def orgRole = RefdataValue.loc('Organisational Role',  [en: 'Content Provider', de: 'Anbieter']);
-          def provider = Org.lookupOrCreate2(newpkg.packageProvider , orgSector , null, [:], null, orgRoleType, newpkg.packageProviderUuid?: null)
+          def provider = Org.lookupOrCreate2(newpkg.packageProvider , orgSector , null, [:], null, orgType, newpkg.packageProviderUuid?: null)
 
           OrgRole.assertOrgPackageLink(provider, pkg, orgRole)
         }

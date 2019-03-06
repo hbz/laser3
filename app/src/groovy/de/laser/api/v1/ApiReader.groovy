@@ -112,8 +112,8 @@ class ApiReader {
         // RefdataValues
 
         result.sector       = org.sector?.value
-        result.type         = org.orgType?.value
-        result.orgRoleType  = ApiReaderHelper.resolveOrgRoleTypes(org.orgRoleType)
+        //result.type         = org.orgType?.value
+        result.orgType  = ApiReaderHelper.resolveOrgRoleTypes(org.orgType)
         result.status       = org.status?.value
 
         // References

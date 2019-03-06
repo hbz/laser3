@@ -137,7 +137,7 @@
 
                             <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
                                 <g:each in="${license.subscriptions.sort{it.name}}" var="sub">
-                                    <g:if test="${contextOrg?.id in sub.orgRelations?.org?.id || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextOrg?.getallOrgRoleTypeIds())}">
+                                    <g:if test="${contextOrg?.id in sub.orgRelations?.org?.id || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextOrg?.getallOrgTypeIds())}">
                                         <table class="ui three column la-selectable table">
                                             <tr>
                                                 <th scope="row">${message(code:'license.linkedSubscription', default:'Linked Subscription')}</th>
