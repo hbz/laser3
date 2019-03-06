@@ -1134,7 +1134,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
                     delSubscription.status = deletedStatus
                     delSubscription.save(flush: true)
                 } else {
-                    flash.error = message(code: 'myinst.actionDeleteChildSubscription.error', default: 'Unable to delete - The selected license has attached cost items')
+                    flash.error = message(code: 'subscription.delete.existingCostItems')
                 }
 
             } else {
