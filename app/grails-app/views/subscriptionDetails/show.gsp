@@ -18,8 +18,9 @@
     <body>
 
         <semui:debugInfo>
-            <g:render template="/templates/debug/orgRoles" model="[debug: subscriptionInstance.orgRelations]" />
-            <g:render template="/templates/debug/prsRoles" model="[debug: subscriptionInstance.prsLinks]" />
+            <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+            <g:render template="/templates/debug/orgRoles"  model="[debug: subscriptionInstance.orgRelations]" />
+            <g:render template="/templates/debug/prsRoles"  model="[debug: subscriptionInstance.prsLinks]" />
         </semui:debugInfo>
 
         <g:render template="breadcrumb" model="${[ params:params ]}"/>

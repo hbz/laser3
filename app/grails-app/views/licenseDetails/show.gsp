@@ -13,8 +13,9 @@
     <body>
 
         <semui:debugInfo>
-            <g:render template="/templates/debug/orgRoles" model="[debug: license.orgLinks]" />
-            <g:render template="/templates/debug/prsRoles" model="[debug: license.prsLinks]" />
+            <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+            <g:render template="/templates/debug/orgRoles"  model="[debug: license.orgLinks]" />
+            <g:render template="/templates/debug/prsRoles"  model="[debug: license.prsLinks]" />
         </semui:debugInfo>
 
         <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>

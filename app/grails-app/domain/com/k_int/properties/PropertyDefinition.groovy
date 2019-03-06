@@ -86,8 +86,6 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
     boolean multipleOccurrence
     // mandatory
     boolean mandatory
-    // indicates this object is created via front-end
-    boolean softData
     // indicates this object is created via current bootstrap
     boolean hardData
     // indicates hard coded logic
@@ -130,7 +128,6 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
                   tenant column: 'pd_tenant_fk'
       multipleOccurrence column: 'pd_multiple_occurrence'
                mandatory column: 'pd_mandatory'
-                softData column: 'pd_soft_data'
                 hardData column: 'pd_hard_data'
           isUsedForLogic column: 'pd_used_for_logic'
                       sort name: 'desc'
@@ -147,7 +144,6 @@ class PropertyDefinition extends AbstractI10nTranslatable implements Serializabl
         tenant              (nullable: true,  blank: true)
         multipleOccurrence  (nullable: true,  blank: true,  default: false)
         mandatory           (nullable: false, blank: false, default: false)
-        softData            (nullable: false, blank: false, default: false)
         hardData            (nullable: false, blank: false, default: false)
         isUsedForLogic      (nullable: false, blank: false, default: false)
     }
