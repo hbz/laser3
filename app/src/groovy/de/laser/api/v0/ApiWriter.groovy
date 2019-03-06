@@ -99,7 +99,7 @@ class ApiWriter {
                 // RefdataValues
                 org.sector  = ApiWriterHelper.getRefdataValue(data.sector, "OrgSector")
                 org.status  = ApiWriterHelper.getRefdataValue(data.status, "OrgStatus") // TODO unknown catagory !!!
-                org.orgType = ApiWriterHelper.getRefdataValue(data.type, "OrgType")
+                //org.orgType = ApiWriterHelper.getRefdataValue(data.type, "OrgType")
 
                 // References
                 org.addresses = ApiWriterHelper.getAddresses(data.addresses, org, null)

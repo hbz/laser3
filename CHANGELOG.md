@@ -1,10 +1,8 @@
-0.14 PRE
+0.14-RC
 
 TODO
  
 - improved pagination
-- upgrade to hibernate 4.3.10
-- ehcache upgrade
 
 TODO
 

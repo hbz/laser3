@@ -57,8 +57,8 @@ class InstitutionsService {
 
             def rdvConsortiumOrgRole = RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString()
 
-            if (params.asOrgRoleType) {
-                if (rdvConsortiumOrgRole in params.asOrgRoleType) {
+            if (params.asOrgType) {
+                if (rdvConsortiumOrgRole in params.asOrgType) {
                     org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role))
                 } else {
                     org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role))
@@ -150,7 +150,7 @@ class InstitutionsService {
 
             def rdvConsortiumOrgRole = RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString()
 
-            if (params.asOrgRoleType && rdvConsortiumOrgRole in params.asOrgRoleType) {
+            if (params.asOrgType && rdvConsortiumOrgRole in params.asOrgType) {
                 org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role))
             } else {
                 org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role))

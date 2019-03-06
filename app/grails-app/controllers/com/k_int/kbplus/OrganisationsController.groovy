@@ -1,10 +1,9 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.PrivateProperty
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
-import grails.converters.JSON
 import org.apache.poi.hssf.usermodel.HSSFRichTextString
 import org.apache.poi.hssf.usermodel.HSSFSheet
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
@@ -112,7 +111,7 @@ class OrganisationsController extends AbstractDebugController {
         result.editable    = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR')
 
         params.orgSector   = RDStore.O_SECTOR_PUBLISHER?.id?.toString()
-        params.orgRoleType = RDStore.OR_TYPE_PROVIDER?.id?.toString()
+        params.orgType = RDStore.OT_PROVIDER?.id?.toString()
         params.sort        = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
         def fsq            = filterService.getOrgQuery(params)
@@ -160,11 +159,11 @@ class OrganisationsController extends AbstractDebugController {
     def createProvider() {
 
                 def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
-                def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
-                def orgRoleType2 = RefdataValue.getByValueAndCategory('Agency','OrgRoleType')
+                def orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
+                def orgType2 = RefdataValue.getByValueAndCategory('Agency','OrgRoleType')
                 def orgInstance = new Org(name: params.provider, sector: orgSector.id)
-                orgInstance.addToOrgRoleType(orgRoleType)
-                orgInstance.addToOrgRoleType(orgRoleType2)
+                orgInstance.addToOrgType(orgType)
+                orgInstance.addToOrgType(orgType2)
 
                 if ( orgInstance.save(flush:true) ) {
                     flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
@@ -183,7 +182,7 @@ class OrganisationsController extends AbstractDebugController {
         def result=[:]
         if ( params.proposedProvider ) {
 
-            result.providerMatches= Org.executeQuery("from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype = :provider ) and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName ) ",
+            result.providerMatches= Org.executeQuery("from Org as o where exists (select roletype from o.orgType as roletype where roletype = :provider ) and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName ) ",
                     [provider: RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType'), searchName: "%${params.proposedProvider.toLowerCase()}%"])
         }
         result
@@ -193,12 +192,17 @@ class OrganisationsController extends AbstractDebugController {
     def show() {
         def result = [:]
 
+        DebugUtil du = new DebugUtil()
+        du.setBenchMark('1')
+
         def orgInstance = Org.get(params.id)
         def user = contextService.getUser()
 
         def link_vals = RefdataCategory.getAllRefdataValues("Organisational Role")
         def sorted_links = [:]
         def offsets = [:]
+
+        du.setBenchMark('orgRoles')
 
         if ( SpringSecurityUtils.ifAnyGranted("ROLE_YODA") ||
              (orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADMIN'))
@@ -236,19 +240,23 @@ class OrganisationsController extends AbstractDebugController {
             return
         }
 
+        du.setBenchMark('editable')
+
         result.sorted_links = sorted_links
 
         result.user = User.get(springSecurityService.principal.id)
         result.orgInstance = orgInstance
 
         def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
-        def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
+        def orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
 
         //IF ORG is a Provider
-        if(orgInstance.sector == orgSector || orgRoleType?.id in orgInstance?.getallOrgRoleTypeIds())
+        if(orgInstance.sector == orgSector || orgType?.id in orgInstance?.getallOrgTypeIds())
         {
+            du.setBenchMark('editable2')
             result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_COM_EDITOR,ROLE_ORG_EDITOR')
         }else {
+            du.setBenchMark('editable2')
             result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
         }
         
@@ -257,6 +265,8 @@ class OrganisationsController extends AbstractDebugController {
         redirect action: 'list'
         return
       }
+
+        du.setBenchMark('properties')
 
         // -- private properties
 
@@ -285,7 +295,11 @@ class OrganisationsController extends AbstractDebugController {
         }
 
         // -- private properties
-      
+
+        List bm = du.stopBenchMark()
+        result.benchMark = bm
+        log.debug (bm)
+
       result
     }
 
@@ -503,7 +517,7 @@ class OrganisationsController extends AbstractDebugController {
 
         result
     }
-    def addOrgRoleType()
+    def addOrgType()
     {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -524,13 +538,13 @@ class OrganisationsController extends AbstractDebugController {
 
         if(result.editable)
         {
-            orgInstance.addToOrgRoleType(RefdataValue.get(params.orgRoleType))
+            orgInstance.addToOrgType(RefdataValue.get(params.orgType))
             orgInstance.save(flush: true)
             flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.name])
             redirect action: 'show', id: orgInstance.id
         }
     }
-    def deleteOrgRoleType()
+    def deleteOrgType()
     {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -551,7 +565,7 @@ class OrganisationsController extends AbstractDebugController {
 
         if(result.editable)
         {
-            orgInstance.removeFromOrgRoleType(RefdataValue.get(params.removeOrgRoleType))
+            orgInstance.removeFromOrgType(RefdataValue.get(params.removeOrgType))
             orgInstance.save(flush: true)
             flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.name])
             redirect action: 'show', id: orgInstance.id
@@ -564,7 +578,7 @@ class OrganisationsController extends AbstractDebugController {
                     'Name', g.message(code: 'org.shortname.label'), g.message(code: 'org.sortname.label')]
 
             def orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
-            def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
+            def orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
 
 
             if(addHigherEducationTitles)

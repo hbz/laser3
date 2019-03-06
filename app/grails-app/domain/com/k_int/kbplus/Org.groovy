@@ -49,9 +49,6 @@ class Org
     int fteStudents
     int fteStaff
 
-    @RefdataAnnotation(cat = 'OrgType')
-    RefdataValue orgType // RefdataCategory 'OrgType' OLD -> NEW: orgRoleType
-
     @RefdataAnnotation(cat = '?')
     RefdataValue sector
 
@@ -108,7 +105,7 @@ class Org
         affiliations:       UserOrg,
         customProperties:   OrgCustomProperty,
         privateProperties:  OrgPrivateProperty,
-        orgRoleType: RefdataValue,
+        orgType:            RefdataValue,
     ]
 
     static mapping = {
@@ -130,7 +127,6 @@ class Org
              scope          column:'org_scope'
         categoryId          column:'org_cat'
         gokbId              column:'org_gokb_id', type:'text'
-           orgType          column:'org_type_rv_fk'
             sector          column:'org_sector_rv_fk'
             status          column:'org_status_rv_fk'
         membership          column:'org_membership'
@@ -143,10 +139,11 @@ class Org
     lastImportDate          column:'org_last_import_date'
     costConfigurationPreset column:'org_config_preset_rv_fk'
 
-        orgRoleType joinTable: [name: 'org_roletype',
-                                key: 'org_id',
-                                column: 'refdata_value_id',
-                                type: "BIGINT"], lazy: false
+        orgType             joinTable: [
+                name:   'org_roletype',
+                key:    'org_id',
+                column: 'refdata_value_id', type:   'BIGINT'
+        ], lazy: false
 
         addresses   lazy: false
         contacts    lazy: false
@@ -168,7 +165,6 @@ class Org
            shortcode(nullable:true, blank:true, maxSize:128)
                scope(nullable:true, blank:true, maxSize:128)
           categoryId(nullable:true, blank:true, maxSize:128)
-             orgType(nullable:true, blank:true, maxSize:128)
               status(nullable:true, blank:true)
           membership(nullable:true, blank:true, maxSize:128)
              country(nullable:true, blank:true)
@@ -179,8 +175,8 @@ class Org
         importSource(nullable:true, blank:true)
       lastImportDate(nullable:true, blank:true)
       costConfigurationPreset(nullable:true, blank:false)
-        orgRoleType(nullable:true, blank:true)
-        gokbId (nullable:true, blank:true)
+             orgType(nullable:true, blank:true)
+             gokbId (nullable:true, blank:true)
     }
 
     @Override
@@ -418,7 +414,7 @@ class Org
                            gokbId: imp_uuid?.length() > 0 ? imp_uuid : null
           ).save()
           if(orgRoleTyp) {
-              result.addToOrgRoleType(orgRoleTyp).save()
+              result.addToOrgType(orgRoleTyp).save()
           }
 
             // SUPPORT MULTIPLE IDENTIFIERS
@@ -534,19 +530,19 @@ class Org
         )
     }
 
-    def getallOrgRoleType()
+    def getallOrgType()
     {
         def result = []
-        getallOrgRoleTypeIds()?.each { it ->
+        getallOrgTypeIds()?.each { it ->
                 result << RefdataValue.get(it)
         }
         result
     }
 
-    def getallOrgRoleTypeIds()
+    def getallOrgTypeIds()
     {
         List result = []
-        orgRoleType.collect{ it -> result.add(it.id) }
+        orgType.collect{ it -> result.add(it.id) }
         result
 
         /*

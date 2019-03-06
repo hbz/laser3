@@ -95,15 +95,35 @@ class UserDetailsController extends AbstractDebugController {
     }
 
     @Secured(['ROLE_ADMIN'])
-  def show() {
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
-    def userInstance = User.get(params.id)
-    result.ui = userInstance
-    result
-  }    
+    def show() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        def userInstance = User.get(params.id)
+        result.ui = userInstance
+        result
+    }
 
-  @Secured(['ROLE_ADMIN'])
+    @Secured(['ROLE_ADMIN'])
+    def newPassword() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
+        result.editable = true // TODO; checked in gsp against ROLE_YODA
+
+        def userInstance = User.get(params.id)
+        if (userInstance) {
+            userInstance.password = params.password
+            if (userInstance.save(flush: true)) {
+                flash.message = message(code: 'user.newPassword.success', args: [params.password])
+                redirect controller: 'userDetails', action: 'edit', id: params.id
+                return
+            }
+        }
+
+        flash.error = message(code: 'user.newPassword.fail')
+        redirect controller: 'userDetails', action: 'edit', id: params.id
+    }
+
+    @Secured(['ROLE_ADMIN'])
   def create() {
     switch (request.method) {
       case 'GET':
@@ -127,5 +147,4 @@ class UserDetailsController extends AbstractDebugController {
         break
     }
   }
-
 }

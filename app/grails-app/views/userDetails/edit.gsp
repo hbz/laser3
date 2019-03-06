@@ -20,22 +20,48 @@
         <div class="column wide eight">
             <div class="ui segment form">
 
-                <h4 class="ui header">Anzeigename</h4>
+                <div class="ui field">
+                    <label>Anzeigename</label>
+                    <span id="displayEdit"
+                          class="xEditableValue"
+                          data-type="text"
+                          data-pk="${ui.class.name}:${ui.id}"
+                          data-name="display"
+                          data-url='<g:createLink controller="ajax" action="editableSetValue"/>'
+                          data-original-title="${ui.display}">${ui.display}</span>
+                </div>
 
-                <span id="displayEdit"
-                      class="xEditableValue"
-                      data-type="textarea"
-                      data-pk="${ui.class.name}:${ui.id}"
-                      data-name="display"
-                      data-url='<g:createLink controller="ajax" action="editableSetValue"/>'
-                      data-original-title="${ui.display}">${ui.display}</span>
-
-                <h4 class="ui header">Enabled</h4>
-
-                <sec:ifAnyGranted roles="ROLE_YODA">
-                    <semui:xEditable owner="${ui}" field="enabled" />
-                </sec:ifAnyGranted>
+                <div class="ui field">
+                    <label>Email</label>
+                    <input type="text" readonly="readonly" value="${ui.email}">
+                </div>
             </div>
+
+            <sec:ifAnyGranted roles="ROLE_YODA">
+
+                <div class="ui segment form">
+
+                    <div class="ui field">
+                        <label>Enabled</label>
+                        <semui:xEditableBoolean owner="${ui}" field="enabled" />
+                    </div>
+
+                    <g:form controller="userDetails" action="newPassword" params="${[id: ui.id]}">
+                        <div class="ui two fields">
+                            <div class="ui field">
+                                <label>Neues Passwort setzen</label>
+                                <input type="text" readonly="readonly" name="password" value="${com.k_int.kbplus.auth.User.generateRandomPassword()}" />
+                            </div>
+                            <div class="ui field">
+                                <label>&nbsp;</label>
+                                <input type="submit" class="ui button orange" value="Übernehmen<%--und Mail verschicken--%>">
+                            </div>
+                        </div>
+                    </g:form>
+
+                </div>
+
+            </sec:ifAnyGranted>
         </div>
 
         <div class="column wide eight">

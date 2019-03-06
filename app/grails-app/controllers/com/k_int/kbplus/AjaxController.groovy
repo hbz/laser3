@@ -27,8 +27,8 @@ class AjaxController {
     def refdata_config = [
     "ContentProvider" : [
       domain:'Org',
-      countQry:"select count(o) from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?)",
-      rowQry:"select o from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?) order by o.name asc",
+      countQry:"select count(o) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?)",
+      rowQry:"select o from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?) order by o.name asc",
       qryParams:[
               [
                 param:'sSearch',
@@ -575,15 +575,22 @@ class AjaxController {
       rq.each { it ->
         def rowobj = GrailsHibernateUtil.unwrapIfProxy(it)
 
-          if ( it instanceof AbstractI10nTranslatable) {
-              result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${it.getI10n(config.cols[0])}"])
+          // handle custom constraint(s) ..
+          if (it.value.equalsIgnoreCase('deleted') && params.constraint?.equalsIgnoreCase('removeValue_deleted')) {
+              log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
+          // default ..
           else {
-              def objTest = rowobj[config.cols[0]]
-              if (objTest) {
-                  def no_ws = objTest.replaceAll(' ','');
-                  def local_text = message(code:"refdata.${no_ws}", default:"${objTest}");
-                  result.add([value:"${rowobj.class.name}:${rowobj.id}", text:"${local_text}"])
+              if (it instanceof AbstractI10nTranslatable) {
+                  result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n(config.cols[0])}"])
+              }
+              else {
+                  def objTest = rowobj[config.cols[0]]
+                  if (objTest) {
+                      def no_ws = objTest.replaceAll(' ', '');
+                      def local_text = message(code: "refdata.${no_ws}", default: "${objTest}");
+                      result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${local_text}"])
+                  }
               }
           }
       }
@@ -910,7 +917,7 @@ class AjaxController {
             }
             else {
                 msg = message(code: 'ajax.addCustPropertyType.success')
-                newProp.softData = true
+                //newProp.softData = true
                 newProp.save(flush: true)
 
                 if (params.autoAdd == "on" && newProp) {
@@ -1463,8 +1470,8 @@ class AjaxController {
     }
     query_params.add(fuzzyString)
     query_params.add(RefdataValue.getByValueAndCategory('Deleted', 'OrgStatus'))
-    String countQry = "select count(o) from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?)"
-    String rowQry = "select o from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?) order by o.name asc"
+    String countQry = "select count(o) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?)"
+    String rowQry = "select o from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?) order by o.name asc"
     def cq = Org.executeQuery(countQry,query_params);
 
     def rq = Org.executeQuery(rowQry,

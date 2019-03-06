@@ -13,8 +13,9 @@
     <body>
 
         <semui:debugInfo>
-            <g:render template="/templates/debug/orgRoles" model="[debug: license.orgLinks]" />
-            <g:render template="/templates/debug/prsRoles" model="[debug: license.prsLinks]" />
+            <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+            <g:render template="/templates/debug/orgRoles"  model="[debug: license.orgLinks]" />
+            <g:render template="/templates/debug/prsRoles"  model="[debug: license.prsLinks]" />
         </semui:debugInfo>
 
         <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
@@ -136,7 +137,7 @@
 
                             <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
                                 <g:each in="${license.subscriptions.sort{it.name}}" var="sub">
-                                    <g:if test="${contextOrg?.id in sub.orgRelations?.org?.id || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextOrg?.getallOrgRoleTypeIds())}">
+                                    <g:if test="${contextOrg?.id in sub.orgRelations?.org?.id || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextOrg?.getallOrgTypeIds())}">
                                         <table class="ui three column la-selectable table">
                                             <tr>
                                                 <th scope="row">${message(code:'license.linkedSubscription', default:'Linked Subscription')}</th>

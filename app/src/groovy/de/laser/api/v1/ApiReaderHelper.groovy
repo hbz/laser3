@@ -152,7 +152,7 @@ class ApiReaderHelper {
         }
 
         // TODO check orgRole.roleType
-        if (org.id == context?.id || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in context?.getallOrgRoleTypeIds())) {
+        if (org.id == context?.id || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in context?.getallOrgTypeIds())) {
             hasAccess = true
         }
         if (hasAccess) {
@@ -162,8 +162,8 @@ class ApiReaderHelper {
             result.shortname    = org.shortname
             result.sortname     = org.sortname
 
-            result.orgType      = org.orgType?.value
-            result.orgRoleType  = resolveOrgRoleTypes(org.orgRoleType)
+            //result.orgType      = org.orgType?.value
+            result.orgType  = resolveOrgRoleTypes(org.orgType)
             result.libraryType  = org.libraryType?.value
             result.federalState = org.federalState?.value
             result.country      = org.country?.value

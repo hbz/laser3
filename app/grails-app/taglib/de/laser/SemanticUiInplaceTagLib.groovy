@@ -129,7 +129,19 @@ class SemanticUiInplaceTagLib {
                 def oid = "${attrs.owner.class.name}:${attrs.owner.id}"
                 def dataController = attrs.dataController ?: 'ajax'
                 def dataAction = attrs.dataAction ?: 'sel2RefdataSearch'
-                def data_link = createLink(controller:dataController, action: dataAction, params:[id:attrs.config,format:'json',oid:oid]).encodeAsHTML()
+
+                Map params = [id:attrs.config, format:'json', oid:oid]
+
+                if (attrs.constraint) {
+                    params.put('constraint', attrs.constraint)
+                }
+
+                def data_link = createLink(
+                        controller:dataController,
+                        action: dataAction,
+                        params: params
+                ).encodeAsHTML()
+
                 def update_link = createLink(controller:'ajax', action: 'genericSetRel').encodeAsHTML()
                 def id = attrs.id ?: "${oid}:${attrs.field}"
                 def default_empty = message(code:'default.button.edit.label')
@@ -147,7 +159,8 @@ class SemanticUiInplaceTagLib {
 
                 // Output an editable link
                 out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne\" " + dataValue +
-                        "data-pk=\"${oid}\" data-type=\"select\" data-name=\"${attrs.field}\" data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"
+                        "data-pk=\"${oid}\" data-type=\"select\" data-name=\"${attrs.field}\" " +
+                        "data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"
 
                 // Here we can register different ways of presenting object references. The most pressing need to be
                 // outputting a a containing an icon for refdata fields.

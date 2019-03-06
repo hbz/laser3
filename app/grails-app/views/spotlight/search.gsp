@@ -19,7 +19,7 @@
         else if (hit.getSource().rectype == 'Organisation') {
             result << [
                 "title": "${hit.getSource().name}",
-                "url":   g.createLink(controller:"organisations", action:"show", id="${hit.getSource().dbId}"),
+                "url":   g.createLink(controller:"organisations", action:"show", id:"${hit.getSource().dbId}"),
                 "category": "${message(code: 'spotlight.organisation')}"
             ]
         }
