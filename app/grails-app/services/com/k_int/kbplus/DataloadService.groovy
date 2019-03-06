@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.*
 import de.laser.SystemEvent
+import de.laser.interfaces.TemplateSupport
 import org.hibernate.ScrollMode
 import java.nio.charset.Charset
 import java.util.GregorianCalendar
@@ -81,6 +82,7 @@ class DataloadService {
             result._id = org.globalUID
             result.dbId = org.id
             result.impId = org.impId
+            result.gokbId = org.gokbId
             result.guid = org.globalUID ?:''
 
             result.name = org.name
@@ -110,6 +112,7 @@ class DataloadService {
                 result._id = ti.globalUID
                 result.dbId = ti.id
                 result.impId = ti.impId
+                result.gokbId = ti.gokbId
                 result.guid = ti.globalUID ?:''
 
                 result.identifiers = []
@@ -142,6 +145,7 @@ class DataloadService {
             result._id = pkg.globalUID
             result.dbId = pkg.id
             result.impId = pkg.impId
+            result.gokbId = pkg.gokbId
             result.guid = pkg.globalUID ?:''
 
             result.consortiaId = pkg.getConsortia()?.id
@@ -197,8 +201,17 @@ class DataloadService {
             result._id = lic.globalUID
             result.dbId = lic.id
             result.guid = lic.globalUID ?:''
-            //TODO: Überarbeiten availableToOrgs
-            result.availableToOrgs = lic.orgLinks.find{it.roleType?.value in ["Licensee", "Licensee_Consortial", "Licensing Consortium"]}?.org?.id
+            switch(lic.getCalculatedType()) {
+                case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
+                    result.availableToOrgs = lic.orgLinks.findAll{it.roleType?.value in ["Licensing Consortium"]}?.org?.id
+                    break
+                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
+                    result.availableToOrgs = lic.orgLinks.findAll{it.roleType?.value in ["Licensee_Consortial"]}?.org?.id
+                    break
+                default:
+                    result.availableToOrgs = lic.orgLinks.findAll{it.roleType?.value in ["Licensee"]}?.org?.id
+                    break
+            }
             result.name = lic.reference
             result.rectype = 'License'
             result.status = lic.status?.value
@@ -214,6 +227,7 @@ class DataloadService {
             result._id = plat.globalUID
             result.dbId = plat.id
             result.impId = plat.impId
+            result.gokbId = plat.gokbId
             result.guid = plat.globalUID ?:''
 
             result.name = plat.name
@@ -229,8 +243,17 @@ class DataloadService {
             result._id = sub.globalUID
             result.dbId = sub.id
             result.guid = sub.globalUID ?:''
-
-            result.availableToOrgs = sub.orgRelations.find{it.roleType?.value in ["Subscriber", "Subscriber_Consortial", "Subscription Consortia"] }?.org?.id
+            switch(sub.getCalculatedType()) {
+                case TemplateSupport.CALCULATED_TYPE_CONSORTIAL:
+                    result.availableToOrgs = sub.orgRelations.find{it.roleType?.value in ["Subscription Consortia"] }?.org?.id
+                    break
+                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
+                    result.availableToOrgs = sub.orgRelations.find{it.roleType.value in ["Subscriber_Consortial"] }?.org?.id
+                    break
+                default:
+                    result.availableToOrgs = sub.orgRelations.find{it.roleType?.value in ["Subscriber", "Subscriber_Consortial", "Subscription Consortia"] }?.org?.id
+                    break
+            }
             result.consortiaId = sub.getConsortia()?.id
             result.consortiaName = sub.getConsortia()?.name
             result.name = sub.name

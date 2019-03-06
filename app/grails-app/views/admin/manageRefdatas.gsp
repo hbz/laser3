@@ -6,6 +6,11 @@
 		<title>${message(code: 'menu.admin.manageRefdatas')}</title>
 	</head>
 
+        <semui:debugInfo>
+            <g:render template="/templates/refdata/integrityCheck" model="[result: integrityCheckResult]" />
+        </semui:debugInfo>
+
+
 		<semui:breadcrumbs>
 			<semui:crumb message="menu.admin.dash" controller="admin" action="index" />
 			<semui:crumb message="menu.admin.manageI10n" class="active"/>
@@ -14,7 +19,6 @@
 		<h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.admin.manageRefdatas"/></h1>
 
         <semui:messages data="${flash}" />
-
 
             <div class="content ui form">
                 <div class="fields">
@@ -71,11 +75,6 @@ ${usedRdvList.join(", ")}
                                     <strong><semui:xEditable owner="${rdcI10n}" field="valueEn" /></strong>
                                 </td>
                                 <td>
-                                    <g:if test="${rdc.softData}">
-                                        <span data-position="top right" data-tooltip="${message(code:'default.softData.tooltip')}">
-                                            <i class="tint icon teal"></i>
-                                        </span>
-                                    </g:if>
                                 </td>
                             </tr>
 
@@ -88,8 +87,8 @@ ${usedRdvList.join(", ")}
                                             </span>
                                         </g:if>
 
-                                        <g:if test="${! usedRdvList?.contains(rdv.id)}">
-                                            <span data-position="top left" data-tooltip="Dieser Wert wird bisher nicht verwendet (ID:${rdv.id})">
+                                        <g:if test="${usedRdvList?.contains(rdv.id)}">
+                                            <span data-position="top left" data-tooltip="${message(code:'default.dataIsUsed.tooltip', args:[rdv.id])}">
                                                 <i class="info circle icon blue"></i>
                                             </span>
                                         </g:if>
@@ -104,12 +103,6 @@ ${usedRdvList.join(", ")}
                                         <semui:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueEn" />
                                     </td>
                                     <td class="x">
-                                        <g:if test="${rdv.softData}">
-                                            <span data-position="top right" data-tooltip="${message(code:'default.softData.tooltip')}">
-                                                <i class="tint icon teal"></i>
-                                            </span>
-                                        </g:if>
-
                                         <sec:ifAnyGranted roles="ROLE_YODA">
                                             <g:if test="${usedRdvList?.contains(rdv.id)}">
                                                 <span data-position="top right" data-tooltip="${message(code:'refdataValue.exchange.label')}">
@@ -122,7 +115,7 @@ ${usedRdvList.join(", ")}
                                             </g:if>
                                         </sec:ifAnyGranted>
 
-                                        <g:if test="${rdv.softData && ! usedRdvList?.contains(rdv.id)}">
+                                        <g:if test="${! rdv.hardData && ! usedRdvList?.contains(rdv.id)}">
                                             <g:link controller="admin" action="manageRefdatas"
                                                     params="${[cmd: 'deleteRefdataValue', rdv: 'com.k_int.kbplus.RefdataValue:' + rdv.id]}" class="ui icon negative button">
                                                 <i class="trash alternate icon"></i>
@@ -143,17 +136,23 @@ ${usedRdvList.join(", ")}
                 <input type="hidden" name="cmd" value="replaceRefdataValue"/>
                 <input type="hidden" name="xcgRdvFrom" value=""/>
 
-                <p>
-                    <strong>WARNUNG</strong>
-                </p>
-
-                <p>
-                    Alle Vorkommen von <strong class="xcgInfo"></strong> in der Datenbank durch folgenden Wert ersetzen:
-                </p>
+                Alle Vorkommen von <strong class="xcgInfo"></strong> in der Datenbank durch den unten angegebenen Wert ersetzen.
+                <br />
+                <br />
 
                 <div class="field">
-                    <label for="xcgRdvTo">&nbsp;</label>
+                    <label for="xcgRdvTo">Innerhalb derselben Kategorie</label>
                     <select id="xcgRdvTo"></select>
+                </div>
+
+                <p>oder</p>
+
+                <div class="field">
+                    <label for="xcgRdvGlobalTo">Kategorieübergreifend</label>
+                    <div class="ui right labeled input">
+                        <input id="xcgRdvGlobalTo" name="xcgRdvGlobalTo" value="RefdataCategory_KEY:RefdataValue_KEY" />
+                        <div class="ui red label">WARNUNG</div>
+                    </div>
                 </div>
 
             </g:form>

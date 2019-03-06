@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.helper.RefdataAnnotation
 
 import javax.persistence.Transient
 
@@ -48,8 +49,10 @@ class UserSettings {
     User         user
     KEYS         key
     String       strValue
-    RefdataValue rdValue
     Org          orgValue
+
+    @RefdataAnnotation(cat = RefdataAnnotation.GENERIC)
+    RefdataValue rdValue
 
     static mapping = {
         id         column:'us_id'

@@ -43,11 +43,7 @@
                                     <td><g:message code="propertyDefinition.${ppd.descr}.label" default="${ppd.descr}" /></td>
                                     <td>
                                         ${ppd.name}
-                                        <g:if test="${ppd.softData}">
-                                            <span data-position="top right" data-tooltip="${message(code:'default.softData.tooltip')}">
-                                                <i class="tint icon teal"></i>
-                                            </span>
-                                        </g:if>
+
                                         <g:if test="${ppd.mandatory}">
                                             <span data-position="top right" data-tooltip="${message(code:'default.mandatory.tooltip')}">
                                                 <i class="star icon yellow"></i>

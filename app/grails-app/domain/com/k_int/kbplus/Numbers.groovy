@@ -1,8 +1,12 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RefdataAnnotation
+
 class Numbers {
 
+    @RefdataAnnotation(cat = '?')
     RefdataValue type
+
     Integer number
     Date startDate
     Date endDate

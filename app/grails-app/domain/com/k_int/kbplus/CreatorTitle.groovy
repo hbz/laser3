@@ -1,8 +1,12 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RefdataAnnotation
+
 class CreatorTitle {
 
+    @RefdataAnnotation(cat = '?')
     RefdataValue role
+
     Date dateCreated
     Date lastUpdated
 

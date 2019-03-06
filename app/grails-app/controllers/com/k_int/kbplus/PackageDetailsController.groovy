@@ -561,7 +561,7 @@ select s from Subscription as s where
 
         if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), contextOrg)) {
             result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
-            result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in contextOrg?.getallOrgRoleTypeIds())) ? 'package' : 'institution'
+            result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in contextOrg?.getallOrgTypeIds())) ? 'package' : 'institution'
             result.packageIdentifier = packageInstance.getIdentifierByType('isil')?.value
         }
 
@@ -617,6 +617,10 @@ select s from Subscription as s where
         }
         result.packageInstance = packageInstance
 
+        def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', 'PendingChangeStatus')
+
+        result.pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where pc.pkg=? and ( pc.status is null or pc.status = ? ) order by ts, changeDoc", [packageInstance, pending_change_pending_status]);
+
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
         params.max = result.max
         def paginate_after = params.paginate_after ?: ((2 * result.max) - 1);
@@ -630,9 +634,8 @@ select s from Subscription as s where
 
         def base_qry = generateBasePackageQuery(params, qry_params, showDeletedTipps, date_filter);
 
-    log.debug("Base qry: ${base_qry}, params: ${qry_params}, result:${result}");
-    result.titlesList = TitleInstancePackagePlatform.executeQuery("select tipp "+base_qry, qry_params, limits);
-    result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + base_qry, qry_params ).size()
+        result.titlesList = TitleInstancePackagePlatform.executeQuery("select tipp "+base_qry, qry_params, limits);
+        result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id " + base_qry, qry_params ).size()
 
         result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max;
 

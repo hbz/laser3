@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RefdataAnnotation
 import groovy.util.logging.Log4j
 
 @Log4j
@@ -8,11 +9,13 @@ class PlatformAccessMethod extends AbstractBaseDomain {
 
     Date validFrom
     Date validTo
-    RefdataValue accessMethod       // RefdataCategory 'Access Method'
     Platform platf
     Date dateCreated
     Date lastUpdated
-    
+
+    @RefdataAnnotation(cat = 'Access Method')
+    RefdataValue accessMethod
+
     static belongsTo = [
         platf:Platform,
     ]

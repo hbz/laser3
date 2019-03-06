@@ -1,6 +1,6 @@
+<%@ page import="de.laser.helper.RDStore; com.k_int.properties.PropertyDefinition" %>
 <!doctype html>
 <r:require module="annotations" />
-<%@ page import="com.k_int.properties.PropertyDefinition" %>
 <laser:serviceInjection />
 
 <html>
@@ -13,8 +13,9 @@
     <body>
 
         <semui:debugInfo>
-            <g:render template="/templates/debug/orgRoles" model="[debug: license.orgLinks]" />
-            <g:render template="/templates/debug/prsRoles" model="[debug: license.prsLinks]" />
+            <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+            <g:render template="/templates/debug/orgRoles"  model="[debug: license.orgLinks]" />
+            <g:render template="/templates/debug/prsRoles"  model="[debug: license.prsLinks]" />
         </semui:debugInfo>
 
         <g:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
@@ -136,7 +137,7 @@
 
                             <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
                                 <g:each in="${license.subscriptions.sort{it.name}}" var="sub">
-                                    <g:if test="${contextOrg?.id in sub.orgRelations?.org?.id || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextOrg?.getallOrgRoleTypeIds())}">
+                                    <g:if test="${contextOrg?.id in sub.orgRelations?.org?.id || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextOrg?.getallOrgTypeIds())}">
                                         <table class="ui three column la-selectable table">
                                             <tr>
                                                 <th scope="row">${message(code:'license.linkedSubscription', default:'Linked Subscription')}</th>
@@ -244,19 +245,20 @@
                                             editmode: editable
                                   ]}" />
 
-                        <g:render template="/templates/links/orgLinksModal"
+                        <g:render template="/templates/links/orgLinksSimpleModal"
                                   model="${[linkType: license?.class?.name,
-                                            parent: license.class.name+':'+license.id,
+                                            parent: license.class.name + ':' + license.id,
                                             property: 'orgLinks',
                                             recip_prop: 'lic',
-                                            tmplRole: com.k_int.kbplus.RefdataValue.getByValueAndCategory('Licensor', 'Organisational Role'),
-                                            tmplText:'Lizenzgeber mit diesem Vertrag verknüpfen',
-                                            tmplID:'CommercialOrgs',
-                                            tmplButtonText: 'Änderungen speichern',
+                                            tmplRole: RDStore.OR_LICENSOR,
+                                            tmplEntity: 'Lizenzgeber',
+                                            tmplText: 'Lizenzgeber mit diesem Vertrag verknüpfen',
+                                            tmplButtonText: 'Lizenzgeber verknüpfen',
                                             tmplModalID:'osel_add_modal_lizenzgeber',
-                                            editmode: editable
+                                            editmode: editable,
+                                            orgList: availableLicensorList,
+                                            signedIdList: existingLicensorIdList
                                   ]}" />
-
                         </div>
                     </div>
 

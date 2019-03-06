@@ -6,8 +6,8 @@ import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.properties.PropertyDefinition
 import de.laser.AccessService
 import de.laser.controller.AbstractDebugController
-import de.laser.helper.DateUtil
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
 import de.laser.interfaces.TemplateSupport
 import grails.doc.internal.StringEscapeCategory
@@ -23,7 +23,6 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.hibernate.cfg.NotYetImplementedException
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -62,7 +61,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
     def GOKbService
     def navigationGenerationService
     def financeService
-    def providerHelperService
+    def orgTypeService
     def subscriptionsQueryService
 
     private static String INVOICES_FOR_SUB_HQL =
@@ -941,7 +940,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) {
+        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) {
             def fsq = filterService.getOrgComboQuery(params, result.institution)
             result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             result.cons_members_disabled = []
@@ -967,9 +966,9 @@ class SubscriptionDetailsController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-        def orgRoleType = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')?.id.toString()]
-        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) {
-            orgRoleType = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString()]
+        def orgType = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')?.id.toString()]
+        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) {
+            orgType = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString()]
         }
 
         def subStatus = RefdataValue.get(params.subStatus) ?: RefdataCategory.lookupOrCreate('Subscription Status', 'Current')
@@ -985,7 +984,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
-            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) {
+            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) {
                 def cons_members = []
                 def licenseCopy
 
@@ -1006,7 +1005,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
                         def subLicenseParams = [
                                 lic_name     : "${subLicense.reference} (${postfix})",
                                 isSlaved     : params.isSlaved,
-                                asOrgRoleType: orgRoleType,
+                                asOrgType: orgType,
                                 copyStartEnd : true
                         ]
 
@@ -1547,7 +1546,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             response.sendError(401); return
         }
 
-        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) {
+        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) {
 
         }
 
@@ -1592,13 +1591,13 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     }
                 }
 
-                if (!Package.findByImpId(grt.owner.uuid)) {
+                if (!Package.findByGokbId(grt.owner.uuid)) {
                     globalSourceSyncService.initialiseTracker(grt);
                     //Update INDEX ES
                     dataloadService.updateFTIndexes();
                 }
 
-                def pkg_to_link = Package.findByImpId(grt.owner.uuid)
+                def pkg_to_link = Package.findByGokbId(grt.owner.uuid)
                 def sub_instances = Subscription.executeQuery("select s from Subscription as s where s.instanceOf = ? ", [result.subscriptionInstance])
                 log.debug("Add package ${params.addType} to subscription ${params}");
 
@@ -1649,8 +1648,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             result.pkgs = []
             if (params.gokbApi) {
                 result.subscriptionInstance.packages.each { sp ->
-                    log.debug("Existing package ${sp.pkg.name} (Adding ImpID: ${sp.pkg.impId})")
-                    result.pkgs.add(sp.pkg.impId)
+                    log.debug("Existing package ${sp.pkg.name} (Adding ImpID: ${sp.pkg.gokbId})")
+                    result.pkgs.add(sp.pkg.gokbId)
                 }
             } else {
                 result.subscriptionInstance.packages.each { sp ->
@@ -1863,10 +1862,16 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def show() {
+
+        DebugUtil du = new DebugUtil()
+        du.setBenchMark('1')
+
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
+
+        du.setBenchMark('2')
 
         // unlink license
 
@@ -1879,6 +1884,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             }
         }
 
+        du.setBenchMark('3')
+
         //if (!result.institution) {
         //    result.institution = result.subscriptionInstance.subscriber ?: result.subscriptionInstance.consortia
         //}
@@ -1887,6 +1894,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             result.institutional_usage_identifier =
                     OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
         }
+
+        du.setBenchMark('links')
 
         LinkedHashMap<String, List> links = navigationGenerationService.generateNavigation(Subscription.class.name, result.subscription.id)
         result.navPrevSubscription = links.prevLink
@@ -1918,6 +1927,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             }
         }
 
+        du.setBenchMark('pending changes')
+
         // ---- pendingChanges : start
 
         if (executorWrapperService.hasRunningProcess(result.subscriptionInstance)) {
@@ -1948,6 +1959,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
         // ---- pendingChanges : end
 
+        du.setBenchMark('tasks')
+
         // tasks
         def contextOrg = contextService.getOrg()
         result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
@@ -1962,6 +1975,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             }
         }
         result.visibleOrgRelations.sort { it.org.sortname }
+
+        du.setBenchMark('properties')
 
         // -- private properties
 
@@ -2010,6 +2025,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 }
             }
         }
+
+        du.setBenchMark('usage')
+
         // usage
         def suppliers = result.subscriptionInstance.issueEntitlements?.tipp.pkg.contentProvider?.id.unique()
 
@@ -2042,7 +2060,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     }
 
                     result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
-                    result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) ? 'package' : 'institution'
+                    result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) ? 'package' : 'institution'
                     result.usage = fsresult?.usage
                     result.x_axis_labels = fsresult?.x_axis_labels
                     result.y_axis_labels = fsresult?.y_axis_labels
@@ -2054,6 +2072,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             }
         }
 
+        du.setBenchMark('costs')
+
         //determine org role
         if (result.subscription.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_CONSORTIAL))
             params.view = "cons"
@@ -2062,6 +2082,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         else if (result.subscription.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_PARTICIPATION) && !result.subscription.getConsortia().equals(result.institution))
             params.view = "subscr"
         //cost items
+        params.forExport = true
         LinkedHashMap costItems = financeService.getCostItemsForSubscription(result.subscription, params, 10, 0)
         result.costItemSums = [:]
         if (costItems.own.count > 0) {
@@ -2074,19 +2095,25 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             result.costItemSums.subscrCosts = costItems.subscr.sums
         }
 
-        result.availableProviderList = providerHelperService.getAllWithTypeProvider().minus(
+        du.setBenchMark('provider & agency filter')
+
+        result.availableProviderList = orgTypeService.getOrgsForTypeProvider().minus(
                 OrgRole.executeQuery(
                         "select o from OrgRole oo join oo.org o where oo.sub.id = :sub and oo.roleType.value = 'Provider'",
                         [sub: result.subscriptionInstance.id]
                 ))
-        result.existingProviderIdList = providerHelperService.getCurrentProviders(contextService.getOrg()).collect { it -> it.id }
+        result.existingProviderIdList = [] // performance problems: orgTypeService.getCurrentProviders(contextService.getOrg()).collect { it -> it.id }
 
-        result.availableAgencyList = providerHelperService.getAllWithTypeAgency().minus(
+        result.availableAgencyList = orgTypeService.getOrgsForTypeAgency().minus(
                 OrgRole.executeQuery(
                         "select o from OrgRole oo join oo.org o where oo.sub.id = :sub and oo.roleType.value = 'Agency'",
                         [sub: result.subscriptionInstance.id]
                 ))
-        result.existingAgencyIdList = providerHelperService.getCurrentAgencies(contextService.getOrg()).collect { it -> it.id }
+        result.existingAgencyIdList = [] // performance problems: orgTypeService.getCurrentAgencies(contextService.getOrg()).collect { it -> it.id }
+
+        List bm = du.stopBenchMark()
+        result.benchMark = bm
+        log.debug (bm)
 
         result
     }
@@ -2096,11 +2123,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
     def renewSubscriptionConsortia() {
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        if (!(result || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in contextService.getOrg()?.getallOrgRoleTypeIds()))) {
+        if (!(result || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in contextService.getOrg()?.getallOrgTypeIds()))) {
             response.sendError(401); return
         }
 
-        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) {
+        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) {
             def baseSub = Subscription.get(params.baseSubscription ?: params.id)
 
             use(TimeCategory) {
@@ -3198,7 +3225,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     'Name', g.message(code: 'org.shortname.label'), g.message(code: 'org.sortname.label')]
 
             def orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')
-            def orgRoleType = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
+            def orgType = RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')
 
 
             if (addHigherEducationTitles) {

@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.ShareSupport
 import de.laser.traits.ShareableTrait
 
@@ -22,16 +23,34 @@ class Package
   String name
   String sortName
   String impId
+  String gokbId
   String vendorURL
   String cancellationAllowances
-  RefdataValue packageType
-  RefdataValue packageStatus        // RefdataCategory 'Package Status'
-  RefdataValue packageListStatus    // RefdataCategory 'Package.ListStatus'
-  RefdataValue breakable
-  RefdataValue consistent
-  RefdataValue fixed
-  RefdataValue isPublic
-  RefdataValue packageScope
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue packageType
+
+    @RefdataAnnotation(cat = 'Package Status')
+    RefdataValue packageStatus
+
+    @RefdataAnnotation(cat = 'Package.ListStatus')
+    RefdataValue packageListStatus
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue breakable
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue consistent
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue fixed
+
+    @RefdataAnnotation(cat = 'YN')
+    RefdataValue isPublic
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue packageScope
+
   Platform nominalPlatform
   Date startDate
   Date endDate
@@ -69,6 +88,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                     name column:'pkg_name'
                 sortName column:'pkg_sort_name'
                    impId column:'pkg_imp_id', index:'pkg_imp_id_idx'
+                  gokbId column:'pkg_gokb_id', type:'text'
              packageType column:'pkg_type_rv_fk'
            packageStatus column:'pkg_status_rv_fk'
        packageListStatus column:'pkg_list_status_rv_fk'
@@ -105,6 +125,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
               packageScope(nullable:true, blank:false)
                    forumId(nullable:true, blank:false)
                      impId(nullable:true, blank:false)
+                    gokbId(nullable:true, blank:false)
                  vendorURL(nullable:true, blank:false)
     cancellationAllowances(nullable:true, blank:false)
                   sortName(nullable:true, blank:false)
@@ -391,6 +412,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     result.packageName = this.name
     result.packageId = this.identifier
     result.impId = this.impId
+    result.gokbId = this.gokbId
 
     result.tipps = []
     this.tipps.each { tip ->

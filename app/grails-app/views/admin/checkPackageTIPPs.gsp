@@ -58,7 +58,7 @@
 
     <div class="twelve wide column">
         <div>
-            <g:if test="${hits}">
+            <g:if test="${records}">
                 <div class="paginateButtons" style="text-align:center">
                     <g:if test="${params.int('offset')}">
                         ${message(code:'default.search.offset.text', args:[(params.int('offset') + 1),(resultsTotal < (params.int('max') + params.int('offset')) ? resultsTotal : (params.int('max') + params.int('offset'))),resultsTotal])}
@@ -82,14 +82,14 @@
                         </thead>
                         <tbody>
 
-                        <g:each in="${hits}" var="hit" >
+                        <g:each in="${records}" var="hit" >
                             <tr>
                                 <td>
                                     ${hit.getSource().name} <a target="_blank" href="${es_host_url ? es_host_url+'/gokb/resource/show/'+hit.id : '#'}" ><i title="GOKB Link" class="external alternate icon"></i></a>
                                 </td>
                                 <td>
-                                    <g:if test="${com.k_int.kbplus.Package.findByImpId(hit.id)}">
-                                        <g:link controller="packageDetails" target="_blank" action="show" id="${com.k_int.kbplus.Package.findByImpId(hit.id).id}">${com.k_int.kbplus.Package.findByImpId(hit.id).name}</g:link>
+                                    <g:if test="${com.k_int.kbplus.Package.findByGokbId(hit.id)}">
+                                        <g:link controller="packageDetails" target="_blank" action="show" id="${com.k_int.kbplus.Package.findByGokbId(hit.id).id}">${com.k_int.kbplus.Package.findByGokbId(hit.id).name}</g:link>
                                     </g:if>
                                     <g:else>
                                         No Package in LAS:eR
@@ -98,10 +98,10 @@
                                 <td>
                                     <b>${hit.getSource().tippsCountCurrent?:'0'} ${message(code:'title.plural', default:'Titles')}</b>
                                 </td>
-                                <g:if test="${com.k_int.kbplus.Package.findByImpId(hit.id)}">
-                                    <g:set var="style" value="${(com.k_int.kbplus.Package.findByImpId(hit.id)?.tipps?.size() != hit.getSource().tippsCountCurrent && hit.getSource().tippsCountCurrent != 0) ? "style=background-color:red;":''}"/>
+                                <g:if test="${com.k_int.kbplus.Package.findByGokbId(hit.id)}">
+                                    <g:set var="style" value="${(com.k_int.kbplus.Package.findByGokbId(hit.id)?.tipps?.size() != hit.getSource().tippsCountCurrent && hit.getSource().tippsCountCurrent != 0) ? "style=background-color:red;":''}"/>
                                     <td ${style}>
-                                            <b>${com.k_int.kbplus.Package.findByImpId(hit.id).tipps.size() ?:'0'} ${message(code:'title.plural', default:'Titles')}</b>
+                                            <b>${com.k_int.kbplus.Package.findByGokbId(hit.id).tipps.size() ?:'0'} ${message(code:'title.plural', default:'Titles')}</b>
                                     </td>
                                 </g:if>
                                 <g:else>
@@ -127,12 +127,7 @@
                     ${message(code:'default.search.no_pagiantion.text', args:[resultsTotal])}
                 </g:else>
             </div>
-            <g:if test="${hits}" >
-                <semui:paginate action="checkPackageTIPPs"  params="${params}"
-                                next="${message(code: 'default.paginate.next', default: 'Next')}"
-                                prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
-                                total="${resultsTotal}"/>
-            </g:if>
+
         </div>
     </div>
 

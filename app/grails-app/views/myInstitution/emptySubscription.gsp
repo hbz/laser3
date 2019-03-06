@@ -38,11 +38,11 @@
                     <semui:datepicker label="subscription.endDate.label" name="valid_to" value="${defaultEndYear}" />
                 </div>
 
-                <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgRoleType)}">
+                <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgType)}">
                     <div class="field">
                         <label>${message(code:'myinst.emptySubscription.create_as', default:'Create with the role of')}</label>
 
-                        <select id="asOrgRoleType" name="asOrgRoleType" class="ui dropdown">
+                        <select id="asOrgType" name="asOrgType" class="ui dropdown">
                             <g:each in="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value in (:wl) and rdv.owner.desc = :ot', [wl:['Consortium', 'Institution'], ot:'OrgRoleType'])}" var="opt">
                                 <option value="${opt.id}" data-value="${opt.value}">${opt.getI10n('value')}</option>
                             </g:each>
@@ -61,7 +61,7 @@
 
     <hr>
 
-        <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgRoleType)}">
+        <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgType)}">
 
             <g:if test="${! cons_members}">
                 <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
@@ -113,7 +113,7 @@
                     $(this).parents('form').submit()
                 })
 
-                $('#asOrgRoleType').change(function() {
+                $('#asOrgType').change(function() {
                     var selVal = $(this).find('option:selected').attr('data-value')
                     if ('Consortium' == selVal) {
                         $('.cons-options').show()

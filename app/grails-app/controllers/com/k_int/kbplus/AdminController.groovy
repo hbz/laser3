@@ -3,14 +3,21 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
+import de.laser.GOKbService
 import de.laser.SystemEvent
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RefdataAnnotation
 import grails.plugin.springsecurity.SpringSecurityUtils;
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import au.com.bytecode.opencsv.CSVReader
 import com.k_int.properties.PropertyDefinition
+import grails.web.Action
+
+import java.lang.reflect.Field
+import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController extends AbstractDebugController {
@@ -35,6 +42,7 @@ class AdminController extends AbstractDebugController {
   def propertyInstanceMap = org.codehaus.groovy.grails.plugins.DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
   def executorService
   def ESSearchService
+  def GOKbService
 
   @Secured(['ROLE_ADMIN'])
   def index() { }
@@ -989,7 +997,7 @@ class AdminController extends AbstractDebugController {
             def rdv = genericOIDService.resolveOID(params.rdv)
 
             if (rdv) {
-                if (rdv.softData) {
+                if (! rdv.hardData) {
                     try {
                         rdv.delete(flush:true)
                         flash.message = "${params.rdv} wurde gelöscht."
@@ -1002,19 +1010,40 @@ class AdminController extends AbstractDebugController {
         }
         else if (params.cmd == 'replaceRefdataValue') {
             if (SpringSecurityUtils.ifAnyGranted('ROLE_YODA')) {
-                def rdvFrom = genericOIDService.resolveOID(params.xcgRdvFrom)
-                def rdvTo = genericOIDService.resolveOID(params.xcgRdvTo)
+                RefdataValue rdvFrom = genericOIDService.resolveOID(params.xcgRdvFrom)
+                RefdataValue rdvTo = genericOIDService.resolveOID(params.xcgRdvTo)
 
-                if (rdvFrom && rdvTo && rdvFrom.owner == rdvTo.owner) {
+                boolean check = false
 
+                if (! rdvFrom) {
+                    check = false
+                }
+                else if (rdvTo && rdvTo.owner == rdvFrom.owner) {
+                    check = true
+                }
+                else if (! rdvTo && params.xcgRdvGlobalTo) {
+
+                    List<String> pParts = params.xcgRdvGlobalTo.split(':')
+                    if (pParts.size() == 2) {
+                        RefdataCategory rdvToCat = RefdataCategory.findByDesc(pParts[0].trim())
+                        RefdataValue rdvToRdv = RefdataValue.getByValueAndCategory(pParts[1].trim(), pParts[0].trim())
+
+                        if (rdvToRdv && rdvToRdv.owner == rdvToCat ) {
+                            rdvTo = rdvToRdv
+                            check = true
+                        }
+                    }
+                }
+
+                if (check) {
                     try {
                         def count = refdataService.replaceRefdataValues(rdvFrom, rdvTo)
 
-                        flash.message = "${count} Vorkommen von ${params.xcgRdvFrom} wurden durch ${params.xcgRdvTo} ersetzt."
+                        flash.message = "${count} Vorkommen von ${params.xcgRdvFrom} wurden durch ${params.xcgRdvTo}${params.xcgRdvGlobalTo} ersetzt."
                     }
                     catch (Exception e) {
                         log.error(e)
-                        flash.error = "${params.xcgRdvFrom} konnte nicht durch ${params.xcgRdvTo} ersetzt werden."
+                        flash.error = "${params.xcgRdvFrom} konnte nicht durch ${params.xcgRdvTo}${params.xcgRdvGlobalTo} ersetzt werden."
                     }
 
                 }
@@ -1026,11 +1055,14 @@ class AdminController extends AbstractDebugController {
 
         def (usedRdvList, attrMap) = refdataService.getUsageDetails()
 
+        def integrityCheckResult = refdataService.integrityCheck()
+
         render view: 'manageRefdatas', model: [
                 editable    : true,
                 rdCategories: RefdataCategory.where{}.sort('desc'),
                 attrMap     : attrMap,
-                usedRdvList : usedRdvList
+                usedRdvList : usedRdvList,
+                integrityCheckResult : integrityCheckResult
         ]
   }
 
@@ -1061,14 +1093,19 @@ class AdminController extends AbstractDebugController {
       }
     }
 
+    def gokbRecords = []
 
-    result.putAll(ESSearchService.search(params))
+    ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { api ->
+      gokbRecords << GOKbService.getPackagesMap(api, params.q, false).records
+    }
+
+    result.records = gokbRecords ? gokbRecords.flatten().sort() : null
 
     result.tippsNotEqual = []
-    result.hits.each{ hit ->
+    result.records.each{ hit ->
 
-        if(com.k_int.kbplus.Package.findByImpId(hit.id)) {
-              if(com.k_int.kbplus.Package.findByImpId(hit.id)?.tipps?.size() != hit.getSource().tippsCountCurrent && hit.getSource().tippsCountCurrent != 0)
+        if(com.k_int.kbplus.Package.findByGokbId(hit.uuid)) {
+              if(com.k_int.kbplus.Package.findByGokbId(hit.uuid)?.tipps?.size() != hit.titleCount && hit.titleCount != 0)
               {
                 result.tippsNotEqual << hit.id
               }

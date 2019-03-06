@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RefdataAnnotation
 
 import javax.persistence.Transient
 import com.k_int.ClassUtils
@@ -14,14 +15,24 @@ class Platform extends AbstractBaseDomain {
   static Log static_logger = LogFactory.getLog(Platform)
 
   String impId
+  String gokbId
   String name
   String normname
   String primaryUrl
   String provenance
+
+  @RefdataAnnotation(cat = '?')
   RefdataValue type
-  RefdataValue status             // RefdataValue 'Platform Status'; TODO: not in Bootstrap
+
+  @RefdataAnnotation(cat = 'Platform Status')
+  RefdataValue status // TODO: not in Bootstrap
+
+  @RefdataAnnotation(cat = '?')
   RefdataValue serviceProvider
+
+  @RefdataAnnotation(cat = '?')
   RefdataValue softwareProvider
+
   Date dateCreated
   Date lastUpdated
 
@@ -37,6 +48,7 @@ class Platform extends AbstractBaseDomain {
          globalUID column:'plat_guid'
            version column:'plat_version'
              impId column:'plat_imp_id', index:'plat_imp_id_idx'
+            gokbId column:'plat_gokb_id', type:'text'
               name column:'plat_name'
           normname column:'plat_normalised_name'
         provenance column:'plat_data_provenance'
@@ -57,6 +69,7 @@ class Platform extends AbstractBaseDomain {
     status(nullable:true, blank:false)
     serviceProvider(nullable:true, blank:false)
     softwareProvider(nullable:true, blank:false)
+    gokbId (nullable:true, blank:false)
   }
 
   def static lookupOrCreatePlatform(Map params=[:]) {
@@ -64,14 +77,22 @@ class Platform extends AbstractBaseDomain {
     def platform = null;
     def platform_candidates = null;
 
-    if ( params.impId && params.impId.trim().length() > 0) {
+/*    if ( params.impId && params.impId.trim().length() > 0) {
       platform = Platform.findByImpId(params.impId)
+    }*/
+
+    if ( params.gokbId && params.gokbId.trim().length() > 0) {
+      platform = Platform.findByGokbId(params.gokbId)
+
+      if(!platform){
+        platform = Platform.findByImpId(params.gokbId)
+      }
     }
 
     if ( !platform && params.name && (params.name.trim().length() > 0)  ) {
 
       String norm_name = params.name.trim().toLowerCase();
-
+        //TODO: Dieser Zweig passieert nicht bei GOKB Sync
       if( params.primaryUrl && (params.primaryUrl.length() > 0) ){
 
         platform_candidates = Platform.executeQuery("from Platform where normname = ? or primaryUrl = ?",[norm_name, params.primaryUrl])
@@ -90,18 +111,23 @@ class Platform extends AbstractBaseDomain {
       }
 
       if ( !platform && !platform_candidates) {
-        platform = new Platform(impId:params.impId?.length() > 0 ? params.impId : java.util.UUID.randomUUID().toString(),
-                                name:params.name,
-                                normname:norm_name,
-                                provenance:params.provenance,
-                                primaryUrl:(params.primaryUrl ?: null),
-                                lastmod:System.currentTimeMillis()).save(flush:true)
+        platform = new Platform(impId:params.impId?.length() > 0 ? params.impId : null,
+                                gokbId: params.gokbId?.length() > 0 ? params.gokbId : null,
+                                name: params.name,
+                                normname: norm_name,
+                                provenance: (params.provenance ?: null),
+                                primaryUrl: (params.primaryUrl ?: null),
+                                lastmod: System.currentTimeMillis()).save(flush:true)
 
-      } else if (platform && Holders.config.globalDataSync.replaceLocalImpIds.Platform && params.impId) {
-        platform.impId = params.impId
-        platform.save(flush:true)
       }
     }
+
+    if (platform && Holders.config.globalDataSync.replaceLocalImpIds.Platform && params.gokbId  && platform.gokbId != params.gokbId) {
+      platform.gokbId = params.gokbId
+      platform.impId = (platform.impId == params.gokbId) ? platform.impId : params.gokbId
+      platform.save(flush:true)
+    }
+
     platform;
   }
   

@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.*
+import de.laser.helper.RefdataAnnotation
 import de.laser.traits.AuditableTrait
 
 import javax.persistence.Transient
@@ -51,13 +52,27 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
   String coverageDepth
   String coverageNote
   String impId
-  RefdataValue status       // RefdataCategory 'TIPP Status'
-  RefdataValue option
-  RefdataValue delayedOA
-  RefdataValue hybridOA
-  RefdataValue statusReason   // RefdataCategory unkown !
-  RefdataValue payment
-  String hostPlatformURL
+  String gokbId
+
+    @RefdataAnnotation(cat = 'TIPP Status')
+    RefdataValue status
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue option
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue delayedOA
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue hybridOA
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue statusReason
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue payment
+
+    String hostPlatformURL
   Date coreStatusStart
   Date coreStatusEnd
 
@@ -94,6 +109,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
      coverageDepth column:'tipp_coverage_depth'
       coverageNote column:'tipp_coverage_note',type: 'text'
              impId column:'tipp_imp_id', index: 'tipp_imp_id_idx'
+            gokbId column:'tipp_gokb_id', type:'text'
             status column:'tipp_status_rv_fk'
          delayedOA column:'tipp_delayedoa_rv_fk'
           hybridOA column:'tipp_hybridoa_rv_fk'
@@ -121,6 +137,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
         coverageDepth(nullable:true, blank:true);
         coverageNote(nullable:true, blank:true);
         impId(nullable:true, blank:true);
+        gokbId (nullable:true, blank:false);
         status(nullable:true, blank:false);
         delayedOA(nullable:true, blank:false);
         hybridOA(nullable:true, blank:false);

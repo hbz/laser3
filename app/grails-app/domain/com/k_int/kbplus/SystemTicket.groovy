@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.helper.RefdataAnnotation
 
 class SystemTicket {
 
@@ -12,7 +13,10 @@ class SystemTicket {
     String info
     String meta
 
-    RefdataValue status             // RefdataCategory 'Ticket.Status'
+    @RefdataAnnotation(cat = 'Ticket.Status')
+    RefdataValue status
+
+    @RefdataAnnotation(cat = '?')
     RefdataValue category
 
     Date dateCreated

@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RefdataAnnotation
+
 import javax.persistence.Transient
 import java.sql.Blob
 
@@ -21,8 +23,11 @@ class Doc {
   private static final MAX_SIZE = 1073741824 // 4GB 
   def sessionFactory
 
-  RefdataValue status       // RefdataCategory unkown !
-  RefdataValue type
+    @RefdataAnnotation(cat = '?')
+    RefdataValue status
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue type
 
   String title
   String filename

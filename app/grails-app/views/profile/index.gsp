@@ -122,7 +122,7 @@
 
         <div class="ui segment">
 
-            <g:form action="updateReminderSettings" class="ui form">
+            <g:form action="updateReminderSettings" class="ui form updateReminderSettings">
 
                 <h4 class="ui dividing header">
                     ${message(code: 'profile.reminder.label')}
@@ -131,7 +131,12 @@
                 <div class="field">
                     <label>${message(code: 'profile.reminderPeriod')}</label>
                     <g:set var="US_DASHBOARD_REMINDER_PERIOD" value="${user.getSetting(UserSettings.KEYS.DASHBOARD_REMINDER_PERIOD, 14)}" />
+                    <div class="ui right labeled input">
                     <input type="number" name="dashboardReminderPeriod" value="${US_DASHBOARD_REMINDER_PERIOD.strValue}"/>
+                        <div class="ui basic label">
+                            ${message(code: 'profile.reminderDaysbeforeData')}
+                        </div>
+                    </div>
                     %{--TODO: strValue überprüfen--}%
                 </div>
 
@@ -514,6 +519,22 @@
                                 ]
                             }
                          }
+                    });
+                    $('.updateReminderSettings')
+                        .form({
+                        on: 'blur',
+                        inline: true,
+                        fields: {
+                            dashboardReminderPeriod: {
+                                identifier  : 'dashboardReminderPeriod',
+                                rules: [
+                                    {
+                                        type   : 'regExp[/^[0-9]/]',
+                                        prompt : '{name} <g:message code="validation.onlyInteger" default=" darf nur aus Ziffern bestehen" />'
+                                    }
+                                ]
+                            }
+                        }
                     });
         $('#passwordToggler').on('change', function(e) {
             $('input.pw').attr('type', ($(this).is(":checked") ? 'text' : 'password'))

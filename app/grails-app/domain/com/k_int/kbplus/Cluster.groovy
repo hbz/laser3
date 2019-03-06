@@ -1,10 +1,14 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RefdataAnnotation
+
 class Cluster {
 
     String       name
     String       definition
-    RefdataValue type           // RefdataCategory 'ClusterType'
+
+    @RefdataAnnotation(cat = 'ClusterType')
+    RefdataValue type
     
     static hasMany = [
         orgs:     OrgRole,

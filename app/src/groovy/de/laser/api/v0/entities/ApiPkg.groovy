@@ -27,6 +27,9 @@ class ApiPkg {
             case 'impId':
                 result = Package.findAllWhere(impId: value)
                 break
+            case 'gokbId':
+                result = Package.findAllWhere(gokbId: value)
+                break
             case 'ns:identifier':
                 result = Identifier.lookupObjectsByIdentifierString(new Package(), value)
                 break

@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.helper.RefdataAnnotation
 
 class Task {
 
@@ -11,7 +12,9 @@ class Task {
 
     String          title
     String          description
-    RefdataValue    status          // RefdataCategory 'YN'
+
+    @RefdataAnnotation(cat = 'Task Status')
+    RefdataValue    status
 
     User            creator
     Date            endDate

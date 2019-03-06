@@ -71,6 +71,7 @@
                 def fakeList = []
                 fakeList.addAll(RefdataCategory.getAllRefdataValues('Subscription Status'))
                 fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
+                fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status'))
             %>
 
             <div class="field fieldcontain">
@@ -161,7 +162,7 @@
 
 
                         <div class="field">
-                            <g:if test="${(RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgRoleTypeIds())}">
+                            <g:if test="${(RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgTypeIds())}">
                             <%--
                             <g:if test="${params.orgRole == 'Subscriber'}">
                                 <input id="radioSubscriber" type="hidden" value="Subscriber" name="orgRole" tabindex="0" class="hidden">
@@ -371,18 +372,27 @@
                           </laser:statsLink>
                         </g:if>
 
-                    <g:if test="${ contextService.getUser().isAdmin() || contextService.getUser().isYoda() ||
-                        (editable && (OrgRole.findAllByOrgAndSubAndRoleType(institution, s, RDStore.OR_SUBSCRIBER) || s.consortia?.id == institution?.id))
-                    }">
+                        <g:if test="${ contextService.getUser().isAdmin() || contextService.getUser().isYoda() ||
+                            (editable && (OrgRole.findAllByOrgAndSubAndRoleType(institution, s, RDStore.OR_SUBSCRIBER) || s.consortia?.id == institution?.id))
+                        }">
                     <%--<g:if test="${editable && ((institution?.id in s.allSubscribers.collect{ it.id }) || s.consortia?.id == institution?.id)}">--%>
-                            <g:link class="ui icon negative button js-open-confirm-modal"
-                                    data-confirm-term-what="subscription"
-                                    data-confirm-term-what-detail="${s.name}"
-                                    data-confirm-term-how="delete"
-                                    controller="myInstitution" action="actionCurrentSubscriptions"
-                                    params="${[curInst: institution.id, basesubscription: s.id]}">
-                                <i class="trash alternate icon"></i>
-                            </g:link>
+                            <g:if test="${CostItem.findBySub(s)}">
+                                <span data-position="top right" data-tooltip="${message(code:'subscription.delete.existingCostItems')}">
+                                    <button class="ui icon button negative" disabled="disabled">
+                                        <i class="trash alternate icon"></i>
+                                    </button>
+                                </span>
+                            </g:if>
+                            <g:else>
+                                <g:link class="ui icon negative button js-open-confirm-modal"
+                                        data-confirm-term-what="subscription"
+                                        data-confirm-term-what-detail="${s.name}"
+                                        data-confirm-term-how="delete"
+                                        controller="myInstitution" action="actionCurrentSubscriptions"
+                                        params="${[curInst: institution.id, basesubscription: s.id]}">
+                                    <i class="trash alternate icon"></i>
+                                </g:link>
+                            </g:else>
                         </g:if>
                     </td>
                 </tr>

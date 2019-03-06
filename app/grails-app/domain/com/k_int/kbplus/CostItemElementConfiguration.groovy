@@ -3,13 +3,18 @@ package com.k_int.kbplus
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.auth.User
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RefdataAnnotation
 
 import javax.persistence.Transient
 
 class CostItemElementConfiguration extends AbstractBaseDomain {
 
-    RefdataValue costItemElement    //RefdataCategory 'CostItemElement'
-    RefdataValue elementSign        //RefdataCategory 'Cost configuration'
+    @RefdataAnnotation(cat = 'CostItemElement')
+    RefdataValue costItemElement
+
+    @RefdataAnnotation(cat = 'Cost configuration')
+    RefdataValue elementSign
+
     Org forOrganisation
 
     Date dateCreated

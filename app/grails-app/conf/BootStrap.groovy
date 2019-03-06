@@ -1360,7 +1360,6 @@ class BootStrap {
         RefdataCategory.loc('Library Type',         	                    [en: 'Library Type', de: 'Bibliothekstyp'], BOOTSTRAP)
         RefdataCategory.loc('OrgSector',            	                    [en: 'OrgSector', de: 'Bereich'], BOOTSTRAP)
         RefdataCategory.loc('OrgStatus',                	                [en: 'Status', de: 'Status'], BOOTSTRAP)
-        RefdataCategory.loc('OrgType',              	                    [en: 'Organisation Type', de: 'Organisationstyp'], BOOTSTRAP)
         RefdataCategory.loc('OrgRoleType',              	                    [en: 'Organisation Type', de: 'Organisationstyp'], BOOTSTRAP)
         RefdataCategory.loc('Person Function',      	                    [en: 'Person Function', de: 'Funktion'], BOOTSTRAP)
         RefdataCategory.loc('Person Contact Type',  	                    [en: 'Person: Contact Type', de: 'Kontaktart'], BOOTSTRAP)
@@ -1810,12 +1809,6 @@ class BootStrap {
 
         RefdataValue.loc('OrgSector',    [en: 'Higher Education', de: 'Akademisch'], BOOTSTRAP)
         RefdataValue.loc('OrgSector',    [key: 'Publisher', en: 'Commercial', de: 'Kommerziell'], BOOTSTRAP)
-
-        RefdataValue.loc('OrgType',      [en: 'Consortium', de: 'Konsortium'], BOOTSTRAP)
-        RefdataValue.loc('OrgType',      [en: 'Institution', de: 'Einrichtung'], BOOTSTRAP)
-        RefdataValue.loc('OrgType',      [en: 'Publisher', de: 'Verlag'], BOOTSTRAP)
-        RefdataValue.loc('OrgType',      [en: 'Provider', de: 'Anbieter'], BOOTSTRAP)
-        RefdataValue.loc('OrgType',      [en: 'Other', de: 'Andere'], BOOTSTRAP)
 
         RefdataValue.loc('OrgRoleType',      [en: 'Consortium', de: 'Konsortium'], BOOTSTRAP)
         RefdataValue.loc('OrgRoleType',      [en: 'Institution', de: 'Einrichtung'], BOOTSTRAP)

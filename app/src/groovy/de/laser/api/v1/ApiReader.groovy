@@ -112,8 +112,8 @@ class ApiReader {
         // RefdataValues
 
         result.sector       = org.sector?.value
-        result.type         = org.orgType?.value
-        result.orgRoleType  = ApiReaderHelper.resolveOrgRoleTypes(org.orgRoleType)
+        //result.type         = org.orgType?.value
+        result.orgType  = ApiReaderHelper.resolveOrgRoleTypes(org.orgType)
         result.status       = org.status?.value
 
         // References
@@ -156,6 +156,7 @@ class ApiReader {
         result.forumId          = pkg.forumId
         result.identifier       = pkg.identifier
         result.impId            = pkg.impId
+        result.gokbId            = pkg.gokbId
         result.lastUpdated      = pkg.lastUpdated
         result.name             = pkg.name
         result.identifier       = pkg.identifier

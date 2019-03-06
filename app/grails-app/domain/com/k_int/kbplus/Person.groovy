@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RefdataAnnotation
 import groovy.util.logging.*
 
 @Log4j
@@ -10,11 +11,19 @@ class Person extends AbstractBaseDomain {
     String       first_name
     String       middle_name
     String       last_name
-    RefdataValue gender         // RefdataCategory 'Gender'
     Org          tenant
-    RefdataValue isPublic       // RefdataCategory 'YN'
-    RefdataValue contactType    // RefdataCategory 'Person Contact Type'
-    RefdataValue roleType       // RefdataCategory 'Person Position'
+
+    @RefdataAnnotation(cat = 'Gender')
+    RefdataValue gender
+
+    @RefdataAnnotation(cat = 'YN')
+    RefdataValue isPublic
+
+    @RefdataAnnotation(cat = 'Person Contact Type')
+    RefdataValue contactType
+
+    @RefdataAnnotation(cat = 'Person Position')
+    RefdataValue roleType
 
     static mapping = {
         id              column:'prs_id'

@@ -1,9 +1,9 @@
 package de.laser
 
+import com.k_int.kbplus.RefdataCategory
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.SystemAdmin
-import com.k_int.kbplus.abstract_domain.AbstractProperty
-import org.codehaus.groovy.grails.web.util.WebUtils
+import de.laser.helper.RefdataAnnotation
 
 class RefdataService {
 
@@ -11,10 +11,10 @@ class RefdataService {
     def genericOIDService
 
     def getUsageDetails() {
-        def usedRdvList = []
         def detailsMap = [:]
+        def usedRdvList = []
 
-        def fortytwo = [:]
+        def allDcs = [:]
 
         grailsApplication.getArtefacts("Domain").toList().each { dc ->
             def dcFields = []
@@ -28,19 +28,18 @@ class RefdataService {
                 )
                 cls = cls.getSuperclass()
             }
-            fortytwo << ["${dc.clazz.simpleName}" : dcFields.sort()]
+            allDcs << ["${dc.clazz.simpleName}" : dcFields.sort()]
         }
 
-        fortytwo.each { dcName, dcFields ->
-            def dcMap = [:]
-            //log.debug("${dcName} : ${dcFields}")
+        // inspect classes and fields
+
+        allDcs.each { dcName, dcFields ->
+            def dfMap = [:]
 
             dcFields.each { df ->
+                def rdvs = SystemAdmin.executeQuery("SELECT DISTINCT ${df.name} FROM ${dcName}")
 
-                def query = "SELECT DISTINCT ${df.name} FROM ${dcName}"
-                def rdvs = SystemAdmin.executeQuery(query)
-
-                dcMap << ["${df.name}": rdvs.collect { it -> "${it.id}:${it.value}" }.sort()]
+                dfMap << ["${df.name}": rdvs.collect { it -> "${it.id}:${it.value}" }.sort()]
 
                 // ids of used refdata values
                 rdvs.each { it ->
@@ -48,8 +47,8 @@ class RefdataService {
                 }
             }
 
-            if (! dcMap.isEmpty()) {
-                detailsMap << ["${dcName}": dcMap]
+            if (! dfMap.isEmpty()) {
+                detailsMap << ["${dcName}": dfMap]
             }
         }
 
@@ -95,6 +94,55 @@ class RefdataService {
             }
         }
         count
+    }
+
+    Map integrityCheck() {
+        Map checkResult = [:]
+
+        grailsApplication.getArtefacts("Domain").toList().each { dc ->
+            def cls = dc.clazz
+
+            // find all rdv_fk from superclasses
+            while (cls != Object.class) {
+                List tmp = []
+                tmp.addAll( cls.getDeclaredFields()
+                        .findAll { it -> !it.synthetic }
+                        .findAll { it -> it.type.name == 'com.k_int.kbplus.RefdataValue' }
+                        .collect { it ->
+
+                            RefdataAnnotation anno = it.getAnnotation(RefdataAnnotation)
+                            if (anno && ! [RefdataAnnotation.GENERIC, RefdataAnnotation.UNKOWN].contains(anno.cat()) ) {
+                                List fieldCats = RefdataValue.executeQuery(
+                                        "SELECT DISTINCT dummy.${it.name}, rdc FROM ${cls.simpleName} dummy JOIN dummy.${it.name}.owner rdc",
+                                )
+                                Map fieldCheck = [:]
+
+                                fieldCats.each { it2 ->
+                                    if (it2[1].id == RefdataCategory.findByDesc(anno.cat())?.id) {
+                                        fieldCheck << ["${it2[0]}": true]
+                                    }
+                                    else {
+                                        fieldCheck << ["${it2[0]}": it2[1]]
+                                    }
+                                }
+                                return [field: it.name, cat: anno.cat(), rdc: RefdataCategory.findByDesc(anno.cat()), check: fieldCheck]
+                            }
+                            else {
+                                return [field: it.name, cat: anno?.cat(), rdc: null, check: [:]]
+                            }
+                        }
+                )
+
+                if (tmp) {
+                    checkResult << ["${cls.simpleName}": tmp]
+                }
+                cls = cls.getSuperclass()
+            }
+        }
+
+        log.debug(checkResult)
+
+        checkResult.sort()
     }
 }
 

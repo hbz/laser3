@@ -50,15 +50,22 @@
                                     </g:remoteLink>
                             </g:if>
                             <g:else>
-                                    <g:remoteLink class="ui mini icon button js-gost js-no-wait-wheel"
+                                    <button class="ui mini icon button js-open-confirm-modal-copycat js-no-wait-wheel">
+                                        <i class="share-slash icon"></i>
+                                    </button>
+                                    <g:remoteLink class="js-gost"
                                                   controller="ajax" action="toggleShare"
                                                   params='[owner:"${ownobj.class.name}:${ownobj.id}", sharedObject:"${docctx.class.name}:${docctx.id}", tmpl:"notes"]'
                                                   onSuccess=""
                                                   onComplete=""
                                                   update="container-notes"
                                                   data-position="top right" data-tooltip="${message(code:'property.share.tooltip.off')}"
+
+                                                  data-confirm-term-what="element"
+                                                  data-confirm-term-what-detail="${docctx.owner.title}"
+                                                  data-confirm-term-where="member"
+                                                  data-confirm-term-how="share"
                                     >
-                                        <i class="share-slash icon"></i>
                                     </g:remoteLink>
                             </g:else>
 
@@ -119,8 +126,9 @@
                 }
             });
         }
-
-        if (r2d2) {
-            r2d2.initDynamicSemuiStuff('#container-notes');
-        }
+        $( document ).ready(function() {
+            if (r2d2) {
+                r2d2.initDynamicSemuiStuff('#container-notes');
+            }
+        });
     </script>

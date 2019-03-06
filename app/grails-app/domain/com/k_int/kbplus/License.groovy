@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.helper.RDStore
+import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
 import de.laser.domain.AbstractBaseDomain
 import de.laser.interfaces.Permissions
@@ -43,16 +44,23 @@ class License
     License instanceOf
 
     // If a license is slaved then any changes to instanceOf will automatically be applied to this license
-    RefdataValue isSlaved // RefdataCategory 'YN'
+    @RefdataAnnotation(cat = 'YN')
+    RefdataValue isSlaved
 
-    RefdataValue status           // RefdataCategory 'License Status'
-    RefdataValue type             // RefdataCategory 'License Type'
+    @RefdataAnnotation(cat = 'License Status')
+    RefdataValue status
+
+    @RefdataAnnotation(cat = 'License Type')
+    RefdataValue type
+
+    @RefdataAnnotation(cat = 'LicenseCategory')
+    RefdataValue licenseCategory
+
+    @RefdataAnnotation(cat = 'YN')
+    RefdataValue isPublic
 
   String reference
   String sortableReference
-
-    RefdataValue licenseCategory  // RefdataCategory 'LicenseCategory'
-    RefdataValue isPublic         // RefdataCategory 'YN'
 
   String noticePeriod
   String licenseUrl

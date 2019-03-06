@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import de.laser.helper.RefdataAnnotation
 import org.springframework.context.MessageSource
 
 import javax.persistence.Transient
@@ -36,7 +37,9 @@ class PendingChange {
     @Deprecated
     String desc
 
-    RefdataValue status     // RefdataCategory 'PendingChangeStatus'
+    @RefdataAnnotation(cat = 'PendingChangeStatus')
+    RefdataValue status
+
     Date actionDate
     User user
 

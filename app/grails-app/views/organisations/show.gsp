@@ -6,7 +6,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-        <g:if test="${RefdataValue.getByValueAndCategory('Provider','OrgRoleType' in orgInstance.orgRoleType)}">
+        <g:if test="${RefdataValue.getByValueAndCategory('Provider','OrgRoleType' in orgInstance.orgType)}">
             <g:set var="entityName" value="${message(code: 'default.provider.label', default: 'Provider')}" />
         </g:if>
         <g:else>
@@ -19,8 +19,9 @@
     <body>
 
     <semui:debugInfo>
-        <g:render template="/templates/debug/orgRoles" model="[debug: orgInstance.links]" />
-        <g:render template="/templates/debug/prsRoles" model="[debug: orgInstance.prsLinks]" />
+        <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+        <g:render template="/templates/debug/orgRoles"  model="[debug: orgInstance.links]" />
+        <g:render template="/templates/debug/prsRoles"  model="[debug: orgInstance.prsLinks]" />
     </semui:debugInfo>
 
     <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
@@ -71,17 +72,11 @@
 
                 <div class="ui card">
                     <div class="content">
-                        <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in orgInstance.orgRoleType)}">
+                        <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in orgInstance.orgType)}">
                         <dl>
                             <dt><g:message code="org.sector.label" default="Sector" /></dt>
                             <dd>
                                 <semui:xEditableRefData owner="${orgInstance}" field="sector" config='OrgSector'/>
-                            </dd>
-                        </dl>
-                        <dl>
-                            <dt><g:message code="org.type.label" default="Org Type" /></dt>
-                            <dd>
-                                <semui:xEditableRefData owner="${orgInstance}" field="orgType" config='OrgType'/>
                             </dd>
                         </dl>
                         </g:if>
@@ -90,12 +85,6 @@
                                 <dt><g:message code="org.sector.label" default="Sector" /></dt>
                                 <dd>
                                     ${orgInstance.sector?.getI10n('value')}
-                                </dd>
-                            </dl>
-                            <dl>
-                                <dt><g:message code="org.type.label" default="Org Type" /></dt>
-                                <dd>
-                                    ${orgInstance.orgType?.getI10n('value')}
                                 </dd>
                             </dl>
                         </g:else>
@@ -118,33 +107,33 @@
                     <div class="content">
                         <%-- ROLE_ADMIN: all , ROLE_ORG_EDITOR: all minus Consortium --%>
                         <dl>
-                            <dt><g:message code="org.orgRoleType.label" default="Organisation Type" /></dt>
+                            <dt><g:message code="org.orgType.label" default="Organisation Type" /></dt>
                             <dd>
                                 <%
                                     // hotfix:
-                                    def orgRoleType_types = RefdataCategory.getAllRefdataValues('OrgRoleType')
-                                    def orgRoleType_editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+                                    def orgType_types = RefdataCategory.getAllRefdataValues('OrgRoleType')
+                                    def orgType_editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
-                                    if (! orgRoleType_editable) {
-                                        orgRoleType_editable = SpringSecurityUtils.ifAnyGranted('ROLE_ORG_EDITOR')
+                                    if (! orgType_editable) {
+                                        orgType_editable = SpringSecurityUtils.ifAnyGranted('ROLE_ORG_EDITOR')
 
-                                        orgRoleType_types = orgRoleType_types.minus(RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType'))
+                                        orgType_types = orgType_types.minus(RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType'))
                                     }
 
                                 %>
-                                <g:render template="orgRoleTypeAsList"
-                                          model="${[org:orgInstance, orgRoleTypes:orgInstance.orgRoleType, availableOrgRoleTypes:orgRoleType_types, editable:orgRoleType_editable]}" />
+                                <g:render template="orgTypeAsList"
+                                          model="${[org:orgInstance, orgTypes:orgInstance.orgType, availableOrgTypes:orgType_types, editable:orgType_editable]}" />
                             </dd>
                         </dl>
 
-                        <g:render template="orgRoleTypeModal"
-                                  model="${[org:orgInstance, availableOrgRoleTypes:orgRoleType_types, editable:orgRoleType_editable]}" />
+                        <g:render template="orgTypeModal"
+                                  model="${[org:orgInstance, availableOrgTypes:orgType_types, editable:orgType_editable]}" />
                     </div>
                 </div>
 
                 <div class="ui card">
                     <div class="content">
-                    <g:if test="${(RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in orgInstance.orgRoleType)}">
+                    <g:if test="${(RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType') in orgInstance.orgType)}">
                         <dl>
                             <dt><g:message code="org.libraryType.label" default="Library Type" /></dt>
                             <dd>

@@ -215,7 +215,7 @@ class ApiReader {
         // RefdataValues
 
         result.sector       = org.sector?.value
-        result.type         = org.orgType?.value
+        result.type         = org.orgType?.collect{ it -> it.value }
         result.status       = org.status?.value
 
         // References
@@ -259,6 +259,7 @@ class ApiReader {
         result.forumId          = pkg.forumId
         //result.identifier       = pkg.identifier - TODO refactoring legacy
         result.impId            = pkg.impId
+        result.gokbId            = pkg.gokbId
         result.lastUpdated      = pkg.lastUpdated
         result.name             = pkg.name
         result.vendorURL        = pkg.vendorURL

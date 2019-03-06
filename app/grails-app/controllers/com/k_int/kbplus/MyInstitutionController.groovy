@@ -4,6 +4,7 @@ import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
 import de.laser.helper.DateUtil
 import grails.converters.JSON
@@ -44,7 +45,7 @@ class MyInstitutionController extends AbstractDebugController {
     def queryService
     def dashboardDueDatesService
     def subscriptionsQueryService
-    def providerHelperService
+    def orgTypeService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -210,7 +211,7 @@ class MyInstitutionController extends AbstractDebugController {
         def qry = INSTITUTIONAL_LICENSES_QUERY
 
         if (! params.orgRole) {
-            if ((RDStore.OR_TYPE_CONSORTIUM?.id in result.institution?.getallOrgRoleTypeIds())) {
+            if ((RDStore.OT_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
                 params.orgRole = 'Licensing Consortium'
             }
             else {
@@ -380,7 +381,7 @@ from License as l where (
             return;
         }
 
-        result.orgRoleType = result.institution?.getallOrgRoleTypeIds()
+        result.orgType = result.institution?.getallOrgTypeIds()
 
         def cal = new java.util.GregorianCalendar()
         def sdf = new DateUtil().getSimpleDateFormat_NoTime()
@@ -452,8 +453,8 @@ from License as l where (
         result.orgRoles    = [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
-        List<Org> providers = providerHelperService.getCurrentProviders( contextService.getOrg())
-        List<Org> agencies   = providerHelperService.getCurrentAgencies( contextService.getOrg())
+        List<Org> providers = orgTypeService.getCurrentProviders( contextService.getOrg())
+        List<Org> agencies   = orgTypeService.getCurrentAgencies( contextService.getOrg())
 
         providers.addAll(agencies)
         List orgIds = providers.unique().collect{ it2 -> it2.id }
@@ -522,7 +523,7 @@ from License as l where (
 
         if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)) {
             result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
-            result.usageMode = ((RDStore.OR_TYPE_CONSORTIUM.id in result.institution?.getallOrgRoleTypeIds())) ? 'package' : 'institution'
+            result.usageMode = ((RDStore.OT_CONSORTIUM.id in result.institution?.getallOrgTypeIds())) ? 'package' : 'institution'
         }
 
         if(params.sort && params.sort.indexOf("§") >= 0) {
@@ -744,7 +745,7 @@ from License as l where (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def emptySubscription() {
         def result = setResultGenerics()
-        result.orgRoleType = result.institution?.getallOrgRoleTypeIds()
+        result.orgType = result.institution?.getallOrgTypeIds()
         
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
@@ -761,7 +762,7 @@ from License as l where (
             result.defaultEndYear = sdf.format(cal.getTime())
             result.defaultSubIdentifier = java.util.UUID.randomUUID().toString()
 
-            if((RDStore.OR_TYPE_CONSORTIUM?.id in result.orgRoleType)) {
+            if((RDStore.OT_CONSORTIUM?.id in result.orgType)) {
                 def fsq = filterService.getOrgComboQuery(params, result.institution)
                 result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             }
@@ -777,7 +778,7 @@ from License as l where (
     def processEmptySubscription() {
         log.debug(params)
         def result = setResultGenerics()
-        result.orgRoleType = result.institution?.getallOrgRoleTypeIds()
+        result.orgType = result.institution?.getallOrgTypeIds()
 
         def role_sub = RDStore.OR_SUBSCRIBER
         def role_sub_cons = RDStore.OR_SUBSCRIBER_CONS
@@ -786,11 +787,11 @@ from License as l where (
         def orgRole = null
         def subType = null
 
-        if (params.asOrgRoleType) {
-            log.debug("asOrgRoleType ${params.asOrgRoleType} in ${result.orgRoleType} ?")
+        if (params.asOrgType) {
+            log.debug("asOrgType ${params.asOrgType} in ${result.orgType} ?")
 
-            if ((Long.valueOf(params.asOrgRoleType) in result.orgRoleType)
-                    && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgRoleType)) {
+            if ((Long.valueOf(params.asOrgType) in result.orgType)
+                    && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgType)) {
                 orgRole = role_cons
                 subType = RefdataValue.getByValueAndCategory('Consortial Licence', 'Subscription Type')
             }
@@ -821,9 +822,9 @@ from License as l where (
                         sub: new_sub,
                         roleType: orgRole).save();
                         
-                // if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgRoleType) && params.linkToAll == "Y"){ // old code
+                // if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgType) && params.linkToAll == "Y"){ // old code
 
-                if((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgRoleType)) {
+                if((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgType)) {
                     
                     def cons_members = []
 
@@ -944,7 +945,7 @@ from License as l where (
         def user = User.get(springSecurityService.principal.id)
         def org = contextService.getOrg()
 
-        params.asOrgRoleType = params.asOrgRoleType ? [params.asOrgRoleType] : [RDStore.OR_TYPE_INSTITUTION.id.toString()]
+        params.asOrgType = params.asOrgType ? [params.asOrgType] : [RDStore.OT_INSTITUTION.id.toString()]
 
 
         if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
@@ -1005,7 +1006,7 @@ from License as l where (
 
             log.debug("adding org link to new license");
 
-            if (params.asOrgRoleType && (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString() in params.asOrgRoleType)) {
+            if (params.asOrgType && (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString() in params.asOrgType)) {
                 org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role))
             } else {
                 org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role))
@@ -1589,7 +1590,10 @@ AND EXISTS (
         if (subscription.hasPerm("edit", result.user)) {
             def derived_subs = Subscription.findByInstanceOfAndStatusNotEqual(subscription, deletedStatus)
 
-            if (!derived_subs) {
+            if (CostItem.findBySub(subscription)) {
+                flash.error = message(code: 'subscription.delete.existingCostItems')
+
+            } else if (! derived_subs) {
               log.debug("Current Institution is ${inst}, sub has consortium ${subscription.consortia}")
               if( subscription.consortia && subscription.consortia != inst ) {
                 OrgRole.executeUpdate("delete from OrgRole where sub = ? and org = ?",[subscription, inst])
@@ -3222,7 +3226,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         def result = setResultGenerics()
 
         // new: filter preset
-        params.orgRoleType   = RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')?.id?.toString()
+        params.orgType   = RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')?.id?.toString()
         params.orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')?.id?.toString()
 
         if (params.selectedOrgs) {
@@ -3232,7 +3236,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 Map map = [
                         toOrg: result.institution,
                         fromOrg: Org.findById( Long.parseLong(soId)),
-                        type: RefdataValue.findByValue('Consortium')
+                        type: RefdataValue.getByValueAndCategory('Consortium','Combo Type')
                 ]
                 if (! Combo.findWhere(map)) {
                     def cmb = new Combo(map)
@@ -3271,7 +3275,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         def result = setResultGenerics()
 
         // new: filter preset
-        params.orgRoleType  = RDStore.OR_TYPE_INSTITUTION?.id?.toString()
+        params.orgType  = RDStore.OT_INSTITUTION?.id?.toString()
         params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
 
         result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
@@ -3325,11 +3329,16 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     def manageConsortiaLicenses() {
         def result = setResultGenerics()
 
+        DebugUtil du = new DebugUtil()
+        du.setBenchMark('filterService')
+
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         Map fsq = filterService.getOrgComboQuery([sort: 'o.sortname'], contextService.getOrg())
         result.filterConsortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
+
+        du.setBenchMark('filterSubTypes & filterPropList')
 
         result.filterSubTypes = RefdataCategory.getAllRefdataValues('Subscription Type').minus(
                 RefdataValue.getByValueAndCategory('Local Licence', 'Subscription Type')
@@ -3353,6 +3362,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         */
 
         // CostItem ci
+
+        du.setBenchMark('filter query')
 
         String query = "select ci, subT, roleT.org " +
                 " from CostItem ci right outer join ci.sub subT join subT.instanceOf subK " +
@@ -3418,6 +3429,8 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         log.debug( query + " " + orderQuery )
         // log.debug( qarams )
 
+        du.setBenchMark('costs')
+
         List<CostItem, Subscription, Org> costs = CostItem.executeQuery(
                 query + " " + orderQuery, qarams
         )
@@ -3443,6 +3456,10 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
             entries
         }()
+
+        List bm = du.stopBenchMark()
+        result.benchMark = bm
+        log.debug (bm)
 
         result
     }
@@ -3594,7 +3611,6 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                     (params.pd_mandatory ? true : false),
                     tenant
             )
-            privatePropDef.softData = PropertyDefinition.TRUE
 
             if (privatePropDef.save(flush: true)) {
                 return message(code: 'default.created.message', args:[privatePropDef.descr, privatePropDef.name])
@@ -3661,12 +3677,12 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     def ajaxEmptySubscription() {
 
         def result = setResultGenerics()
-        result.orgRoleType = result.institution?.getallOrgRoleTypeIds()
+        result.orgType = result.institution?.getallOrgTypeIds()
 
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
         if (result.editable) {
 
-            if((RDStore.OR_TYPE_CONSORTIUM?.id in result.orgRoleType)) {
+            if((RDStore.OT_CONSORTIUM?.id in result.orgType)) {
                 def fsq = filterService.getOrgComboQuery(params, result.institution)
                 result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             }
@@ -3744,7 +3760,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                     'Name', g.message(code: 'org.shortname.label'), g.message(code: 'org.sortname.label')]
 
             def orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
-            def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
+            def orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
 
 
             if(addHigherEducationTitles)

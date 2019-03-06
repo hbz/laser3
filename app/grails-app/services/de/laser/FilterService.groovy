@@ -21,9 +21,9 @@ class FilterService {
              queryParams << [orgNameContains2  : "%${params.orgNameContains.toLowerCase()}%"]
              queryParams << [orgNameContains3 : "%${params.orgNameContains.toLowerCase()}%"]
         }
-        if (params.orgRoleType?.length() > 0) {
-            query << " exists (select roletype from o.orgRoleType as roletype where roletype.id = :orgRoleType )"
-             queryParams << [orgRoleType : Long.parseLong(params.orgRoleType)]
+        if (params.orgType?.length() > 0) {
+            query << " exists (select roletype from o.orgType as roletype where roletype.id = :orgType )"
+             queryParams << [orgType : Long.parseLong(params.orgType)]
         }
         if (params.orgRole?.length() > 0) {
             query << " exists (select ogr from o.links as ogr where ogr.roleType.id = :orgRole )"
@@ -87,9 +87,9 @@ class FilterService {
             query << "o.orgType.id = ?"
              queryParams << [Long.parseLong(params.orgType)
         }*/
-        if (params.orgRoleType?.length() > 0) {
-            query << " exists (select roletype from o.orgRoleType as roletype where roletype.id = :orgRoleType )"
-             queryParams << [orgRoleType : Long.parseLong(params.orgRoleType)]
+        if (params.orgType?.length() > 0) {
+            query << " exists (select roletype from o.orgType as roletype where roletype.id = :orgType )"
+             queryParams << [orgType : Long.parseLong(params.orgType)]
         }
         if (params.orgSector?.length() > 0) {
             query << "o.sector.id = :orgSector"
