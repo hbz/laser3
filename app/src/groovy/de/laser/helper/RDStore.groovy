@@ -34,12 +34,6 @@ class RDStore {
     static final O_STATUS_CURRENT           = getRefdataValue('Current','OrgStatus')
     static final O_STATUS_DELETED           = getRefdataValue('Deleted','OrgStatus')
 
-    static final O_TYPE_CONSORTIUM          = getRefdataValue('Consortium','OrgType')
-    static final O_TYPE_INSTITUTION         = getRefdataValue('Institution','OrgType')
-    static final O_TYPE_PUBLISHER           = getRefdataValue('Publisher','OrgType')
-    static final O_TYPE_PROVIDER            = getRefdataValue('Provider', 'OrgType')
-    static final O_TYPE_OTHER               = getRefdataValue('Other', 'OrgType')
-
     static final LICENSE_DELETED            = getRefdataValue('Deleted', 'License Status')
     static final ORG_DELETED                = getRefdataValue('Deleted', 'OrgStatus')
     static final PACKAGE_DELETED            = getRefdataValue('Deleted', 'Package Status')

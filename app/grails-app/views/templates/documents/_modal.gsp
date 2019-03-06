@@ -34,12 +34,13 @@
                     <label>${message(code: 'template.addDocument.type', default: 'Document Type')}:</label>
                 </dt>
                 <dd>
-                    <g:select from="${RefdataValue.findAllByOwnerAndValueNotInList(
-                                            RefdataCategory.loc('Document Type', [en: 'Document Type', de: 'Dokumenttyp']),
-                                           [RefdataValue.loc('Document Type', [en: 'ONIX-PL License', de: 'ONIX-PL Lizenz']),
-                                            RefdataValue.loc('Document Type', [en: 'Note', de: 'Anmerkung']),
-                                            RefdataValue.loc('Document Type', [en: 'Announcement', de: 'Angekündigung'])
-                                           ]).sort{it.getI10n('value')}}"
+                    <%
+                        List notAvailable = [RefdataValue.getByValueAndCategory('ONIX-PL License','Document Type'),
+                                             RefdataValue.getByValueAndCategory('Note','Document Type'),
+                                             RefdataValue.getByValueAndCategory('Announcement','Document Type')]
+                        List documentTypes = RefdataCategory.getAllRefdataValues("Document Type")-notAvailable
+                    %>
+                    <g:select from="${documentTypes}"
                               class="ui dropdown fluid"
                               optionKey="value"
                               optionValue="${{ it.getI10n('value') }}"
@@ -62,7 +63,7 @@
                         <label>${message(code:'template.addDocument.targetOrg')}</label>
                     </dt>
                     <dd>
-                        <g:select class="ui dropdown search"
+                        <g:select class="ui dropdown search la-full-width"
                                   name="targetOrg"
                                   from="${Org.executeQuery('select o from Org o where o.status != :deleted or o.status is null order by o.sortname asc',[deleted:RDStore.O_STATUS_DELETED])}"
                                   optionKey="id"
