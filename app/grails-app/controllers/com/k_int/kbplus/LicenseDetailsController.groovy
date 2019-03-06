@@ -249,7 +249,7 @@ class LicenseDetailsController extends AbstractDebugController {
             log.debug( 'ignored setting.cons_members because: LCurrent.instanceOf (LParent.noTemplate)')
         }
         else {
-            if ((RDStore.OR_TYPE_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
+            if ((RDStore.OT_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
 
                 def consMembers = Org.executeQuery(
                         'select o from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :inst and c.type.value = :cons',

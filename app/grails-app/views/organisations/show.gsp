@@ -121,12 +121,12 @@
                                     }
 
                                 %>
-                                <g:render template="orgRoleTypeAsList"
+                                <g:render template="orgTypeAsList"
                                           model="${[org:orgInstance, orgTypes:orgInstance.orgType, availableOrgTypes:orgType_types, editable:orgType_editable]}" />
                             </dd>
                         </dl>
 
-                        <g:render template="orgRoleTypeModal"
+                        <g:render template="orgTypeModal"
                                   model="${[org:orgInstance, availableOrgTypes:orgType_types, editable:orgType_editable]}" />
                     </div>
                 </div>

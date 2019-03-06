@@ -211,7 +211,7 @@ class MyInstitutionController extends AbstractDebugController {
         def qry = INSTITUTIONAL_LICENSES_QUERY
 
         if (! params.orgRole) {
-            if ((RDStore.OR_TYPE_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
+            if ((RDStore.OT_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
                 params.orgRole = 'Licensing Consortium'
             }
             else {
@@ -523,7 +523,7 @@ from License as l where (
 
         if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)) {
             result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
-            result.usageMode = ((RDStore.OR_TYPE_CONSORTIUM.id in result.institution?.getallOrgTypeIds())) ? 'package' : 'institution'
+            result.usageMode = ((RDStore.OT_CONSORTIUM.id in result.institution?.getallOrgTypeIds())) ? 'package' : 'institution'
         }
 
         if(params.sort && params.sort.indexOf("§") >= 0) {
@@ -762,7 +762,7 @@ from License as l where (
             result.defaultEndYear = sdf.format(cal.getTime())
             result.defaultSubIdentifier = java.util.UUID.randomUUID().toString()
 
-            if((RDStore.OR_TYPE_CONSORTIUM?.id in result.orgType)) {
+            if((RDStore.OT_CONSORTIUM?.id in result.orgType)) {
                 def fsq = filterService.getOrgComboQuery(params, result.institution)
                 result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             }
@@ -945,7 +945,7 @@ from License as l where (
         def user = User.get(springSecurityService.principal.id)
         def org = contextService.getOrg()
 
-        params.asOrgType = params.asOrgType ? [params.asOrgType] : [RDStore.OR_TYPE_INSTITUTION.id.toString()]
+        params.asOrgType = params.asOrgType ? [params.asOrgType] : [RDStore.OT_INSTITUTION.id.toString()]
 
 
         if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
@@ -3272,7 +3272,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         def result = setResultGenerics()
 
         // new: filter preset
-        params.orgType  = RDStore.OR_TYPE_INSTITUTION?.id?.toString()
+        params.orgType  = RDStore.OT_INSTITUTION?.id?.toString()
         params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
 
         result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
@@ -3679,7 +3679,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
         if (result.editable) {
 
-            if((RDStore.OR_TYPE_CONSORTIUM?.id in result.orgType)) {
+            if((RDStore.OT_CONSORTIUM?.id in result.orgType)) {
                 def fsq = filterService.getOrgComboQuery(params, result.institution)
                 result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             }

@@ -111,7 +111,7 @@ class OrganisationsController extends AbstractDebugController {
         result.editable    = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR')
 
         params.orgSector   = RDStore.O_SECTOR_PUBLISHER?.id?.toString()
-        params.orgType = RDStore.OR_TYPE_PROVIDER?.id?.toString()
+        params.orgType = RDStore.OT_PROVIDER?.id?.toString()
         params.sort        = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
         def fsq            = filterService.getOrgQuery(params)
@@ -517,7 +517,7 @@ class OrganisationsController extends AbstractDebugController {
 
         result
     }
-    def addOrgRoleType()
+    def addOrgType()
     {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -544,7 +544,7 @@ class OrganisationsController extends AbstractDebugController {
             redirect action: 'show', id: orgInstance.id
         }
     }
-    def deleteOrgRoleType()
+    def deleteOrgType()
     {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)

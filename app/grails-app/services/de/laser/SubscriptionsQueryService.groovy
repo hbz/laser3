@@ -49,7 +49,7 @@ class SubscriptionsQueryService {
         def qry_params
 
         if (! params.orgRole) {
-            if ((RDStore.OR_TYPE_CONSORTIUM?.id in contextOrg?.getallOrgTypeIds())) {
+            if ((RDStore.OT_CONSORTIUM?.id in contextOrg?.getallOrgTypeIds())) {
                 params.orgRole = 'Subscription Consortia'
             }
             else {
