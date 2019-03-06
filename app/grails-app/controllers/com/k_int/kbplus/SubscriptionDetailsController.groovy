@@ -25,6 +25,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.hibernate.cfg.NotYetImplementedException
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import java.text.NumberFormat
@@ -2871,7 +2872,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
     }
 
     private boolean takeLinks(Subscription sourceSub, Subscription targetSub) {
-        NOT IMPLEMENTED YET
+        throw new NotYetImplementedException()
     }
 
     private boolean takeProperties(List<AbstractProperty> properties, Subscription targetSub){
