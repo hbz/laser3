@@ -5,6 +5,7 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AuditConfig
 import de.laser.domain.AbstractI10nTranslatable
+import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
@@ -514,8 +515,9 @@ class AjaxController {
             }
         }
 
-        if(result)
-        {
+        if(result) {
+            RefdataValue notSet = RDStore.GENERIC_NULL_VALUE
+            result.add([value:"${notSet.class.name}:${notSet.id}",text:notSet.getI10n("value")])
             result.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
         }
 
