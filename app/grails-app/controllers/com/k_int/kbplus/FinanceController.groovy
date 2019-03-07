@@ -672,7 +672,7 @@ class FinanceController extends AbstractDebugController {
           def cost_local_currency_after_tax     = params.newCostInLocalCurrencyAfterTax ? params.double( 'newCostInLocalCurrencyAfterTax') : cost_local_currency
           //moved to TAX_TYPES
           //def new_tax_rate                      = params.newTaxRate ? params.int( 'newTaxRate' ) : 0
-          def tax_key = params.newCostTaxKey    ?
+          //def tax_key = params.newCostTaxKey    ?
           def cost_item_element_configuration   = params.ciec ? genericOIDService.resolveOID(params.ciec) : null
 
           def cost_item_isVisibleForSubscriber = (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber)?.value == 'Yes') : false)
