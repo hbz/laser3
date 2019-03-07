@@ -124,6 +124,14 @@ class UserDetailsController extends AbstractDebugController {
     }
 
     @Secured(['ROLE_ADMIN'])
+    def addAffiliation(){
+
+
+
+        redirect controller: 'userDetails', action: 'edit', id: params.id
+    }
+
+    @Secured(['ROLE_ADMIN'])
   def create() {
     switch (request.method) {
       case 'GET':
