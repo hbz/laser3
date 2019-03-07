@@ -149,4 +149,8 @@ databaseChangeLog = {
 	changeSet(author: "kloberd (generated)", id: "1551166000616-25") {
 		addForeignKeyConstraint(baseColumnNames: "pr_position_type_rv_fk", baseTableName: "person_role", baseTableSchemaName: "public", constraintName: "FKE6A16B206F376025", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "rdv_id", referencedTableName: "refdata_value", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
 	}
+
+	changeSet(author: "kloberd (generated)", id: "1551166000616-32") {
+		dropColumn(columnName: "pd_soft_data", tableName: "property_definition")
+	}
 }
