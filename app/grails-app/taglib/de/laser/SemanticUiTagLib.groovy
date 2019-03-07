@@ -471,7 +471,7 @@ class SemanticUiTagLib {
     //<semui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="true" />
 
     def datepicker = { attrs, body ->
-        def inputCssClass = attrs.inputCssClass ? attrs.inputCssClass : false;
+        def inputCssClass = attrs.inputCssClass ?: '';
         def label = attrs.label ? "${message(code: attrs.label)}" : '&nbsp'
         def name = attrs.name ? "${message(code: attrs.name)}" : ''
         def placeholder = attrs.placeholder ? "${message(code: attrs.placeholder)}" : 'Date'
