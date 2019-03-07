@@ -30268,6 +30268,11 @@ a.ui.card:hover,
   padding-left: .9rem;
 }
 
+.la-inline-lists {
+  position: relative;
+  z-index: 100;
+}
+
 .la-inline-lists dl {
   display: table-row;
 }
