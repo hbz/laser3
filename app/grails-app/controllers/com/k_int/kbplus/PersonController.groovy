@@ -22,13 +22,7 @@ class PersonController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def index() {
-        redirect action: 'list', params: params
-    }
-
-    @Secured(['ROLE_ADMIN'])
-    def list() {
-        params.max = params.max ?: ((User) springSecurityService.getCurrentUser())?.getDefaultPageSizeTMP()
-        [personInstanceList: Person.list(params), personInstanceTotal: Person.count()]
+        redirect controller: 'myInstitution', action: 'addressbook'
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
@@ -72,7 +66,7 @@ class PersonController extends AbstractDebugController {
         }
         else if(personInstance && personInstance.isPublic.equals(RDStore.YN_NO)) {
             if(contextService.org != personInstance.tenant && !SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-                redirect action: 'list'
+                redirect(url: request.getHeader('referer'))
                 return
             }
         }
@@ -183,7 +177,8 @@ class PersonController extends AbstractDebugController {
         def personInstance = Person.get(params.id)
         if (!personInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label', default: 'Person'), params.id])
-            redirect action: 'list'
+            //redirect action: 'list'
+            redirect(url: request.getHeader('referer'))
             return
         }
         
