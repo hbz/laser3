@@ -14458,6 +14458,14 @@ i.icon.copy-send {
   font-family: 'icomoon';
 }
 
+i.icon.la-notebook {
+  font-family: 'icomoon';
+}
+
+i.icon.la-books {
+  font-family: 'icomoon';
+}
+
 i.icon.hand.pointer.outline.slash:before {
   content: "\e900";
 }
@@ -14492,6 +14500,14 @@ i.icon.share-slash:before {
 
 i.icon.copy-send:before {
   content: "\e908";
+}
+
+i.icon.la-notebook:before {
+  content: "\e909";
+}
+
+i.icon.la-books:before {
+  content: "\e90a";
 }
 
 /*******************************
@@ -16960,6 +16976,14 @@ a.ui.basic.label:hover {
   border-radius: 0;
   white-space: nowrap;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+/*******************************
+             Types
+*******************************/
+
+.ui.image.label {
+  margin-top: 5px;
 }
 /*!
  * # Semantic UI 2.3.1 - List
@@ -22035,6 +22059,12 @@ input#spotlightSearch[type="search"] {
 .ui.form .field :disabled {
   pointer-events: none;
   opacity: 0.45;
+}
+
+/* Smaller input field for table headers */
+
+.ui.form .field .ui.input input.la-input-small {
+  width: 80px;
 }
 /*!
  * # Semantic UI 2.3.1 - Grid
@@ -30236,6 +30266,11 @@ a.ui.card:hover,
   font-size: 0.8rem;
   text-transform: uppercase;
   padding-left: .9rem;
+}
+
+.la-inline-lists {
+  position: relative;
+  z-index: 100;
 }
 
 .la-inline-lists dl {

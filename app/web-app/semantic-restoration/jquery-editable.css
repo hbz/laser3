@@ -169,24 +169,41 @@
 .editable-click, 
 a.editable-click, 
 a.editable-click:hover {
-    text-decoration: none;
-    border-bottom: dashed 1px #0088cc;
+    border-bottom: dotted 2px #2e39485c;
 }
 
 .editable-click.editable-disabled, 
 a.editable-click.editable-disabled, 
 a.editable-click.editable-disabled:hover {
-   color: #585858;  
+   color: #585858;
    cursor: default;
    border-bottom: none;
 }
-
+/*
 .editable-empty, .editable-empty:hover, .editable-empty:focus{
   font-style: italic; 
-  color: #DD1144;  
-  /* border-bottom: none; */
+  color: #DD1144;
   text-decoration: none;
 }
+*/
+.editable-empty, .editable-empty:hover, .editable-empty:focus{
+    background-color:#f1ebe5;
+    padding: 0 4px;
+}
+/*
+.editable-empty:after {
+    right:-3px;
+    top: -3px;
+    content: '';
+    position: absolute;
+    width: 3px;
+    height: 3px;
+
+    border-radius: 12px;
+    background-color: #fa820a;
+
+}
+*/
 
 .editable-unsaved {
   font-weight: bold; 
@@ -209,5 +226,10 @@ a.editable-click.editable-disabled:hover {
 { 
     padding-top: 5px;
     display:inline-block;
+}
+.ui.table tr th a.editable-empty,
+.ui.table tr th a.editable-empty:hover,
+.ui.table tr th a.editable-empty:focus {
+    padding: 0 4px;
 }
 

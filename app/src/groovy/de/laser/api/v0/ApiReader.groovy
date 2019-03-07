@@ -68,6 +68,7 @@ class ApiReader {
         result.billingCurrency     = costItem.billingCurrency?.value
         result.costItemElement     = costItem.costItemElement?.value
         result.taxCode             = costItem.taxCode?.value
+        result.costItemElementConfiguration = costItem.costItemElementConfiguration?.value
 
         // References
 

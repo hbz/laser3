@@ -142,9 +142,9 @@ databaseChangeLog = {
 		addForeignKeyConstraint(baseColumnNames: "dc_shared_from_fk", baseTableName: "doc_context", baseTableSchemaName: "public", constraintName: "FK30EBA9A8E2E554F4", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "dc_id", referencedTableName: "doc_context", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
 	}
 
-	changeSet(author: "kloberd (generated)", id: "1551166000616-24") {
-		addForeignKeyConstraint(baseColumnNames: "grt_owner_fk", baseTableName: "global_record_tracker", baseTableSchemaName: "public", constraintName: "FK808F5966F6287F86", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "gri_id", referencedTableName: "global_record_info", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
-	}
+	//changeSet(author: "kloberd (generated)", id: "1551166000616-24") {
+	//	addForeignKeyConstraint(baseColumnNames: "grt_owner_fk", baseTableName: "global_record_tracker", baseTableSchemaName: "public", constraintName: "FK808F5966F6287F86", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "gri_id", referencedTableName: "global_record_info", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
+	//}
 
 	changeSet(author: "kloberd (generated)", id: "1551166000616-25") {
 		addForeignKeyConstraint(baseColumnNames: "pr_position_type_rv_fk", baseTableName: "person_role", baseTableSchemaName: "public", constraintName: "FKE6A16B206F376025", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "rdv_id", referencedTableName: "refdata_value", referencedTableSchemaName: "public", referencesUniqueColumn: "false")
