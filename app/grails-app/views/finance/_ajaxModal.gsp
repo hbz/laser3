@@ -135,7 +135,7 @@
                     <div class="field">
                         <label>${message(code:'financials.costItemConfiguration')}</label>
                         <%
-                            def ciec = null
+                            def ciec = [id:null,value:'financials.costItemConfiguration.notSet']
                             if(costItem && !tab.equals("subscr")) {
                                 if(costItem.costItemElementConfiguration)
                                     ciec = costItem.costItemElementConfiguration.class.name+":"+costItem.costItemElementConfiguration.id
@@ -223,7 +223,7 @@
                         <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc"
                                name="newCostCurrencyRate" id="newCostCurrencyRate"
                                placeholder="${g.message(code:'financials.newCosts.exchangeRate')}"
-                               value="${costItem?.currencyRate}" step="0.000000001" />
+                               value="${costItem ? costItem.currencyRate : 1.0}" step="0.000000001" />
 
                         <div class="ui icon button" id="costButton2" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
@@ -282,7 +282,7 @@
                     <label>${message(code:'subscription.label')}</label>
 
                     <g:if test="${costItem?.sub}">
-                        <input class="la-full-width la-select2-fixed-width"
+                        <input class="la-full-width"
                                readonly='readonly'
                                value="${costItem.sub.getName()}" />
                         <input name="newSubscription" id="pickedSubscription"
@@ -291,7 +291,7 @@
                     </g:if>
                     <g:else>
                         <g:if test="${sub}">
-                            <input class="la-full-width la-select2-fixed-width"
+                            <input class="la-full-width"
                                    readonly='readonly'
                                    value="${sub.getName()}" />
                             <input name="newSubscription" id="pickedSubscription"
@@ -299,9 +299,15 @@
                                    value="${'com.k_int.kbplus.Subscription:' + sub.id}" />
                         </g:if>
                         <g:else>
-                            <input name="newSubscription" id="newSubscription" class="la-full-width select2 la-select2-fixed-width"
+                            <div class="ui search selection dropdown newCISelect" id="newSubscription">
+                                <input type="hidden" name="newSubscription">
+                                <i class="dropdown icon"></i>
+                                <input type="text" class="search">
+                                <div class="default text">${message(code:'financials.newCosts.newLicence')}</div>
+                            </div>
+                            <%--<input name="newSubscription" id="newSubscription" class="la-full-width"
                                    data-subfilter=""
-                                   placeholder="${message(code:'financials.newCosts.newLicence')}" />
+                                   placeholder="${message(code:'financials.newCosts.newLicence')}" />--%>
                         </g:else>
                     </g:else>
                 </div><!-- .field -->
@@ -384,8 +390,14 @@
 
                     <%-- the distinction between subMode (= sub) and general view is done already in the controller! --%>
                     <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
-                    <input name="newIe" id="newIE" class="select2 la-select2-fixed-width" />
-                    <%--<g:if test="${!sub}">
+                    <div class="ui search selection dropdown newCISelect" id="newIE">
+                        <input type="hidden" name="newIE" value="${params.newIe}">
+                        <i class="dropdown icon"></i>
+                        <input type="text" class="search">
+                        <div class="default text"></div>
+                    </div>
+                    <%--<input name="newIe" id="newIE" />
+                    <g:if test="${!sub}">
                         <input name="newIe" id="newIE" data-subFilter="" data-disableReset="true" class="la-full-width" value="${params.newIe}">
                     </g:if>
                     <g:else>
@@ -399,7 +411,12 @@
 
         <div class="three fields">
             <fieldset class="field la-modal-fieldset-no-margin">
-                <semui:datepicker label="financials.datePaid" name="newDatePaid" placeholder="financials.datePaid" value="${costItem?.datePaid}" />
+                <div class="two fields">
+                    <semui:datepicker label="financials.datePaid" name="newDatePaid" placeholder="financials.datePaid" value="${costItem?.datePaid}" />
+
+                    <%-- to restrict upon year: https://jsbin.com/ruqakehefa/1/edit?html,js,output , cf. example 8! --%>
+                    <semui:datepicker label="financials.financialYear" name="newFinancialYear" placeholder="financials.financialYear" value="${costItem?.financialYear}" />
+                </div>
                 <div class="two fields">
                     <semui:datepicker label="financials.dateFrom" name="newStartDate" placeholder="default.date.label" value="${costItem?.startDate}" />
 
@@ -441,6 +458,7 @@
             rate: "#newCostCurrencyRate",
             bc:   "#newCostInBillingCurrency"
         }*/
+
         <%
             def costItemElementConfigurations = "{"
             StringJoiner sj = new StringJoiner(",")
@@ -449,157 +467,189 @@
             }
             costItemElementConfigurations += sj.toString()+"}"
         %>
-        var costItemElementConfigurations = ${raw(costItemElementConfigurations)}
+            var costItemElementConfigurations = ${raw(costItemElementConfigurations)}
+            var selLinks = {
+                "newSubscription": "${createLink([controller:"ajax",action:"lookupSubscriptions"])}?query={query}",
+                "newIE": "${createLink([controller:"ajax",action:"lookupIssueEntitlements"])}?query={query}"
+            };
+            if($("#pickedSubscription,#newSubscription input[type='hidden']").val().length > 0) {
+                selLinks.newIE += "&sub="+$("#pickedSubscription,#newSubscription input[type='hidden']").val();
+            }
+            $("#costButton1").click(function() {
+                if (! isError("#newCostInBillingCurrency") && ! isError("#newCostCurrencyRate")) {
+                    var input = $(this).siblings("input");
+                    input.transition('glow');
+                    input.val(($("#newCostInBillingCurrency").val() * $("#newCostCurrencyRate").val()).toFixed(2));
 
-        $("#costButton1").click(function() {
-            if (! isError("#newCostInBillingCurrency") && ! isError("#newCostCurrencyRate")) {
-                var input = $(this).siblings("input");
-                input.transition('glow');
-                input.val(($("#newCostInBillingCurrency").val() * $("#newCostCurrencyRate").val()).toFixed(2));
+                    $(".la-account-currency").find(".field").removeClass("error");
+                    calcTaxResults()
+                }
+            });
+            $("#costButton2").click(function() {
+                if (! isError("#newCostInLocalCurrency") && ! isError("#newCostInBillingCurrency")) {
+                    var input = $(this).siblings("input");
+                    input.transition('glow');
+                    input.val(($("#newCostInLocalCurrency").val() / $("#newCostInBillingCurrency").val()).toFixed(9));
 
-                $(".la-account-currency").find(".field").removeClass("error");
+                    $(".la-account-currency").find(".field").removeClass("error");
+                    calcTaxResults()
+                }
+            });
+            $("#costButton3").click(function() {
+                if (! isError("#newCostInLocalCurrency") && ! isError("#newCostCurrencyRate")) {
+                    var input = $(this).siblings("input");
+                    input.transition('glow');
+                    input.val(($("#newCostInLocalCurrency").val() / $("#newCostCurrencyRate").val()).toFixed(2));
+
+                    $(".la-account-currency").find(".field").removeClass("error");
+                    calcTaxResults()
+                }
+            });
+            $("#newCostItemElement").change(function() {
+                if(typeof(costItemElementConfigurations[$(this).val()]) !== 'undefined')
+                    $("[name='ciec']").dropdown('set selected',costItemElementConfigurations[$(this).val()]);
+                else
+                    $("[name='ciec']").dropdown('set selected','null');
+            });
+            var isError = function(cssSel)  {
+                if ($(cssSel).val().length <= 0 || $(cssSel).val() < 0) {
+                    $(".la-account-currency").children(".field").removeClass("error");
+                    $(cssSel).parent(".field").addClass("error");
+                    return true
+                }
+                return false
+            };
+
+            $('.calc').on('change', function() {
                 calcTaxResults()
-            }
-        })
-        $("#costButton2").click(function() {
-            if (! isError("#newCostInLocalCurrency") && ! isError("#newCostInBillingCurrency")) {
-                var input = $(this).siblings("input");
-                input.transition('glow');
-                input.val(($("#newCostInLocalCurrency").val() / $("#newCostInBillingCurrency").val()).toFixed(9));
+            });
 
-                $(".la-account-currency").find(".field").removeClass("error");
-                calcTaxResults()
-            }
-        })
-        $("#costButton3").click(function() {
-            if (! isError("#newCostInLocalCurrency") && ! isError("#newCostCurrencyRate")) {
-                var input = $(this).siblings("input");
-                input.transition('glow');
-                input.val(($("#newCostInLocalCurrency").val() / $("#newCostCurrencyRate").val()).toFixed(2));
+            var calcTaxResults = function() {
+                var roundF = $('*[name=newFinalCostRounding]').prop('checked');
+                var taxF = 1.0 + (0.01 * $("*[name=newTaxRate]").val());
 
-                $(".la-account-currency").find(".field").removeClass("error");
-                calcTaxResults()
-            }
-        });
-        $("#newCostItemElement").change(function() {
-            if(typeof(costItemElementConfigurations[$(this).val()]) !== 'undefined')
-                $("[name='ciec']").dropdown('set selected',costItemElementConfigurations[$(this).val()]);
-            else
-                $("[name='ciec']").dropdown('set selected','null');
-        });
-        var isError = function(cssSel)  {
-            if ($(cssSel).val().length <= 0 || $(cssSel).val() < 0) {
-                $(".la-account-currency").children(".field").removeClass("error");
-                $(cssSel).parent(".field").addClass("error");
-                return true
-            }
-            return false
-        }
+                $('#newCostInBillingCurrencyAfterTax').val(
+                    roundF ? Math.round($("#newCostInBillingCurrency").val() * taxF) : ($("#newCostInBillingCurrency").val() * taxF).toFixed(2)
+                );
+                $('#newCostInLocalCurrencyAfterTax').val(
+                    roundF ? Math.round( $("#newCostInLocalCurrency").val() * taxF ) : ( $("#newCostInLocalCurrency").val() * taxF ).toFixed(2)
+                );
+            };
 
-        $('.calc').on('change', function() {
-            calcTaxResults()
-        })
+            var costElems = $("#newCostInLocalCurrency, #newCostCurrencyRate, #newCostInBillingCurrency")
 
-        var calcTaxResults = function() {
-            var roundF = $('*[name=newFinalCostRounding]').prop('checked')
-            var taxF = 1.0 + (0.01 * $("*[name=newTaxRate]").val())
-
-            $('#newCostInBillingCurrencyAfterTax').val(
-                roundF ? Math.round($("#newCostInBillingCurrency").val() * taxF) : ($("#newCostInBillingCurrency").val() * taxF).toFixed(2)
-            )
-            $('#newCostInLocalCurrencyAfterTax').val(
-                roundF ? Math.round( $("#newCostInLocalCurrency").val() * taxF ) : ( $("#newCostInLocalCurrency").val() * taxF ).toFixed(2)
-            )
-        }
-
-        var costElems = $("#newCostInLocalCurrency, #newCostCurrencyRate, #newCostInBillingCurrency")
-
-        costElems.on('change', function(){
-            if ( $("#newCostInLocalCurrency").val() * $("#newCostCurrencyRate").val() != $("#newCostInBillingCurrency").val() ) {
-                costElems.parent('.field').addClass('error')
-            }
-            else {
-                costElems.parent('.field').removeClass('error')
-            }
-        })
-
-        var ajaxPostFunc = function () {
-
-            console.log( "ajaxPostFunc")
-
-            <g:if test="${!sub}">
-
-            $('#costItem_ajaxModal #newSubscription').select2({
-                placeholder: "${message(code:'financials.newCosts.enterSubName')}",
-                minimumInputLength: 1,
-                formatInputTooShort: function () {
-                    return "${message(code:'select2.minChars.note')}";
-                },
-                global: false,
-                ajax: {
-                    url: "<g:createLink controller='ajax' action='lookupSubscriptions'/>",
-                    dataType: 'json',
-                    data: function (term, page) {
-                        return {
-                            hideDeleted: 'true',
-                            hideIdent: 'false',
-                            inclSubStartDate: 'false',
-                            inst_shortcode: "${contextService.getOrg()?.shortcode}",
-                            q: '%' + term , // contains search term
-                            page_limit: 20,
-                            baseClass:'com.k_int.kbplus.Subscription'
-                        };
-                    },
-                    results: function (data, page) {
-                        return {results: data.values};
-                    }
-                },
-                allowClear: true,
-                formatSelection: function(data) {
-                    return data.text;
+            costElems.on('change', function(){
+                if ( $("#newCostInLocalCurrency").val() * $("#newCostCurrencyRate").val() != $("#newCostInBillingCurrency").val() ) {
+                    costElems.parent('.field').addClass('error')
+                }
+                else {
+                    costElems.parent('.field').removeClass('error')
                 }
             });
 
-            </g:if>
+            $("[name='newSubscription']").change(function(){
+                selLinks.newIE = "${createLink([controller:"ajax",action:"lookupIssueEntitlements"])}?query={query}&sub="+$("[name='newSubscription']").val();
+                ajaxPostFunc();
+            });
 
-            <g:if test="${issueEntitlement}">
-                var data = {id : "${issueEntitlement.class.name}:${issueEntitlement.id}",
-                            text : "${issueEntitlement.tipp.title.title}"};
-            </g:if>
+            function ajaxPostFunc() {
+                $(".newCISelect").each(function(k,v){
+                    $(this).dropdown({
+                        apiSettings: {
+                            url: selLinks[$(this).attr("id")],
+                            cache: false
+                        },
+                        clearable: true,
+                        minCharacters: 0
+                    });
+                });
 
-            $('#newIE').select2({
-                placeholder: "${message(code:'financials.newCosts.singleEntitlement')}",
-                <%--minimumInputLength: 1,
-                formatInputTooShort: function () {
-                    return "${message(code:'select2.minChars.note')}";
-                },--%>
-                global: false,
-                ajax: {
-                    url: "<g:createLink controller='ajax' action='lookupIssueEntitlements'/>",
-                    data: function (term, page) {
-                        return {
-                            hideDeleted: 'true',
-                            hideIdent: 'false',
-                            inclSubStartDate: 'false',
-                            q: '%' + term + '%',
-                            page_limit: 20,
-                            baseClass: 'com.k_int.kbplus.IssueEntitlement',
-                            sub: $("#pickedSubscription,#newSubscription").val()
-                        };
+                $("[name='newFinancialYear']").parents(".datepicker").calendar({
+                    type: 'year'
+                });
+            }
+
+            <%--var ajaxPostFunc = function () {
+
+                console.log( "ajaxPostFunc")
+                DOES NOT WORK AS OF #1053! To be refactored!!!!
+                <g:if test="${!sub}">
+
+                $('#costItem_ajaxModal #newSubscription').select2({
+                    placeholder: "${message(code:'financials.newCosts.enterSubName')}",
+                    minimumInputLength: 1,
+                    formatInputTooShort: function () {
+                        return "${message(code:'select2.minChars.note')}";
                     },
-                    results: function (data, page) {
-                        return {results: data.values};
+                    global: false,
+                    ajax: {
+                        url: "<g:createLink controller='ajax' action='lookupSubscriptions'/>",
+                        dataType: 'json',
+                        data: function (term, page) {
+                            return {
+                                hideDeleted: 'true',
+                                hideIdent: 'false',
+                                inclSubStartDate: 'false',
+                                inst_shortcode: "${contextService.getOrg()?.shortcode}",
+                                q: '%' + term , // contains search term
+                                page_limit: 20,
+                                baseClass:'com.k_int.kbplus.Subscription'
+                            };
+                        },
+                        results: function (data, page) {
+                            return {results: data.values};
+                        }
                     },
                     allowClear: true,
                     formatSelection: function(data) {
                         return data.text;
                     }
-                }
-            });
-            //duplicated call needed to preselect data
-            if(typeof(data) !== 'undefined')
-                $('#newIE').select2('data',data);
-        }
+                });
+
+                </g:if>
+
+                <g:if test="${issueEntitlement}">
+                    var data = {id : "${issueEntitlement.class.name}:${issueEntitlement.id}",
+                                text : "${issueEntitlement.tipp.title.title}"};
+                </g:if>
+
+                $('#newIE').select2({
+                    placeholder: "${message(code:'financials.newCosts.singleEntitlement')}",
+                    /*minimumInputLength: 1,
+                    formatInputTooShort: function () {
+                        return "${message(code:'select2.minChars.note')}";
+                    },*/
+                    global: false,
+                    ajax: {
+                        url: "<g:createLink controller='ajax' action='lookupIssueEntitlements'/>",
+                        data: function (term, page) {
+                            return {
+                                hideDeleted: 'true',
+                                hideIdent: 'false',
+                                inclSubStartDate: 'false',
+                                q: '%' + term + '%',
+                                page_limit: 20,
+                                baseClass: 'com.k_int.kbplus.IssueEntitlement',
+                                sub: $("#pickedSubscription,#newSubscription").val()
+                            };
+                        },
+                        results: function (data, page) {
+                            return {results: data.values};
+                        },
+                        allowClear: true,
+                        formatSelection: function(data) {
+                            return data.text;
+                        }
+                    }
+                });
+                //duplicated call needed to preselect data
+                if(typeof(data) !== 'undefined')
+                    $('#newIE').select2('data',data);
+                end legacy!
+
+
+            };--%>
+
     </script>
 
 </semui:modal>

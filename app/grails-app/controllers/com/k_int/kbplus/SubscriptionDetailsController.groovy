@@ -2081,7 +2081,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         else if (result.subscription.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_PARTICIPATION) && !result.subscription.getConsortia().equals(result.institution))
             params.view = "subscr"
         //cost items
-        params.forExport = true
+        //params.forExport = true
         LinkedHashMap costItems = financeService.getCostItemsForSubscription(result.subscription, params, 10, 0)
         result.costItemSums = [:]
         if (costItems.own.count > 0) {

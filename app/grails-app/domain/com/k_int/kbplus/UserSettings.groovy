@@ -112,10 +112,10 @@ class UserSettings {
 
         switch (key.type) {
             case Integer:
-                result = Integer.parseInt(strValue)
+                result = strValue? Integer.parseInt(strValue) : null
                 break
             case Long:
-                result = Long.parseLong(strValue)
+                result = strValue ? Long.parseLong(strValue) : null
                 break
             case Org:
                 result = orgValue

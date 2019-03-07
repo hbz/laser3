@@ -195,7 +195,8 @@ class ProfileController {
   def updateReminderSettings() {
     def user = User.get(springSecurityService.principal.id)
 
-    flash.message=""
+    flash.message = ""
+    flash.error = ""
     changeValue(user.getSetting(DASHBOARD_REMINDER_PERIOD, 14),    params.dashboardReminderPeriod,     'profile.updateProfile.updated.dashboardReminderPeriod')
 
       if ( (! user.email) && user.getSetting(IS_REMIND_BY_EMAIL, YN_NO).equals(YN_NO)) {
@@ -222,22 +223,28 @@ class ProfileController {
   }
     private void changeValue(UserSettings userSetting, def newValue, String messageSuccessfull) {
         def oldValue = userSetting.value
-        if (oldValue instanceof RefdataValue){//} && ((RefdataValue)oldValue).belongsTo.owner. == com.k_int.kbplus.RefdataCategory.{
-            def owner = ((RefdataValue)oldValue).belongsTo.owner
-            print owner
-            if (newValue == 'Y') {
-                newValue = YN_YES
-            } else {
-                newValue = YN_NO
+        if (newValue) {
+            if (oldValue instanceof RefdataValue) {//} && ((RefdataValue)oldValue).belongsTo.owner. == com.k_int.kbplus.RefdataCategory.{
+                if (newValue == 'Y') {
+                    newValue = YN_YES
+                } else {
+                    newValue = YN_NO
+                }
             }
-        }
-        if (oldValue instanceof Integer){
-            newValue = Integer.parseInt(newValue)
-        }
-        boolean valueHasChanged = newValue && (userSetting.value != newValue)
-        if ( valueHasChanged ) {
-            userSetting.setValue(newValue)
-            flash.message += (message(code: messageSuccessfull) +"<br/>")
+            if (userSetting.key.type == Integer) {
+                newValue = Integer.parseInt(newValue)
+            }
+            boolean valueHasChanged = oldValue != newValue
+            if (valueHasChanged) {
+                userSetting.setValue(newValue)
+                flash.message += (message(code: messageSuccessfull) + "<br/>")
+            }
+        } else {
+            if (DASHBOARD_REMINDER_PERIOD == userSetting.key) {
+                flash.error += (message(args: userSetting.key, code: 'profile.updateProfile.updated.error.dashboardReminderPeriod') + "<br/>")
+            } else {
+                flash.error += (message(args: userSetting.key, code: 'profile.updateProfile.updated.error') + "<br/>")
+            }
         }
     }
 
