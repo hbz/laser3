@@ -56,7 +56,7 @@ class PersonController extends AbstractDebugController {
             addPersonRoles(personInstance)
             
 			flash.message = message(code: 'default.created.message', args: [message(code: 'person.label', default: 'Person'), personInstance.toString()])
-            redirect action: 'show', id: personInstance.id
+            redirect(url: request.getHeader('referer'))
 			break
 		}
     }
