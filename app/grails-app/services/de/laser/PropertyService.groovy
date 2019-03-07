@@ -37,7 +37,6 @@ class PropertyService {
             base_qry += " and ( exists ( select gProp from ${hqlVar}.${propGroup} as gProp where gProp.type = :propDef "
             base_qry_params.put('propDef', pd)
 
-
             switch (pd.type) {
                 case RefdataValue.toString():
                     def pdValue = genericOIDService.resolveOID(params.filterProp)

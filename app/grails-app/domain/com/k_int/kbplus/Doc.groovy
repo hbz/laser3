@@ -40,6 +40,7 @@ class Doc {
   Date dateCreated
   Date lastUpdated
   User user
+  Org owner         //the context org of the user uploading a document
   String migrated
 
   static mapping = {
@@ -56,6 +57,7 @@ class Doc {
        blobContent column:'doc_blob_content'
           mimeType column:'doc_mimeType'
               user column:'doc_user_fk'
+             owner column:'doc_owner_fk'
   }
 
   static constraints = {
@@ -70,6 +72,7 @@ class Doc {
     filename  (nullable:true, blank:false)
     mimeType  (nullable:true, blank:false)
     user      (nullable:true, blank:false)
+    owner     (nullable:true, blank:false)
     migrated  (nullable:true, blank:false, maxSize:1)
   }
 

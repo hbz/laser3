@@ -1102,8 +1102,20 @@ from License as l where (
         redirect action: 'currentLicenses'
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    Map documents() {
+        User user = User.get(springSecurityService.principal.id)
+        Org org = contextService.org
+        Set<DocContext> documents = []
+        documents.addAll(DocContext.executeQuery('select dc from DocContext dc join dc.owner d where d.owner = :org or dc.targetOrg = :org',[org:org]))
+        org.documents = documents
+        Map result = [user:user,org:org,editable:accessService.checkMinUserOrgRole(user,org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]
+        result
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def deleteDocuments() {
         def ctxlist = []
 

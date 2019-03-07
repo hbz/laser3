@@ -22,9 +22,11 @@ class DocContext implements ShareableTrait {
 
     @RefdataAnnotation(cat = 'Document Context Status')
     RefdataValue status
-
-    @RefdataAnnotation(cat = '?')
+    @RefdataAnnotation(cat = 'Document Type')
     RefdataValue doctype
+    Org targetOrg
+    @RefdataAnnotation(cat = 'Share Configuration')
+    RefdataValue shareConf
 
     Boolean globannounce = false
     DocContext sharedFrom
@@ -46,6 +48,8 @@ class DocContext implements ShareableTrait {
            status column:'dc_status_fk'
        sharedFrom column:'dc_shared_from_fk'
          isShared column:'dc_is_shared'
+        targetOrg column:'dc_target_org_fk'
+        shareConf column:'dc_share_conf_fk'
   }
 
   static constraints = {
@@ -59,6 +63,8 @@ class DocContext implements ShareableTrait {
     globannounce(nullable:true, blank:true)
       sharedFrom(nullable:true, blank:true)
       isShared(nullable:true, blank:false, default:false)
+      targetOrg(nullable: true,blank: false)
+      shareConf(nullable: true,blank: false)
   }
 
     void afterUpdate(PostUpdateEvent event) {
