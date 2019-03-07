@@ -6,6 +6,7 @@ import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
 import de.laser.interfaces.TemplateSupport
+import java.time.Year
 
 import javax.persistence.Transient
 
@@ -49,7 +50,9 @@ class CostItem
     Double costInLocalCurrency     //local amount entered
     Double currencyRate
 
+    //legacy, to be replaced by ...
     Integer taxRate
+
     Boolean finalCostRounding
 
     @Transient
@@ -58,6 +61,7 @@ class CostItem
     Double costInBillingCurrencyAfterTax
 
     Date invoiceDate
+    Year financialYear
 
     String costTitle
     String costDescription
@@ -103,6 +107,7 @@ class CostItem
         taxCode         column: 'ci_tax_code'
         taxRate                         column: 'ci_tax_rate'
         invoiceDate                     column: 'ci_invoice_date'
+        financialYear                   column: 'ci_financial_year'
         isVisibleForSubscriber          column: 'ci_is_viewable'
         includeInSubscription column: 'ci_include_in_subscr'
         costItemCategory    column: 'ci_cat_rv_fk'
@@ -134,6 +139,7 @@ class CostItem
         taxCode         (nullable: true, blank: false)
         taxRate                         (nullable: true, blank: false)
         invoiceDate                     (nullable: true, blank: false)
+        financialYear   (nullable: true, blank: false)
         isVisibleForSubscriber(nullable: true, blank: false)
         includeInSubscription(nullable: true, blank: false)
         costItemCategory(nullable: true, blank: false)
