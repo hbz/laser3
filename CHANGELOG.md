@@ -1,4 +1,4 @@
-0.14-RC
+0.14
 
 - added sharing of documents and notes
 - supporting new gokb identifiers
