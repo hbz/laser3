@@ -132,19 +132,20 @@
     $('input:checkbox').change( function(event) {
         if (this.checked) {
             var dPropType = $(this).attr('data-prop-type');
-            $('.table tr[data-prop-type="' + dPropType + '"]').addClass('trHover')
+            $('.table tr[data-prop-type="' + dPropType + '"]').addClass('trWarning')
         } else {
             var dPropType = $(this).attr('data-prop-type');
-            $('.table tr[data-prop-type="' + dPropType + '"]').removeClass('trHover')
+            $('.table tr[data-prop-type="' + dPropType + '"]').removeClass('trWarning')
         }
     })
 </r:script>
 <style>
-table tr.trHover td {
+table tr.trWarning td {
     background-color:tomato !important;
+    text-decoration: line-through;
 }
-table tr.trHover td[data-uri]:hover,
-table tr.trHover td[data-context]:hover {
+table tr.trWarning td[data-uri]:hover,
+table tr.trWarning td[data-context]:hover {
     cursor: pointer;
 }
 </style>
