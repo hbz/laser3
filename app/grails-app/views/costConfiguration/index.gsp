@@ -11,6 +11,9 @@
             <semui:crumb message="menu.institutions.costConfiguration" class="active" />
         </semui:breadcrumbs>
         <h1 class="ui left aligned icon header"><semui:headerIcon/><g:message code="menu.institutions.costConfiguration"/></h1>
+        <p>
+            <g:message code="costConfiguration.preset" />
+        </p>
         <semui:messages data="${flash}"/>
         <%--<div class="content ui form">
             <div class="two fields wide">
@@ -42,7 +45,6 @@
             <table class="ui celled la-table la-table-small table">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>${message(code:'financials.costItemElement')}</th>
                         <th>${message(code:'financials.costItemConfiguration')}</th>
                         <th>${message(code:'financials.setAll')}</th>
@@ -51,7 +53,6 @@
                 <tbody>
                     <g:each in="${costItemElementConfigurations}" var="ciec">
                         <tr>
-                            <td>${ciec.id}</td>
                             <td>${ciec.costItemElement.getI10n('value')}</td>
                             <td>
                                 <semui:xEditableRefData owner="${ciec}" field="elementSign" emptytext="${message(code:'financials.costItemConfiguration.notSet')}" config="Cost configuration"/>

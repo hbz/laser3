@@ -35,7 +35,7 @@
                     }
                 },
                 results: function (data, page) {
-                    return {results: data.values};
+                    return {results: data.results};
                 }
 	        }
 	    });
