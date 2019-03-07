@@ -52,12 +52,15 @@ ${message(code: 'subscription.linkLicenseConsortium.header')}
                 <h4>${message(code: 'subscription.linkLicenseConsortium.info')}</h4>
 
                 <label>${message(code: 'subscription.linktoLicense')}</label>
-
-                <g:select class="ui search dropdown"
-                          optionKey="id" optionValue="reference"
-                          from="${validLicenses}" name="license_All" value=""
-                          required="required"
-                          noSelection='["": "${message(code: 'subscription.linkLicenseConsortium.noSelection')}"]'/>
+                <g:if test="${validLicenses}">
+                    <g:select class="ui search dropdown"
+                              optionKey="id" optionValue="reference"
+                              from="${validLicenses}" name="license_All" value=""
+                              required="required"
+                              noSelection='["": "${message(code: 'subscription.linkLicenseConsortium.noSelection')}"]'/>
+                </g:if><g:else>
+                    ${message(code: 'subscription.linkLicenseConsortium.noValidLicenses')}"]
+                </g:else>
             </div>
             <button class="ui button" type="submit">${message(code: 'default.button.save_changes')}</button>
         </g:form>
@@ -109,11 +112,14 @@ ${message(code: 'subscription.linkLicenseConsortium.header')}
                     <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
                     <td>${sub.status.getI10n('value')}</td>
                     <td>
-                        <g:select class="ui search dropdown"
-                                  optionKey="id" optionValue="reference"
-                                  from="${validLicenses}" name="license_${sub.id}" value="${sub?.owner?.id}"
-                                  noSelection='["": "${message(code: 'subscription.linkLicenseConsortium.noSelection')}"]'/>
-
+                        <g:if test="${validLicenses}">
+                            <g:select class="ui search dropdown"
+                                      optionKey="id" optionValue="reference"
+                                      from="${validLicenses}" name="license_${sub.id}" value="${sub?.owner?.id}"
+                                      noSelection='["": "${message(code: 'subscription.linkLicenseConsortium.noSelection')}"]'/>
+                        </g:if><g:else>
+                            ${message(code: 'subscription.linkLicenseConsortium.noValidLicenses')}"]
+                        </g:else>
                     </td>
 
                     <td class="x">
