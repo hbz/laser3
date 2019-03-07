@@ -61,13 +61,6 @@ r2d2 = {
     initGlobalSemuiStuff : function() {
         console.log("r2d2.initGlobalSemuiStuff()")
 
-        //popup tooltips
-        $('.la-popup-tooltip.la-delay').popup({delay: {
-                    show: 300,
-                    hide: 0
-                }
-            });
-
         // spotlight
         $('.ui.search').search({
             type: 'category',
