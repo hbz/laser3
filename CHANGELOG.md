@@ -1,11 +1,12 @@
-0.14
+0.14-RC
 
 - added sharing of documents and notes
 - supporting new gokb identifiers
 - importing e-books fields from gokb 
 - reworked finance views
 - supported preselection of issue entitlements with KBart
-- added consortia view for linking subscriptions with licenses
+- added consortia view for subscriber depending licenses
+- added consortia view for linking subscriber licenses
 - improved management of refdatas and properties
 - reworked modals for adding providers, agencies and licensors
 - improved pagination
