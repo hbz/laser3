@@ -14507,7 +14507,7 @@ i.icon.la-notebook:before {
 }
 
 i.icon.la-books:before {
-  content: "\e910";
+  content: "\e90a";
 }
 
 /*******************************
@@ -22059,6 +22059,12 @@ input#spotlightSearch[type="search"] {
 .ui.form .field :disabled {
   pointer-events: none;
   opacity: 0.45;
+}
+
+/* Smaller input field for table headers */
+
+.ui.form .field .ui.input input.la-input-small {
+  width: 80px;
 }
 /*!
  * # Semantic UI 2.3.1 - Grid

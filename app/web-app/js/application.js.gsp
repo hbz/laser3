@@ -61,6 +61,13 @@ r2d2 = {
     initGlobalSemuiStuff : function() {
         console.log("r2d2.initGlobalSemuiStuff()")
 
+        //popup tooltips
+        $('.la-popup-tooltip.la-delay').popup({delay: {
+                    show: 300,
+                    hide: 0
+                }
+            });
+
         // spotlight
         $('.ui.search').search({
             type: 'category',
@@ -269,6 +276,12 @@ r2d2 = {
             ctxSel = 'body'
         }
 
+        //popup tooltips
+        $(ctxSel + ' .la-popup-tooltip.la-delay').popup({delay: {
+            show: 300,
+            hide: 0
+        }
+        });
         $("a[href], input.js-wait-wheel").not("a[href^='#'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-tooltip], a.la-ctrls , .close, .js-no-wait-wheel, .trigger-modal").click(function() {
             $("html").css("cursor", "wait");
         });
@@ -330,6 +343,10 @@ r2d2 = {
         $(ctxSel + ' form').attr('autocomplete', 'off');
 
         $(ctxSel + ' .la-filter .ui.dropdown').dropdown({
+            clearable: true
+        });
+
+        $(ctxSel + ' .ui.dropdown.la-clearable').dropdown({
             clearable: true
         });
 

@@ -1756,7 +1756,7 @@ i.icon.share-unslash:before { content: "\e906"; }
 i.icon.share-slash:before { content: "\e907"; }
 i.icon.copy-send:before { content: "\e908"; }
 i.icon.la-notebook:before { content: "\e909"; }
-i.icon.la-books:before { content: "\e910"; }
+i.icon.la-books:before { content: "\e90a"; }
 
 
 /*******************************

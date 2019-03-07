@@ -1361,12 +1361,7 @@ body.public #Footer .footer-sublinks a:hover {
 
 /* --- OVERRIDES --- */
 
-.editable-click, a.editable-click, a.editable-click:hover {
-	border-color: orange;
-}
-.editable-empty, .editable-empty:hover {
-	color: orange;
-}
+
 .container > .span12 {
 	margin-left: 0;
 }
