@@ -19,6 +19,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 
 import java.text.SimpleDateFormat
+import java.time.Year
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class FinanceController extends AbstractDebugController {
@@ -67,15 +68,7 @@ class FinanceController extends AbstractDebugController {
         else if(OrgRole.findByRoleTypeAndOrg(RDStore.OR_SUBSCRIBER_CONS,result.institution))
             result.showView = "subscr"
         result.filterPresets = result.financialData.filterPresets
-        if(result.financialData.filterLists) {
-            result.providers = result.financialData.filterLists.providers
-            result.allCISubs = result.financialData.filterLists.subscriptions
-            result.allCISPkgs = result.financialData.filterLists.subPackages
-            result.allCIBudgetCodes = result.financialData.filterLists.budgetCodes
-            result.allCIReferences = result.financialData.filterLists.references
-            result.allCIInvoiceNumbers = result.financialData.filterLists.invoiceNumbers
-            result.allCIOrderNumbers = result.financialData.filterLists.orderNumbers
-        }
+        result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:result.institution])
         result
     }
 
@@ -105,22 +98,14 @@ class FinanceController extends AbstractDebugController {
             result.showView = "cons"
             if(params.view.equals("consAtSubscr"))
                 result.showView = "consAtSubscr"
-            def fsq = filterService.getOrgComboQuery(params,result.institution)
+            Map fsq = filterService.getOrgComboQuery(params,result.institution)
             result.subscriptionParticipants = OrgRole.executeQuery(fsq.query,fsq.queryParams)
         }
         else if(OrgRole.findBySubAndOrgAndRoleType(result.subscription,result.institution,RDStore.OR_SUBSCRIBER_CONS))
             result.showView = "subscr"
         else result.showView = "own"
         result.filterPresets = result.financialData.filterPresets
-        if(result.financialData.filterLists) {
-            result.providers = result.financialData.filterLists.providers
-            result.allCISubs = result.financialData.filterLists.subscriptions
-            result.allCISPkgs = result.financialData.filterLists.subPackages
-            result.allCIBudgetCodes = result.financialData.filterLists.budgetCodes
-            result.allCIReferences = result.financialData.filterLists.references
-            result.allCIInvoiceNumbers = result.financialData.filterLists.invoiceNumbers
-            result.allCIOrderNumbers = result.financialData.filterLists.orderNumbers
-        }
+        result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:result.institution])
         Map navigation = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)
         result.navNextSubscription = navigation.nextLink
         result.navPrevSubscription = navigation.prevLink
@@ -651,6 +636,7 @@ class FinanceController extends AbstractDebugController {
         def startDate   = newDate(params.newStartDate, dateFormat.toPattern())
         def endDate     = newDate(params.newEndDate,   dateFormat.toPattern())
         def invoiceDate = newDate(params.newInvoiceDate,    dateFormat.toPattern())
+        Year financialYear = Year.parse(params.newFinancialYear)
 
         def ie = null
         if(params.newIe)
@@ -732,6 +718,7 @@ class FinanceController extends AbstractDebugController {
               newCostItem.startDate = startDate
               newCostItem.endDate = endDate
               newCostItem.invoiceDate = invoiceDate
+              newCostItem.financialYear = financialYear
 
               newCostItem.includeInSubscription = null //todo Discussion needed, nobody is quite sure of the functionality behind this...
               newCostItem.reference = params.newReference ? params.newReference.trim() : null

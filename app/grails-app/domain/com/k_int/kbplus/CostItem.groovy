@@ -5,6 +5,7 @@ import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
 import de.laser.interfaces.TemplateSupport
+import java.time.Year
 
 import javax.persistence.Transient
 
@@ -64,7 +65,7 @@ class CostItem
     Double costInLocalCurrency     //local amount entered
     Double currencyRate
 
-    //is going to be replaced by ...
+    //legacy, to be replaced by ...
     Integer taxRate
     //... this construct:
     TAX_TYPES taxKey
@@ -77,6 +78,7 @@ class CostItem
     Double costInBillingCurrencyAfterTax
 
     Date invoiceDate
+    Year financialYear
 
     String costTitle
     String costDescription
@@ -123,6 +125,7 @@ class CostItem
         //taxRate                         column: 'ci_tax_rate'
         taxKey          column: 'ci_tax_enum'
         invoiceDate                     column: 'ci_invoice_date'
+        financialYear                   column: 'ci_financial_year'
         isVisibleForSubscriber          column: 'ci_is_viewable'
         includeInSubscription column: 'ci_include_in_subscr'
         costItemCategory    column: 'ci_cat_rv_fk'
@@ -154,6 +157,7 @@ class CostItem
         taxCode         (nullable: true, blank: false)
         taxRate                         (nullable: true, blank: false)
         invoiceDate                     (nullable: true, blank: false)
+        financialYear   (nullable: true, blank: false)
         isVisibleForSubscriber(nullable: true, blank: false)
         includeInSubscription(nullable: true, blank: false)
         costItemCategory(nullable: true, blank: false)
