@@ -144,8 +144,8 @@ table tr.trWarning td {
     background-color:tomato !important;
     text-decoration: line-through;
 }
-table tr.trWarning td[data-uri]:hover,
-table tr.trWarning td[data-context]:hover {
-    cursor: pointer;
-}
+/*table tr.trWarning td[data-uri]:hover,*/
+/*table tr.trWarning td[data-context]:hover {*/
+    /*cursor: pointer;*/
+/*}*/
 </style>
