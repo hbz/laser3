@@ -87,68 +87,13 @@
 
     </div><!-- grid -->
 
-            <h4 class="ui dividing header">
-                ${message(code:'user.affiliation.plural', default:'Affiliations')}
-            </h4>
+    <div class="ui one column grid">
+        <g:render template="/templates/user/membership_table" model="[userInstance: ui, tmplAdmin: true]" />
+    </div>
 
-          <table class="ui celled la-table la-table-small table">
-            <thead>
-              <tr>
-                <th>${message(code:'user.org', default:'Org')}</th>
-                <th>${message(code:'user.role', default:'Role')}</th>
-                <th>${message(code:'user.status', default:'Status')}</th>
-                <th>${message(code:'user.actions', default:'Actions')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <g:each in="${ui.affiliations}" var="af">
-                <tr>
-                  <td>${af.org.name}</td>
-                  <td>${af.formalRole?.authority}</td>
-                  <td>${message(code:"cv.membership.status.${af.status}")}</td>
-                  <td class="x">
-                      <g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${ui.class.name}:${ui.id}",contextProperty:"affiliations",targetOid:"${af.class.name}:${af.id}"]}'
-                              class="ui icon negative button">
-                          <i class="trash alternate icon"></i>
-                      </g:link>
-                  </td>
-                </tr>
-              </g:each>
-            </tbody>
-              <tfoot>
-              <tr>
-                  <td colspan="4">
-                      <g:form controller="userDetails" action="addAffiliation" class="ui form" method="get" params="${[id: ui.id]}">
-
-                          <div class="two fields">
-                              <div class="field">
-                                  <label>Organisation</label>
-                                  <g:select name="org"
-                                            from="${com.k_int.kbplus.Org.executeQuery('from Org o where o.sector.value = ? order by o.name', 'Higher Education')}"
-                                            optionKey="id"
-                                            optionValue="name"
-                                            class="ui fluid search dropdown"/>
-                              </div>
-
-                              <div class="field">
-                                  <label>Role</label>
-                                  <g:select name="formalRole"
-                                            from="${com.k_int.kbplus.auth.Role.findAllByRoleType('user')}"
-                                            optionKey="id"
-                                            optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
-                                            class="ui fluid dropdown"/>
-                              </div>
-                          </div>
-
-                          <div class="field">
-                              <label></label>
-                              <button type="submit" class="ui button">${message(code: 'profile.membership.add.button')}</button>
-                          </div>
-                      </g:form>
-                  </td>
-              </tr>
-              </tfoot>
-          </table>
+    <div class="ui segment form">
+        <g:render template="/templates/user/membership_form" model="[userInstance: ui, tmplAdmin: true]" />
+    </div>
 
           <h4 class="ui dividing header">${message(code:'user.role.plural', default:'Roles')}</h4>
 

@@ -21,6 +21,7 @@ class ProfileController {
     def errorReportService
     def refdataService
     def propertyService
+    def userService
 
     @Secured(['ROLE_USER'])
     def index() {
@@ -78,39 +79,12 @@ class ProfileController {
     def processJoinRequest() {
         log.debug("processJoinRequest(${params}) org with id ${params.org} role ${params.formalRole}")
 
-        def user        = User.get(springSecurityService.principal.id)
-        def org         = Org.get(params.org)
-        def formal_role = Role.get(params.formalRole)
+        User user       = User.get(springSecurityService.principal.id)
+        Org org         = Org.get(params.org)
+        Role formalRole = Role.get(params.formalRole)
 
-        try {
-            if ( (org != null) && (formal_role != null) ) {
-                def existingRel = UserOrg.find( { org==org && user==user && formalRole==formal_role } )
-
-                if (existingRel && existingRel.status == UserOrg.STATUS_CANCELLED) {
-                    existingRel.delete()
-                    existingRel = null
-                }
-
-                if(existingRel) {
-                    log.debug("existing rel");
-                    flash.error= message(code:'profile.processJoinRequest.error', default:"You already have a relation with the requested organisation.")
-                }
-                else {
-                    log.debug("Create new user_org entry....");
-                    def p = new UserOrg(dateRequested:System.currentTimeMillis(),
-                                      status:UserOrg.STATUS_PENDING,
-                                      org:org,
-                                      user:user,
-                                      formalRole:formal_role)
-                    p.save(flush:true, failOnError:true)
-                }
-            }
-            else {
-                log.error("Unable to locate org or role");
-            }
-        }
-        catch ( Exception e ) {
-            log.error("Problem requesting affiliation",e);
+        if (user && org && formalRole) {
+            userService.createAffiliation(user, org, formalRole, UserOrg.STATUS_PENDING, flash)
         }
 
         redirect(action: "index")

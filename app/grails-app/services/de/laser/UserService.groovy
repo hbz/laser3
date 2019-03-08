@@ -5,51 +5,53 @@ import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
 import com.k_int.kbplus.auth.UserOrg
 import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.util.Holders
 import groovy.transform.CompileStatic
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import org.springframework.context.i18n.LocaleContextHolder
 
 //@CompileStatic
 class UserService {
 
     GrailsApplication grailsApplication
 
-    def createAffiliationRequest(){
+    def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
 
-        /*
-        def user        = User.get(springSecurityService.principal.id)
-        def org         = Org.get(params.org)
-        def formal_role = Role.get(params.formalRole)
+    def createAffiliation(User user, Org org, Role formalRole, def uoStatus, def flash){
 
         try {
-            if ( (org != null) && (formal_role != null) ) {
-                def existingRel = UserOrg.find( { org==org && user==user && formalRole==formal_role } )
+            def check = UserOrg.findByOrgAndUserAndFormalRole(org, user, formalRole)
 
-                if (existingRel && existingRel.status == UserOrg.STATUS_CANCELLED) {
-                    existingRel.delete()
-                    existingRel = null
-                }
+            if (check && check.status == UserOrg.STATUS_CANCELLED) {
+                check.delete()
+                check = null
+            }
 
-                if(existingRel) {
-                    log.debug("existing rel");
-                    flash.error= message(code:'profile.processJoinRequest.error', default:"You already have a relation with the requested organisation.")
-                }
-                else {
-                    log.debug("Create new user_org entry....");
-                    def p = new UserOrg(dateRequested:System.currentTimeMillis(),
-                            status:UserOrg.STATUS_PENDING,
-                            org:org,
-                            user:user,
-                            formalRole:formal_role)
-                    p.save(flush:true, failOnError:true)
-                }
+            if (check) {
+                flash?.error = messageSource.getMessage('profile.processJoinRequest.error', null, LocaleContextHolder.getLocale())
             }
             else {
-                log.error("Unable to locate org or role");
+                log.debug("Create new user_org entry....");
+                def uo = new UserOrg(
+                        dateRequested:System.currentTimeMillis(),
+                        status: uoStatus,
+                        org: org,
+                        user: user,
+                        formalRole: formalRole)
+
+                if (uoStatus in [UserOrg.STATUS_APPROVED, UserOrg.STATUS_AUTO_APPROVED]) {
+                    uo.dateActioned = uo.dateRequested
+                }
+                if (uo.save(flush:true)) {
+                    flash?.message = "OK"
+                }
+                else {
+                    flash?.error = "Problem requesting affiliation"
+                }
             }
         }
-        catch ( Exception e ) {
-            log.error("Problem requesting affiliation",e);
+        catch (Exception e) {
+            flash?.error = "Problem requesting affiliation"
         }
-        */
     }
 }

@@ -330,35 +330,7 @@
                     </h4>
                 </div>-->
 
-    <div class="column wide sixteen">
-        <h4 class="ui dividing header">${message(code: 'profile.membership.existing')}</h4>
-        <table class="ui celled la-table table">
-            <thead>
-            <tr>
-                <th>${message(code: 'profile.membership.org', default:'Organisation')}</th>
-                <th>${message(code: 'profile.membership.role', default:'Role')}</th>
-                <th>${message(code: 'profile.membership.status', default:'Status')}</th>
-                <th>${message(code: 'profile.membership.date', default:'Date Requested / Actioned')}</th>
-                <th>${message(code: 'default.actions', default:'Actions')}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <g:each in="${user.affiliations}" var="assoc">
-                <tr>
-                    <td><g:link controller="organisations" action="show" id="${assoc.org.id}">${assoc.org.name}</g:link></td>
-                    <td><g:message code="cv.roles.${assoc.formalRole?.authority}"/></td>
-                    <td><g:message code="cv.membership.status.${assoc.status}"/></td>
-                    <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${assoc.dateRequested}"/> / <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${assoc.dateActioned}"/></td>
-                    <td style="vertical-align:middle">
-                        <g:if test="${assoc.status != UserOrg.STATUS_CANCELLED}">
-                            <g:link class="ui button" controller="profile" action="processCancelRequest" params="${[assoc:assoc.id]}">${message(code:'default.button.revoke.label', default:'Revoke')}</g:link>
-                        </g:if>
-                    </td>
-                </tr>
-            </g:each>
-            </tbody>
-        </table>
-    </div><!--.column-->
+    <g:render template="/templates/user/membership_table" model="[userInstance: user, tmplProfile: true]" />
 
     <div class="column wide sixteen">
         <div class="ui segment">
@@ -370,33 +342,7 @@
                 <g:message code="profile.membership.request.text" default="Select an organisation and a role below. Requests to join existing organisations will be referred to the administrative users of that organisation. If you feel you should be the administrator of an organisation please contact the ${message(code:'laser', default:'LAS:eR')} team for support." />
             </p>
 
-            <g:form name="affiliationRequestForm" controller="profile" action="processJoinRequest" class="ui form" method="get">
-
-                <div class="two fields">
-                    <div class="field">
-                        <label>Organisation</label>
-                        <g:select name="org"
-                                  from="${com.k_int.kbplus.Org.executeQuery('from Org o where o.sector.value = ? order by o.name', 'Higher Education')}"
-                                  optionKey="id"
-                                  optionValue="name"
-                                  class="ui fluid search dropdown"/>
-                    </div>
-
-                    <div class="field">
-                        <label>Role</label>
-                        <g:select name="formalRole"
-                                  from="${com.k_int.kbplus.auth.Role.findAllByRoleType('user')}"
-                                  optionKey="id"
-                                  optionValue="${ {role->g.message(code:'cv.roles.'+role.authority) } }"
-                                  class="ui fluid dropdown"/>
-                    </div>
-                </div>
-
-                <div class="field">
-                    <label></label>
-                    <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="ui button">${message(code: 'profile.membership.request.button', default:'Request Membership')}</button>
-                </div>
-            </g:form>
+            <g:render template="/templates/user/membership_form" model="[userInstance: user, tmplProfile: true]" />
         </div><!-- .segment -->
     </div><!--.column-->
 

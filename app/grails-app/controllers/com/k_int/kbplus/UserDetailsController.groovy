@@ -1,7 +1,6 @@
 package com.k_int.kbplus
 
 import de.laser.controller.AbstractDebugController
-import org.springframework.dao.DataIntegrityViolationException
 import grails.converters.*
 import org.elasticsearch.groovy.common.xcontent.*
 import groovy.xml.MarkupBuilder
@@ -16,6 +15,7 @@ class UserDetailsController extends AbstractDebugController {
 
     def springSecurityService
     def genericOIDService
+    def userService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -126,7 +126,13 @@ class UserDetailsController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN'])
     def addAffiliation(){
 
+        User user = User.get(params.id)
+        Org org = Org.get(params.org)
+        Role formalRole = Role.get(params.formalRole)
 
+        if (user && org && formalRole) {
+            userService.createAffiliation(user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
+        }
 
         redirect controller: 'userDetails', action: 'edit', id: params.id
     }
