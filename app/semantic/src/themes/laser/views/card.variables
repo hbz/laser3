@@ -26,7 +26,7 @@
   @borderShadow
 ;
 @border: 1px solid @laSecondaryColor;
-@zIndex: '';
+@zIndex: auto;
 @transition:
   box-shadow @defaultDuration @defaultEasing,
   transform @defaultDuration @defaultEasing

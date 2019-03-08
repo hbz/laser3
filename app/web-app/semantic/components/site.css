@@ -535,6 +535,7 @@ aside.ui.accordion .title:not(.ui) {
   -webkit-box-shadow: 1px 1px 2px 1px rgba(20, 20, 20, 0.3);
           box-shadow: 1px 1px 2px 1px rgba(20, 20, 20, 0.3);
   position: relative;
+  z-index: 100;
 }
 .editableform .control-group select,
 .editableform .control-group input {
