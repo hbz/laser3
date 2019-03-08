@@ -61,6 +61,12 @@ class UserService {
 
     def sendMail(User user, String subj, String view, Map model) {
 
+        if (grailsApplication.config.getCurrentServer() == ContextService.SERVER_LOCAL) {
+            println "--- UserService.sendMail() ---"
+            println "--- IGNORE SENDING MAIL -- SERVER_LOCAL ---"
+            return
+        }
+
         model.serverURL = grailsApplication.config.grails.serverURL
 
         try {

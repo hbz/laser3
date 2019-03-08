@@ -54,7 +54,7 @@
 
         <div class="field">
             <label></label>
-            <button type="submit" class="ui button">${message(code: 'profile.membership.add.button')}</button>
+            <button type="submit" class="ui orange button">${message(code: 'profile.membership.add.button')} und Mail versenden</button>
         </div>
     </g:form>
 </g:if>
