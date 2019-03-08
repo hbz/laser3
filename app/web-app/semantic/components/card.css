@@ -41,7 +41,7 @@
   transition: -webkit-box-shadow 0.1s ease, -webkit-transform 0.1s ease;
   transition: box-shadow 0.1s ease, transform 0.1s ease;
   transition: box-shadow 0.1s ease, transform 0.1s ease, -webkit-box-shadow 0.1s ease, -webkit-transform 0.1s ease;
-  z-index: '';
+  z-index: auto;
 }
 .ui.card {
   margin: 1em 0em;
@@ -1011,7 +1011,7 @@ a.ui.card:hover,
   transition: -webkit-box-shadow 0.1s ease, -webkit-transform 0.1s ease;
   transition: box-shadow 0.1s ease, transform 0.1s ease;
   transition: box-shadow 0.1s ease, transform 0.1s ease, -webkit-box-shadow 0.1s ease, -webkit-transform 0.1s ease;
-  z-index: '';
+  z-index: auto;
 }
 .ui.cards > .card,
 .ui.card {
@@ -1046,10 +1046,6 @@ a.ui.card:hover,
   font-size: 0.8rem;
   text-transform: uppercase;
   padding-left: .9rem;
-}
-.la-inline-lists {
-  position: relative;
-  z-index: 100;
 }
 .la-inline-lists dl {
   display: table-row;

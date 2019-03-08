@@ -326,6 +326,7 @@ aside.ui.accordion .title:not(.ui) {
     padding: 10px;
     box-shadow: 1px 1px 2px 1px rgba(20,20,20,.3);
     position: relative;
+    z-index:100;
     //left: -20px;
 }
 .editableform .control-group {
