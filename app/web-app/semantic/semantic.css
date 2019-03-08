@@ -1135,6 +1135,7 @@ aside.ui.accordion .title:not(.ui) {
   -webkit-box-shadow: 1px 1px 2px 1px rgba(20, 20, 20, 0.3);
   box-shadow: 1px 1px 2px 1px rgba(20, 20, 20, 0.3);
   position: relative;
+  z-index: 100;
 }
 
 .editableform .control-group select,
@@ -29139,7 +29140,7 @@ Floated Menu / Item
   transition: -webkit-box-shadow 0.1s ease, -webkit-transform 0.1s ease;
   transition: box-shadow 0.1s ease, transform 0.1s ease;
   transition: box-shadow 0.1s ease, transform 0.1s ease, -webkit-box-shadow 0.1s ease, -webkit-transform 0.1s ease;
-  z-index: '';
+  z-index: auto;
 }
 
 .ui.card {
@@ -30225,7 +30226,7 @@ a.ui.card:hover,
   transition: -webkit-box-shadow 0.1s ease, -webkit-transform 0.1s ease;
   transition: box-shadow 0.1s ease, transform 0.1s ease;
   transition: box-shadow 0.1s ease, transform 0.1s ease, -webkit-box-shadow 0.1s ease, -webkit-transform 0.1s ease;
-  z-index: '';
+  z-index: auto;
 }
 
 .ui.cards > .card,
@@ -30266,11 +30267,6 @@ a.ui.card:hover,
   font-size: 0.8rem;
   text-transform: uppercase;
   padding-left: .9rem;
-}
-
-.la-inline-lists {
-  position: relative;
-  z-index: 100;
 }
 
 .la-inline-lists dl {

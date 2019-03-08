@@ -1,3 +1,7 @@
+0.14.1
+
+- fixed frontend issues
+
 0.14
 
 - added sharing of documents and notes
