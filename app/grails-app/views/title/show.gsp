@@ -11,7 +11,7 @@
   <body>
 
       <semui:breadcrumbs>
-          <semui:crumb controller="titleDetails" action="list" message="menu.institutions.all_titles" />
+          <semui:crumb controller="title" action="list" message="menu.institutions.all_titles" />
           <semui:crumb class="active" text="${message(code:'title.title.label')}: ${ti.title}" />
       </semui:breadcrumbs>
 
@@ -58,7 +58,7 @@
                       ${message(code:'title.edit.duplicate.warn', args:[entry.key])}:
                       <ul>
                           <g:each in ="${entry.value}" var="dup_title">
-                              <li><g:link controller='titleDetails' action='show' id="${dup_title.id}">${dup_title.title}</g:link></li>
+                              <li><g:link controller='title' action='show' id="${dup_title.id}">${dup_title.title}</g:link></li>
                           </g:each>
                       </ul>
                   </bootstrap:alert>
@@ -120,14 +120,14 @@
                     <td>
                       <g:each in="${th.participants}" var="p">
                         <g:if test="${p.participantRole=='from'}">
-                          <g:link controller="titleDetails" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == ti.id}">font-weight:bold</g:if>">${p.participant.title}</span></g:link><br/>
+                          <g:link controller="title" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == ti.id}">font-weight:bold</g:if>">${p.participant.title}</span></g:link><br/>
                         </g:if>
                       </g:each>
                     </td>
                     <td>
                       <g:each in="${th.participants}" var="p">
                         <g:if test="${p.participantRole=='to'}">
-                          <g:link controller="titleDetails" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == ti.id}">font-weight:bold</g:if>">${p.participant.title}</span></g:link><br/>
+                          <g:link controller="title" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == ti.id}">font-weight:bold</g:if>">${p.participant.title}</span></g:link><br/>
                         </g:if>
                       </g:each>
                     </td>
@@ -170,7 +170,7 @@
               </table>
 */ %>
 
-            %{--<g:form id="${params.id}" controller="titleDetails" action="batchUpdate" class="ui form"> BULK_REMOVE --}%
+            %{--<g:form id="${params.id}" controller="title" action="batchUpdate" class="ui form"> BULK_REMOVE --}%
               <table class="ui celled la-rowspan table">
                   <thead>
                     <tr>

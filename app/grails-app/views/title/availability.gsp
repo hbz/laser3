@@ -12,7 +12,7 @@
 
   <ul class="breadcrumb">
     <li> <g:link controller="home" action="index">Home</g:link> <span class="divider">/</span> </li>
-    <li> <g:link controller="titleDetails" action="show" id="${ti?.id}">Title ${ti?.title}</g:link> </li>
+    <li> <g:link controller="title" action="show" id="${ti?.id}">Title ${ti?.title}</g:link> </li>
   </ul>
 
       <g:if test="${editable}">

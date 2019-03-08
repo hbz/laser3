@@ -65,7 +65,7 @@
                             <g:link class="item" controller="packageDetails">Package</g:link>
                             <g:link class="item" controller="organisations">Organisations</g:link>
                             <g:link class="item" controller="platform">Platform</g:link>
-                            <g:link class="item" controller="titleDetails">Title Instance</g:link>
+                            <g:link class="item" controller="title">Title Instance</g:link>
                             <g:link class="item" controller="tipp">Title Instance Package Platform</g:link>
                             <g:link class="item" controller="subscriptionDetails">Subscriptions</g:link>
                             <g:link class="item" controller="licenseDetails">Licenses</g:link>
@@ -81,7 +81,7 @@
 
                         <div class="menu">
                                 <g:link class="item" controller="packageDetails" action="index">${message(code:'menu.institutions.all_pkg')}</g:link>
-                                <g:link class="item" controller="titleDetails" action="index">${message(code:'menu.institutions.all_titles')}</g:link>
+                                <g:link class="item" controller="title" action="index">${message(code:'menu.institutions.all_titles')}</g:link>
                             <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
                                 <g:link class="item" controller="organisations" action="index">${message(code:'menu.institutions.all_orgs')}</g:link>
                             </sec:ifAnyGranted>
@@ -264,7 +264,7 @@
 
                                 <div class="divider"></div>
 
-                                <g:link class="item" controller="titleDetails" action="findTitleMatches">${message(code:'menu.datamanager.newTitle')}</g:link>
+                                <g:link class="item" controller="title" action="findTitleMatches">${message(code:'menu.datamanager.newTitle')}</g:link>
                                 <g:link class="item" controller="licenseDetails" action="create">${message(code:'license.template.new')}</g:link>
                                 <g:link class="item" controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link>
 
@@ -282,7 +282,7 @@
                             <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN">
                                 <div class="divider"></div>
                                 <g:link class="item" controller="jasperReports" action="index">${message(code:'menu.datamanager.jasper_reports')}</g:link>
-                                <g:link class="item" controller="titleDetails" action="dmIndex">${message(code:'menu.datamanager.titles')}</g:link>
+                                <g:link class="item" controller="title" action="dmIndex">${message(code:'menu.datamanager.titles')}</g:link>
                             </sec:ifAnyGranted>
                         </div>
                     </div>

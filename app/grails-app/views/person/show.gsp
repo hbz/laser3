@@ -273,7 +273,7 @@ ${personInstance}
                                                    <g:link controller="licenseDetails" action="show" id="${link.lic.id}">${link.lic}</g:link>
                                                </g:if>
                                                <g:if test="${link.title}">
-                                                   <g:link controller="titleDetails" action="show" id="${link.title.id}">${link.title.title}</g:link>
+                                                   <g:link controller="title" action="show" id="${link.title.id}">${link.title.title}</g:link>
                                                </g:if>
                                            </div>
 

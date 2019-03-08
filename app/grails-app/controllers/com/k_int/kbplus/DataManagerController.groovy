@@ -200,7 +200,7 @@ class DataManagerController extends AbstractDebugController {
           case 'com.k_int.kbplus.TitleInstance':
             def title_object = TitleInstance.get(hl.persistedObjectId);
             if (title_object) {
-                line_to_add.link = createLink(controller:'titleDetails', action: 'show', id:hl.persistedObjectId)
+                line_to_add.link = createLink(controller:'title', action: 'show', id:hl.persistedObjectId)
                 line_to_add.name = title_object.title
             }
             linetype = 'Title'

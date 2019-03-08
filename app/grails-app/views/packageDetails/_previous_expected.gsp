@@ -96,7 +96,7 @@
                 <td ${hasCoverageNote==true?'rowspan="2"':''}>${counter++}</td>
                 <td style="vertical-align:top;">
                    ${t.title.title} 
-                   <g:link controller="titleDetails" action="show" id="${t.title.id}">(${message(code:'title.label', default:'Title')})</g:link>
+                   <g:link controller="title" action="show" id="${t.title.id}">(${message(code:'title.label', default:'Title')})</g:link>
                    <g:link controller="tipp" action="show" id="${t.id}">(${message(code:'tipp.label', default:'TIPP')})</g:link><br/>
                    <span title="${t.availabilityStatusExplanation}">${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.value}</span>
                     <span>${message(code:'title.type.label')}: ${t.title.type.getI10n('value')}</span>

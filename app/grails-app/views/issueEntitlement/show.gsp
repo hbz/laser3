@@ -45,7 +45,7 @@
 
             <g:if test="${issueEntitlementInstance?.tipp}">
                     <dt><g:message code="title.label" default="Title" /></dt>
-                    <dd><g:link controller="titleDetails" action="show" id="${issueEntitlementInstance?.tipp?.title.id}">${issueEntitlementInstance?.tipp?.title.title}</g:link> (${message(code:'title.type.label')}: ${issueEntitlementInstance?.tipp?.title.type.getI10n('value')})</dd>
+                    <dd><g:link controller="title" action="show" id="${issueEntitlementInstance?.tipp?.title.id}">${issueEntitlementInstance?.tipp?.title.title}</g:link> (${message(code:'title.type.label')}: ${issueEntitlementInstance?.tipp?.title.type.getI10n('value')})</dd>
                     <dt><g:message code="tipp.delayedOA" default="TIPP Delayed OA" /></dt>
                     <dd>${issueEntitlementInstance?.tipp.delayedOA?.value}</dd>
                     <dt><g:message code="tipp.hybridOA" default="TIPP Hybrid OA" /></dt>

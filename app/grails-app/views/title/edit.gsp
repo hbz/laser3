@@ -39,7 +39,7 @@
                  ${message(code:'title.edit.duplicate.warn', args:[entry.key])}:
                  <ul>
                  <g:each in ="${entry.value}" var="dup_title">
-                 <li><g:link controller='titleDetails' action='show' id="${dup_title.id}">${dup_title.title}</g:link></li>
+                 <li><g:link controller='title' action='show' id="${dup_title.id}">${dup_title.title}</g:link></li>
                  </g:each>
                  </ul>
                  </bootstrap:alert>

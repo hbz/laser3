@@ -215,7 +215,7 @@
                 <td ${hasCoverageNote==true?'rowspan="2"':''}>${counter++}</td>
                 <td style="vertical-align:top;">
                     <semui:listIcon type="${t.title.type.getI10n('value')}"/>
-                   <strong><g:link controller="titleDetails" action="show" id="${t.title.id}">${t.title.title}</g:link></strong>
+                   <strong><g:link controller="title" action="show" id="${t.title.id}">${t.title.title}</g:link></strong>
                     <br>
                    <g:link controller="tipp" action="show" id="${t.id}">${message(code:'tipp.label', default:'TIPP')}</g:link>
                     &nbsp;

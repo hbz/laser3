@@ -1,24 +1,19 @@
 package com.k_int.kbplus
 
 import de.laser.controller.AbstractDebugController
-import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.*
-import jdk.nashorn.internal.scripts.JO;
-import org.apache.log4j.*
-import java.text.SimpleDateFormat
-import com.k_int.kbplus.*;
 import grails.plugin.springsecurity.SpringSecurityUtils
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class TitleDetailsController extends AbstractDebugController {
+class TitleController extends AbstractDebugController {
 
     def springSecurityService
     def ESSearchService
 
     @Secured(['ROLE_USER'])
     def index() {
-        redirect controller: 'titleDetails', action: 'list', params: params
+        redirect controller: 'title', action: 'list', params: params
         return // ----- deprecated
 
         log.debug("titleSearch : ${params}");
@@ -144,7 +139,7 @@ class TitleDetailsController extends AbstractDebugController {
     @Deprecated
     @Secured(['ROLE_ADMIN'])
     def edit() {
-        redirect controller: 'titleDetails', action: 'show', params: params
+        redirect controller: 'title', action: 'show', params: params
         return // ----- deprecated
 
         def result = [:]
@@ -238,7 +233,7 @@ class TitleDetailsController extends AbstractDebugController {
       }
     }
 
-    redirect(controller:'titleDetails', action:'show', id:params.id);
+    redirect(controller:'title', action:'show', id:params.id);
   }
 
   @Secured(['ROLE_USER'])
@@ -280,7 +275,7 @@ class TitleDetailsController extends AbstractDebugController {
         switch(hl.className) {
           case 'com.k_int.kbplus.TitleInstance':
             def instance_obj = TitleInstance.get(hl.persistedObjectId);
-            line_to_add = [ link: createLink(controller:'titleDetails', action: 'show', id:hl.persistedObjectId),
+            line_to_add = [ link: createLink(controller:'title', action: 'show', id:hl.persistedObjectId),
                             name: instance_obj.title,
                             lastUpdated: hl.lastUpdated,
                             propertyName: hl.propertyName,

@@ -340,7 +340,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
         dep_ies.each { dep_ie ->
         def sub = ClassUtils.deproxy(dep_ie.subscription)
         if(dep_ie.subscription && sub && sub?.status?.value != "Deleted" ) {
-        def titleLink = grailsLinkGenerator.link(controller: 'titleDetails', action: 'show', id: this.title.id, absolute: true)
+        def titleLink = grailsLinkGenerator.link(controller: 'title', action: 'show', id: this.title.id, absolute: true)
         def pkgLink =  grailsLinkGenerator.link(controller: 'packageDetails', action: 'show', id: this.pkg.id, absolute: true)
         changeNotificationService.registerPendingChange(
                 PendingChange.PROP_SUBSCRIPTION,

@@ -145,7 +145,7 @@ class DataConsistencyService {
         }
         if (key1 == 'TitleInstance') {
             result = TitleInstance.findAllWhere( "${key2}": value ).collect{ it ->
-                [id: it.id, name: it.title, link: g.createLink(controller:'titleDetails', action:'show', id: it.id)]
+                [id: it.id, name: it.title, link: g.createLink(controller:'title', action:'show', id: it.id)]
             }
         }
         if (key1 == 'TitleInstancePackagePlatform') {

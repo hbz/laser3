@@ -500,7 +500,7 @@
                 <td ${hasCoverageNote==true?'rowspan="2"':''}>${counter++}</td>
                 <td style="vertical-align:top;">
                    <strong>${t.title.title}</strong>
-                   <g:link controller="titleDetails" action="show" id="${t.title.id}">(${message(code:'title.label', default:'Title')})</g:link>
+                   <g:link controller="title" action="show" id="${t.title.id}">(${message(code:'title.label', default:'Title')})</g:link>
                    <g:link controller="tipp" action="show" id="${t.id}">(${message(code:'tipp.label', default:'TIPP')})</g:link><br/>
                    <ul>
                      <g:each in="${t.title.distinctEventList()}" var="h">
@@ -510,12 +510,12 @@
 
                          <g:each status="st" in="${h.event.fromTitles()}" var="the">
                             <g:if test="${st>0}">, </g:if>
-                            <g:link controller="titleDetails" action="show" id="${the.id}">${the.title}</g:link>
+                            <g:link controller="title" action="show" id="${the.id}">${the.title}</g:link>
                             <g:if test="${the.isInPackage(packageInstance)}">(✔)</g:if><g:else>(✘)</g:else>
                          </g:each>
                          ${message(code:'package.show.became', default:'Became')}
                          <g:each status="st" in="${h.event.toTitles()}" var="the"><g:if test="${st>0}">, </g:if>
-                            <g:link controller="titleDetails" action="show" id="${the.id}">${the.title}</g:link>
+                            <g:link controller="title" action="show" id="${the.id}">${the.title}</g:link>
                             <g:if test="${the.isInPackage(packageInstance)}">(✔)</g:if><g:else>(✘)</g:else>
                          </g:each>
                        </li>

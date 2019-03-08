@@ -7,7 +7,7 @@
 
   <body>
     <semui:breadcrumbs>
-      <semui:crumb controller="titleDetails" action="list" message="menu.institutions.all_titles" />
+      <semui:crumb controller="title" action="list" message="menu.institutions.all_titles" />
       <semui:crumb text="${message(code:'datamanager.titleView.label', default:'Data Manager Titles View')}" class="active"/>
     </semui:breadcrumbs>
     <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="datamanager.titleView.label"/>
@@ -66,9 +66,9 @@
                       <g:each in="${hits}" var="hit">
                         <tr>
                           <td>
-                            <g:link controller="titleDetails" action="show" id="${hit.id}">${hit.title}</g:link>
+                            <g:link controller="title" action="show" id="${hit.id}">${hit.title}</g:link>
                             <g:if test="${editable}">
-                              <g:link controller="titleDetails" action="show" id="${hit.id}">(Edit)</g:link>
+                              <g:link controller="title" action="show" id="${hit.id}">(Edit)</g:link>
                             </g:if>
                           </td>
                           <td>
