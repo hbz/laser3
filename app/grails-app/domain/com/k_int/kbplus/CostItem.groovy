@@ -121,8 +121,8 @@ class CostItem
         costInLocalCurrency             column: 'ci_cost_in_local_currency'
         currencyRate    column: 'ci_currency_rate'
         finalCostRounding               column:'ci_final_cost_rounding'
-        //taxCode         column: 'ci_tax_code'
-        //taxRate                         column: 'ci_tax_rate'
+        taxCode         column: 'ci_tax_code'
+        taxRate                         column: 'ci_tax_rate'
         taxKey          column: 'ci_tax_enum'
         invoiceDate                     column: 'ci_invoice_date'
         financialYear                   column: 'ci_financial_year'
@@ -156,6 +156,7 @@ class CostItem
         finalCostRounding               (nullable: true, blank: false)
         taxCode         (nullable: true, blank: false)
         taxRate                         (nullable: true, blank: false)
+        taxKey          (nullable: true, blank: false)
         invoiceDate                     (nullable: true, blank: false)
         financialYear   (nullable: true, blank: false)
         isVisibleForSubscriber(nullable: true, blank: false)
@@ -226,13 +227,13 @@ class CostItem
     }
 
     def getCostInLocalCurrencyAfterTax() {
-        Double result = ( costInLocalCurrency ?: 0.0 ) * ( taxRate ? ((taxRate/100) + 1) : 1.0 )
+        Double result = ( costInLocalCurrency ?: 0.0 ) * ( taxKey ? ((taxKey.taxRate/100) + 1) : 1.0 )
 
         finalCostRounding ? result.round(0) : result.round(2)
     }
 
     def getCostInBillingCurrencyAfterTax() {
-        Double result = ( costInBillingCurrency ?: 0.0 ) * ( taxRate ? ((taxRate/100) + 1) : 1.0 )
+        Double result = ( costInBillingCurrency ?: 0.0 ) * ( taxKey ? ((taxKey.taxRate/100) + 1) : 1.0 )
 
         finalCostRounding ? result.round(0) : result.round(2)
     }

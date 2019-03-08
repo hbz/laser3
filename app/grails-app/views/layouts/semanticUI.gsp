@@ -447,6 +447,16 @@
                             <%--<g:link class="item" controller="yoda" action="logViewer">Log Viewer</g:link>--%>
                             <g:link class="item" controller="yoda" action="manageESSources" >Manage ES Source</g:link>
 
+                            <div class="divider"></div>
+
+                            <div class="ui dropdown item">
+                                Datenmigration
+                                <i class="dropdown icon"></i>
+                                <div class="menu">
+                                    <g:link class="item" controller="yoda" action="updateTaxRates">${message(code:'menu.admin.taxTypeCheck')}</g:link>
+                                </div>
+                            </div>
+
                         </div>
 
                     </div>

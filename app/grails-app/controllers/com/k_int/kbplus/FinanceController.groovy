@@ -636,7 +636,7 @@ class FinanceController extends AbstractDebugController {
         def startDate   = newDate(params.newStartDate, dateFormat.toPattern())
         def endDate     = newDate(params.newEndDate,   dateFormat.toPattern())
         def invoiceDate = newDate(params.newInvoiceDate,    dateFormat.toPattern())
-        Year financialYear = Year.parse(params.newFinancialYear)
+        Year financialYear = params.newFinancialYear ? Year.parse(params.newFinancialYear) : null
 
         def ie = null
         if(params.newIe)
@@ -672,7 +672,31 @@ class FinanceController extends AbstractDebugController {
           def cost_local_currency_after_tax     = params.newCostInLocalCurrencyAfterTax ? params.double( 'newCostInLocalCurrencyAfterTax') : cost_local_currency
           //moved to TAX_TYPES
           //def new_tax_rate                      = params.newTaxRate ? params.int( 'newTaxRate' ) : 0
-          //def tax_key = params.newCostTaxKey    ?
+          def tax_key = null
+          if(!params.newTaxRate.contains("null")) {
+              String[] newTaxRate = params.newTaxRate.split("§")
+              RefdataValue taxType = genericOIDService.resolveOID(newTaxRate[0])
+              int taxRate = Integer.parseInt(newTaxRate[1])
+              switch(taxType.id) {
+                  case RefdataValue.getByValueAndCategory("taxable","TaxType").id:
+                      switch(taxRate) {
+                          case 7: tax_key = CostItem.TAX_TYPES.TAXABLE_7
+                              break
+                          case 19: tax_key = CostItem.TAX_TYPES.TAXABLE_19
+                              break
+                      }
+                      break
+                  case RefdataValue.getByValueAndCategory("taxable tax-exempt","TaxType").id:
+                      tax_key = CostItem.TAX_TYPES.TAX_EXEMPT
+                      break
+                  case RefdataValue.getByValueAndCategory("not taxable","TaxType").id:
+                      tax_key = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
+                      break
+                  case RefdataValue.getByValueAndCategory("not applicable","TaxType").id:
+                      tax_key = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
+                      break
+              }
+          }
           def cost_item_element_configuration   = params.ciec ? genericOIDService.resolveOID(params.ciec) : null
 
           def cost_item_isVisibleForSubscriber = (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber)?.value == 'Yes') : false)
@@ -1093,9 +1117,13 @@ class FinanceController extends AbstractDebugController {
 
     //ex SubscriptionDetailsController
     private Map setResultGenerics() {
-        LinkedHashMap result          = [:]
+        LinkedHashMap result = [:]
         result.user         = User.get(springSecurityService.principal.id)
         result.subscription = Subscription.get(params.sub)
+        if(params.sub)
+            result.editable = result.subscription.isEditableBy(result.user)
+        else
+            result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
         result.institution  = contextService.getOrg()
         result
     }

@@ -91,11 +91,11 @@ class FinanceService {
             b) owner = consortium and sub = contextSub and visibleForSubscriber
          */
             case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
-                Org subscrCons = Org.executeQuery("select o.org from OrgRole as o where o.sub = :sub and o.roleType = :cons",[sub:sub,cons: RDStore.OR_SUBSCRIPTION_CONSORTIA]).get(0)
                 String visibility = ""
-                if(!subscrCons.equals(org))
+                if(sub.getConsortia().id != org.id) {
                     visibility = " and ci.isVisibleForSubscriber = true"
-                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner = :owner and ci.sub = :sub'+visibility+filterSubscrQuery[0],[owner:subscrCons,sub:sub]+filterSubscrQuery[1])
+                }
+                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner = :owner and ci.sub = :sub'+visibility+filterSubscrQuery[0],[owner:sub.getConsortia(),sub:sub]+filterSubscrQuery[1])
                 List costItems = []
                 limit = subscrOffset+max
                 if(limit > subscrCostItems.size())
@@ -377,17 +377,12 @@ class FinanceService {
             queryParams.filterCIStatus = filterStatus
             log.info(queryParams.filterCIStatus)
         }
-        //tax type (deactivated and to be refactored in 0.15
-        /*if(params.filterCITaxType) {
-            filterQuery += " and ci.taxCode in (:filterCITaxType) "
-            List<RefdataValue> filterTaxType = []
-            String[] taxTypes = params.list("filterCITaxType")
-            taxTypes.each { taxType ->
-                filterTaxType.add(genericOIDService.resolveOID(taxType))
-            }
-            queryParams.filterCITaxType = filterTaxType
+        //tax type
+        if(params.filterCITaxType) {
+            filterQuery += " and ci.taxKey = :filterCITaxType "
+            queryParams.filterCITaxType = CostItem.TAX_TYPES.valueOf(params.filterCITaxType)
             log.info(params.filterCITaxType)
-        }*/
+        }
         //financial year
         if(params.filterCIFinancialYear) {
             filterQuery += " and ci.financialYear = :filterCIFinancialYear "
@@ -452,10 +447,11 @@ class FinanceService {
      *
      */
     Map calculateResults(List<CostItem> costItems) {
-        List<Map> billingSumsPositive = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * ((ci.taxRate/100.0) + 1)) as billingSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive' group by ci.billingCurrency.value",[costItems:costItems])
-        List<Map> billingSumsNegative = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * ((ci.taxRate/100.0) + 1)) as billingSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'negative' group by ci.billingCurrency.value",[costItems:costItems])
-        Map localSumsPositive = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * ((ci.taxRate / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive'",[costItems:costItems]).get(0)
-        Map localSumsNegative = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * ((ci.taxRate / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'negative'",[costItems:costItems]).get(0)
+        //List<Map> billingSumsPositive = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * ((ci.taxKey.taxRate/100.0) + 1)) as billingSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive' group by ci.billingCurrency.value",[costItems:costItems])
+        List<Map> billingSumsPositive = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive' group by ci.billingCurrency.value",[costItems:costItems,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax19:CostItem.TAX_TYPES.TAXABLE_19])
+        List<Map> billingSumsNegative = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'negative' group by ci.billingCurrency.value",[costItems:costItems,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax19:CostItem.TAX_TYPES.TAXABLE_19])
+        Map localSumsPositive = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax19 then 19 else 0 end) / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive'",[costItems:costItems,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax19:CostItem.TAX_TYPES.TAXABLE_19]).get(0)
+        Map localSumsNegative = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax19 then 19 else 0 end) / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'negative'",[costItems:costItems,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax19:CostItem.TAX_TYPES.TAXABLE_19]).get(0)
         List<Map> billingSums = []
         Map localSums = [:]
         double billingSum = 0.0
