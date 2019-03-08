@@ -49,12 +49,8 @@
                     <g:form controller="userDetails" action="newPassword" params="${[id: ui.id]}">
                         <div class="ui two fields">
                             <div class="ui field">
-                                <label>Neues Passwort setzen</label>
-                                <input type="text" readonly="readonly" name="password" value="${com.k_int.kbplus.auth.User.generateRandomPassword()}" />
-                            </div>
-                            <div class="ui field">
-                                <label>&nbsp;</label>
-                                <input type="submit" class="ui button orange" value="Übernehmen<%--und Mail verschicken--%>">
+                                <label>Passwort</label>
+                                <input type="submit" class="ui button orange" value="Neues Passwort per Mail verschicken">
                             </div>
                         </div>
                     </g:form>

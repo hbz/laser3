@@ -73,7 +73,7 @@ class AdminReminderService {
                 from overrideFrom != null ? overrideFrom : from
                 replyTo overrideReplyTo != null ? overrideReplyTo : replyTo
                 subject subjectSystemPraefix + subjectTrigger
-                body(view: "/admin/_emailReminderView", model: [pendingRequests: content.pendingRequests])
+                body(view: "/mailTemplates/html/pendingMemberships", model: [pendingRequests: content.pendingRequests])
             }
         } catch (Exception e) {
             log.error("Admin Reminder Service - mailReminder() :: Unable to perform email due to exception ${e.message}")

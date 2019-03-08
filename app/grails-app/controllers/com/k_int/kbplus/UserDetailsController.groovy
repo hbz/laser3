@@ -111,9 +111,14 @@ class UserDetailsController extends AbstractDebugController {
 
         def userInstance = User.get(params.id)
         if (userInstance) {
-            userInstance.password = params.password
+            String newPassword = User.generateRandomPassword()
+            userInstance.password = newPassword
             if (userInstance.save(flush: true)) {
-                flash.message = message(code: 'user.newPassword.success', args: [params.password])
+                flash.message = message(code: 'user.newPassword.success', args: [newPassword])
+
+                userService.sendMail(userInstance, 'Passwortänderung',
+                        '/mailTemplates/text/newPassword', [user: userInstance, newPass: newPassword])
+
                 redirect controller: 'userDetails', action: 'edit', id: params.id
                 return
             }

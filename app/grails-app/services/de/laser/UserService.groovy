@@ -16,6 +16,7 @@ class UserService {
     GrailsApplication grailsApplication
 
     def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+    def mailService = Holders.grailsApplication.mainContext.getBean('mailService')
 
     def createAffiliation(User user, Org org, Role formalRole, def uoStatus, def flash){
 
@@ -44,6 +45,9 @@ class UserService {
                 }
                 if (uo.save(flush:true)) {
                     flash?.message = "OK"
+
+                    sendMail(uo.user, 'Änderung der Organisationszugehörigkeit',
+                            '/mailTemplates/text/newMembership', [userOrg: uo])
                 }
                 else {
                     flash?.error = "Problem requesting affiliation"
@@ -52,6 +56,25 @@ class UserService {
         }
         catch (Exception e) {
             flash?.error = "Problem requesting affiliation"
+        }
+    }
+
+    def sendMail(User user, String subj, String view, Map model) {
+
+        model.serverURL = grailsApplication.config.grails.serverURL
+
+        try {
+
+            mailService.sendMail {
+                to      user.email
+                from    grailsApplication.config.notifications.email.from
+                replyTo grailsApplication.config.notifications.email.replyTo
+                subject grailsApplication.config.laserSystemId + ' - ' + subj
+                body    view: view, model: model
+            }
+        }
+        catch (Exception e) {
+            println "Unable to perform email due to exception ${e.message}"
         }
     }
 }
