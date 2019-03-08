@@ -313,7 +313,7 @@
 
                 <div class="field">
 
-                    <g:if test="${tab == "cons" && (sub || costItem.sub)}">
+                    <g:if test="${tab == "cons" && (sub || (costItem && costItem.sub))}">
                         <%
                             def validSubChilds
                             Subscription contextSub
