@@ -1,3 +1,7 @@
+0.14.2
+
+- fixed regression bugs
+
 0.14.1
 
 - fixed frontend issues
