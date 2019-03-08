@@ -1,9 +1,6 @@
 package com.k_int.kbplus
 
 import de.laser.controller.AbstractDebugController
-import grails.converters.*
-import org.elasticsearch.groovy.common.xcontent.*
-import groovy.xml.MarkupBuilder
 import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.*;
 import grails.gorm.*
@@ -11,7 +8,7 @@ import grails.gorm.*
 import java.security.MessageDigest
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class UserDetailsController extends AbstractDebugController {
+class UserController extends AbstractDebugController {
 
     def springSecurityService
     def genericOIDService
@@ -119,13 +116,13 @@ class UserDetailsController extends AbstractDebugController {
                 userService.sendMail(userInstance, 'Passwortänderung',
                         '/mailTemplates/text/newPassword', [user: userInstance, newPass: newPassword])
 
-                redirect controller: 'userDetails', action: 'edit', id: params.id
+                redirect controller: 'user', action: 'edit', id: params.id
                 return
             }
         }
 
         flash.error = message(code: 'user.newPassword.fail')
-        redirect controller: 'userDetails', action: 'edit', id: params.id
+        redirect controller: 'user', action: 'edit', id: params.id
     }
 
     @Secured(['ROLE_ADMIN'])
@@ -139,7 +136,7 @@ class UserDetailsController extends AbstractDebugController {
             userService.createAffiliation(user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
         }
 
-        redirect controller: 'userDetails', action: 'edit', id: params.id
+        redirect controller: 'user', action: 'edit', id: params.id
     }
 
     @Secured(['ROLE_ADMIN'])

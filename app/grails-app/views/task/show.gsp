@@ -51,7 +51,7 @@
 				
 					<g:if test="${taskInstance?.creator}">
 						<dt><g:message code="task.creator.label" default="Creator" /></dt>
-						<dd><g:link controller="userDetails" action="show" id="${taskInstance?.creator?.id}">${taskInstance?.creator?.display}</g:link></dd>
+						<dd><g:link controller="user" action="show" id="${taskInstance?.creator?.id}">${taskInstance?.creator?.display}</g:link></dd>
 					</g:if>
 
 					<g:if test="${taskInstance?.createDate}">
@@ -66,7 +66,7 @@
 				
 					<g:if test="${taskInstance?.responsibleUser}">
 						<dt><g:message code="task.responsibleUser.label" default="Responsible User" /></dt>
-						<dd><g:link controller="userDetails" action="show" id="${taskInstance?.responsibleUser?.id}">${taskInstance?.responsibleUser?.display}</g:link></dd>
+						<dd><g:link controller="user" action="show" id="${taskInstance?.responsibleUser?.id}">${taskInstance?.responsibleUser?.display}</g:link></dd>
 					</g:if>
 				
 					<g:if test="${taskInstance?.responsibleOrg}">

@@ -335,7 +335,7 @@
 
                             <g:link class="item" controller="organisations" action="index">Manage Organisations</g:link>
                             <g:link class="item" controller="admin" action="showAffiliations">Show Affiliations</g:link>
-                            <g:link class="item" controller="userDetails" action="list">User Details</g:link>
+                            <g:link class="item" controller="user" action="list">User Details</g:link>
                             <g:link class="item" controller="usage">Manage Usage Stats</g:link>
                             <% /* g:link class="item" controller="admin" action="forumSync">Run Forum Sync</g:link */ %>
                             <% /* g:link class="item" controller="admin" action="juspSync">Run JUSP Sync</g:link */ %>

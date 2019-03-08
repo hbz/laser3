@@ -46,7 +46,7 @@
                         <semui:xEditableBoolean owner="${ui}" field="enabled" />
                     </div>
 
-                    <g:form controller="userDetails" action="newPassword" params="${[id: ui.id]}">
+                    <g:form controller="user" action="newPassword" params="${[id: ui.id]}">
                         <div class="ui two fields">
                             <div class="ui field">
                                 <label>Passwort</label>

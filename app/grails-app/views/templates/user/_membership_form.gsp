@@ -30,7 +30,7 @@
     </g:form>
 </g:if>
 <g:if test="${tmplAdmin}">
-    <g:form controller="userDetails" action="addAffiliation" class="ui form" method="get" params="${[id: userInstance.id]}">
+    <g:form controller="user" action="addAffiliation" class="ui form" method="get" params="${[id: userInstance.id]}">
 
         <div class="two fields">
             <div class="field">

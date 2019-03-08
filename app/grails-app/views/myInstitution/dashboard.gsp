@@ -202,7 +202,7 @@
                                 <div class="three wide column">
 
                                     <strong>${message(code:'myinst.ann.posted_by', default:'Posted by')}</strong>
-                                    <g:link controller="userDetails" action="show" id="${ra.user?.id}">${ra.user?.displayName}</g:link>
+                                    <g:link controller="user" action="show" id="${ra.user?.id}">${ra.user?.displayName}</g:link>
                                     <br /><br />
                                     <g:formatDate date="${ra.dateCreated}" formatName="default.date.format.noZ"/>
 
