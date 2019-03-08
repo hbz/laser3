@@ -49,7 +49,7 @@
                                 url: "<g:createLink controller='finance' action='editCostItem'/>",
                                 data: {
                                     sub: "${fixedSubscription?.id}",
-                                    tab: "${params.tab}"
+                                    tab: "${showView}"
                                 }
                             }).done(function (data) {
                                 $('#dynamicModalContainer').html(data);

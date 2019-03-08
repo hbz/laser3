@@ -312,7 +312,7 @@
                         <%
                             def validSubChilds
                             Subscription contextSub
-                            if(costItem.sub) contextSub = costItem.sub
+                            if(costItem && costItem.sub) contextSub = costItem.sub
                             else if(sub) contextSub = sub
                             //consortial subscription
                             if(!contextSub.instanceOf)
