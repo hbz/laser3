@@ -57,6 +57,7 @@
         </semui:controlButtons>
 
         <g:if test="${showView.equals("cons")}">
+            <g:set var="showConsortiaFunctions" value="true"/>
             <g:set var="totalString" value="${own.count ? own.count : 0} ${message(code:'financials.header.ownCosts')} / ${cons.count} ${message(code:'financials.header.consortialCosts')}"/>
         </g:if>
         <g:elseif test="${showView.equals("consAtSubscr")}">
@@ -73,7 +74,7 @@
             <semui:anualRings mapping="subfinance" object="${subscription}" controller="finance" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
         </h1>
 
-        <g:render template="../subscriptionDetails/nav" model="${[subscriptionInstance:subscription, params:(params << [id:subscription.id])]}"/>
+        <g:render template="../subscriptionDetails/nav" model="${[subscriptionInstance:subscription, params:(params << [id:subscription.id,showConsortiaFunctions:showConsortiaFunctions])]}"/>
 
         <g:if test="${showView.equals("consAtSubscr")}">
             <div class="ui negative message">
