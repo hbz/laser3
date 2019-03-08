@@ -26,7 +26,7 @@
             <tr>
                 <td></td>
                 <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeDates" value="${SubscriptionElementAction.REPLACE}" /></div></td>
-                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeDates" value="${SubscriptionElementAction.DO_NOTHING}" /></div></td>
+                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeDates" value="${SubscriptionElementAction.DO_NOTHING} " checked /></div></td>
                 <td><g:formatDate date="${sourceSubscription.startDate}" format="${message(code: 'default.date.format.notime')}"/>
                     ${sourceSubscription?.endDate ? (' - ' + formatDate(date: sourceSubscription.endDate, format: message(code: 'default.date.format.notime'))) : ''}</td>
                 <td><g:formatDate date="${targetSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
@@ -35,14 +35,13 @@
             <tr>
                 <td></td>
                 <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeOwner" value="${SubscriptionElementAction.REPLACE}" /></div></td>
-                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeOwner" value="${SubscriptionElementAction.DO_NOTHING}" /></div></td>
+                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeOwner" value="${SubscriptionElementAction.DO_NOTHING} " checked /></div></td>
                 <td>
                     <g:if test="${sourceSubscription?.owner}">
                         <b>${message(code: 'license')}:</b>
                         <g:link controller="licenseDetails" action="show" target="_blank" id="${sourceSubscription.owner.id}">
                             ${sourceSubscription.owner}
                         </g:link>
-                        <br><br>
                     </g:if>
                 </td>
                 <td>
@@ -51,14 +50,13 @@
                         <g:link controller="licenseDetails" action="show" target="_blank" id="${targetSubscription?.owner?.id}">
                             ${targetSubscription?.owner}
                         </g:link>
-                        <br><br>
                     </g:if>
                 </td>
             </tr>
             <tr>
                 <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeOrgRelations" value="${SubscriptionElementAction.COPY}" /></div></td>
                 <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeOrgRelations" value="${SubscriptionElementAction.REPLACE}" /></div></td>
-                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeOrgRelations" value="${SubscriptionElementAction.DO_NOTHING}" /></div></td>
+                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeOrgRelations" value="${SubscriptionElementAction.DO_NOTHING} " checked /></div></td>
                 <td>
                     <g:each in="${source_visibleOrgRelations}" var="source_role">
                         <g:if test="${source_role.org}">
@@ -75,7 +73,8 @@
                             <b>${target_role?.roleType?.getI10n("value")}:</b>
                             <g:link controller="Organisations" action="show" target="_blank" id="${target_role.org.id}">
                                 ${target_role?.org?.name}
-                            </g:link><br>
+                            </g:link>
+                            <br>
                         </g:if>
                     </g:each>
                 </td>

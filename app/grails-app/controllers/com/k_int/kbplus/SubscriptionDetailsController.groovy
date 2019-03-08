@@ -2613,21 +2613,21 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         flash.error = ""
 
-        if (params?.subscription?.takeDates) {
-            if (baseSub && newSub) {
+        if (params?.subscription?.takeDates && (SubscriptionElementAction.DO_NOTHING.toString() != params?.subscription?.takeDates)) {
+            if (isBothSubscriptionsSet(baseSub, newSub)) {
                 takeDates(baseSub, newSub)
-            } else {
-                if (!baseSub) flash.error += message(code: 'subscription.details.copyElementsIntoSubscription.noSubscriptionSource')
-                if (!newSub) flash.error += message(code: 'subscription.details.copyElementsIntoSubscription.noSubscriptionTarget')
             }
         }
 
-        if (params?.subscription?.takeOwner) {
-            if (baseSub && newSub) {
-                takeSubOwner(baseSub, newSub)
-            } else {
-                if (!baseSub) flash.error += message(code: 'subscription.details.copyElementsIntoSubscription.noSubscriptionSource')
-                if (!newSub) flash.error += message(code: 'subscription.details.copyElementsIntoSubscription.noSubscriptionTarget')
+        if (params?.subscription?.takeOwner && (SubscriptionElementAction.DO_NOTHING.toString() != params?.subscription?.takeOwner)) {
+            if (isBothSubscriptionsSet(baseSub, newSub)) {
+                takeOwner(baseSub, newSub)
+            }
+        }
+
+        if (params?.subscription?.takeOrgRelations && (SubscriptionElementAction.DO_NOTHING.toString() != params?.subscription?.takeOrgRelations)) {
+            if (isBothSubscriptionsSet(baseSub, newSub)) {
+                takeOrgRelations(baseSub, newSub)
             }
         }
 
@@ -2807,20 +2807,46 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result
     }
 
-    private boolean takeSubOwner(Subscription sourceSub, Subscription targetSub) {
-        //Vertrag/License
-        targetSub.owner = sourceSub.owner ?: null
-        targetSub.save(flush: true)
+    private boolean isBothSubscriptionsSet(Subscription baseSub, Subscription newSub) {
+        if (! baseSub || !newSub) {
+            if (!baseSub) flash.error += message(code: 'subscription.details.copyElementsIntoSubscription.noSubscriptionSource') + '<br />'
+            if (!newSub)  flash.error += message(code: 'subscription.details.copyElementsIntoSubscription.noSubscriptionTarget') + '<br />'
+            return false
+        }
+        return true
     }
 
-    private boolean takeOrgRoles(Subscription sourceSub, Subscription targetSub) {
-        sourceSub.orgRelations?.each { or ->
-            if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || params.subscription.takeLinks) {
-                OrgRole newOrgRole = new OrgRole()
-                InvokerHelper.setProperties(newOrgRole, or.properties)
-                newOrgRole.sub = targetSub
-                newOrgRole.save(flush: true)
-            }
+    private boolean takeOwner(Subscription sourceSub, Subscription targetSub) {
+        //Vertrag/License
+        switch (params?.subscription?.takeOwner) {
+            case SubscriptionElementAction.REPLACE.toString():
+                targetSub.owner = sourceSub.owner ?: null
+                targetSub.save(flush: true)
+                break;
+            case SubscriptionElementAction.COPY.toString():
+                throw new UnsupportedOperationException("Der Fall " + params?.subscription?.takeOwner + " ist nicht vorgesehen!")
+        }
+    }
+
+    private boolean takeOrgRelations(Subscription sourceSub, Subscription targetSub) {
+        if (params?.subscription?.takeOrgRelations.equals(SubscriptionElementAction.REPLACE.toString())) {
+//            List oldTargetORIds = targetSub.orgRelations.collect {it.id}
+//            OrgRole.executeUpdate("delete from OrgRole o where o.id in (:orIds)",[orIds: oldTargetORIds])
+
+            OrgRole.executeUpdate("delete from OrgRole o where o in (:orgRelations)",[orgRelations: targetSub.orgRelations])
+        }
+        switch (params?.subscription?.takeOrgRelations) {
+            case SubscriptionElementAction.REPLACE.toString():
+            case SubscriptionElementAction.COPY.toString():
+                sourceSub.orgRelations?.each { or ->
+//                    if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || params.subscription.takeLinks) {
+                        OrgRole newOrgRole = new OrgRole()
+                        InvokerHelper.setProperties(newOrgRole, or.properties)
+                        newOrgRole.sub = targetSub
+                        newOrgRole.save(flush: true)
+//                    }
+                }
+                break;
         }
     }
 
@@ -2897,7 +2923,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
     private boolean takeDates(Subscription sourceSub, Subscription targetSub) {
         switch (params?.subscription?.takeDates) {
-            case SubscriptionElementAction.REPLACE:
+            case SubscriptionElementAction.REPLACE.toString():
                 targetSub.setStartDate(sourceSub.getStartDate())
                 targetSub.setEndDate(sourceSub.getEndDate())
                 if (targetSub.save(flush: true)) {
@@ -2909,8 +2935,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     return false
                 }
                 break;
-            case SubscriptionElementAction.COPY:
-            default:
+
+            case SubscriptionElementAction.COPY.toString():
                 throw new UnsupportedOperationException("Der Fall " + params?.subscription?.takeDates + " ist nicht vorgesehen!")
         }
     }
