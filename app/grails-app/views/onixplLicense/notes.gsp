@@ -14,8 +14,8 @@
         <g:if test="${onixplLicense.license.getLicensee()}">
           <li> <g:link controller="myInstitution" action="currentLicenses" params="${[shortcode:onixplLicense.license.licensee.shortcode]}"> ${onixplLicense.license.licensee.name} Current Licenses</g:link> <span class="divider">/</span> </li>
         </g:if>
-        <li> <g:link controller="onixplLicenseDetails" action="index" id="${params.id}">ONIX-PL License Details</g:link> <span class="divider">/</span></li>
-        <li> <g:link controller="onixplLicenseDetails" action="notes" id="${params.id}">License Notes</g:link> </li>
+        <li> <g:link controller="onixplLicense" action="index" id="${params.id}">ONIX-PL License Details</g:link> <span class="divider">/</span></li>
+        <li> <g:link controller="onixplLicense" action="notes" id="${params.id}">License Notes</g:link> </li>
 
         <g:if test="${editable}">
             <semui:crumbAsBadge message="default.editable" class="orange" />
@@ -29,8 +29,8 @@
             <g:if test="${onixplLicense.license.getLicensee()}">
                 <semui:crumb controller="myInstitution" action="currentLicenses" params="${[shortcode:onixplLicense.license.getLicensee().shortcode]}" text="${onixplLicense.license.getLicensee().name} Current Licenses" />
             </g:if>
-            <semui:crumb controller="onixplLicenseDetails" action="index" id="${params.id}" text="ONIX-PL License Details" />
-            <semui:crumb controller="onixplLicenseDetails" action="notes" id="${params.id}" text="License Notes" />
+            <semui:crumb controller="onixplLicense" action="index" id="${params.id}" text="ONIX-PL License Details" />
+            <semui:crumb controller="onixplLicense" action="notes" id="${params.id}" text="License Notes" />
         </semui:breadcrumbs>
 
         <g:if test="${editable}">

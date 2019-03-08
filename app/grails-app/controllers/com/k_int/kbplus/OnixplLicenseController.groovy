@@ -6,7 +6,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class OnixplLicenseDetailsController extends AbstractDebugController {
+class OnixplLicenseController extends AbstractDebugController {
 
     def springSecurityService
 

@@ -40,7 +40,7 @@
             <g:if test="${issueEntitlementInstance?.subscription?.owner?.onixplLicense}">
                 <dt><g:message code="onixplLicence.licence.label" default="ONIX-PL Licence" /></dt>
 
-                <dd><g:link controller="onixplLicenseDetails" action="index" id="${issueEntitlementInstance.subscription.owner.onixplLicense.id}">${issueEntitlementInstance.subscription.owner.onixplLicense.title}</g:link></dd>
+                <dd><g:link controller="onixplLicense" action="index" id="${issueEntitlementInstance.subscription.owner.onixplLicense.id}">${issueEntitlementInstance.subscription.owner.onixplLicense.title}</g:link></dd>
             </g:if>
 
             <g:if test="${issueEntitlementInstance?.tipp}">

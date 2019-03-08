@@ -69,7 +69,7 @@
                             <g:link class="item" controller="tipp">Title Instance Package Platform</g:link>
                             <g:link class="item" controller="subscriptionDetails">Subscriptions</g:link>
                             <g:link class="item" controller="licenseDetails">Licenses</g:link>
-                            <g:link class="item" controller="onixplLicenseDetails" action="list">ONIX-PL Licenses</g:link>
+                            <g:link class="item" controller="onixplLicense" action="list">ONIX-PL Licenses</g:link>
                         </div>
                     </div>
                 </g:if>

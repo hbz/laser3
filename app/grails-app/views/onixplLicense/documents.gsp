@@ -14,8 +14,8 @@
             <li><g:link controller="myInstitution" action="currentLicenses">${onixplLicense.license.getLicensee().name} Current Licenses</g:link> <span
                     class="divider">/</span></li>
         </g:if>
-        <li><g:link controller="onixplLicenseDetails" action="index" id="${params.id}">ONIX-PL License Details</g:link> <span class="divider">/</span></li>
-        <li><g:link controller="onixplLicenseDetails" action="documents" id="${params.id}">License Documents</g:link></li>
+        <li><g:link controller="onixplLicense" action="index" id="${params.id}">ONIX-PL License Details</g:link> <span class="divider">/</span></li>
+        <li><g:link controller="onixplLicense" action="documents" id="${params.id}">License Documents</g:link></li>
     </ul>
 </div>
 
