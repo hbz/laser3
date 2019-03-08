@@ -94,7 +94,6 @@
           <table class="ui celled la-table la-table-small table">
             <thead>
               <tr>
-                <th>${message(code:'user.id', default:'Id')}</th>
                 <th>${message(code:'user.org', default:'Org')}</th>
                 <th>${message(code:'user.role', default:'Role')}</th>
                 <th>${message(code:'user.status', default:'Status')}</th>
@@ -104,7 +103,6 @@
             <tbody>
               <g:each in="${ui.affiliations}" var="af">
                 <tr>
-                  <td>${af.id}</td>
                   <td>${af.org.name}</td>
                   <td>${af.formalRole?.authority}</td>
                   <td>${message(code:"cv.membership.status.${af.status}")}</td>
@@ -117,6 +115,39 @@
                 </tr>
               </g:each>
             </tbody>
+              <tfoot>
+              <tr>
+                  <td colspan="4">
+                      <g:form controller="userDetails" action="addAffiliation" class="ui form" method="get" params="${[id: ui.id]}">
+
+                          <div class="two fields">
+                              <div class="field">
+                                  <label>Organisation</label>
+                                  <g:select name="org"
+                                            from="${com.k_int.kbplus.Org.executeQuery('from Org o where o.sector.value = ? order by o.name', 'Higher Education')}"
+                                            optionKey="id"
+                                            optionValue="name"
+                                            class="ui fluid search dropdown"/>
+                              </div>
+
+                              <div class="field">
+                                  <label>Role</label>
+                                  <g:select name="formalRole"
+                                            from="${com.k_int.kbplus.auth.Role.findAllByRoleType('user')}"
+                                            optionKey="id"
+                                            optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
+                                            class="ui fluid dropdown"/>
+                              </div>
+                          </div>
+
+                          <div class="field">
+                              <label></label>
+                              <button type="submit" class="ui button">${message(code: 'profile.membership.add.button')}</button>
+                          </div>
+                      </g:form>
+                  </td>
+              </tr>
+              </tfoot>
           </table>
 
           <h4 class="ui dividing header">${message(code:'user.role.plural', default:'Roles')}</h4>
