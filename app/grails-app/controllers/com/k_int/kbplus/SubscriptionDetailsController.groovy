@@ -64,6 +64,8 @@ class SubscriptionDetailsController extends AbstractDebugController {
     def orgTypeService
     def subscriptionsQueryService
 
+    public enum SubscriptionElementAction{COPY, REPLACE, DO_NOTHING;}
+
     private static String INVOICES_FOR_SUB_HQL =
             'select co.invoice, sum(co.costInLocalCurrency), sum(co.costInBillingCurrency), co from CostItem as co where co.sub = :sub group by co.invoice order by min(co.invoice.startDate) desc';
 
@@ -2620,15 +2622,14 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             }
         }
 
-        if (params?.subscription?.takeLinks) {
+        if (params?.subscription?.takeOwner) {
             if (baseSub && newSub) {
-                takeLinks(baseSub, newSub)
+                takeSubOwner(baseSub, newSub)
             } else {
                 if (!baseSub) flash.error += message(code: 'subscription.details.copyElementsIntoSubscription.noSubscriptionSource')
                 if (!newSub) flash.error += message(code: 'subscription.details.copyElementsIntoSubscription.noSubscriptionTarget')
             }
         }
-
 
         // restrict visible for templates/links/orgLinksAsList
         result.source_visibleOrgRelations = getVisibleOrgRelations(baseSub)
@@ -2806,6 +2807,37 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result
     }
 
+    private boolean takeSubOwner(Subscription sourceSub, Subscription targetSub) {
+        //Vertrag/License
+        targetSub.owner = sourceSub.owner ?: null
+        targetSub.save(flush: true)
+    }
+
+    private boolean takeOrgRoles(Subscription sourceSub, Subscription targetSub) {
+        sourceSub.orgRelations?.each { or ->
+            if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || params.subscription.takeLinks) {
+                OrgRole newOrgRole = new OrgRole()
+                InvokerHelper.setProperties(newOrgRole, or.properties)
+                newOrgRole.sub = targetSub
+                newOrgRole.save(flush: true)
+            }
+        }
+    }
+
+    private boolean takePackages(Subscription sourceSub, Subscription targetSub) {
+        sourceSub.packages?.each { pkg ->
+            SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
+            InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
+            newSubscriptionPackage.subscription = targetSub
+            newSubscriptionPackage.save(flush: true)
+        }
+        // fixed hibernate error: java.util.ConcurrentModificationException
+        // change owner before first save
+        //License
+        //newSub.owner = baseSub.owner ?: null
+        //newSub.save(flush: true)
+    }
+
     private boolean takeEntitlements(Subscription sourceSub, Subscription targetSub) {
         sourceSub.issueEntitlements.each { ie ->
             if (ie.status != RDStore.IE_DELETED) {
@@ -2818,6 +2850,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             }
         }
     }
+
     private boolean takeTasks(Subscription sourceSub, Subscription targetSub) {
 //        if (!Task.findAllBySubscription(targetSub)) {
             //Copy Tasks
@@ -2863,17 +2896,25 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
     }
 
     private boolean takeDates(Subscription sourceSub, Subscription targetSub) {
-        targetSub.setStartDate(sourceSub.getStartDate())
-        targetSub.setEndDate(sourceSub.getEndDate())
-        if (targetSub.save(flush: true)) {
-            log.debug("Save ok")
-            return true
-        } else {
-            log.error("Problem saving subscription ${targetSub.errors}")
-            flash.error("Es ist ein Fehler aufgetreten.")
-            return false
+        switch (params?.subscription?.takeDates) {
+            case SubscriptionElementAction.REPLACE:
+                targetSub.setStartDate(sourceSub.getStartDate())
+                targetSub.setEndDate(sourceSub.getEndDate())
+                if (targetSub.save(flush: true)) {
+                    log.debug("Save ok")
+                    return true
+                } else {
+                    log.error("Problem saving subscription ${targetSub.errors}")
+                    flash.error("Es ist ein Fehler aufgetreten.")
+                    return false
+                }
+                break;
+            case SubscriptionElementAction.COPY:
+            default:
+                throw new UnsupportedOperationException("Der Fall " + params?.subscription?.takeDates + " ist nicht vorgesehen!")
         }
     }
+
     private boolean takeDoks(Subscription sourceSub, Subscription targetSub) {
         //Copy Docs
         def toCopyDocs = []
@@ -2896,10 +2937,6 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             }
         }
         //        }
-    }
-
-    private boolean takeLinks(Subscription sourceSub, Subscription targetSub) {
-        throw new NotYetImplementedException()
     }
 
     private boolean takeProperties(List<AbstractProperty> properties, Subscription targetSub){
