@@ -236,9 +236,7 @@
 
                                     <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.issue')}"></i>
                                     <semui:xEditable owner="${ie}" field="startIssue"/>
-                                    <span class="ui grey horizontal divider" style="color: #00000066; font-size: 8px;margin: 0.2rem 0;">
-                                        BIS
-                                    </span>
+                                    <semui:dateDevider/>
                                    <!-- bis -->
                                     <semui:xEditable owner="${ie}" type="date" field="endDate" /><br>
                                     <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.volume')}"></i>
@@ -256,9 +254,7 @@
                                     <g:else>
                                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessStartDate}"/>
                                     </g:else>
-                                    <span class="ui grey horizontal divider" style="color: #00000066; font-size: 8px;margin: 0.2rem 0;">
-                                        BIS
-                                    </span>
+                                    <semui:dateDevider/>
                                     <!-- bis -->
                                     <g:if test="${editable}">
                                         <semui:xEditable owner="${ie}" type="date" field="accessEndDate" />

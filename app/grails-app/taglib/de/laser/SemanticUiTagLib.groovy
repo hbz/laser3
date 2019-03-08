@@ -689,6 +689,11 @@ class SemanticUiTagLib {
         out << '</div>'
 
     }
+    def dateDevider = { attrs, body ->
+        out << "<span class='ui grey horizontal divider la-date-devider'>"
+        out << "        ${message(code:'default.to')}"
+        out << "</span>"
+    }
     public SemanticUiTagLib() {}
 
 }
