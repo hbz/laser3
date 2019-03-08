@@ -260,7 +260,7 @@ class ApiReader {
         result.forumId          = pkg.forumId
         //result.identifier       = pkg.identifier - TODO refactoring legacy
         result.impId            = pkg.impId
-        result.gokbId            = pkg.gokbId
+        result.gokbId           = pkg.gokbId
         result.lastUpdated      = pkg.lastUpdated
         result.name             = pkg.name
         result.vendorURL        = pkg.vendorURL
