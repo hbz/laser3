@@ -1,5 +1,5 @@
 <!-- _filter.gsp -->
-<%@ page import="java.text.SimpleDateFormat; de.laser.helper.RDStore; com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.FinanceController" %>
+<%@ page import="java.text.SimpleDateFormat; de.laser.helper.RDStore;com.k_int.properties.PropertyDefinition;com.k_int.kbplus.OrgRole;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.RefdataValue;com.k_int.kbplus.FinanceController;com.k_int.kbplus.CostItem" %>
 <laser:serviceInjection />
 
     <semui:filter>
@@ -214,7 +214,7 @@
             </div>
 
             <div class="three fields">
-                <div class="field fieldcontain"><!-- here comes the new field for tax rate, see ERMS-1046 -->
+                <div class="field"><!-- here comes the new field for tax rate, see ERMS-1046 -->
                 <%--
                 <label for="filterCICategory">${message(code:'financials.costItemCategory')}</label>
                 <laser:select id="filterCICategory" class="ui dropdown selection"
@@ -224,16 +224,15 @@
                               optionValue="value"
                               value="${params.filterCICategory}"
                               noSelection="${['':'Alle ..']}"/>
-
-                    <label for="filterCITaxType">${message(code:'financials.newCosts.controllable')}</label>
-                    <% println params.taxType %>
-                    <laser:select id="filterCITaxType" class="ui dropdown selection"
-                                  name="filterCITaxType"
-                                  from="${RefdataCategory.getAllRefdataValues("TaxType")}"
-                                  optionKey="${{it.class.getName() + ":" + it.id}}"
-                                  optionValue="value"
-                                  value="${params.taxType}"
-                                  noSelection="${['':'Alle ..']}"/>--%>
+                --%>
+                    <label for="filterCITaxType">${message(code:'financials.newCosts.taxTypeAndRate')}</label>
+                    <g:select id="filterCITaxType" class="ui dropdown selection"
+                              name="filterCITaxType"
+                              from="${CostItem.TAX_TYPES}"
+                              optionKey="${{it}}"
+                              optionValue="${{it.taxType.getI10n("value")+" ("+it.taxRate+"%)"}}"
+                              value="${params.filterCITaxType}"
+                              noSelection="${['':'Alle ..']}"/>
                 </div>
                 <div class="field">
                     <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>

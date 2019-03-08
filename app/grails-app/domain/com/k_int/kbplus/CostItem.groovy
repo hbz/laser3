@@ -2,7 +2,6 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
 import de.laser.domain.AbstractBaseDomain
-import de.laser.helper.RDStore
 import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
 import de.laser.interfaces.TemplateSupport
@@ -13,6 +12,22 @@ import javax.persistence.Transient
 class CostItem
         extends AbstractBaseDomain
         implements DeleteFlag, TemplateSupport {
+
+    static enum TAX_TYPES {
+        TAXABLE_7          (RefdataValue.getByValueAndCategory('taxable','TaxType'),7),
+        TAXABLE_19         (RefdataValue.getByValueAndCategory('taxable','TaxType'),19),
+        TAX_EXEMPT         (RefdataValue.getByValueAndCategory('taxable tax-exempt','TaxType'),0),
+        TAX_NOT_TAXABLE    (RefdataValue.getByValueAndCategory('not taxable','TaxType'),0),
+        TAX_NOT_APPLICABLE (RefdataValue.getByValueAndCategory('not applicable','TaxType'),0)
+
+        TAX_TYPES(taxType, taxRate) {
+            this.taxType = taxType
+            this.taxRate = taxRate
+        }
+
+        public RefdataValue taxType
+        public int taxRate
+    }
 
     Org owner
     Subscription sub
@@ -42,7 +57,7 @@ class CostItem
     RefdataValue costItemElementConfiguration
 
     @RefdataAnnotation(cat = 'TaxType')
-    RefdataValue taxCode
+    RefdataValue taxCode          //to be deleted, will be replaced by TAX_TYPES
 
     Boolean includeInSubscription //include in sub details page
 
@@ -52,6 +67,8 @@ class CostItem
 
     //legacy, to be replaced by ...
     Integer taxRate
+    //... this construct:
+    TAX_TYPES taxKey
 
     Boolean finalCostRounding
 
@@ -106,6 +123,7 @@ class CostItem
         finalCostRounding               column:'ci_final_cost_rounding'
         taxCode         column: 'ci_tax_code'
         taxRate                         column: 'ci_tax_rate'
+        taxKey          column: 'ci_tax_enum'
         invoiceDate                     column: 'ci_invoice_date'
         financialYear                   column: 'ci_financial_year'
         isVisibleForSubscriber          column: 'ci_is_viewable'
@@ -138,6 +156,7 @@ class CostItem
         finalCostRounding               (nullable: true, blank: false)
         taxCode         (nullable: true, blank: false)
         taxRate                         (nullable: true, blank: false)
+        taxKey          (nullable: true, blank: false)
         invoiceDate                     (nullable: true, blank: false)
         financialYear   (nullable: true, blank: false)
         isVisibleForSubscriber(nullable: true, blank: false)
@@ -208,13 +227,13 @@ class CostItem
     }
 
     def getCostInLocalCurrencyAfterTax() {
-        Double result = ( costInLocalCurrency ?: 0.0 ) * ( taxRate ? ((taxRate/100) + 1) : 1.0 )
+        Double result = ( costInLocalCurrency ?: 0.0 ) * ( taxKey ? ((taxKey.taxRate/100) + 1) : 1.0 )
 
         finalCostRounding ? result.round(0) : result.round(2)
     }
 
     def getCostInBillingCurrencyAfterTax() {
-        Double result = ( costInBillingCurrency ?: 0.0 ) * ( taxRate ? ((taxRate/100) + 1) : 1.0 )
+        Double result = ( costInBillingCurrency ?: 0.0 ) * ( taxKey ? ((taxKey.taxRate/100) + 1) : 1.0 )
 
         finalCostRounding ? result.round(0) : result.round(2)
     }

@@ -122,7 +122,7 @@
                                       value="${costItem?.costItemCategory?.id}" />
                     </div><!-- .field -->
                 --%>
-                <div class="two fields">
+                <div class="two fields la-fields-no-margin-button">
                     <div class="field">
                         <label>${message(code:'financials.costItemElement')}</label>
                         <laser:select name="newCostItemElement" class="ui dropdown"
@@ -152,29 +152,16 @@
                     </div>
                 </div>
 
-
-                <div class="two fields la-fields-no-margin-button">
-                    <div class="field">
-                        <label>${message(code:'financials.newCosts.controllable')}</label>
-                        <laser:select name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCategory')}" class="ui dropdown"
-                                      from="${taxType}"
-                                      optionKey="id"
-                                      optionValue="value"
-                                      noSelection="${['':'']}"
-                                      value="${costItem?.taxCode?.id}" />
-                    </div><!-- .field -->
-
-                    <div class="field">
-                        <label>${message(code:'financials.costItemStatus')}</label>
-                        <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
-                                      id="newCostItemStatus"
-                                      from="${costItemStatus}"
-                                      optionKey="id"
-                                      optionValue="value"
-                                      noSelection="${['':'']}"
-                                      value="${costItem?.costItemStatus?.id}" />
-                    </div><!-- .field -->
-                </div><!-- .fields two -->
+                <div class="field">
+                    <label>${message(code:'financials.costItemStatus')}</label>
+                    <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
+                                  id="newCostItemStatus"
+                                  from="${costItemStatus}"
+                                  optionKey="id"
+                                  optionValue="value"
+                                  noSelection="${['':'']}"
+                                  value="${costItem?.costItemStatus?.id}" />
+                </div><!-- .field -->
 
             </div> <!-- 2/2 field -->
         </div><!-- two fields -->
@@ -229,18 +216,30 @@
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
+                    <%--
                     <div class="field">
-                        <label>Steuersatz (in %)</label>
+                        <label>${message(code:'financials.newCosts.controllable')}</label>
+                        <laser:select name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCategory')}" class="ui dropdown"
+                                      from="${taxType}"
+                                      optionKey="id"
+                                      optionValue="value"
+                                      noSelection="${['':'']}"
+                                      value="${costItem?.taxCode?.id}" />
+                    </div><!-- .field -->
+                    --%>
+                    <div class="field">
+                        <label>${message(code:'financials.newCosts.taxTypeAndRate')}</label>
                         <%
-                            int taxRate = 0
-                            if(costItem?.taxRate && tab == "cons")
-                                taxRate = costItem.taxRate
+                            CostItem.TAX_TYPES taxKey
+                            if(costItem?.taxKey && tab != "subscr")
+                                taxKey = costItem.taxKey
                         %>
                         <g:select class="ui dropdown calc" name="newTaxRate" title="TaxRate"
-                              from="${CostItem.TAX_RATES}"
-                              optionKey="${{it}}"
-                              optionValue="${{it}}"
-                              value="${taxRate}" />
+                              from="${CostItem.TAX_TYPES}"
+                              optionKey="${{it.taxType.class.name+":"+it.taxType.id+"§"+it.taxRate}}"
+                              optionValue="${{it.taxType.getI10n("value")+" ("+it.taxRate+"%)"}}"
+                              value="${taxKey?.taxType?.class?.name}:${taxKey?.taxType?.id}§${taxKey?.taxRate}"
+                              noSelection="${['null§0':'']}"/>
 
                     </div><!-- .field -->
                 </div>
@@ -318,7 +317,7 @@
                         <%
                             def validSubChilds
                             Subscription contextSub
-                            if(costItem.sub) contextSub = costItem.sub
+                            if(costItem && costItem.sub) contextSub = costItem.sub
                             else if(sub) contextSub = sub
                             //consortial subscription
                             if(!contextSub.instanceOf)
@@ -364,45 +363,39 @@
 
                 </div><!-- .field -->
 
-                <div class="field" id="newPackageWrapper">
-
-                    <label>${message(code:'package.label')}</label>
-                    <g:if test="${costItem?.sub}">
-                        <g:select name="newPackage" id="newPackage" class="ui dropdown"
-                                  from="${[{}] + costItem?.sub?.packages}"
-                                  optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
-                                  optionKey="${{"com.k_int.kbplus.SubscriptionPackage:" + it?.id}}"
-                                  noSelection="['':'']"
-                                  value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}" />
-                    </g:if>
-                    <g:elseif test="${sub}">
-                        <g:select name="newPackage" id="newPackage" class="ui dropdown"
-                                  from="${[{}] + sub.packages}"
-                                  optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
-                                  optionKey="${{"com.k_int.kbplus.SubscriptionPackage:" + it?.id}}"
-                                  noSelection="['':'']"
-                                  value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}" />
-                    </g:elseif>
-                    <g:else>
-                        <input name="newPackage" id="newPackage" class="ui" disabled="disabled" data-subFilter="" data-disableReset="true" />
-                    </g:else>
-
-
-                    <%-- the distinction between subMode (= sub) and general view is done already in the controller! --%>
-                    <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
-                    <div class="ui search selection dropdown newCISelect" id="newIE">
-                        <input type="hidden" name="newIE" value="${params.newIe}">
-                        <i class="dropdown icon"></i>
-                        <input type="text" class="search">
-                        <div class="default text"></div>
+                <div id="newPackageWrapper">
+                    <div class="field">
+                        <label>${message(code:'package.label')}</label>
+                        <g:if test="${costItem?.sub}">
+                            <g:select name="newPackage" id="newPackage" class="ui dropdown"
+                                      from="${[{}] + costItem?.sub?.packages}"
+                                      optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
+                                      optionKey="${{"com.k_int.kbplus.SubscriptionPackage:" + it?.id}}"
+                                      noSelection="['':'']"
+                                      value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}" />
+                        </g:if>
+                        <g:elseif test="${sub}">
+                            <g:select name="newPackage" id="newPackage" class="ui dropdown"
+                                      from="${[{}] + sub.packages}"
+                                      optionValue="${{it?.pkg?.name ?: 'Keine Verknüpfung'}}"
+                                      optionKey="${{"com.k_int.kbplus.SubscriptionPackage:" + it?.id}}"
+                                      noSelection="['':'']"
+                                      value="${'com.k_int.kbplus.SubscriptionPackage:' + costItem?.subPkg?.id}" />
+                        </g:elseif>
+                        <g:else>
+                            <input name="newPackage" id="newPackage" class="ui" disabled="disabled" data-subFilter="" data-disableReset="true" />
+                        </g:else>
                     </div>
-                    <%--<input name="newIe" id="newIE" />
-                    <g:if test="${!sub}">
-                        <input name="newIe" id="newIE" data-subFilter="" data-disableReset="true" class="la-full-width" value="${params.newIe}">
-                    </g:if>
-                    <g:else>
-                        <input name="newIe" id="newIE" data-subFilter="${sub.id}" data-disableReset="true" class="select2 la-full-width" value="${params.newIe}">
-                    </g:else>--%>
+                    <div class="field">
+                        <%-- the distinction between subMode (= sub) and general view is done already in the controller! --%>
+                        <label>${message(code:'financials.newCosts.singleEntitlement')}</label>
+                        <div class="ui search selection dropdown newCISelect" id="newIE">
+                            <input type="hidden" name="newIE" value="${params.newIe}">
+                            <i class="dropdown icon"></i>
+                            <input type="text" class="search">
+                            <div class="default text"></div>
+                        </div>
+                    </div>
 
                 </div><!-- .field -->
             </fieldset> <!-- 2/2 field -->
@@ -526,7 +519,8 @@
 
             var calcTaxResults = function() {
                 var roundF = $('*[name=newFinalCostRounding]').prop('checked');
-                var taxF = 1.0 + (0.01 * $("*[name=newTaxRate]").val());
+                console.log($("*[name=newTaxRate]").val());
+                var taxF = 1.0 + (0.01 * $("*[name=newTaxRate]").val().split("§")[1]);
 
                 $('#newCostInBillingCurrencyAfterTax').val(
                     roundF ? Math.round($("#newCostInBillingCurrency").val() * taxF) : ($("#newCostInBillingCurrency").val() * taxF).toFixed(2)

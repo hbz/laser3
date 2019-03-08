@@ -636,7 +636,7 @@ class FinanceController extends AbstractDebugController {
         def startDate   = newDate(params.newStartDate, dateFormat.toPattern())
         def endDate     = newDate(params.newEndDate,   dateFormat.toPattern())
         def invoiceDate = newDate(params.newInvoiceDate,    dateFormat.toPattern())
-        Year financialYear = Year.parse(params.newFinancialYear)
+        Year financialYear = params.newFinancialYear ? Year.parse(params.newFinancialYear) : null
 
         def ie = null
         if(params.newIe)
@@ -659,7 +659,9 @@ class FinanceController extends AbstractDebugController {
         //def tempCurrencyVal       = params.newCostCurrencyRate?      params.double('newCostCurrencyRate',1.00) : 1.00//def cost_local_currency   = params.newCostInLocalCurrency?   params.double('newCostInLocalCurrency', cost_billing_currency * tempCurrencyVal) : 0.00
           def cost_item_status      = params.newCostItemStatus ?       (RefdataValue.get(params.long('newCostItemStatus'))) : null;    //estimate, commitment, etc
           def cost_item_element     = params.newCostItemElement ?      (RefdataValue.get(params.long('newCostItemElement'))): null    //admin fee, platform, etc
-          def cost_tax_type         = params.newCostTaxType ?          (RefdataValue.get(params.long('newCostTaxType'))) : null           //on invoice, self declared, etc
+          //moved to TAX_TYPES
+          //def cost_tax_type         = params.newCostTaxType ?          (RefdataValue.get(params.long('newCostTaxType'))) : null           //on invoice, self declared, etc
+
           def cost_item_category    = params.newCostItemCategory ?     (RefdataValue.get(params.long('newCostItemCategory'))): null  //price, bank charge, etc
 
           def cost_billing_currency = params.newCostInBillingCurrency? params.double('newCostInBillingCurrency',0.00) : 0.00
@@ -668,7 +670,33 @@ class FinanceController extends AbstractDebugController {
 
           def cost_billing_currency_after_tax   = params.newCostInBillingCurrencyAfterTax ? params.double( 'newCostInBillingCurrencyAfterTax') : cost_billing_currency
           def cost_local_currency_after_tax     = params.newCostInLocalCurrencyAfterTax ? params.double( 'newCostInLocalCurrencyAfterTax') : cost_local_currency
-          def new_tax_rate                      = params.newTaxRate ? params.int( 'newTaxRate' ) : 0
+          //moved to TAX_TYPES
+          //def new_tax_rate                      = params.newTaxRate ? params.int( 'newTaxRate' ) : 0
+          def tax_key = null
+          if(!params.newTaxRate.contains("null")) {
+              String[] newTaxRate = params.newTaxRate.split("§")
+              RefdataValue taxType = genericOIDService.resolveOID(newTaxRate[0])
+              int taxRate = Integer.parseInt(newTaxRate[1])
+              switch(taxType.id) {
+                  case RefdataValue.getByValueAndCategory("taxable","TaxType").id:
+                      switch(taxRate) {
+                          case 7: tax_key = CostItem.TAX_TYPES.TAXABLE_7
+                              break
+                          case 19: tax_key = CostItem.TAX_TYPES.TAXABLE_19
+                              break
+                      }
+                      break
+                  case RefdataValue.getByValueAndCategory("taxable tax-exempt","TaxType").id:
+                      tax_key = CostItem.TAX_TYPES.TAX_EXEMPT
+                      break
+                  case RefdataValue.getByValueAndCategory("not taxable","TaxType").id:
+                      tax_key = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
+                      break
+                  case RefdataValue.getByValueAndCategory("not applicable","TaxType").id:
+                      tax_key = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
+                      break
+              }
+          }
           def cost_item_element_configuration   = params.ciec ? genericOIDService.resolveOID(params.ciec) : null
 
           def cost_item_isVisibleForSubscriber = (params.newIsVisibleForSubscriber ? (RefdataValue.get(params.newIsVisibleForSubscriber)?.value == 'Yes') : false)
@@ -696,7 +724,7 @@ class FinanceController extends AbstractDebugController {
               newCostItem.costItemElement = cost_item_element
               newCostItem.costItemStatus = cost_item_status
               newCostItem.billingCurrency = billing_currency //Not specified default to GDP
-              newCostItem.taxCode = cost_tax_type
+              //newCostItem.taxCode = cost_tax_type -> to taxKey
               newCostItem.costDescription = params.newDescription ? params.newDescription.trim() : null
               newCostItem.costTitle = params.newCostTitle ?: null
               newCostItem.costInBillingCurrency = cost_billing_currency as Double
@@ -706,7 +734,8 @@ class FinanceController extends AbstractDebugController {
               newCostItem.costInBillingCurrencyAfterTax = cost_billing_currency_after_tax as Double
               newCostItem.costInLocalCurrencyAfterTax = cost_local_currency_after_tax as Double
               newCostItem.currencyRate = cost_currency_rate as Double
-              newCostItem.taxRate = new_tax_rate as Integer
+              //newCostItem.taxRate = new_tax_rate as Integer -> to taxKey
+              newCostItem.taxKey = tax_key
               newCostItem.costItemElementConfiguration = cost_item_element_configuration
 
               newCostItem.datePaid = datePaid
@@ -1088,9 +1117,13 @@ class FinanceController extends AbstractDebugController {
 
     //ex SubscriptionDetailsController
     private Map setResultGenerics() {
-        LinkedHashMap result          = [:]
+        LinkedHashMap result = [:]
         result.user         = User.get(springSecurityService.principal.id)
         result.subscription = Subscription.get(params.sub)
+        if(params.sub)
+            result.editable = result.subscription.isEditableBy(result.user)
+        else
+            result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
         result.institution  = contextService.getOrg()
         result
     }
