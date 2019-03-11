@@ -113,7 +113,7 @@ class DocWidgetController extends AbstractDebugController {
           )
           if(instance instanceof Org) {
             doc_context.shareConf = genericOIDService.resolveOID(params.shareConf)
-            doc_context.targetOrg = Org.get(Long.parseLong(params.targetOrg))
+            doc_context.targetOrg = params.targetOrg ? Org.get(Long.parseLong(params.targetOrg)) : null
           }
           doc_context.save(flush:true)
 

@@ -23,10 +23,10 @@ class Doc {
   private static final MAX_SIZE = 1073741824 // 4GB 
   def sessionFactory
 
-    @RefdataAnnotation(cat = '?')
+    @RefdataAnnotation(cat = 'Document Status')
     RefdataValue status
 
-    @RefdataAnnotation(cat = '?')
+    @RefdataAnnotation(cat = 'Document Type')
     RefdataValue type
 
   String title
