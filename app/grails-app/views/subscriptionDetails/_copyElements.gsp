@@ -87,11 +87,12 @@
                 </td>
             </tr>
             <tr>
-                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takePackages" value="${SubscriptionElementAction.COPY}" disabled="" /></div></td>
-                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takePackages" value="${SubscriptionElementAction.REPLACE}" disabled="" /></div></td>
-                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takePackages" value="${SubscriptionElementAction.DO_NOTHING}" checked disabled=""/></div></td>
+                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takePackages" value="${SubscriptionElementAction.COPY}" /></div></td>
+                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takePackages" value="${SubscriptionElementAction.REPLACE}" /></div></td>
+                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takePackages" value="${SubscriptionElementAction.DO_NOTHING}" checked /></div></td>
                 <td>
                     <g:each in="${sourceSubscription?.packages?.sort { it.pkg.name }}" var="sp">
+                        <input type="checkbox" data-pckId="${sp.pkg.id}"></input>
                         <b>${message(code: 'subscription.packages.label')}:</b>
                         <g:link controller="package" action="show" target="_blank" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
                         <g:if test="${sp.pkg?.contentProvider}">(${sp.pkg?.contentProvider?.name})</g:if>
@@ -127,9 +128,10 @@
                     <g:if test="${targetIEs}">
                         <b>${message(code: 'issueEntitlement.countSubscription')} </b>${targetIEs?.size()} <br />
                         <g:each in="${targetIEs}" var="ie">
-                            <semui:listIcon type="${ie.tipp.title.type.getI10n('value')}"/>
-                            <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
-                            <br />
+                            <div data-pckId="${ie?.tipp?.pkg?.id}">
+                                <semui:listIcon type="${ie.tipp.title.type.getI10n('value')}"/>
+                                <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
+                            </div>
                         </g:each>
                     </g:if>
                 </td>
@@ -139,23 +141,22 @@
         <input type="submit" class="ui button js-click-control" value="Ausgewählte Elemente kopieren/überschreiben" />
     </g:form>
 </semui:form>
-%{--TODO: Muss noch benutzt werden bzw. data- Werte müssn noch gesetzt werden--}%
-%{--<r:script>--}%
-    %{--$('input:checkbox').change( function(event) {--}%
-        %{--if (this.checked) {--}%
-            %{--var dPropType = $(this).attr('data-prop-type');--}%
-            %{--$('.table tr[data-prop-type="' + dPropType + '"]').addClass('trWarning')--}%
-        %{--} else {--}%
-            %{--var dPropType = $(this).attr('data-prop-type');--}%
-            %{--$('.table tr[data-prop-type="' + dPropType + '"]').removeClass('trWarning')--}%
-        %{--}--}%
-    %{--})--}%
-%{--Geht auch ohne. Warum auch immer.--}%
-     %{--$('.ui.checkbox').checkbox();--}%
-%{--</r:script>--}%
+
+<r:script>
+    $('input:checkbox').change( function(event) {
+        if (this.checked) {
+            var pkgId = $(this).attr('data-pckId');
+            $('.table tr div[data-pckId="' + pkgId + '"]').addClass('trWarning')
+        } else {
+            var pkgId = $(this).attr('data-pckId');
+            $('.table tr div[data-pckId="' + pkgId + '"]').removeClass('trWarning')
+        }
+    })
+</r:script>
+
 <style>
-table tr.trWarning td {
-    background-color:tomato !important;
-    text-decoration: line-through;
+table tr td div.trWarning {
+    background-color: tomato !important;
+    text-decoration: line-through; !important;
 }
 </style>
