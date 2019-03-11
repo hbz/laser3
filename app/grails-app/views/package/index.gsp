@@ -86,7 +86,7 @@
                             <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
                           <td>
                             <g:if test="${com.k_int.kbplus.Package.findByImpId(hit.id)}">
-                                <g:link controller="packageDetails" action="show" id="${com.k_int.kbplus.Package.findByImpId(hit.id).id}">${hit.getSource().name}</g:link>
+                                <g:link controller="package" action="show" id="${com.k_int.kbplus.Package.findByImpId(hit.id).id}">${hit.getSource().name}</g:link>
                             </g:if>
                               <g:else>
                                   ${hit.getSource().name} <a target="_blank" href="${es_host_url ? es_host_url+'/gokb/resource/show/'+hit.id : '#'}" ><i title="GOKB Link" class="external alternate icon"></i></a>
@@ -97,24 +97,24 @@
                               <g:if test="${hit.getSource().tippsCountCurrent}">
                                 <g:if test="${hit.getSource().tippsCountCurrent == 1}">
                                     <g:if test="${com.k_int.kbplus.Package.findByImpId(hit.id)}">
-                                        <g:link controller="packageDetails" action="current" id="${com.k_int.kbplus.Package.findByImpId(hit.id).id}">${message(code:'packageDetails.index.result.titles.single')}</g:link>
+                                        <g:link controller="package" action="current" id="${com.k_int.kbplus.Package.findByImpId(hit.id).id}">${message(code:'package.index.result.titles.single')}</g:link>
                                     </g:if>
                                     <g:else>
-                                        ${message(code:'packageDetails.index.result.titles.single')}
+                                        ${message(code:'package.index.result.titles.single')}
                                     </g:else>
                                 </g:if>
                                 <g:else>
                                     <g:if test="${com.k_int.kbplus.Package.findByImpId(hit.id)}">
-                                        <g:link controller="packageDetails" action="current" id="${com.k_int.kbplus.Package.findByImpId(hit.id).id}">${message(code:'packageDetails.index.result.titles', args: [hit.getSource().tippsCountCurrent])}</g:link>
+                                        <g:link controller="package" action="current" id="${com.k_int.kbplus.Package.findByImpId(hit.id).id}">${message(code:'package.index.result.titles', args: [hit.getSource().tippsCountCurrent])}</g:link>
                                     </g:if>
                                     <g:else>
-                                        ${message(code:'packageDetails.index.result.titles', args: [hit.getSource().tippsCountCurrent])}
+                                        ${message(code:'package.index.result.titles', args: [hit.getSource().tippsCountCurrent])}
                                     </g:else>
 
                                 </g:else>
                               </g:if>
                               <g:else>
-                                  ${message(code:'packageDetails.index.result.titles.unknown', default:'Unknown number of TIPPs')}
+                                  ${message(code:'package.index.result.titles.unknown', default:'Unknown number of TIPPs')}
                               </g:else>
                           </td>
                             <td><g:if test="${com.k_int.kbplus.Org.findByName(hit.getSource().providerName)}"><g:link controller="organisations" action="show" id="${com.k_int.kbplus.Org.findByName(hit.getSource().providerName).id}">${hit.getSource().providerName}</g:link></g:if>
@@ -129,7 +129,7 @@
                   </table>
                 </div><!-- #resultsarea -->
 
-                 <semui:paginate action="index" controller="packageDetails" params="${params}"
+                 <semui:paginate action="index" controller="package" params="${params}"
                                  next="${message(code: 'default.paginate.next', default: 'Next')}"
                                  prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
                                  total="${resultsTotal}"/>
@@ -187,7 +187,7 @@
                                 <!--UUID: ${record.uuid} -->
                                 <!--Package: ${com.k_int.kbplus.Package.findByGokbId(record.uuid)} -->
                                 <g:if test="${com.k_int.kbplus.Package.findByGokbId(record.uuid)}">
-                                    <g:link controller="packageDetails" action="show"
+                                    <g:link controller="package" action="show"
                                             id="${com.k_int.kbplus.Package.findByGokbId(record.uuid).id}">${record.name}</g:link>
                                 </g:if>
                                 <g:else>
@@ -201,26 +201,26 @@
                                 <g:if test="${record.titleCount}">
                                     <g:if test="${record.titleCount == 1}">
                                         <g:if test="${com.k_int.kbplus.Package.findByGokbId(record.uuid)}">
-                                            <g:link controller="packageDetails" action="current"
-                                                    id="${com.k_int.kbplus.Package.findByGokbId(record.uuid).id}">${message(code: 'packageDetails.index.result.titles.single')}</g:link>
+                                            <g:link controller="package" action="current"
+                                                    id="${com.k_int.kbplus.Package.findByGokbId(record.uuid).id}">${message(code: 'package.index.result.titles.single')}</g:link>
                                         </g:if>
                                         <g:else>
-                                            ${message(code: 'packageDetails.index.result.titles.single')}
+                                            ${message(code: 'package.index.result.titles.single')}
                                         </g:else>
                                     </g:if>
                                     <g:else>
                                         <g:if test="${com.k_int.kbplus.Package.findByGokbId(record.uuid)}">
-                                            <g:link controller="packageDetails" action="current"
-                                                    id="${com.k_int.kbplus.Package.findByGokbId(record.uuid).id}">${message(code: 'packageDetails.index.result.titles', args: [record.titleCount])}</g:link>
+                                            <g:link controller="package" action="current"
+                                                    id="${com.k_int.kbplus.Package.findByGokbId(record.uuid).id}">${message(code: 'package.index.result.titles', args: [record.titleCount])}</g:link>
                                         </g:if>
                                         <g:else>
-                                            ${message(code: 'packageDetails.index.result.titles', args: [record.titleCount])}
+                                            ${message(code: 'package.index.result.titles', args: [record.titleCount])}
                                         </g:else>
 
                                     </g:else>
                                 </g:if>
                                 <g:else>
-                                    ${message(code: 'packageDetails.index.result.titles.unknown', default: 'Unknown number of TIPPs')}
+                                    ${message(code: 'package.index.result.titles.unknown', default: 'Unknown number of TIPPs')}
                                 </g:else>
                             </td>
                             <td><g:if test="${com.k_int.kbplus.Org.findByGokbId(record.providerUuid)}"><g:link
@@ -239,7 +239,7 @@
                 </table>
             </div><!-- #resultsarea -->
 
-            <semui:paginate action="index" controller="packageDetails" params="${params}"
+            <semui:paginate action="index" controller="package" params="${params}"
                             next="${message(code: 'default.paginate.next', default: 'Next')}"
                             prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
                             total="${resultsTotal2}"/>

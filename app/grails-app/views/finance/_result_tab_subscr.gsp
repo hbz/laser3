@@ -77,7 +77,7 @@
                         <g:link controller="subscriptionDetails" action="show" id="${ci.sub?.id}">${ci.sub}</g:link>
                     </td>
                     <td>
-                        <g:link controller="packageDetails" action="show" id="${ci.subPkg?.pkg?.id}">${ci.subPkg?.pkg}</g:link>
+                        <g:link controller="package" action="show" id="${ci.subPkg?.pkg?.id}">${ci.subPkg?.pkg}</g:link>
                     </td>
                     <td class="x">
                         <g:if test="${editable}">

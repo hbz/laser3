@@ -200,7 +200,7 @@
                                 <dd>
                                     <g:if test="${license.pkgs && ( license.pkgs.size() > 0 )}">
                                         <g:each in="${license.pkgs.sort{it.name}}" var="pkg">
-                                            <g:link controller="packageDetails" action="show" id="${pkg.id}">${pkg.name}</g:link><br/>
+                                            <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link><br/>
                                         </g:each>
                                     </g:if>
                                     <g:else>

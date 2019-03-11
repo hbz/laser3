@@ -30,7 +30,7 @@
 
         <g:if test="${new_pkg_id && new_sub_id}">
           <g:link controller="subscriptionDetails" action="index" id="${new_sub_id}">Created subscription ${new_sub_id}</g:link><br/>
-          <g:link controller="packageDetails" action="show" id="${new_pkg_id}">Created package ${new_pkg_id}</g:link>
+          <g:link controller="package" action="show" id="${new_pkg_id}">Created package ${new_pkg_id}</g:link>
         </g:if>
 
   </body>

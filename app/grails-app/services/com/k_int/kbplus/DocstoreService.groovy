@@ -430,7 +430,7 @@ class DocstoreService {
         // copied from / used in ..
         // LicenseDetailsController
         // MyInstitutionsController
-        // PackageDetailsController
+        // PackageController
         // SubscriptionDetailsController
 
         params.each { p ->
@@ -442,7 +442,7 @@ class DocstoreService {
                 docctx.status = RefdataValue.getByValueAndCategory('Deleted', 'Document Context Status')
                 docctx.save(flush: true)
             }
-            if (p.key.startsWith('_deleteflag"@.') ) { // PackageDetailsController
+            if (p.key.startsWith('_deleteflag"@.') ) { // PackageController
                 def docctx_to_delete = p.key.substring(12);
                 log.debug("Looking up docctx ${docctx_to_delete} for delete")
 

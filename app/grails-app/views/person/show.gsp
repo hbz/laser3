@@ -261,7 +261,7 @@ ${personInstance}
                                                <br />
 
                                                <g:if test="${link.pkg}">
-                                                   <g:link controller="packageDetails" action="show" id="${link.pkg.id}">${link.pkg.name}</g:link>
+                                                   <g:link controller="package" action="show" id="${link.pkg.id}">${link.pkg.name}</g:link>
                                                </g:if>
                                                <g:if test="${link.cluster}">
                                                    <g:link controller="cluster" action="show" id="${link.cluster.id}">${link.cluster.name}</g:link>

@@ -29,7 +29,7 @@
             <g:each in="${pendingChanges}" var="pc">
               <tr>
                 <td>
-                  <g:link controller="packageDetails" action="show" id="${pc.pkg.id}">${pc.pkg.name}</g:link> <br/>${pc.desc}
+                  <g:link controller="package" action="show" id="${pc.pkg.id}">${pc.pkg.name}</g:link> <br/>${pc.desc}
                 </td>
                 <td class="x">
                   <g:link controller="pendingChange" action="accept" id="${pc.id}" class="ui positive button">${message(code:'datamanager.accept.label')}</g:link>

@@ -86,7 +86,7 @@
             </tbody>
         </table>
 
-        <semui:paginate action="list" controller="packageDetails" params="${params}" next="Next" prev="Prev" max="${max}" total="${packageInstanceTotal}" />
+        <semui:paginate action="list" controller="package" params="${params}" next="Next" prev="Prev" max="${max}" total="${packageInstanceTotal}" />
 
     </body>
 </html>

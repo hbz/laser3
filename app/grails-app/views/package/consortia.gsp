@@ -10,7 +10,7 @@
 <body>
 
     <semui:breadcrumbs>
-        <semui:crumb controller="packageDetails" action="index" text="${message(code:'package.show.all', default:'All Packages')}" />
+        <semui:crumb controller="package" action="index" text="${message(code:'package.show.all', default:'All Packages')}" />
         <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
     </semui:breadcrumbs>
 
@@ -25,7 +25,7 @@
 <h3 class="ui header"> Institutions for ${consortia.name} consortia </h3>
 <br><p> The following list displays all members of ${consortia.name} consortia. To create child subscriptions
     select the desired checkboxes and click 'Create child subscriptions'</p><br>
-<g:form action="generateSlaveSubscriptions" controller="packageDetails" method="POST">
+<g:form action="generateSlaveSubscriptions" controller="package" method="POST">
 <input type="hidden" name="id" value="${id}">
 <table class="ui celled la-table table">
 <thead>

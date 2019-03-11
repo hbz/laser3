@@ -159,7 +159,7 @@
                                     </td>
                                 </g:if>
                                 <g:if test="${hit.getSource().rectype == 'Package'}">
-                                    <td><g:link controller="packageDetails" action="show"
+                                    <td><g:link controller="package" action="show"
                                                 id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
                                 </g:if>
                                 <g:if test="${hit.getSource().rectype == 'Platform'}">

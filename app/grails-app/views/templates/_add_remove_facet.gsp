@@ -40,7 +40,7 @@
       <p>
           <g:each in="${['type','endYear','startYear','consortiaName','cpname']}" var="facet">
             <g:each in="${params.list(facet)}" var="fv">
-              <span class="badge alert-info">${facet}:${fv} &nbsp; <g:link controller="packageDetails" action="index" params="${removeFacet(params,facet,fv)}"><i class="icon-remove icon-white"></i></g:link></span>
+              <span class="badge alert-info">${facet}:${fv} &nbsp; <g:link controller="package" action="index" params="${removeFacet(params,facet,fv)}"><i class="icon-remove icon-white"></i></g:link></span>
             </g:each>
           </g:each>
       </p>

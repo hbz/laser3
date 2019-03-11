@@ -101,7 +101,7 @@
                         <g:each in="${hits}" var="hit">
                             <g:if test="${!params.gokbApi}">
                                 <tr>
-                                    <td><g:link controller="packageDetails" action="show"
+                                    <td><g:link controller="package" action="show"
                                                 id="${hit.getSource().dbId}">${hit.getSource().name}</g:link>(${hit.getSource()?.titleCount ?: '0'} ${message(code: 'title.plural', default: 'Titles')})</td>
                                     <%--<td>${hit.getSource().consortiaName}</td>--%>
                                     <td>
@@ -126,7 +126,7 @@
                                 <tr>
                                     <td>
                                         <g:if test="${com.k_int.kbplus.Package.findByGokbId(hit.uuid)}">
-                                            <g:link controller="packageDetails" target="_blank" action="show"
+                                            <g:link controller="package" target="_blank" action="show"
                                                     id="${com.k_int.kbplus.Package.findByGokbId(hit.uuid).id}">${hit.name}</g:link>
                                         </g:if>
                                         <g:else>
@@ -211,7 +211,7 @@
 
             <div class="content">
                 <g:each in="${subscriptionInstance.packages.sort { it.pkg.name }}" var="sp">
-                    <div class="item"><g:link controller="packageDetails" action="show"
+                    <div class="item"><g:link controller="package" action="show"
                                               id="${sp.pkg.id}">${sp.pkg.name}</g:link>
                         <g:if test="${editable}">
                             <br>

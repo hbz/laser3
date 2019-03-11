@@ -207,7 +207,7 @@
                     <g:each in="${subCons.packages}" var="subPkg">
                         <div class="la-flexbox">
                             <i class="icon gift la-list-icon"></i>
-                            <g:link controller="packageDetails" action="show" id="${subPkg.pkg.id}">${subPkg.pkg.name}</g:link>
+                            <g:link controller="package" action="show" id="${subPkg.pkg.id}">${subPkg.pkg.name}</g:link>
                         </div>
                     </g:each>
                 </td>

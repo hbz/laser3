@@ -10,7 +10,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class PackageDetailsController extends AbstractDebugController {
+class PackageController extends AbstractDebugController {
 
     def springSecurityService
     def transformerService
@@ -48,7 +48,7 @@ class PackageDetailsController extends AbstractDebugController {
             def old_sort = params.sort
 
             if (!ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)) {
-                redirect controller: 'packageDetails', action: 'list'
+                redirect controller: 'package', action: 'list'
                 return
             }
 
@@ -178,7 +178,7 @@ class PackageDetailsController extends AbstractDebugController {
     @Deprecated
     @Secured(['ROLE_YODA'])
     def consortia() {
-        redirect controller: 'packageDetails', action: 'show', params: params
+        redirect controller: 'package', action: 'show', params: params
         return
 
         def result = [:]
@@ -246,7 +246,7 @@ class PackageDetailsController extends AbstractDebugController {
                 createNewSubscription(orgaisation, params.id, params.genSubName);
             }
         }
-        redirect controller: 'packageDetails', action: 'consortia', params: [id: params.id]
+        redirect controller: 'package', action: 'consortia', params: [id: params.id]
     }
 
 
@@ -452,7 +452,7 @@ class PackageDetailsController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def show() {
-        def verystarttime = exportService.printStart("PackageDetails show")
+        def verystarttime = exportService.printStart("Package show")
 
         def result = [:]
         boolean showDeletedTipps = false
@@ -480,7 +480,7 @@ class PackageDetailsController extends AbstractDebugController {
 
         log.debug("Package has ${result.pendingChanges?.size()} pending changes");
 
-        result.pkg_link_str = "${grailsApplication.config.grails.serverURL}/packageDetails/show/${params.id}"
+        result.pkg_link_str = "${grailsApplication.config.grails.serverURL}/package/show/${params.id}"
 
         // tasks
         def contextOrg = contextService.getOrg()
@@ -651,7 +651,7 @@ select s from Subscription as s where
 
         docstoreService.unifiedDeleteDocuments(params)
 
-        redirect controller: 'packageDetails', action: params.redirectAction, id: params.instanceId
+        redirect controller: 'package', action: params.redirectAction, id: params.instanceId
     }
 
 
@@ -1129,7 +1129,7 @@ select s from Subscription as s where
             switch (hl.className) {
                 case 'com.k_int.kbplus.Package':
                     def package_object = Package.get(hl.persistedObjectId);
-                    line_to_add = [link        : createLink(controller: 'packageDetails', action: 'show', id: hl.persistedObjectId),
+                    line_to_add = [link        : createLink(controller: 'package', action: 'show', id: hl.persistedObjectId),
                                    name        : package_object.toString(),
                                    lastUpdated : hl.lastUpdated,
                                    propertyName: hl.propertyName,

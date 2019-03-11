@@ -15,10 +15,10 @@
 
     <g:set var="locale" value="${RequestContextUtils.getLocale(request)}" />
 
-    <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
+    <semui:modeSwitch controller="package" action="show" params="${params}"/>
 
     <semui:breadcrumbs>
-        <semui:crumb controller="packageDetails" action="index" message="package.show.all" />
+        <semui:crumb controller="package" action="index" message="package.show.all" />
         <semui:crumb class="active" text="${packageInstance.name}" />
     </semui:breadcrumbs>
 
@@ -216,7 +216,7 @@
                 <div class="content">
                 <g:if test="${(subscriptionList != null) && (subscriptionList?.size() > 0)}">
 
-                    <g:form controller="packageDetails" action="addToSub" id="${packageInstance.id}" class="ui form">
+                    <g:form controller="package" action="addToSub" id="${packageInstance.id}" class="ui form">
 
                         <select class="ui dropdown" name="subid">
                             <g:each in="${subscriptionList}" var="s">
@@ -262,9 +262,9 @@
           </g:else>
         </span>
         ${message(code: 'package.show.pagination', args: [(offset+1),lasttipp,num_tipp_rows])} (
-        <g:if test="${params.mode=='advanced'}">${message(code:'package.show.switchView.basic')} <g:link controller="packageDetails" action="show" params="${params+['mode':'basic']}">${message(code:'default.basic', default:'Basic')}</g:link>
+        <g:if test="${params.mode=='advanced'}">${message(code:'package.show.switchView.basic')} <g:link controller="package" action="show" params="${params+['mode':'basic']}">${message(code:'default.basic', default:'Basic')}</g:link>
         </g:if>
-        <g:else>${message(code:'package.show.switchView.advanced')} <g:link controller="packageDetails" action="show" params="${params+['mode':'advanced']}">${message(code:'default.advanced', default:'Advanced')}</g:link>
+        <g:else>${message(code:'package.show.switchView.advanced')} <g:link controller="package" action="show" params="${params+['mode':'advanced']}">${message(code:'default.advanced', default:'Advanced')}</g:link>
         </g:else>
           )
      </p>
@@ -588,7 +588,7 @@
           
 
           <g:if test="${titlesList}" >
-            <semui:paginate  action="show" controller="packageDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
+            <semui:paginate  action="show" controller="package" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
           </g:if>
 
         <g:if test="${editable}">

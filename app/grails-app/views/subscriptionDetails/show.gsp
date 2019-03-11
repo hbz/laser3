@@ -218,7 +218,7 @@
                                     <tr>
                                     <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'subscription.packages.label')}</th>
                                         <td>
-                                            <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
+                                            <g:link controller="package" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
 
                                             <g:if test="${sp.pkg?.contentProvider}">
                                                 (${sp.pkg?.contentProvider?.name})

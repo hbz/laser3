@@ -26,7 +26,7 @@
         else if (hit.getSource().rectype == 'Package') {
             result << [
                 "title": "${hit.getSource().name}",
-                "url":   g.createLink(controller:"packageDetails", action:"show", id:"${hit.getSource().dbId}"),
+                "url":   g.createLink(controller:"package", action:"show", id:"${hit.getSource().dbId}"),
                 "category": "${message(code: 'spotlight.package')}"
             ]
         }

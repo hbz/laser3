@@ -26,7 +26,7 @@
 				
 					<g:if test="${taskInstance?.pkg}">
 						<dt><g:message code="task.pkg.label" default="Pkg" /></dt>
-						<dd><g:link controller="packageDetails" action="show" id="${taskInstance?.pkg?.id}">${taskInstance?.pkg}</g:link></dd>
+						<dd><g:link controller="package" action="show" id="${taskInstance?.pkg?.id}">${taskInstance?.pkg}</g:link></dd>
 					</g:if>
 				
 					<g:if test="${taskInstance?.subscription}">

@@ -15,7 +15,7 @@
 
                     <div class="item">
                         <g:if test="${i.pkg}">
-                            <g:link controller="packageDetails" action="show" id="${i.pkg.id}">
+                            <g:link controller="package" action="show" id="${i.pkg.id}">
                                 ${message(code:'package.label', default:'Package')}: ${i.pkg.name}
                             </g:link>
                         </g:if>

@@ -86,7 +86,7 @@
                   </tr>
                   <tr>
                     <g:each in="${packages}" var="p">
-                      <th><g:link controller="packageDetails" action="show" id="${p.id}">${p.name} (${p.contentProvider?.name})</g:link></th>
+                      <th><g:link controller="package" action="show" id="${p.id}">${p.name} (${p.contentProvider?.name})</g:link></th>
                     </g:each>
                   </tr>
                 </thead>

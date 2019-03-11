@@ -89,7 +89,7 @@
                                 </td>
                                 <td>
                                     <g:if test="${com.k_int.kbplus.Package.findByGokbId(hit.id)}">
-                                        <g:link controller="packageDetails" target="_blank" action="show" id="${com.k_int.kbplus.Package.findByGokbId(hit.id).id}">${com.k_int.kbplus.Package.findByGokbId(hit.id).name}</g:link>
+                                        <g:link controller="package" target="_blank" action="show" id="${com.k_int.kbplus.Package.findByGokbId(hit.id).id}">${com.k_int.kbplus.Package.findByGokbId(hit.id).name}</g:link>
                                     </g:if>
                                     <g:else>
                                         No Package in LAS:eR

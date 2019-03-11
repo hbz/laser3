@@ -62,7 +62,7 @@
 
                         <div class="menu">
                             <a class="item" href="${createLink(uri: '/home/search')}">Search</a>
-                            <g:link class="item" controller="packageDetails">Package</g:link>
+                            <g:link class="item" controller="package">Package</g:link>
                             <g:link class="item" controller="organisations">Organisations</g:link>
                             <g:link class="item" controller="platform">Platform</g:link>
                             <g:link class="item" controller="title">Title Instance</g:link>
@@ -80,7 +80,7 @@
                         <i class="dropdown icon"></i>
 
                         <div class="menu">
-                                <g:link class="item" controller="packageDetails" action="index">${message(code:'menu.institutions.all_pkg')}</g:link>
+                                <g:link class="item" controller="package" action="index">${message(code:'menu.institutions.all_pkg')}</g:link>
                                 <g:link class="item" controller="title" action="index">${message(code:'menu.institutions.all_titles')}</g:link>
                             <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
                                 <g:link class="item" controller="organisations" action="index">${message(code:'menu.institutions.all_orgs')}</g:link>
@@ -101,7 +101,7 @@
                                 <div class="divider"></div>
                             </g:if>
 
-                            <g:link class="item" controller="packageDetails" action="compare">${message(code:'menu.institutions.comp_pkg')}</g:link>
+                            <g:link class="item" controller="package" action="compare">${message(code:'menu.institutions.comp_pkg')}</g:link>
                         </div>
                     </div>
 
@@ -254,7 +254,7 @@
                                 <div class="divider"></div>
 
                                 <g:link class="item" controller="announcement" action="index">${message(code:'menu.datamanager.ann')}</g:link>
-                                <g:link class="item" controller="packageDetails" action="list">${message(code:'menu.datamanager.searchPackages')}</g:link>
+                                <g:link class="item" controller="package" action="list">${message(code:'menu.datamanager.searchPackages')}</g:link>
                                 <g:link class="item" controller="platform" action="list">${message(code:'menu.datamanager.searchPlatforms')}</g:link>
 
                                 <div class="divider"></div>

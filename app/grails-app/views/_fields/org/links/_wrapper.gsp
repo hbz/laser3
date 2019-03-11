@@ -6,7 +6,7 @@
         <g:each in="${orgInstance.links}" var="ol">
           <li>
             <g:if test="${ol.pkg?.id}">
-              <g:link controller="packageDetails" action="show" id="${ol.pkg.id}" >${ol.pkg.name} (${message(code:'package.label')})</g:link>
+              <g:link controller="package" action="show" id="${ol.pkg.id}" >${ol.pkg.name} (${message(code:'package.label')})</g:link>
             </g:if>
             <g:elseif test="${ol.sub?.id}">
               <g:link controller="subscriptionDetails" action="show" id="${ol.sub.id}" >${ol.sub.name ?: ol.sub.id} (${message(code:'subscription.label')})</g:link>

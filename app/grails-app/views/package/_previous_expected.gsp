@@ -9,11 +9,11 @@
   <body>
 
       <semui:breadcrumbs>
-          <semui:crumb controller="packageDetails" action="index" text="${message(code:'package.show.all', default:'All Packages')}" />
+          <semui:crumb controller="package" action="index" text="${message(code:'package.show.all', default:'All Packages')}" />
           <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
       </semui:breadcrumbs>
 
-      <semui:modeSwitch controller="packageDetails" action="${params.action}" params="${params}" />
+      <semui:modeSwitch controller="package" action="${params.action}" params="${params}" />
 
       <semui:controlButtons>
           <semui:exportDropdown>
@@ -149,7 +149,7 @@
         </dl>
 
           <g:if test="${titlesList}" >
-            <semui:paginate  action="${params.action}" controller="packageDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
+            <semui:paginate  action="${params.action}" controller="package" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
           </g:if>
 
         <%--

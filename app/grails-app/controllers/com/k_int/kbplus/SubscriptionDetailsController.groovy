@@ -298,7 +298,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
                 def numOfPCs = removePackagePendingChanges(result.package.id, result.subscription.id, params.confirmed)
 
                 def numOfIEs = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams).size()
-                def conflict_item_pkg = [name: "${g.message(code: "subscription.details.unlink.linkedPackage")}", details: [['link': createLink(controller: 'packageDetails', action: 'show', id: result.package.id), 'text': result.package.name]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.linkedPackage.action")}"]]
+                def conflict_item_pkg = [name: "${g.message(code: "subscription.details.unlink.linkedPackage")}", details: [['link': createLink(controller: 'package', action: 'show', id: result.package.id), 'text': result.package.name]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.linkedPackage.action")}"]]
                 def conflicts_list = [conflict_item_pkg]
 
                 if (numOfIEs > 0) {

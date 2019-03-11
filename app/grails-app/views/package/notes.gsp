@@ -6,12 +6,11 @@
     <g:set var="entityName" value="${message(code: 'package.label', default: 'Package')}"/>
     <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'package', default:'Package Details')}</title>
 </head>
-
 <body>
 
     <semui:breadcrumbs>
-        <semui:crumb controller="packageDetails" action="index" text="${message(code:'package.show.all', default:'All Packages')}" />
-        <semui:crumb text="${packageInstance?.name}" id="${packageInstance?.id}" class="active"/>
+        <semui:crumb controller="package" action="index" text="${message(code:'package.show.all', default:'All Packages')}" />
+        <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
     </semui:breadcrumbs>
     <semui:controlButtons>
         <semui:exportDropdown>
@@ -30,7 +29,11 @@
         </semui:exportDropdown>
         <g:render template="actions" />
     </semui:controlButtons>
-    <semui:modeSwitch controller="packageDetails" action="show" params="${params}"/>
+
+    <semui:modeSwitch controller="package" action="show" params="${params}"/>
+
+<semui:messages data="${flash}" />
+
 
     <h1 class="ui left aligned icon header"><semui:headerIcon />
 
@@ -39,10 +42,7 @@
 
     <g:render template="nav"/>
 
-    <semui:messages data="${flash}" />
-
-    <g:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList]}"/>
-    <g:render template="/templates/tasks/js_taskedit"/>
+    <g:render template="/templates/notes/table" model="${[instance: packageInstance, redirect: 'notes']}"/>
 
 </body>
 </html>

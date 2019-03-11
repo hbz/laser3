@@ -184,7 +184,7 @@ class DataManagerController extends AbstractDebugController {
           case 'com.k_int.kbplus.Package':
             def package_object = Package.get(hl.persistedObjectId);
             if (package_object) {
-                line_to_add.link = createLink(controller:'packageDetails', action: 'show', id:hl.persistedObjectId)
+                line_to_add.link = createLink(controller:'package', action: 'show', id:hl.persistedObjectId)
                 line_to_add.name = package_object.name
             }
             linetype = 'Package'

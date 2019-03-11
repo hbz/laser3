@@ -162,7 +162,7 @@
                           <td>${t.endIssue}</td>
                           <td>${t.coverageDepth}</td>
                           <td><g:link controller="platform" action="show" id="${t.platform.id}">${t.platform.name}</g:link></td>
-                          <td><g:link controller="packageDetails" action="show" id="${t.pkg.id}">${t.pkg.name}</g:link></td>
+                          <td><g:link controller="package" action="show" id="${t.pkg.id}">${t.pkg.name}</g:link></td>
                           <td><g:link controller="tipp" action="show" id="${t.id}">${message(code:'title.edit.tipp.show', default:'Full TIPP record')}</g:link></td>
                       </tr>
                   </g:each>
@@ -263,7 +263,7 @@
                     <td>
                         <div class="la-flexbox">
                             <i class="icon gift scale la-list-icon"></i>
-                            <g:link controller="packageDetails" action="show" id="${t.pkg.id}">${t.pkg.name}</g:link>
+                            <g:link controller="package" action="show" id="${t.pkg.id}">${t.pkg.name}</g:link>
                         </div>
                     </td>
   

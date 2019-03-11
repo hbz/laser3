@@ -3,7 +3,7 @@ package pages
  * Created by ioannis on 02/06/2014.
  */
 class PackageDetailsPage extends AbstractDetails {
-    static url = "/laser/packageDetails/show/*"
+    static url = "/laser/package/show/*"
     static at = {
         browser.page.title.startsWith("Edit Package") ||
                 browser.page.title.startsWith("KB+ Packages")

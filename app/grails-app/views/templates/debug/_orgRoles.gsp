@@ -24,7 +24,7 @@
                     </td>
                     <td>
                         <g:if test="${role.pkg}">
-                            <g:link controller="packageDetails" action="show" id="${role.pkg.id}">${role.pkg.name} (${role.pkg.id})</g:link>
+                            <g:link controller="package" action="show" id="${role.pkg.id}">${role.pkg.name} (${role.pkg.id})</g:link>
                         </g:if>
                         <g:if test="${role.sub}">
                             <g:link controller="subscriptionDetails" action="show" id="${role.sub.id}">${role.sub.name} (${role.sub.id})</g:link>

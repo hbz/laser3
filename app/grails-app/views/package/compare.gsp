@@ -8,7 +8,7 @@
  <body>
 
 	<semui:breadcrumbs>
-		<semui:crumb controller="packageDetails" action="index" message="package.show.all" />
+		<semui:crumb controller="package" action="index" message="package.show.all" />
 		<semui:crumb class="active" message="package.compare.compare" />
 	</semui:breadcrumbs>
 
@@ -28,7 +28,7 @@
 		    <bootstrap:alert class="alert alert-error">${request.message}</bootstrap:alert>
 	    </g:if>
 
-	<g:form action="compare" controller="packageDetails" method="GET" class="ui form">
+	<g:form action="compare" controller="package" method="GET" class="ui form">
 		<table class="ui celled la-table table">
 			<thead>
 				<tr>
@@ -243,7 +243,7 @@
 	</tbody>
 </table>
 
- <semui:paginate action="compare" controller="packageDetails" params="${params}" first="first" last="Last" max="${max}" total="${unionListSize}" />
+ <semui:paginate action="compare" controller="package" params="${params}" first="first" last="Last" max="${max}" total="${unionListSize}" />
 
 </g:if>
 </div>

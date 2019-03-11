@@ -8,11 +8,11 @@
     </head>
     <body>
         <semui:breadcrumbs>
-            <semui:crumb controller="packageDetails" action="index" text="${message(code:'package.show.all', default:'All Packages')}" />
+            <semui:crumb controller="package" action="index" text="${message(code:'package.show.all', default:'All Packages')}" />
             <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
         </semui:breadcrumbs>
 
-        <semui:modeSwitch controller="packageDetails" action="show" params="${params}" />
+        <semui:modeSwitch controller="package" action="show" params="${params}" />
 
         <semui:controlButtons>
             <semui:exportDropdown>
@@ -66,8 +66,8 @@
 
         <dl>
           <dt>${message(code:'title.search.offset.text', args:[offset+1,lasttipp,num_tipp_rows])} -
-            <g:if test="${params.mode=='advanced'}">${message(code:'package.show.switchView.basic')} <g:link controller="packageDetails" action="current" params="${params+['mode':'basic']}">${message(code:'default.basic', default:'Basic')}</g:link></g:if>
-                <g:else>${message(code:'package.show.switchView.advanced')} <g:link controller="packageDetails" action="current" params="${params+['mode':'advanced']}" button type="button" >${message(code:'default.advanced', default:'Advanced')}</g:link></g:else>
+            <g:if test="${params.mode=='advanced'}">${message(code:'package.show.switchView.basic')} <g:link controller="package" action="current" params="${params+['mode':'basic']}">${message(code:'default.basic', default:'Basic')}</g:link></g:if>
+                <g:else>${message(code:'package.show.switchView.advanced')} <g:link controller="package" action="current" params="${params+['mode':'advanced']}" button type="button" >${message(code:'default.advanced', default:'Advanced')}</g:link></g:else>
           </dt>
           <dd>
 
@@ -293,7 +293,7 @@
 
 
           <g:if test="${titlesList}" >
-            <semui:paginate action="current" controller="packageDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
+            <semui:paginate action="current" controller="package" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
           </g:if>
 
       </div>
