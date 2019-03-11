@@ -1,10 +1,28 @@
-0.14-RC
+0.14.2
 
-TODO
- 
+- fixed regression bugs
+
+0.14.1
+
+- fixed frontend issues
+
+0.14
+
+- added sharing of documents and notes
+- supporting new gokb identifiers
+- importing e-books fields from gokb 
+- reworked finance views
+- supported preselection of issue entitlements with KBart
+- added consortia view for subscriber depending licenses
+- added consortia view for linking subscriber licenses
+- improved management of refdatas and properties
+- reworked modals for adding providers, agencies and licensors
 - improved pagination
-
-TODO
+- added person positions
+- added internal benchmark tools
+- reworked several filters
+- various ui improvements
+- various minor enhancements and bugfixes
 
 
 0.13.2

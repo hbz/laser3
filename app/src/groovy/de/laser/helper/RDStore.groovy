@@ -8,6 +8,8 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 @CompileStatic
 class RDStore {
 
+    static final GENERIC_NULL_VALUE         = getRefdataValue('generic.null.value','filter.fake.values')
+
     static final OR_LICENSING_CONSORTIUM    = getRefdataValue('Licensing Consortium', 'Organisational Role')
     static final OR_LICENSEE                = getRefdataValue('Licensee','Organisational Role')
     static final OR_LICENSEE_CONS           = getRefdataValue('Licensee_Consortial','Organisational Role')
@@ -28,6 +30,9 @@ class RDStore {
 
     static final O_SECTOR_HIGHER_EDU        = getRefdataValue('Higher Education', 'OrgSector')
     static final O_SECTOR_PUBLISHER         = getRefdataValue('Publisher', 'OrgSector')
+
+    static final O_STATUS_CURRENT           = getRefdataValue('Current','OrgStatus')
+    static final O_STATUS_DELETED           = getRefdataValue('Deleted','OrgStatus')
 
     static final LICENSE_DELETED            = getRefdataValue('Deleted', 'License Status')
     static final ORG_DELETED                = getRefdataValue('Deleted', 'OrgStatus')
@@ -72,8 +77,12 @@ class RDStore {
 
     static final PENDING_CHANGE_STATUS      = getRefdataValue('Pending', 'PendingChangeStatus')
 
-    static final TASK_STATUS_DONE           =  getRefdataValue('Done', 'Task Status')
+    static final TASK_STATUS_DONE           = getRefdataValue('Done', 'Task Status')
 
+    static final SHARE_CONF_ALL               = getRefdataValue('everyone','Share Configuration')
+    static final SHARE_CONF_CREATOR           = getRefdataValue('only for creator','Share Configuration')
+    static final SHARE_CONF_AUTHOR_ORG        = getRefdataValue('only for author organisation','Share Configuration')
+    static final SHARE_CONF_AUTHOR_AND_TARGET = getRefdataValue('only for author and target organisation','Share Configuration')
 
     static RefdataValue getRefdataValue(String value, String category) {
         (RefdataValue) GrailsHibernateUtil.unwrapIfProxy( RefdataValue.getByValueAndCategory(value, category))

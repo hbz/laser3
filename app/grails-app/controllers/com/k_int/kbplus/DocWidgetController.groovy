@@ -12,6 +12,7 @@ import com.k_int.kbplus.auth.*;
 class DocWidgetController extends AbstractDebugController {
 
   def springSecurityService
+  def genericOIDService
   def docstoreService
 
   @Secured(['ROLE_USER'])
@@ -66,7 +67,6 @@ class DocWidgetController extends AbstractDebugController {
     def original_filename = request.getFile("upload_file")?.originalFilename
 
     def user = User.get(springSecurityService.principal.id)
-
     def domain_class=grailsApplication.getArtefact('Domain',params.ownerclass)
 
     if ( domain_class ) {
@@ -78,12 +78,14 @@ class DocWidgetController extends AbstractDebugController {
           // def docstore_uuid = docstoreService.uploadStream(input_stream, original_filename, params.upload_title)
           // log.debug("Docstore uuid is ${docstore_uuid}");
     
-          def doc_content = new Doc(contentType:Doc.CONTENT_TYPE_BLOB,
+          Doc doc_content = new Doc(contentType:Doc.CONTENT_TYPE_BLOB,
                                     filename: original_filename,
                                     mimeType: request.getFile("upload_file")?.contentType,
                                     title: params.upload_title,
                                     type:RefdataCategory.lookupOrCreate('Document Type',params.doctype),
                                     creator: user)
+          if(instance instanceof Org)
+            doc_content.owner = instance
           // erms-790
           //doc_content.setBlobData(input_stream, input_file.size)
           doc_content.save()
@@ -104,11 +106,16 @@ class DocWidgetController extends AbstractDebugController {
               doc_content.save()
           }
 
-          def doc_context = new DocContext(
+          DocContext doc_context = new DocContext(
                   "${params.ownertp}": instance,
                   owner:               doc_content,
                   doctype:             RefdataCategory.lookupOrCreate('Document Type',params.doctype)
-          ).save(flush:true)
+          )
+          if(instance instanceof Org) {
+            doc_context.shareConf = genericOIDService.resolveOID(params.shareConf)
+            doc_context.targetOrg = Org.get(Long.parseLong(params.targetOrg))
+          }
+          doc_context.save(flush:true)
 
           log.debug("Doc created and new doc context set on ${params.ownertp} for ${params.ownerid}");
         }

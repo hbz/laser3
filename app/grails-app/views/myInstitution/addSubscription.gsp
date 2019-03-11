@@ -55,7 +55,7 @@
                   <tr>
                     <td><input type="radio" name="packageId" value="${p.id}"/></td>
                     <td>
-                      <g:link controller="packageDetails" action="show" id="${p.id}">${p.name}</g:link>
+                      <g:link controller="package" action="show" id="${p.id}">${p.name}</g:link>
                     </td>
                     <td>${p.getConsortia()?.name}</td>
                     <td><g:formatDate formatName="default.date.format.notime" date="${p.startDate}"/></td>

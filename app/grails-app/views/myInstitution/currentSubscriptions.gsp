@@ -286,7 +286,7 @@
                             <g:if test="${ind < 10}">
                                 <div class="la-flexbox">
                                     <i class="icon gift la-list-icon"></i>
-                                    <g:link controller="packageDetails" action="show" id="${sp.pkg?.id}"
+                                    <g:link controller="package" action="show" id="${sp.pkg?.id}"
                                             title="${sp.pkg?.contentProvider?.name}">
                                         ${sp.pkg.name}
                                     </g:link>

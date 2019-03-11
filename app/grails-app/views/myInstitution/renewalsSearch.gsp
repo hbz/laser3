@@ -116,7 +116,7 @@
                     <tbody>
                     <g:each in="${hits}" var="hit">
                         <tr>
-                            <td><i class="gift icon"></i><g:link controller="packageDetails" action="show"
+                            <td><i class="gift icon"></i><g:link controller="package" action="show"
                                                                  id="${hit.getSource().dbId}"
                                                                  target="_blank">${hit.getSource().name}</g:link></td>
                             %{--<td>${hit.getSource().consortiaName}</td>--}%

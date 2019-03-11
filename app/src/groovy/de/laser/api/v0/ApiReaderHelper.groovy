@@ -154,6 +154,7 @@ class ApiReaderHelper {
 
         def result = [:]
         result.globalUID    = org.globalUID
+        result.gokbId       = org.gokbId
         result.name         = org.name
 
         // References
@@ -177,7 +178,7 @@ class ApiReaderHelper {
         result.name         = pkg.name
         //result.identifier   = pkg.identifier // TODO refactor legacy
         result.impId        = pkg.impId
-        result.gokbId        = pkg.gokbId
+        result.gokbId       = pkg.gokbId
 
         // References
         result.identifiers = resolveIdentifiers(pkg.ids) // com.k_int.kbplus.IdentifierOccurrence
@@ -192,7 +193,7 @@ class ApiReaderHelper {
         if (pform) {
             result.globalUID    = pform.globalUID
             result.impId        = pform.impId
-            result.gokbId        = pform.gokbId
+            result.gokbId       = pform.gokbId
             result.name         = pform.name
             result.normname     = pform.normname
             result.primaryUrl   = pform.primaryUrl
@@ -779,7 +780,7 @@ class ApiReaderHelper {
         if (pform) {
             result.globalUID        = pform.globalUID
             result.impId            = pform.impId
-            result.gokbId            = pform.gokbId
+            result.gokbId           = pform.gokbId
             result.name             = pform.name
             result.normName         = pform.normname
             result.primaryUrl       = pform.primaryUrl
@@ -953,7 +954,7 @@ class ApiReaderHelper {
         //result.endIssue         = tipp.endIssue            // duplicate information in IE
         result.hostPlatformURL  = tipp.hostPlatformURL
         result.impId            = tipp.impId
-        result.gokbId            = tipp.gokbId
+        result.gokbId           = tipp.gokbId
         //result.rectype          = tipp.rectype    // legacy; not needed ?
         //result.startDate        = tipp.startDate           // duplicate information in IE
         //result.startIssue       = tipp.startIssue          // duplicate information in IE

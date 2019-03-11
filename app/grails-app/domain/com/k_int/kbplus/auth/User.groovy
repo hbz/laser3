@@ -8,6 +8,8 @@ import javax.persistence.Transient
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
 
+import java.nio.charset.Charset
+
 class User implements Permissions {
 
   transient springSecurityService
@@ -291,6 +293,10 @@ class User implements Permissions {
             }
         }
         result
+    }
+
+    static String generateRandomPassword() {
+        org.apache.commons.lang.RandomStringUtils.randomAlphanumeric(24)
     }
 
     @Override

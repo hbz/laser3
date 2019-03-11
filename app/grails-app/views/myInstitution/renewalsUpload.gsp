@@ -108,7 +108,7 @@
                                 <input type="hidden" name="entitlements.${counter}.coverage" value="${e.coverage}"/>
                                 <input type="hidden" name="entitlements.${counter}.coverage_note" value="${e.coverage_note}"/>
                                 ${e.base_entitlement.title.title}</td>
-                            <td><g:link controller="packageDetails" action="show" id="${e.base_entitlement.pkg.id}">${e.base_entitlement.pkg.name}(${e.base_entitlement.pkg.id})</g:link></td>
+                            <td><g:link controller="package" action="show" id="${e.base_entitlement.pkg.id}">${e.base_entitlement.pkg.name}(${e.base_entitlement.pkg.id})</g:link></td>
                             <td>${e.base_entitlement.title.getIdentifierValue('ISSN')}</td>
                             <td>${e.base_entitlement.title.getIdentifierValue('eISSN')}</td>
                             <td>${e.start_date} (Default:<g:formatDate formatName="default.date.format.notime" date="${e.base_entitlement.startDate}"/>)</td>

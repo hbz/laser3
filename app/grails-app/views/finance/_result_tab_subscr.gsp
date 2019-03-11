@@ -77,23 +77,25 @@
                         <g:link controller="subscriptionDetails" action="show" id="${ci.sub?.id}">${ci.sub}</g:link>
                     </td>
                     <td>
-                        <g:link controller="packageDetails" action="show" id="${ci.subPkg?.pkg?.id}">${ci.subPkg?.pkg}</g:link>
+                        <g:link controller="package" action="show" id="${ci.subPkg?.pkg?.id}">${ci.subPkg?.pkg}</g:link>
                     </td>
                     <td class="x">
-                        <g:if test="${fixedSubscription}">
-                            <span data-position="top right" data-tooltip="${message(code:'financials.costItem.transfer.tooltip')}">
-                                <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", tab:"subscr"]' class="ui icon button trigger-modal">
-                                    <i class="copy-send icon"></i>
-                                </g:link>
-                            </span>
+                        <g:if test="${editable}">
+                            <g:if test="${fixedSubscription}">
+                                <span data-position="top right" data-tooltip="${message(code:'financials.costItem.transfer.tooltip')}">
+                                    <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", tab:"subscr"]' class="ui icon button trigger-modal">
+                                        <i class="copy-send icon"></i>
+                                    </g:link>
+                                </span>
+                            </g:if>
+                            <g:else>
+                                <span data-position="top right" data-tooltip="${message(code:'financials.costItem.transfer.tooltip')}">
+                                    <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", tab:"subscr"]' class="ui icon button trigger-modal">
+                                        <i class="copy-send icon"></i>
+                                    </g:link>
+                                </span>
+                            </g:else>
                         </g:if>
-                        <g:else>
-                            <span data-position="top right" data-tooltip="${message(code:'financials.costItem.transfer.tooltip')}">
-                                <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", tab:"subscr"]' class="ui icon button trigger-modal">
-                                    <i class="copy-send icon"></i>
-                                </g:link>
-                            </span>
-                        </g:else>
                     </td>
                 </tr>
             </g:each>

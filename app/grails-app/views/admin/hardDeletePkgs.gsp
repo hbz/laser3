@@ -42,7 +42,7 @@
           <g:each in="${pkgs}" var="packageInstance">
             <tr>
               <td>
-              <g:link controller="packageDetails" action="show" id="${packageInstance.id}">
+              <g:link controller="package" action="show" id="${packageInstance.id}">
               ${fieldValue(bean: packageInstance, field: "name")} (${packageInstance?.contentProvider?.name})</g:link>
               </td>            
               <td class="link">

@@ -37,6 +37,13 @@
                 <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeOwner" value="${SubscriptionElementAction.REPLACE}" /></div></td>
                 <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeOwner" value="${SubscriptionElementAction.DO_NOTHING} " checked /></div></td>
                 <td>
+                    %{--<g:each in="${sourceSubscription?.packages?.sort { it.pkg.name }}" var="sp">--}%
+                        %{--<b>${message(code: 'subscription.packages.label')}:</b>--}%
+                        %{--<g:link controller="package" action="show" target="_blank" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>--}%
+                        %{--<g:if test="${sp.pkg?.contentProvider}">(${sp.pkg?.contentProvider?.name})</g:if>--}%
+                        %{--<br>--}%
+                    %{--</g:each>--}%
+                    %{--<br>--}%
                     <g:if test="${sourceSubscription?.owner}">
                         <b>${message(code: 'license')}:</b>
                         <g:link controller="licenseDetails" action="show" target="_blank" id="${sourceSubscription.owner.id}">
@@ -87,7 +94,7 @@
                     COMING SOON<br>
                     <g:each in="${sourceSubscription?.packages?.sort { it.pkg.name }}" var="sp">
                         <b>${message(code: 'subscription.packages.label')}:</b>
-                        <g:link controller="packageDetails" action="show" target="_blank" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
+                        <g:link controller="package" action="show" target="_blank" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
                         <g:if test="${sp.pkg?.contentProvider}">(${sp.pkg?.contentProvider?.name})</g:if>
                         <br>
                     </g:each>
@@ -111,6 +118,7 @@
                     COMING SOON<br>
                     <g:if test="${sourceIECount}"><b>${message(code: 'issueEntitlement.countSubscription')} </b>
                     ${sourceIECount}</g:if>
+                    <br>
                 </td>
                 <% def targetIECount = targetSubscription?.issueEntitlements?.findAll { it.status != RDStore.IE_DELETED }?.size() %>
                 <td>

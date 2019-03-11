@@ -32,6 +32,7 @@ class YodaController {
     def dashboardDueDatesService
     def subscriptionUpdateService
     def executorService
+    def costItemUpdateService
     def quartzScheduler
 
     static boolean ftupdate_running = false
@@ -596,6 +597,13 @@ class YodaController {
             flash.message = "Lizenzen ohne Startdatum verlieren ihren Status ..."
         else
             flash.message = "Lizenzen ohne Startdatum haben bereits ihren Status verloren!"
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_YODA'])
+    def updateTaxRates(){
+        flash.message = "Kosten werden in das neue Steuermodell überführt ..."
+        costItemUpdateService.updateTaxRates()
         redirect(url: request.getHeader('referer'))
     }
 

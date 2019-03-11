@@ -117,3 +117,7 @@ input#spotlightSearch[type="search"] {
   opacity: @disabledOpacity;
 }
 
+/* Smaller input field for table headers */
+.ui.form .field .ui.input input.la-input-small {
+  width: 80px;
+}

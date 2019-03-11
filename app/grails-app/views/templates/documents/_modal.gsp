@@ -1,3 +1,4 @@
+<%@page import="com.k_int.kbplus.*;de.laser.helper.RDStore"%>
 <semui:modal id="modalCreateDocument" text="Neues Dokument hinzufügen">
 
     <g:form id="upload_new_doc_form" class="ui form" url="[controller:'docWidget',action:'uploadDocument']" method="post" enctype="multipart/form-data">
@@ -33,12 +34,13 @@
                     <label>${message(code: 'template.addDocument.type', default: 'Document Type')}:</label>
                 </dt>
                 <dd>
-                    <g:select from="${com.k_int.kbplus.RefdataValue.findAllByOwnerAndValueNotInList(
-                                            com.k_int.kbplus.RefdataCategory.loc('Document Type', [en: 'Document Type', de: 'Dokumenttyp']),
-                                           [com.k_int.kbplus.RefdataValue.loc('Document Type', [en: 'ONIX-PL License', de: 'ONIX-PL Lizenz']),
-                                            com.k_int.kbplus.RefdataValue.loc('Document Type', [en: 'Note', de: 'Anmerkung']),
-                                            com.k_int.kbplus.RefdataValue.loc('Document Type', [en: 'Announcement', de: 'Angekündigung'])
-                                           ]).sort{it.getI10n('value')}}"
+                    <%
+                        List notAvailable = [RefdataValue.getByValueAndCategory('ONIX-PL License','Document Type'),
+                                             RefdataValue.getByValueAndCategory('Note','Document Type'),
+                                             RefdataValue.getByValueAndCategory('Announcement','Document Type')]
+                        List documentTypes = RefdataCategory.getAllRefdataValues("Document Type")-notAvailable
+                    %>
+                    <g:select from="${documentTypes}"
                               class="ui dropdown fluid"
                               optionKey="value"
                               optionValue="${{ it.getI10n('value') }}"
@@ -46,6 +48,31 @@
                               value=""/>
                 </dd>
             </dl>
+            <g:if test="${ownobj.class.name.equals(Org.class.name)}">
+                <dl>
+                    <dt>
+                        <label>${message(code:'template.addDocument.shareConf')}</label>
+                    </dt>
+                    <dd>
+                        <laser:select from="${RefdataCategory.getAllRefdataValues('Share Configuration')}" class="ui dropdown fluid" name="shareConf"
+                                      optionKey="${{it.class.name+":"+it.id}}" optionValue="value" value="${RefdataValue.class.name}:${RDStore.SHARE_CONF_CREATOR}"/>
+                    </dd>
+                </dl>
+                <dl>
+                    <dt>
+                        <label>${message(code:'template.addDocument.targetOrg')}</label>
+                    </dt>
+                    <dd>
+                        <g:select class="ui dropdown search la-full-width"
+                                  name="targetOrg"
+                                  from="${Org.executeQuery('select o from Org o where o.status != :deleted or o.status is null order by o.sortname asc',[deleted:RDStore.O_STATUS_DELETED])}"
+                                  optionKey="id"
+                                  optionValue="name"
+                                  value="${contextService.getOrg().id}"
+                        />
+                    </dd>
+                </dl>
+            </g:if>
         </div>
 
     </g:form>

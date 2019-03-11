@@ -1,10 +1,6 @@
-<%@ page import="de.laser.helper.RDStore; java.math.MathContext; com.k_int.kbplus.Subscription; com.k_int.kbplus.Links" %>
-<%@ page import="java.text.SimpleDateFormat"%>
+<%@ page import="de.laser.helper.RDStore; java.math.MathContext; com.k_int.kbplus.Subscription; com.k_int.kbplus.Links; java.text.SimpleDateFormat" %>
 <%@ page import="com.k_int.properties.PropertyDefinition" %>
 <%@ page import="com.k_int.kbplus.RefdataCategory" %>
-<%
-  def dateFormater = new SimpleDateFormat(message(code:'default.date.format.notime'))
-%>
 <laser:serviceInjection />
 <r:require module="annotations" />
 
@@ -222,7 +218,7 @@
                                     <tr>
                                     <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'subscription.packages.label')}</th>
                                         <td>
-                                            <g:link controller="packageDetails" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
+                                            <g:link controller="package" action="show" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
 
                                             <g:if test="${sp.pkg?.contentProvider}">
                                                 (${sp.pkg?.contentProvider?.name})
@@ -369,7 +365,7 @@
                 <%-- assemble data on server side --%>
                 <div class="ui card la-dl-no-table la-js-hideable">
                     <div class="content">
-                        <g:if test="${costItemSums.ownCosts}">
+                        <g:if test="${costItemSums.ownCosts && contextOrg.id != subscription.getConsortia().id}">
                             <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.ownCosts')}</h5>
                             <g:render template="financials" model="[data:costItemSums.ownCosts]"/>
                         </g:if>

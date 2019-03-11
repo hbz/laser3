@@ -86,13 +86,13 @@
                   </tr>
                   <tr>
                     <g:each in="${packages}" var="p">
-                      <th><g:link controller="packageDetails" action="show" id="${p.id}">${p.name} (${p.contentProvider?.name})</g:link></th>
+                      <th><g:link controller="package" action="show" id="${p.id}">${p.name} (${p.contentProvider?.name})</g:link></th>
                     </g:each>
                   </tr>
                 </thead>
               <g:each in="${titles}" var="t">
                 <tr>
-                  <td style="text-align:left;"><g:link controller="titleDetails" action="show" id="${t.title.id}">${t.title.title}</g:link>&nbsp;</td>
+                  <td style="text-align:left;"><g:link controller="title" action="show" id="${t.title.id}">${t.title.title}</g:link>&nbsp;</td>
                   <td>
                     <g:each in="${t.title.ids.sort{it.identifier.ns.ns}}" var="tid">
                       <g:if test="${tid.identifier.ns.ns != 'originediturl'}">

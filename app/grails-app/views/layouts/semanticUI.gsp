@@ -62,14 +62,14 @@
 
                         <div class="menu">
                             <a class="item" href="${createLink(uri: '/home/search')}">Search</a>
-                            <g:link class="item" controller="packageDetails">Package</g:link>
+                            <g:link class="item" controller="package">Package</g:link>
                             <g:link class="item" controller="organisations">Organisations</g:link>
                             <g:link class="item" controller="platform">Platform</g:link>
-                            <g:link class="item" controller="titleDetails">Title Instance</g:link>
+                            <g:link class="item" controller="title">Title Instance</g:link>
                             <g:link class="item" controller="tipp">Title Instance Package Platform</g:link>
                             <g:link class="item" controller="subscriptionDetails">Subscriptions</g:link>
                             <g:link class="item" controller="licenseDetails">Licenses</g:link>
-                            <g:link class="item" controller="onixplLicenseDetails" action="list">ONIX-PL Licenses</g:link>
+                            <g:link class="item" controller="onixplLicense" action="list">ONIX-PL Licenses</g:link>
                         </div>
                     </div>
                 </g:if>
@@ -80,8 +80,8 @@
                         <i class="dropdown icon"></i>
 
                         <div class="menu">
-                                <g:link class="item" controller="packageDetails" action="index">${message(code:'menu.institutions.all_pkg')}</g:link>
-                                <g:link class="item" controller="titleDetails" action="index">${message(code:'menu.institutions.all_titles')}</g:link>
+                                <g:link class="item" controller="package" action="index">${message(code:'menu.institutions.all_pkg')}</g:link>
+                                <g:link class="item" controller="title" action="index">${message(code:'menu.institutions.all_titles')}</g:link>
                             <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
                                 <g:link class="item" controller="organisations" action="index">${message(code:'menu.institutions.all_orgs')}</g:link>
                             </sec:ifAnyGranted>
@@ -101,7 +101,7 @@
                                 <div class="divider"></div>
                             </g:if>
 
-                            <g:link class="item" controller="packageDetails" action="compare">${message(code:'menu.institutions.comp_pkg')}</g:link>
+                            <g:link class="item" controller="package" action="compare">${message(code:'menu.institutions.comp_pkg')}</g:link>
                         </div>
                     </div>
 
@@ -193,6 +193,8 @@
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />
 
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="documents" message="default.documents.label" />
+
                             <g:set var="newAffiliationRequests1" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatusAndOrg(0, contextService.getOrg(), [sort:'dateRequested']).size()}" />
                             <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageAffiliationRequests" message="menu.institutions.affiliation_requests" newAffiliationRequests="${newAffiliationRequests1}" />
 
@@ -252,7 +254,7 @@
                                 <div class="divider"></div>
 
                                 <g:link class="item" controller="announcement" action="index">${message(code:'menu.datamanager.ann')}</g:link>
-                                <g:link class="item" controller="packageDetails" action="list">${message(code:'menu.datamanager.searchPackages')}</g:link>
+                                <g:link class="item" controller="package" action="list">${message(code:'menu.datamanager.searchPackages')}</g:link>
                                 <g:link class="item" controller="platform" action="list">${message(code:'menu.datamanager.searchPlatforms')}</g:link>
 
                                 <div class="divider"></div>
@@ -262,7 +264,7 @@
 
                                 <div class="divider"></div>
 
-                                <g:link class="item" controller="titleDetails" action="findTitleMatches">${message(code:'menu.datamanager.newTitle')}</g:link>
+                                <g:link class="item" controller="title" action="findTitleMatches">${message(code:'menu.datamanager.newTitle')}</g:link>
                                 <g:link class="item" controller="licenseDetails" action="create">${message(code:'license.template.new')}</g:link>
                                 <g:link class="item" controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link>
 
@@ -280,7 +282,7 @@
                             <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN">
                                 <div class="divider"></div>
                                 <g:link class="item" controller="jasperReports" action="index">${message(code:'menu.datamanager.jasper_reports')}</g:link>
-                                <g:link class="item" controller="titleDetails" action="dmIndex">${message(code:'menu.datamanager.titles')}</g:link>
+                                <g:link class="item" controller="title" action="dmIndex">${message(code:'menu.datamanager.titles')}</g:link>
                             </sec:ifAnyGranted>
                         </div>
                     </div>
@@ -333,7 +335,7 @@
 
                             <g:link class="item" controller="organisations" action="index">Manage Organisations</g:link>
                             <g:link class="item" controller="admin" action="showAffiliations">Show Affiliations</g:link>
-                            <g:link class="item" controller="userDetails" action="list">User Details</g:link>
+                            <g:link class="item" controller="user" action="list">User Details</g:link>
                             <g:link class="item" controller="usage">Manage Usage Stats</g:link>
                             <% /* g:link class="item" controller="admin" action="forumSync">Run Forum Sync</g:link */ %>
                             <% /* g:link class="item" controller="admin" action="juspSync">Run JUSP Sync</g:link */ %>
@@ -444,6 +446,16 @@
                             <g:link class="item" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">Start ES Index Update</g:link>
                             <%--<g:link class="item" controller="yoda" action="logViewer">Log Viewer</g:link>--%>
                             <g:link class="item" controller="yoda" action="manageESSources" >Manage ES Source</g:link>
+
+                            <div class="divider"></div>
+
+                            <div class="ui dropdown item">
+                                Datenmigration
+                                <i class="dropdown icon"></i>
+                                <div class="menu">
+                                    <g:link class="item" controller="yoda" action="updateTaxRates">${message(code:'menu.admin.taxTypeCheck')}</g:link>
+                                </div>
+                            </div>
 
                         </div>
 

@@ -29,11 +29,11 @@
                                  data-confirm-term-how="ok"
                                  controller="finance"
                                  action="financialsExport"
-                                 params="${params+[forExport:true]}">${message(code:'default.button.exports.xls', default:'XLS Export')}
+                                 params="${params/*+[forExport:true]*/}">${message(code:'default.button.exports.xls', default:'XLS Export')}
                         </g:link>
                     </g:if>
                     <g:else>
-                        <g:link class="item" controller="finance" action="financialsExport" params="${params+[forExport:true]}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
+                        <g:link class="item" controller="finance" action="financialsExport" params="${params/*+[forExport:true]*/}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
                     </g:else>
                 </semui:exportDropdownItem>
             <%--

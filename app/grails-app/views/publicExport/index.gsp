@@ -100,11 +100,11 @@
 
       </ul>
           <div class="well form-horizontal">
-            ${message(code:'default.search.term', default:'Search Term')}: <input name="q" placeholder="${message(code:'packageDetails.index.search.ph')}" value="${params.q}"/>
+            ${message(code:'default.search.term', default:'Search Term')}: <input name="q" placeholder="${message(code:'package.index.search.ph')}" value="${params.q}"/>
             ${message(code:'default.sort.label', default:'Sort')}: <select name="sort">
-                    <option ${params.sort=='sortname' ? 'selected' : ''} value="sortname">${message(code:'packageDetails.index.search.sort.name', default:'Package Name')}</option>
-                    <option ${params.sort=='_score' ? 'selected' : ''} value="_score">${message(code:'packageDetails.index.search.sort.score', default:'Score')}</option>
-                    <option ${params.sort=='lastModified' ? 'selected' : ''} value="lastModified">${message(code:'packageDetails.index.search.sort.modified', default:'Last Modified')}</option>
+                    <option ${params.sort=='sortname' ? 'selected' : ''} value="sortname">${message(code:'package.index.search.sort.name', default:'Package Name')}</option>
+                    <option ${params.sort=='_score' ? 'selected' : ''} value="_score">${message(code:'package.index.search.sort.score', default:'Score')}</option>
+                    <option ${params.sort=='lastModified' ? 'selected' : ''} value="lastModified">${message(code:'package.index.search.sort.modified', default:'Last Modified')}</option>
                   </select>
             ${message(code:'default.order.label', default:'Order')}: <select name="order" value="${params.order}">
                     <option ${params.order=='asc' ? 'selected' : ''} value="asc">${message(code:'default.asc', default:'Ascending')}</option>
@@ -181,7 +181,7 @@
                       <g:sortableColumn property="consortiaName" title="${message(code:'consortium.label', default:'Consortium')}" params="${params}"/>
                       <g:sortableColumn property="startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" params="${params}" />
                       <g:sortableColumn property="endDate" title="${message(code:'default.endDate.label', default:'End Date')}" params="${params}" />
-                      <g:sortableColumn property="lastModified" title="${message(code:'packageDetails.index.search.sort.modified', default:'Last Modified')}" params="${params}" />
+                      <g:sortableColumn property="lastModified" title="${message(code:'package.index.search.sort.modified', default:'Last Modified')}" params="${params}" />
                       <th>Export</th>
                     </thead>
                     <tbody>

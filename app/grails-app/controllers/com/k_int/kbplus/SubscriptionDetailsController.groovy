@@ -301,7 +301,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
                 def numOfPCs = removePackagePendingChanges(result.package.id, result.subscription.id, params.confirmed)
 
                 def numOfIEs = IssueEntitlement.executeQuery("select ie.id ${query}", queryParams).size()
-                def conflict_item_pkg = [name: "${g.message(code: "subscription.details.unlink.linkedPackage")}", details: [['link': createLink(controller: 'packageDetails', action: 'show', id: result.package.id), 'text': result.package.name]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.linkedPackage.action")}"]]
+                def conflict_item_pkg = [name: "${g.message(code: "subscription.details.unlink.linkedPackage")}", details: [['link': createLink(controller: 'package', action: 'show', id: result.package.id), 'text': result.package.name]], action: [actionRequired: false, text: "${g.message(code: "subscription.details.unlink.linkedPackage.action")}"]]
                 def conflicts_list = [conflict_item_pkg]
 
                 if (numOfIEs > 0) {
@@ -1137,7 +1137,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
                     delSubscription.status = deletedStatus
                     delSubscription.save(flush: true)
                 } else {
-                    flash.error = message(code: 'myinst.actionDeleteChildSubscription.error', default: 'Unable to delete - The selected license has attached cost items')
+                    flash.error = message(code: 'subscription.delete.existingCostItems')
                 }
 
             } else {
@@ -2084,7 +2084,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         else if (result.subscription.getCalculatedType().equals(TemplateSupport.CALCULATED_TYPE_PARTICIPATION) && !result.subscription.getConsortia().equals(result.institution))
             params.view = "subscr"
         //cost items
-        params.forExport = true
+        //params.forExport = true
         LinkedHashMap costItems = financeService.getCostItemsForSubscription(result.subscription, params, 10, 0)
         result.costItemSums = [:]
         if (costItems.own.count > 0) {

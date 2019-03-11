@@ -1331,6 +1331,7 @@ class BootStrap {
 
         RefdataCategory.loc('filter.fake.values', [en: 'filter.fake.values', de: 'filter.fake.values'], BOOTSTRAP)
         RefdataValue.loc('filter.fake.values',   [key: 'subscription.status.no.status.set.but.null', en: 'No Status', de: 'Kein Status'], BOOTSTRAP)
+        RefdataValue.loc('filter.fake.values',   [key: 'generic.null.value', en: 'Not set', de: 'Nicht gesetzt'], BOOTSTRAP)
         // refdata categories
 
         RefdataCategory.loc('YN',                   	                    [en: 'Yes/No', de: 'Ja/Nein'], BOOTSTRAP)
@@ -1873,6 +1874,11 @@ class BootStrap {
         RefdataValue.loc('Person Responsibility',    [en: 'Specific package editor', de: 'Paketbearbeiter'], BOOTSTRAP)
         RefdataValue.loc('Person Responsibility',    [en: 'Specific cluster editor', de: 'Gruppenkontakt'], BOOTSTRAP)
         RefdataValue.loc('Person Responsibility',    [en: 'Specific title editor', de: 'Titelbearbeiter'], BOOTSTRAP)
+
+        RefdataValue.loc('Share Configuration', [en: 'only for creator',de:'nur für Autor'], BOOTSTRAP)
+        RefdataValue.loc('Share Configuration', [en: 'only for author organisation',de:'nur für Organisation des Autors'], BOOTSTRAP)
+        RefdataValue.loc('Share Configuration', [en: 'only for author and target organisation',de:'nur für Organisation des Autors und der Zielorganisation'], BOOTSTRAP)
+        RefdataValue.loc('Share Configuration', [en: 'everyone',de:'alle'], BOOTSTRAP)
 
         RefdataValue.loc('Subscription Form',      [key: 'test', en: 'Test', de: 'Test'], BOOTSTRAP)
         RefdataValue.loc('Subscription Form',      [key: 'offer', en: 'Offer', de: 'Angebot'], BOOTSTRAP)

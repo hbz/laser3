@@ -48,7 +48,7 @@
 					<g:if test="${identifierOccurrenceInstance?.ti}">
 						<dt><g:message code="identifierOccurrence.ti.label" default="Ti" /></dt>
 						
-							<dd><g:link controller="titleDetails" action="show" id="${identifierOccurrenceInstance?.ti?.id}">${identifierOccurrenceInstance?.ti}</g:link></dd>
+							<dd><g:link controller="title" action="show" id="${identifierOccurrenceInstance?.ti?.id}">${identifierOccurrenceInstance?.ti}</g:link></dd>
 						
 					</g:if>
 				

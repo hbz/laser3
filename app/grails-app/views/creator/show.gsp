@@ -76,7 +76,7 @@
                         <dd><g:each in="${creatorInstance?.title}" var="t">
                             <dl>
                                 <dd>
-                                    <g:link controller="TitleDetails" action="show"
+                                    <g:link controller="title" action="show"
                                             id="${t?.title.id}">${t?.title.title}</g:link>
                                 </dd>
                             </dl>

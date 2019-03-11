@@ -103,7 +103,7 @@
                             <input type="hidden" name="entitlements.${counter}.coverage_note"
                                    value="${e.coverageNote}"/>
                             ${e.tipp.title.title}</td>
-                        <td><g:link controller="packageDetails" action="show"
+                        <td><g:link controller="package" action="show"
                                     id="${e.tipp.pkg.id}">${e.tipp.pkg.name}(${e.tipp.pkg.id})</g:link></td>
                         <td>${e.tipp.title.getIdentifierValue('ISSN')}</td>
                         <td>${e.tipp.title.getIdentifierValue('eISSN')}</td>
