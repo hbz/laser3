@@ -27,8 +27,8 @@
                 <td></td>
                 <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeDates" value="${SubscriptionElementAction.REPLACE}" /></div></td>
                 <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeDates" value="${SubscriptionElementAction.DO_NOTHING} " checked /></div></td>
-                <td><g:formatDate date="${sourceSubscription.startDate}" format="${message(code: 'default.date.format.notime')}"/>
-                    ${sourceSubscription?.endDate ? (' - ' + formatDate(date: sourceSubscription.endDate, format: message(code: 'default.date.format.notime'))) : ''}</td>
+                <td><g:formatDate date="${sourceSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
+                    ${sourceSubscription?.endDate ? (' - ' + formatDate(date: sourceSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}</td>
                 <td><g:formatDate date="${targetSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
                     ${targetSubscription?.endDate ? (' - ' + formatDate(date: targetSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}</td>
             </tr>
@@ -91,7 +91,6 @@
                 <td><div class="ui radio checkbox"><input type="radio" name="subscription.takePackages" value="${SubscriptionElementAction.REPLACE}" disabled="" /></div></td>
                 <td><div class="ui radio checkbox"><input type="radio" name="subscription.takePackages" value="${SubscriptionElementAction.DO_NOTHING}" checked disabled=""/></div></td>
                 <td>
-                    COMING SOON<br>
                     <g:each in="${sourceSubscription?.packages?.sort { it.pkg.name }}" var="sp">
                         <b>${message(code: 'subscription.packages.label')}:</b>
                         <g:link controller="package" action="show" target="_blank" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
@@ -100,7 +99,6 @@
                     </g:each>
                 </td>
                 <td>
-                    COMING SOON<br>
                     <g:each in="${targetSubscription?.packages?.sort { it.pkg.name }}" var="sp">
                         <b>${message(code: 'subscription.packages.label')}:</b>
                         <g:link controller="packageDetails" action="show" target="_blank" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
@@ -113,18 +111,27 @@
                 <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeEntitlements" value="${SubscriptionElementAction.COPY}" disabled=""/></div></td>
                 <td><div class="ui radio checkbox" ><input type="radio" name="subscription.takeEntitlements" value="${SubscriptionElementAction.REPLACE}" disabled=""/></div></td>
                 <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeEntitlements" value="${SubscriptionElementAction.DO_NOTHING}" checked disabled=""/></div></td>
-                <% def sourceIECount = sourceSubscription?.issueEntitlements?.findAll { it.status != RDStore.IE_DELETED }?.size() %>
+                <% def sourceIEs = sourceSubscription?.issueEntitlements?.findAll { it.status != RDStore.IE_DELETED } %>
                 <td>
-                    COMING SOON<br>
-                    <g:if test="${sourceIECount}"><b>${message(code: 'issueEntitlement.countSubscription')} </b>
-                    ${sourceIECount}</g:if>
-                    <br>
-                </td>
-                <% def targetIECount = targetSubscription?.issueEntitlements?.findAll { it.status != RDStore.IE_DELETED }?.size() %>
+                    <g:if test="${sourceIEs}">
+                        <b>${message(code: 'issueEntitlement.countSubscription')} </b>${sourceIEs?.size()}<br>
+                        <g:each in="${sourceIEs}" var="ie">
+                            <semui:listIcon type="${ie.tipp.title.type.getI10n('value')}"/>
+                            <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
+                            <br />
+                        </g:each>
+                    </g:if>
+               </td>
+                <% def targetIEs = targetSubscription?.issueEntitlements?.findAll { it.status != RDStore.IE_DELETED } %>
                 <td>
-                    COMING SOON<br>
-                    <g:if test="${targetIECount}"> <b>${message(code: 'issueEntitlement.countSubscription')} </b>
-                    ${targetIECount}</g:if>
+                    <g:if test="${targetIEs}">
+                        <b>${message(code: 'issueEntitlement.countSubscription')} </b>${targetIEs?.size()} <br />
+                        <g:each in="${targetIEs}" var="ie">
+                            <semui:listIcon type="${ie.tipp.title.type.getI10n('value')}"/>
+                            <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
+                            <br />
+                        </g:each>
+                    </g:if>
                 </td>
             </tr>
             </tbody>
