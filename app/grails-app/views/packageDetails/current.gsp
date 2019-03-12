@@ -185,23 +185,27 @@
                 <tbody></tbody>
           </table>
             </g:if>
+            <br>
+            <br>
 
-            <table class="ui celled la-table table">
+           <table class="ui sortable celled la-table table ignore-floatThead la-bulk-header">
                 <thead>
                     <tr>
-                        <th rowspan="2">&nbsp;</th>
-                        <th rowspan="2">&nbsp;</th>
-                        <g:sortableColumn rowspan="2" params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
-                        <th rowspan="2">${message(code:'tipp.platform', default:'Platform')}</th>
-                        <th rowspan="2">${message(code:'identifier.plural', default:'Identifiers')}</th>
-                        <th colspan="2">${message(code:'tipp.coverage')}</th>
-                        <th colspan="2">${message(code:'tipp.access')}</th>
-                        <th rowspan="2">${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
+                        <th></th>
+                        <th></th>
+                        <g:sortableColumn  params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
+                        <th>${message(code:'tipp.coverage')}</th>
+                        <th>${message(code:'tipp.access')}</th>
+                        <th>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
                     </tr>
                     <tr>
+                        <th colspan="3" rowspan="2"></th>
                         <th>${message(code:'default.from')}</th>
+                        <th>${message(code:'default.from')}</th>
+                        <th rowspan="2"></th>
+                    </tr>
+                    <tr>
                         <th>${message(code:'default.to')}</th>
-                        <th>${message(code:'default.from')}</th>
                         <th>${message(code:'default.to')}</th>
                     </tr>
                 </thead>
@@ -213,12 +217,27 @@
               <tr>
                 <td ${hasCoverageNote==true?'rowspan="2"':''}><g:if test="${editable}"><input type="checkbox" name="_bulkflag.${t.id}" class="bulkcheck"/></g:if></td>
                 <td ${hasCoverageNote==true?'rowspan="2"':''}>${counter++}</td>
-                <td style="vertical-align:top;">
+                <td>
                     <semui:listIcon type="${t.title.type.getI10n('value')}"/>
                    <strong><g:link controller="titleDetails" action="show" id="${t.title.id}">${t.title.title}</g:link></strong>
                     <br>
                    <g:link controller="tipp" action="show" id="${t.id}">${message(code:'tipp.label', default:'TIPP')}</g:link>
-                    &nbsp;
+                    <br>
+
+                        <g:each in="${t.title.ids.sort{it.identifier.ns.ns}}" var="id">
+                            <g:if test="${id.identifier.ns.ns == 'originediturl'}">
+                                <span class="ui small teal image label">
+                                    ${id.identifier.ns.ns}: <div class="detail"><a href="${id.identifier.value}">${message(code:'package.show.openLink', default:'Open Link')}</a></div>
+                                    ${id.identifier.ns.ns}: <div class="detail"><a href="${id.identifier.value.toString().replace("resource/show", "public/packageContent")}">${message(code:'package.show.openLink', default:'Open Link')}</a></div>
+                                </span>
+                            </g:if>
+                            <g:else>
+                                <span class="ui small teal image label">
+                                    ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
+                                </span>
+                            </g:else>
+                        </g:each>
+
                     <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                             var="gokbAPI">
                         <g:if test="${t?.gokbId}">
@@ -226,49 +245,46 @@
                                     title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
                         </g:if>
                     </g:each>
-
-                    <br/>
-
-                    <span title="${t.availabilityStatusExplanation}">${message(code:'default.access.label', default:'Access')}: ${t.availabilityStatus?.getI10n('value')}</span><br/>
-                    <span>${message(code:'title.type.label')}: ${t.title.type.getI10n('value')}</span><br/>
-                    <span>${message(code:'default.status.label', default:'Status')}: <semui:xEditableRefData owner="${t}" field="status" config="TIPP Status"/></span>
-                </td>
-                <td style="white-space: nowrap;vertical-align:top;">
-                   <g:if test="${t.hostPlatformURL}">
-                     <a href="${t.hostPlatformURL.contains('http') ? t.hostPlatformURL :'http://'+t.hostPlatformURL}" target="_blank">${t.platform?.name}</a>
-                   </g:if>
-                   <g:else>
-                     ${t.platform?.name}
-                   </g:else>
-                </td>
-                <td style="white-space: nowrap;vertical-align:top;">
-                  <g:each in="${t.title.ids.sort{it.identifier.ns.ns}}" var="id">
-                    <g:if test="${id.identifier.ns.ns == 'originediturl'}">
-                      ${id.identifier.ns.ns}: <a href="${id.identifier.value}">${message(code:'package.show.openLink', default:'Open Link')}</a>
-                      ${id.identifier.ns.ns}: <a href="${id.identifier.value.toString().replace("resource/show", "public/packageContent")}">${message(code:'package.show.openLink', default:'Open Link')}</a>
-                    </g:if>
-                    <g:else>
-                      ${id.identifier.ns.ns}: ${id.identifier.value}
-                    </g:else>
-                    <br/>
-                  </g:each>
+                    <div class="ui list">
+                        <div class="item"  title="${t.availabilityStatusExplanation}"><b>${message(code:'default.access.label', default:'Access')}:</b> ${t.availabilityStatus?.getI10n('value')}</div>
+                        <div class="item"><b>${message(code:'title.type.label')}:</b> ${t.title.type.getI10n('value')}</div>
+                        <div class="item"><b>${message(code:'default.status.label', default:'Status')}:</b>  <semui:xEditableRefData owner="${t}" field="status" config="TIPP Status"/></div>
+                        <div class="item"><b>${message(code:'tipp.platform', default:'Platform')}: </b>
+                            <g:if test="${t?.platform.name}">
+                                ${t?.platform.name}
+                            </g:if>
+                            <g:else>${message(code:'default.unknown')}</g:else>
+                            <g:if test="${t?.platform.name}">
+                                <g:link class="ui icon mini  button la-url-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.changePlattform')}" controller="platform" action="show" id="${t?.platform.id}"><i class="pencil alternate icon"></i></g:link>
+                            </g:if>
+                            <g:if test="${t.hostPlatformURL}">
+                                <a class="ui icon mini blue button la-url-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.callUrl')}" href="${t.hostPlatformURL.contains('http') ? t.hostPlatformURL :'http://'+t.hostPlatformURL}" target="_blank"><i class="share square icon"></i></a>
+                            </g:if>
+                        </div>
+                    </div>
                 </td>
 
                 <td>
-                    ${message(code:'default.date.label', default:'Date')}: <semui:xEditable owner="${t}" type="date" field="startDate" /><br/>
-                    ${message(code:'tipp.volume', default:'Volume')}: <semui:xEditable owner="${t}" field="startVolume" /><br>
-                    ${message(code:'tipp.issue', default:'Issue')}: <semui:xEditable owner="${t}" field="startIssue" />
+                    <!-- von -->
+                    <semui:xEditable owner="${t}" type="date" field="startDate" /><br/>
+                    <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.volume')}"></i>
+                    <semui:xEditable owner="${t}" field="startVolume" /><br>
+                    <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.issue')}"></i>
+                    <semui:xEditable owner="${t}" field="startIssue" />
+                    <semui:dateDevider/>
+                    <!-- bis -->
+                    <semui:xEditable owner="${t}" type="date" field="endDate" /><br/>
+                    <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.volume')}"></i>
+                    <semui:xEditable owner="${t}" field="endVolume" /><br>
+                    <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.issue')}"></i>
+                    <semui:xEditable owner="${t}" field="endIssue" />
                 </td>
                 <td>
-                    ${message(code:'default.date.label', default:'Date')}: <semui:xEditable owner="${t}" type="date" field="endDate" /><br/>
-                    ${message(code:'tipp.volume', default:'Volume')}: <semui:xEditable owner="${t}" field="endVolume" /><br>
-                    ${message(code:'tipp.issue', default:'Issue')}: <semui:xEditable owner="${t}" field="endIssue" />
-                </td>
-                <td>
-                    ${message(code:'default.date.label', default:'Date')}: <semui:xEditable owner="${t}" type="date" field="accessStartDate" />
-                </td>
-                <td>
-                    ${message(code:'default.date.label', default:'Date')}: <semui:xEditable owner="${t}" type="date" field="accessEndDate" />
+                    <!-- von -->
+                    <semui:xEditable owner="${t}" type="date" field="accessStartDate" />
+                    <semui:dateDevider/>
+                    <!-- bis -->
+                    <semui:xEditable owner="${t}" type="date" field="accessEndDate" />
                 </td>
                 <td>
                   <semui:xEditable owner="${t}" field="coverageDepth" />
@@ -277,7 +293,7 @@
 
               <g:if test="${hasCoverageNote==true}">
                 <tr>
-                  <td colspan="6">${message(code:'tipp.coverageNote', default:'Coverage Note')}: ${t.coverageNote}</td>
+                    <td colspan="6"><b>${message(code:'tipp.coverageNote', default:'Coverage Note')}:</b> ${t.coverageNote}</td>
                 </tr>
               </g:if>
 

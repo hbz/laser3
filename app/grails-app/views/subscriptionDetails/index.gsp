@@ -192,11 +192,7 @@
                                 <td>
                                     <semui:listIcon type="${ie.tipp?.title.type.getI10n('value')}"/>
                                     <g:link controller="issueEntitlement" id="${ie.id}" action="show"><strong>${ie.tipp.title.title}</strong></g:link><br>
-                                    <g:if test="${ie.tipp?.hostPlatformURL}">
 
-                                        <a href="${ie.tipp?.hostPlatformURL}" TITLE="${ie.tipp?.hostPlatformURL}" target="_blank">${message(code:'tipp.hostPlatformURL', default:'Host Link')}  <i class="ui icon share square"></i></a>
-
-                                    </g:if>
                                     <g:each in="${ie?.tipp?.title?.ids.sort{it.identifier.ns.ns}}" var="title_id">
                                         <g:if test="${title_id.identifier.ns.ns.toLowerCase() != 'originediturl'}">
                                             <span class="ui small teal image label">
@@ -212,9 +208,17 @@
                                         <div class="item"><b>${message(code:'tipp.coverageNote', default:'Coverage Note')}:</b> ${ie.coverageNote?:(ie.tipp?.coverageNote ?: '')}</div>
                                         <div class="item"><b>${message(code:'tipp.platform', default:'Platform')}:</b>
                                             <g:if test="${ie.tipp?.platform.name}">
-                                                <g:link controller="platform" action="show" id="${ie.tipp?.platform.id}">${ie.tipp?.platform.name}</g:link>
+                                                ${ie.tipp?.platform.name}
                                             </g:if>
                                             <g:else>${message(code:'default.unknown')}</g:else>
+
+                                            <g:if test="${ie.tipp?.platform.name}">
+                                                <g:link  class="ui icon mini  button la-url-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.changePlattform')}" controller="platform" action="show" id="${ie.tipp?.platform.id}"><i class="pencil alternate icon"></i></g:link>
+                                            </g:if>
+                                            <g:if test="${ie.tipp?.hostPlatformURL}">
+                                                <a class="ui icon mini blue button la-url-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.callUrl')}" href="${ie.tipp?.hostPlatformURL.contains('http') ? ie.tipp?.hostPlatformURL :'http://'+ie.tipp?.hostPlatformURL}" target="_blank"><i class="share square icon"></i></a>
+                                            </g:if>
+
                                             <g:if test="${ie.availabilityStatus?.value=='Expected'}">
                                                 ${message(code:'default.on', default:'on')} <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessStartDate}"/>
                                             </g:if>
