@@ -32,7 +32,7 @@
         <table class="ui celled la-table la-table-small table">
           <thead>
             <tr>
-                <th></th>
+                <th>${pendingChanges.size()? "1-"+pendingChanges.size() : 0}</th>
               <th>${message(code:'default.info.label', default:'Info')}</th>
                 <th>${message(code: 'event.timestamp', default: 'Timestamp')}</th>
               <th>${message(code:'default.actions.label', default:'Action')}</th>
