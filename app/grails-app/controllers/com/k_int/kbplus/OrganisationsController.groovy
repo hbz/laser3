@@ -103,6 +103,31 @@ class OrganisationsController extends AbstractDebugController {
         result
     }
 
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") }) //preliminarily, until the new roleTypes are there
+    Map listInstitution() {
+        Map result = setResultGenerics()
+        if(!result.institution.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id)) {
+            flash.error = message(code:'org.error.noConsortium')
+            response.sendError(401)
+            return
+        }
+        params.orgType   = RDStore.OT_INSTITUTION.id.toString()
+        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
+        if(!params.sort)
+            params.sort = " LOWER(o.sortname)"
+        def fsq = filterService.getOrgQuery(params)
+        result.availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
+        result.consortiaMemberIds = []
+        Combo.findAllWhere(
+                toOrg: result.institution,
+                type:    RefdataValue.getByValueAndCategory('Consortium','Combo Type')
+        ).each { cmb ->
+            result.consortiaMemberIds << cmb.fromOrg.id
+        }
+        result
+    }
+
     @Secured(['ROLE_USER'])
     def listProvider() {
         def result = [:]
@@ -570,6 +595,39 @@ class OrganisationsController extends AbstractDebugController {
             flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.name])
             redirect action: 'show', id: orgInstance.id
         }
+    }
+
+    private Map setResultGenerics() {
+        return [user:User.get(springSecurityService.principal.id),institution:contextService.org]
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def toggleCombo() {
+        Map result = setResultGenerics()
+        if(!params.direction) {
+            flash.error(message(code:'org.error.noToggleDirection'))
+            response.sendError(404)
+            return
+        }
+        switch(params.direction) {
+            case 'add':
+                Map map = [toOrg: result.institution,
+                        fromOrg: Org.get(params.fromOrg),
+                        type: RefdataValue.getByValueAndCategory('Consortium','Combo Type')]
+                if (! Combo.findWhere(map)) {
+                    def cmb = new Combo(map)
+                    cmb.save()
+                }
+                break
+            case 'remove':
+                Combo cmb = Combo.findWhere(toOrg: result.institution,
+                    fromOrg: Org.get(params.fromOrg),
+                    type: RefdataValue.getByValueAndCategory('Consortium','Combo Type'))
+                cmb.delete()
+                break
+        }
+        redirect action: 'listInstitution'
     }
 
     private def exportOrg(orgs, message, addHigherEducationTitles) {
