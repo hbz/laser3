@@ -49,7 +49,6 @@
 
 <g:if test="${actionName == 'documents'}">
     <semui:actionsDropdown>
-        <semui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument" />
+        <semui:actionsDropdownItem message="template.documents.add" controller="myInstitution" action="editDocument"/>
     </semui:actionsDropdown>
-    <g:render template="/templates/documents/modal" model="${[ownobj: org, owntp: 'organisation']}"/>
 </g:if>

@@ -1876,8 +1876,8 @@ class BootStrap {
         RefdataValue.loc('Person Responsibility',    [en: 'Specific title editor', de: 'Titelbearbeiter'], BOOTSTRAP)
 
         RefdataValue.loc('Share Configuration', [en: 'only for creator',de:'nur für Uploader'], BOOTSTRAP)
-        RefdataValue.loc('Share Configuration', [en: 'only for uploader context organisation',de:'nur für aktuelle Organisation des Uploaders'], BOOTSTRAP)
-        RefdataValue.loc('Share Configuration', [en: 'only for uploader context and target organisation',de:'nur für aktuelle Organisation des Uploders und die Bezugsorganisation'], BOOTSTRAP)
+        RefdataValue.loc('Share Configuration', [key: 'only for author organisation', en: 'only for uploader context organisation',de:'nur für aktuelle Organisation des Uploaders'], BOOTSTRAP)
+        RefdataValue.loc('Share Configuration', [key: 'only for author and target organisation', en: 'only for uploader context and target organisation',de:'nur für aktuelle Organisation des Uploders und die Bezugsorganisation'], BOOTSTRAP)
         RefdataValue.loc('Share Configuration', [en: 'only for consortia members',de:'nur für Konsorten'], BOOTSTRAP)
         RefdataValue.loc('Share Configuration', [en: 'everyone',de:'alle'], BOOTSTRAP)
 

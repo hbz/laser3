@@ -1349,6 +1349,20 @@ class SubscriptionDetailsController extends AbstractDebugController {
         result
     }
 
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def editDocument() {
+        Map result = [user:springSecurityService.getCurrentUser(),institution:contextService.org]
+        result.ownobj = Subscription.get(params.instanceId)
+        result.owntp = 'subscription'
+        if(params.id) {
+            result.docctx = DocContext.get(params.id)
+            result.doc = result.docctx.owner
+        }
+
+        render template: "/templates/documents/modal", model: result
+    }
+
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def tasks() {

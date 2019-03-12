@@ -1,10 +1,28 @@
-<%@page import="com.k_int.kbplus.*;de.laser.helper.RDStore"%>
-<semui:modal id="modalCreateDocument" text="Neues Dokument hinzufügen">
+<%@page import="com.k_int.kbplus.*;de.laser.helper.RDStore;"%>
+<%
+    String modalText
+    String submitButtonLabel
+    String formUrl
+    if(docctx && doc) {
+        modalText = message(code:'template.documents.edit')
+        submitButtonLabel = message(code:'default.button.edit.label')
+        formUrl = createLink(controller:'docWidget',action:'editDocument')
+    }
+    else {
+        modalText = message(code:'template.documents.add')
+        submitButtonLabel = message(code:'default.button.create_new.label')
+        formUrl = createLink(controller: 'docWidget',action:'uploadDocument')
+    }
+%>
+<semui:modal id="modalCreateDocument" text="${modalText}" msgSave="${submitButtonLabel}">
 
-    <g:form id="upload_new_doc_form" class="ui form" url="[controller:'docWidget',action:'uploadDocument']" method="post" enctype="multipart/form-data">
+    <g:form id="upload_new_doc_form" class="ui form" url="${formUrl}" method="post" enctype="multipart/form-data">
         <input type="hidden" name="ownerid" value="${ownobj?.id}"/>
         <input type="hidden" name="ownerclass" value="${ownobj?.class?.name}"/>
         <input type="hidden" name="ownertp" value="${owntp}"/>
+        <g:if test="${docctx}">
+            <input type="hidden" name="docctx" value="${docctx.id}"/>
+        </g:if>
 
         <div class="inline-lists">
             <dl>
@@ -12,23 +30,36 @@
                     <label>${message(code: 'template.addDocument.name', default: 'Document Name')}:</label>
                 </dt>
                 <dd>
-                    <input type="text" name="upload_title">
+                    <input type="text" name="upload_title" value="${doc?.title}">
                 </dd>
             </dl>
-            <dl>
-                <dt>
-                    <label>${message(code: 'template.addDocument.file', default: 'File')}:</label>
-                </dt>
-                <dd>
-                    <div class="ui fluid action input">
-                        <input type="text" readonly="readonly" placeholder="${message(code:'template.addDocument.selectFile')}">
-                        <input type="file" name="upload_file" style="display: none;">
-                        <div class="ui icon button" style="padding-left:30px; padding-right:30px">
-                            <i class="attach icon"></i>
+            <g:if test="${!docctx && !doc}">
+                <dl>
+                    <dt>
+                        <label>${message(code: 'template.addDocument.file', default: 'File')}:</label>
+                    </dt>
+                    <dd>
+                        <div class="ui fluid action input">
+                            <input type="text" readonly="readonly" placeholder="${message(code:'template.addDocument.selectFile')}">
+                            <input type="file" name="upload_file" style="display: none;">
+                            <div class="ui icon button" style="padding-left:30px; padding-right:30px">
+                                <i class="attach icon"></i>
+                            </div>
                         </div>
-                    </div>
-                </dd>
-            </dl>
+                    </dd>
+                </dl>
+
+                <script>
+                    $('#modalCreateDocument .action .icon.button').click( function() {
+                        $(this).parent('.action').find('input:file').click();
+                    });
+
+                    $('input:file', '.ui.action.input').on('change', function(e) {
+                        var name = e.target.files[0].name;
+                        $('input:text', $(e.target).parent()).val(name);
+                    });
+                </script>
+            </g:if>
             <dl>
                 <dt>
                     <label>${message(code: 'template.addDocument.type', default: 'Document Type')}:</label>
@@ -45,17 +76,29 @@
                               optionKey="value"
                               optionValue="${{ it.getI10n('value') }}"
                               name="doctype"
-                              value=""/>
+                              value="${doc?.type?.value}"/>
                 </dd>
             </dl>
-            <g:if test="${ownobj.class.name.equals(Org.class.name)}">
+            <g:if test="${ownobj?.class?.name?.equals(Org.class.name)}">
                 <dl>
                     <dt>
                         <label>${message(code:'template.addDocument.shareConf')}</label>
                     </dt>
                     <dd>
-                        <laser:select from="${RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.owner.desc = 'Share Configuration' order by rdv.order asc")}" class="ui dropdown fluid" name="shareConf"
-                                      optionKey="${{it.class.name+":"+it.id}}" optionValue="value" value="${RefdataValue.class.name}:${RDStore.SHARE_CONF_UPLOADER_ORG.id}"/>
+                        <%
+                            String value = "${RefdataValue.class.name}:${RDStore.SHARE_CONF_UPLOADER_ORG.id}"
+                            if(docctx) {
+                                value = "${RefdataValue.class.name}:${docctx.shareConf.id}"
+                            }
+                            List allConfigs = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.owner.desc = 'Share Configuration' order by rdv.order asc")
+                            List availableConfigs = []
+                            if(!institution.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id)){
+                                availableConfigs = allConfigs-RDStore.SHARE_CONF_CONSORTIUM
+                            }
+                            else availableConfigs = allConfigs
+                        %>
+                        <laser:select from="${availableConfigs}" class="ui dropdown fluid" name="shareConf"
+                                      optionKey="${{it.class.name+":"+it.id}}" optionValue="value" value="${value}"/>
                     </dd>
                 </dl>
                 <dl>
@@ -69,6 +112,7 @@
                                   optionKey="id"
                                   optionValue="name"
                                   noSelection="['':'']"
+                                  value="${docctx?.targetOrg?.id}"
                         />
                     </dd>
                 </dl>
@@ -78,13 +122,3 @@
     </g:form>
 
 </semui:modal>
-<r:script type="text/javascript">
-    $('#modalCreateDocument .action .icon.button').click( function() {
-         $(this).parent('.action').find('input:file').click();
-    });
-
-    $('input:file', '.ui.action.input').on('change', function(e) {
-        var name = e.target.files[0].name;
-        $('input:text', $(e.target).parent()).val(name);
-    });
-</r:script>

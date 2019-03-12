@@ -32,7 +32,9 @@
                         case RDStore.SHARE_CONF_CONSORTIUM:
                         case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
                             break
-                        default: println docctx.shareConf
+                        default:
+                            if(docctx.shareConf) println docctx.shareConf
+                            else visible = true
                             break
                     }
 
@@ -41,25 +43,13 @@
                     <%--<g:if test="${editable}"><td><input type="checkbox" name="_deleteflag.${docctx.id}" value="true"/></td></g:if> : REMOVED BULK--%>
                     <tr>
                         <td>
-                            <g:if test="${! docctx.sharedFrom}">
-                                <semui:xEditable owner="${docctx.owner}" field="title" id="title" />
-                            </g:if>
-                            <g:else>
-                                ${docctx.owner.title}
-                            </g:else>
+                            ${docctx.owner.title}
                         </td>
                         <td>
-                            <g:if test="${! docctx.sharedFrom}">
-                                <semui:xEditable owner="${docctx.owner}" field="filename" id="filename" validation="notEmpty"/>
-                            </g:if>
-                            <g:else>
-                                ${docctx.owner.filename}
-                            </g:else>
+                            ${docctx.owner.filename}
                         </td>
                         <td>
-                            <g:if test="${docctx?.owner?.owner?.id == org.id}">
-                                ${docctx.owner.creator}
-                            </g:if>
+                            ${docctx.owner.creator}
                         </td>
                         <td>
                             ${docctx.owner?.type?.getI10n('value')}
@@ -69,20 +59,10 @@
                                 ${docctx.owner.owner.name}
                             </td>
                             <td>
-                                <g:if test="${user == docctx.owner.creator}">
-                                    <semui:xEditable owner="${docctx}" field="targetOrg" value="${docctx.targetOrg}"/>
-                                </g:if>
-                                <g:else>
-                                    ${docctx.targetOrg}
-                                </g:else>
+                                ${docctx.targetOrg}
                             </td>
                             <td>
-                                <g:if test="${user == docctx.owner.creator}">
-                                    <semui:xEditableRefData config="Share Configuration" owner="${docctx}" field="shareConf" value="${docctx.shareConf.getI10n("value")}" />
-                                </g:if>
-                                <g:else>
-                                    ${docctx.shareConf.getI10n("value")}
-                                </g:else>
+                                ${docctx.shareConf.getI10n("value")}
                             </td>
                         </g:if>
                         <td class="x">
@@ -112,13 +92,22 @@
                                 </g:if>
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon button"><i class="download icon"></i></g:link>
                                 <g:if test="${!(instance instanceof Org) && (editable && ! docctx.sharedFrom)}">
-                                    <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button"
+                                    <g:link controller="${controllerName}" action="editDocument" params="[id:docctx.id,instanceId:instance.id]" data-tooltip="${message(code:"template.documents.edit")}" class="ui icon button trigger-modal">
+                                        <i class="pencil icon"></i>
+                                    </g:link>
+                                    <g:render template="/templates/documents/modal" model="${[ownobj: org, owntp: 'document']}" />
+                                    <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button js-open-confirm-modal"
+                                            data-confirm-term-what="document" data-confirm-term-what-detail="${docctx.owner.title}" data-confirm-term-how="delete"
                                             params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${redirect}"]'>
                                         <i class="trash alternate icon"></i>
                                     </g:link>
                                 </g:if>
                                 <g:elseif test="${(instance instanceof Org) && (docctx.owner.owner.id == org.id || docctx.owner.creator.id == user.id) && !docctx.sharedFrom}">
-                                    <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button"
+                                    <g:link controller="${controllerName}" action="editDocument" params="[id:docctx.id]" data-tooltip="${message(code:"template.documents.edit")}" class="ui icon button trigger-modal">
+                                        <i class="pencil icon"></i>
+                                    </g:link>
+                                    <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button js-open-confirm-modal"
+                                            data-confirm-term-what="document" data-confirm-term-what-detail="${docctx.owner.title}" data-confirm-term-how="delete"
                                             params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${redirect}"]'>
                                         <i class="trash alternate icon"></i>
                                     </g:link>
@@ -131,4 +120,29 @@
         </tbody>
     </table>
 </g:form>
+<r:script>
+    $("[href*='editDocument']").on('click', function(e) {
+        e.preventDefault();
 
+        $.ajax({
+            url: $(this).attr("href")
+        }).done( function(data) {
+            $('.ui.dimmer.modals > #modalCreateDocument').remove();
+            $('#dynamicModalContainer').empty().html(data);
+            $('#dynamicModalContainer .ui.modal').modal({
+                onVisible: function () {
+                    r2d2.initDynamicSemuiStuff('#modalCreateDocument');
+                    r2d2.initDynamicXEditableStuff('#modalCreateDocument');
+                },
+                detachable: true,
+                closable: false,
+                transition: 'scale',
+                onApprove : function() {
+                    $(this).find('.ui.form').submit();
+                    return false;
+                }
+            }).modal('show');
+        });
+
+    });
+</r:script>

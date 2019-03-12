@@ -81,8 +81,8 @@ class RDStore {
 
     static final SHARE_CONF_ALL                 = getRefdataValue('everyone','Share Configuration')
     static final SHARE_CONF_CREATOR             = getRefdataValue('only for creator','Share Configuration')
-    static final SHARE_CONF_UPLOADER_ORG        = getRefdataValue('only for uploader context organisation','Share Configuration')
-    static final SHARE_CONF_UPLOADER_AND_TARGET = getRefdataValue('only for uploader context and target organisation','Share Configuration')
+    static final SHARE_CONF_UPLOADER_ORG        = getRefdataValue('only for author organisation','Share Configuration') //maps to key, value is correct!
+    static final SHARE_CONF_UPLOADER_AND_TARGET = getRefdataValue('only for author and target organisation','Share Configuration') //maps to key, value is correct!
     static final SHARE_CONF_CONSORTIUM          = getRefdataValue('only for consortia members','Share Configuration')
 
     static RefdataValue getRefdataValue(String value, String category) {
