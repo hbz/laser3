@@ -36,11 +36,11 @@ class LicenseCompareController extends AbstractDebugController {
   Map compare(){
     LinkedHashMap result = [groupedProperties:[:],orphanedProperties:[:],privateProperties:[:]]
     Org org = contextService.getOrg()
-    List licenses = params.availableLicenses.split(',').collect{
+    List licKeys = params.availableLicenses.split(",")
+    List licenses = licKeys.collect{ it ->
       (License) genericOIDService.resolveOID(it)
     }
     licenses.each{ lic ->
-
       /*
         Back to square one:
         I need the following groupings:
