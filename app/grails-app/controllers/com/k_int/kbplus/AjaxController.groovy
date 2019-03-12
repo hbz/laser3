@@ -769,6 +769,12 @@ class AjaxController {
 
                 if (new_link.save(flush: true)) {
                     // log.debug("Org link added")
+                    if (owner instanceof ShareSupport && owner.checkSharePreconditions(new_link)) {
+                        new_link.isShared = true
+                        new_link.save(flush:true)
+
+                        owner.updateShare(new_link)
+                    }
                 } else {
                     log.error("Problem saving new org link ..")
                     new_link.errors.each { e ->
@@ -778,6 +784,20 @@ class AjaxController {
                 }
             }
         }
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_USER'])
+    def delOrgRole() {
+        def or = OrgRole.get(params.id)
+
+        def owner = or.getOwner()
+        if (owner instanceof ShareSupport && or.isShared) {
+            or.isShared = false
+            owner.updateShare(or)
+        }
+        or.delete(flush:true)
+
         redirect(url: request.getHeader('referer'))
     }
 
@@ -1138,15 +1158,6 @@ class AjaxController {
     }
 
     @Secured(['ROLE_USER'])
-    def delOrgRole() {
-        // log.debug("delOrgRole ${params}");
-        def or = OrgRole.get(params.id)
-        or.delete(flush:true);
-        // log.debug("Delete link: ${or}");
-        redirect(url: request.getHeader('referer'))
-    }
-
-    @Secured(['ROLE_USER'])
     def showAuditConfigManager() {
 
         def owner = genericOIDService.resolveOID(params.target)
@@ -1239,16 +1250,16 @@ class AjaxController {
 
         ((ShareSupport) owner).updateShare(sharedObject)
 
-        if (params.reload) {
-            redirect(url: request.getHeader('referer'))
-        }
-        else if (params.tmpl) {
+        if (params.tmpl) {
             if (params.tmpl == 'documents') {
                 render(template: '/templates/documents/card', model: [ownobj: owner, editable: true]) // TODO editable from owner
             }
             else if (params.tmpl == 'notes') {
                 render(template: '/templates/notes/card', model: [ownobj: owner, editable: true]) // TODO editable from owner
             }
+        }
+        else {
+            redirect(url: request.getHeader('referer'))
         }
     }
 
