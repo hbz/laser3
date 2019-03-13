@@ -4,7 +4,9 @@ import de.laser.traits.ShareableTrait
 
 interface ShareSupport {
 
-    boolean showShareButton()
+    boolean checkSharePreconditions(ShareableTrait sharedObject)
+
+    boolean showUIShareButton()
 
     def updateShare(ShareableTrait sharedObject)
 
