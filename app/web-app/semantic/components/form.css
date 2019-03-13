@@ -1168,3 +1168,8 @@ input#spotlightSearch[type="search"] {
   pointer-events: none;
   opacity: 0.45;
 }
+
+/* Smaller input field for table headers */
+.ui.form .field .ui.input input.la-input-small {
+  width: 80px;
+}
