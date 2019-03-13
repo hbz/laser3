@@ -244,8 +244,8 @@ class BootStrap {
         log.debug("setIdentifierNamespace ..")
         setIdentifierNamespace()
 
-        log.debug("setESGOKB ..")
-        setESGOKB()
+//        log.debug("setESGOKB ..")
+//        setESGOKB()
 
         log.debug("setJSONFormatDate ..")
         JSON.registerObjectMarshaller(Date) {
@@ -1396,6 +1396,7 @@ class BootStrap {
         RefdataCategory.loc('Package Status',                               [en: 'Package Status', de: 'Paketstatus'], BOOTSTRAP)
         RefdataCategory.loc('Number Type',                                  [en: 'Number Type', de: 'Zahlen-Typ'], BOOTSTRAP)
         RefdataCategory.loc('User.Settings.Dashboard.Tab',                  [en: 'Dashboard Tab', de: 'Dashbord Tab'], BOOTSTRAP)
+        RefdataCategory.loc('Survey Type',                  [en: 'Survey Type', de: 'Umfrage-Typ'], BOOTSTRAP)
         // refdata values
 
         RefdataValue.loc('YN',   [en: 'Yes', de: 'Ja'], BOOTSTRAP)
@@ -2080,6 +2081,9 @@ class BootStrap {
         RefdataValue.loc('IPv6 Address Format',      [key: 'ranges', en: 'IPv6 (Ranges)', de: 'IPv6 (Bereiche)'], BOOTSTRAP)
         RefdataValue.loc('IPv6 Address Format',      [key: 'input', en: 'IPv6 (Input)', de: 'IPv6 (Eingabe)'], BOOTSTRAP)
 
+        RefdataValue.loc('Survey Type',      [key: 'renewal', en: 'Renewal Survey', de: 'Verlängerungsumfrage'], BOOTSTRAP)
+        RefdataValue.loc('Survey Type',      [key: 'interest', en: 'Interest Survey', de: 'Interessenumfrage'], BOOTSTRAP)
+
     }
 
     def setupOnixPlRefdata = {
@@ -2653,7 +2657,7 @@ No Host Platform URL Content
 
     }
 
-    def setESGOKB() {
+    /*def setESGOKB() {
          ElasticsearchSource.findByIdentifier("gokb") ?: new ElasticsearchSource(name: 'GOKB ES', identifier: 'gokb', cluster: 'elasticsearch', index: 'gokb', host: '127.0.0.1', gokb_es: true)
-    }
+    }*/
 }

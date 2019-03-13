@@ -131,7 +131,12 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                   sortName(nullable:true, blank:false)
   }
 
-    boolean showShareButton() {
+    @Override
+    boolean checkSharePreconditions(ShareableTrait sharedObject) {
+        false // NO SHARES
+    }
+
+    boolean showUIShareButton() {
         false // NO SHARES
     }
 
