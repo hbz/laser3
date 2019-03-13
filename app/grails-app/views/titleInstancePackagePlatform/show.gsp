@@ -21,7 +21,7 @@
               <g:if test="${titleInstancePackagePlatformInstance?.pkg}">
                   <dl>
                       <dt><g:message code="package.label" default="Pkg" /></dt>
-                      <dd><g:link controller="packageDetails" action="show" id="${titleInstancePackagePlatformInstance?.pkg?.id}">${titleInstancePackagePlatformInstance?.pkg?.name} (id: ${titleInstancePackagePlatformInstance?.pkg?.identifier})</g:link></dd>
+                      <dd><g:link controller="package" action="show" id="${titleInstancePackagePlatformInstance?.pkg?.id}">${titleInstancePackagePlatformInstance?.pkg?.name} (id: ${titleInstancePackagePlatformInstance?.pkg?.identifier})</g:link></dd>
                   </dl>
               </g:if>
 
@@ -35,7 +35,7 @@
               <g:if test="${titleInstancePackagePlatformInstance?.title}">
                   <dl>
                       <dt><g:message code="title.label" default="Title" /></dt>
-                      <dd><g:link controller="titleDetails" action="show" id="${titleInstancePackagePlatformInstance?.title?.id}">${titleInstancePackagePlatformInstance?.title?.title}</g:link></dd>
+                      <dd><g:link controller="title" action="show" id="${titleInstancePackagePlatformInstance?.title?.id}">${titleInstancePackagePlatformInstance?.title?.title}</g:link></dd>
                   </dl>
               </g:if>
 

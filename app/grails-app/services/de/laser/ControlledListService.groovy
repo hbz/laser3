@@ -151,14 +151,13 @@ class ControlledListService {
             licFilter = ' and l.reference like :query'
             filterParams.put('query',"%"+params.query+"%")
         }
-        result = License.executeQuery('select l from License as l where l in (select o.lic from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ))'+licFilter,filterParams)
+        result = License.executeQuery('select l from License as l join l.orgLinks ol where ol.org = :org and ol.roleType in (:orgRoles)'+licFilter+" order by l.reference asc",filterParams)
         if(result.size() > 0) {
             SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
             log.debug("licenses found")
             result.each { res ->
-                licenses.results.add([name:"${res.reference} (${res.startDate ? sdf.format(res.startDate) : '???'} - ${res.endDate ? sdf.format(res.endDate) : ''})"],value:res.class.name+":"+res.id)
+                licenses.results.add([name:"${res.reference} (${res.startDate ? sdf.format(res.startDate) : '???'} - ${res.endDate ? sdf.format(res.endDate) : ''})",value:res.class.name+":"+res.id])
             }
-            licenses.results.sort{x,y -> x.text.compareToIgnoreCase y.text }
         }
         licenses
     }

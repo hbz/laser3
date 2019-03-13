@@ -37,7 +37,7 @@
                 <td>
                     <g:each in="${sourceSubscription?.packages?.sort { it.pkg.name }}" var="sp">
                         <b>${message(code: 'subscription.packages.label')}:</b>
-                        <g:link controller="packageDetails" action="show" target="_blank" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
+                        <g:link controller="package" action="show" target="_blank" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
                         <g:if test="${sp.pkg?.contentProvider}">(${sp.pkg?.contentProvider?.name})</g:if>
                         <br>
                     </g:each>
@@ -61,7 +61,7 @@
                 <td>
                     <g:each in="${targetSubscription?.packages?.sort { it.pkg.name }}" var="sp">
                         <b>${message(code: 'subscription.packages.label')}:</b>
-                        <g:link controller="packageDetails" action="show" target="_blank" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
+                        <g:link controller="package" action="show" target="_blank" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
                         <g:if test="${sp.pkg?.contentProvider}">(${sp.pkg?.contentProvider?.name})</g:if>
                         <br>
                     </g:each>

@@ -35,7 +35,7 @@
                     </td>
                     <td>
                         <g:if test="${role.pkg}">
-                            <g:link controller="packageDetails" action="show" id="${role.pkg.id}">${role.pkg.name} (${role.pkg.id})</g:link>
+                            <g:link controller="package" action="show" id="${role.pkg.id}">${role.pkg.name} (${role.pkg.id})</g:link>
                         </g:if>
                         <g:if test="${role.sub}">
                             <g:link controller="subscriptionDetails" action="show" id="${role.sub.id}">${role.sub.name} (${role.sub.id})</g:link>
@@ -47,7 +47,7 @@
                             <g:link controller="cluster" action="show" id="${role.cluster.id}">${role.cluster.name} (${role.cluster.id})</g:link>
                         </g:if>
                         <g:if test="${role.title}">
-                            <g:link controller="titleDetails" action="show" id="${role.title.id}">${role.title.title} (${role.title.id})</g:link>
+                            <g:link controller="title" action="show" id="${role.title.id}">${role.title.title} (${role.title.id})</g:link>
                         </g:if>
                     </td>
                 </tr>

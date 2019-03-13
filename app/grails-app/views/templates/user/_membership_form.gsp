@@ -30,7 +30,7 @@
     </g:form>
 </g:if>
 <g:if test="${tmplAdmin}">
-    <g:form controller="userDetails" action="addAffiliation" class="ui form" method="get" params="${[id: userInstance.id]}">
+    <g:form controller="user" action="addAffiliation" class="ui form" method="get" params="${[id: userInstance.id]}">
 
         <div class="two fields">
             <div class="field">
@@ -54,7 +54,7 @@
 
         <div class="field">
             <label></label>
-            <button type="submit" class="ui button">${message(code: 'profile.membership.add.button')}</button>
+            <button type="submit" class="ui orange button">${message(code: 'profile.membership.add.button')} und Mail versenden</button>
         </div>
     </g:form>
 </g:if>

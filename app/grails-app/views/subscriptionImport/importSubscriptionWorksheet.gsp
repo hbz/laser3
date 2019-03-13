@@ -70,7 +70,7 @@
                       <input type="hidden" name="entitlements.${counter}.core_start_date" value="${e.core_start_date}"/>
                       <input type="hidden" name="entitlements.${counter}.core_end_date" value="${e.core_end_date}"/>
                       ${e.base_entitlement.title.title}</td>
-                  <td><g:link controller="packageDetails" action="show" id="${e.base_entitlement.pkg.id}">${e.base_entitlement.pkg.name}(${e.base_entitlement.pkg.id})</g:link></td>
+                  <td><g:link controller="package" action="show" id="${e.base_entitlement.pkg.id}">${e.base_entitlement.pkg.name}(${e.base_entitlement.pkg.id})</g:link></td>
                   <td>${e.base_entitlement.title.getIdentifierValue('ISSN')}</td>
                   <td>${e.base_entitlement.title.getIdentifierValue('eISSN')}</td>
                   <td>${e.start_date} (Default:<g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${e.base_entitlement.startDate}"/>)</td>

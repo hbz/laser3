@@ -200,7 +200,7 @@
                                 <dd>
                                     <g:if test="${license.pkgs && ( license.pkgs.size() > 0 )}">
                                         <g:each in="${license.pkgs.sort{it.name}}" var="pkg">
-                                            <g:link controller="packageDetails" action="show" id="${pkg.id}">${pkg.name}</g:link><br/>
+                                            <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link><br/>
                                         </g:each>
                                     </g:if>
                                     <g:else>
@@ -215,7 +215,7 @@
                                     <dt class="control-label">${message(code:'license.ONIX-PL-License', default:'ONIX-PL License')}</dt>
                                     <dd>
                                         <g:if test="${license.onixplLicense}">
-                                            <g:link controller="onixplLicenseDetails" action="index" id="${license.onixplLicense?.id}">${license.onixplLicense.title}</g:link>
+                                            <g:link controller="onixplLicense" action="index" id="${license.onixplLicense?.id}">${license.onixplLicense.title}</g:link>
                                             <g:if test="${editable}">
 
                                                 <div class="ui mini icon buttons">

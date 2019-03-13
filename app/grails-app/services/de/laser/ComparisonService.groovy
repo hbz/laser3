@@ -49,7 +49,11 @@ class ComparisonService {
         def propertyMap = result.get(prop.type.getI10n("name"))
         if(propertyMap == null)
           propertyMap = [:]
-        propertyMap.put(cmpObject,prop)
+        List propertyList = propertyMap.get(cmpObject)
+        if(propertyList == null)
+          propertyList = [prop]
+        else propertyList.add(prop)
+        propertyMap.put(cmpObject,propertyList)
         result.put(prop.type.getI10n("name"),propertyMap)
       }
       result

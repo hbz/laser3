@@ -26,6 +26,8 @@ def performAccept(change,httpRequest) {
     PendingChange.withNewTransaction { TransactionStatus status ->
       change = PendingChange.get(change)
 
+      def saveWithoutError = false
+
       try {
         def event = JSON.parse(change.changeDoc)
         log.debug("Process change ${event}");
@@ -38,7 +40,13 @@ def performAccept(change,httpRequest) {
             def ie_to_update = IssueEntitlement.findBySubscriptionAndTipp(sub_to_change,tipp)
             if ( ie_to_update != null ) {
               ie_to_update.status = RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')
-              ie_to_update.save();
+
+                if( ie_to_update.save())
+                {
+
+                    saveWithoutError = true
+                }
+
             }
             break;
 
@@ -74,7 +82,13 @@ def performAccept(change,httpRequest) {
                   log.debug("Setting value for ${event.changeDoc.prop} to ${event.changeDoc.new}");
                   target_object[event.changeDoc.prop] = event.changeDoc.new
                 }
-                target_object.save()
+
+                  if(target_object.save())
+                  {
+
+                      saveWithoutError = true
+                  }
+
                 //FIXME: is this needed anywhere?
                 def change_audit_object = null
                 if ( change.license ) change_audit_object = change.license;
@@ -95,8 +109,19 @@ def performAccept(change,httpRequest) {
              if ( new_domain_class != null ) {
                def new_instance = new_domain_class.getClazz().newInstance()
                // like bindData(destination, map), that only exists in controllers
+
+                 if(event.changeDoc?.startDate || event.changeDoc?.endDate)
+                 {
+                     def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                     event.changeDoc?.startDate = ((event.changeDoc?.startDate != null) && (event.changeDoc?.startDate.length() > 0)) ? sdf.parse(event.changeDoc?.startDate) : null
+                     event.changeDoc?.endDate = ((event.changeDoc?.endDate != null) && (event.changeDoc?.endDate.length() > 0)) ? sdf.parse(event.changeDoc?.endDate) : null
+                 }
+
                DataBindingUtils.bindObjectToInstance(new_instance, event.changeDoc)
-               new_instance.save();
+               if(new_instance.save())
+               {
+                   saveWithoutError = true
+               }
              }
             break;
 
@@ -105,7 +130,19 @@ def performAccept(change,httpRequest) {
               def target_object = genericOIDService.resolveOID(event.changeTarget);
               if ( target_object ) {
                 DataBindingUtils.bindObjectToInstance(target_object, event.changeDoc)
-                target_object.save();
+
+                  if(event.changeDoc?.startDate || event.changeDoc?.endDate)
+                  {
+                      def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                      event.changeDoc?.startDate = ((event.changeDoc?.startDate != null) && (event.changeDoc?.startDate.length() > 0)) ? sdf.parse(event.changeDoc?.startDate) : null
+                      event.changeDoc?.endDate = ((event.changeDoc?.endDate != null) && (event.changeDoc?.endDate.length() > 0)) ? sdf.parse(event.changeDoc?.endDate) : null
+                  }
+
+                  if(target_object.save())
+                  {
+                      saveWithoutError = true
+                  }
+
               }
             }
             break;
@@ -114,17 +151,20 @@ def performAccept(change,httpRequest) {
             log.error("Unhandled change type : ${pc.changeDoc}");
             break;
         }
-        change.pkg?.pendingChanges?.remove(change)
-        change.pkg?.save();
-        change.license?.pendingChanges?.remove(change)
-        change.license?.save();
-        change.subscription?.pendingChanges?.remove(change)
-        change.subscription?.save();
-        change.status = RefdataValue.getByValueAndCategory("Accepted","PendingChangeStatus")
-        change.actionDate = new Date()
-        change.user = httpRequest?.user
-        change.save(flush: true);
-        log.debug("Pending change accepted and saved")
+
+          if(saveWithoutError) {
+              change.pkg?.pendingChanges?.remove(change)
+              change.pkg?.save();
+              change.license?.pendingChanges?.remove(change)
+              change.license?.save();
+              change.subscription?.pendingChanges?.remove(change)
+              change.subscription?.save();
+              change.status = RefdataValue.getByValueAndCategory("Accepted", "PendingChangeStatus")
+              change.actionDate = new Date()
+              change.user = httpRequest[0]?.user
+              change.save(flush: true);
+              log.debug("Pending change accepted and saved")
+          }
       }
       catch ( Exception e ) {
         log.error("Problem accepting change",e);

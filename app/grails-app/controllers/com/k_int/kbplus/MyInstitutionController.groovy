@@ -567,9 +567,10 @@ from License as l where (
     private def exportcurrentSubscription(subscriptions) {
         try {
             String[] titles = [
-                    'Name', 'Vertrag', 'Verknuepfte Pakete', 'Konsortium', 'Anbieter', 'Agentur', 'Anfangsdatum', 'Enddatum', 'Status', 'Typ' ]
+                    'Name', g.message(code:'subscription.owner.label'), g.message(code:'subscription.packages.label'), g.message(code:'consortium.label'), g.message(code:'default.provider.label'), g.message(code:'default.agency.label'),
+                    g.message(code:'subscription.startDate.label'), g.message(code:'subscription.endDate.label'), 'Status', 'Typ' ]
 
-            def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+            def sdf = new SimpleDateFormat(g.message(code:'default.date.format.notimenopoint', default:'ddMMyyyy'));
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
             HSSFWorkbook wb = new HSSFWorkbook();
@@ -656,7 +657,7 @@ from License as l where (
                 sheet.autoSizeColumn(i);
             }
             // Write the output to a file
-            String file = g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions")+"_${datetoday}.xls";
+            String file = "${datetoday}_"+g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions").replaceAll(' ', '_')+".xls";
             //if(wb instanceof XSSFWorkbook) file += "x";
 
             response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
@@ -3792,7 +3793,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 titles.add(it.name)
             }
 
-            def sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+            def sdf = new SimpleDateFormat(g.message(code:'default.date.format.notimenopoint', default:'ddMMyyyy'));
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
             HSSFWorkbook wb = new HSSFWorkbook();
@@ -3914,7 +3915,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 sheet.autoSizeColumn(i);
             }
             // Write the output to a file
-            String file = message+"_${datetoday}.xls";
+            String file = "${datetoday}_"+message.replaceAll(' ', '_')+".xls";
             //if(wb instanceof XSSFWorkbook) file += "x";
 
             response.setHeader "Content-disposition", "attachment; filename=\"${file}\""

@@ -29,7 +29,7 @@
                       <strong>${ra.title}</strong> <br/>
                     <% print ra.content; /* avoid auto encodeAsHTML() */ %>
                     <span class="pull-right">${message(code:'announcement.posted_by.label', default:'posted by')}
-                    <em><g:link controller="userDetails" action="show" id="${ra.user?.id}">${ra.user?.displayName}</g:link></em>
+                    <em><g:link controller="user" action="show" id="${ra.user?.id}">${ra.user?.displayName}</g:link></em>
                     ${message(code:'default.on', default:'on')}
                     <g:formatDate date="${ra.dateCreated}" formatName="default.date.format.notime"/></span>
                   </td>

@@ -83,7 +83,7 @@
                                         </g:else>
                                     </td>
                                     <td>
-                                        <g:if test="${!pd.isUsedForLogic || SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                        <g:if test="${!pd.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
                                             <semui:xEditable owner="${pdI10nName}" field="valueDe" />
                                         </g:if>
                                         <g:else>
@@ -91,7 +91,7 @@
                                         </g:else>
                                     </td>
                                     <td>
-                                        <g:if test="${!pd.isUsedForLogic || SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                        <g:if test="${!pd.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
                                             <semui:xEditable owner="${pdI10nName}" field="valueEn" />
                                         </g:if>
                                         <g:else>
@@ -127,7 +127,7 @@
                                     </td>
 
                                     <td>
-                                        <g:if test="${!pd.isUsedForLogic || SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                        <g:if test="${!pd.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
                                             <semui:xEditable owner="${pdI10nExpl}" field="valueDe" type="textarea" />
                                         </g:if>
                                         <g:else>
@@ -135,7 +135,7 @@
                                         </g:else>
                                     </td>
                                     <td>
-                                        <g:if test="${!pd.isUsedForLogic || SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                        <g:if test="${!pd.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
                                             <semui:xEditable owner="${pdI10nExpl}" field="valueEn" type="textarea" />
                                         </g:if>
                                         <g:else>
