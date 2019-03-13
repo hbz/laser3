@@ -236,7 +236,7 @@ class OrganisationsController extends AbstractDebugController {
             log.error("Problem creating title: ${orgInstance.errors}")
             log.error(e.printStackTrace())
             flash.message = message(code: "org.error.createInstitutionError",args:[orgInstance.errors])
-            //redirect ( action:'findInstitutionMatches' )
+            redirect ( action:'findInstitutionMatches' )
         }
     }
 
