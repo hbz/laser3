@@ -74,7 +74,7 @@
                     </div>
                     <div class="twelve wide column">
                         <div class="ui search selection dropdown la-full-width" id="${selectPair}">
-                            <input type="hidden" name="${selectPair}" value="${pair.class.name}:${pair.id}"/>
+                            <input type="hidden" name="${selectPair}" value="${pair?.class?.name}:${pair?.id}"/>
                             <i class="dropdown icon"></i>
                             <input type="text" class="search"/>
                             <div class="default text"></div>
@@ -98,7 +98,7 @@
     $(document).ready(function(){
         $("#${selectPair}").dropdown({
             apiSettings: {
-                url: "<g:createLink controller="ajax" action="lookupSubscriptions"/>?query={query}&ctx=${pair.class.name}:${pair.id}",
+                url: "<g:createLink controller="ajax" action="lookupSubscriptions"/>?query={query}&ctx=${pair?.class?.name}:${pair?.id}",
                 cache: false
             },
             clearable: true,

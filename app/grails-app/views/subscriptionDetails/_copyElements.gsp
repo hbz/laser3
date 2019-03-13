@@ -64,7 +64,7 @@
                 <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeOrgRelations" value="${SubscriptionElementAction.COPY}" /></div></td>
                 <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeOrgRelations" value="${SubscriptionElementAction.REPLACE}" /></div></td>
                 <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeOrgRelations" value="${SubscriptionElementAction.DO_NOTHING} " checked /></div></td>
-                <td>
+                <td style="vertical-align: top">
                     <g:each in="${source_visibleOrgRelations}" var="source_role">
                         <g:if test="${source_role.org}">
                             <b>${source_role?.roleType?.getI10n("value")}:</b>
@@ -74,7 +74,7 @@
                         </g:if>
                     </g:each>
                 </td>
-                <td>
+                <td style="vertical-align: top">
                     <g:each in="${target_visibleOrgRelations}" var="target_role">
                         <g:if test="${target_role.org}">
                             <b>${target_role?.roleType?.getI10n("value")}:</b>
@@ -88,18 +88,18 @@
             </tr>
             <tr>
                 <td><div class="ui radio checkbox"><input type="radio" name="subscription.takePackages" value="${SubscriptionElementAction.COPY}" /></div></td>
-                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takePackages" value="${SubscriptionElementAction.REPLACE}" /></div></td>
+                <td>COMING SOON<br /><div class="ui radio checkbox"><input type="radio" name="subscription.takePackages" value="${SubscriptionElementAction.REPLACE}" disabled/></div></td>
                 <td><div class="ui radio checkbox"><input type="radio" name="subscription.takePackages" value="${SubscriptionElementAction.DO_NOTHING}" checked /></div></td>
-                <td>
+                <td style="vertical-align: top">
                     <g:each in="${sourceSubscription?.packages?.sort { it.pkg.name }}" var="sp">
-                        <input type="checkbox" data-pckId="${sp.pkg.id}"></input>
+                        <input type="checkbox" data-pckId="${sp.pkg.id}" ></input>
                         <b>${message(code: 'subscription.packages.label')}:</b>
                         <g:link controller="package" action="show" target="_blank" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
                         <g:if test="${sp.pkg?.contentProvider}">(${sp.pkg?.contentProvider?.name})</g:if>
                         <br>
                     </g:each>
                 </td>
-                <td>
+                <td style="vertical-align: top">
                     <g:each in="${targetSubscription?.packages?.sort { it.pkg.name }}" var="sp">
                         <b>${message(code: 'subscription.packages.label')}:</b>
                         <g:link controller="packageDetails" action="show" target="_blank" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
@@ -113,7 +113,7 @@
                 <td><div class="ui radio checkbox" ><input type="radio" name="subscription.takeEntitlements" value="${SubscriptionElementAction.REPLACE}" disabled=""/></div></td>
                 <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeEntitlements" value="${SubscriptionElementAction.DO_NOTHING}" checked disabled=""/></div></td>
                 <% def sourceIEs = sourceSubscription?.issueEntitlements?.findAll { it.status != RDStore.IE_DELETED } %>
-                <td>
+                <td style="vertical-align: top">
                     <g:if test="${sourceIEs}">
                         <b>${message(code: 'issueEntitlement.countSubscription')} </b>${sourceIEs?.size()}<br>
                         <g:each in="${sourceIEs}" var="ie">
@@ -124,7 +124,7 @@
                     </g:if>
                </td>
                 <% def targetIEs = targetSubscription?.issueEntitlements?.findAll { it.status != RDStore.IE_DELETED } %>
-                <td>
+                <td style="vertical-align: top">
                     <g:if test="${targetIEs}">
                         <b>${message(code: 'issueEntitlement.countSubscription')} </b>${targetIEs?.size()} <br />
                         <g:each in="${targetIEs}" var="ie">
@@ -144,6 +144,7 @@
 
 <r:script>
     $('input:checkbox').change( function(event) {
+        // TODO Logik überprüfen, wann gewarnt werden soll!
         if (this.checked) {
             var pkgId = $(this).attr('data-pckId');
             $('.table tr div[data-pckId="' + pkgId + '"]').addClass('trWarning')

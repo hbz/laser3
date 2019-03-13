@@ -2631,6 +2631,12 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             }
         }
 
+        if (params?.subscription?.takePackages && (SubscriptionElementAction.DO_NOTHING.toString() != params?.subscription?.takePackages)) {
+            if (isBothSubscriptionsSet(baseSub, newSub)) {
+                takePackages(baseSub, newSub)
+            }
+        }
+
         // restrict visible for templates/links/orgLinksAsList
         result.source_visibleOrgRelations = getVisibleOrgRelations(baseSub)
         result.target_visibleOrgRelations = getVisibleOrgRelations(newSub)
