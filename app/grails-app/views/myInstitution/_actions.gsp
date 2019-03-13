@@ -48,7 +48,9 @@
 
 
 <g:if test="${actionName == 'documents'}">
-    <semui:actionsDropdown>
-        <semui:actionsDropdownItem message="template.documents.add" controller="myInstitution" action="editDocument"/>
-    </semui:actionsDropdown>
+    <g:if test="${editable}">
+        <semui:actionsDropdown>
+            <semui:actionsDropdownItem message="template.documents.add" controller="myInstitution" action="editDocument"/>
+        </semui:actionsDropdown>
+    </g:if>
 </g:if>

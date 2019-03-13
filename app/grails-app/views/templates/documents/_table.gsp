@@ -95,14 +95,14 @@
                                     <g:link controller="${controllerName}" action="editDocument" params="[id:docctx.id,instanceId:instance.id]" data-tooltip="${message(code:"template.documents.edit")}" class="ui icon button trigger-modal">
                                         <i class="pencil icon"></i>
                                     </g:link>
-                                    <g:render template="/templates/documents/modal" model="${[ownobj: org, owntp: 'document']}" />
+                                    <%--<g:render template="/templates/documents/modal" model="${[ownobj: org, owntp: 'document']}" />--%>
                                     <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button js-open-confirm-modal"
                                             data-confirm-term-what="document" data-confirm-term-what-detail="${docctx.owner.title}" data-confirm-term-how="delete"
                                             params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${redirect}"]'>
                                         <i class="trash alternate icon"></i>
                                     </g:link>
                                 </g:if>
-                                <g:elseif test="${(instance instanceof Org) && (docctx.owner.owner.id == org.id || docctx.owner.creator.id == user.id) && !docctx.sharedFrom}">
+                                <g:elseif test="${(instance instanceof Org) && ((docctx.owner.owner.id == org.id && editable) || docctx.owner.creator.id == user.id) && !docctx.sharedFrom}">
                                     <g:link controller="${controllerName}" action="editDocument" params="[id:docctx.id]" data-tooltip="${message(code:"template.documents.edit")}" class="ui icon button trigger-modal">
                                         <i class="pencil icon"></i>
                                     </g:link>
