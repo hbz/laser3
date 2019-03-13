@@ -617,6 +617,10 @@ select s from Subscription as s where
         }
         result.packageInstance = packageInstance
 
+        if (executorWrapperService.hasRunningProcess(packageInstance)) {
+            result.processingpc = true
+        }
+
         def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', 'PendingChangeStatus')
 
         result.pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where pc.pkg=? and ( pc.status is null or pc.status = ? ) order by ts, changeDoc", [packageInstance, pending_change_pending_status]);
