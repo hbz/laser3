@@ -1,4 +1,5 @@
 <%@ page import="com.k_int.kbplus.auth.UserOrg" %>
+<laser:serviceInjection />
 
 <div class="column wide sixteen">
     <h4 class="ui dividing header">${message(code: 'profile.membership.existing')}</h4>
@@ -26,10 +27,12 @@
                         </g:if>
                     </g:if>
                     <g:if test="${tmplAdmin}">
-                        <g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${userInstance.class.name}:${userInstance.id}",contextProperty:"affiliations",targetOid:"${aff.class.name}:${aff.id}"]}'
-                                class="ui icon negative button">
-                            <i class="trash alternate icon"></i>
-                        </g:link>
+                        <g:if test="${editor.hasRole('ROLE_ADMIN') || (aff.org == contextService.getOrg())}">
+                            <g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${userInstance.class.name}:${userInstance.id}",contextProperty:"affiliations",targetOid:"${aff.class.name}:${aff.id}"]}'
+                                    class="ui icon negative button">
+                                <i class="trash alternate icon"></i>
+                            </g:link>
+                        </g:if>
                     </g:if>
                 </td>
             </tr>

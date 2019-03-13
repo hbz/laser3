@@ -96,10 +96,11 @@
 
     <g:if test="${editable}">
         <div class="ui segment form">
-            <g:render template="/templates/user/membership_form" model="[userInstance: user, tmplAdmin: true]" />
+            <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, availableOrgRoles: availableOrgRoles, tmplAdmin: true]" />
         </div>
     </g:if>
 
+    <sec:ifAnyGranted roles="ROLE_ADMIN">
       <h4 class="ui dividing header">${message(code:'user.role.plural', default:'Roles')}</h4>
 
           <table class="ui celled la-table la-table-small table">
@@ -141,35 +142,37 @@
 </g:if>
           </table>
 
-  <r:script language="JavaScript">
+          <r:script language="JavaScript">
 
-    $(function(){
-      $.fn.editable.defaults.mode = 'inline';
-      $('.xEditableValue').editable();
+            $(function(){
+              $.fn.editable.defaults.mode = 'inline';
+              $('.xEditableValue').editable();
 
-      $("#userRoleSelect").select2({
-        placeholder: "${message(code:'user.role.search.ph', default:'Search for an role...')}",
-        minimumInputLength: 0,
-        formatInputTooShort: function () {
-            return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
-        },
-        ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-          url: "<g:createLink controller='ajax' action='lookup'/>",
-          dataType: 'json',
-          data: function (term, page) {
-              return {
-                  q: term, // search term
-                  page_limit: 10,
-                  baseClass:'com.k_int.kbplus.auth.Role'
-              };
-          },
-          results: function (data, page) {
-            return {results: data.values};
-          }
-        }
-      });
-    });
+              $("#userRoleSelect").select2({
+                placeholder: "${message(code:'user.role.search.ph', default:'Search for an role...')}",
+                minimumInputLength: 0,
+                formatInputTooShort: function () {
+                    return "${message(code:'select2.minChars.note', default:'Please enter 1 or more character')}";
+                },
+                ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
+                  url: "<g:createLink controller='ajax' action='lookup'/>",
+                  dataType: 'json',
+                  data: function (term, page) {
+                      return {
+                          q: term, // search term
+                          page_limit: 10,
+                          baseClass:'com.k_int.kbplus.auth.Role'
+                      };
+                  },
+                  results: function (data, page) {
+                    return {results: data.values};
+                  }
+                }
+              });
+            });
 
-  </r:script>
+          </r:script>
+
+    </sec:ifAnyGranted>
   </body>
 </html>

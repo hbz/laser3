@@ -7,7 +7,7 @@
             <div class="field">
                 <label>Organisation</label>
                 <g:select name="org"
-                          from="${com.k_int.kbplus.Org.executeQuery('from Org o where o.sector.value = ? order by o.name', 'Higher Education')}"
+                          from="${availableOrgs}"
                           optionKey="id"
                           optionValue="name"
                           class="ui fluid search dropdown"/>
@@ -16,7 +16,7 @@
             <div class="field">
                 <label>Role</label>
                 <g:select name="formalRole"
-                          from="${com.k_int.kbplus.auth.Role.findAllByRoleType('user')}"
+                          from="${availableOrgRoles}"
                           optionKey="id"
                           optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
                           class="ui fluid dropdown"/>
@@ -36,7 +36,7 @@
             <div class="field">
                 <label>Organisation</label>
                 <g:select name="org"
-                          from="${com.k_int.kbplus.Org.executeQuery('from Org o where o.sector.value = ? order by o.name', 'Higher Education')}"
+                          from="${availableOrgs}"
                           optionKey="id"
                           optionValue="name"
                           class="ui fluid search dropdown"/>
@@ -45,7 +45,7 @@
             <div class="field">
                 <label>Role</label>
                 <g:select name="formalRole"
-                          from="${com.k_int.kbplus.auth.Role.findAllByRoleType('user')}"
+                          from="${availableOrgRoles}"
                           optionKey="id"
                           optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
                           class="ui fluid dropdown"/>

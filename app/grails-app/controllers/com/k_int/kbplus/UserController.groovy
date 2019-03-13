@@ -32,14 +32,15 @@ class UserController extends AbstractDebugController {
 
         def result = setResultGenerics()
 
-        List baseQuery = ['select u from User u']
+        List baseQuery = ['select distinct u from User u']
         List whereQuery = []
         Map queryParams = [:]
 
         if (! result.editor.hasRole('ROLE_ADMIN')) {
             // only context org depending
             baseQuery.add('UserOrg uo')
-            whereQuery.add('uo.user = u and uo.org = :ctxOrg')
+            whereQuery.add('( uo.user = u and uo.org = :ctxOrg )')
+            //whereQuery.add('( uo.user = u and uo.org = :ctxOrg ) or not exists ( SELECT uoCheck from UserOrg uoCheck where uoCheck.user = u ) )')
             queryParams.put('ctxOrg', contextService.getOrg())
         }
 
@@ -57,8 +58,10 @@ class UserController extends AbstractDebugController {
         params.max = params.max ?: result.editor?.getDefaultPageSizeTMP() // TODO
 
         result.users = User.executeQuery(
-                baseQuery.join(', ') + (whereQuery ? ' where ' + whereQuery.join(' and ') : ''),
-                queryParams)
+                baseQuery.join(', ') + (whereQuery ? ' where ' + whereQuery.join(' and ') : '') ,
+                queryParams /*,
+                params */
+        )
 
         result.total = result.users.size()
 
@@ -88,13 +91,20 @@ class UserController extends AbstractDebugController {
             def writeRole = UserRole.findAllWhere(user: result.user, role: Role.findByAuthority('ROLE_API_WRITER'))
             if((readRole || writeRole)){
                 if(! result.user.apikey){
-                    def seed1 = Math.abs(new Random().nextFloat()).toString().getBytes()
-                    result.user.apikey = MessageDigest.getInstance("MD5").digest(seed1).encodeHex().toString().take(16)
+                    result.user.apikey = User.generateRandomPassword()
                 }
                 if(! result.user.apisecret){
-                    def seed2 = Math.abs(new Random().nextFloat()).toString().getBytes()
-                    result.user.apisecret = MessageDigest.getInstance("MD5").digest(seed2).encodeHex().toString().take(16)
+                    result.user.apisecret = User.generateRandomPassword()
                 }
+            }
+
+            if (! result.editor.hasRole('ROLE_ADMIN')) {
+                result.availableOrgs = contextService.getOrg()
+                result.availableOrgRoles = Role.findAllByRoleType('user')
+            }
+            else {
+                result.availableOrgs = Org.executeQuery('from Org o where o.sector.value = ? order by o.name', 'Higher Education')
+                result.availableOrgRoles = Role.findAllByRoleType('user')
             }
         }
         result
@@ -199,10 +209,9 @@ class UserController extends AbstractDebugController {
 
     private LinkedHashMap setResultGenerics() {
         def result = [:]
-
         result.editor = User.get(springSecurityService.principal.id)
 
-        if (params.id) {
+        if (params.get('id')) {
             result.user = User.get(params.id)
             result.editable = accessService.checkIsEditableForAdmin(result.user, result.editor, contextService.getOrg())
         }

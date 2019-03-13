@@ -45,9 +45,13 @@
             <table class="ui sortable celled la-table la-table-small table">
                 <thead>
                     <tr>
-                        <g:sortableColumn property="username" params="${params}" title="${message(code: 'user.name.label', default: 'User Name')}" />
-                        <g:sortableColumn property="display" params="${params}" title="${message(code: 'user.display.label', default: 'Display Name')}" />
-                        <g:sortableColumn property="instname" params="${params}" title="${message(code: 'user.instname.label', default: 'Institution')}" />
+                        <%--<g:sortableColumn property="u.username" params="${params}" title="${message(code: 'user.name.label', default: 'User Name')}" />
+                        <g:sortableColumn property="u.display" params="${params}" title="${message(code: 'user.display.label', default: 'Display Name')}" />
+                        <g:sortableColumn property="uo.org.instname" params="${params}" title="${message(code: 'user.instname.label', default: 'Institution')}" />
+                        --%>
+                        <th>User Name</th>
+                        <th>Display Name</th>
+                        <th>Institution</th>
                         <th>Enabled</th>
                         <th>API</th>
                         <th></th>

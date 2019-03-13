@@ -14,7 +14,7 @@
 
         <semui:messages data="${flash}" />
 
-        <g:form class="ui form" id="createUserForm" action="create" method="post">
+        <g:form class="ui form" action="create" method="post">
             <fieldset>
                 <div class="field">
                     <label>Username</label>
