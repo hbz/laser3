@@ -61,17 +61,18 @@
   <semui:messages data="${flash}" />
 
   <semui:errors bean="${packageInstance}" />
-
-    <div>
-
-        <dl>
-          <dt>${message(code:'title.search.offset.text', args:[offset+1,lasttipp,num_tipp_rows])} -
-            <g:if test="${params.mode=='advanced'}">${message(code:'package.show.switchView.basic')} <g:link controller="packageDetails" action="current" params="${params+['mode':'basic']}">${message(code:'default.basic', default:'Basic')}</g:link></g:if>
-                <g:else>${message(code:'package.show.switchView.advanced')} <g:link controller="packageDetails" action="current" params="${params+['mode':'advanced']}" button type="button" >${message(code:'default.advanced', default:'Advanced')}</g:link></g:else>
-          </dt>
-          <dd>
-
-        <semui:filter>
+    <br><br>
+    <div class="ui grid">
+        <div class="row">
+            <div class="column">
+                ${message(code:'title.search.offset.text', args:[offset+1,lasttipp,num_tipp_rows])} -
+                <g:if test="${params.mode=='advanced'}">${message(code:'package.show.switchView.basic')} <g:link controller="packageDetails" action="current" params="${params+['mode':'basic']}">${message(code:'default.basic', default:'Basic')}</g:link></g:if>
+                    <g:else>${message(code:'package.show.switchView.advanced')} <g:link controller="packageDetails" action="current" params="${params+['mode':'advanced']}" button type="button" >${message(code:'default.advanced', default:'Advanced')}</g:link></g:else>
+            </div>
+        </div>
+        <div class="row">
+            <div class="column">
+                <semui:filter>
             <g:form action="current" params="${params}" method="get" class="ui form">
                 <input type="hidden" name="sort" value="${params.sort}">
                 <input type="hidden" name="order" value="${params.order}">
@@ -85,15 +86,16 @@
                         <input name="coverageNoteFilter" value="${params.coverageNoteFilter}"/>
                     </div>
                 </div>
-                <div class="fields">
+                <div class="three fields">
                     <div class="field">
                         <semui:datepicker label="package.compare.filter.coverage_startsBefore" name="startsBefore" value="${params.startsBefore}" />
                     </div>
                     <div class="field">
                         <semui:datepicker label="package.compare.filter.coverage_endsAfter" name="endsAfter" value="${params.endsAfter}" />
                     </div>
-                    <div class="field">
-                        <label>&nbsp;</label>
+                    <div class="field la-field-right-aligned">
+
+                        <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
                         <input type="submit" class="ui secondary button" value="${message(code:'package.compare.filter.submit.label', default:'Filter Results')}" />
                     </div>
                 </div>
@@ -101,9 +103,12 @@
 
             </g:form>
         </semui:filter>
+            </div>
+        </div>
 
-              <g:if test="${editable}">
-
+        <g:if test="${editable}">
+          <div class="row">
+              <div class="column">
                   <semui:form>
                       <g:form class="ui form" controller="ajax" action="addToCollection">
 
@@ -128,27 +133,35 @@
 
                       </g:form>
                   </semui:form>
-
-              </g:if>
+              </div>
+          </div>
+        </g:if>
 
         <g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
+
             <g:if test="${editable}">
           <table class="ui celled la-table table ignore-floatThead la-bulk-header">
 
             <thead>
             <tr>
 
-              <th>
+              <td>
                 <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" onClick="javascript:selectAll();"/></g:if>
-              </th>
+              </td>
 
-              <th colspan="7">
+              <td colspan="7">
+                  <div class="ui form">
+                      <div class="two fields">
+                          <div class="field">
+                              <select id="bulkOperationSelect" name="bulkOperation" class="ui selection dropdown la-clearable">
+                                <option value="edit">${message(code:'package.show.batch.edit.label', default:'Batch Edit Selected Rows Using the following values')}</option>
+                                <option value="remove">${message(code:'package.show.batch.remove.label', default:'Batch Remove Selected Rows')}</option>
+                              </select>
+                          </div>
+                      </div>
+                  </div>
 
-                  <select id="bulkOperationSelect" name="bulkOperation" class="input-xxlarge">
-                    <option value="edit">${message(code:'package.show.batch.edit.label', default:'Batch Edit Selected Rows Using the following values')}</option>
-                    <option value="remove">${message(code:'package.show.batch.remove.label', default:'Batch Remove Selected Rows')}</option>
-                  </select>
-                  <br/>
+
                   <table class="ui celled la-table table">
                     <tr>
                       <td>${message(code:'subscription.details.coverageStartDate', default:'Coverage Start Date')}: <semui:simpleHiddenValue id="bulk_start_date" name="bulk_start_date" type="date"/>
@@ -178,25 +191,22 @@
                   <button name="BatchSelectedBtn" value="on" onClick="return confirmSubmit()" class="ui button">${message(code:'default.button.apply_batch.label')} (${message(code:'default.selected.label')})</button>
                   <button name="BatchAllBtn" value="on" onClick="return confirmSubmit()" class="ui button">${message(code:'default.button.apply_batch.label')} (${message(code:'package.show.batch.allInFL', default:'All in filtered list')})</button>
 
-              </th>
+              </td>
             </tr>
 
             </thead>
                 <tbody></tbody>
           </table>
             </g:if>
-            <br>
-            <br>
-
            <table class="ui sortable celled la-table table ignore-floatThead la-bulk-header">
                 <thead>
                     <tr>
                         <th></th>
                         <th></th>
-                        <g:sortableColumn  params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
-                        <th>${message(code:'tipp.coverage')}</th>
-                        <th>${message(code:'tipp.access')}</th>
-                        <th>${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
+                        <g:sortableColumn class="ten wide" params="${params}" property="tipp.title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
+                        <th class="two wide">${message(code:'tipp.coverage')}</th>
+                        <th class="two wide">${message(code:'tipp.access')}</th>
+                        <th class="two wide">${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
                     </tr>
                     <tr>
                         <th colspan="3" rowspan="2"></th>
@@ -228,6 +238,8 @@
                             <g:if test="${id.identifier.ns.ns == 'originediturl'}">
                                 <span class="ui small teal image label">
                                     ${id.identifier.ns.ns}: <div class="detail"><a href="${id.identifier.value}">${message(code:'package.show.openLink', default:'Open Link')}</a></div>
+                                </span>
+                                <span class="ui small teal image label">
                                     ${id.identifier.ns.ns}: <div class="detail"><a href="${id.identifier.value.toString().replace("resource/show", "public/packageContent")}">${message(code:'package.show.openLink', default:'Open Link')}</a></div>
                                 </span>
                             </g:if>
@@ -306,13 +318,13 @@
         </g:form>
           </dd>
         </dl>
-
+    </div>
 
           <g:if test="${titlesList}" >
             <semui:paginate action="current" controller="packageDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
           </g:if>
 
-      </div>
+
 
 
     <%-- <g:render template="enhanced_select" contextPath="../templates" /> --%>
