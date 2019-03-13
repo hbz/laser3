@@ -85,26 +85,29 @@
               <table class="ui celled sortable table table-tworow la-table">
               <thead>
                 <tr>
-                  <th rowspan="2" style="vertical-align:middle;">
+                  <th rowspan="3" style="vertical-align:middle;">
                     <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" onClick="javascript:selectAll();"/></g:if>
                   </th>
-                  <th rowspan="2">${message(code:'sidewide.number')}</th>
-                  <g:sortableColumn rowspan="2" params="${params}" property="title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
-                  <th rowspan="2">ZDB-ID</th>
-                  <th rowspan="2">ISSN / ISBN</th>
-                  <th rowspan="2">eISSN / eISBN</th>
-                  <th colspan="2">${message(code:'tipp.coverage')}</th>
-                  <th colspan="2">${message(code:'tipp.access')}</th>
-                  <th rowspan="2">${message(code:'tipp.embargo', default:'Embargo')}</th>
-                  <th rowspan="2">${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
-                  <th rowspan="2">${message(code:'tipp.coverageNote', default:'Coverage Note')}</th>
-                  <th rowspan="2">${message(code:'default.actions.label')}</th>
+                  <th rowspan="3">${message(code:'sidewide.number')}</th>
+                  <g:sortableColumn rowspan="3" params="${params}" property="title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
+                  <th rowspan="3">ZDB-ID</th>
+                  <th rowspan="3">ISSN / ISBN</th>
+                  <th rowspan="3">eISSN / eISBN</th>
+                  <th  class="la-smaller-table-head" >${message(code:'tipp.coverage')}</th>
+                  <th  class="la-smaller-table-head" >${message(code:'tipp.access')}</th>
+                  <th rowspan="3">${message(code:'tipp.embargo', default:'Embargo')}</th>
+                  <th rowspan="3">${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
+                  <th rowspan="3">${message(code:'tipp.coverageNote', default:'Coverage Note')}</th>
+                  <th rowspan="3">${message(code:'default.actions.label')}</th>
                 </tr>
                 <tr>
-                    <g:sortableColumn params="${params}" property="startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
-                    <g:sortableColumn params="${params}" property="endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
-                    <g:sortableColumn params="${params}" property="accessStartDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
-                    <g:sortableColumn params="${params}" property="accessEndDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
+                    <g:sortableColumn  class="la-smaller-table-head"  params="${params}" property="startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
+                    <g:sortableColumn  class="la-smaller-table-head"  params="${params}" property="accessStartDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
+
+                </tr>
+                <tr>
+                    <g:sortableColumn  class="la-smaller-table-head"  params="${params}" property="endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
+                    <g:sortableColumn  class="la-smaller-table-head"  params="${params}" property="accessEndDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
                 </tr>
               </thead>
               <tbody>
@@ -148,10 +151,14 @@
                     <td style="white-space: nowrap;">${tipp.title.getIdentifierValue('zdb')}</td>
                     <td style="white-space: nowrap;">${serial}</td>
                     <td style="white-space: nowrap;">${electronicSerial}</td>
-                    <td style="white-space: nowrap;"><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.startDate}"/></td>
-                    <td style="white-space: nowrap;"><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.endDate}"/></td>
-                    <td style="white-space: nowrap;"><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.accessStartDate}"/></td>
-                    <td style="white-space: nowrap;"><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.accessEndDate}"/></td>
+                    <td style="white-space: nowrap;">
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.startDate}"/>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.endDate}"/>
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.accessStartDate}"/>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.accessEndDate}"/>
+                    </td>
                     <td>${tipp.embargo}</td>
                     <td>${tipp.coverageDepth}</td>
                     <td>${tipp.coverageNote}</td>
