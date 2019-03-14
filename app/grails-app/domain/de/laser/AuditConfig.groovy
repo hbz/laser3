@@ -67,7 +67,7 @@ class AuditConfig {
                     referenceId: obj.getId(),
                     referenceClass: obj.getClass().name,
                     referenceField: field
-            ).each { it.delete() }
+            ).each { it.delete(flush: true) }
         }
     }
 
@@ -76,7 +76,7 @@ class AuditConfig {
             AuditConfig.findAllWhere(
                     referenceId: obj.getId(),
                     referenceClass: obj.getClass().name
-            ).each { it.delete() }
+            ).each { it.delete(flush: true) }
         }
     }
 }

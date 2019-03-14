@@ -1172,6 +1172,8 @@ class AjaxController {
     @Secured(['ROLE_USER'])
     def processAuditConfigManager() {
 
+        String referer = request.getHeader('referer')
+
         def owner = genericOIDService.resolveOID(params.target)
         if (owner) {
             def objProps = owner.getClass().controlledProperties
@@ -1186,12 +1188,11 @@ class AjaxController {
 
                     members.each { m ->
                         m.setProperty(prop, owner.getProperty(prop))
-                        //m.save(flush:true)
+                        m.save(flush:true)
                     }
                 }
             }
 
-            def resetQueue = []
             def keepProperties = params.list('keepProperties')
 
             negativeList.each{ prop ->
@@ -1200,40 +1201,30 @@ class AjaxController {
 
                     if (! keepProperties.contains(prop)) {
                         members.each { m ->
-                            resetQueue << [m, prop]
+                            m.setProperty(prop, null)
+                            m.save(flush:true)
                         }
                     }
 
                     // delete pending changes
-
+                    // e.g. PendingChange.changeDoc = {changeTarget, changeType, changeDoc:{OID,  event}}
                     def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
                     openPD.each { pc ->
                         def event = JSON.parse(pc.changeDoc)
-                        def eventObj = genericOIDService.resolveOID(event.changeDoc.OID)
-                        def eventProp = event.changeDoc.prop
+                        if (event && event.changeDoc) {
+                            def eventObj = genericOIDService.resolveOID(event.changeDoc.OID)
+                            def eventProp = event.changeDoc.prop
 
-                        if (eventObj?.id == owner.id && eventProp.equalsIgnoreCase(prop)) {
-                            pc.delete(flush: true)
+                            if (eventObj?.id == owner.id && eventProp.equalsIgnoreCase(prop)) {
+                                pc.delete(flush: true)
+                            }
                         }
                     }
                 }
             }
-
-            // delete inherited values
-            resetQueue.each{ q ->
-                def member = q[0]
-                def prop   = q[1]
-
-                member.setProperty(prop, null)
-                //member.save(flush:true)
-            }
-
-            members.each { m ->
-                m.save(flush:true) // only one save
-            }
         }
 
-        redirect(url: request.getHeader('referer'))
+        redirect(url: referer)
     }
 
     @Secured(['ROLE_USER'])
