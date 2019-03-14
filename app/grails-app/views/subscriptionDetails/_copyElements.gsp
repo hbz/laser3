@@ -99,7 +99,7 @@
                         %{--<input type="checkbox" data-pckId="${sp.pkg.id}" >--}%
                         <g:checkBox name="subscription.takePackageIds" value="${genericOIDService.getOID(sp.pkg)}" data-pckId="${sp.pkg?.id}" checked="false"/>
                         <b>${message(code: 'subscription.packages.label')}:</b>
-                        <g:link controller="package" action="show" target="_blank" id="${sp.pkg?.id}">${sp?.pkg?.name}</g:link>
+                        <g:link controller="package" action="show" target="_blank" id="${sp.pkg?.id}">${sp?.pkg?.name}</g:link> ${sp.pkg?.id}
                         <g:if test="${sp.pkg?.contentProvider}">(${sp.pkg?.contentProvider?.name})</g:if>
                         <br>
                     </g:each>
@@ -107,7 +107,7 @@
                 <td style="vertical-align: top">
                     <g:each in="${targetSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
                         <b>${message(code: 'subscription.packages.label')}:</b>
-                        <g:link controller="packageDetails" action="show" target="_blank" id="${sp.pkg?.id}">${sp?.pkg?.name}</g:link>
+                        <g:link controller="packageDetails" action="show" target="_blank" id="${sp.pkg?.id}">${sp?.pkg?.name}</g:link> ${sp.pkg?.id}
                         <g:if test="${sp.pkg?.contentProvider}">(${sp.pkg?.contentProvider?.name})</g:if>
                         <br>
                     </g:each>
@@ -117,20 +117,26 @@
                 <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takeEntitlements" value="${COPY}" disabled=""/></div></td>
                 <td style="vertical-align: top"><div class="ui radio checkbox" ><input type="radio" name="subscription.takeEntitlements" value="${REPLACE}" disabled=""/></div></td>
                 <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takeEntitlements" value="${DO_NOTHING}" checked disabled=""/></div></td>
-                <% def sourceIEs = IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
-                [sub: sourceSubscription, del: RDStore.IE_DELETED]) %>
+                <% def sourceIEs = sourceSubscription?
+                        IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
+                        [sub: sourceSubscription, del: RDStore.IE_DELETED])
+                        : [] %>
                 <td style="vertical-align: top">
                     <g:if test="${sourceIEs}">
                         <b>${message(code: 'issueEntitlement.countSubscription')} </b>${sourceIEs?.size()}<br>
                         <g:each in="${sourceIEs}" var="ie">
                             <semui:listIcon type="${ie.tipp.title.type.getI10n('value')}"/>
                             <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
+                            ${ie.tipp.pkg.id}
                             <br />
                         </g:each>
                     </g:if>
                </td>
-                <% def targetIEs = IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
-                        [sub: targetSubscription, del: RDStore.IE_DELETED]) %>
+                <% List<IssueEntitlement> targetIEs =
+                        targetSubscription?
+                                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
+                                [sub: targetSubscription, del: RDStore.IE_DELETED])
+                                : [] %>
                 <td style="vertical-align: top">
                     <g:if test="${targetIEs}">
                         <b>${message(code: 'issueEntitlement.countSubscription')} </b>${targetIEs?.size()} <br />
@@ -138,6 +144,7 @@
                             <div data-pckId="${ie?.tipp?.pkg?.id}">
                                 <semui:listIcon type="${ie.tipp.title.type.getI10n('value')}"/>
                                 <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
+                                ${ie.tipp.pkg.id}
                             </div>
                         </g:each>
                     </g:if>
