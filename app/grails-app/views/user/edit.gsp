@@ -91,12 +91,12 @@
     </div><!-- grid -->
 
     <div class="ui one column grid">
-        <g:render template="/templates/user/membership_table" model="[userInstance: user, tmplAdmin: true]" />
+        <g:render template="/templates/user/membership_table" model="[userInstance: user, tmplUserEdit: true]" />
     </div>
 
     <g:if test="${editable}">
         <div class="ui segment form">
-            <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, availableOrgRoles: availableOrgRoles, tmplAdmin: true]" />
+            <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, availableOrgRoles: availableOrgRoles, tmplUserEdit: true]" />
         </div>
     </g:if>
 

@@ -294,7 +294,11 @@ class BootStrap {
         def cl_owner_role       = RefdataValue.loc('Cluster Role',   [en: 'Cluster Owner'], BOOTSTRAP)
         def cl_member_role      = RefdataValue.loc('Cluster Role',   [en: 'Cluster Member'], BOOTSTRAP)
 
-        def cons_combo          = RefdataValue.loc('Combo Type',     [en: 'Consortium', de: 'Konsortium'], BOOTSTRAP)
+        // TODO: refactoring: partOf
+
+        def combo1 = RefdataValue.loc('Combo Type',     [en: 'Consortium', de: 'Konsortium'], BOOTSTRAP)
+        def combo2 = RefdataValue.loc('Combo Type',     [en: 'Institution', de: 'Einrichtung'], BOOTSTRAP)
+        def combo3 = RefdataValue.loc('Combo Type',     [en: 'Department', de: 'Abteilung'], BOOTSTRAP)
 
         OrgPermShare.assertPermShare(view_permission, cl_owner_role)
         OrgPermShare.assertPermShare(edit_permission, cl_owner_role)
@@ -302,7 +306,7 @@ class BootStrap {
         OrgPermShare.assertPermShare(view_permission, cl_member_role)
         OrgPermShare.assertPermShare(edit_permission, cl_member_role)
 
-        OrgPermShare.assertPermShare(view_permission, cons_combo)
+        OrgPermShare.assertPermShare(view_permission, combo1)
 
         // Global System Roles
 

@@ -72,7 +72,7 @@
                             <td>${us.getDisplayName()}</td>
                             <td>
                                 <g:each in="${us.getAuthorizedAffiliations()}" var="affi">
-                                    ${affi.org?.getDesignation()}<br />
+                                    ${affi.org?.getDesignation()} <span>(${affi.formalRole.authority})</span> <br />
                                 </g:each>
                             </td>
                             <td>
@@ -103,14 +103,16 @@
                                 </div>
                             </td>
                             <td class="x">
-                                <g:link action="edit" id="${us.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                                <g:if test="${editor.hasRole('ROLE_ADMIN') || us.getAuthorizedAffiliations().collect{ it.org.id }.unique().size() == 1}">
+                                    <g:link action="edit" id="${us.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                                </g:if>
                             </td>
                         </tr>
                     </g:each>
                 </tbody>
             </table>
 
-          <semui:paginate total="${total}" params="${params}" />
+          <%-- <semui:paginate total="${total}" params="${params}" /> --%>
 
     </body>
 </html>

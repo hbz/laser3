@@ -436,7 +436,7 @@ class OrganisationsController extends AbstractDebugController {
         result.user = User.get(springSecurityService.principal.id)
         UserOrg uo = UserOrg.get(params.grant)
         if ( accessService.checkMinUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
-            uo.delete();
+            uo.delete(flush:true);
         }
         redirect action: 'users', id: params.id
     }

@@ -47,9 +47,9 @@ class UserService {
                     flash?.message = "OK"
 
                     if (uoStatus == UserOrg.STATUS_APPROVED) {
-                        // only send if manually approved
-                        sendMail(uo.user, 'Änderung der Organisationszugehörigkeit',
-                                '/mailTemplates/text/newMembership', [userOrg: uo])
+                        // TODO: only send if manually approved
+                        //sendMail(uo.user, 'Änderung der Organisationszugehörigkeit',
+                        //        '/mailTemplates/text/newMembership', [userOrg: uo])
                     }
                 }
                 else {

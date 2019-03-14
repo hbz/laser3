@@ -187,24 +187,47 @@ class UserController extends AbstractDebugController {
             return
         }
 
+        if (! result.editor.hasRole('ROLE_ADMIN')) {
+            result.availableOrgs = contextService.getOrg()
+            result.availableOrgRoles = Role.findAllByRoleType('user')
+        }
+        else {
+            result.availableOrgs = Org.executeQuery('from Org o where o.sector.value = ? order by o.name', 'Higher Education')
+            result.availableOrgRoles = Role.findAllByRoleType('user')
+        }
+
         switch (request.method) {
             case 'POST':
                 def user = new User(params)
                 if (! user.save(flush: true)) {
-                    render view: 'create', model: [userInstance: user]
+                    render view: 'create', model: [
+                            userInstance: user,
+                            editable: result.editable,
+                            availableOrgs: result.availableOrgs,
+                            availableOrgRoles: result.availableOrgRoles
+                    ]
                     return
                 }
 
-                def defaultRole = new UserRole(
-                    user: user,
-                    role: Role.findByAuthority('ROLE_USER')
-                )
-                defaultRole.save(flush: true);
+                def defaultRole = new UserRole(user: user, role: Role.findByAuthority('ROLE_USER'))
+                defaultRole.save(flush: true)
+
+                if (params.org && params.formalRole) {
+                    Org org = Org.get(params.org)
+                    Role formalRole = Role.get(params.formalRole)
+                    if (org && formalRole) {
+                        userService.createAffiliation(user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
+                    }
+                }
 
                 flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), user.id])
                 redirect action: 'edit', id: user.id
                 break
         }
+
+
+
+        result
     }
 
     private LinkedHashMap setResultGenerics() {

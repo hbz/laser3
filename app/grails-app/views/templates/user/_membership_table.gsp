@@ -26,7 +26,7 @@
                             <g:link class="ui button" controller="profile" action="processCancelRequest" params="${[assoc:aff.id]}">${message(code:'default.button.revoke.label', default:'Revoke')}</g:link>
                         </g:if>
                     </g:if>
-                    <g:if test="${tmplAdmin}">
+                    <g:if test="${tmplUserEdit}">
                         <g:if test="${editor.hasRole('ROLE_ADMIN') || (aff.org == contextService.getOrg())}">
                             <g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${userInstance.class.name}:${userInstance.id}",contextProperty:"affiliations",targetOid:"${aff.class.name}:${aff.id}"]}'
                                     class="ui icon negative button">
