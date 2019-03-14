@@ -1,3 +1,9 @@
+0.14.3
+
+- fixed inheritance bug
+- fixed tipp handling / gokb sync
+- prevent deleting pending changes at package sync
+
 0.14.2
 
 - fixed regression bugs
