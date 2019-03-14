@@ -824,12 +824,12 @@ class BootStrap {
                     descr:allDescr, type: OT.Rdv, cat:'YNU', isUsedForLogic: false
             ],
             [
-                    name: [en: "Single-site license ", de: "Einzelplatzlizenz"],
+                    name: [en: "Single-site license", de: "Einzelplatzlizenz"],
                     expl: [en: "", de: "Angaben über die Nutzung des Produktes über eine Einzelplatzlizenz."],
                     descr:allDescr, type: OT.String, isUsedForLogic: false
             ],
             [
-                    name: [en: "Document delivery service (commercial) ", de: "Dokumentenlieferdienst kommerziell"],
+                    name: [en: "Document delivery service (commercial)", de: "Dokumentenlieferdienst kommerziell"],
                     expl: [en: "", de: "Angabe über die Nutzungsmöglichkeit von kommerziellen Dokumentenlieferdiensten wie Subito."],
                     descr:allDescr, type: OT.String, isUsedForLogic: false
             ],

@@ -61,15 +61,15 @@ class Package
   Set pendingChanges
   Boolean autoAccept = false
 
-static hasMany = [  tipps:     TitleInstancePackagePlatform, 
-                    orgs:      OrgRole, 
+static hasMany = [  tipps:     TitleInstancePackagePlatform,
+                    orgs:      OrgRole,
                     prsLinks:  PersonRole,
                     documents: DocContext,
                     subscriptions:  SubscriptionPackage,
                     pendingChanges: PendingChange,
                     ids: IdentifierOccurrence ]
 
-  static mappedBy = [tipps:     'pkg', 
+  static mappedBy = [tipps:     'pkg',
                      orgs:      'pkg',
                      prsLinks:  'pkg',
                      documents: 'pkg',
@@ -156,17 +156,17 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     }
     result
   }
-  
+
   /**
    * Materialise this package into a subscription of the given type (taken or offered)
    * @param subtype One of 'Subscription Offered' or 'Subscription Taken'
    */
   @Transient
-  def createSubscription(subtype, 
-                         subname, 
-                         subidentifier, 
-                         startdate, 
-                         enddate, 
+  def createSubscription(subtype,
+                         subname,
+                         subidentifier,
+                         startdate,
+                         enddate,
                          consortium_org) {
     createSubscription(subtype,subname,subidentifier,startdate,enddate,consortium_org,true)
   }
@@ -221,7 +221,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         log.debug("Create Org role ${or}")
       }
       addToSubscription(result, add_entitlements)
-          
+
     }
     else {
       result.errors.each { err ->
@@ -272,7 +272,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     // Step 1 - Make sure this package is not already attached to the sub
     // Step 2 - Connect
     def dupe = SubscriptionPackage.executeQuery("from SubscriptionPackage where subscription = ? and pkg = ?", [subscription, this])
-    
+
     if (!dupe){
       def new_pkg_sub = new SubscriptionPackage(subscription:subscription, pkg:this).save();
       // Step 3 - If createEntitlements ...
@@ -294,7 +294,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                                               endIssue:tipp.endIssue,
                                               embargo:tipp.embargo,
                                               coverageDepth:tipp.coverageDepth,
-                                              coverageNote:tipp.coverageNote).save()      
+                                              coverageNote:tipp.coverageNote).save()
           }
         }
       }
@@ -370,13 +370,13 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   @Transient
   static def refdataFind(params) {
     def result = [];
-    
+
     def hqlString = "select pkg from Package pkg where lower(pkg.name) like ? "
     def hqlParams = [((params.q ? params.q.toLowerCase() : '' ) + "%")]
     def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd")
-    
+
     if(params.hasDate ){
-    
+
       def startDate = params.startDate.length() > 1 ? sdf.parse(params.startDate) : null
       def endDate =  params.endDate.length() > 1 ? sdf.parse(params.endDate)  : null
 
@@ -402,7 +402,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       resultText = params.inclPkgStartDate == "true" ? resultText + date : resultText
       resultText = params.hideIdent == "true" ? resultText : resultText+" (${t.identifier})"
       result.add([id:"${t.class.name}:${t.id}",text:resultText])
-    }    
+    }
 
     result
   }
@@ -422,6 +422,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     result.tipps = []
     this.tipps.each { tip ->
 
+      //NO DELETED TIPPS because from only come no deleted tipps
+      if(tip.status?.id != RefdataValue.loc(RefdataCategory.TIPP_STATUS, [en: 'Deleted', de: 'Gelöscht'])?.id){
       // Title.ID needs to be the global identifier, so we need to pull out the global id for each title
       // and use that.
       def title_id = tip.title.getIdentifierValue('uri')?:"uri://KBPlus/localhost/title/${tip.title.id}";
@@ -434,12 +436,12 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                        identifiers:[]
                      ],
                      titleId:title_id,
-                     titleUuid:tip.title.impId,
+                     titleUuid:tip.title.gokbId,
                      tippId:tipp_id,
-                     tippUuid:tip.impId,
+                     tippUuid:tip.gokbId,
                      platform:tip.platform.name,
                      platformId:tip.platform.id,
-                     platformUuid:tip.platform.impId,
+                     platformUuid:tip.platform.gokbId,
                      coverage:[],
                      url:tip.hostPlatformURL,
                      identifiers:[],
@@ -466,6 +468,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       }
 
       result.tipps.add(newtip)
+          }
     }
 
     result.tipps.sort{it.titleId}
@@ -478,11 +481,11 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         if ( name != null ) {
             sortName = generateSortName(name)
         }
-        
+
         if (impId == null) {
           impId = java.util.UUID.randomUUID().toString();
         }
-        
+
         super.beforeInsert()
     }
 
@@ -520,7 +523,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     s1 = s1.replaceFirst('^a ','')
     s1 = s1.replaceFirst('^der ','')
     return s1.trim()
-   
+
   }
 
     def getIdentifierByType(idtype) {

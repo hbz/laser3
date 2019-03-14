@@ -26,6 +26,7 @@ public class GokbDiffEngine {
 
         def primaryUrl = (oldpkg?.nominalPlatformPrimaryUrl == newpkg?.nominalPlatformPrimaryUrl) ? oldpkg?.nominalPlatformPrimaryUrl : newpkg?.nominalPlatformPrimaryUrl
 
+        //TODO: Umstellung auf UUID vielleicht
         oldpkg.tipps.sort { it.tippId }
         newpkg.tipps.sort { it.tippId }
 

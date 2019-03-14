@@ -98,7 +98,7 @@ class GlobalDataSyncController {
     redirect(action:'index', params:[q:params.itemName])
   }
 
-  @Secured(['ROLE_DATAMANAGER'])
+  /*@Secured(['ROLE_DATAMANAGER'])
   def buildMergeTracker() {
     log.debug("params:"+params)
     if(!params.localPkg)
@@ -116,7 +116,7 @@ class GlobalDataSyncController {
     result.impact = globalSourceSyncService.diff(result.localPkg, result.item)
 
     render view:'reviewTracker', model:result
-  }
+  }*/
 
   @Secured(['ROLE_GLOBAL_DATA'])
   def createTracker() {
