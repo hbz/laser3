@@ -7,6 +7,7 @@ class SurveyInfo {
     String name
     Date startDate
     Date endDate
+    String comment
 
     Org owner
 
@@ -23,6 +24,7 @@ class SurveyInfo {
     static constraints = {
         endDate (nullable:true, blank:false)
         surveyConfig (nullable:true, blank:false)
+        comment (nullable:true, blank:true)
 
     }
 
@@ -33,11 +35,14 @@ class SurveyInfo {
         name column: 'surIn_name'
         startDate column: 'surIn_startDate'
         endDate column: 'surIn_endDate'
+        comment column: 'surIn_comment', type: 'TEXT'
+
         dateCreated column: 'surIn_dateCreated'
         lastUpdated column: 'surIn_lastUpdated'
 
         owner column: 'surIn_owner_org_fk'
         type column: 'surIn_type_rv_fk '
+
 
 
     }

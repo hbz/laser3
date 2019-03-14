@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import com.k_int.properties.PropertyDefinition
+
 class SurveyConfig {
 
 
@@ -15,7 +17,8 @@ class SurveyConfig {
 
 
     static hasMany = [
-            docs: Doc
+            docs: Doc,
+            properties: SurveyConfigProperties
     ]
 
     static constraints = {
