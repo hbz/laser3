@@ -1,5 +1,9 @@
-<%@ page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription" %>
-<%@ page import="com.k_int.kbplus.SubscriptionDetailsController.SubscriptionElementAction" %>
+<%@ page import="com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.SubscriptionDetailsController; com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService "%>
+<%@ page import="com.k_int.kbplus.SubscriptionDetailsController" %>
+<%@ page import="static com.k_int.kbplus.SubscriptionDetailsController.COPY" %>
+<%@ page import="static com.k_int.kbplus.SubscriptionDetailsController.REPLACE" %>
+<%@ page import="static com.k_int.kbplus.SubscriptionDetailsController.DO_NOTHING" %>
+<laser:serviceInjection />
 <br>
 <semui:form>
     <g:render template="selectSourceAndTargetSubscription" model="[
@@ -24,19 +28,19 @@
                 </td>
             </tr>
             <tr>
-                <td></td>
-                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeDates" value="${SubscriptionElementAction.REPLACE}" /></div></td>
-                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeDates" value="${SubscriptionElementAction.DO_NOTHING} " checked /></div></td>
-                <td><g:formatDate date="${sourceSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
+                <td style="vertical-align: top"></td>
+                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takeDates" value="${REPLACE}" /></div></td>
+                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takeDates" value="${DO_NOTHING} " checked /></div></td>
+                <td style="vertical-align: top"><g:formatDate date="${sourceSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
                     ${sourceSubscription?.endDate ? (' - ' + formatDate(date: sourceSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}</td>
-                <td><g:formatDate date="${targetSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
+                <td style="vertical-align: top"><g:formatDate date="${targetSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
                     ${targetSubscription?.endDate ? (' - ' + formatDate(date: targetSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}</td>
             </tr>
             <tr>
-                <td></td>
-                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeOwner" value="${SubscriptionElementAction.REPLACE}" /></div></td>
-                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeOwner" value="${SubscriptionElementAction.DO_NOTHING} " checked /></div></td>
-                <td>
+                <td style="vertical-align: top"></td>
+                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takeOwner" value="${REPLACE}" /></div></td>
+                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takeOwner" value="${DO_NOTHING} " checked /></div></td>
+                <td style="vertical-align: top">
                     %{--<g:each in="${sourceSubscription?.packages?.sort { it.pkg.name }}" var="sp">--}%
                         %{--<b>${message(code: 'subscription.packages.label')}:</b>--}%
                         %{--<g:link controller="package" action="show" target="_blank" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>--}%
@@ -51,7 +55,7 @@
                         </g:link>
                     </g:if>
                 </td>
-                <td>
+                <td style="vertical-align: top">
                     <g:if test="${targetSubscription?.owner}">
                         <b>${message(code: 'license')}:</b>
                         <g:link controller="licenseDetails" action="show" target="_blank" id="${targetSubscription?.owner?.id}">
@@ -61,9 +65,9 @@
                 </td>
             </tr>
             <tr>
-                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeOrgRelations" value="${SubscriptionElementAction.COPY}" /></div></td>
-                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeOrgRelations" value="${SubscriptionElementAction.REPLACE}" /></div></td>
-                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeOrgRelations" value="${SubscriptionElementAction.DO_NOTHING} " checked /></div></td>
+                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takeOrgRelations" value="${COPY}" /></div></td>
+                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takeOrgRelations" value="${REPLACE}" /></div></td>
+                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takeOrgRelations" value="${DO_NOTHING} " checked /></div></td>
                 <td style="vertical-align: top">
                     <g:each in="${source_visibleOrgRelations}" var="source_role">
                         <g:if test="${source_role.org}">
@@ -87,32 +91,34 @@
                 </td>
             </tr>
             <tr>
-                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takePackages" value="${SubscriptionElementAction.COPY}" /></div></td>
-                <td>COMING SOON<br /><div class="ui radio checkbox"><input type="radio" name="subscription.takePackages" value="${SubscriptionElementAction.REPLACE}" disabled/></div></td>
-                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takePackages" value="${SubscriptionElementAction.DO_NOTHING}" checked /></div></td>
+                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takePackages" value="${COPY}" /></div></td>
+                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takePackages" value="${REPLACE}" /></div></td>
+                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takePackages" value="${DO_NOTHING}" checked /></div></td>
                 <td style="vertical-align: top">
-                    <g:each in="${sourceSubscription?.packages?.sort { it.pkg.name }}" var="sp">
-                        <input type="checkbox" data-pckId="${sp.pkg.id}" ></input>
+                    <g:each in="${sourceSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
+                        %{--<input type="checkbox" data-pckId="${sp.pkg.id}" >--}%
+                        <g:checkBox name="subscription.takePackageIds" value="${genericOIDService.getOID(sp.pkg)}" data-pckId="${sp.pkg?.id}" checked="false"/>
                         <b>${message(code: 'subscription.packages.label')}:</b>
-                        <g:link controller="package" action="show" target="_blank" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
+                        <g:link controller="package" action="show" target="_blank" id="${sp.pkg?.id}">${sp?.pkg?.name}</g:link>
                         <g:if test="${sp.pkg?.contentProvider}">(${sp.pkg?.contentProvider?.name})</g:if>
                         <br>
                     </g:each>
                 </td>
                 <td style="vertical-align: top">
-                    <g:each in="${targetSubscription?.packages?.sort { it.pkg.name }}" var="sp">
+                    <g:each in="${targetSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
                         <b>${message(code: 'subscription.packages.label')}:</b>
-                        <g:link controller="packageDetails" action="show" target="_blank" id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
+                        <g:link controller="packageDetails" action="show" target="_blank" id="${sp.pkg?.id}">${sp?.pkg?.name}</g:link>
                         <g:if test="${sp.pkg?.contentProvider}">(${sp.pkg?.contentProvider?.name})</g:if>
                         <br>
                     </g:each>
                 </td>
             </tr>
             <tr>
-                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeEntitlements" value="${SubscriptionElementAction.COPY}" disabled=""/></div></td>
-                <td><div class="ui radio checkbox" ><input type="radio" name="subscription.takeEntitlements" value="${SubscriptionElementAction.REPLACE}" disabled=""/></div></td>
-                <td><div class="ui radio checkbox"><input type="radio" name="subscription.takeEntitlements" value="${SubscriptionElementAction.DO_NOTHING}" checked disabled=""/></div></td>
-                <% def sourceIEs = sourceSubscription?.issueEntitlements?.findAll { it.status != RDStore.IE_DELETED } %>
+                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takeEntitlements" value="${COPY}" disabled=""/></div></td>
+                <td style="vertical-align: top"><div class="ui radio checkbox" ><input type="radio" name="subscription.takeEntitlements" value="${REPLACE}" disabled=""/></div></td>
+                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takeEntitlements" value="${DO_NOTHING}" checked disabled=""/></div></td>
+                <% def sourceIEs = IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
+                [sub: sourceSubscription, del: RDStore.IE_DELETED]) %>
                 <td style="vertical-align: top">
                     <g:if test="${sourceIEs}">
                         <b>${message(code: 'issueEntitlement.countSubscription')} </b>${sourceIEs?.size()}<br>
@@ -123,7 +129,8 @@
                         </g:each>
                     </g:if>
                </td>
-                <% def targetIEs = targetSubscription?.issueEntitlements?.findAll { it.status != RDStore.IE_DELETED } %>
+                <% def targetIEs = IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
+                        [sub: targetSubscription, del: RDStore.IE_DELETED]) %>
                 <td style="vertical-align: top">
                     <g:if test="${targetIEs}">
                         <b>${message(code: 'issueEntitlement.countSubscription')} </b>${targetIEs?.size()} <br />
