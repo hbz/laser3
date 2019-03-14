@@ -226,6 +226,11 @@ class User implements Permissions {
         false
     }
 
+    def hasRole(String roleName) {
+        println SpringSecurityUtils.ifAnyGranted(roleName)
+        SpringSecurityUtils.ifAnyGranted(roleName)
+    }
+
     def isAdmin() {
         SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")
     }
