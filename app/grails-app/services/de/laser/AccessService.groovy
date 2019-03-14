@@ -33,7 +33,7 @@ class AccessService {
 
         // def uo = UserOrg.findByUserAndOrg(user,org)
         def uoq = UserOrg.where {
-            (user == user && org == org && (status == UserOrg.STATUS_APPROVED || status == UserOrg.STATUS_AUTO_APPROVED))
+            (user == user && org == org && status == UserOrg.STATUS_APPROVED)
         }
 
         return (uoq.count() > 0)
@@ -68,7 +68,7 @@ class AccessService {
 
         rolesToCheck.each{ rot ->
             def userOrg = UserOrg.findByUserAndOrgAndFormalRole(user, org, rot)
-            if (userOrg && (userOrg.status == UserOrg.STATUS_APPROVED || userOrg.status == UserOrg.STATUS_AUTO_APPROVED)) {
+            if (userOrg && userOrg.status == UserOrg.STATUS_APPROVED) {
                 result = true
             }
         }

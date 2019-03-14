@@ -60,7 +60,7 @@
             </td>
             <td class="x">
               <g:if test="${editable}">
-                <g:if test="${(userOrg[0].status==UserOrg.STATUS_APPROVED) || (userOrg[0].status==UserOrg.STATUS_AUTO_APPROVED)}">
+                <g:if test="${userOrg[0].status==UserOrg.STATUS_APPROVED}">
                   <span data-tooltip="${message(code:'profile.membership.cancel.button')}" data-position="right center">
                     <g:link controller="organisations" action="revokeRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui icon negative button">
                       <i class="times icon"></i>
