@@ -1145,7 +1145,7 @@ class AjaxController {
 
                     members.each { m ->
                         m.setProperty(prop, owner.getProperty(prop))
-                        //m.save(flush:true)
+                        m.save(flush:true)
                     }
                 }
             }
@@ -1159,7 +1159,7 @@ class AjaxController {
                     if (! keepProperties.contains(prop)) {
                         members.each { m ->
                             m.setProperty(prop, null)
-                            //m.save(flush:true)
+                            m.save(flush:true)
                         }
                     }
 
@@ -1178,10 +1178,6 @@ class AjaxController {
                         }
                     }
                 }
-            }
-
-            members.each { m ->
-                m.save() // only one save
             }
         }
 

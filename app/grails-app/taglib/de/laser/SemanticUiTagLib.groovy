@@ -223,7 +223,10 @@ class SemanticUiTagLib {
                     }
                 }
 
+                /*
                 out << ' <button data-semui="modal" href="#' + attrs.auditable[1] + '_audit_single_config_modal">X</button> '
+
+                ERMS-976, ERMS-1082
 
                 def ownObj = attrs.auditable[0]
                 def ownObjProps = ownObj.getClass().controlledProperties
@@ -237,8 +240,10 @@ class SemanticUiTagLib {
                 ]
 
                 out << render(template: '/templates/audit/modal_single_config', model: [
-                        ownObj: ownObj, auditAttr: attrs.auditable[1] /*, properties: Subscription.controlledProperties */
+                        ownObj: ownObj, auditAttr: attrs.auditable[1]
                 ])
+
+                */
 
             } catch (Exception e) {
             }
