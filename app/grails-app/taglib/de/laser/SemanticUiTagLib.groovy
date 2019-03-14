@@ -222,6 +222,24 @@ class SemanticUiTagLib {
                         out << '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
                     }
                 }
+
+                out << ' <button data-semui="modal" href="#' + attrs.auditable[1] + '_audit_single_config_modal">X</button> '
+
+                def ownObj = attrs.auditable[0]
+                def ownObjProps = ownObj.getClass().controlledProperties
+                println ownObjProps
+
+                Map model = [
+                        ownObj: ownObj,
+                        target: ownObj.getId(),
+                        properties: ownObj.getClass().controlledProperties, // ?
+                        auditAttr: attrs.auditable[1]
+                ]
+
+                out << render(template: '/templates/audit/modal_single_config', model: [
+                        ownObj: ownObj, auditAttr: attrs.auditable[1] /*, properties: Subscription.controlledProperties */
+                ])
+
             } catch (Exception e) {
             }
         }
