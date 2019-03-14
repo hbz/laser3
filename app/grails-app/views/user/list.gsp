@@ -45,68 +45,74 @@
             <table class="ui sortable celled la-table la-table-small table">
                 <thead>
                     <tr>
-                        <g:sortableColumn property="username" params="${params}" title="${message(code: 'user.name.label', default: 'User Name')}" />
-                        <g:sortableColumn property="display" params="${params}" title="${message(code: 'user.display.label', default: 'Display Name')}" />
-                        <g:sortableColumn property="instname" params="${params}" title="${message(code: 'user.instname.label', default: 'Institution')}" />
+                        <%--<g:sortableColumn property="u.username" params="${params}" title="${message(code: 'user.name.label', default: 'User Name')}" />
+                        <g:sortableColumn property="u.display" params="${params}" title="${message(code: 'user.display.label', default: 'Display Name')}" />
+                        <g:sortableColumn property="uo.org.instname" params="${params}" title="${message(code: 'user.instname.label', default: 'Institution')}" />
+                        --%>
+                        <th>User Name</th>
+                        <th>Display Name</th>
+                        <th>Institution</th>
                         <th>Enabled</th>
                         <th>API</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    <g:each in="${users}" var="user">
+                    <g:each in="${users}" var="us">
                         <tr>
                             <td>
-                                ${fieldValue(bean: user, field: "username")}
+                                ${fieldValue(bean: us, field: "username")}
 
-                                <g:if test="${! UserRole.findByUserAndRole(user, Role.findByAuthority('ROLE_USER'))}">
+                                <g:if test="${! UserRole.findByUserAndRole(us, Role.findByAuthority('ROLE_USER'))}">
                                     <span data-tooltip="Dieser Account besitzt keine ROLE_USER." data-position="top right">
                                         <i class="icon minus circle red"></i>
                                     </span>
                                 </g:if>
                             </td>
-                            <td>${user.getDisplayName()}</td>
+                            <td>${us.getDisplayName()}</td>
                             <td>
-                                <g:each in="${user.getAuthorizedAffiliations()}" var="affi">
-                                    ${affi.org?.getDesignation()}<br />
+                                <g:each in="${us.getAuthorizedAffiliations()}" var="affi">
+                                    ${affi.org?.getDesignation()} <span>(${affi.formalRole.authority})</span> <br />
                                 </g:each>
                             </td>
                             <td>
                                 <sec:ifAnyGranted roles="ROLE_YODA">
-                                    <semui:xEditableBoolean owner="${user}" field="enabled"/>
+                                    <semui:xEditableBoolean owner="${us}" field="enabled"/>
                                 </sec:ifAnyGranted>
                                 <sec:ifNotGranted roles="ROLE_YODA">
-                                    ${fieldValue(bean: user, field: "enabled")}
+                                    ${fieldValue(bean: us, field: "enabled")}
                                 </sec:ifNotGranted>
                             </td>
                             <td>
                                 <div class="ui list">
-                                    <g:if test="${UserRole.findByUserAndRole(user, Role.findByAuthority('ROLE_API'))}">
+                                    <g:if test="${UserRole.findByUserAndRole(us, Role.findByAuthority('ROLE_API'))}">
                                         <div class="item"><i class="icon circle outline"></i> API</div>
                                     </g:if>
 
-                                    <g:if test="${UserRole.findByUserAndRole(user, Role.findByAuthority('ROLE_API_READER'))}">
+                                    <g:if test="${UserRole.findByUserAndRole(us, Role.findByAuthority('ROLE_API_READER'))}">
                                         <div class="item"><i class="icon check circle outline"></i> Lesend</div>
                                     </g:if>
 
-                                    <g:if test="${UserRole.findByUserAndRole(user, Role.findByAuthority('ROLE_API_WRITER'))}">
+                                    <g:if test="${UserRole.findByUserAndRole(us, Role.findByAuthority('ROLE_API_WRITER'))}">
                                         <div class="item"><i class="icon check circle"></i> Schreibend</div>
                                     </g:if>
 
-                                    <g:if test="${UserRole.findByUserAndRole(user, Role.findByAuthority('ROLE_API_DATAMANAGER'))}">
+                                    <g:if test="${UserRole.findByUserAndRole(us, Role.findByAuthority('ROLE_API_DATAMANAGER'))}">
                                         <div class="item"><i class="icon circle"></i> Datamanager</div>
                                     </g:if>
                                 </div>
                             </td>
                             <td class="x">
-                                <g:link action="edit" id="${user.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                                <g:if test="${editor.hasRole('ROLE_ADMIN') || us.getAuthorizedAffiliations().collect{ it.org.id }.unique().size() == 1}">
+                                    <g:link action="edit" id="${us.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                                </g:if>
                             </td>
                         </tr>
                     </g:each>
                 </tbody>
             </table>
 
-          <semui:paginate total="${total}" params="${params}" />
+          <%-- <semui:paginate total="${total}" params="${params}" /> --%>
 
     </body>
 </html>

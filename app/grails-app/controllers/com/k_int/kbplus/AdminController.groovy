@@ -1096,7 +1096,6 @@ class AdminController extends AbstractDebugController {
     /*if(params.onlyNotEqual) {
       result.tippsNotEqual = []
       result.records.each { hit ->
-
         if (com.k_int.kbplus.Package.findByGokbId(hit.uuid)) {
           if (com.k_int.kbplus.Package.findByGokbId(hit.uuid)?.tipps?.size() != hit.titleCount && hit.titleCount != 0) {
             result.tippsNotEqual << hit

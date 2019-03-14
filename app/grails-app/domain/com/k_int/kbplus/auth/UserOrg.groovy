@@ -17,7 +17,6 @@ class UserOrg implements Comparable {
 
     Long dateRequested
     Long dateActioned
-    String role = "deprecated"
 
     Org org
     com.k_int.kbplus.auth.User user
@@ -27,7 +26,6 @@ class UserOrg implements Comparable {
         dateActioned    (nullable: true)
         dateRequested   (nullable: true)
         formalRole      (nullable: true)
-        role            (nullable: true)
     }
 
     @Transient

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.Org;com.k_int.kbplus.UserSettings" %>
+<%@ page import="com.k_int.kbplus.Org;com.k_int.kbplus.UserSettings;com.k_int.kbplus.auth.UserOrg" %>
 <!doctype html>
 <html>
   <head>
@@ -60,20 +60,20 @@
             </td>
             <td class="x">
               <g:if test="${editable}">
-                <g:if test="${((userOrg[0].status==1 ) || (userOrg[0].status==3)) }">
+                <g:if test="${(userOrg[0].status==UserOrg.STATUS_APPROVED) || (userOrg[0].status==UserOrg.STATUS_AUTO_APPROVED)}">
                   <span data-tooltip="${message(code:'profile.membership.cancel.button')}" data-position="right center">
                     <g:link controller="organisations" action="revokeRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui icon negative button">
                       <i class="times icon"></i>
                     </g:link>
                   </span>
                 </g:if>
-                <g:else>
+                <g:if test="${(userOrg[0].status==UserOrg.STATUS_PENDING) || (userOrg[0].status==UserOrg.STATUS_REJECTED)}">
                   <span data-tooltip="${message(code:'profile.membership.accept.button')}" data-position="right center">
                     <g:link controller="organisations" action="enableRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui icon positive button">
                       <i class="checkmark icon"></i>
                     </g:link>
                   </span>
-                </g:else>
+                </g:if>
                 <span data-tooltip="${message(code:'profile.membership.delete.button')}" data-position="right center">
                   <g:link class="ui icon negative button js-open-confirm-modal"
                           data-confirm-term-what="user"
