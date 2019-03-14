@@ -46,7 +46,7 @@
               <br />
             <g:if test="${ra.user != null}">
               ${message(code:'announcement.posted_by.label', default:'posted by')}
-                <em><g:link controller="userDetails" action="show" id="${ra.user?.id}">${(ra.user?.displayName)?:'Unknown'}</g:link></em>
+                <em><g:link controller="user" action="show" id="${ra.user?.id}">${(ra.user?.displayName)?:'Unknown'}</g:link></em>
                 <br />
                 ${message(code:'default.on', default:'on')} <g:formatDate date="${ra.dateCreated}" format="${message(code:'default.date.format')}"/>
             </g:if>

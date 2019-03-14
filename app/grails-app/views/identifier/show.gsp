@@ -41,7 +41,7 @@
                                 <g:each in="${identifierInstance.occurrences}" var="io">
                                     <li>
                                        <g:if test="${io.org}">Organisation <g:link controller="organisations" action="show" id="${io.org.id}">${io.org.name}</g:link></g:if>
-                                       <g:if test="${io.ti}">Title Instance <g:link controller="titleDetails" action="show" id="${io.ti.id}">${io.ti.title}</g:link></g:if>
+                                       <g:if test="${io.ti}">Title Instance <g:link controller="title" action="show" id="${io.ti.id}">${io.ti.title}</g:link></g:if>
                                        <g:if test="${io.tipp}">tipp <g:link controller="titleInstancePackagePlatform" action="show" id="${io.tipp.id}">${io.tipp.title.title}</g:link></g:if>
                                     </li>
                                 </g:each>

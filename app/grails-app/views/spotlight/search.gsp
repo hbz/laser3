@@ -26,7 +26,7 @@
         else if (hit.getSource().rectype == 'Package') {
             result << [
                 "title": "${hit.getSource().name}",
-                "url":   g.createLink(controller:"packageDetails", action:"show", id:"${hit.getSource().dbId}"),
+                "url":   g.createLink(controller:"package", action:"show", id:"${hit.getSource().dbId}"),
                 "category": "${message(code: 'spotlight.package')}"
             ]
         }
@@ -47,7 +47,7 @@
         else if (hit.getSource().rectype == 'Title') {
             result << [
                 "title": "${hit.getSource().title}",
-                "url":   g.createLink(controller:"titleDetails", action:"show", id:"${hit.getSource().dbId}"),
+                "url":   g.createLink(controller:"title", action:"show", id:"${hit.getSource().dbId}"),
                 "category": (hit.getSource().typTitle == 'Journal') ? "${message(code: 'spotlight.journaltitle')}" :
                                 (hit.getSource().typTitle == 'Database') ? "${message(code: 'spotlight.databasetitle')}" :
                                         (hit.getSource().typTitle == 'EBook') ? "${message(code: 'spotlight.ebooktitle')}" : "${message(code: 'spotlight.title')}"

@@ -131,7 +131,12 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                   sortName(nullable:true, blank:false)
   }
 
-    boolean showShareButton() {
+    @Override
+    boolean checkSharePreconditions(ShareableTrait sharedObject) {
+        false // NO SHARES
+    }
+
+    boolean showUIShareButton() {
         false // NO SHARES
     }
 
@@ -315,7 +320,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
   @Transient
   public String getURL() {
-    "${grailsApplication.config.grails.serverURL}/packageDetails/show/${id}".toString();
+    "${grailsApplication.config.grails.serverURL}/package/show/${id}".toString();
   }
 
     def onChange = { oldMap, newMap ->

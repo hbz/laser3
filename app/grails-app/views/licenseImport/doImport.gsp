@@ -66,7 +66,7 @@
                     ${message(code:'onix.import.dupe', default:'This ONIX-PL document appears to describe an existing ONIX-PL license')}:
                     <div class="well">
                         <g:link action="index"
-                                controller="onixplLicenseDetails"
+                                controller="onixplLicense"
                                 id="${existing_opl.id}">
                             ${existing_opl.title}
                         </g:link>
@@ -116,7 +116,7 @@
             <%-- Show link to ONIX-PL display if no associated license specified, or multiple ones --%>
                 <g:link action="index"
                         style="margin-top:10px;"
-                        controller="onixplLicenseDetails"
+                        controller="onixplLicense"
                         class="ui button"
                         id="${validationResult.onixpl_license.id}">
                     ${message(code:'onix.import.view', args:[(validationResult.replace ? message(code:'onix.import.view.updated', default:'updated') : message(code:'onix.import.view.new', default:'new'))])}</g:link>

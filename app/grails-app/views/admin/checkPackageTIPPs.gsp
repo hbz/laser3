@@ -50,63 +50,55 @@
 
 <h1 class="ui header"> Package Tipps LAS:eR and GOKB</h1>
 
-
-
-
-<g:link action="checkPackageTIPPs" params="${params+[onlyNotEqual: tippsNotEqual]}" class="ui button">Show only where Tipps Not Equal</g:link>
+%{--<g:link action="checkPackageTIPPs" params="${params+[onlyNotEqual: true]}" class="ui button">Show only where Tipps Not Equal</g:link>--}%
+<br>
+<br>
 <div class="ui grid">
 
-    <div class="twelve wide column">
         <div>
             <g:if test="${records}">
-                <div class="paginateButtons" style="text-align:center">
-                    <g:if test="${params.int('offset')}">
-                        ${message(code:'default.search.offset.text', args:[(params.int('offset') + 1),(resultsTotal < (params.int('max') + params.int('offset')) ? resultsTotal : (params.int('max') + params.int('offset'))),resultsTotal])}
-                    </g:if>
-                    <g:elseif test="${resultsTotal && resultsTotal > 0}">
-                        ${message(code:'default.search.no_offset.text', args:[(resultsTotal < params.int('max') ? resultsTotal : params.int('max')),resultsTotal])}
-                    </g:elseif>
-                    <g:else>
-                        ${message(code:'default.search.no_pagiantion.text', args:[resultsTotal])}
-                    </g:else>
-                </div>
-                <div id="resultsarea">
+                <div>
                     <table class="ui celled la-selectable la-table table">
                         <thead>
                         <tr>
-                            <th>${message(code:'package.show.pkg_name', default:'Package Name')} GOKB</th>
-                            <th>${message(code:'package.show.pkg_name', default:'Package Name')} LAS:eR</th>
+                            <th>${message(code:'package.show.pkg_name', default:'Package Name')} in GOKB</th>
+                            <th>${message(code:'package.show.pkg_name', default:'Package Name')} in LAS:eR</th>
                             <%--<th>${message(code:'consortium.label', default:'Consortium')}</th>--%>
-                            <th>${message(code:'tipp.plural', default:'Tipps')} GOKB</th>
-                             <th>${message(code:'tipp.plural', default:'Tipps')} LAS:eR</th>
+                            <th>${message(code:'tipp.plural', default:'Tipps')} in GOKB</th>
+                             <th>${message(code:'tipp.plural', default:'Tipps')} in LAS:eR</th>
                         </thead>
                         <tbody>
 
                         <g:each in="${records}" var="hit" >
                             <tr>
                                 <td>
-                                    ${hit.getSource().name} <a target="_blank" href="${es_host_url ? es_host_url+'/gokb/resource/show/'+hit.id : '#'}" ><i title="GOKB Link" class="external alternate icon"></i></a>
+                                    ${hit.name} <a target="_blank" href="${es_host_url ? es_host_url+'/gokb/resource/show/'+hit.uuid : '#'}" ><i title="GOKB Link" class="external alternate icon"></i></a>
                                 </td>
-                                <td>
-                                    <g:if test="${com.k_int.kbplus.Package.findByGokbId(hit.id)}">
-                                        <g:link controller="packageDetails" target="_blank" action="show" id="${com.k_int.kbplus.Package.findByGokbId(hit.id).id}">${com.k_int.kbplus.Package.findByGokbId(hit.id).name}</g:link>
+
+                                    <g:if test="${com.k_int.kbplus.Package.findByGokbId(hit.uuid)}">
+                                        <g:set var="style" value="${(com.k_int.kbplus.Package.findByGokbId(hit.uuid)?.name != hit.name) ? "style=background-color:red;":''}"/>
+                                        <td ${style}>
+                                        <g:link controller="package" target="_blank" action="show" id="${com.k_int.kbplus.Package.findByGokbId(hit.uuid).id}">${com.k_int.kbplus.Package.findByGokbId(hit.uuid).name}</g:link>
+                                        </td>
                                     </g:if>
                                     <g:else>
-                                        No Package in LAS:eR
+                                        <td>
+                                                No Package in LAS:eR
+                                        </td>
                                     </g:else>
-                                </td>
                                 <td>
-                                    <b>${hit.getSource().tippsCountCurrent?:'0'} ${message(code:'title.plural', default:'Titles')}</b>
+                                    <b>${hit.titleCount?:'0'} </b>
                                 </td>
-                                <g:if test="${com.k_int.kbplus.Package.findByGokbId(hit.id)}">
-                                    <g:set var="style" value="${(com.k_int.kbplus.Package.findByGokbId(hit.id)?.tipps?.size() != hit.getSource().tippsCountCurrent && hit.getSource().tippsCountCurrent != 0) ? "style=background-color:red;":''}"/>
+                                <g:if test="${com.k_int.kbplus.Package.findByGokbId(hit.uuid)}">
+                                    <g:set var="laserTipps" value="${(com.k_int.kbplus.Package.findByGokbId(hit.uuid)?.tipps?.findAll {it.status.value == 'Current'}.size().toString())}" />
+                                    <g:set var="style" value="${(laserTipps != hit.titleCount && hit.titleCount != '0') ? "style=background-color:red;":''}"/>
                                     <td ${style}>
-                                            <b>${com.k_int.kbplus.Package.findByGokbId(hit.id).tipps.size() ?:'0'} ${message(code:'title.plural', default:'Titles')}</b>
+                                            <b>${laserTipps ?:'0'} </b>
                                     </td>
                                 </g:if>
                                 <g:else>
                                         <td>
-                                                No Package in LAS:eR. No Tipps.
+                                                No Tipps.
                                         </td>
                                 </g:else>
 
@@ -115,24 +107,16 @@
                         </tbody>
                     </table>
                 </div>
+
+                <semui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
+                                next="${message(code: 'default.paginate.next', default: 'Next')}"
+                                prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
+                                max="${max}"
+                                total="${resultsTotal2}"/>
             </g:if>
-            <div class="paginateButtons" style="text-align:center">
-                <g:if test="${params.int('offset')}">
-                    ${message(code:'default.search.offset.text', args:[(params.int('offset') + 1),(resultsTotal < (params.int('max') + params.int('offset')) ? resultsTotal : (params.int('max') + params.int('offset'))),resultsTotal])}
-                </g:if>
-                <g:elseif test="${resultsTotal && resultsTotal > 0}">
-                    ${message(code:'default.search.no_offset.text', args:[(resultsTotal < params.int('max') ? resultsTotal : params.int('max')),resultsTotal])}
-                </g:elseif>
-                <g:else>
-                    ${message(code:'default.search.no_pagiantion.text', args:[resultsTotal])}
-                </g:else>
-            </div>
 
         </div>
-    </div>
 
-
-<div id="magicArea"></div>
-
+</div>
 </body>
 </html>

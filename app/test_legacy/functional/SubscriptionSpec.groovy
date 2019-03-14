@@ -81,7 +81,7 @@ class SubscriptionSpec extends GebReportingSpec {
         $('#add_to_sub_submit_id').click()
         then:
         1 == 1
-        // response page sends back a link containing the new package ID <a href="/laser/packageDetails/show/590">New Package Details</a>
+        // response page sends back a link containing the new package ID <a href="/laser/package/show/590">New Package Details</a>
     }
     def "Go to subscription and check title core status"(){
         when:

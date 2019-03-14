@@ -101,7 +101,7 @@
                 <td>${counter++}</td>
                 <td><a href="${hl.link}">${hl.name}</a></td>
                 <td>
-                  <g:link controller="userDetails" action="edit" id="${hl.actor?.id}">${hl.actor?.displayName}</g:link>
+                  <g:link controller="user" action="edit" id="${hl.actor?.id}">${hl.actor?.displayName}</g:link>
                 </td>
                 <td>${hl.eventName}</td>
                 <td>${hl.propertyName}</td>

@@ -111,7 +111,7 @@
                         -> ${message(code: 'globalDataSync.using_id')}
                         <g:if test="${tracker.localOid != null}">
                             <g:if test="${tracker.localOid.startsWith('com.k_int.kbplus.Package')}">
-                                <g:link controller="packageDetails" action="show"
+                                <g:link controller="package" action="show"
                                         id="${tracker.localOid.split(':')[1]}">
                                     ${tracker.name ?: message(code: 'globalDataSync.noname')}</g:link>
                                 <g:if test="${tracker.name == null}">
