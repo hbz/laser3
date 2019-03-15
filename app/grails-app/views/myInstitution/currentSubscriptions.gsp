@@ -376,7 +376,9 @@
                             (editable && (OrgRole.findAllByOrgAndSubAndRoleType(institution, s, RDStore.OR_SUBSCRIBER) || s.consortia?.id == institution?.id))
                         }">
                     <%--<g:if test="${editable && ((institution?.id in s.allSubscribers.collect{ it.id }) || s.consortia?.id == institution?.id)}">--%>
-                            <g:if test="${CostItem.findBySub(s)}">
+
+
+                            <g:if test="${CostItem.findBySub(s) || CostItem.findAllBySubInListAndOwner(Subscription.findAllByInstanceOfAndStatusNotEqual(s, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')), institution)}">
                                 <span data-position="top right" data-tooltip="${message(code:'subscription.delete.existingCostItems')}">
                                     <button class="ui icon button negative" disabled="disabled">
                                         <i class="trash alternate icon"></i>

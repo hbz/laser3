@@ -1108,11 +1108,42 @@ from License as l where (
     Map documents() {
         User user = User.get(springSecurityService.principal.id)
         Org org = contextService.org
+        Map filterQuery = filterService.getDocumentQuery(params)
         Set<DocContext> documents = []
-        documents.addAll(DocContext.executeQuery('select dc from DocContext dc join dc.owner d where d.owner = :org or dc.targetOrg = :org',[org:org]))
+        documents.addAll(DocContext.executeQuery('select dc from DocContext dc join dc.owner d where (d.owner = :org or dc.targetOrg = :org)'+filterQuery.query,[org:org]+filterQuery.queryParams))
+        //get documents shared for consortia
+        if(!org.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id)) {
+            List consortia = Combo.findAllByFromOrgAndType(org,RefdataValue.getByValueAndCategory('Consortium','Combo Type')).collect {
+                combo -> combo.toOrg
+            }
+            documents.addAll(DocContext.executeQuery('select dc from DocContext dc join dc.owner d where d.owner in :consortia'+filterQuery.query,[consortia:consortia]+filterQuery.queryParams))
+        }
         org.documents = documents
-        Map result = [user:user,org:org,editable:accessService.checkMinUserOrgRole(user,org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]
+        List allUploaders = Doc.executeQuery('select dc.shareConf,d.creator from DocContext dc join dc.owner d where d.owner = :org order by d.creator.display asc',[org:org])
+        Set availableUsers = []
+        allUploaders.each { row ->
+            if(row[0] == RDStore.SHARE_CONF_CREATOR) {
+                if(row[1] == user)
+                    availableUsers.add(row[1])
+            }
+            else availableUsers.add(row[1])
+        }
+        Map result = [user:user,org:org,availableUsers:availableUsers,editable:accessService.checkMinUserOrgRole(user,org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]
         result
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def editDocument() {
+        Map result = setResultGenerics()
+        result.ownobj = result.institution
+        result.owntp = 'organisation'
+        if(params.id) {
+            result.docctx = DocContext.get(params.id)
+            result.doc = result.docctx.owner
+        }
+
+        render template: "/templates/documents/modal", model: result
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
@@ -1124,7 +1155,7 @@ from License as l where (
 
         docstoreService.unifiedDeleteDocuments(params)
 
-        redirect controller: 'licenseDetails', action: 'show', id: params.licid /*, fragment: 'docstab' */
+        redirect controller: 'myInstitution', action: 'documents' /*, fragment: 'docstab' */
     }
 
     @Deprecated
@@ -1606,7 +1637,8 @@ AND EXISTS (
             if (CostItem.findBySub(subscription)) {
                 flash.error = message(code: 'subscription.delete.existingCostItems')
 
-            } else if (! derived_subs) {
+            }
+            else if (! derived_subs) {
               log.debug("Current Institution is ${inst}, sub has consortium ${subscription.consortia}")
               if( subscription.consortia && subscription.consortia != inst ) {
                 OrgRole.executeUpdate("delete from OrgRole where sub = ? and org = ?",[subscription, inst])
@@ -1627,7 +1659,7 @@ AND EXISTS (
                 }
               }
             } else {
-                flash.error = message(code:'myinst.actionCurrentSubscriptions.error', default:'Unable to delete - The selected license has attached subscriptions')
+                flash.error = message(code:'myinst.actionCurrentSubscriptions.error', default:'Unable to delete - The selected subscriptions has attached subscriptions')
             }
         } else {
             log.warn("${result.user} attempted to delete subscription ${result.subscription} without perms")

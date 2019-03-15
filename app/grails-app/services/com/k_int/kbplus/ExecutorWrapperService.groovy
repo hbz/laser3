@@ -9,18 +9,18 @@ class ExecutorWrapperService {
 
 	def processClosure(clos,owner){
 		log.debug('processClosure: ' + owner)
-		owner = "${owner.class.name}:${owner.id}"
+		def newOwner = "${owner?.class?.name}:${owner?.id}"
 		//see if we got a process running for owner already
-		def existingFuture = activeFuture.get(owner)
+		def existingFuture = activeFuture.get(newOwner)
 		if(!existingFuture){
 			//start new thread and store the process
 		      def future = executorService.submit(clos as java.util.concurrent.Callable)
-		      activeFuture.put(owner,future)
+		      activeFuture.put(newOwner,future)
 		}else{
 			//if a previous process for this owner is done, remove it and start new one
 			if(existingFuture.isDone()){
-				activeFuture.remove(owner)
-				processClosure(clos,owner)
+				activeFuture.remove(newOwner)
+				processClosure(clos,newOwner)
 			}
 			//if not done, do something else
 		}

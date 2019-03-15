@@ -303,7 +303,7 @@ class AdminController extends AbstractDebugController {
 
         if ( existing_affil_check == null ) {
           log.debug("No existing affiliation");
-          def newAffil = new UserOrg(org:affil.org,user:usrKeep,formalRole:affil.formalRole,status:UserOrg.STATUS_AUTO_APPROVED)
+          def newAffil = new UserOrg(org:affil.org,user:usrKeep,formalRole:affil.formalRole,status:affil.status)
           if(!newAffil.save(flush:true,failOnError:true)){
             log.error("Probem saving user roles");
             newAffil.errors.each { e ->
@@ -1096,7 +1096,6 @@ class AdminController extends AbstractDebugController {
     /*if(params.onlyNotEqual) {
       result.tippsNotEqual = []
       result.records.each { hit ->
-
         if (com.k_int.kbplus.Package.findByGokbId(hit.uuid)) {
           if (com.k_int.kbplus.Package.findByGokbId(hit.uuid)?.tipps?.size() != hit.titleCount && hit.titleCount != 0) {
             result.tippsNotEqual << hit

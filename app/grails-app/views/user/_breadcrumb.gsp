@@ -11,7 +11,7 @@
     </g:if>
     <g:if test="${actionName == 'show'}">
         <semui:crumb controller="user" action="list" message="user.show_all.label" />
-        <semui:crumb class="active" text="${ui.displayName?:'No username'}" />
+        <semui:crumb class="active" text="${user.displayName?:'No username'}" />
     </g:if>
     <g:if test="${actionName == 'list'}">
         <semui:crumb class="active" message="user.show_all.label" />
