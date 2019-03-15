@@ -2550,11 +2550,23 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             response.sendError(401); return
         }
         flash.error = ""
+        flash.info = ""
+        if (params?.sourceSubscriptionId == "null") params.remove("sourceSubscriptionId")
         result.sourceSubscriptionId = params?.sourceSubscriptionId ?: params?.id
-        if (params?.targetSubscriptionId) { result.targetSubscriptionId = params?.targetSubscriptionId}
-//        obsolet?
-        result.sourceSubscription = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): params.id)
-        if (params.targetSubscriptionId){ result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))}
+        result.sourceSubscription = Subscription.get(Long.parseLong(params?.sourceSubscriptionId ?: params?.id))
+
+        //remove all DO_NOTHING from params
+        List toRemove = []
+        params?.subscription?.each{ k, v ->
+            if (DO_NOTHING.equals(v)){ toRemove << k}
+        }
+        toRemove.each {params.remove("subscription."+it)}
+
+        if (params?.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
+        if (params?.targetSubscriptionId) {
+            result.targetSubscriptionId = params?.targetSubscriptionId
+            result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
+        }
 
         result.allSubscriptions_readRights = getMySubscriptions_readRights()
         result.allSubscriptions_writeRights = getMySubscriptions_writeRights()
@@ -2614,32 +2626,38 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
-        flash.error = ""
-        flash.info = "initialisiert<br/>"
 
-        if (params?.subscription?.takeDates && (DO_NOTHING != params?.subscription?.takeDates)) {
+        if (params?.subscription?.takeDates) {
             if (isBothSubscriptionsSet(baseSub, newSub)) {
                 takeDates(baseSub, newSub)
             }
         }
 
-        if (params?.subscription?.takeOwner && (DO_NOTHING != params?.subscription?.takeOwner)) {
+        if (params?.subscription?.takeOwner) {
             if (isBothSubscriptionsSet(baseSub, newSub)) {
                 takeOwner(baseSub, newSub)
             }
         }
 
-        if (params?.subscription?.takeOrgRelations && (DO_NOTHING != params?.subscription?.takeOrgRelations)) {
+        if (params?.subscription?.takeOrgRelations) {
             if (isBothSubscriptionsSet(baseSub, newSub)) {
                 takeOrgRelations(baseSub, newSub)
             }
         }
 
-        if (params?.subscription?.takePackages && (DO_NOTHING != params?.subscription?.takePackages)) {
+        if (params?.subscription?.takePackages) {
             List<Package> packagesToTake = params?.list('subscription.takePackageIds').collect{ genericOIDService.resolveOID(it)}
 
             if (isBothSubscriptionsSet(baseSub, newSub)) {
-                takePackages(packagesToTake, baseSub, newSub)
+                takePackages(packagesToTake, newSub)
+            }
+        }
+
+        if (params?.subscription?.takeEntitlements) {
+            List<IssueEntitlement> entitlementsToTake = params?.list('subscription.takePackageIds').collect{ genericOIDService.resolveOID(it)}
+
+            if (isBothSubscriptionsSet(baseSub, newSub)) {
+                takeEntitlements(entitlementsToTake, newSub)
             }
         }
 
@@ -2800,7 +2818,6 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
     private workFlowPart4() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
-        flash.error = ""
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         List<AbstractProperty> propertiesToTake = params?.list('subscription.takeProperty').collect{ genericOIDService.resolveOID(it)}
@@ -2862,13 +2879,14 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         }
     }
 
-    private boolean takePackages(List<Package> packagesToTake, Subscription sourceSub, Subscription targetSub) {
+    private boolean takePackages(List<Package> packagesToTake, Subscription targetSub) {
         if (params?.subscription?.takePackages?.equals(REPLACE)) {
             //alle IEs löschen, die zu den zu löschenden Packages gehören
             targetSub.issueEntitlements.each{ ie ->
                 TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(ie.tipp.id)
                 if (targetSub.packages.find { p -> p.pkg.id == tipp.pkg.id } ) {
-                    ie.delete(flush: true)
+                    ie.status = RDStore.IE_DELETED
+                    ie.save(flush: true)//TODO: testen!
                 }
             }
 
@@ -2900,16 +2918,29 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         }
     }
 
-    private boolean takeEntitlements(Subscription sourceSub, Subscription targetSub) {
-        sourceSub.issueEntitlements.each { ie ->
-            if (ie.status != RDStore.IE_DELETED) {
-                def properties = ie.properties
-                properties.globalUID = null
-                IssueEntitlement newIssueEntitlement = new IssueEntitlement()
-                InvokerHelper.setProperties(newIssueEntitlement, properties)
-                newIssueEntitlement.subscription = targetSub
-                newIssueEntitlement.save(flush: true)
+    private boolean takeEntitlements(List<IssueEntitlement> entitlementsToTake, Subscription targetSub) {
+        if (params?.subscription?.takeEntitlements?.equals(REPLACE)) {
+            //TODO: testen!
+            targetSub.issueEntitlements.each {
+                it.status = RDStore.IE_DELETED
+                it.save(flush: true)
             }
+        }
+
+        switch (params?.subscription?.takeEntitlements) {
+            case REPLACE:
+            case COPY:
+                entitlementsToTake.each { ie ->
+                    if (ie.status != RDStore.IE_DELETED) {
+                        def properties = ie.properties
+                        properties.globalUID = null
+                        IssueEntitlement newIssueEntitlement = new IssueEntitlement()
+                        InvokerHelper.setProperties(newIssueEntitlement, properties)
+                        newIssueEntitlement.subscription = targetSub
+                        newIssueEntitlement.save(flush: true)
+                    }
+                }
+                break;
         }
     }
 
