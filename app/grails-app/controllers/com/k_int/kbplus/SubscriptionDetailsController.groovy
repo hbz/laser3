@@ -2627,25 +2627,25 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
-        if (params?.subscription?.takeDates) {
+        if (params?.subscription?.takeDates && ( ! DO_NOTHING.equals(params.subscription.takeDates))) {
             if (isBothSubscriptionsSet(baseSub, newSub)) {
                 takeDates(baseSub, newSub)
             }
         }
 
-        if (params?.subscription?.takeOwner) {
+        if (params?.subscription?.takeOwner && ( ! DO_NOTHING.equals(params?.subscription?.takeOwner))) {
             if (isBothSubscriptionsSet(baseSub, newSub)) {
                 takeOwner(baseSub, newSub)
             }
         }
 
-        if (params?.subscription?.takeOrgRelations) {
+        if (params?.subscription?.takeOrgRelations && ( ! DO_NOTHING.equals(params?.subscription?.takeOrgRelations))) {
             if (isBothSubscriptionsSet(baseSub, newSub)) {
                 takeOrgRelations(baseSub, newSub)
             }
         }
 
-        if (params?.subscription?.takePackages) {
+        if (params?.subscription?.takePackages && ( ! DO_NOTHING.equals(params?.subscription?.takePackages))) {
             List<Package> packagesToTake = params?.list('subscription.takePackageIds').collect{ genericOIDService.resolveOID(it)}
 
             if (isBothSubscriptionsSet(baseSub, newSub)) {
@@ -2653,15 +2653,24 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             }
         }
 
-        if (params?.subscription?.takeEntitlements) {
+        if (params?.subscription?.takeEntitlements && ( ! DO_NOTHING.equals(params?.subscription?.takeEntitlements))) {
             List<IssueEntitlement> entitlementsToTake = params?.list('subscription.takePackageIds').collect{ genericOIDService.resolveOID(it)}
 
             if (isBothSubscriptionsSet(baseSub, newSub)) {
                 takeEntitlements(entitlementsToTake, newSub)
             }
         }
+        result.sourceIEs = baseSub?
+                                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
+                                [sub: baseSub, del: RDStore.IE_DELETED])
+                                : []
+        result.targetIEs = newSub?
+                                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
+                                [sub: newSub, del: RDStore.IE_DELETED])
+                                : []
 
-        // restrict visible for templates/links/orgLinksAsList
+
+                        // restrict visible for templates/links/orgLinksAsList
         result.source_visibleOrgRelations = getVisibleOrgRelations(baseSub)
         result.target_visibleOrgRelations = getVisibleOrgRelations(newSub)
 
@@ -2923,7 +2932,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             //TODO: testen!
             targetSub.issueEntitlements.each {
                 it.status = RDStore.IE_DELETED
-                it.save(flush: true)
+//                it.save(flush: true)
             }
         }
 
@@ -2937,7 +2946,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                         IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                         InvokerHelper.setProperties(newIssueEntitlement, properties)
                         newIssueEntitlement.subscription = targetSub
-                        newIssueEntitlement.save(flush: true)
+//                        newIssueEntitlement.save(flush: true)
                     }
                 }
                 break;
