@@ -17,6 +17,9 @@ import com.k_int.properties.*
 
 import java.sql.Ref
 
+import static grails.async.Promises.task
+import static grails.async.Promises.waitAll
+
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class OrganisationsController extends AbstractDebugController {
 
@@ -258,6 +261,9 @@ class OrganisationsController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def show() {
+
+        def debugTimeA = System.currentTimeMillis()
+
         def result = [:]
 
         //this is a flag to check whether the page has been called by a context org without full reading/writing permissions, to be extended as soon as the new orgTypes are defined
@@ -265,7 +271,7 @@ class OrganisationsController extends AbstractDebugController {
             result.institutionalView = params.institutionalView
 
         DebugUtil du = new DebugUtil()
-        du.setBenchMark('1')
+        du.setBenchMark('this-n-that')
 
         def orgInstance = Org.get(params.id)
         def user = contextService.getUser()
@@ -277,33 +283,37 @@ class OrganisationsController extends AbstractDebugController {
 
         du.setBenchMark('orgRoles')
 
-        if ( SpringSecurityUtils.ifAnyGranted("ROLE_YODA") ||
-             (orgInstance.id == org.id && user.hasAffiliation('INST_ADM'))
-        ) {
+        // TODO: experimental asynchronous task
+        def task_orgRoles = task {
 
-            link_vals.each { lv ->
-                def param_offset = 0
+            if (SpringSecurityUtils.ifAnyGranted("ROLE_YODA") ||
+                    (orgInstance.id == org.id && user.hasAffiliation('INST_ADM'))
+            ) {
 
-                if (lv.id) {
-                    def cur_param = "rdvl_${String.valueOf(lv.id)}"
+                link_vals.each { lv ->
+                    def param_offset = 0
 
-                    if (params[cur_param]) {
-                        param_offset = params[cur_param]
-                        result[cur_param] = param_offset
+                    if (lv.id) {
+                        def cur_param = "rdvl_${String.valueOf(lv.id)}"
+
+                        if (params[cur_param]) {
+                            param_offset = params[cur_param]
+                            result[cur_param] = param_offset
+                        }
+
+                        def links = OrgRole.findAll {
+                            org == orgInstance && roleType == lv
+                        }
+                        links = links.findAll { it2 -> it2.ownerStatus?.value != 'Deleted' }
+
+                        def link_type_results = links.drop(param_offset.toInteger()).take(10) // drop from head, take 10
+
+                        if (link_type_results) {
+                            sorted_links["${String.valueOf(lv.id)}"] = [rdv: lv, rdvl: cur_param, links: link_type_results, total: links.size()]
+                        }
+                    } else {
+                        log.debug("Could not read Refdata: ${lv}")
                     }
-
-                    def links = OrgRole.findAll {
-                        org == orgInstance && roleType == lv
-                    }
-                    links = links.findAll { it -> it.ownerStatus?.value != 'Deleted' }
-
-                    def link_type_results = links.drop(param_offset.toInteger()).take(10) // drop from head, take 10
-
-                    if (link_type_results) {
-                        sorted_links["${String.valueOf(lv.id)}"] = [rdv: lv, rdvl: cur_param, links: link_type_results, total: links.size()]
-                    }
-                } else {
-                    log.debug("Could not read Refdata: ${lv}")
                 }
             }
         }
@@ -344,39 +354,50 @@ class OrganisationsController extends AbstractDebugController {
 
         du.setBenchMark('properties')
 
-        // -- private properties
+        // TODO: experimental asynchronous task
+        def task_properties = task {
 
-        result.authorizedOrgs = result.user?.authorizedOrgs
-        result.contextOrg     = contextService.getOrg()
+            // -- private properties
 
-        // create mandatory OrgPrivateProperties if not existing
+            result.authorizedOrgs = result.user?.authorizedOrgs
+            result.contextOrg = contextService.getOrg()
 
-        def mandatories = []
-        result.user?.authorizedOrgs?.each{ authOrg ->
-            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Organisation Property", true, authOrg)
-            if(ppd){
-                mandatories << ppd
-            }
-        }
-        mandatories.flatten().each{ pd ->
-            if (! OrgPrivateProperty.findWhere(owner: orgInstance, type: pd)) {
-                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, orgInstance, pd)
+            // create mandatory OrgPrivateProperties if not existing
 
-                if (newProp.hasErrors()) {
-                    log.error(newProp.errors)
-                } else {
-                    log.debug("New org private property created via mandatory: " + newProp.type.name)
+            def mandatories = []
+            result.user?.authorizedOrgs?.each { authOrg ->
+                def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Organisation Property", true, authOrg)
+                if (ppd) {
+                    mandatories << ppd
                 }
             }
-        }
+            mandatories.flatten().each { pd ->
+                if (!OrgPrivateProperty.findWhere(owner: orgInstance, type: pd)) {
+                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, orgInstance, pd)
 
-        // -- private properties
+                    if (newProp.hasErrors()) {
+                        log.error(newProp.errors)
+                    } else {
+                        log.debug("New org private property created via mandatory: " + newProp.type.name)
+                    }
+                }
+            }
+
+            // -- private properties
+       }
+
 
         List bm = du.stopBenchMark()
         result.benchMark = bm
         log.debug (bm)
 
-      result
+        // TODO: experimental asynchronous task
+        waitAll(task_orgRoles, task_properties)
+
+        def debugTimeB = System.currentTimeMillis()
+        println " ---> " + Math.abs(debugTimeB - debugTimeA)
+
+        result
     }
 
     @Secured(['ROLE_USER'])

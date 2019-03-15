@@ -11,6 +11,7 @@
                     <th>(Step_x+1 - Step_x) MS</th>
                 </tr>
             </thead>
+            <% def sum = 0 %>
             <g:each in="${debug}" status="c" var="bm">
                 <tr>
                     <td>${c+1}</td>
@@ -18,9 +19,9 @@
                     <td>
                         <%
                             if (c < debug.size() - 1) {
-                                print (debug[c+1][1] - bm[1])
+                                print debug[c+1][1] - bm[1]
                             } else {
-                                print 0
+                                print '(' + ( bm[1] - debug[0][1] ) + ') '
                             }
                         %>
                     </td>
