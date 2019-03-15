@@ -1,7 +1,4 @@
-<%@ page import="com.k_int.properties.PropertyDefinition; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription" %>
-<%@ page import="com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService");
-   def contextOrg = contextService.org%>
+<%@ page import="com.k_int.kbplus.Subscription" %>
 <g:form action="copyElementsIntoSubscription" controller="subscriptionDetails" id="${params.id}" params="[
             workFlowPart: workFlowPart,
             workFlowPartNext: workFlowPartNext
