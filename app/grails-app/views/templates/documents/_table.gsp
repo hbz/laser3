@@ -20,14 +20,22 @@
         <tbody>
             <g:each in="${instance.documents.sort{it.owner?.title}}" var="docctx">
                 <%
+                    boolean inOwnerOrg = false
+                    boolean isCreator = false
+
+                    if(docctx.owner.owner.id == org.id)
+                        inOwnerOrg = true
+                    if(docctx.owner.creator.id == user.id)
+                        isCreator = true
+
                     boolean visible = false
 
                     switch(docctx.shareConf) {
-                        case RDStore.SHARE_CONF_CREATOR: if(user.id == docctx.owner.creator.id) visible = true
+                        case RDStore.SHARE_CONF_CREATOR: if(isCreator) visible = true
                             break
-                        case RDStore.SHARE_CONF_UPLOADER_ORG: if(org.id == docctx.owner.owner.id) visible = true
+                        case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true
                             break
-                        case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(org.id == docctx.owner.owner.id || org.id == instance.id) visible = true
+                        case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || org.id == instance.id) visible = true
                             break
                         case RDStore.SHARE_CONF_CONSORTIUM:
                         case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
@@ -49,7 +57,9 @@
                             ${docctx.owner.filename}
                         </td>
                         <td>
-                            ${docctx.owner.creator}
+                            <g:if test="${inOwnerOrg || isCreator}">
+                                ${docctx.owner.creator}
+                            </g:if>
                         </td>
                         <td>
                             ${docctx.owner?.type?.getI10n('value')}
@@ -102,7 +112,7 @@
                                         <i class="trash alternate icon"></i>
                                     </g:link>
                                 </g:if>
-                                <g:elseif test="${(instance instanceof Org) && ((docctx.owner.owner.id == org.id && editable) || docctx.owner.creator.id == user.id) && !docctx.sharedFrom}">
+                                <g:elseif test="${(instance instanceof Org) && ((inOwnerOrg && editable) || isCreator) && !docctx.sharedFrom}">
                                     <g:link controller="${controllerName}" action="editDocument" params="[id:docctx.id]" data-tooltip="${message(code:"template.documents.edit")}" class="ui icon button trigger-modal">
                                         <i class="pencil icon"></i>
                                     </g:link>
