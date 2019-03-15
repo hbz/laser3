@@ -19,6 +19,7 @@ class UrlMappings {
 
         // new custom api
         "/api/push/orgs"        (controller: 'api', action: 'importInstitutions', parseRequest: false)
+        "/api/fetch/orgs"       (controller: 'api', action: 'makeshiftLaserOrgExport')
 
         "/api/$version/spec"    (controller: 'api', action: 'loadSpec')
         "/api/$version/$obj"    (controller: 'api', action: 'dispatch')

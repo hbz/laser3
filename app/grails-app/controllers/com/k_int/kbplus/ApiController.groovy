@@ -7,6 +7,7 @@ import de.laser.api.v0.ApiReader
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.Constants
 import grails.converters.JSON
+import grails.converters.XML
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.xml.MarkupBuilder
 
@@ -313,14 +314,18 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
     }
 
     @Secured(['ROLE_API_READER', 'IS_AUTHENTICATED_FULLY'])
-    makeshiftLaserExport() {
+    makeshiftLaserOrgExport() {
         log.info("Export institutions in XML, structure follows LAS:eR-DB-structure")
         StringWriter writer = new StringWriter()
         MarkupBuilder orgDataBuilder = new MarkupBuilder(writer)
         orgDataBuilder.organisations {
-
+            Org.getAll().each { o ->
+                org {
+                    globalUID(o.globalUID)
+                }
+            }
         }
-        render writer.toString()
+        render (text:writer.toString(), contentType: "text/xml")
     }
 
     @Secured(['ROLE_API_WRITER', 'IS_AUTHENTICATED_FULLY'])
