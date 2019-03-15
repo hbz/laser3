@@ -9,6 +9,7 @@ class PendingChangeService {
 
     def genericOIDService
     def grailsApplication
+    def springSecurityService
 
     final static EVENT_OBJECT_NEW = 'New Object'
     final static EVENT_OBJECT_UPDATE = 'Update Object'
@@ -90,12 +91,12 @@ class PendingChangeService {
                                 }
 
                                 //FIXME: is this needed anywhere?
-                                def change_audit_object = null
-                                if ( change.license ) change_audit_object = pendingChange.license;
-                                if ( change.subscription ) change_audit_object = pendingChange.subscription;
-                                if ( change.pkg ) change_audit_object = pendingChange.pkg;
+                                /*def change_audit_object = null
+                                if ( change?.license ) change_audit_object = pendingChange?.license;
+                                if ( change?.subscription ) change_audit_object = pendingChange?.subscription;
+                                if ( change?.pkg ) change_audit_object = pendingChange?.pkg;
                                 def change_audit_id = change_audit_object.id
-                                def change_audit_class_name = change_audit_object.class.name
+                                def change_audit_class_name = change_audit_object.class.name*/
                             }
                         }
                         break;
@@ -162,7 +163,7 @@ class PendingChangeService {
                     pendingChange.status = RefdataValue.getByValueAndCategory("Accepted", "PendingChangeStatus")
                     pendingChange.actionDate = new Date()
                     log.debug("httpRequest: " +httpRequest)
-                    pendingChange.user = httpRequest[0]?.user
+                    pendingChange.user = httpRequest[0]?.user ?: springSecurityService.getCurrentUser()
                     pendingChange.save(flush: true);
                     def x = pendingChange
                     log.debug("Pending change accepted and saved")
@@ -185,15 +186,15 @@ class PendingChangeService {
             change.subscription?.pendingChanges?.remove(change)
             change.subscription?.save();
             change.actionDate = new Date()
-            change.user = httpRequest.user
+            change.user = httpRequest?.user ?: springSecurityService.getCurrentUser()
             change.status = RefdataValue.getByValueAndCategory("Rejected","PendingChangeStatus")
 
-            def change_audit_object = null
+           /* def change_audit_object = null
             if ( change.license ) change_audit_object = change.license;
             if ( change.subscription ) change_audit_object = change.subscription;
             if ( change.pkg ) change_audit_object = change.pkg;
             def change_audit_id = change_audit_object.id
-            def change_audit_class_name = change_audit_object.class.name
+            def change_audit_class_name = change_audit_object.class.name*/
         }
     }
 
