@@ -1637,7 +1637,8 @@ AND EXISTS (
             if (CostItem.findBySub(subscription)) {
                 flash.error = message(code: 'subscription.delete.existingCostItems')
 
-            } else if (! derived_subs) {
+            }
+            else if (! derived_subs) {
               log.debug("Current Institution is ${inst}, sub has consortium ${subscription.consortia}")
               if( subscription.consortia && subscription.consortia != inst ) {
                 OrgRole.executeUpdate("delete from OrgRole where sub = ? and org = ?",[subscription, inst])
@@ -1658,7 +1659,7 @@ AND EXISTS (
                 }
               }
             } else {
-                flash.error = message(code:'myinst.actionCurrentSubscriptions.error', default:'Unable to delete - The selected license has attached subscriptions')
+                flash.error = message(code:'myinst.actionCurrentSubscriptions.error', default:'Unable to delete - The selected subscriptions has attached subscriptions')
             }
         } else {
             log.warn("${result.user} attempted to delete subscription ${result.subscription} without perms")
