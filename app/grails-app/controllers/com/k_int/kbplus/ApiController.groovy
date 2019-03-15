@@ -8,6 +8,7 @@ import de.laser.controller.AbstractDebugController
 import de.laser.helper.Constants
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import groovy.xml.MarkupBuilder
 
 import java.text.SimpleDateFormat
 
@@ -288,6 +289,38 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
             }
         }
         render xml
+    }
+
+    @Secured(['ROLE_API_WRITER', 'IS_AUTHENTICATED_FULLY'])
+    def setupLaserData() {
+        log.info("import institutions via xml .. ROLE_API_WRITER required")
+
+        def xml = "(Code: 0) - Errare humanum est"
+        def rawText = request.getReader().getText()
+
+        if (request.method == 'POST') {
+
+            if(rawText) {
+                xml = new XmlSlurper().parseText(rawText)
+                assert xml instanceof groovy.util.slurpersupport.GPathResult
+                apiService.makeshiftOrgImport(xml)
+            }
+            else {
+                xml = "(Code: 1) - Ex nihilo nihil fit"
+            }
+        }
+        render xml
+    }
+
+    @Secured(['ROLE_API_READER', 'IS_AUTHENTICATED_FULLY'])
+    makeshiftLaserExport() {
+        log.info("Export institutions in XML, structure follows LAS:eR-DB-structure")
+        StringWriter writer = new StringWriter()
+        MarkupBuilder orgDataBuilder = new MarkupBuilder(writer)
+        orgDataBuilder.organisations {
+
+        }
+        render writer.toString()
     }
 
     @Secured(['ROLE_API_WRITER', 'IS_AUTHENTICATED_FULLY'])
