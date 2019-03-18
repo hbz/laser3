@@ -207,7 +207,7 @@ class OrganisationsController extends AbstractDebugController {
         du.setBenchMark('orgRoles')
 
         if ( SpringSecurityUtils.ifAnyGranted("ROLE_YODA") ||
-             (orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADMIN'))
+             (orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADM'))
         ) {
 
             link_vals.each { lv ->
