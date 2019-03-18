@@ -28,9 +28,19 @@
                 </td>
             </tr>
             <tr>
-                <td style="vertical-align: top"></td>
-                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takeDates" value="${REPLACE}" /></div></td>
-                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takeDates" value="${DO_NOTHING}" checked /></div></td>
+                <td style="vertical-align: top">
+
+                </td>
+                <td style="vertical-align: top">
+                    <div class="ui radio checkbox la-toggle-radio la-replace">
+                        <input type="radio" name="subscription.takeDates" value="${REPLACE}" />
+                    </div>
+                </td>
+                <td style="vertical-align: top">
+                    <div class="ui radio checkbox la-toggle-radio la-noChange">
+                        <input type="radio" name="subscription.takeDates" value="${DO_NOTHING}" checked />
+                    </div>
+                </td>
                 <td style="vertical-align: top"><g:formatDate date="${sourceSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
                     ${sourceSubscription?.endDate ? (' - ' + formatDate(date: sourceSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}</td>
                 <td style="vertical-align: top"><g:formatDate date="${targetSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
@@ -38,8 +48,8 @@
             </tr>
             <tr>
                 <td style="vertical-align: top"></td>
-                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takeOwner" value="${REPLACE}" /></div></td>
-                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takeOwner" value="${DO_NOTHING}" checked /></div></td>
+                <td style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeOwner" value="${REPLACE}" /></div></td>
+                <td style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeOwner" value="${DO_NOTHING}" checked /></div></td>
                 <td style="vertical-align: top">
                     %{--<g:each in="${sourceSubscription?.packages?.sort { it.pkg.name }}" var="sp">--}%
                         %{--<b>${message(code: 'subscription.packages.label')}:</b>--}%
@@ -65,9 +75,9 @@
                 </td>
             </tr>
             <tr>
-                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takeOrgRelations" value="${COPY}" /></div></td>
-                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takeOrgRelations" value="${REPLACE}" /></div></td>
-                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takeOrgRelations" value="${DO_NOTHING}" checked /></div></td>
+                <td style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeOrgRelations" value="${COPY}" /></div></td>
+                <td style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeOrgRelations" value="${REPLACE}" /></div></td>
+                <td style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeOrgRelations" value="${DO_NOTHING}" checked /></div></td>
                 <td style="vertical-align: top">
                     <g:each in="${source_visibleOrgRelations}" var="source_role">
                         <g:if test="${source_role.org}">
@@ -91,9 +101,9 @@
                 </td>
             </tr>
             <tr>
-                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takePackages" value="${COPY}" /></div></td>
-                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takePackages" value="${REPLACE}" /></div></td>
-                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takePackages" value="${DO_NOTHING}" checked /></div></td>
+                <td style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takePackages" value="${COPY}" /></div></td>
+                <td style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takePackages" value="${REPLACE}" /></div></td>
+                <td style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takePackages" value="${DO_NOTHING}" checked /></div></td>
                 <td style="vertical-align: top">
                     <g:each in="${sourceSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
                         %{--<input type="checkbox" data-pckId="${sp.pkg.id}" >--}%
@@ -114,9 +124,9 @@
                 </td>
             </tr>
             <tr>
-                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takeEntitlements" value="${COPY}" /></div></td>
-                <td style="vertical-align: top"><div class="ui radio checkbox" ><input type="radio" name="subscription.takeEntitlements" value="${REPLACE}" /></div></td>
-                <td style="vertical-align: top"><div class="ui radio checkbox"><input type="radio" name="subscription.takeEntitlements" value="${DO_NOTHING}" checked /></div></td>
+                <td style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeEntitlements" value="${COPY}" /></div></td>
+                <td style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeEntitlements" value="${REPLACE}" /></div></td>
+                <td style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeEntitlements" value="${DO_NOTHING}" checked /></div></td>
                 <td style="vertical-align: top">
                     <g:if test="${sourceIEs}">
                         <b>${message(code: 'issueEntitlement.countSubscription')} </b>${sourceIEs?.size()}<br>

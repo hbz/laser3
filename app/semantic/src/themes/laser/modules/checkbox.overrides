@@ -37,51 +37,44 @@
 .plus:before { content: '\e802'; }
 */
 
-/* Copy Elements into Subscription */
+/************* laser three toggle icon buttons ***************/
+/* BEFORE */
+.ui.checkbox.la-toggle-radio label{
+  font-size: 1.7em;
+
+}
 .ui.checkbox.la-toggle-radio label:before {
-  border: none;
-  font-size: 30px;
-}
 
-.ui.radio.checkbox label:before {
-  font-family: Icons;
-  content: "\f43f";
-  color: lightgray;
-}
+  //border: none;
+  //font-size: 25px;
 
-/* Focus */
-.ui.radio.checkbox.la-toggle-radio input:focus ~ label:before {
-  background-color:none;
+  width: 40px;
+  height: 40px;
+  padding-top: 9px;
+  color: @white;
+  background-color: lightgray;
+  text-align: center;
 }
-.ui.radio.checkbox.la-toggle-radio input:focus ~ label:after {
-  content:'';
-}
-.ui.radio.checkbox.la-toggle-radio input:focus:checked ~ label:before {
-  background-color: none;
-}
-.ui.radio.checkbox.la-toggle-radio input:focus:checked ~ label:after {
-  display: none !important;
-}
-
-/* Indeterminate */
-.ui.radio.checkbox.la-toggle-radio input:indeterminate ~ label:after {
-  opacity: 0;
-}
-
-/* Active */
 .ui.radio.checkbox.la-toggle-radio input:checked ~ label:before {
-  font-family: Icons;
-  content: "\f43f";
-  background-color: none;
-  color: black
-}
-.ui.radio.checkbox.la-toggle-radio input:checked ~ label:after {
-  background-color: none;
-}
-.ui.radio.checkbox.la-toggle-radio input:checked~label:after {
-  background-color: none;
-}
 
-.ui.radio.checkbox.la-toggle-radio input:checked~label:after {
-  background-color: transparent;
+  background-color: @darkGrey;
+}
+/* AFTER */
+.ui.checkbox.la-toggle-radio label:after {
+  display: none;
+}
+/* APPEND */
+.ui.checkbox.la-toggle-radio.la-append label:before {
+  font-family: icomoon;
+  content: "\e90c";
+}
+/* REPLACE */
+.ui.checkbox.la-toggle-radio.la-replace label:before {
+  font-family: icomoon;
+  content: "\e90d";
+}
+/* NO CHANGE */
+.ui.checkbox.la-toggle-radio.la-noChange label:before {
+  font-family: Icons;
+  content: "\f05e";
 }

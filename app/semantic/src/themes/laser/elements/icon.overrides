@@ -1756,21 +1756,22 @@ i.icon.la-noChange {
 // the other part of the button is the SEMANTIC UI Icon: 'hand pointer outline'
 
 
-i.icon.hand.pointer.outline.slash:before { content: "\e900"; }
-i.icon.pencil.alternate.slash:before { content: "\e901"; }
-i.icon.thumbtack.slash:before { content: "\e902"; }
-i.icon.plus.square.slash:before { content: "\e903"; }
-i.icon.chain.broken:before { content: "\e904"; }
-i.icon.chain:before { content: "\e905"; }
-i.icon.share-unslash:before { content: "\e906"; }
-i.icon.share-slash:before { content: "\e907"; }
-i.icon.la-copySend:before { content: "\e908"; }
-i.icon.la-notebook:before { content: "\e909"; }
-i.icon.la-books:before { content: "\e90a"; }
+i.icon.hand.pointer.outline.slash:before { content: "\e901"; }
+i.icon.pencil.alternate.slash:before { content: "\e902"; }
+i.icon.thumbtack.slash:before { content: "\e903"; }
+i.icon.plus.square.slash:before { content: "\e904"; }
+i.icon.chain.broken:before { content: "\e905"; }
+i.icon.chain:before { content: "\e906"; }
+i.icon.share-unslash:before { content: "\e907"; }
+i.icon.share-slash:before { content: "\e908"; }
+i.icon.la-copySend:before { content: "\e909"; }
+i.icon.la-notebook:before { content: "\e90a"; }
+i.icon.la-books:before { content: "\e90b"; }
 /**/
-i.icon.la-append:before { content: "\e90b"; }
-i.icon.la-replace:before { content: "\e90c"; }
-i.icon.la-noChange:before { content: "\e90d"; }
+i.icon.la-noChange:before { content: "\e900"; }
+i.icon.la-append:before { content: "\e90c"; }
+i.icon.la-replace:before { content: "\e90d"; }
+
 
 
 /*******************************
