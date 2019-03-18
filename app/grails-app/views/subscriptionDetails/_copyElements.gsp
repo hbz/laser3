@@ -124,7 +124,8 @@
                             <g:checkBox name="subscription.takeEntitlementIds" value="${genericOIDService.getOID(ie)}" checked="false"/>&nbsp
                             <semui:listIcon type="${ie.tipp.title.type.getI10n('value')}"/>&nbsp
                             <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
-                            ${ie.tipp.pkg.id}
+                            Tipp PkgId: ${ie.tipp.pkg.id}
+                            Tipp ID: ${ie.tipp.id}
                             <br />
                         </g:each>
                     </g:if>
@@ -136,7 +137,8 @@
                             <div data-pckId="${ie?.tipp?.pkg?.id}">
                                 <semui:listIcon type="${ie.tipp.title.type.getI10n('value')}"/>
                                 <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
-                                ${ie.tipp.pkg.id}
+                                Tipp PkgId: ${ie.tipp.pkg.id}
+                                Tipp ID: ${ie.tipp.id}
                             </div>
                         </g:each>
                     </g:if>

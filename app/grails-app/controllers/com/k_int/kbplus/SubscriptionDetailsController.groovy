@@ -2556,11 +2556,12 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.sourceSubscription = Subscription.get(Long.parseLong(params?.sourceSubscriptionId ?: params?.id))
 
         //remove all DO_NOTHING from params
-        List toRemove = []
-        params?.subscription?.each{ k, v ->
-            if (DO_NOTHING.equals(v)){ toRemove << k}
-        }
-        toRemove.each {params.remove("subscription."+it)}
+        //Funktioniert leider nur halb: Die Params Einträge sind im Debugger nicht mehr sichtbar, aber dennoch da!!!
+//        List toRemove = []
+//        params?.subscription?.each{ k, v ->
+//            if (DO_NOTHING.equals(v)){ toRemove << k}
+//        }
+//        toRemove.each {params.remove("subscription."+it)}
 
         if (params?.targetSubscriptionId == "null") params.remove("targetSubscriptionId")
         if (params?.targetSubscriptionId) {
@@ -2611,6 +2612,15 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.workFlowPartNext = params?.workFlowPartNext ?: '2'
         result
     }
+
+    private List getIssueEntitlements(Subscription subscription) {
+        List<IssueEntitlement> ies = subscription?
+                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
+                        [sub: subscription, del: RDStore.IE_DELETED])
+                : []
+        ies.sort {it.tipp.title.title}
+        ies
+    }
     private List getVisibleOrgRelations(Subscription subscription) {
         // restrict visible for templates/links/orgLinksAsList
         List visibleOrgRelations = []
@@ -2627,50 +2637,32 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
-        if (params?.subscription?.takeDates && ( ! DO_NOTHING.equals(params.subscription.takeDates))) {
-            if (isBothSubscriptionsSet(baseSub, newSub)) {
-                takeDates(baseSub, newSub)
-            }
+        if (params?.subscription?.takeDates && ( ! DO_NOTHING.equals(params.subscription.takeDates)) && isBothSubscriptionsSet(baseSub, newSub)) {
+            takeDates(baseSub, newSub)
         }
 
-        if (params?.subscription?.takeOwner && ( ! DO_NOTHING.equals(params?.subscription?.takeOwner))) {
-            if (isBothSubscriptionsSet(baseSub, newSub)) {
-                takeOwner(baseSub, newSub)
-            }
+        if (params?.subscription?.takeOwner && ( ! DO_NOTHING.equals(params?.subscription?.takeOwner)) && isBothSubscriptionsSet(baseSub, newSub)) {
+            takeOwner(baseSub, newSub)
         }
 
-        if (params?.subscription?.takeOrgRelations && ( ! DO_NOTHING.equals(params?.subscription?.takeOrgRelations))) {
-            if (isBothSubscriptionsSet(baseSub, newSub)) {
-                takeOrgRelations(baseSub, newSub)
-            }
+        if (params?.subscription?.takeOrgRelations && ( ! DO_NOTHING.equals(params?.subscription?.takeOrgRelations)) && isBothSubscriptionsSet(baseSub, newSub)) {
+            takeOrgRelations(baseSub, newSub)
         }
 
-        if (params?.subscription?.takePackages && ( ! DO_NOTHING.equals(params?.subscription?.takePackages))) {
+        if (params?.subscription?.takePackages && ( ! DO_NOTHING.equals(params?.subscription?.takePackages)) && isBothSubscriptionsSet(baseSub, newSub)) {
             List<Package> packagesToTake = params?.list('subscription.takePackageIds').collect{ genericOIDService.resolveOID(it)}
-
-            if (isBothSubscriptionsSet(baseSub, newSub)) {
-                takePackages(packagesToTake, newSub)
-            }
+            takePackages(packagesToTake, newSub)
         }
 
-        if (params?.subscription?.takeEntitlements && ( ! DO_NOTHING.equals(params?.subscription?.takeEntitlements))) {
-            List<IssueEntitlement> entitlementsToTake = params?.list('subscription.takePackageIds').collect{ genericOIDService.resolveOID(it)}
-
-            if (isBothSubscriptionsSet(baseSub, newSub)) {
-                takeEntitlements(entitlementsToTake, newSub)
-            }
+        if (params?.subscription?.takeEntitlements && ( ! DO_NOTHING.equals(params?.subscription?.takeEntitlements)) && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<IssueEntitlement> entitlementsToTake = params?.list('subscription.takeEntitlementIds').collect{ genericOIDService.resolveOID(it)}
+            takeEntitlements(entitlementsToTake, newSub)
         }
-        result.sourceIEs = baseSub?
-                                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
-                                [sub: baseSub, del: RDStore.IE_DELETED])
-                                : []
-        result.targetIEs = newSub?
-                                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
-                                [sub: newSub, del: RDStore.IE_DELETED])
-                                : []
 
+        result.sourceIEs = getIssueEntitlements(baseSub)
+        result.targetIEs = getIssueEntitlements(newSub)
 
-                        // restrict visible for templates/links/orgLinksAsList
+        // restrict visible for templates/links/orgLinksAsList
         result.source_visibleOrgRelations = getVisibleOrgRelations(baseSub)
         result.target_visibleOrgRelations = getVisibleOrgRelations(newSub)
 
@@ -2895,7 +2887,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(ie.tipp.id)
                 if (targetSub.packages.find { p -> p.pkg.id == tipp.pkg.id } ) {
                     ie.status = RDStore.IE_DELETED
-                    ie.save(flush: true)//TODO: testen!
+                    ie.save(flush: true)
                 }
             }
 
@@ -2929,10 +2921,9 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
     private boolean takeEntitlements(List<IssueEntitlement> entitlementsToTake, Subscription targetSub) {
         if (params?.subscription?.takeEntitlements?.equals(REPLACE)) {
-            //TODO: testen!
             targetSub.issueEntitlements.each {
                 it.status = RDStore.IE_DELETED
-//                it.save(flush: true)
+                it.save(flush: true)
             }
         }
 
@@ -2941,12 +2932,17 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             case COPY:
                 entitlementsToTake.each { ie ->
                     if (ie.status != RDStore.IE_DELETED) {
-                        def properties = ie.properties
-                        properties.globalUID = null
-                        IssueEntitlement newIssueEntitlement = new IssueEntitlement()
-                        InvokerHelper.setProperties(newIssueEntitlement, properties)
-                        newIssueEntitlement.subscription = targetSub
-//                        newIssueEntitlement.save(flush: true)
+                        if (targetSub.issueEntitlements.find {it.tipp.id == ie.tipp.id} ) {
+                            // mich gibts schon! Fehlermeldung ausgeben!
+                            flash.error = ie.tipp.title.title + " wurde nicht hinzugefügt, weil es in der Ziellizenz schon existiert."
+                        } else {
+                            def properties = ie.properties
+                            properties.globalUID = null
+                            IssueEntitlement newIssueEntitlement = new IssueEntitlement()
+                            InvokerHelper.setProperties(newIssueEntitlement, properties)
+                            newIssueEntitlement.subscription = targetSub
+                            newIssueEntitlement.save(flush: true)
+                        }
                     }
                 }
                 break;
