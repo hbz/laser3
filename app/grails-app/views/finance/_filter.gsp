@@ -25,7 +25,7 @@
                     </div>
                 </g:if>
                 <div class="field">
-                    <label>${message(code:'default.provider.label')}</label>
+                    <label>${message(code:'default.myProvider.label')}</label>
                     <div class="ui multiple search selection dropdown newFilter" id="filterSubProviders">
                         <input type="hidden" name="filterSubProviders" value="${params.filterSubProviders}">
                         <i class="dropdown icon"></i>
@@ -249,7 +249,7 @@
 <r:script>
     $(document).ready(function(){
         var links = {
-            "filterSubProviders": "${createLink([controller:"ajax",action:"lookupProviders"])}?query={query}",
+            "filterSubProviders": "${createLink([controller:"ajax",action:"lookupProviders"])}?query={query}&forFinanceView=true",
             "filterCISub": "${createLink([controller:"ajax",action:"lookupSubscriptions"])}?query={query}",
             "filterCISPkg": "${createLink([controller:"ajax",action:"lookupSubscriptionPackages"])}?query={query}${fixedSubscription ? '&ctx='+fixedSubscription.class.name+':'+fixedSubscription.id : ''}",
             "filterCIBudgetCode": "${createLink([controller:"ajax",action:"lookupBudgetCodes"])}?query={query}",
