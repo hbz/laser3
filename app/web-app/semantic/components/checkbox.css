@@ -621,8 +621,51 @@
   font-size: 12px;
   content: '\e801';
 }
+
 /*  UTF Reference
 .check:before { content: '\e800'; }
 .dash:before  { content: '\e801'; }
 .plus:before { content: '\e802'; }
 */
+
+
+/************* laser three toggle icon buttons ***************/
+
+/* BEFORE */
+.ui.checkbox.la-toggle-radio label {
+  font-size: 1.7em;
+}
+.ui.checkbox.la-toggle-radio label:before {
+  width: 40px;
+  height: 40px;
+  padding-top: 9px;
+  color: #FFFFFF;
+  background-color: lightgray;
+  text-align: center;
+}
+.ui.radio.checkbox.la-toggle-radio input:checked ~ label:before {
+  background-color: #454545;
+}
+
+/* AFTER */
+.ui.checkbox.la-toggle-radio label:after {
+  display: none;
+}
+
+/* APPEND */
+.ui.checkbox.la-toggle-radio.la-append label:before {
+  font-family: icomoon;
+  content: "\e90c";
+}
+
+/* REPLACE */
+.ui.checkbox.la-toggle-radio.la-replace label:before {
+  font-family: icomoon;
+  content: "\e90d";
+}
+
+/* NO CHANGE */
+.ui.checkbox.la-toggle-radio.la-noChange label:before {
+  font-family: Icons;
+  content: "\f05e";
+}
