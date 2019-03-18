@@ -76,7 +76,7 @@
         </g:if>
 
         <g:if test="${params.steps == 2}">
-            <g:render template="firstStep"/>
+            <g:render template="secondStep"/>
         </g:if>
 
     </div>
