@@ -60,7 +60,7 @@ class DashboardDueDatesService {
                 SystemEvent.createEvent('DBDD_SERVICE_START_1')
 
                 if (isUpdateDashboardTableInDatabase) {
-                    flash= updateDashboardTableInDatabase(flash)
+                    flash = updateDashboardTableInDatabase(flash)
                 }
                 if (isSendEmailsForDueDatesOfAllUsers) {
                     flash = sendEmailsForDueDatesOfAllUsers(flash)
@@ -150,8 +150,8 @@ class DashboardDueDatesService {
         // TODO: remove due SystemEvent
         new EventLog(event:'DashboardDueDatesService updateDashboardTableInDatabase', message:'Finished', tstp:new Date(System.currentTimeMillis())).save(flush:true)
 
-       SystemEvent.createEvent('DBDD_SERVICE_COMPLETE_2')
-
+        SystemEvent.createEvent('DBDD_SERVICE_COMPLETE_2')
+        flash
     }
 
     private sendEmailsForDueDatesOfAllUsers(def flash) {
@@ -181,6 +181,7 @@ class DashboardDueDatesService {
         } catch (Exception e) {
             flash.error += messageSource.getMessage('menu.admin.sendEmailsForDueDates.error', null, locale)
         }
+        flash
     }
 
     private void sendEmail(User user, Org org, List<DashboardDueDate> dashboardEntries) {
@@ -212,8 +213,6 @@ class DashboardDueDatesService {
             new EventLog(event:'DashboardDueDatesService.sendEmail', message:'Unable to perform email due to exception ' + eMsg, tstp:new Date(System.currentTimeMillis())).save(flush:true)
 
             SystemEvent.createEvent('DBDD_SERVICE_ERROR_3', ['error': eMsg])
-
-            throw e
         }
     }
 }
