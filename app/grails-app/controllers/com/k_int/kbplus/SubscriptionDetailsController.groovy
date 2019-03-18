@@ -1918,7 +1918,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.navNextSubscription = links.nextLink
 
         // links
-        Long key = Long.parseLong(params.id)
+        def key = result.subscription.id
         def sources = Links.executeQuery('select l from Links as l where l.source = :source and l.objectType = :objectType', [source: key, objectType: Subscription.class.name])
         def destinations = Links.executeQuery('select l from Links as l where l.destination = :destination and l.objectType = :objectType', [destination: key, objectType: Subscription.class.name])
         //IN is from the point of view of the context subscription (= params.id)
