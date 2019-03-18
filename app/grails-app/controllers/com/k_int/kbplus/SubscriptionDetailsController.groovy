@@ -1918,7 +1918,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.navNextSubscription = links.nextLink
 
         // links
-        Long key = Long.parseLong(params.id)
+        def key = result.subscription.id
         def sources = Links.executeQuery('select l from Links as l where l.source = :source and l.objectType = :objectType', [source: key, objectType: Subscription.class.name])
         def destinations = Links.executeQuery('select l from Links as l where l.destination = :destination and l.objectType = :objectType', [destination: key, objectType: Subscription.class.name])
         //IN is from the point of view of the context subscription (= params.id)
@@ -1979,7 +1979,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         du.setBenchMark('tasks')
 
         // TODO: experimental asynchronous task
-        def task_tasks = task {
+        //def task_tasks = task {
 
             // tasks
 
@@ -1996,12 +1996,12 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 }
             }
             result.visibleOrgRelations.sort { it.org.sortname }
-        }
+        //}
 
         du.setBenchMark('properties')
 
         // TODO: experimental asynchronous task
-        def task_properties = task {
+        //def task_properties = task {
 
             // -- private properties
 
@@ -2050,12 +2050,12 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     }
                 }
             }
-        }
+        //}
 
         du.setBenchMark('usage')
 
         // TODO: experimental asynchronous task
-        def task_usage = task {
+        //def task_usage = task {
 
             // usage
             def suppliers = result.subscriptionInstance.issueEntitlements?.tipp.pkg.contentProvider?.id.unique()
@@ -2100,7 +2100,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                     }
                 }
             }
-        }
+        //}
 
         du.setBenchMark('costs')
 
@@ -2128,7 +2128,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         du.setBenchMark('provider & agency filter')
 
         // TODO: experimental asynchronous task
-        def task_providerFilter = task {
+        //def task_providerFilter = task {
 
             result.availableProviderList = orgTypeService.getOrgsForTypeProvider().minus(
                     OrgRole.executeQuery(
@@ -2146,14 +2146,14 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             result.existingAgencyIdList = []
             // performance problems: orgTypeService.getCurrentAgencies(contextService.getOrg()).collect { it -> it.id }
 
-        }
+        //}
 
         List bm = du.stopBenchMark()
         result.benchMark = bm
         log.debug (bm)
 
         // TODO: experimental asynchronous task
-        waitAll(task_tasks, task_properties, task_usage, task_providerFilter)
+        //waitAll(task_tasks, task_properties, task_usage, task_providerFilter)
 
         def debugTimeB = System.currentTimeMillis()
         println " ---> " + Math.abs(debugTimeB - debugTimeA)

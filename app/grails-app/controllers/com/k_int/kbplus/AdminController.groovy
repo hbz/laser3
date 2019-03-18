@@ -378,7 +378,7 @@ class AdminController extends AbstractDebugController {
 
         params.sort =   params.sort ?: 'created'
         params.order =  params.order ?: 'desc'
-        params.max =    params.max ?: 500
+        params.max =    params.max ?: 1000
 
         result.events = SystemEvent.list(params)
 

@@ -110,7 +110,7 @@ class LicenseDetailsController extends AbstractDebugController {
         du.setBenchMark('tasks')
 
         // TODO: experimental asynchronous task
-        def task_tasks = task {
+        //def task_tasks = task {
 
             // tasks
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.license)
@@ -125,12 +125,12 @@ class LicenseDetailsController extends AbstractDebugController {
                 }
             }
             result.visibleOrgLinks.sort { it.org.sortname }
-        }
+        //}
 
         du.setBenchMark('properties')
 
         // TODO: experimental asynchronous task
-        def task_properties = task {
+        //def task_properties = task {
 
             // -- private properties
 
@@ -179,7 +179,7 @@ class LicenseDetailsController extends AbstractDebugController {
                     }
                 }
             }
-        }
+        //}
 
         du.setBenchMark('licensor filter')
 
@@ -208,7 +208,7 @@ class LicenseDetailsController extends AbstractDebugController {
         log.debug (bm)
 
         // TODO: experimental asynchronous task
-        waitAll(task_tasks, task_properties)
+        //waitAll(task_tasks, task_properties)
 
         def debugTimeB = System.currentTimeMillis()
         println " ---> " + Math.abs(debugTimeB - debugTimeA)
