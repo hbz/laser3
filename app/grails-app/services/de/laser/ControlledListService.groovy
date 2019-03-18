@@ -162,7 +162,9 @@ class ControlledListService {
             Subscription s = (Subscription) row[0]
             String tenant
             if(s.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION && s.getConsortia().id == org.id) {
-                tenant = s.getAllSubscribers().get(0).name
+                if(s.getAllSubscribers().size() > 0)
+                    tenant = s.getAllSubscribers().get(0).name
+                else tenant = ""
             }
             else {
                 tenant = org.name
