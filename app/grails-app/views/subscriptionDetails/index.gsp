@@ -190,7 +190,7 @@
                                 <td><g:if test="${editable}"><input type="checkbox" name="_bulkflag.${ie.id}" class="bulkcheck"/></g:if></td>
                                 <td>${counter++}</td>
                                 <td>
-                                    <semui:listIcon type="${ie.tipp?.title.type.getI10n('value')}"/>
+                                    <semui:listIcon type="${ie.tipp?.title.type}"/>
                                     <g:link controller="issueEntitlement" id="${ie.id}" action="show"><strong>${ie.tipp.title.title}</strong></g:link><br>
                                     <g:if test="${ie.tipp?.hostPlatformURL}">
 

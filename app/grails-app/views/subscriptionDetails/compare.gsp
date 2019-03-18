@@ -182,7 +182,7 @@
 							<g:set var="highlight" value="${entry.value[2]}"/>
 							<tr>
 								
-								<td><semui:listIcon type="${currentTitle.type.getI10n('value')}"/>
+								<td><semui:listIcon type="${currentTitle.type}"/>
 								<strong><g:link action="show" controller="titleDetails" id="${currentTitle.id}">${entry.key}</g:link></strong>
 								<i onclick="showMore('${currentTitle.id}')" class="icon-info-sign"></i>
 
