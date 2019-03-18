@@ -199,7 +199,8 @@ class SemanticUiTagLib {
     }
 
 
-    def dtAuditCheck = { attrs, body ->
+    def auditButton = { attrs, body ->
+
         def text = attrs.text ? attrs.text : ''
         def message = attrs.message ? "${message(code: attrs.message)}" : ''
         def label = (text && message) ? text + " - " + message : text + message
@@ -209,41 +210,41 @@ class SemanticUiTagLib {
         if (attrs.auditable) {
             try {
                 def obj = attrs.auditable[0]
-                if (obj.instanceOf && !obj.instanceOf.isTemplate()) {
-                    if (auditService.getAuditConfig(obj.instanceOf, attrs.auditable[1])) {
-                        if (obj.isSlaved?.value?.equalsIgnoreCase('yes')) {
-                            out << '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
-                        } else {
-                            out << '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                def objAttr = attrs.auditable[1]
+
+                if (obj?.getClass().controlledProperties?.contains(objAttr)) {
+
+                    // inherited (to)
+                    if (obj.instanceOf && !obj.instanceOf.isTemplate()) {
+
+                        if (auditService.getAuditConfig(obj.instanceOf, objAttr)) {
+                            if (obj.isSlaved?.value?.equalsIgnoreCase('yes')) {
+                                out << '&nbsp; <span data-tooltip="Wert wird automatisch geerbt" data-position="top right">'
+                                out << '<i class="icon thumbtack blue"></i>'
+                                out << '</span>'
+                            }
+                            else {
+                                out << '&nbsp; <span data-tooltip="Wert wird geerbt" data-position="top right">'
+                                //out <<   '<button class="ui icon mini green button">'
+                                out << '<i class="icon thumbtack grey"></i>'
+                                out << '</span>'
+                            }
                         }
                     }
-                } else {
-                    if (auditService.getAuditConfig(obj, attrs.auditable[1])) {
-                        out << '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                    // inherit (from)
+                    else {
+                        if (auditService.getAuditConfig(obj, objAttr)) {
+                            out << '&nbsp; <button class="ui icon mini green button" data-tooltip="Wert wird vererbt" data-position="top right">'
+                            out << '<i class="icon thumbtack"></i>'
+                            out << '</button>'
+                        }
+                        else {
+                            out << '&nbsp; <button class="ui icon mini button">'
+                            out << '<i class="icon thumbtack"></i>'
+                            out << '</button>'
+                        }
                     }
                 }
-
-                /*
-                out << ' <button data-semui="modal" href="#' + attrs.auditable[1] + '_audit_single_config_modal">X</button> '
-
-                ERMS-976, ERMS-1082
-
-                def ownObj = attrs.auditable[0]
-                def ownObjProps = ownObj.getClass().controlledProperties
-                println ownObjProps
-
-                Map model = [
-                        ownObj: ownObj,
-                        target: ownObj.getId(),
-                        properties: ownObj.getClass().controlledProperties, // ?
-                        auditAttr: attrs.auditable[1]
-                ]
-
-                out << render(template: '/templates/audit/modal_single_config', model: [
-                        ownObj: ownObj, auditAttr: attrs.auditable[1]
-                ])
-
-                */
 
             } catch (Exception e) {
             }

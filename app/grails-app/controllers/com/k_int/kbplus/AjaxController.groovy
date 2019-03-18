@@ -1274,10 +1274,12 @@ class AjaxController {
             def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
             openPD.each { pc ->
                 def event = JSON.parse(pc.changeDoc)
-                def scp = genericOIDService.resolveOID(event.changeDoc.OID)
-                if (scp?.id == property.id) {
-                    pc.delete(flush: true)
-                }
+                //if (event) {
+                    def scp = genericOIDService.resolveOID(event.changeDoc.OID)
+                    if (scp?.id == property.id) {
+                        pc.delete(flush: true)
+                    }
+                //}
             }
         }
         else {
