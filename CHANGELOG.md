@@ -1,3 +1,10 @@
+0.14.4
+
+- bugfix: processing dashboard data
+- bugfix: global data sync
+- fixed false INST_ADM checks
+- system event improvements
+
 0.14.3
 
 - fixed inheritance bug

@@ -296,7 +296,7 @@
 
                     <g:if test="${orgInstance?.incomingCombos}">
 
-                        <g:if test="${orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADMIN')}">
+                        <g:if test="${orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADM')}">
                             <div class="ui card">
                                 <div class="content">
                                     <dl>
@@ -361,7 +361,7 @@
                                 </div>
                             </div><!--.card-->
                         </g:if>
-                        <g:elseif test="${orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADMIN')}">
+                        <g:elseif test="${orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADM')}">
                             <div class="ui card">
                                 <div class="content">
                                     <g:render template="/templates/links/orgRoleContainer" model="[listOfLinks: sorted_links]" />
