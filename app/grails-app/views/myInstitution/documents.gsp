@@ -25,8 +25,6 @@
 
     <h1 class="ui left aligned icon header"><semui:headerIcon />${org.name}</h1>
 
-    <semui:messages data="${flash}" />
-
     <semui:filter>
       <g:form class="ui form" controller="myInstitution" action="documents">
         <div class="two fields">
