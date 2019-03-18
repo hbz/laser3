@@ -284,7 +284,7 @@ class OrganisationsController extends AbstractDebugController {
         du.setBenchMark('orgRoles')
 
         // TODO: experimental asynchronous task
-        def task_orgRoles = task {
+        //def task_orgRoles = task {
 
             if (SpringSecurityUtils.ifAnyGranted("ROLE_YODA") ||
                     (orgInstance.id == org.id && user.hasAffiliation('INST_ADM'))
@@ -316,7 +316,7 @@ class OrganisationsController extends AbstractDebugController {
                     }
                 }
             }
-        }
+        //}
 
         if (params.ajax) {
             render template: '/templates/links/orgRoleContainer', model: [listOfLinks: sorted_links, orgInstance: orgInstance]
@@ -355,7 +355,7 @@ class OrganisationsController extends AbstractDebugController {
         du.setBenchMark('properties')
 
         // TODO: experimental asynchronous task
-        def task_properties = task {
+        //def task_properties = task {
 
             // -- private properties
 
@@ -384,7 +384,7 @@ class OrganisationsController extends AbstractDebugController {
             }
 
             // -- private properties
-       }
+       //}
 
 
         List bm = du.stopBenchMark()
@@ -392,7 +392,7 @@ class OrganisationsController extends AbstractDebugController {
         log.debug (bm)
 
         // TODO: experimental asynchronous task
-        waitAll(task_orgRoles, task_properties)
+        //waitAll(task_orgRoles, task_properties)
 
         def debugTimeB = System.currentTimeMillis()
         println " ---> " + Math.abs(debugTimeB - debugTimeA)
