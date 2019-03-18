@@ -121,6 +121,8 @@
                     onVisible: function () {
                         r2d2.initDynamicSemuiStuff('#modalCreateDocument');
                         r2d2.initDynamicXEditableStuff('#modalCreateDocument');
+                        toggleTarget();
+                        showHideTargetableRefdata();
                     },
                     detachable: true,
                     closable: false,
@@ -137,4 +139,21 @@
         }
 
     });
+
+    function showHideTargetableRefdata() {
+        console.log($("[name='targetOrg']").val());
+        if($("[name='targetOrg']").val().length === 0) {
+            $("[data-value='com.k_int.kbplus.RefdataValue:${RDStore.SHARE_CONF_UPLOADER_AND_TARGET.id}']").hide();
+        }
+        else {
+            $("[data-value='com.k_int.kbplus.RefdataValue:${RDStore.SHARE_CONF_UPLOADER_AND_TARGET.id}']").show();
+        }
+    }
+
+    function toggleTarget() {
+        if($("#hasTarget")[0].checked)
+            $("#target").show();
+        else
+            $("#target").hide();
+    }
 </r:script>

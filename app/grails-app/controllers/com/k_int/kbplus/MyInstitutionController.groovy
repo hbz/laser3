@@ -10,7 +10,7 @@ import de.laser.helper.DateUtil
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import org.apache.poi.hslf.model.*
+import org.apache.poi.hssf.model.*
 import org.apache.poi.hssf.usermodel.*
 import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
@@ -46,6 +46,7 @@ class MyInstitutionController extends AbstractDebugController {
     def dashboardDueDatesService
     def subscriptionsQueryService
     def orgTypeService
+    def orgDocumentService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -1108,27 +1109,8 @@ from License as l where (
     Map documents() {
         User user = User.get(springSecurityService.principal.id)
         Org org = contextService.org
-        Map filterQuery = filterService.getDocumentQuery(params)
-        Set<DocContext> documents = []
-        documents.addAll(DocContext.executeQuery('select dc from DocContext dc join dc.owner d where (d.owner = :org or dc.targetOrg = :org)'+filterQuery.query,[org:org]+filterQuery.queryParams))
-        //get documents shared for consortia
-        if(!org.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id)) {
-            List consortia = Combo.findAllByFromOrgAndType(org,RefdataValue.getByValueAndCategory('Consortium','Combo Type')).collect {
-                combo -> combo.toOrg
-            }
-            documents.addAll(DocContext.executeQuery('select dc from DocContext dc join dc.owner d where d.owner in :consortia'+filterQuery.query,[consortia:consortia]+filterQuery.queryParams))
-        }
-        org.documents = documents
-        List allUploaders = Doc.executeQuery('select dc.shareConf,d.creator from DocContext dc join dc.owner d where d.owner = :org order by d.creator.display asc',[org:org])
-        Set availableUsers = []
-        allUploaders.each { row ->
-            if(row[0] == RDStore.SHARE_CONF_CREATOR) {
-                if(row[1] == user)
-                    availableUsers.add(row[1])
-            }
-            else availableUsers.add(row[1])
-        }
-        Map result = [user:user,org:org,availableUsers:availableUsers,editable:accessService.checkMinUserOrgRole(user,org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]
+        Map ret = orgDocumentService.getDocuments(user,org,params)
+        Map result = [user:user,org:ret.org,availableUsers:ret.availableUsers,editable:accessService.checkMinUserOrgRole(user,ret.org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]
         result
     }
 
