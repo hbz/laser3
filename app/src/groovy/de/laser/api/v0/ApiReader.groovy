@@ -56,7 +56,7 @@ class ApiReader {
 
         result.reference           = costItem.reference
         result.startDate           = costItem.startDate
-        result.taxRate             = costItem.taxRate
+        result.taxRate             = costItem.taxKey?.taxRate ?: costItem.taxRate
 
         // erms-888
         result.calculatedType      = costItem.getCalculatedType()
@@ -67,7 +67,7 @@ class ApiReader {
         result.costItemCategory    = costItem.costItemCategory?.value
         result.billingCurrency     = costItem.billingCurrency?.value
         result.costItemElement     = costItem.costItemElement?.value
-        result.taxCode             = costItem.taxCode?.value
+        result.taxCode             = costItem.taxKey?.taxType?.value ?: costItem.taxCode?.value
         result.costItemElementConfiguration = costItem.costItemElementConfiguration?.value
 
         // References

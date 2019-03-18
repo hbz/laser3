@@ -35,7 +35,7 @@ class SurveyInfo {
         name column: 'surIn_name'
         startDate column: 'surIn_startDate'
         endDate column: 'surIn_endDate'
-        comment column: 'surIn_comment', type: 'TEXT'
+        comment column: 'surIn_comment', type: 'text'
 
         dateCreated column: 'surIn_dateCreated'
         lastUpdated column: 'surIn_lastUpdated'

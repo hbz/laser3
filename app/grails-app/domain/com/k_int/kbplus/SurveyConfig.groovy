@@ -5,7 +5,8 @@ import com.k_int.properties.PropertyDefinition
 class SurveyConfig {
 
 
-    Integer order
+    Integer configOrder
+
     String question
 
     Subscription subscription
@@ -18,7 +19,7 @@ class SurveyConfig {
 
     static hasMany = [
             docs: Doc,
-            properties: SurveyConfigProperties
+            surveyProperties: SurveyConfigProperties
     ]
 
     static constraints = {
@@ -31,11 +32,15 @@ class SurveyConfig {
         id column: 'surConf_id'
         version column: 'surConf_version'
 
-
         dateCreated column: 'surConf_dateCreated'
         lastUpdated column: 'surConf_lastUpdated'
 
         surveyInfo column: 'surConf_surInfo_fk'
+        subscription column: 'surConf_sub_fk'
+
+        configOrder column: 'surConf_configOrder'
+        question column: 'surConf_question'
+
 
 
     }
