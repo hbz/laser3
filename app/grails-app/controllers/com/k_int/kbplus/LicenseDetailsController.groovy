@@ -80,21 +80,21 @@ class LicenseDetailsController extends AbstractDebugController {
           // refactoring: replace link table with instanceOf
           // if (result.license.incomingLinks.find { it?.isSlaved?.value == "Yes" } && pendingChanges) {
 
-          if (result.license.isSlaved?.value == "Yes" && pendingChanges) {
-              log.debug("Slaved lincence, auto-accept pending changes")
-              def changesDesc = []
-              pendingChanges.each { change ->
-                  if (!pendingChangeService.performAccept(change, request)) {
-                      log.debug("Auto-accepting pending change has failed.")
-                  } else {
-                      changesDesc.add(PendingChange.get(change).desc)
-                  }
-              }
-              flash.message = changesDesc
-          } else {
-              result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
-          }
-      }
+            if (result.license.isSlaved?.value == "Yes" && pendingChanges) {
+                log.debug("Slaved lincence, auto-accept pending changes")
+                def changesDesc = []
+                pendingChanges.each { change ->
+                    if (!pendingChangeService.performAccept(change, result.user)) {
+                        log.debug("Auto-accepting pending change has failed.")
+                    } else {
+                        changesDesc.add(PendingChange.get(change).desc)
+                    }
+                }
+                flash.message = changesDesc
+            } else {
+                result.pendingChanges = pendingChanges.collect { PendingChange.get(it) }
+            }
+        }
 
          // ---- pendingChanges : end
 

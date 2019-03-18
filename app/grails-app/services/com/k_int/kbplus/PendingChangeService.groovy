@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import grails.converters.*
+import com.k_int.kbplus.auth.User
 import org.codehaus.groovy.grails.web.binding.DataBindingUtils
 import org.springframework.transaction.TransactionStatus
 import com.k_int.properties.PropertyDefinition
@@ -20,7 +21,7 @@ class PendingChangeService {
     final static EVENT_PROPERTY_CHANGE = 'PropertyChange'
 
 
-    def performAccept(change,httpRequest) {
+    def performAccept(change, User user) {
         log.debug('performAccept')
 
         def result = true
@@ -162,8 +163,7 @@ class PendingChangeService {
                     pendingChange.subscription?.save();
                     pendingChange.status = RefdataValue.getByValueAndCategory("Accepted", "PendingChangeStatus")
                     pendingChange.actionDate = new Date()
-                    log.debug("httpRequest: " +httpRequest)
-                    pendingChange.user = httpRequest[0]?.user ?: springSecurityService.getCurrentUser()
+                    pendingChange.user = user
                     pendingChange.save(flush: true);
                     def x = pendingChange
                     log.debug("Pending change accepted and saved")
@@ -178,7 +178,7 @@ class PendingChangeService {
         }
     }
 
-    def performReject(change,httpRequest) {
+    def performReject(change, User user) {
         PendingChange.withNewTransaction { TransactionStatus status ->
             change = PendingChange.get(change)
             change.license?.pendingChanges?.remove(change)
@@ -186,7 +186,7 @@ class PendingChangeService {
             change.subscription?.pendingChanges?.remove(change)
             change.subscription?.save();
             change.actionDate = new Date()
-            change.user = httpRequest?.user ?: springSecurityService.getCurrentUser()
+            change.user = user
             change.status = RefdataValue.getByValueAndCategory("Rejected","PendingChangeStatus")
 
            /* def change_audit_object = null
