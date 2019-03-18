@@ -37,14 +37,13 @@ class ChangeAcceptJob extends AbstractJob {
   def pending_change_pending_status = RefdataValue.getByValueAndCategory("Pending", "PendingChangeStatus")
   //def pending_change_pending_status = RefdataCategory.lookupOrCreate("PendingChangeStatus", "Pending")
   def user = User.findByDisplay("Admin")
-  def httpRequestMock = [:]
-  httpRequestMock.user = user
+
   // Get all changes associated with slaved subscriptions
   def subQueryStr = "select pc.id from PendingChange as pc where subscription.isSlaved.value = 'Yes' and ( pc.status is null or pc.status = ? ) order by pc.ts desc"
   def subPendingChanges = PendingChange.executeQuery(subQueryStr, [ pending_change_pending_status ]);
   log.debug(subPendingChanges.size() +" pending changes have been found for slaved subscriptions")
   subPendingChanges.each {
-      pendingChangeService.performAccept(it,httpRequestMock)
+      pendingChangeService.performAccept(it, user)
   }
 
     //refactoring: replace link table with instanceOf
@@ -53,7 +52,7 @@ class ChangeAcceptJob extends AbstractJob {
   def licPendingChanges = PendingChange.executeQuery(licQueryStr, [ pending_change_pending_status ]);
   log.debug( licPendingChanges.size() +" pending changes have been found for slaved licenses")
   licPendingChanges.each {
-      pendingChangeService.performAccept(it,httpRequestMock)
+      pendingChangeService.performAccept(it, user)
   }
 
      SystemEvent.createEvent('CAJ_JOB_COMPLETE')
