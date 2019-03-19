@@ -1280,9 +1280,11 @@ class AjaxController {
                 else {
                     AuditConfig.removeConfig(owner, prop)
 
-                    members.each { m ->
-                        m.setProperty(prop, null)
-                        m.save(flush:true)
+                    if (! params.keep) {
+                        members.each { m ->
+                            m.setProperty(prop, null)
+                            m.save(flush: true)
+                        }
                     }
 
                     // delete pending changes

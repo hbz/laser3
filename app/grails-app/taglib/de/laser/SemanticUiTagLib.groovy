@@ -233,25 +233,29 @@ class SemanticUiTagLib {
                     }
                     // inherit (from)
                     else {
+                        String oid = "${obj.getClass().getName()}:${obj.getId()}"
+
                         if (auditService.getAuditConfig(obj, objAttr)) {
-                            //out << '&nbsp; <button class="ui icon mini green button" data-tooltip="Wert wird vererbt" data-position="top right">'
-                            //out << '<i class="icon thumbtack"></i>'
-                            //out << '</button>'
-                            String oid = "${obj.getClass().getName()}:${obj.getId()}"
-                            out << ' &nbsp; '
-                            out << g.link( '<i class="icon thumbtack"></i>',
+                            out << '&nbsp; <div class="ui simple dropdown icon mini green button" data-tooltip="Wert wird vererbt" data-position="top right">'
+                            out   << '<i class="icon thumbtack"></i>'
+
+                            out   << '<div class="menu">'
+                            out << g.link( 'Deaktivieren. Wert für Teilnehmer löschen',
                                     controller: 'ajax',
                                     action: 'toggleAudit',
                                     params: ['owner': oid, 'property': [objAttr]],
-                                    class: 'ui icon mini green button'
+                                    class: 'item'
                             )
+                            out << g.link( 'Deaktivieren. Wert für Teilnehmer erhalten',
+                                    controller: 'ajax',
+                                    action: 'toggleAudit',
+                                    params: ['owner': oid, 'property': [objAttr], keep: true],
+                                    class: 'item'
+                            )
+                            out   << '</div>'
+                            out << '</div>'
                         }
                         else {
-                            //out << '&nbsp; <button class="ui icon mini button">'
-                            //out << '<i class="icon thumbtack"></i>'
-                            //out << '</button>'
-
-                            String oid = "${obj.getClass().getName()}:${obj.getId()}"
                             out << ' &nbsp; '
                             out << g.link( '<i class="icon thumbtack"></i>',
                                     controller: 'ajax',

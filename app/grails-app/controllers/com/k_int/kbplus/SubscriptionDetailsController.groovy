@@ -2164,7 +2164,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         //waitAll(task_tasks, task_properties, task_usage, task_providerFilter)
 
         def debugTimeB = System.currentTimeMillis()
-        println " ---> " + Math.abs(debugTimeB - debugTimeA)
+        //println " ---> " + Math.abs(debugTimeB - debugTimeA)
 
         result
     }

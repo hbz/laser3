@@ -211,7 +211,7 @@ class LicenseDetailsController extends AbstractDebugController {
         //waitAll(task_tasks, task_properties)
 
         def debugTimeB = System.currentTimeMillis()
-        println " ---> " + Math.abs(debugTimeB - debugTimeA)
+        //println " ---> " + Math.abs(debugTimeB - debugTimeA)
 
         withFormat {
       html result
