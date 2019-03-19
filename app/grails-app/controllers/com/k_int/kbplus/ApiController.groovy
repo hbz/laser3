@@ -304,7 +304,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
             if(rawText) {
                 xml = new XmlSlurper().parseText(rawText)
                 assert xml instanceof groovy.util.slurpersupport.GPathResult
-                apiService.makeshiftOrgImport(xml)
+                apiService.setupLaserData(xml)
             }
             else {
                 xml = "(Code: 1) - Ex nihilo nihil fit"
@@ -313,15 +313,163 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         render xml
     }
 
-    @Secured(['ROLE_API_READER', 'IS_AUTHENTICATED_FULLY'])
+    @Secured(['ROLE_YODA'])
     makeshiftLaserOrgExport() {
         log.info("Export institutions in XML, structure follows LAS:eR-DB-structure")
         StringWriter writer = new StringWriter()
         MarkupBuilder orgDataBuilder = new MarkupBuilder(writer)
-        orgDataBuilder.organisations {
-            Org.getAll().each { o ->
-                org {
-                    globalUID(o.globalUID)
+        orgDataBuilder.data {
+            organisations {
+                Org.getAll().each { obj ->
+                    try {
+                        Org o = (Org) obj
+                        org {
+                            globalUID(o.globalUID)
+                            name(o.name)
+                            shortname(o.shortname)
+                            shortcode(o.shortcode)
+                            sortname(o.sortname)
+                            url(o.url)
+                            urlGov(o.urlGov)
+                            importSource(o.importSource)
+                            lastImportDate(o.lastImportDate)
+                            impId(o.impId)
+                            gokbId(o.gokbId)
+                            comment(o.comment)
+                            ipRange(o.ipRange)
+                            scope(o.scope)
+                            dateCreated(o.dateCreated)
+                            lastUpdated(o.lastUpdated)
+                            categoryId(o.categoryId)
+                            fteStudents(o.fteStudents)
+                            fteStaff(o.fteStaff)
+                            sector {
+                                if(o.sector) {
+                                    rdc(o.sector.owner.desc)
+                                    rdv(o.sector.value)
+                                }
+                            }
+                            status {
+                                if(o.status) {
+                                    rdc(o.status.owner.desc)
+                                    rdv(o.status.value)
+                                }
+                            }
+                            membership {
+                                if(o.membership) {
+                                    rdc(o.membership.owner.desc)
+                                    rdv(o.membership.value)
+                                }
+                            }
+                            countryElem {
+                                if(o.country) {
+                                    rdc(o.country.owner.desc)
+                                    rdv(o.country.value)
+                                }
+                            }
+                            federalState {
+                                if(o.federalState) {
+                                    rdc(o.federalState.owner.desc)
+                                    rdv(o.federalState.value)
+                                }
+                            }
+                            libraryNetwork {
+                                if(o.libraryNetwork) {
+                                    rdc(o.libraryNetwork.owner.desc)
+                                    rdv(o.libraryNetwork.value)
+                                }
+                            }
+                            funderType {
+                                if(o.funderType) {
+                                    rdc(o.funderType.owner.desc)
+                                    rdv(o.funderType.value)
+                                }
+                            }
+                            libraryType {
+                                if(o.libraryType) {
+                                    rdc(o.libraryType.owner.desc)
+                                    rdv(o.libraryType.value)
+                                }
+                            }
+                            costConfigurationPreset {
+                                if(o.costConfigurationPreset) {
+                                    rdc(o.costConfigurationPreset.owner.desc)
+                                    rdv(o.costConfigurationPreset.value)
+                                }
+                            }
+                            ids {
+                                o.ids.each { idObj ->
+                                    id {
+                                        IdentifierOccurrence idOcc = (IdentifierOccurrence) idObj
+                                        canoncialID(idOcc.identifier) //may not match; no globalUID available
+                                    }
+                                }
+                            }
+                            //outgoing/ingoingCombos: assembled in branch combos
+                            links {
+                                o.links.each { linkObj ->
+                                    linkElem {
+                                        OrgRole link = (OrgRole) linkObj
+                                        org(link.org.globalUID)
+                                        roleType {
+                                            rdc(link.roleType.owner.desc)
+                                            rdv(link.roleType.value)
+                                        }
+                                        if(link.pkg) pkg(link.pkg.globalUID)
+                                        if(link.sub) sub(link.sub.globalUID)
+                                        if(link.lic) lic(link.lic.globalUID)
+                                        if(link.cluster) cluster {
+                                            name(link.cluster.name)
+                                            definition(link.cluster.definition)
+                                            type {
+                                                rdc(link.cluster.type.owner.desc)
+                                                rdv(link.cluster.type.value)
+                                            }
+                                        }
+                                        if(link.title) title(link.title.globalUID)
+                                        if(link.startDate) startDate(link.startDate)
+                                        if(link.endDate) endDate(link.endDate)
+                                        if(link.isShared) {
+                                            isShared(link.isShared)
+                                            sharedFrom(link.sharedFrom) //temp
+                                        }
+                                    }
+                                }
+                            }
+                            prsLinks {
+
+                            }
+                        }
+                    }
+                    catch (ClassCastException e) {
+                        log.error("Help! ${obj} is a non-organisation object among orgs!!!")
+                    }
+                }
+            }
+            combos {
+                Combo.getAll().each { obj ->
+                    try {
+                        Combo c = (Combo) obj
+                        if(c.type) {
+                            combo {
+                                status {
+                                    if (c.status) {
+                                        rdc(c.status.owner.desc)
+                                        rdv(c.status.value)
+                                    }
+                                }
+                                type{
+                                    rdc(c.type.owner.desc)
+                                    rdv(c.type.value)
+                                }
+                                fromOrg(c.fromOrg.globalUID)
+                                toOrg(c.toOrg.globalUID)
+                            }
+                        }
+                    }
+                    catch (ClassCastException e) {
+                        log.error("Help! ${obj} is a non-combo object amoung combos!!!")
+                    }
                 }
             }
         }
