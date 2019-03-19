@@ -214,7 +214,7 @@
                 <td ${hasCoverageNote==true?'rowspan="2"':''}><g:if test="${editable}"><input type="checkbox" name="_bulkflag.${t.id}" class="bulkcheck"/></g:if></td>
                 <td ${hasCoverageNote==true?'rowspan="2"':''}>${counter++}</td>
                 <td style="vertical-align:top;">
-                    <semui:listIcon type="${t.title.type.getI10n('value')}"/>
+                    <semui:listIcon type="${t.title.type}"/>
                    <strong><g:link controller="titleDetails" action="show" id="${t.title.id}">${t.title.title}</g:link></strong>
                     <br>
                    <g:link controller="tipp" action="show" id="${t.id}">${message(code:'tipp.label', default:'TIPP')}</g:link>
