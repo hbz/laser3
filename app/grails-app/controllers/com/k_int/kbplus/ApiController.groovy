@@ -460,19 +460,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                                         org(affiliation.org.globalUID)
                                         status(affiliation.status)
                                         if(affiliation.formalRole) {
-                                            formalRole {
-                                                authority(affiliation.formalRole.authority)
-                                                roleType(affiliation.formalRole.roleType)
-                                                grantedPermissions {
-                                                    affiliation.formalRole.grantedPermissions.each { gp ->
-                                                        PermGrant permission = (PermGrant) gp
-                                                        grantedPermission {
-                                                            perm(permission.perm)
-                                                            role(permission.role)
-                                                        }
-                                                    }
-                                                }
-                                            }
+                                            formalRole(affiliation.formalRole.authority)
                                         }
                                         if(affiliation.dateActioned) {
                                             dateActioned(affiliation.dateActioned)
@@ -555,9 +543,11 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                         middleName(p.middle_name)
                         lastName(p.last_name)
                         tenant(p.tenant.globalUID)
-                        gender {
-                            rdc(p.gender.owner.desc)
-                            rdv(p.gender.value)
+                        if(p.gender) {
+                            gender {
+                                rdc(p.gender.owner.desc)
+                                rdv(p.gender.value)
+                            }
                         }
                         isPublic {
                             rdc(p.isPublic.owner.desc)
@@ -567,18 +557,42 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                             rdc(p.contactType.owner.desc)
                             rdv(p.contactType.value)
                         }
-                        roleType {
-                            rdc(p.roleType.owner.desc)
-                            rdv(p.roleType.value)
+                        if(p.roleType) {
+                            roleType {
+                                rdc(p.roleType.owner.desc)
+                                rdv(p.roleType.value)
+                            }
                         }
                     }
                 }
             }
             users {
-
+                User.getAll().each { userObj ->
+                    user {
+                        User u = (User) userObj
+                        username(u.username)
+                        display(u.display)
+                        password(u.password)
+                        email(u.email)
+                        shibbScope(u.shibbScope)
+                        apikey(u.apikey)
+                        apisecret(u.apisecret)
+                        enabled(u.enabled)
+                        accountExpired(u.accountExpired)
+                        accountLocked(u.accountLocked)
+                        passwordExpired(u.passwordExpired)
+                        //affiliations done already on organisations
+                        roles {
+                            u.roles.each { rObj ->
+                                UserRole r = (UserRole) rObj
+                                role(r.role.authority)
+                            }
+                        }
+                    }
+                }
             }
             addresses {
-                List addresses = Address.findAllByOrgIsNotNullOrPrsIsNotNull()
+                List addresses = Address.executeQuery('select a from Address a where a.prs != null or a.org != null')
                 addresses.each { a ->
                     address {
                         if(a.org) org(a.org.globalUID)
@@ -590,26 +604,30 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                         pob(a.pob)
                         pobZipcode(a.pobZipcode)
                         pobCity(a.pobCity)
-                        state {
-                            rdc(a.state.owner.desc)
-                            rdv(a.state.value)
+                        if(a.state) {
+                            state {
+                                rdc(a.state.owner.desc)
+                                rdv(a.state.value)
+                            }
                         }
-                        countryElem {
-                            rdc(a.country.owner.desc)
-                            rdv(a.country.value)
+                        if(a.country) {
+                            countryElem {
+                                rdc(a.country.owner.desc)
+                                rdv(a.country.value)
+                            }
                         }
                         type {
                             rdc(a.type.owner.desc)
                             rdv(a.type.value)
                         }
-                        name(a.name)
-                        additionFirst(a.additionFirst)
-                        additionSecond(a.additionSecond)
+                        if(a.name) name(a.name)
+                        if(a.additionFirst) additionFirst(a.additionFirst)
+                        if(a.additionSecond) additionSecond(a.additionSecond)
                     }
                 }
             }
             contacts {
-                List contacts = Contact.findAllByOrgIsNotNullOrPrsIsNotNull()
+                List contacts = Contact.executeQuery('select c from Contact c where c.org != null or c.prs != null')
                 contacts.each { c ->
                     contact {
                         if(c.org) org(c.org.globalUID)
@@ -627,7 +645,17 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                 }
             }
         }
-        render (text:writer.toString(), contentType: "text/xml")
+        Date now = new Date()
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd")
+        File f = new File("orgData_dump_${sdf.format(now)}.xml")
+        f.write(writer.toString())
+        /*
+        response.contentType = 'text/xml'
+        response.setHeader('Content-disposition',"filename=")
+        response.outputStream << writer.toString()
+        response.outputStream.flush()
+        */
+        render (file:f, contentType: "text/xml")
     }
 
     @Secured(['ROLE_API_WRITER', 'IS_AUTHENTICATED_FULLY'])
