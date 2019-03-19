@@ -136,33 +136,9 @@
                 </tr>
               </thead>
               <tbody>
-                <g:each in="${tipps}" var="tipp">
-                  <%
-                      String serial
-                      String electronicSerial
-                      String checked = ""
-                      if(tipp.title.type.equals(RDStore.TITLE_TYPE_EBOOK)) {
-                          serial = tipp.title.getIdentifierValue('ISBN')
-                          electronicSerial = tipp?.title?.getIdentifierValue('eISBN')
-                      }
-                      else if(tipp.title.type.equals(RDStore.TITLE_TYPE_JOURNAL)) {
-                          serial = tipp?.title?.getIdentifierValue('ISSN')
-                          electronicSerial = tipp?.title?.getIdentifierValue('eISSN')
-                      }
-                      if(identifiers) {
-                          if(zdbIds.indexOf(tipp.title.getIdentifierValue('zdb')) > -1) {
-                              checked = "checked"
-                          }
-                          else if(onlineIds.indexOf(electronicSerial) > -1) {
-                              checked = "checked"
-                          }
-                          else if(printIds.indexOf(serial) > -1) {
-                              checked = "checked"
-                          }
-                      }
-                  %>
+                <g:each in="${tipps}" var="tipp" status="t">
                   <tr>
-                    <td><input type="checkbox" name="_bulkflag.${tipp.id}" class="bulkcheck" ${checked}/></td>
+                    <td><input type="checkbox" name="_bulkflag.${tipp.id}" class="bulkcheck" ${checked[t]}/></td>
                     <td>${counter++}</td>
                     <td>
                         <semui:listIcon type="${tipp.title.type}"/>
