@@ -234,14 +234,31 @@ class SemanticUiTagLib {
                     // inherit (from)
                     else {
                         if (auditService.getAuditConfig(obj, objAttr)) {
-                            out << '&nbsp; <button class="ui icon mini green button" data-tooltip="Wert wird vererbt" data-position="top right">'
-                            out << '<i class="icon thumbtack"></i>'
-                            out << '</button>'
+                            //out << '&nbsp; <button class="ui icon mini green button" data-tooltip="Wert wird vererbt" data-position="top right">'
+                            //out << '<i class="icon thumbtack"></i>'
+                            //out << '</button>'
+                            String oid = "${obj.getClass().getName()}:${obj.getId()}"
+                            out << ' &nbsp; '
+                            out << g.link( '<i class="icon thumbtack"></i>',
+                                    controller: 'ajax',
+                                    action: 'toggleAudit',
+                                    params: ['owner': oid, 'property': [objAttr]],
+                                    class: 'ui icon mini green button'
+                            )
                         }
                         else {
-                            out << '&nbsp; <button class="ui icon mini button">'
-                            out << '<i class="icon thumbtack"></i>'
-                            out << '</button>'
+                            //out << '&nbsp; <button class="ui icon mini button">'
+                            //out << '<i class="icon thumbtack"></i>'
+                            //out << '</button>'
+
+                            String oid = "${obj.getClass().getName()}:${obj.getId()}"
+                            out << ' &nbsp; '
+                            out << g.link( '<i class="icon thumbtack"></i>',
+                                    controller: 'ajax',
+                                    action: 'toggleAudit',
+                                    params: ['owner': oid, 'property': [objAttr]],
+                                    class: 'ui icon mini button'
+                            )
                         }
                     }
                 }
