@@ -14,6 +14,9 @@ class SurveyInfo {
     @RefdataAnnotation(cat = 'Survey Type')
     RefdataValue type
 
+    @RefdataAnnotation(cat = 'Survey Status')
+    RefdataValue status
+
     Date dateCreated
     Date lastUpdated
 
