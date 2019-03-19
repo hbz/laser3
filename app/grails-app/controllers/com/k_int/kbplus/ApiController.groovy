@@ -418,26 +418,98 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                                         if(link.pkg) pkg(link.pkg.globalUID)
                                         if(link.sub) sub(link.sub.globalUID)
                                         if(link.lic) lic(link.lic.globalUID)
-                                        if(link.cluster) cluster {
-                                            name(link.cluster.name)
-                                            definition(link.cluster.definition)
-                                            type {
-                                                rdc(link.cluster.type.owner.desc)
-                                                rdv(link.cluster.type.value)
-                                            }
-                                        }
                                         if(link.title) title(link.title.globalUID)
                                         if(link.startDate) startDate(link.startDate)
                                         if(link.endDate) endDate(link.endDate)
-                                        if(link.isShared) {
-                                            isShared(link.isShared)
-                                            sharedFrom(link.sharedFrom) //temp
-                                        }
                                     }
                                 }
                             }
                             prsLinks {
-
+                                o.prsLinks.each { linkObj ->
+                                    personRole {
+                                        PersonRole link = (PersonRole) linkObj
+                                        org(link.org.globalUID)
+                                        prs(link.prs.globalUID)
+                                        if(link.positionType) {
+                                            positionType {
+                                                rdc(link.positionType.owner.desc)
+                                                rdv(link.positionType.value)
+                                            }
+                                        }
+                                        if(link.functionType) {
+                                            functionType {
+                                                rdc(link.functionType.owner.desc)
+                                                rdv(link.functionType.value)
+                                            }
+                                        }
+                                        if(link.responsibilityType) {
+                                            responsibilityType {
+                                                rdc(link.responsibilityType.owner.desc)
+                                                rdv(link.responsibilityType.value)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            //contacts and addresses done on own branches respectively
+                            affiliations {
+                                o.affiliations.each { affObj ->
+                                    affiliation {
+                                        UserOrg affiliation = (UserOrg) affObj
+                                        user(affiliation.user.username)
+                                        org(affiliation.org.globalUID)
+                                        status(affiliation.status)
+                                        if(affiliation.formalRole) {
+                                            formalRole {
+                                                authority(affiliation.formalRole.authority)
+                                                roleType(affiliation.formalRole.roleType)
+                                                grantedPermissions {
+                                                    affiliation.formalRole.grantedPermissions.each { gp ->
+                                                        PermGrant permission = (PermGrant) gp
+                                                        grantedPermission {
+                                                            perm(permission.perm)
+                                                            role(permission.role)
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        if(affiliation.dateActioned) {
+                                            dateActioned(affiliation.dateActioned)
+                                        }
+                                        if(affiliation.dateRequested) {
+                                            dateReuested(affiliation.dateRequested)
+                                        }
+                                    }
+                                }
+                            }
+                            customProperties {
+                                o.customProperties.each { cpObj ->
+                                    OrgCustomProperty customProp = (OrgCustomProperty) cpObj
+                                    customProperty {
+                                        org(customProp.owner.globalUID)
+                                        name(customProp.type.name)
+                                        value(customProp.value)
+                                    }
+                                }
+                            }
+                            privateProperties {
+                                o.privateProperties.each { ppObj ->
+                                    OrgPrivateProperty privateProp = (OrgPrivateProperty) ppObj
+                                    privateProperty {
+                                        org(privateProp.owner.globalUID)
+                                        name(privateProp.type.name)
+                                        value(privateProp.value)
+                                    }
+                                }
+                            }
+                            orgTypes {
+                                o.orgType.each { ot ->
+                                    orgType {
+                                        rdc(ot.owner.desc)
+                                        rdv(ot.value)
+                                    }
+                                }
                             }
                         }
                     }
@@ -469,6 +541,88 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                     }
                     catch (ClassCastException e) {
                         log.error("Help! ${obj} is a non-combo object amoung combos!!!")
+                    }
+                }
+            }
+            persons {
+                List orgPersons = PersonRole.findAllByOrgIsNotNull()
+                orgPersons.each { prsObj ->
+                    person {
+                        Person p = prsObj.prs
+                        globalUID(p.globalUID)
+                        title(p.title)
+                        firstName(p.first_name)
+                        middleName(p.middle_name)
+                        lastName(p.last_name)
+                        tenant(p.tenant.globalUID)
+                        gender {
+                            rdc(p.gender.owner.desc)
+                            rdv(p.gender.value)
+                        }
+                        isPublic {
+                            rdc(p.isPublic.owner.desc)
+                            rdv(p.isPublic.value)
+                        }
+                        contactType {
+                            rdc(p.contactType.owner.desc)
+                            rdv(p.contactType.value)
+                        }
+                        roleType {
+                            rdc(p.roleType.owner.desc)
+                            rdv(p.roleType.value)
+                        }
+                    }
+                }
+            }
+            users {
+
+            }
+            addresses {
+                List addresses = Address.findAllByOrgIsNotNullOrPrsIsNotNull()
+                addresses.each { a ->
+                    address {
+                        if(a.org) org(a.org.globalUID)
+                        if(a.prs) prs(a.prs.globalUID)
+                        street1(a.street_1)
+                        street2(a.street_2)
+                        zipcode(a.zipcode)
+                        city(a.city)
+                        pob(a.pob)
+                        pobZipcode(a.pobZipcode)
+                        pobCity(a.pobCity)
+                        state {
+                            rdc(a.state.owner.desc)
+                            rdv(a.state.value)
+                        }
+                        countryElem {
+                            rdc(a.country.owner.desc)
+                            rdv(a.country.value)
+                        }
+                        type {
+                            rdc(a.type.owner.desc)
+                            rdv(a.type.value)
+                        }
+                        name(a.name)
+                        additionFirst(a.additionFirst)
+                        additionSecond(a.additionSecond)
+                    }
+                }
+            }
+            contacts {
+                List contacts = Contact.findAllByOrgIsNotNullOrPrsIsNotNull()
+                contacts.each { c ->
+                    contact {
+                        if(c.org) org(c.org.globalUID)
+                        if(c.prs) prs(c.prs.globalUID)
+                        content(c.content)
+                        contentType {
+                            rdc(c.contentType.owner.desc)
+                            rdv(c.contentType.value)
+                        }
+                        type {
+                            rdc(c.type.owner.desc)
+                            rdv(c.type.value)
+                        }
                     }
                 }
             }
