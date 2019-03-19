@@ -155,12 +155,12 @@ class PendingChangeService {
                 }
 
                 if(saveWithoutError && pendingChange instanceof PendingChange) {
-                    if(pendingChange.pkg?.pendingChanges) pendingChange.pkg?.pendingChanges?.remove(pendingChange)
+                    /*if(pendingChange.pkg?.pendingChanges) pendingChange.pkg?.pendingChanges?.remove(pendingChange)
                     pendingChange.pkg?.save();
                     if(pendingChange.license?.pendingChanges) pendingChange.license?.pendingChanges?.remove(pendingChange)
                     pendingChange.license?.save();
                     if(pendingChange.subscription?.pendingChanges) pendingChange.subscription?.pendingChanges?.remove(pendingChange)
-                    pendingChange.subscription?.save();
+                    pendingChange.subscription?.save();*/
                     pendingChange.status = RefdataValue.getByValueAndCategory("Accepted", "PendingChangeStatus")
                     pendingChange.actionDate = new Date()
                     pendingChange.user = user

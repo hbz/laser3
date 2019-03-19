@@ -37,6 +37,7 @@ class PendingChangeController extends AbstractDebugController {
         def pendingChanges = owner?.pendingChanges.findAll {
             (it.status == pending_change_pending_status) || it.status == null
         }
+        def user = User.get(springSecurityService.principal.id)
         pendingChanges = pendingChanges.collect { it.id }
         executorWrapperService.processClosure({
             pendingChanges.each { pc ->
@@ -59,7 +60,8 @@ class PendingChangeController extends AbstractDebugController {
         }
         pendingChanges = pendingChanges.collect { it.id }
 
-        def user = [user: request.user]
+        //def user = [user: request.user]
+        def user = User.get(springSecurityService.principal.id)
         executorWrapperService.processClosure({
             pendingChanges.each { pc ->
                 pendingChangeService.performReject(pc, user)
