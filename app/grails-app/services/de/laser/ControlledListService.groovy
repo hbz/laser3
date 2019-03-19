@@ -54,14 +54,17 @@ class ControlledListService {
             Subscription s = (Subscription) row[0]
             String tenant
             if(s.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION && s.getConsortia().id == org.id) {
-                if(s.getAllSubscribers().size() > 0)
+                try {
                     tenant = s.getAllSubscribers().get(0).name
-                else tenant = ""
+                }
+                catch (IndexOutOfBoundsException e) {
+                    log.debug("Please check subscription #${s.id}")
+                }
             }
             else {
                 tenant = org.name
             }
-            if ((params.checkView && s.isVisibleBy(contextService.getUser())) || !params.checkView) {
+            if (((params.checkView && s.isVisibleBy(contextService.getUser())) || !params.checkView) && tenant != null) {
                 String dateString = ", "
                 if (s.startDate)
                     dateString += sdf.format(s.startDate) + "-"
@@ -162,14 +165,17 @@ class ControlledListService {
             Subscription s = (Subscription) row[0]
             String tenant
             if(s.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION && s.getConsortia().id == org.id) {
-                if(s.getAllSubscribers().size() > 0)
+                try {
                     tenant = s.getAllSubscribers().get(0).name
-                else tenant = ""
+                }
+                catch (IndexOutOfBoundsException e) {
+                    log.debug("see above")
+                }
             }
             else {
                 tenant = org.name
             }
-            if ((params.checkView && s.isVisibleBy(contextService.getUser())) || !params.checkView) {
+            if (((params.checkView && s.isVisibleBy(contextService.getUser())) || !params.checkView) && tenant != null) {
                 s.packages.each { sp ->
                     String dateString = ", "
                     if (s.startDate)
