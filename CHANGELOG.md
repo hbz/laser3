@@ -1,3 +1,9 @@
+
+0.14.5
+
+- bugfix: processing pending changes
+- bugfix: handle nameless subscriptions
+
 0.14.4
 
 - bugfix: processing dashboard data
