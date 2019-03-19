@@ -675,7 +675,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
                 int zdbCol = -1, onlineIdentifierCol = -1, printIdentifierCol = -1
                 //read off first line of KBART file
                 rows[0].split('\t').eachWithIndex { headerCol, int c ->
-                    switch(headerCol) {
+                    switch(headerCol.toLowerCase()) {
                         case "zdb_id": zdbCol = c
                             break
                         case "print_identifier": printIdentifierCol = c
@@ -712,7 +712,15 @@ class SubscriptionDetailsController extends AbstractDebugController {
             }
             if(result.identifiers && result.identifiers.unidentified.size() > 0) {
                 String unidentifiedTitles = result.identifiers.unidentified.join(", ")
-                flash.error = g.message(code:'subscription.details.addEntitlements.unidentified',args:[StringEscapeCategory.encodeAsHtml(result.identifiers.filename), unidentifiedTitles])
+                String escapedFileName
+                try {
+                    escapedFileName = StringEscapeCategory.encodeAsHtml(result.identifiers.filename)
+                }
+                catch (Exception | Error e) {
+                    log.error(e.printStackTrace())
+                    escapedFileName = result.identifiers.filename
+                }
+                flash.error = g.message(code:'subscription.details.addEntitlements.unidentified',args:[escapedFileName, unidentifiedTitles])
             }
         } else {
             result.num_sub_rows = 0;
