@@ -212,7 +212,7 @@
                             def numberOfSubscriptions = Subscription.executeQuery("select s.id " + base_qry, qry_params).size()
                         %>
                         <g:if test="${actionName == 'manageConsortia'}">
-                            <g:link controller="myInstitution" action="manageConsortiaLicenses" params="${[member: org.id, status: RDStore.SUBSCRIPTION_CURRENT.id]}">
+                            <g:link controller="myInstitution" action="manageConsortiaSubscriptions" params="${[member: org.id, status: RDStore.SUBSCRIPTION_CURRENT.id]}">
                                 <div class="ui circular label">
                                     ${numberOfSubscriptions}
                                 </div>

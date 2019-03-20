@@ -10,12 +10,19 @@ import de.laser.helper.DateUtil
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+import org.apache.commons.collections.BidiMap
+import org.apache.commons.collections.bidimap.DualHashBidiMap
 import org.apache.poi.hslf.model.*
 import org.apache.poi.hssf.usermodel.*
 import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
 import com.k_int.properties.*
 import de.laser.DashboardDueDate
+import org.apache.poi.xssf.streaming.SXSSFSheet
+import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.apache.poi.xssf.usermodel.XSSFCellStyle
+import org.apache.poi.xssf.usermodel.XSSFColor
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import java.sql.Timestamp
 import java.text.DateFormat
@@ -3371,7 +3378,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-    def manageConsortiaLicenses() {
+    def manageConsortiaSubscriptions() {
         def result = setResultGenerics()
 
         DebugUtil du = new DebugUtil()
@@ -3444,7 +3451,9 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             query += " and subT.status.id = :status "
             qarams.put('status', params.long('status'))
         } else {
-            query += " and subT.status.value != 'Deleted' "
+            query += " and subT.status.id = :status "
+            qarams.put('status', RDStore.SUBSCRIPTION_CURRENT.id)
+            params.status = RDStore.SUBSCRIPTION_CURRENT
         }
 
         if (params.filterPropDef?.size() > 0) {
@@ -3480,7 +3489,9 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 query + " " + orderQuery, qarams
         )
         result.countCostItems = costs.size()
-        result.costItems = costs.drop((int) result.offset).take((int) result.max)
+        if(params.forExport)
+            result.costItems = costs
+        else result.costItems = costs.drop((int) result.offset).take((int) result.max)
 
         result.finances = {
             Map entries = [:]
@@ -3506,7 +3517,175 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result.benchMark = bm
         log.debug (bm)
 
-        result
+        if(params.forExport) {
+            SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
+            XSSFWorkbook wb = new XSSFWorkbook()
+            BidiMap subLinks = new DualHashBidiMap()
+            Links.findAllByLinkTypeAndObjectType(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name).each { link ->
+                subLinks.put(link.source,link.destination)
+            }
+            LinkedHashMap<Subscription,List<Org>> providers = [:]
+            OrgRole.findAllByRoleType(RDStore.OR_PROVIDER).each { it ->
+                List<Org> orgs = providers.get(it.sub)
+                if(orgs == null)
+                    orgs = [it.org]
+                else orgs.add(it.org)
+                providers.put(it.sub,orgs)
+            }
+            XSSFCellStyle lineBreaks = wb.createCellStyle()
+            lineBreaks.setWrapText(true)
+            XSSFCellStyle csPositive = wb.createCellStyle()
+            csPositive.setFillForegroundColor(new XSSFColor(new java.awt.Color(198,239,206)))
+            csPositive.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+            XSSFCellStyle csNegative = wb.createCellStyle()
+            csNegative.setFillForegroundColor(new XSSFColor(new java.awt.Color(255,199,206)))
+            csNegative.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+            XSSFCellStyle csNeutral = wb.createCellStyle()
+            csNeutral.setFillForegroundColor(new XSSFColor(new java.awt.Color(255,235,156)))
+            csNeutral.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+            SXSSFWorkbook workbook = new SXSSFWorkbook(wb,50)
+            workbook.setCompressTempFiles(true)
+            SXSSFSheet sheet = workbook.createSheet(message(code:'menu.institutions.myConsortiaLicenses'))
+            sheet.flushRows(10)
+            sheet.setAutobreaks(true)
+            Row headerRow = sheet.createRow(0)
+            headerRow.setHeightInPoints(16.75f)
+            List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'),message(code:'myinst.consortiaSubscriptions.subscription'),message(code:'myinst.consortiaSubscriptions.license'),
+                           message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
+                           message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
+            titles.eachWithIndex{ titleName, int i ->
+                Cell cell = headerRow.createCell(i)
+                cell.setCellValue(titleName)
+            }
+            sheet.createFreezePane(0,1)
+            Row row
+            Cell cell
+            int rownum = 1
+            int sumcell = 7
+            int sumTitleCell = 6
+            result.costItems.eachWithIndex { entry, int sidewideNumber ->
+                log.debug("processing entry ${sidewideNumber} ...")
+                CostItem ci = (CostItem) entry[0] ?: new CostItem()
+                Subscription subCons = (Subscription) entry[1]
+                Org subscr = (Org) entry[2]
+                int cellnum = 0
+                row = sheet.createRow(rownum)
+                //sidewide number
+                log.debug("insert sidewide number")
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(rownum)
+                //sortname
+                log.debug("insert sortname")
+                cell = row.createCell(cellnum++)
+                String subscrName = ""
+                if(subscr.sortname) subscrName += subscr.sortname
+                subscrName += "(${subscr.name})"
+                cell.setCellValue(subscrName)
+                //subscription name
+                log.debug("insert subscription name")
+                cell = row.createCell(cellnum++)
+                String subscriptionString = subCons.name
+                //if(subCons.getCalculatedPrevious()) //avoid! Makes 5846 queries!!!!!
+                if(subLinks.getKey(subCons.id))
+                    subscriptionString += " (${message(code:'subscription.hasPreviousSubscription')})"
+                cell.setCellValue(subscriptionString)
+                //license name
+                log.debug("insert license name")
+                cell = row.createCell(cellnum++)
+                if(subCons.owner)
+                    cell.setCellValue(subCons.owner.reference)
+                //packages
+                log.debug("insert package name")
+                cell = row.createCell(cellnum++)
+                cell.setCellStyle(lineBreaks)
+                String packagesString = ""
+                subCons.packages.each { subPkg ->
+                    packagesString += "${subPkg.pkg.name}\n"
+                }
+                cell.setCellValue(packagesString)
+                //provider
+                log.debug("insert provider name")
+                cell = row.createCell(cellnum++)
+                cell.setCellStyle(lineBreaks)
+                String providersString = ""
+                providers.get(subCons).each { p ->
+                    log.debug("Getting provider ${p}")
+                    providersString += "${p.name}\n"
+                }
+                cell.setCellValue(providersString)
+                //running time from / to
+                log.debug("insert running times")
+                cell = row.createCell(cellnum++)
+                String dateString = ""
+                if(ci.id) {
+                    if(ci.getDerivedStartDate()) dateString += sdf.format(ci.getDerivedStartDate())
+                    if(ci.getDerivedEndDate()) dateString += " - ${sdf.format(ci.getDerivedEndDate())}"
+                }
+                cell.setCellValue(dateString)
+                //final sum
+                log.debug("insert final sum")
+                cell = row.createCell(cellnum++)
+                if(ci.id && ci.costItemElementConfiguration) {
+                    switch(ci.costItemElementConfiguration) {
+                        case RDStore.CIEC_POSITIVE: cell.setCellStyle(csPositive)
+                            break
+                        case RDStore.CIEC_NEGATIVE: cell.setCellStyle(csNegative)
+                            break
+                        case RDStore.CIEC_NEUTRAL: cell.setCellStyle(csNeutral)
+                            break
+                    }
+                    cell.setCellValue(formatNumber([number:ci.costInBillingCurrencyAfterTax ?: 0.0,type:'currency',currencySymbol:ci.billingCurrency ?: 'EUR']))
+                }
+                //cost item sign and visibility
+                log.debug("insert cost sign and visiblity")
+                cell = row.createCell(cellnum++)
+                String costSignAndVisibility = ""
+                if(ci.id) {
+                    if(ci.isVisibleForSubscriber) {
+                        costSignAndVisibility += message(code:'financials.isVisibleForSubscriber')+" / "
+                    }
+                    if(ci.costItemElementConfiguration) {
+                        costSignAndVisibility += ci.costItemElementConfiguration.getI10n("value")
+                    }
+                    else
+                        costSignAndVisibility += message(code:'financials.costItemConfiguration.notSet')
+                }
+                cell.setCellValue(costSignAndVisibility)
+                rownum++
+            }
+            rownum++
+            sheet.createRow(rownum)
+            rownum++
+            Row sumRow = sheet.createRow(rownum)
+            cell = sumRow.createCell(sumTitleCell)
+            cell.setCellValue(message(code:'financials.export.sums'))
+            rownum++
+            result.finances.each { entry ->
+                sumRow = sheet.createRow(rownum)
+                cell = sumRow.createCell(sumTitleCell)
+                cell.setCellValue("${message(code:'financials.sum.billing')} ${entry.key}")
+                cell = sumRow.createCell(sumcell)
+                cell.setCellValue(formatNumber([number:entry.value,type:'currency',currencySymbol: entry.key]))
+                rownum++
+            }
+            for(int i = 0;i < titles.size();i++) {
+                try {
+                    sheet.autoSizeColumn(i)
+                }
+                catch (NullPointerException e) {
+                    log.error("Null value in column ${i}")
+                }
+            }
+            String filename = "${result.institution.name}_consortiaSubscriptions.xlsx"
+            response.setHeader("Content-disposition","attachment; filename=\"${filename}\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
+        }
+        else
+            result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')

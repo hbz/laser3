@@ -127,7 +127,7 @@
 
                                 <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.myConsortia" />
 
-                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortiaLicenses" message="menu.institutions.myConsortiaLicenses" />
+                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortiaSubscriptions" message="menu.institutions.myConsortiaLicenses" />
                             </g:if>
 
                             <%--<semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="tipview" message="menu.institutions.myCoreTitles" />--%>
