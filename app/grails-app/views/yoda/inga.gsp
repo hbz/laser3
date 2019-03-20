@@ -34,7 +34,7 @@
     <div class="column"><i class="plus square slash icon"></i>plus square slash</div>
     <div class="column"><i class="chain broken icon"></i>chain broken</div>
     <div class="column"><i class="chain icon"></i>chain icon</div>
-    <div class="column"><i class="share-unslash icon"></i>share-unslash</div>
+    <div class="column"><i class="la-share unslash icon"></i>la-share unslash</div>
     <div class="column"><i class="share-slash icon"></i>share-slash</div>
     <div class="column"><i class="la-copySend icon"></i>la-copySend</div>
     <div class="column"><i class="la-notebook icon"></i>la-notebook</div>

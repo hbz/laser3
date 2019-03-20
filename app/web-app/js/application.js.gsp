@@ -565,7 +565,7 @@ r2d2 = {
                         $('#js-confirmation-button').html('Aufheben<i class="chain broken icon"></i>');
                         break;
                     case "share":
-                        $('#js-confirmation-button').html('Teilen<i class="share-unslash icon"></i>');
+                        $('#js-confirmation-button').html('Teilen<i class="la-share unslash icon"></i>');
                         break;
                     case "inherit":
                         $('#js-confirmation-button').html('Vererbung ändern<i class="thumbtack icon"></i>');

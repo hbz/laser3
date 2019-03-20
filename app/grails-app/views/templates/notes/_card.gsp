@@ -46,7 +46,7 @@
                                                   update="container-notes"
                                                   data-position="top right" data-tooltip="${message(code:'property.share.tooltip.on')}"
                                     >
-                                        <i class="share-unslash icon"></i>
+                                        <i class="la-share unslash icon"></i>
                                     </g:remoteLink>
                             </g:if>
                             <g:else>
