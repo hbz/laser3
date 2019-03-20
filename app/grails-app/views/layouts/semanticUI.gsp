@@ -1,4 +1,4 @@
-<%@ page import="org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.UserSettings; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="de.laser.helper.RDStore; org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.UserSettings; com.k_int.kbplus.RefdataValue" %>
 
 <!doctype html>
 
@@ -82,9 +82,12 @@
                         <div class="menu">
                                 <g:link class="item" controller="package" action="index">${message(code:'menu.institutions.all_pkg')}</g:link>
                                 <g:link class="item" controller="title" action="index">${message(code:'menu.institutions.all_titles')}</g:link>
-                            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
-                                <g:link class="item" controller="organisations" action="index">${message(code:'menu.institutions.all_orgs')}</g:link>
-                            </sec:ifAnyGranted>
+                                <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
+                                    <g:link class="item" controller="organisations" action="index">${message(code:'menu.institutions.all_orgs')}</g:link>
+                                </sec:ifAnyGranted>
+                                <g:if test="${RDStore.OT_CONSORTIUM.id in  contextService.org.getallOrgTypeIds()}">
+                                    <g:link class="item" controller="organisations" action="listInstitution">${message(code:'menu.institutions.all_insts')}</g:link>
+                                </g:if>
                                 <g:link class="item" controller="organisations" action="listProvider">${message(code:'menu.institutions.all_provider')}</g:link>
                                 <g:link class="item" controller="platform" action="list">${message(code:'menu.institutions.all_platforms')}</g:link>
                                 <g:link class="item" controller="gasco">${message(code:'menu.institutions.gasco_monitor')}</g:link>
@@ -119,7 +122,7 @@
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.institutions.myTitles" />
 
-                            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgTypeIds())}">
+                            <g:if test="${RDStore.OT_CONSORTIUM.id in  contextService.org.getallOrgTypeIds()}">
                                 <div class="divider"></div>
 
                                 <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.myConsortia" />
@@ -389,7 +392,7 @@
                 </sec:ifAnyGranted>
 
                 <sec:ifAnyGranted roles="ROLE_YODA">
-                    <div class="ui simple dropdown item">
+                    <div class="ui  simple dropdown  item">
                         Yoda
                         <i class="dropdown icon"></i>
 
@@ -456,6 +459,9 @@
                                     <g:link class="item" controller="yoda" action="updateTaxRates">${message(code:'menu.admin.taxTypeCheck')}</g:link>
                                 </div>
                             </div>
+
+                            <div class="divider"></div>
+                            <g:link class="item" controller="yoda" action="inga" >Frontend für Entwickler</g:link>
 
                         </div>
 

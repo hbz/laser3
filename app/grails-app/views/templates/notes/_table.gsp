@@ -35,11 +35,11 @@
                             [ Wird geteilt ]
                         </g:if>
 
-                        <g:if test="${instance.showShareButton()}">
+                        <g:if test="${instance.showUIShareButton()}">
                             <g:if test="${docctx.isShared}">
                                 <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip.on')}">
                                     <g:link controller="ajax" action="toggleShare" class="ui icon button green"
-                                            params='[owner:"${instance.class.name}:${instance.id}", sharedObject:"${docctx.class.name}:${docctx.id}", reload:true]'>
+                                            params='[owner:"${instance.class.name}:${instance.id}", sharedObject:"${docctx.class.name}:${docctx.id}"]'>
                                         <i class="alternate share icon"></i>
                                     </g:link>
                                 </span>
@@ -47,7 +47,7 @@
                             <g:else>
                                 <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip.off')}">
                                     <g:link controller="ajax" action="toggleShare" class="ui icon button"
-                                            params='[owner:"${instance.class.name}:${instance.id}", sharedObject:"${docctx.class.name}:${docctx.id}", reload:true]'>
+                                            params='[owner:"${instance.class.name}:${instance.id}", sharedObject:"${docctx.class.name}:${docctx.id}"]'>
                                         <i class="alternate share icon"></i>
                                     </g:link>
                                 </span>

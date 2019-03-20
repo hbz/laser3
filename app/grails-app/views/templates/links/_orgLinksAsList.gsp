@@ -11,13 +11,39 @@
                 <td>
                     <g:link controller="Organisations" action="show" id="${role.org.id}">${role?.org?.name}</g:link>
                 </td>
-                <g:if test="${editmode}">
-                    <td class="right aligned">
-                        <div class="ui icon negative buttons">
-                            <g:link class="ui mini icon button la-selectable-button" controller="ajax" action="delOrgRole" id="${role.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
-                                <i class="unlink icon"></i>
-                            </g:link>
-                        </div>
+
+                <td class="right aligned">
+                    <g:if test="${editmode}">
+                        <g:if test="${roleObject.showUIShareButton()}">
+                            <g:if test="${role.isShared}">
+                                <div class="ui icon buttons">
+                                    <g:link class="ui mini icon button green la-selectable-button"
+                                            controller="ajax" action="toggleShare"
+                                            params="${[owner:"${roleObject.class.name}:${roleObject.id}", sharedObject:"${role.class.name}:${role.id}"]}"
+                                            data-position="top right" data-tooltip="${message(code:'property.share.tooltip.on')}"
+                                    >
+                                        <i class="share-unslash icon"></i>
+                                    </g:link>
+                                </div>
+                            </g:if>
+                            <g:else>
+                                <div class="ui icon buttons">
+                                    <g:link class="ui mini icon button la-selectable-button"
+                                            controller="ajax" action="toggleShare"
+                                            params="${[owner:"${roleObject.class.name}:${roleObject.id}", sharedObject:"${role.class.name}:${role.id}"]}"
+                                    >
+                                        <i class="share-slash icon"></i>
+                                    </g:link>
+                                </div>
+                            </g:else>
+                        </g:if>
+                        <g:if test="${! role.isShared && ! role.sharedFrom}">
+                            <div class="ui icon negative buttons">
+                                <g:link class="ui mini icon button la-selectable-button" controller="ajax" action="delOrgRole" id="${role.id}" onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})">
+                                    <i class="unlink icon"></i>
+                                </g:link>
+                            </div>
+                        </g:if>
 
                         <div class="ui icon buttons">
                             <button class="ui button la-selectable-button" data-semui="modal" href="#${cssId}">
@@ -32,8 +58,9 @@
                                           parent: roleObject.class.name + ':' + roleObject.id,
                                           role: modalPrsLinkRole.class.name + ':' + modalPrsLinkRole.id
                                   ]"/>
-                    </td>
-                </g:if>
+                    </g:if>
+                </td>
+
             </tr>
             <g:if test="${  Person.getPublicByOrgAndFunc(role.org, 'General contact person') ||
                             Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue) ||

@@ -4,9 +4,17 @@
 -- clean up data / local dev environment only
 UPDATE combo SET combo_type_rv_fk = (
   SELECT rdv.rdv_id from refdata_value rdv join refdata_category rdc on rdv.rdv_owner = rdc.rdc_id where rdv.rdv_value = 'Consortium' and rdc.rdc_description = 'Combo Type'
-)
+);
 where combo_type_rv_fk = (
   SELECT rdv.rdv_id from refdata_value rdv join refdata_category rdc on rdv.rdv_owner = rdc.rdc_id where rdv.rdv_value = 'Consortium' and rdc.rdc_description = 'OrgType'
 );
 
+-- erms-1072
+-- 2019-03-08
+-- execute after bootstrap loc()-calls
+update public.refdata_value set rdv_order = 0 where rdv_value = 'only for creator';
+update public.refdata_value set rdv_order = 10 where rdv_value = 'only for author organisation';
+update public.refdata_value set rdv_order = 20 where rdv_value = 'only for author and target organisation';
+update public.refdata_value set rdv_order = 30 where rdv_value = 'only for consortia members';
+update public.refdata_value set rdv_order = 40 where rdv_value = 'everyone';
 

@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DebugAnnotation
 import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
@@ -113,13 +114,50 @@ class DocWidgetController extends AbstractDebugController {
           )
           if(instance instanceof Org) {
             doc_context.shareConf = genericOIDService.resolveOID(params.shareConf)
-            doc_context.targetOrg = Org.get(Long.parseLong(params.targetOrg))
+            doc_context.targetOrg = params.targetOrg ? Org.get(Long.parseLong(params.targetOrg)) : null
           }
           doc_context.save(flush:true)
 
           log.debug("Doc created and new doc context set on ${params.ownertp} for ${params.ownerid}");
         }
         
+      }
+      else {
+        log.error("Unable to locate document owner instance for class ${params.ownerclass}:${params.ownerid}");
+      }
+    }
+    else {
+      log.warn("Unable to locate domain class when processing generic doc upload. ownerclass was ${params.ownerclass}");
+    }
+
+    redirect(url: request.getHeader('referer'))
+  }
+
+  @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+  @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+  def editDocument() {
+    log.debug("edit document....");
+
+    def domain_class=grailsApplication.getArtefact('Domain',params.ownerclass)
+
+    if ( domain_class ) {
+      def instance = domain_class.getClazz().get(params.ownerid)
+      if ( instance ) {
+        log.debug("Got owner instance ${instance}");
+        DocContext doc_context = DocContext.get(params.docctx)
+        Doc doc_content = doc_context.owner
+        doc_content.title = params.upload_title
+        doc_content.type = RefdataValue.getByValueAndCategory(params.doctype,'Document Type')
+        if(instance instanceof Org)
+          doc_content.owner = instance
+        doc_content.save()
+        doc_context.doctype = RefdataValue.getByValueAndCategory(params.doctype,'Document Type')
+        if(instance instanceof Org) {
+          doc_context.shareConf = genericOIDService.resolveOID(params.shareConf)
+          doc_context.targetOrg = params.targetOrg ? Org.get(Long.parseLong(params.targetOrg)) : null
+        }
+        doc_context.save(flush:true)
+        log.debug("Doc updated and new doc context updated on ${params.ownertp} for ${params.ownerid}");
       }
       else {
         log.error("Unable to locate document owner instance for class ${params.ownerclass}:${params.ownerid}");

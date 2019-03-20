@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import com.k_int.kbplus.auth.User
 import de.laser.controller.AbstractDebugController
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -10,18 +11,19 @@ class PendingChangeController extends AbstractDebugController {
     def pendingChangeService
     def executorWrapperService
     def contextService
+    def springSecurityService
 
     @Secured(['ROLE_USER'])
     def accept() {
         log.debug("Accept");
-        pendingChangeService.performAccept(params.id, request)
+        pendingChangeService.performAccept(params.id, User.get(springSecurityService.principal.id))
         redirect(url: request.getHeader('referer'))
     }
 
     @Secured(['ROLE_USER'])
     def reject() {
         log.debug("Reject")
-        pendingChangeService.performReject(params.id, request)
+        pendingChangeService.performReject(params.id, User.get(springSecurityService.principal.id))
         redirect(url: request.getHeader('referer'))
     }
 
@@ -35,11 +37,11 @@ class PendingChangeController extends AbstractDebugController {
         def pendingChanges = owner?.pendingChanges.findAll {
             (it.status == pending_change_pending_status) || it.status == null
         }
+        def user = User.get(springSecurityService.principal.id)
         pendingChanges = pendingChanges.collect { it.id }
-        def user = [user: request.user]
         executorWrapperService.processClosure({
             pendingChanges.each { pc ->
-                pendingChangeService.performAccept(pc, user)
+                pendingChangeService.performAccept(pc, request.user)
             }
         }, owner)
 
@@ -58,7 +60,8 @@ class PendingChangeController extends AbstractDebugController {
         }
         pendingChanges = pendingChanges.collect { it.id }
 
-        def user = [user: request.user]
+        //def user = [user: request.user]
+        def user = User.get(springSecurityService.principal.id)
         executorWrapperService.processClosure({
             pendingChanges.each { pc ->
                 pendingChangeService.performReject(pc, user)

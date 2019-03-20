@@ -2,6 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
 import java.text.DateFormat
 
@@ -160,6 +161,45 @@ class FilterService {
         result.query = query
         result.queryParams = queryParams
 
+        result
+    }
+
+    Map<String,Object> getDocumentQuery(Map params) {
+        Map result = [:]
+        List query = []
+        Map<String,Object> queryParams = [:]
+        if(params.title) {
+            query << "lower(d.title) like lower(:title)"
+            queryParams << [title:"%${params.title}%"]
+        }
+        if(params.docFilename) {
+            query << "lower(d.filename) like lower(:filename)"
+            queryParams << [filename:"%${params.docFilename}%"]
+        }
+        if(params.docCreator) {
+            query << "d.creator = :creator"
+            queryParams << [creator: User.get(params.docCreator)]
+        }
+        if(params.docType) {
+            query << "d.type = :type"
+            queryParams << [type: RefdataValue.get(params.docType)]
+        }
+        if(params.docOwnerOrg) {
+            query << "d.owner = :owner"
+            queryParams << [owner: Org.get(params.docOwnerOrg)]
+        }
+        if(params.docTargetOrg) {
+            query << "dc.targetOrg = :target"
+            queryParams << [target: Org.get(params.docTargetOrg)]
+        }
+        if(params.docShareConf) {
+            query << "dc.shareConf = :shareConf"
+            queryParams << [shareConf: RefdataValue.get(params.docShareConf)]
+        }
+        if(query.size() > 0)
+            result.query = " and "+query.join(" and ")
+        else result.query = ""
+        result.queryParams = queryParams
         result
     }
 }

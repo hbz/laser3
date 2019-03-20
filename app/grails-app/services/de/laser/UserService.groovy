@@ -40,14 +40,17 @@ class UserService {
                         user: user,
                         formalRole: formalRole)
 
-                if (uoStatus in [UserOrg.STATUS_APPROVED, UserOrg.STATUS_AUTO_APPROVED]) {
+                if (uoStatus == UserOrg.STATUS_APPROVED) {
                     uo.dateActioned = uo.dateRequested
                 }
                 if (uo.save(flush:true)) {
                     flash?.message = "OK"
 
-                    sendMail(uo.user, 'Änderung der Organisationszugehörigkeit',
-                            '/mailTemplates/text/newMembership', [userOrg: uo])
+                    if (uoStatus == UserOrg.STATUS_APPROVED) {
+                        // TODO: only send if manually approved
+                        //sendMail(uo.user, 'Änderung der Organisationszugehörigkeit',
+                        //        '/mailTemplates/text/newMembership', [userOrg: uo])
+                    }
                 }
                 else {
                     flash?.error = "Problem requesting affiliation"
@@ -62,8 +65,7 @@ class UserService {
     def sendMail(User user, String subj, String view, Map model) {
 
         if (grailsApplication.config.getCurrentServer() == ContextService.SERVER_LOCAL) {
-            println "--- UserService.sendMail() ---"
-            println "--- IGNORE SENDING MAIL -- SERVER_LOCAL ---"
+            println "--- UserService.sendMail() --- IGNORED SENDING MAIL because of SERVER_LOCAL ---"
             return
         }
 

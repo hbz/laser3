@@ -497,6 +497,9 @@ r2d2 = {
                 // DELETE BUTTON
                 if (how == "delete"){
                     switch (what) {
+                        case "document":
+                            var messageWhat = "das Dokument";
+                            break;
                         case "organisationtype":
                             var messageWhat = "den Organisationstyp";
                             break;

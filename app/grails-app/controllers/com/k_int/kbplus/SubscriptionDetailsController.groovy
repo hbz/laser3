@@ -30,6 +30,9 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 
 
+import static grails.async.Promises.*
+
+
 //For Transform
 
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
@@ -108,7 +111,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
             log.debug("Slaved subscription, auto-accept pending changes")
             def changesDesc = []
             pendingChanges.each { change ->
-                if (!pendingChangeService.performAccept(change, request)) {
+                if (!pendingChangeService.performAccept(change, result.user)) {
                     log.debug("Auto-accepting pending change has failed.")
                 } else {
                     changesDesc.add(PendingChange.get(change).desc)
@@ -672,7 +675,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
                 int zdbCol = -1, onlineIdentifierCol = -1, printIdentifierCol = -1
                 //read off first line of KBART file
                 rows[0].split('\t').eachWithIndex { headerCol, int c ->
-                    switch(headerCol) {
+                    switch(headerCol.toLowerCase()) {
                         case "zdb_id": zdbCol = c
                             break
                         case "print_identifier": printIdentifierCol = c
@@ -709,7 +712,15 @@ class SubscriptionDetailsController extends AbstractDebugController {
             }
             if(result.identifiers && result.identifiers.unidentified.size() > 0) {
                 String unidentifiedTitles = result.identifiers.unidentified.join(", ")
-                flash.error = g.message(code:'subscription.details.addEntitlements.unidentified',args:[StringEscapeCategory.encodeAsHtml(result.identifiers.filename), unidentifiedTitles])
+                String escapedFileName
+                try {
+                    escapedFileName = StringEscapeCategory.encodeAsHtml(result.identifiers.filename)
+                }
+                catch (Exception | Error e) {
+                    log.error(e.printStackTrace())
+                    escapedFileName = result.identifiers.filename
+                }
+                flash.error = g.message(code:'subscription.details.addEntitlements.unidentified',args:[escapedFileName, unidentifiedTitles])
             }
         } else {
             result.num_sub_rows = 0;
@@ -1349,6 +1360,20 @@ class SubscriptionDetailsController extends AbstractDebugController {
         result
     }
 
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def editDocument() {
+        Map result = [user:springSecurityService.getCurrentUser(),institution:contextService.org]
+        result.ownobj = Subscription.get(params.instanceId)
+        result.owntp = 'subscription'
+        if(params.id) {
+            result.docctx = DocContext.get(params.id)
+            result.doc = result.docctx.owner
+        }
+
+        render template: "/templates/documents/modal", model: result
+    }
+
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def tasks() {
@@ -1862,6 +1887,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def show() {
 
+        def debugTimeA = System.currentTimeMillis()
+
         DebugUtil du = new DebugUtil()
         du.setBenchMark('1')
 
@@ -1870,7 +1897,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             response.sendError(401); return
         }
 
-        du.setBenchMark('2')
+        du.setBenchMark('this-n-that')
 
         // unlink license
 
@@ -1882,8 +1909,6 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 return
             }
         }
-
-        du.setBenchMark('3')
 
         //if (!result.institution) {
         //    result.institution = result.subscriptionInstance.subscriber ?: result.subscriptionInstance.consortia
@@ -1901,7 +1926,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.navNextSubscription = links.nextLink
 
         // links
-        Long key = Long.parseLong(params.id)
+        def key = result.subscription.id
         def sources = Links.executeQuery('select l from Links as l where l.source = :source and l.objectType = :objectType', [source: key, objectType: Subscription.class.name])
         def destinations = Links.executeQuery('select l from Links as l where l.destination = :destination and l.objectType = :objectType', [destination: key, objectType: Subscription.class.name])
         //IN is from the point of view of the context subscription (= params.id)
@@ -1926,6 +1951,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             }
         }
 
+
         du.setBenchMark('pending changes')
 
         // ---- pendingChanges : start
@@ -1944,7 +1970,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 log.debug("Slaved subscription, auto-accept pending changes")
                 def changesDesc = []
                 pendingChanges.each { change ->
-                    if (!pendingChangeService.performAccept(change, request)) {
+                    if (!pendingChangeService.performAccept(change, result.user)) {
                         log.debug("Auto-accepting pending change has failed.")
                     } else {
                         changesDesc.add(PendingChange.get(change).desc)
@@ -1960,116 +1986,129 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
         du.setBenchMark('tasks')
 
-        // tasks
-        def contextOrg = contextService.getOrg()
-        result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
-        def preCon = taskService.getPreconditions(contextOrg)
-        result << preCon
+        // TODO: experimental asynchronous task
+        //def task_tasks = task {
 
-        // restrict visible for templates/links/orgLinksAsList
-        result.visibleOrgRelations = []
-        result.subscriptionInstance.orgRelations?.each { or ->
-            if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
-                result.visibleOrgRelations << or
+            // tasks
+
+            def contextOrg = contextService.getOrg()
+            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.subscriptionInstance)
+            def preCon = taskService.getPreconditions(contextOrg)
+            result << preCon
+
+            // restrict visible for templates/links/orgLinksAsList
+            result.visibleOrgRelations = []
+            result.subscriptionInstance.orgRelations?.each { or ->
+                if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
+                    result.visibleOrgRelations << or
+                }
             }
-        }
-        result.visibleOrgRelations.sort { it.org.sortname }
+            result.visibleOrgRelations.sort { it.org.sortname }
+        //}
 
         du.setBenchMark('properties')
 
-        // -- private properties
+        // TODO: experimental asynchronous task
+        //def task_properties = task {
 
-        result.authorizedOrgs = result.user?.authorizedOrgs
-        result.contextOrg = contextService.getOrg()
+            // -- private properties
 
-        // create mandatory OrgPrivateProperties if not existing
+            result.authorizedOrgs = result.user?.authorizedOrgs
+            result.contextOrg = contextService.getOrg()
 
-        def mandatories = []
-        result.user?.authorizedOrgs?.each { org ->
-            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Subscription Property", true, org)
-            if (ppd) {
-                mandatories << ppd
-            }
-        }
-        mandatories.flatten().each { pd ->
-            if (!SubscriptionPrivateProperty.findWhere(owner: result.subscriptionInstance, type: pd)) {
-                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd)
+            // create mandatory OrgPrivateProperties if not existing
 
-                if (newProp.hasErrors()) {
-                    log.error(newProp.errors)
-                } else {
-                    log.debug("New subscription private property created via mandatory: " + newProp.type.name)
+            def mandatories = []
+            result.user?.authorizedOrgs?.each { org ->
+                def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Subscription Property", true, org)
+                if (ppd) {
+                    mandatories << ppd
                 }
             }
-        }
+            mandatories.flatten().each { pd ->
+                if (!SubscriptionPrivateProperty.findWhere(owner: result.subscriptionInstance, type: pd)) {
+                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.subscriptionInstance, pd)
 
-        // -- private properties
+                    if (newProp.hasErrors()) {
+                        log.error(newProp.errors)
+                    } else {
+                        log.debug("New subscription private property created via mandatory: " + newProp.type.name)
+                    }
+                }
+            }
 
-        result.modalPrsLinkRole = RefdataValue.findByValue('Specific subscription editor')
-        result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
+            // -- private properties
 
-        result.visiblePrsLinks = []
+            result.modalPrsLinkRole = RefdataValue.findByValue('Specific subscription editor')
+            result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
 
-        result.subscriptionInstance.prsLinks.each { pl ->
-            if (!result.visiblePrsLinks.contains(pl.prs)) {
-                if (pl.prs.isPublic?.value != 'No') {
-                    result.visiblePrsLinks << pl
-                } else {
-                    // nasty lazy loading fix
-                    result.user.authorizedOrgs.each { ao ->
-                        if (ao.getId() == pl.prs.tenant.getId()) {
-                            result.visiblePrsLinks << pl
+            result.visiblePrsLinks = []
+
+            result.subscriptionInstance.prsLinks.each { pl ->
+                if (!result.visiblePrsLinks.contains(pl.prs)) {
+                    if (pl.prs.isPublic?.value != 'No') {
+                        result.visiblePrsLinks << pl
+                    } else {
+                        // nasty lazy loading fix
+                        result.user.authorizedOrgs.each { ao ->
+                            if (ao.getId() == pl.prs.tenant.getId()) {
+                                result.visiblePrsLinks << pl
+                            }
                         }
                     }
                 }
             }
-        }
+        //}
 
         du.setBenchMark('usage')
 
-        // usage
-        def suppliers = result.subscriptionInstance.issueEntitlements?.tipp.pkg.contentProvider?.id.unique()
+        // TODO: experimental asynchronous task
+        //def task_usage = task {
 
-        if (suppliers) {
-            if (suppliers.size() > 1) {
-                log.debug('Found different content providers, cannot show usage')
-            } else {
-                def supplier_id = suppliers[0]
-                result.natStatSupplierId = Org.get(supplier_id).getIdentifierByType('statssid')?.value
-                result.institutional_usage_identifier =
-                        OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
-                if (result.institutional_usage_identifier) {
+            // usage
+            def suppliers = result.subscriptionInstance.issueEntitlements?.tipp.pkg.contentProvider?.id.unique()
 
-                    def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscriptionInstance)
-                    def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscriptionInstance)
+            if (suppliers) {
+                if (suppliers.size() > 1) {
+                    log.debug('Found different content providers, cannot show usage')
+                } else {
+                    def supplier_id = suppliers[0]
+                    result.natStatSupplierId = Org.get(supplier_id).getIdentifierByType('statssid')?.value
+                    result.institutional_usage_identifier =
+                            OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)
+                    if (result.institutional_usage_identifier) {
 
-                    def holdingTypes = result.subscriptionInstance.getHoldingTypes() ?: null
-                    if (!holdingTypes) {
-                        log.debug('No types found, maybe there are no issue entitlements linked to subscription')
-                    } else if (holdingTypes.size() > 1) {
-                        log.info('Different content type for this license, cannot calculate Cost Per Use.')
-                    } else if (!fsLicenseResult.isEmpty()) {
-                        def existingReportMetrics = fsLicenseResult.y_axis_labels*.split(':')*.last()
-                        def costPerUseMetricValuePair = factService.getTotalCostPerUse(result.subscriptionInstance, holdingTypes.first(), existingReportMetrics)
-                        if (costPerUseMetricValuePair) {
-                            result.costPerUseMetric = costPerUseMetricValuePair[0]
-                            result.totalCostPerUse = costPerUseMetricValuePair[1]
-                            result.currencyCode = NumberFormat.getCurrencyInstance().getCurrency().currencyCode
+                        def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscriptionInstance)
+                        def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscriptionInstance)
+
+                        def holdingTypes = result.subscriptionInstance.getHoldingTypes() ?: null
+                        if (!holdingTypes) {
+                            log.debug('No types found, maybe there are no issue entitlements linked to subscription')
+                        } else if (holdingTypes.size() > 1) {
+                            log.info('Different content type for this license, cannot calculate Cost Per Use.')
+                        } else if (!fsLicenseResult.isEmpty()) {
+                            def existingReportMetrics = fsLicenseResult.y_axis_labels*.split(':')*.last()
+                            def costPerUseMetricValuePair = factService.getTotalCostPerUse(result.subscriptionInstance, holdingTypes.first(), existingReportMetrics)
+                            if (costPerUseMetricValuePair) {
+                                result.costPerUseMetric = costPerUseMetricValuePair[0]
+                                result.totalCostPerUse = costPerUseMetricValuePair[1]
+                                result.currencyCode = NumberFormat.getCurrencyInstance().getCurrency().currencyCode
+                            }
                         }
+
+                        result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
+                        result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) ? 'package' : 'institution'
+                        result.usage = fsresult?.usage
+                        result.x_axis_labels = fsresult?.x_axis_labels
+                        result.y_axis_labels = fsresult?.y_axis_labels
+
+                        result.lusage = fsLicenseResult?.usage
+                        result.l_x_axis_labels = fsLicenseResult?.x_axis_labels
+                        result.l_y_axis_labels = fsLicenseResult?.y_axis_labels
                     }
-
-                    result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
-                    result.usageMode = ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) ? 'package' : 'institution'
-                    result.usage = fsresult?.usage
-                    result.x_axis_labels = fsresult?.x_axis_labels
-                    result.y_axis_labels = fsresult?.y_axis_labels
-
-                    result.lusage = fsLicenseResult?.usage
-                    result.l_x_axis_labels = fsLicenseResult?.x_axis_labels
-                    result.l_y_axis_labels = fsLicenseResult?.y_axis_labels
                 }
             }
-        }
+        //}
 
         du.setBenchMark('costs')
 
@@ -2096,23 +2135,36 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
         du.setBenchMark('provider & agency filter')
 
-        result.availableProviderList = orgTypeService.getOrgsForTypeProvider().minus(
-                OrgRole.executeQuery(
-                        "select o from OrgRole oo join oo.org o where oo.sub.id = :sub and oo.roleType.value = 'Provider'",
-                        [sub: result.subscriptionInstance.id]
-                ))
-        result.existingProviderIdList = [] // performance problems: orgTypeService.getCurrentProviders(contextService.getOrg()).collect { it -> it.id }
+        // TODO: experimental asynchronous task
+        //def task_providerFilter = task {
 
-        result.availableAgencyList = orgTypeService.getOrgsForTypeAgency().minus(
-                OrgRole.executeQuery(
-                        "select o from OrgRole oo join oo.org o where oo.sub.id = :sub and oo.roleType.value = 'Agency'",
-                        [sub: result.subscriptionInstance.id]
-                ))
-        result.existingAgencyIdList = [] // performance problems: orgTypeService.getCurrentAgencies(contextService.getOrg()).collect { it -> it.id }
+            result.availableProviderList = orgTypeService.getOrgsForTypeProvider().minus(
+                    OrgRole.executeQuery(
+                            "select o from OrgRole oo join oo.org o where oo.sub.id = :sub and oo.roleType.value = 'Provider'",
+                            [sub: result.subscriptionInstance.id]
+                    ))
+            result.existingProviderIdList = []
+            // performance problems: orgTypeService.getCurrentProviders(contextService.getOrg()).collect { it -> it.id }
+
+            result.availableAgencyList = orgTypeService.getOrgsForTypeAgency().minus(
+                    OrgRole.executeQuery(
+                            "select o from OrgRole oo join oo.org o where oo.sub.id = :sub and oo.roleType.value = 'Agency'",
+                            [sub: result.subscriptionInstance.id]
+                    ))
+            result.existingAgencyIdList = []
+            // performance problems: orgTypeService.getCurrentAgencies(contextService.getOrg()).collect { it -> it.id }
+
+        //}
 
         List bm = du.stopBenchMark()
         result.benchMark = bm
         log.debug (bm)
+
+        // TODO: experimental asynchronous task
+        //waitAll(task_tasks, task_properties, task_usage, task_providerFilter)
+
+        def debugTimeB = System.currentTimeMillis()
+        //println " ---> " + Math.abs(debugTimeB - debugTimeA)
 
         result
     }

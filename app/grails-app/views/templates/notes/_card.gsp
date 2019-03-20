@@ -36,7 +36,7 @@
                         </div>
                         <div class="center aligned four wide column">
 
-                            <g:if test="${ownobj.showShareButton()}">
+                            <g:if test="${ownobj.showUIShareButton()}">
                             <g:if test="${docctx.isShared}">
                                     <g:remoteLink class="ui mini icon button green js-gost js-no-wait-wheel"
                                                   controller="ajax" action="toggleShare"

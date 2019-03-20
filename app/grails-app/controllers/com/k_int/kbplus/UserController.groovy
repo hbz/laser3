@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.controller.AbstractDebugController
+import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.*;
 import grails.gorm.*
@@ -13,108 +14,133 @@ class UserController extends AbstractDebugController {
     def springSecurityService
     def genericOIDService
     def userService
+    def contextService
+    def accessService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-    @Secured(['ROLE_ADMIN'])
     def index() {
         redirect action: 'list', params: params
     }
 
-    @Secured(['ROLE_ADMIN'])
+    @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
+    @Secured(closure = {
+        ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') ||
+                ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM")
+    })
     def list() {
 
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.editable = true // TODO; checked in gsp against ROLE_YODA
+        def result = setResultGenerics()
 
+        List baseQuery = ['select distinct u from User u']
+        List whereQuery = []
+        Map queryParams = [:]
 
-        params.max = params.max ?: result.user?.getDefaultPageSizeTMP()
-        def results = null;
-        def count = null;
-
-      if(params.authority == "null") 
-        params.authority=null;
-
-      def criteria = new DetachedCriteria(User).build {
-        if ( params.name && params.name != '' ) {
-          or {
-            ilike('username',"%${params.name}%")
-            ilike('display',"%${params.name}%")
-            ilike('instname',"%${params.name}%")
-          }
+        if (! result.editor.hasRole('ROLE_ADMIN')) {
+            // only context org depending
+            baseQuery.add('UserOrg uo')
+            whereQuery.add('( uo.user = u and uo.org = :ctxOrg )')
+            //whereQuery.add('( uo.user = u and uo.org = :ctxOrg ) or not exists ( SELECT uoCheck from UserOrg uoCheck where uoCheck.user = u ) )')
+            queryParams.put('ctxOrg', contextService.getOrg())
         }
-        if(params.authority){
-          def filter_role = Role.get(params.authority.toLong())
-          if(filter_role){
-              roles{
-                eq('role',filter_role)
-              }
-          }
+
+        if (params.authority && params.authority != 'null') {
+            baseQuery.add('UserRole ur')
+            whereQuery.add('ur.user = u and ur.role = :role')
+            queryParams.put('role', Role.get(params.authority.toLong()))
         }
-      }
 
-      result.users = criteria.list(params)
-      result.total = criteria.count()
+        if (params.name && params.name != '' ) {
+            whereQuery.add('(lower(username) like :name or lower(display) like :name or lower(instname) like :name)')
+            queryParams.put('name', "%${params.name.toLowerCase()}%")
+        }
 
-      result
+        params.max = params.max ?: result.editor?.getDefaultPageSizeTMP() // TODO
+
+        result.users = User.executeQuery(
+                baseQuery.join(', ') + (whereQuery ? ' where ' + whereQuery.join(' and ') : '') ,
+                queryParams /*,
+                params */
+        )
+
+        result.total = result.users.size()
+
+        result
     }
 
-    @Secured(['ROLE_ADMIN'])
+    @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
+    @Secured(closure = {
+        ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') ||
+                ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM")
+    })
     def edit() {
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.editable = true // TODO; checked in gsp against ROLE_YODA
+        def result = setResultGenerics()
 
-        def userInstance = User.get(params.id)
-        if (! userInstance) {
+        if (! result.editable) {
+            redirect action: 'list'
+            return
+        }
+        else if (! result.user) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'Org'), params.id])
             redirect action: 'list'
             return
         }
         else {
             // check if api key and secret are existing
-            def readRole  = UserRole.findAllWhere(user: userInstance, role: Role.findByAuthority('ROLE_API_READER'))
-            def writeRole = UserRole.findAllWhere(user: userInstance, role: Role.findByAuthority('ROLE_API_WRITER'))
+            def readRole  = UserRole.findAllWhere(user: result.user, role: Role.findByAuthority('ROLE_API_READER'))
+            def writeRole = UserRole.findAllWhere(user: result.user, role: Role.findByAuthority('ROLE_API_WRITER'))
             if((readRole || writeRole)){
-                if(! userInstance.apikey){
-                    def seed1 = Math.abs(new Random().nextFloat()).toString().getBytes()
-                    userInstance.apikey = MessageDigest.getInstance("MD5").digest(seed1).encodeHex().toString().take(16)
+                if(! result.user.apikey){
+                    result.user.apikey = User.generateRandomPassword()
                 }
-                if(! userInstance.apisecret){
-                    def seed2 = Math.abs(new Random().nextFloat()).toString().getBytes()
-                    userInstance.apisecret = MessageDigest.getInstance("MD5").digest(seed2).encodeHex().toString().take(16)
+                if(! result.user.apisecret){
+                    result.user.apisecret = User.generateRandomPassword()
                 }
             }
+
+            if (! result.editor.hasRole('ROLE_ADMIN')) {
+                result.availableOrgs = contextService.getOrg()
+                result.availableOrgRoles = Role.findAllByRoleType('user')
+            }
+            else {
+                result.availableOrgs = Org.executeQuery('from Org o where o.sector.value = ? order by o.name', 'Higher Education')
+                result.availableOrgRoles = Role.findAllByRoleType('user')
+            }
         }
-        result.ui = userInstance
         result
     }
 
-    @Secured(['ROLE_ADMIN'])
+    @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
+    @Secured(closure = {
+        ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') ||
+                ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM")
+    })
     def show() {
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        def userInstance = User.get(params.id)
-        result.ui = userInstance
+        def result = setResultGenerics()
         result
     }
 
-    @Secured(['ROLE_ADMIN'])
+    @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
+    @Secured(closure = {
+        ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') ||
+                ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM")
+    })
     def newPassword() {
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        result.editable = true // TODO; checked in gsp against ROLE_YODA
+        def result = setResultGenerics()
 
-        def userInstance = User.get(params.id)
-        if (userInstance) {
+        if (! result.editable) {
+            flash.error = message(code: 'default.noPermissions', default: 'KEINE BERECHTIGUNG')
+            redirect controller: 'user', action: 'edit', id: params.id
+            return
+        }
+        if (result.user) {
             String newPassword = User.generateRandomPassword()
-            userInstance.password = newPassword
-            if (userInstance.save(flush: true)) {
+            result.user.password = newPassword
+            if (result.user.save(flush: true)) {
                 flash.message = message(code: 'user.newPassword.success', args: [newPassword])
 
-                userService.sendMail(userInstance, 'Passwortänderung',
-                        '/mailTemplates/text/newPassword', [user: userInstance, newPass: newPassword])
+                userService.sendMail(result.user, 'Passwortänderung',
+                        '/mailTemplates/text/newPassword', [user: result.user, newPass: newPassword])
 
                 redirect controller: 'user', action: 'edit', id: params.id
                 return
@@ -125,42 +151,97 @@ class UserController extends AbstractDebugController {
         redirect controller: 'user', action: 'edit', id: params.id
     }
 
-    @Secured(['ROLE_ADMIN'])
+    @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
+    @Secured(closure = {
+        ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') ||
+                ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM")
+    })
     def addAffiliation(){
+        def result = setResultGenerics()
+        if (! result.editable) {
+            flash.error = message(code: 'default.noPermissions', default: 'KEINE BERECHTIGUNG')
+            redirect controller: 'user', action: 'edit', id: params.id
+            return
+        }
 
-        User user = User.get(params.id)
         Org org = Org.get(params.org)
         Role formalRole = Role.get(params.formalRole)
 
-        if (user && org && formalRole) {
-            userService.createAffiliation(user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
+        if (result.user && org && formalRole) {
+            userService.createAffiliation(result.user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
         }
 
         redirect controller: 'user', action: 'edit', id: params.id
     }
 
-    @Secured(['ROLE_ADMIN'])
-  def create() {
-    switch (request.method) {
-      case 'GET':
-        [orgInstance: new Org(params)]
-        break
-      case 'POST':
-            def userInstance = new User(params)
-            if (!userInstance.save(flush: true)) {
-                render view: 'create', model: [userInstance: userInstance]
-                return
-            }
+    @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
+    @Secured(closure = {
+        ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') ||
+                ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM")
+    })
+    def create() {
+        def result = setResultGenerics()
+        if (! result.editable) {
+            flash.error = message(code: 'default.noPermissions', default: 'KEINE BERECHTIGUNG')
+            redirect controller: 'user', action: 'list'
+            return
+        }
 
-            def defaultRole = new UserRole(
-                user: userInstance,
-                role: Role.findByAuthority('ROLE_USER')
-            )
-            defaultRole.save(flush: true);
+        if (! result.editor.hasRole('ROLE_ADMIN')) {
+            result.availableOrgs = contextService.getOrg()
+            result.availableOrgRoles = Role.findAllByRoleType('user')
+        }
+        else {
+            result.availableOrgs = Org.executeQuery('from Org o where o.sector.value = ? order by o.name', 'Higher Education')
+            result.availableOrgRoles = Role.findAllByRoleType('user')
+        }
 
-            flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), userInstance.id])
-            redirect action: 'edit', id: userInstance.id
-        break
+        switch (request.method) {
+            case 'POST':
+                def user = new User(params)
+                if (! user.save(flush: true)) {
+                    render view: 'create', model: [
+                            userInstance: user,
+                            editable: result.editable,
+                            availableOrgs: result.availableOrgs,
+                            availableOrgRoles: result.availableOrgRoles
+                    ]
+                    return
+                }
+
+                def defaultRole = new UserRole(user: user, role: Role.findByAuthority('ROLE_USER'))
+                defaultRole.save(flush: true)
+
+                if (params.org && params.formalRole) {
+                    Org org = Org.get(params.org)
+                    Role formalRole = Role.get(params.formalRole)
+                    if (org && formalRole) {
+                        userService.createAffiliation(user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
+                    }
+                }
+
+                flash.message = message(code: 'default.created.message', args: [message(code: 'user.label', default: 'User'), user.id])
+                redirect action: 'edit', id: user.id
+                break
+        }
+
+
+
+        result
     }
-  }
+
+    private LinkedHashMap setResultGenerics() {
+        def result = [:]
+        result.editor = User.get(springSecurityService.principal.id)
+
+        if (params.get('id')) {
+            result.user = User.get(params.id)
+            result.editable = accessService.checkIsEditableForAdmin(result.user, result.editor, contextService.getOrg())
+        }
+        else {
+            result.editable = result.editor.hasRole('ROLE_ADMIN') || result.editor.hasAffiliation('INST_ADM')
+        }
+
+        result
+    }
 }

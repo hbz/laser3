@@ -199,7 +199,8 @@ class SemanticUiTagLib {
     }
 
 
-    def dtAuditCheck = { attrs, body ->
+    def auditButton = { attrs, body ->
+
         def text = attrs.text ? attrs.text : ''
         def message = attrs.message ? "${message(code: attrs.message)}" : ''
         def label = (text && message) ? text + " - " + message : text + message
@@ -209,19 +210,63 @@ class SemanticUiTagLib {
         if (attrs.auditable) {
             try {
                 def obj = attrs.auditable[0]
-                if (obj.instanceOf && !obj.instanceOf.isTemplate()) {
-                    if (auditService.getAuditConfig(obj.instanceOf, attrs.auditable[1])) {
-                        if (obj.isSlaved?.value?.equalsIgnoreCase('yes')) {
-                            out << '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
-                        } else {
-                            out << '&nbsp; <span data-tooltip="Wert wird geerbt." data-position="top right"><i class="icon thumbtack grey"></i></span>'
+                def objAttr = attrs.auditable[1]
+
+                if (obj?.getClass().controlledProperties?.contains(objAttr)) {
+
+                    // inherited (to)
+                    if (obj.instanceOf && !obj.instanceOf.isTemplate()) {
+
+                        if (auditService.getAuditConfig(obj.instanceOf, objAttr)) {
+                            if (obj.isSlaved?.value?.equalsIgnoreCase('yes')) {
+                                out << '&nbsp; <span data-tooltip="Wert wird automatisch geerbt" data-position="top right">'
+                                out << '<i class="icon thumbtack blue"></i>'
+                                out << '</span>'
+                            }
+                            else {
+                                out << '&nbsp; <span data-tooltip="Wert wird geerbt" data-position="top right">'
+                                //out <<   '<button class="ui icon mini green button">'
+                                out << '<i class="icon thumbtack grey"></i>'
+                                out << '</span>'
+                            }
                         }
                     }
-                } else {
-                    if (auditService.getAuditConfig(obj, attrs.auditable[1])) {
-                        out << '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
+                    // inherit (from)
+                    else {
+                        String oid = "${obj.getClass().getName()}:${obj.getId()}"
+
+                        if (auditService.getAuditConfig(obj, objAttr)) {
+                            out << '&nbsp; <div class="ui simple dropdown icon mini green button" data-tooltip="Wert wird vererbt" data-position="top right">'
+                            out   << '<i class="icon thumbtack"></i>'
+
+                            out   << '<div class="menu">'
+                            out << g.link( 'Deaktivieren. Wert für Teilnehmer löschen',
+                                    controller: 'ajax',
+                                    action: 'toggleAudit',
+                                    params: ['owner': oid, 'property': [objAttr]],
+                                    class: 'item'
+                            )
+                            out << g.link( 'Deaktivieren. Wert für Teilnehmer erhalten',
+                                    controller: 'ajax',
+                                    action: 'toggleAudit',
+                                    params: ['owner': oid, 'property': [objAttr], keep: true],
+                                    class: 'item'
+                            )
+                            out   << '</div>'
+                            out << '</div>'
+                        }
+                        else {
+                            out << ' &nbsp; '
+                            out << g.link( '<i class="icon thumbtack"></i>',
+                                    controller: 'ajax',
+                                    action: 'toggleAudit',
+                                    params: ['owner': oid, 'property': [objAttr]],
+                                    class: 'ui icon mini button'
+                            )
+                        }
                     }
                 }
+
             } catch (Exception e) {
             }
         }
@@ -688,6 +733,11 @@ class SemanticUiTagLib {
         // close <div class="ui fluid search selection dropdown">
         out << '</div>'
 
+    }
+    def dateDevider = { attrs, body ->
+        out << "<span class='ui grey horizontal divider la-date-devider'>"
+        out << "        ${message(code:'default.to')}"
+        out << "</span>"
     }
     public SemanticUiTagLib() {}
 
