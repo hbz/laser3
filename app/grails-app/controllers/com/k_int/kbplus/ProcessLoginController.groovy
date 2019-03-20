@@ -158,18 +158,18 @@ class ProcessLoginController {
         org = com.k_int.kbplus.Org.findByShortcode(candidate)
 
       if ( org ) {
-        boolean auto_approve = false;
+        //boolean auto_approve = false;
 
-        def auto_approve_setting = Setting.findByName('AutoApproveMemberships');
+        //def auto_approve_setting = Setting.findByName('AutoApproveMemberships');
 
-        if ( auto_approve_setting?.value == 'true' )
-          auto_approve = true;
+        //if ( auto_approve_setting?.value == 'true' )
+        //  auto_approve = true;
 
         def userRole = com.k_int.kbplus.auth.Role.findByAuthority('INST_USER')
         def user_org_link = new com.k_int.kbplus.auth.UserOrg(user:user, 
                                                               org:org, 
                                                               formalRole:userRole,
-                                                              status: auto_approve?com.k_int.kbplus.auth.UserOrg.STATUS_AUTO_APPROVED:com.k_int.kbplus.auth.UserOrg.STATUS_PENDING,
+                                                              status: com.k_int.kbplus.auth.UserOrg.STATUS_PENDING,
                                                               dateRequested:System.currentTimeMillis(), 
                                                               dateActioned:System.currentTimeMillis())
         if ( !user_org_link.save(flush:true) ) {
@@ -177,6 +177,7 @@ class ProcessLoginController {
           user_org_link.errors.each { e ->
             log.error(e);
           }
+
         }
         else {
           log.debug("Linked user with org ${org.id} based on name ${authInstitutionName}");

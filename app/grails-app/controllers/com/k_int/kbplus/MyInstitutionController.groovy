@@ -567,9 +567,10 @@ from License as l where (
     private def exportcurrentSubscription(subscriptions) {
         try {
             String[] titles = [
-                    'Name', 'Vertrag', 'Verknuepfte Pakete', 'Konsortium', 'Anbieter', 'Agentur', 'Anfangsdatum', 'Enddatum', 'Status', 'Typ' ]
+                    'Name', g.message(code:'subscription.owner.label'), g.message(code:'subscription.packages.label'), g.message(code:'consortium.label'), g.message(code:'default.provider.label'), g.message(code:'default.agency.label'),
+                    g.message(code:'subscription.startDate.label'), g.message(code:'subscription.endDate.label'), 'Status', 'Typ' ]
 
-            def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+            def sdf = new SimpleDateFormat(g.message(code:'default.date.format.notimenopoint', default:'ddMMyyyy'));
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
             HSSFWorkbook wb = new HSSFWorkbook();
@@ -656,7 +657,7 @@ from License as l where (
                 sheet.autoSizeColumn(i);
             }
             // Write the output to a file
-            String file = g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions")+"_${datetoday}.xls";
+            String file = "${datetoday}_"+g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions").replaceAll(' ', '_')+".xls";
             //if(wb instanceof XSSFWorkbook) file += "x";
 
             response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
@@ -1107,11 +1108,42 @@ from License as l where (
     Map documents() {
         User user = User.get(springSecurityService.principal.id)
         Org org = contextService.org
+        Map filterQuery = filterService.getDocumentQuery(params)
         Set<DocContext> documents = []
-        documents.addAll(DocContext.executeQuery('select dc from DocContext dc join dc.owner d where d.owner = :org or dc.targetOrg = :org',[org:org]))
+        documents.addAll(DocContext.executeQuery('select dc from DocContext dc join dc.owner d where (d.owner = :org or dc.targetOrg = :org)'+filterQuery.query,[org:org]+filterQuery.queryParams))
+        //get documents shared for consortia
+        if(!org.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id)) {
+            List consortia = Combo.findAllByFromOrgAndType(org,RefdataValue.getByValueAndCategory('Consortium','Combo Type')).collect {
+                combo -> combo.toOrg
+            }
+            documents.addAll(DocContext.executeQuery('select dc from DocContext dc join dc.owner d where d.owner in :consortia'+filterQuery.query,[consortia:consortia]+filterQuery.queryParams))
+        }
         org.documents = documents
-        Map result = [user:user,org:org,editable:accessService.checkMinUserOrgRole(user,org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]
+        List allUploaders = Doc.executeQuery('select dc.shareConf,d.creator from DocContext dc join dc.owner d where d.owner = :org order by d.creator.display asc',[org:org])
+        Set availableUsers = []
+        allUploaders.each { row ->
+            if(row[0] == RDStore.SHARE_CONF_CREATOR) {
+                if(row[1] == user)
+                    availableUsers.add(row[1])
+            }
+            else availableUsers.add(row[1])
+        }
+        Map result = [user:user,org:org,availableUsers:availableUsers,editable:accessService.checkMinUserOrgRole(user,org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]
         result
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def editDocument() {
+        Map result = setResultGenerics()
+        result.ownobj = result.institution
+        result.owntp = 'organisation'
+        if(params.id) {
+            result.docctx = DocContext.get(params.id)
+            result.doc = result.docctx.owner
+        }
+
+        render template: "/templates/documents/modal", model: result
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
@@ -1123,7 +1155,7 @@ from License as l where (
 
         docstoreService.unifiedDeleteDocuments(params)
 
-        redirect controller: 'licenseDetails', action: 'show', id: params.licid /*, fragment: 'docstab' */
+        redirect controller: 'myInstitution', action: 'documents' /*, fragment: 'docstab' */
     }
 
     @Deprecated
@@ -1605,7 +1637,8 @@ AND EXISTS (
             if (CostItem.findBySub(subscription)) {
                 flash.error = message(code: 'subscription.delete.existingCostItems')
 
-            } else if (! derived_subs) {
+            }
+            else if (! derived_subs) {
               log.debug("Current Institution is ${inst}, sub has consortium ${subscription.consortia}")
               if( subscription.consortia && subscription.consortia != inst ) {
                 OrgRole.executeUpdate("delete from OrgRole where sub = ? and org = ?",[subscription, inst])
@@ -1626,7 +1659,7 @@ AND EXISTS (
                 }
               }
             } else {
-                flash.error = message(code:'myinst.actionCurrentSubscriptions.error', default:'Unable to delete - The selected license has attached subscriptions')
+                flash.error = message(code:'myinst.actionCurrentSubscriptions.error', default:'Unable to delete - The selected subscriptions has attached subscriptions')
             }
         } else {
             log.warn("${result.user} attempted to delete subscription ${result.subscription} without perms")
@@ -3792,7 +3825,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 titles.add(it.name)
             }
 
-            def sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+            def sdf = new SimpleDateFormat(g.message(code:'default.date.format.notimenopoint', default:'ddMMyyyy'));
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
             HSSFWorkbook wb = new HSSFWorkbook();
@@ -3914,7 +3947,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 sheet.autoSizeColumn(i);
             }
             // Write the output to a file
-            String file = message+"_${datetoday}.xls";
+            String file = "${datetoday}_"+message.replaceAll(' ', '_')+".xls";
             //if(wb instanceof XSSFWorkbook) file += "x";
 
             response.setHeader "Content-disposition", "attachment; filename=\"${file}\""

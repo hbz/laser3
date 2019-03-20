@@ -3,13 +3,13 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI">
-    <title>${ui.display}</title>
+    <title>${user.display}</title>
   </head>
   <body>
 
     <g:render template="breadcrumb" model="${[ params:params ]}"/>
 
-      <h1 class="ui left aligned icon header"><semui:headerIcon />${ui.username} : ${ui.displayName?:'No username'}</h1>
+      <h1 class="ui left aligned icon header"><semui:headerIcon />${user.username} : ${user.displayName?:'No username'}</h1>
 
       <semui:messages data="${flash}" />
 
@@ -25,7 +25,7 @@
           </tr>
         </thead>
         <tbody>
-          <g:each in="${ui.affiliations}" var="af">
+          <g:each in="${user.affiliations}" var="af">
             <tr>
               <td>${af.id}</td>
               <td>${af.org.name}</td>
@@ -45,7 +45,7 @@
           </tr>
         </thead>
         <tbody>
-          <g:each in="${ui.roles}" var="rl">
+          <g:each in="${user.roles}" var="rl">
             <tr>
               <td>${rl.role.authority}</td>
             </tr>

@@ -136,7 +136,7 @@ class SystemEvent {
             result.add( it.getSource() )
         }
 
-        result.unique()
+        result.unique().sort()
     }
 
     // GETTER
@@ -147,16 +147,25 @@ class SystemEvent {
         }
     }
 
-    String getSource() {
+    private String getInfoPart(def index) {
         setInfo()
-        i18n.split('\\|')[0]
+        List parts = i18n.split('\\|')
+
+        if (parts.size() > index) {
+            i18n.split('\\|')[index]
+        }
+        else {
+            ''
+        }
+    }
+
+    String getSource() {
+        getInfoPart(0)
     }
     String getEvent() {
-        setInfo()
-        i18n.split('\\|')[1]
+        getInfoPart(1)
     }
     String getDescr() {
-        setInfo()
-        i18n.split('\\|')[2]
+        getInfoPart(3)
     }
 }

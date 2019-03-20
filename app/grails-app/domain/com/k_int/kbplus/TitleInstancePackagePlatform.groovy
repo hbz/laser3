@@ -308,7 +308,7 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
         if ( sub.getSubscriber() == null ) {
           // SO - Ignore!
         }
-        else if(sub.status.value != "Deleted") {
+        else if(sub.status?.value != "Deleted") {
           changeNotificationService.registerPendingChange(
                   PendingChange.PROP_SUBSCRIPTION,
                                                           dep_ie.subscription,

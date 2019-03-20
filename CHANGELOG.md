@@ -1,3 +1,22 @@
+
+0.14.5
+
+- bugfix: processing pending changes
+- bugfix: handle nameless subscriptions
+
+0.14.4
+
+- bugfix: processing dashboard data
+- bugfix: global data sync
+- fixed false INST_ADM checks
+- system event improvements
+
+0.14.3
+
+- fixed inheritance bug
+- fixed tipp handling / gokb sync
+- prevent deleting pending changes at package sync
+
 0.14.2
 
 - fixed regression bugs

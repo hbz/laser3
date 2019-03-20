@@ -171,7 +171,18 @@ class Subscription
     }
 
     @Override
-    boolean showShareButton() {
+    boolean checkSharePreconditions(ShareableTrait sharedObject) {
+        // needed to differentiate OrgRoles
+        if (sharedObject instanceof OrgRole) {
+            if (showUIShareButton() && sharedObject.roleType.value in ['Provider', 'Agency']) {
+                return true
+            }
+        }
+        false
+    }
+
+    @Override
+    boolean showUIShareButton() {
         getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL
     }
 
@@ -179,7 +190,7 @@ class Subscription
     def updateShare(ShareableTrait sharedObject) {
         log.debug('updateShare: ' + sharedObject)
 
-        if (sharedObject instanceof DocContext) {
+        if (sharedObject instanceof DocContext || sharedObject instanceof OrgRole) {
             if (sharedObject.isShared) {
                 List<Subscription> newTargets = Subscription.findAllByInstanceOfAndStatusNotEqual(this, RDStore.SUBSCRIPTION_DELETED)
                 log.debug('found targets: ' + newTargets)
@@ -200,7 +211,19 @@ class Subscription
         log.debug('synAllShares: ' + targets)
 
         documents.each{ sharedObject ->
+            targets.each{ sub ->
+                if (sharedObject.isShared) {
+                    log.debug('adding for: ' + sub)
+                    sharedObject.addShareForTarget_trait(sub)
+                }
+                else {
+                    log.debug('deleting all shares')
+                    sharedObject.deleteShare_trait()
+                }
+            }
+        }
 
+        orgRelations.each{ sharedObject ->
             targets.each{ sub ->
                 if (sharedObject.isShared) {
                     log.debug('adding for: ' + sub)

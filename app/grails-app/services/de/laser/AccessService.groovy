@@ -29,17 +29,17 @@ class AccessService {
     def contextService
 
     // copied from FinanceController, LicenseCompareController, MyInstitutionsController
-    boolean checkUserIsMember(user, org) {
+    boolean checkUserIsMember(User user, Org org) {
 
         // def uo = UserOrg.findByUserAndOrg(user,org)
         def uoq = UserOrg.where {
-            (user == user && org == org && (status == UserOrg.STATUS_APPROVED || status == UserOrg.STATUS_AUTO_APPROVED))
+            (user == user && org == org && status == UserOrg.STATUS_APPROVED)
         }
 
         return (uoq.count() > 0)
     }
 
-    boolean checkMinUserOrgRole(user, org, role) {
+    boolean checkMinUserOrgRole(User user, Org org, def role) {
 
         def result = false
         def rolesToCheck = []
@@ -68,10 +68,19 @@ class AccessService {
 
         rolesToCheck.each{ rot ->
             def userOrg = UserOrg.findByUserAndOrgAndFormalRole(user, org, rot)
-            if (userOrg && (userOrg.status == UserOrg.STATUS_APPROVED || userOrg.status == UserOrg.STATUS_AUTO_APPROVED)) {
+            if (userOrg && userOrg.status == UserOrg.STATUS_APPROVED) {
                 result = true
             }
         }
         result
+    }
+
+    boolean checkIsEditableForAdmin(User toEdit, User editor, Org org) {
+
+        boolean roleAdmin = editor.hasRole('ROLE_ADMIN')
+        boolean instAdmin = editor.hasAffiliation('INST_ADM') // check @ contextService.getOrg()
+        boolean orgMatch  = checkUserIsMember(toEdit, contextService.getOrg())
+
+        roleAdmin || (instAdmin && orgMatch)
     }
 }
