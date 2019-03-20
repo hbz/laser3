@@ -3,8 +3,8 @@
             workFlowPart: workFlowPart,
             workFlowPartNext: workFlowPartNext
         ]" method="post" class="ui form newLicence">
-    <div class="three fields">
-        <div class="field">
+    <div class="fields" style="justify-content: flex-end;">
+        <div class="six wide field">
             <label>${message(code: 'subscription.details.copyElementsIntoSubscription.sourceSubscription.name')}: </label>
             <g:select class="ui search dropdown"
                   name="sourceSubscriptionId"
@@ -15,7 +15,7 @@
                   />
         </div>
                   %{--disabled="${(subscription)? true : false}"/>--}%
-        <div class="field">
+        <div class="six wide field">
             <label>${message(code: 'subscription.details.copyElementsIntoSubscription.targetSubscription.name')}: </label>
             <g:select class="ui search dropdown"
                   name="targetSubscriptionId"
@@ -25,8 +25,11 @@
                   value="${targetSubscription?.id}"
                   noSelection="${[null: message(code: 'default.select.choose.label')]}"/>
         </div>
-        <div class="field la-field-right-aligned">
-            <input type="submit" class="ui button" value="Lizenzen auswählen" />
+    </div>
+    <div class="fields" style="justify-content: flex-end;">
+        <div class="six wide field" style="text-align: right;">
+            <input type="submit" class="ui wide button" value="Lizenzen auswählen" />
         </div>
     </div>
+
 </g:form>

@@ -631,14 +631,20 @@
 
 /************* laser three toggle icon buttons ***************/
 
+.radio,
+.checkbox.la-toggle-radio {
+  padding: 0;
+}
 /* BEFORE */
 .ui.checkbox.la-toggle-radio label {
   font-size: 1.7em;
+  width: 40px;
+  height: 40px;
 }
 .ui.checkbox.la-toggle-radio label:before {
   width: 40px;
   height: 40px;
-  padding-top: 9px;
+  padding-top: 10px;
   color: #FFFFFF;
   background-color: lightgray;
   text-align: center;
