@@ -4797,10 +4797,10 @@ i.icon.chain.broken {
 i.icon.chain {
   font-family: 'icomoon';
 }
-i.icon.la-share unslash {
+i.icon.la-share {
   font-family: 'icomoon';
 }
-i.icon.share-slash {
+i.icon.la-share.slash {
   font-family: 'icomoon';
 }
 i.icon.la-copySend {
@@ -4840,10 +4840,10 @@ i.icon.chain.broken:before {
 i.icon.chain:before {
   content: "\e906";
 }
-i.icon.la-share unslash:before {
+i.icon.la-share:before {
   content: "\e907";
 }
-i.icon.share-slash:before {
+i.icon.la-share.slash:before {
   content: "\e908";
 }
 i.icon.la-copySend:before {

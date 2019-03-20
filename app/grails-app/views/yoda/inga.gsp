@@ -33,15 +33,15 @@
     <div class="column"><i class="thumbtack slash icon"></i>thumbtack slash</div>
     <div class="column"><i class="plus square slash icon"></i>plus square slash</div>
     <div class="column"><i class="chain broken icon"></i>chain broken</div>
-    <div class="column"><i class="chain icon"></i>chain icon</div>
-    <div class="column"><i class="la-share unslash icon"></i>la-share unslash</div>
-    <div class="column"><i class="share-slash icon"></i>share-slash</div>
+    <div class="column"><i class="chain icon"></i>chain</div>
+    <div class="column"><i class="la-share icon"></i>la-share</div>
+    <div class="column"><i class="la-share slash icon"></i>la-share slash</div>
     <div class="column"><i class="la-copySend icon"></i>la-copySend</div>
     <div class="column"><i class="la-notebook icon"></i>la-notebook</div>
     <div class="column"><i class="la-books icon"></i>la-books </div>
     <div class="column"><i class="la-noChange icon"></i>la-noChange</div>
-    <div class="column"><i class="la-append icon"></i>sign language</div>
-    <div class="column"><i class="la-replace icon"></i>la-append</div>
+    <div class="column"><i class="la-append icon"></i>la-append</div>
+    <div class="column"><i class="la-replace icon"></i>la-replace</div>
 </div><div class="ui top attached label">Zusätzliche Icons in Laser</div></div>
 
 </body>
