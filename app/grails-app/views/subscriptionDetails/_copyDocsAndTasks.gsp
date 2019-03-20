@@ -1,5 +1,4 @@
 <%@ page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription" %>
-<br>
 <semui:form>
     <g:render template="selectSourceAndTargetSubscription" model="[
             sourceSubscription: sourceSubscription,

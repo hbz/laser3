@@ -4,14 +4,14 @@
 <%@ page import="static com.k_int.kbplus.SubscriptionDetailsController.REPLACE" %>
 <%@ page import="static com.k_int.kbplus.SubscriptionDetailsController.DO_NOTHING" %>
 <laser:serviceInjection />
-<br>
+
 <semui:form>
     <g:render template="selectSourceAndTargetSubscription" model="[
             sourceSubscription: sourceSubscription,
             targetSubscription: targetSubscription,
             allSubscriptions_readRights: allSubscriptions_readRights,
             allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
-    <hr>
+
     <g:form action="copyElementsIntoSubscription" controller="subscriptionDetails" id="${params.id}"
             params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscription?.id]" method="post" class="ui form newLicence">
         <table class="ui celled table">

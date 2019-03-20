@@ -3,24 +3,30 @@
             workFlowPart: workFlowPart,
             workFlowPartNext: workFlowPartNext
         ]" method="post" class="ui form newLicence">
-    <div class="five wide column">
-        <label>${message(code: 'subscription.details.copyElementsIntoSubscription.sourceSubscription.name')}: </label>
-        <g:select class="ui search dropdown"
+    <div class="three fields">
+        <div class="field">
+            <label>${message(code: 'subscription.details.copyElementsIntoSubscription.sourceSubscription.name')}: </label>
+            <g:select class="ui search dropdown"
                   name="sourceSubscriptionId"
                   from="${allSubscriptions_readRights}"
                   optionValue="name"
                   optionKey="id"
                   value="${sourceSubscription?.id}"
                   />
+        </div>
                   %{--disabled="${(subscription)? true : false}"/>--}%
-        <label>${message(code: 'subscription.details.copyElementsIntoSubscription.targetSubscription.name')}: </label>
-        <g:select class="ui search dropdown"
+        <div class="field">
+            <label>${message(code: 'subscription.details.copyElementsIntoSubscription.targetSubscription.name')}: </label>
+            <g:select class="ui search dropdown"
                   name="targetSubscriptionId"
                   from="${allSubscriptions_writeRights}"
                   optionValue="name"
                   optionKey="id"
                   value="${targetSubscription?.id}"
                   noSelection="${[null: message(code: 'default.select.choose.label')]}"/>
-        <input type="submit" class="ui button" value="Lizenzen auswählen" />
+        </div>
+        <div class="field la-field-right-aligned">
+            <input type="submit" class="ui button" value="Lizenzen auswählen" />
+        </div>
     </div>
 </g:form>

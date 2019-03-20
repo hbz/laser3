@@ -19977,6 +19977,12 @@ ol.ui.horizontal.list li:before,
   background: #f1ebe5;
   border: none;
 }
+
+/* Grey */
+
+.ui.grey.segment:not(.inverted) {
+  border-top: 1px solid #d3dae3 !important;
+}
 /*!
  * # Semantic UI 2.3.1 - Step
  * http://github.com/semantic-org/semantic-ui/
