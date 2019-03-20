@@ -30,10 +30,10 @@
 <div id="example" class="html ui top attached segment"><div class="ui doubling five column grid">
     <div class="column"><i class="hand pointer outline slash icon"></i>hand pointer outline slash</div>
     <div class="column"><i class="pencil alternate slash icon"></i>pencil alternate slash </div>
-    <div class="column"><i class="thumbtack slash icon"></i>thumbtack slash</div>
+    <div class="column"><i class="la-thumbtack slash icon"></i>la-thumbtack slash</div>
     <div class="column"><i class="plus square slash icon"></i>plus square slash</div>
-    <div class="column"><i class="chain broken icon"></i>chain broken</div>
-    <div class="column"><i class="chain icon"></i>chain</div>
+    <div class="column"><i class="la-chain broken icon"></i>la-chain broken</div>
+    <div class="column"><i class="la-chain icon"></i>la-chain</div>
     <div class="column"><i class="la-share icon"></i>la-share</div>
     <div class="column"><i class="la-share slash icon"></i>la-share slash</div>
     <div class="column"><i class="la-copySend icon"></i>la-copySend</div>
@@ -43,6 +43,5 @@
     <div class="column"><i class="la-append icon"></i>la-append</div>
     <div class="column"><i class="la-replace icon"></i>la-replace</div>
 </div><div class="ui top attached label">Zusätzliche Icons in Laser</div></div>
-
 </body>
 </html>
