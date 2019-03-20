@@ -91,7 +91,7 @@ class LicenseDetailsController extends AbstractDebugController {
                 log.debug("Slaved lincence, auto-accept pending changes")
                 def changesDesc = []
                 pendingChanges.each { change ->
-                    if (!pendingChangeService.performAccept(change, request)) {
+                    if (!pendingChangeService.performAccept(change, result.user)) {
                         log.debug("Auto-accepting pending change has failed.")
                     } else {
                         changesDesc.add(PendingChange.get(change).desc)
@@ -211,7 +211,7 @@ class LicenseDetailsController extends AbstractDebugController {
         //waitAll(task_tasks, task_properties)
 
         def debugTimeB = System.currentTimeMillis()
-        println " ---> " + Math.abs(debugTimeB - debugTimeA)
+        //println " ---> " + Math.abs(debugTimeB - debugTimeA)
 
         withFormat {
       html result

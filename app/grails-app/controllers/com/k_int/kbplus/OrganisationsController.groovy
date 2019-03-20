@@ -395,7 +395,7 @@ class OrganisationsController extends AbstractDebugController {
         //waitAll(task_orgRoles, task_properties)
 
         def debugTimeB = System.currentTimeMillis()
-        println " ---> " + Math.abs(debugTimeB - debugTimeA)
+        //println " ---> " + Math.abs(debugTimeB - debugTimeA)
 
         result
     }

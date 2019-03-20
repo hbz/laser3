@@ -607,4 +607,10 @@ class YodaController {
         redirect(url: request.getHeader('referer'))
     }
 
+    @Secured(['ROLE_YODA'])
+    def inga() {
+        Map result = [test:123]
+        result
+    }
+
 }
