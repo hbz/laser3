@@ -77,11 +77,11 @@
                     <div class="ui card la-time-card">
                         <div class="content">
                             <dl>
-                                <semui:dtAuditCheck message="subscription.startDate.label" auditable="[subscriptionInstance, 'startDate']"/>
+                                <semui:auditButton message="subscription.startDate.label" auditable="[subscriptionInstance, 'startDate']"/>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="startDate" type="date"/></dd>
                             </dl>
                             <dl>
-                                <semui:dtAuditCheck message="subscription.endDate.label" auditable="[subscriptionInstance, 'endDate']"/>
+                                <semui:auditButton message="subscription.endDate.label" auditable="[subscriptionInstance, 'endDate']"/>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="endDate" type="date"/></dd>
                             </dl>
                             <% /*
@@ -91,7 +91,7 @@
                             </dl>
                             */ %>
                             <dl>
-                                <semui:dtAuditCheck message="subscription.manualCancellationlDate.label" auditable="[subscriptionInstance, 'manualCancellationDate']" />
+                                <semui:auditButton message="subscription.manualCancellationlDate.label" auditable="[subscriptionInstance, 'manualCancellationDate']" />
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
                             </dl>
 
@@ -100,11 +100,11 @@
                     <div class="ui card">
                         <div class="content">
                             <dl>
-                                <semui:dtAuditCheck message="subscription.details.status" auditable="[subscriptionInstance, 'status']"/>
+                                <semui:auditButton message="subscription.details.status" auditable="[subscriptionInstance, 'status']"/>
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status' constraint="removeValue_deleted" /></dd>
                             </dl>
                             <dl>
-                                <semui:dtAuditCheck message="subscription.details.type" auditable="[subscriptionInstance, 'type']"/>
+                                <semui:auditButton message="subscription.details.type" auditable="[subscriptionInstance, 'type']"/>
                                 <dd>
                                     <%-- TODO: subscribers may not edit type, but admins and yoda --%>
                                     <g:if test="${subscriptionInstance.getAllSubscribers().contains(contextOrg)}">
@@ -116,11 +116,11 @@
                                 </dd>
                             </dl>
                             <dl>
-                                <semui:dtAuditCheck message="subscription.form.label" auditable="[subscriptionInstance, 'form']"/>
+                                <semui:auditButton message="subscription.form.label" auditable="[subscriptionInstance, 'form']"/>
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="form" config='Subscription Form'/></dd>
                             </dl>
                             <dl>
-                                <semui:dtAuditCheck message="subscription.resource.label" auditable="[subscriptionInstance, 'resource']"/>
+                                <semui:auditButton message="subscription.resource.label" auditable="[subscriptionInstance, 'resource']"/>
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="resource" config='Subscription Resource'/></dd>
                             </dl>
                             <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id == subscriptionInstance.getConsortia()?.id)}">
@@ -365,7 +365,7 @@
                 <%-- assemble data on server side --%>
                 <div class="ui card la-dl-no-table la-js-hideable">
                     <div class="content">
-                        <g:if test="${costItemSums.ownCosts && contextOrg.id != subscription.getConsortia().id}">
+                        <g:if test="${costItemSums.ownCosts && contextOrg.id != subscription.getConsortia()?.id}">
                             <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.ownCosts')}</h5>
                             <g:render template="financials" model="[data:costItemSums.ownCosts]"/>
                         </g:if>

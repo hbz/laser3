@@ -143,4 +143,10 @@
 
 .ui.image.label {
   margin-top: 5px;
+  .detail {
+    a {
+      color: white;
+      text-decoration: underline;
+    }
+  }
 }

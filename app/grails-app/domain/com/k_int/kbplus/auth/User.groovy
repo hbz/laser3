@@ -137,7 +137,7 @@ class User implements Permissions {
   }
 
   @Transient def getAuthorizedAffiliations() {
-    affiliations.findAll { (it.status == UserOrg.STATUS_APPROVED) || (it.status==UserOrg.STATUS_AUTO_APPROVED) }
+    affiliations.findAll { it.status == UserOrg.STATUS_APPROVED }
   }
 
   @Transient List<Org> getAuthorizedOrgs() {
@@ -175,7 +175,6 @@ class User implements Permissions {
               }
               or {
                 eq("status",UserOrg.STATUS_APPROVED)
-                eq("status",UserOrg.STATUS_AUTO_APPROVED)
               }
              
       }
@@ -224,6 +223,11 @@ class User implements Permissions {
 
     def hasPerm(perm, user) {
         false
+    }
+
+    def hasRole(String roleName) {
+        println SpringSecurityUtils.ifAnyGranted(roleName)
+        SpringSecurityUtils.ifAnyGranted(roleName)
     }
 
     def isAdmin() {

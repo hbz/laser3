@@ -22,9 +22,9 @@
         <g:render template="nav" contextPath="." />
 
         <g:set var="counter" value="${offset+1}" />
+    ${message(code:'subscription.details.availableTitles', default:'Available Titles')} ( ${message(code:'default.paginate.offset', args:[(offset+1),(offset+(tipps?.size())),num_tipp_rows])} )
 
       <semui:filter>
-        ${message(code:'subscription.details.availableTitles', default:'Available Titles')} ( ${message(code:'default.paginate.offset', args:[(offset+1),(offset+(tipps?.size())),num_tipp_rows])} )
           <g:form class="ui form" action="addEntitlements" params="${params}" method="get">
             <input type="hidden" name="sort" value="${params.sort}">
             <input type="hidden" name="order" value="${params.order}">
@@ -73,38 +73,66 @@
           <g:if test="${flash.error}">
               <semui:messages data="${flash}"/>
           </g:if>
-          <g:form controller="subscriptionDetails" action="addEntitlements" params="${[identifiers:identifiers,sort:params.sort,order:params.order,filter:params.filter,pkgFilter:params.pkgfilter,startsBefore:params.startsBefore,endsAfter:params.endAfter,id:subscriptionInstance.id]}" method="post" enctype="multipart/form-data">
-              <input type="file" id="kbartPreselect" name="kbartPreselect" accept="text/tab-separated-values"/>
-              <input type="submit" value="${message(code:'subscription.details.addEntitlements.preselect', default:'Preselect Entitlements per KBART-File')}" class="ui button"/>
+          <g:form class="ui form" controller="subscriptionDetails" action="addEntitlements" params="${[identifiers:identifiers,sort:params.sort,order:params.order,filter:params.filter,pkgFilter:params.pkgfilter,startsBefore:params.startsBefore,endsAfter:params.endAfter,id:subscriptionInstance.id]}" method="post" enctype="multipart/form-data">
+              <div class="two fields">
+                  <div class="field">
+                      <div class="ui fluid action input">
+                          <input type="text" readonly="readonly" placeholder="${message(code:'template.addDocument.selectFile')}">
+                          <input type="file" id="kbartPreselect" name="kbartPreselect" accept="text/tab-separated-values" style="display: none;">
+                          <div class="ui icon button" style="padding-left:30px; padding-right:30px">
+                              <i class="attach icon"></i>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="field">
+                    <input type="submit" value="${message(code:'subscription.details.addEntitlements.preselect', default:'Preselect Entitlements per KBART-File')}" class="fluid ui button"/>
+                  </div>
+              </div>
           </g:form>
-          <g:form action="processAddEntitlements">
+            <r:script type="text/javascript">
+                $('.action .icon.button').click( function() {
+                    $(this).parent('.action').find('input:file').click();
+                });
+
+                $('input:file', '.ui.action.input').on('change', function(e) {
+                    var name = e.target.files[0].name;
+                    $('input:text', $(e.target).parent()).val(name);
+                });
+            </r:script>
+          <g:form action="processAddEntitlements" class="ui form">
             <input type="hidden" name="siid" value="${subscriptionInstance.id}"/>
-              <div class="paginateButtons" style="text-align:center">
-                  <input type="submit" value="${message(code:'subscription.details.addEntitlements.add_selected', default:'Add Selected Entitlements')}" class="ui button"/>
+              <div class="two fields">
+                <div class="field"></div>
+                  <div class="field">
+                      <input type="submit" value="${message(code:'subscription.details.addEntitlements.add_selected', default:'Add Selected Entitlements')}" class="fluid ui button"/>
+                  </div>
               </div>
               <table class="ui celled sortable table table-tworow la-table">
               <thead>
                 <tr>
-                  <th rowspan="2" style="vertical-align:middle;">
+                  <th rowspan="3" style="vertical-align:middle;">
                     <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" onClick="javascript:selectAll();"/></g:if>
                   </th>
-                  <th rowspan="2">${message(code:'sidewide.number')}</th>
-                  <g:sortableColumn rowspan="2" params="${params}" property="title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
-                  <th rowspan="2">ZDB-ID</th>
-                  <th rowspan="2">ISSN / ISBN</th>
-                  <th rowspan="2">eISSN / eISBN</th>
-                  <th colspan="2">${message(code:'tipp.coverage')}</th>
-                  <th colspan="2">${message(code:'tipp.access')}</th>
-                  <th rowspan="2">${message(code:'tipp.embargo', default:'Embargo')}</th>
-                  <th rowspan="2">${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
-                  <th rowspan="2">${message(code:'tipp.coverageNote', default:'Coverage Note')}</th>
-                  <th rowspan="2">${message(code:'default.actions.label')}</th>
+                  <th rowspan="3">${message(code:'sidewide.number')}</th>
+                  <g:sortableColumn rowspan="3" params="${params}" property="title.sortTitle" title="${message(code:'title.label', default:'Title')}" />
+                  <th rowspan="3">ZDB-ID</th>
+                  <th rowspan="3">ISSN / ISBN</th>
+                  <th rowspan="3">eISSN / eISBN</th>
+                  <th  class="la-smaller-table-head" >${message(code:'tipp.coverage')}</th>
+                  <th  class="la-smaller-table-head" >${message(code:'tipp.access')}</th>
+                  <th rowspan="3">${message(code:'tipp.embargo', default:'Embargo')}</th>
+                  <th rowspan="3">${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
+                  <th rowspan="3">${message(code:'tipp.coverageNote', default:'Coverage Note')}</th>
+                  <th rowspan="3">${message(code:'default.actions.label')}</th>
                 </tr>
                 <tr>
-                    <g:sortableColumn params="${params}" property="startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
-                    <g:sortableColumn params="${params}" property="endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
-                    <g:sortableColumn params="${params}" property="accessStartDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
-                    <g:sortableColumn params="${params}" property="accessEndDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
+                    <g:sortableColumn  class="la-smaller-table-head"  params="${params}" property="startDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
+                    <g:sortableColumn  class="la-smaller-table-head"  params="${params}" property="accessStartDate" title="${message(code:'default.startDate.label', default:'Start Date')}" />
+
+                </tr>
+                <tr>
+                    <g:sortableColumn  class="la-smaller-table-head"  params="${params}" property="endDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
+                    <g:sortableColumn  class="la-smaller-table-head"  params="${params}" property="accessEndDate" title="${message(code:'default.endDate.label', default:'End Date')}" />
                 </tr>
               </thead>
               <tbody>
@@ -137,7 +165,7 @@
                     <td><input type="checkbox" name="_bulkflag.${tipp.id}" class="bulkcheck" ${checked}/></td>
                     <td>${counter++}</td>
                     <td>
-                        <semui:listIcon type="${tipp.title.type.getI10n("value")}"/>
+                        <semui:listIcon type="${tipp.title.type}"/>
                       <g:link controller="tipp" id="${tipp.id}" action="show">${tipp.title.title}</g:link>
                       <br/>
                       <span class="pull-right">
@@ -148,10 +176,14 @@
                     <td style="white-space: nowrap;">${tipp.title.getIdentifierValue('zdb')}</td>
                     <td style="white-space: nowrap;">${serial}</td>
                     <td style="white-space: nowrap;">${electronicSerial}</td>
-                    <td style="white-space: nowrap;"><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.startDate}"/></td>
-                    <td style="white-space: nowrap;"><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.endDate}"/></td>
-                    <td style="white-space: nowrap;"><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.accessStartDate}"/></td>
-                    <td style="white-space: nowrap;"><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.accessEndDate}"/></td>
+                    <td style="white-space: nowrap;">
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.startDate}"/>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.endDate}"/>
+                    </td>
+                    <td style="white-space: nowrap;">
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.accessStartDate}"/>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tipp.accessEndDate}"/>
+                    </td>
                     <td>${tipp.embargo}</td>
                     <td>${tipp.coverageDepth}</td>
                     <td>${tipp.coverageNote}</td>
@@ -184,6 +216,7 @@
           </g:form>
 
     <r:script language="JavaScript">
+    <% /*
       $(document).ready(function() {
         $('span.newipe').editable('<g:createLink controller="ajax" action="genericSetValue" />', {
           type      : 'textarea',
@@ -194,7 +227,7 @@
           tooltip   : '${message(code:'default.click_to_edit', default:'Click to edit...')}'
         });
       });
-
+    */ %>
       function selectAll() {
         $('#select-all').is( ":checked")? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
       }

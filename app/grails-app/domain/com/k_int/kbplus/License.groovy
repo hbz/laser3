@@ -167,14 +167,25 @@ class License
         return instanceOf ? instanceOf.isTemplate() : false
     }
 
-    boolean showShareButton() {
+    @Override
+    boolean checkSharePreconditions(ShareableTrait sharedObject) {
+        // needed to differentiate OrgRoles
+        if (sharedObject instanceof OrgRole) {
+            if (showUIShareButton() && sharedObject.roleType.value == 'Licensor') {
+                return true
+            }
+        }
+        false
+    }
+
+    boolean showUIShareButton() {
         getCalculatedType() == TemplateSupport.CALCULATED_TYPE_CONSORTIAL
     }
 
     def updateShare(ShareableTrait sharedObject) {
         log.debug('updateShare: ' + sharedObject)
 
-        if (sharedObject instanceof DocContext) {
+        if (sharedObject instanceof DocContext || sharedObject instanceof OrgRole) {
             if (sharedObject.isShared) {
                 List<License> newTargets = License.findAllByInstanceOfAndStatusNotEqual(this, RDStore.LICENSE_DELETED)
                 log.debug('found targets: ' + newTargets)
@@ -194,11 +205,22 @@ class License
         log.debug('synAllShares: ' + targets)
 
         documents.each{ sharedObject ->
-
             targets.each{ lic ->
                 if (sharedObject.isShared) {
                     log.debug('adding for: ' + lic)
                     sharedObject.addShareForTarget_trait(lic)
+                }
+                else {
+                    log.debug('deleting all shares')
+                    sharedObject.deleteShare_trait()
+                }
+            }
+        }
+        orgLinks.each{ sharedObject ->
+            targets.each{ sub ->
+                if (sharedObject.isShared) {
+                    log.debug('adding for: ' + sub)
+                    sharedObject.addShareForTarget_trait(sub)
                 }
                 else {
                     log.debug('deleting all shares')

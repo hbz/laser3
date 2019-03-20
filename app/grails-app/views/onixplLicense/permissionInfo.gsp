@@ -62,7 +62,7 @@
           <th>Affiliated via Role</th><th>Permissions</th>
         </tr>
         <g:each in="${user.affiliations}" var="ol">
-          <g:if test="${((ol.status==1) || (ol.status==3))}">
+          <g:if test="${ol.status==1}">
             <tr>
               <td>Affiliated to ${ol.org?.name} with role <g:message code="cv.roles.${ol.formalRole?.authority}"/></td>
               <td>

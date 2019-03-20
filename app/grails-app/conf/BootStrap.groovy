@@ -186,8 +186,7 @@ class BootStrap {
             }
         }
 
-        def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'true', value: 'true').save()
-
+        // def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'true', value: 'true').save()
 
         def mailSent = Setting.findByName('MailSentDisabled') ?: new Setting(name: 'MailSentDisabled', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'false', value: (grailsApplication.config.grails.mail.disabled ?: "false")).save()
 
@@ -244,8 +243,8 @@ class BootStrap {
         log.debug("setIdentifierNamespace ..")
         setIdentifierNamespace()
 
-        log.debug("setESGOKB ..")
-        setESGOKB()
+//        log.debug("setESGOKB ..")
+//        setESGOKB()
 
         log.debug("setJSONFormatDate ..")
         JSON.registerObjectMarshaller(Date) {
@@ -294,7 +293,11 @@ class BootStrap {
         def cl_owner_role       = RefdataValue.loc('Cluster Role',   [en: 'Cluster Owner'], BOOTSTRAP)
         def cl_member_role      = RefdataValue.loc('Cluster Role',   [en: 'Cluster Member'], BOOTSTRAP)
 
-        def cons_combo          = RefdataValue.loc('Combo Type',     [en: 'Consortium', de: 'Konsortium'], BOOTSTRAP)
+        // TODO: refactoring: partOf
+
+        def combo1 = RefdataValue.loc('Combo Type',     [en: 'Consortium', de: 'Konsortium'], BOOTSTRAP)
+        def combo2 = RefdataValue.loc('Combo Type',     [en: 'Institution', de: 'Einrichtung'], BOOTSTRAP)
+        def combo3 = RefdataValue.loc('Combo Type',     [en: 'Department', de: 'Abteilung'], BOOTSTRAP)
 
         OrgPermShare.assertPermShare(view_permission, cl_owner_role)
         OrgPermShare.assertPermShare(edit_permission, cl_owner_role)
@@ -302,7 +305,7 @@ class BootStrap {
         OrgPermShare.assertPermShare(view_permission, cl_member_role)
         OrgPermShare.assertPermShare(edit_permission, cl_member_role)
 
-        OrgPermShare.assertPermShare(view_permission, cons_combo)
+        OrgPermShare.assertPermShare(view_permission, combo1)
 
         // Global System Roles
 
@@ -824,12 +827,12 @@ class BootStrap {
                     descr:allDescr, type: OT.Rdv, cat:'YNU', isUsedForLogic: false
             ],
             [
-                    name: [en: "Single-site license ", de: "Einzelplatzlizenz"],
+                    name: [en: "Single-site license", de: "Einzelplatzlizenz"],
                     expl: [en: "", de: "Angaben über die Nutzung des Produktes über eine Einzelplatzlizenz."],
                     descr:allDescr, type: OT.String, isUsedForLogic: false
             ],
             [
-                    name: [en: "Document delivery service (commercial) ", de: "Dokumentenlieferdienst kommerziell"],
+                    name: [en: "Document delivery service (commercial)", de: "Dokumentenlieferdienst kommerziell"],
                     expl: [en: "", de: "Angabe über die Nutzungsmöglichkeit von kommerziellen Dokumentenlieferdiensten wie Subito."],
                     descr:allDescr, type: OT.String, isUsedForLogic: false
             ],
@@ -1396,6 +1399,7 @@ class BootStrap {
         RefdataCategory.loc('Package Status',                               [en: 'Package Status', de: 'Paketstatus'], BOOTSTRAP)
         RefdataCategory.loc('Number Type',                                  [en: 'Number Type', de: 'Zahlen-Typ'], BOOTSTRAP)
         RefdataCategory.loc('User.Settings.Dashboard.Tab',                  [en: 'Dashboard Tab', de: 'Dashbord Tab'], BOOTSTRAP)
+        RefdataCategory.loc('Survey Type',                  [en: 'Survey Type', de: 'Umfrage-Typ'], BOOTSTRAP)
         // refdata values
 
         RefdataValue.loc('YN',   [en: 'Yes', de: 'Ja'], BOOTSTRAP)
@@ -1875,9 +1879,11 @@ class BootStrap {
         RefdataValue.loc('Person Responsibility',    [en: 'Specific cluster editor', de: 'Gruppenkontakt'], BOOTSTRAP)
         RefdataValue.loc('Person Responsibility',    [en: 'Specific title editor', de: 'Titelbearbeiter'], BOOTSTRAP)
 
-        RefdataValue.loc('Share Configuration', [en: 'only for creator',de:'nur für Autor'], BOOTSTRAP)
-        RefdataValue.loc('Share Configuration', [en: 'only for author organisation',de:'nur für Organisation des Autors'], BOOTSTRAP)
-        RefdataValue.loc('Share Configuration', [en: 'only for author and target organisation',de:'nur für Organisation des Autors und der Zielorganisation'], BOOTSTRAP)
+        RefdataValue.loc('Share Configuration', [en: 'only for creator',de:'nur für Uploader'], BOOTSTRAP)
+        RefdataValue.loc('Share Configuration', [key: 'only for author organisation', en: 'only for uploader context organisation',de:'nur für aktuelle Organisation des Uploaders'], BOOTSTRAP)
+        RefdataValue.loc('Share Configuration', [key: 'only for author and target organisation', en: 'only for uploader context and target organisation',de:'nur für aktuelle Organisation des Uploders und die Bezugsorganisation'], BOOTSTRAP)
+        RefdataValue.loc('Share Configuration', [en: 'only for consortia members',de:'nur für Konsorten'], BOOTSTRAP)
+
         RefdataValue.loc('Share Configuration', [en: 'everyone',de:'alle'], BOOTSTRAP)
 
         RefdataValue.loc('Subscription Form',      [key: 'test', en: 'Test', de: 'Test'], BOOTSTRAP)
@@ -2078,6 +2084,9 @@ class BootStrap {
         RefdataValue.loc('IPv6 Address Format',      [key: 'cidr',   en: 'IPv6 (CIDR)', de: 'IPv6 (CIDR)'], BOOTSTRAP)
         RefdataValue.loc('IPv6 Address Format',      [key: 'ranges', en: 'IPv6 (Ranges)', de: 'IPv6 (Bereiche)'], BOOTSTRAP)
         RefdataValue.loc('IPv6 Address Format',      [key: 'input', en: 'IPv6 (Input)', de: 'IPv6 (Eingabe)'], BOOTSTRAP)
+
+        RefdataValue.loc('Survey Type',      [key: 'renewal', en: 'Renewal Survey', de: 'Verlängerungsumfrage'], BOOTSTRAP)
+        RefdataValue.loc('Survey Type',      [key: 'interest', en: 'Interest Survey', de: 'Interessenumfrage'], BOOTSTRAP)
 
     }
 
@@ -2652,7 +2661,7 @@ No Host Platform URL Content
 
     }
 
-    def setESGOKB() {
+    /*def setESGOKB() {
          ElasticsearchSource.findByIdentifier("gokb") ?: new ElasticsearchSource(name: 'GOKB ES', identifier: 'gokb', cluster: 'elasticsearch', index: 'gokb', host: '127.0.0.1', gokb_es: true)
-    }
+    }*/
 }

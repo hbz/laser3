@@ -71,13 +71,13 @@
                         <div class="ui card ">
                             <div class="content">
                                 <dl>
-                                    <semui:dtAuditCheck message="license.startDate" auditable="[license, 'startDate']" />
+                                    <semui:auditButton message="license.startDate" auditable="[license, 'startDate']" />
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="startDate" />
                                     </dd>
                                 </dl>
                                 <dl>
-                                    <semui:dtAuditCheck message="license.endDate" auditable="[license, 'endDate']" />
+                                    <semui:auditButton message="license.endDate" auditable="[license, 'endDate']" />
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="endDate" />
                                     </dd>
@@ -87,7 +87,7 @@
                         <div class="ui card ">
                             <div class="content">
                                 <dl>
-                                    <semui:dtAuditCheck message="license.status" auditable="[license, 'status']" />
+                                    <semui:auditButton message="license.status" auditable="[license, 'status']" />
                                     <dd>
                                         <semui:xEditableRefData owner="${license}" field="status" config='License Status'/>
                                     </dd>

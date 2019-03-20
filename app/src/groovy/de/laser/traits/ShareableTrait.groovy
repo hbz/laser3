@@ -3,6 +3,7 @@ package de.laser.traits
 import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.License
 import com.k_int.kbplus.Links
+import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.Package
 import com.k_int.kbplus.Subscription
 import de.laser.interfaces.ShareSupport
@@ -11,9 +12,9 @@ import javax.persistence.Transient
 
 trait ShareableTrait {
 
-    // static belongsTo = [ sharedFrom: DocContext ]
+    // static belongsTo = [ sharedFrom: ShareableTrait_IMPL ]
 
-    // DocContext sharedFrom
+    // ShareableTrait_IMPL sharedFrom
     // Boolean isShared
 
     // static mapping { sharedFrom column:'dc_shared_from_fk'; isShared column:'dc_is_shared' }
@@ -27,6 +28,9 @@ trait ShareableTrait {
         if (this instanceof DocContext) {
             shareService.addDocShareForTarget(this, target)
         }
+        if (this instanceof OrgRole) {
+            shareService.addOrgRoleShareForTarget(this, target)
+        }
     }
 
     @Transient
@@ -36,6 +40,9 @@ trait ShareableTrait {
         if (this instanceof DocContext) {
             shareService.deleteDocShareForTarget(this, target)
         }
+        if (this instanceof OrgRole) {
+            shareService.deleteOrgRoleShareForTarget(this, target)
+        }
     }
 
     @Transient
@@ -44,6 +51,9 @@ trait ShareableTrait {
 
         if (this instanceof DocContext) {
             DocContext.executeUpdate('delete from DocContext dc where dc.sharedFrom = :sf', [sf: this])
+        }
+        if (this instanceof OrgRole) {
+            OrgRole.executeUpdate('delete from OrgRole oorr where oorr.sharedFrom = :sf', [sf: this])
         }
     }
 }

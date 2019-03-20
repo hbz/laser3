@@ -769,6 +769,12 @@ class AjaxController {
 
                 if (new_link.save(flush: true)) {
                     // log.debug("Org link added")
+                    if (owner instanceof ShareSupport && owner.checkSharePreconditions(new_link)) {
+                        new_link.isShared = true
+                        new_link.save(flush:true)
+
+                        owner.updateShare(new_link)
+                    }
                 } else {
                     log.error("Problem saving new org link ..")
                     new_link.errors.each { e ->
@@ -778,6 +784,20 @@ class AjaxController {
                 }
             }
         }
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_USER'])
+    def delOrgRole() {
+        def or = OrgRole.get(params.id)
+
+        def owner = or.getOwner()
+        if (owner instanceof ShareSupport && or.isShared) {
+            or.isShared = false
+            owner.updateShare(or)
+        }
+        or.delete(flush:true)
+
         redirect(url: request.getHeader('referer'))
     }
 
@@ -1137,15 +1157,7 @@ class AjaxController {
       }
     }
 
-    @Secured(['ROLE_USER'])
-    def delOrgRole() {
-        // log.debug("delOrgRole ${params}");
-        def or = OrgRole.get(params.id)
-        or.delete(flush:true);
-        // log.debug("Delete link: ${or}");
-        redirect(url: request.getHeader('referer'))
-    }
-
+    @Deprecated
     @Secured(['ROLE_USER'])
     def showAuditConfigManager() {
 
@@ -1158,8 +1170,12 @@ class AjaxController {
             ])
         }
     }
+
+    @Deprecated
     @Secured(['ROLE_USER'])
     def processAuditConfigManager() {
+
+        String referer = request.getHeader('referer')
 
         def owner = genericOIDService.resolveOID(params.target)
         if (owner) {
@@ -1175,12 +1191,11 @@ class AjaxController {
 
                     members.each { m ->
                         m.setProperty(prop, owner.getProperty(prop))
-                        //m.save(flush:true)
+                        m.save(flush:true)
                     }
                 }
             }
 
-            def resetQueue = []
             def keepProperties = params.list('keepProperties')
 
             negativeList.each{ prop ->
@@ -1189,40 +1204,30 @@ class AjaxController {
 
                     if (! keepProperties.contains(prop)) {
                         members.each { m ->
-                            resetQueue << [m, prop]
+                            m.setProperty(prop, null)
+                            m.save(flush:true)
                         }
                     }
 
                     // delete pending changes
-
+                    // e.g. PendingChange.changeDoc = {changeTarget, changeType, changeDoc:{OID,  event}}
                     def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
                     openPD.each { pc ->
                         def event = JSON.parse(pc.changeDoc)
-                        def eventObj = genericOIDService.resolveOID(event.changeDoc.OID)
-                        def eventProp = event.changeDoc.prop
+                        if (event && event.changeDoc) {
+                            def eventObj = genericOIDService.resolveOID(event.changeDoc.OID)
+                            def eventProp = event.changeDoc.prop
 
-                        if (eventObj?.id == owner.id && eventProp.equalsIgnoreCase(prop)) {
-                            pc.delete(flush: true)
+                            if (eventObj?.id == owner.id && eventProp.equalsIgnoreCase(prop)) {
+                                pc.delete(flush: true)
+                            }
                         }
                     }
                 }
             }
-
-            // delete inherited values
-            resetQueue.each{ q ->
-                def member = q[0]
-                def prop   = q[1]
-
-                member.setProperty(prop, null)
-                //member.save(flush:true)
-            }
-
-            members.each { m ->
-                m.save(flush:true) // only one save
-            }
         }
 
-        redirect(url: request.getHeader('referer'))
+        redirect(url: referer)
     }
 
     @Secured(['ROLE_USER'])
@@ -1239,10 +1244,7 @@ class AjaxController {
 
         ((ShareSupport) owner).updateShare(sharedObject)
 
-        if (params.reload) {
-            redirect(url: request.getHeader('referer'))
-        }
-        else if (params.tmpl) {
+        if (params.tmpl) {
             if (params.tmpl == 'documents') {
                 render(template: '/templates/documents/card', model: [ownobj: owner, editable: true]) // TODO editable from owner
             }
@@ -1250,6 +1252,60 @@ class AjaxController {
                 render(template: '/templates/notes/card', model: [ownobj: owner, editable: true]) // TODO editable from owner
             }
         }
+        else {
+            redirect(url: request.getHeader('referer'))
+        }
+    }
+
+
+    @Secured(['ROLE_USER'])
+    def toggleAudit() {
+        String referer = request.getHeader('referer')
+
+        def owner = genericOIDService.resolveOID(params.owner)
+        if (owner) {
+            def members = owner.getClass().findAllByInstanceOf(owner)
+            def objProps = owner.getClass().controlledProperties
+            def prop = params.property
+
+            if (prop in objProps) {
+                if (! AuditConfig.getConfig(owner, prop)) {
+                    AuditConfig.addConfig(owner, prop)
+
+                    members.each { m ->
+                        m.setProperty(prop, owner.getProperty(prop))
+                        m.save(flush:true)
+                    }
+                }
+                else {
+                    AuditConfig.removeConfig(owner, prop)
+
+                    if (! params.keep) {
+                        members.each { m ->
+                            m.setProperty(prop, null)
+                            m.save(flush: true)
+                        }
+                    }
+
+                    // delete pending changes
+                    // e.g. PendingChange.changeDoc = {changeTarget, changeType, changeDoc:{OID,  event}}
+                    def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
+                    openPD.each { pc ->
+                        def event = JSON.parse(pc.changeDoc)
+                        if (event && event.changeDoc) {
+                            def eventObj = genericOIDService.resolveOID(event.changeDoc.OID)
+                            def eventProp = event.changeDoc.prop
+
+                            if (eventObj?.id == owner.id && eventProp.equalsIgnoreCase(prop)) {
+                                pc.delete(flush: true)
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+        redirect(url: request.getHeader('referer'))
     }
 
     @Secured(['ROLE_USER'])
@@ -1272,9 +1328,11 @@ class AjaxController {
             def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
             openPD.each { pc ->
                 def event = JSON.parse(pc.changeDoc)
-                def scp = genericOIDService.resolveOID(event.changeDoc.OID)
-                if (scp?.id == property.id) {
-                    pc.delete(flush: true)
+                if (event && event.changeDoc) {
+                    def scp = genericOIDService.resolveOID(event.changeDoc.OID)
+                    if (scp?.id == property.id) {
+                        pc.delete(flush: true)
+                    }
                 }
             }
         }

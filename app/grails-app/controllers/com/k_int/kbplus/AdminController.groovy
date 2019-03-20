@@ -303,7 +303,7 @@ class AdminController extends AbstractDebugController {
 
         if ( existing_affil_check == null ) {
           log.debug("No existing affiliation");
-          def newAffil = new UserOrg(org:affil.org,user:usrKeep,formalRole:affil.formalRole,status:UserOrg.STATUS_AUTO_APPROVED)
+          def newAffil = new UserOrg(org:affil.org,user:usrKeep,formalRole:affil.formalRole,status:affil.status)
           if(!newAffil.save(flush:true,failOnError:true)){
             log.error("Probem saving user roles");
             newAffil.errors.each { e ->
@@ -378,7 +378,7 @@ class AdminController extends AbstractDebugController {
 
         params.sort =   params.sort ?: 'created'
         params.order =  params.order ?: 'desc'
-        params.max =    params.max ?: 500
+        params.max =    params.max ?: 1000
 
         result.events = SystemEvent.list(params)
 
@@ -1069,29 +1069,9 @@ class AdminController extends AbstractDebugController {
   @Secured(['ROLE_ADMIN'])
   def checkPackageTIPPs() {
     def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
+    result.user = springSecurityService.getCurrentUser()
+    params.max =  params.max ?: result.user.getDefaultPageSizeTMP()
 
-
-    //Change to GOKB ElasticSearch
-    params.esgokb = "Package"
-    params.sort = "name"
-
-    params.max = (result.user?.getDefaultPageSizeTMP() >= Package.getAll().size())? result.user?.getDefaultPageSizeTMP() : Package.getAll().size()
-    params.q = ""
-
-    if(params.onlyNotEqual){
-      params.onlyNotEqual.each { p ->
-        if (p == params.onlyNotEqual.first()) {
-          params.q +="( "
-        }
-        params.q += "_id:\"${p}\""
-        if (p == params.onlyNotEqual.last()) {
-          params.q +=" ) "
-        } else {
-          params.q +=" OR "
-        }
-      }
-    }
 
     def gokbRecords = []
 
@@ -1099,18 +1079,40 @@ class AdminController extends AbstractDebugController {
       gokbRecords << GOKbService.getPackagesMap(api, params.q, false).records
     }
 
+
+    params.sort = params.sort ?: 'name'
+    params.order = params.order ?: 'asc'
+
     result.records = gokbRecords ? gokbRecords.flatten().sort() : null
 
-    result.tippsNotEqual = []
-    result.records.each{ hit ->
-
-        if(com.k_int.kbplus.Package.findByGokbId(hit.uuid)) {
-              if(com.k_int.kbplus.Package.findByGokbId(hit.uuid)?.tipps?.size() != hit.titleCount && hit.titleCount != 0)
-              {
-                result.tippsNotEqual << hit.id
-              }
-        }
+    result.records?.sort { x, y ->
+      if (params.order == 'desc') {
+        y."${params.sort}".toString().compareToIgnoreCase x."${params.sort}".toString()
+      } else {
+        x."${params.sort}".toString().compareToIgnoreCase y."${params.sort}".toString()
+      }
     }
+
+    /*if(params.onlyNotEqual) {
+      result.tippsNotEqual = []
+      result.records.each { hit ->
+        if (com.k_int.kbplus.Package.findByGokbId(hit.uuid)) {
+          if (com.k_int.kbplus.Package.findByGokbId(hit.uuid)?.tipps?.size() != hit.titleCount && hit.titleCount != 0) {
+            result.tippsNotEqual << hit
+          }
+        }
+      }
+      result.records = result.tippsNotEqual
+    }*/
+
+    result.resultsTotal2 = result.records?.size()
+
+    Integer start = params.offset ? params.int('offset') : 0
+    Integer end = params.offset ? params.int('max') + params.int('offset') : params.int('max')
+    end = (end > result.records?.size()) ? result.records?.size() : end
+
+    result.records = result.records?.subList(start, end)
+
 
     result
   }
