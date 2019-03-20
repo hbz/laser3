@@ -2576,7 +2576,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         params.orgRole = RDStore.OR_SUBSCRIBER.value
         tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
-        result
+        result.sort{it.name}
     }
     private getMySubscriptions_writeRights(){
         List result
@@ -2591,7 +2591,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL_LICENSE.id}"
         tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
-        result
+        result.sort{it.name}
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -2973,7 +2973,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 
     private boolean takeEntitlements(List<IssueEntitlement> entitlementsToTake, Subscription targetSub) {
         if (params?.subscription?.takeEntitlements?.equals(REPLACE)) {
-            targetSub.issueEntitlements.each {
+//            targetSub.issueEntitlements.each {
+            getIssueEntitlements(targetSub).each {
                 it.status = RDStore.IE_DELETED
                 it.save(flush: true)
             }
@@ -2982,13 +2983,15 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         switch (params?.subscription?.takeEntitlements) {
             case REPLACE:
             case COPY:
-                entitlementsToTake.each { ie ->
-                    if (ie.status != RDStore.IE_DELETED) {
-                        if (targetSub.issueEntitlements.find {it.tipp.id == ie.tipp.id} ) {
+                entitlementsToTake.each { ieToTake ->
+                    if (ieToTake.status != RDStore.IE_DELETED) {
+                        def list = getIssueEntitlements(targetSub).findAll{it.tipp.id == ieToTake.tipp.id && it.status != RDStore.IE_DELETED}
+//                        def list = targetSub.issueEntitlements.findAll {it.tipp.id == ieToTake.tipp.id} && it.status != RDStore.IE_DELETED}
+                        if (list?.size() > 0) {
                             // mich gibts schon! Fehlermeldung ausgeben!
-                            flash.error = ie.tipp.title.title + " wurde nicht hinzugefügt, weil es in der Ziellizenz schon existiert."
+                            flash.error = ieToTake.tipp.title.title + " wurde nicht hinzugefügt, weil es in der Ziellizenz schon existiert."
                         } else {
-                            def properties = ie.properties
+                            def properties = ieToTake.properties
                             properties.globalUID = null
                             IssueEntitlement newIssueEntitlement = new IssueEntitlement()
                             InvokerHelper.setProperties(newIssueEntitlement, properties)
