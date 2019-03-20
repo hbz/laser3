@@ -55,17 +55,19 @@
   //border: none;
   //font-size: 25px;
 
-
+  border: none;
   width: 40px;
   height: 40px;
-  padding-top: 10px;
-  color: @white;
-  background-color: lightgray;
+  padding-top: 11px;
+  color: #89898952;
+  background-color: #d3d3d352;
   text-align: center;
 }
 .ui.radio.checkbox.la-toggle-radio input:checked ~ label:before {
 
-  background-color: @darkGrey;
+  border: none;
+  color: white;
+  background-color: #909090ba;
 }
 /* AFTER */
 .ui.checkbox.la-toggle-radio label:after {
