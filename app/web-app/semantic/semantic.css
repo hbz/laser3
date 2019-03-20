@@ -14437,7 +14437,7 @@ i.icon.pencil.alternate.slash {
   font-family: 'icomoon';
 }
 
-i.icon.thumbtack.slash {
+i.icon.la-thumbtack.slash {
   font-family: 'icomoon';
 }
 
@@ -14445,11 +14445,11 @@ i.icon.plus.square.slash {
   font-family: 'icomoon';
 }
 
-i.icon.chain.broken {
+i.icon.la-chain.broken {
   font-family: 'icomoon';
 }
 
-i.icon.chain {
+i.icon.la-chain {
   font-family: 'icomoon';
 }
 
@@ -14495,7 +14495,7 @@ i.icon.pencil.alternate.slash:before {
   content: "\e902";
 }
 
-i.icon.thumbtack.slash:before {
+i.icon.la-thumbtack.slash:before {
   content: "\e903";
 }
 
@@ -14503,11 +14503,11 @@ i.icon.plus.square.slash:before {
   content: "\e904";
 }
 
-i.icon.chain.broken:before {
+i.icon.la-chain.broken:before {
   content: "\e905";
 }
 
-i.icon.chain:before {
+i.icon.la-chain:before {
   content: "\e906";
 }
 
