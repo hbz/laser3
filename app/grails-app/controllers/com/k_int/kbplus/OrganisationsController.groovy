@@ -30,6 +30,8 @@ class OrganisationsController extends AbstractDebugController {
     def filterService
     def genericOIDService
     def propertyService
+    def orgDocumentService
+    def docstoreService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -386,6 +388,10 @@ class OrganisationsController extends AbstractDebugController {
             // -- private properties
        //}
 
+        //documents
+        du.setBenchMark('documents')
+        Map docMap = orgDocumentService.getDocuments(result.user,result.orgInstance,params)
+        result.orgInstance = docMap.org
 
         List bm = du.stopBenchMark()
         result.benchMark = bm
@@ -398,6 +404,42 @@ class OrganisationsController extends AbstractDebugController {
         //println " ---> " + Math.abs(debugTimeB - debugTimeA)
 
         result
+    }
+
+    @Secured(['ROLE_USER'])
+    def documents() {
+        User user = User.get(springSecurityService.principal.id)
+        Org org = Org.get(params.id)
+        Map ret = orgDocumentService.getDocuments(user,org,params)
+        Map result = [user:user,org:ret.org,availableUsers:ret.availableUsers,editable:accessService.checkMinUserOrgRole(user,ret.org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]
+        result
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def editDocument() {
+        Map result = setResultGenerics()
+        result.targetOrg = Org.get(params.org)
+        result.ownobj = result.institution
+        result.owntp = 'organisation'
+        if(params.id) {
+            result.docctx = DocContext.get(params.id)
+            result.doc = result.docctx.owner
+        }
+
+        render template: "/templates/documents/modal", model: result
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def deleteDocuments() {
+        def ctxlist = []
+
+        log.debug("deleteDocuments ${params}");
+
+        docstoreService.unifiedDeleteDocuments(params)
+
+        redirect controller: 'organisations', action: 'documents' /*, fragment: 'docstab' */
     }
 
     @Secured(['ROLE_USER'])
