@@ -18,7 +18,6 @@ import java.time.Year
 class FinanceService {
 
     def contextService
-    def controlledListService
     def genericOIDService
     def messageSource
 
@@ -120,15 +119,6 @@ class FinanceService {
                 }
                 break
         }
-        /*
-        if(!params.forExport) {
-            List<CostItem> allCostItems = CostItem.findAllByOwnerAndSub(org,sub)
-            if(allCostItems.size() > 0) {
-                result.filterLists = assembleFilterLists()
-                result.filterLists.providers = OrgRole.executeQuery('select distinct o.org, o.org.name from OrgRole o where o.roleType = :provider and o.sub = :sub order by o.org.name asc',[sub:sub,provider:RDStore.OR_PROVIDER]).collect{ it -> it[0] }
-            }
-        }
-        */
         result
     }
 
@@ -219,15 +209,6 @@ class FinanceService {
         if(result.subscr.count > 0) {
             result.subscr.sums = calculateResults(consortialMemberSubscriptionCostItems)
         }
-        /*
-        if(!params.forExport) {
-        List<CostItem> allCostItems = CostItem.findAllByOwner(org)
-            if(allCostItems.size() > 0) {
-                result.filterLists = assembleFilterLists()
-                result.filterLists.providers = OrgRole.executeQuery('select distinct o.org, o.org.name from OrgRole o where o.roleType = :provider order by o.org.name asc',[provider:RDStore.OR_PROVIDER]).collect{ it -> it[0] }
-            }
-        }
-        */
         result.filterPresets = filterQueryCons[1]
         result
     }
@@ -260,7 +241,7 @@ class FinanceService {
             List<Org> filterSubProviders = []
             String[] subProviders = params.list("filterSubProviders")
             subProviders.each { subProvider ->
-                filterSubProviders.add(Org.get(Long.parseLong(subProvider)))
+                filterSubProviders.add(genericOIDService.resolveOID(subProvider))
             }
             queryParams.filterSubProviders = filterSubProviders
             log.info(queryParams.filterSubProviders)
@@ -512,19 +493,5 @@ class FinanceService {
         }
         return ret
     }
-
-    /*
-    Map assembleFilterLists() {
-        log.info("assembling filter lists")
-        Org org = contextService.getOrg()
-        List budgetCodes = BudgetCode.executeQuery("select bc from BudgetCode bc where owner = :org",[org:org])
-        List invoiceNumbers = Invoice.executeQuery("select i.invoiceNumber from Invoice i where i.owner = :org",[org:org])
-        List orderNumbers = Order.executeQuery("select ord.orderNumber from Order ord where ord.owner = :org",[org:org])
-        List references = CostItem.executeQuery("select distinct ci.reference from CostItem ci where ci.owner = :org and ci.reference is not null order by ci.reference asc",[org:org])
-        return [subscriptions: controlledListService.getSubscriptions([status:RDStore.SUBSCRIPTION_CURRENT]).values,
-                subPackages: controlledListService.getSubscriptionPackages([status:RDStore.SUBSCRIPTION_CURRENT]).values,
-                references: references, budgetCodes: budgetCodes,invoiceNumbers: invoiceNumbers,orderNumbers: orderNumbers]
-    }
-    */
 
 }

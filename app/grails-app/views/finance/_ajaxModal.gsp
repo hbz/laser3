@@ -1,5 +1,5 @@
 <!-- _ajaxModal.gsp -->
-<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.*;" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.*;org.springframework.context.i18n.LocaleContextHolder" %>
 <laser:serviceInjection />
 
 <g:render template="vars" /><%-- setting vars --%>
@@ -173,10 +173,10 @@
                 <div class="two fields">
                     <div class="field">
                         <label>${message(code:'financials.invoice_total')}</label>
-                        <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="number" class="calc" style="width:50%"
+                        <input title="${g.message(code:'financials.addNew.BillingCurrency')}" type="text" class="calc" style="width:50%"
                                name="newCostInBillingCurrency" id="newCostInBillingCurrency"
                                placeholder="${g.message(code:'financials.invoice_total')}"
-                               value="${consCostTransfer ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}" step="0.01"/>
+                               value="<g:formatNumber number="${consCostTransfer ? costItem?.costInBillingCurrencyAfterTax : costItem?.costInBillingCurrency}" minFractionDigits="2" maxFractionDigits="2" />"/>
 
                         <div class="ui icon button" id="costButton3" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
@@ -192,7 +192,7 @@
                         <label>Endpreis</label>
                         <input title="Rechnungssumme nach Steuer (in EUR)" type="text" readonly="readonly"
                                name="newCostInBillingCurrencyAfterTax" id="newCostInBillingCurrencyAfterTax"
-                               value="${consCostTransfer ? 0.0 : costItem?.costInBillingCurrencyAfterTax}" step="0.01"/>
+                               value="<g:formatNumber number="${consCostTransfer ? 0.0 : costItem?.costInBillingCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2" />" />
 
                     </div><!-- .field -->
                     <!-- TODO -->
@@ -247,10 +247,10 @@
                 <div class="two fields">
                     <div class="field">
                         <label>${g.message(code:'financials.newCosts.valueInEuro')}</label>
-                        <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="number" class="calc"
+                        <input title="${g.message(code:'financials.addNew.LocalCurrency')}" type="text" class="calc"
                                name="newCostInLocalCurrency" id="newCostInLocalCurrency"
                                placeholder="${message(code:'financials.newCosts.valueInEuro')}"
-                               value="${consCostTransfer ? costItem?.costInLocalCurrencyAfterTax : costItem?.costInLocalCurrency}" step="0.01"/>
+                               value="<g:formatNumber number="${consCostTransfer ? costItem?.costInLocalCurrencyAfterTax : costItem?.costInLocalCurrency}" minFractionDigits="2" maxFractionDigits="2"/>" />
 
                         <div class="ui icon button" id="costButton1" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
@@ -260,7 +260,7 @@
                         <label>Endpreis (in EUR)</label>
                         <input title="Wert nach Steuer (in EUR)" type="text" readonly="readonly"
                                name="newCostInLocalCurrencyAfterTax" id="newCostInLocalCurrencyAfterTax"
-                               value="${consCostTransfer ? 0.0 : costItem?.costInLocalCurrencyAfterTax}" step="0.01"/>
+                               value="<g:formatNumber number="${consCostTransfer ? 0.0 : costItem?.costInLocalCurrencyAfterTax}" minFractionDigits="2" maxFractionDigits="2"/>"/>
                     </div><!-- .field -->
                 </div>
 
@@ -313,7 +313,7 @@
 
                 <div class="field">
 
-                    <g:if test="${tab == "cons" && (sub || costItem.sub)}">
+                    <g:if test="${tab == "cons" && (sub || (costItem && costItem.sub))}">
                         <%
                             def validSubChilds
                             Subscription contextSub
@@ -472,7 +472,7 @@
                 if (! isError("#newCostInBillingCurrency") && ! isError("#newCostCurrencyRate")) {
                     var input = $(this).siblings("input");
                     input.transition('glow');
-                    input.val(($("#newCostInBillingCurrency").val() * $("#newCostCurrencyRate").val()).toFixed(2));
+                    input.val((convertDouble($("#newCostInBillingCurrency").val()) * $("#newCostCurrencyRate").val()).toFixed(2));
 
                     $(".la-account-currency").find(".field").removeClass("error");
                     calcTaxResults()
@@ -482,7 +482,7 @@
                 if (! isError("#newCostInLocalCurrency") && ! isError("#newCostInBillingCurrency")) {
                     var input = $(this).siblings("input");
                     input.transition('glow');
-                    input.val(($("#newCostInLocalCurrency").val() / $("#newCostInBillingCurrency").val()).toFixed(9));
+                    input.val((convertDouble($("#newCostInLocalCurrency").val()) / convertDouble($("#newCostInBillingCurrency").val())).toFixed(9));
 
                     $(".la-account-currency").find(".field").removeClass("error");
                     calcTaxResults()
@@ -492,7 +492,7 @@
                 if (! isError("#newCostInLocalCurrency") && ! isError("#newCostCurrencyRate")) {
                     var input = $(this).siblings("input");
                     input.transition('glow');
-                    input.val(($("#newCostInLocalCurrency").val() / $("#newCostCurrencyRate").val()).toFixed(2));
+                    input.val((convertDouble($("#newCostInLocalCurrency").val()) / $("#newCostCurrencyRate").val()).toFixed(2));
 
                     $(".la-account-currency").find(".field").removeClass("error");
                     calcTaxResults()
@@ -522,18 +522,21 @@
                 console.log($("*[name=newTaxRate]").val());
                 var taxF = 1.0 + (0.01 * $("*[name=newTaxRate]").val().split("§")[1]);
 
+                var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency").val());
+                var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency").val());
+
                 $('#newCostInBillingCurrencyAfterTax').val(
-                    roundF ? Math.round($("#newCostInBillingCurrency").val() * taxF) : ($("#newCostInBillingCurrency").val() * taxF).toFixed(2)
+                    roundF ? Math.round(parsedBillingCurrency * taxF) : convertDouble(parsedBillingCurrency * taxF)
                 );
                 $('#newCostInLocalCurrencyAfterTax').val(
-                    roundF ? Math.round( $("#newCostInLocalCurrency").val() * taxF ) : ( $("#newCostInLocalCurrency").val() * taxF ).toFixed(2)
+                    roundF ? Math.round(parsedLocalCurrency * taxF ) : convertDouble(parsedLocalCurrency * taxF )
                 );
             };
 
             var costElems = $("#newCostInLocalCurrency, #newCostCurrencyRate, #newCostInBillingCurrency")
 
             costElems.on('change', function(){
-                if ( $("#newCostInLocalCurrency").val() * $("#newCostCurrencyRate").val() != $("#newCostInBillingCurrency").val() ) {
+                if ( convertDouble($("#newCostInLocalCurrency").val()) * $("#newCostCurrencyRate").val() != convertDouble($("#newCostInBillingCurrency").val()) ) {
                     costElems.parent('.field').addClass('error')
                 }
                 else {
@@ -563,86 +566,28 @@
                 });
             }
 
-            <%--var ajaxPostFunc = function () {
-
-                console.log( "ajaxPostFunc")
-                DOES NOT WORK AS OF #1053! To be refactored!!!!
-                <g:if test="${!sub}">
-
-                $('#costItem_ajaxModal #newSubscription').select2({
-                    placeholder: "${message(code:'financials.newCosts.enterSubName')}",
-                    minimumInputLength: 1,
-                    formatInputTooShort: function () {
-                        return "${message(code:'select2.minChars.note')}";
-                    },
-                    global: false,
-                    ajax: {
-                        url: "<g:createLink controller='ajax' action='lookupSubscriptions'/>",
-                        dataType: 'json',
-                        data: function (term, page) {
-                            return {
-                                hideDeleted: 'true',
-                                hideIdent: 'false',
-                                inclSubStartDate: 'false',
-                                inst_shortcode: "${contextService.getOrg()?.shortcode}",
-                                q: '%' + term , // contains search term
-                                page_limit: 20,
-                                baseClass:'com.k_int.kbplus.Subscription'
-                            };
-                        },
-                        results: function (data, page) {
-                            return {results: data.values};
-                        }
-                    },
-                    allowClear: true,
-                    formatSelection: function(data) {
-                        return data.text;
+            function convertDouble(input) {
+                console.log("input: "+input+", typeof: "+typeof(input))
+                var output;
+                //determine locale from server
+                var locale = "${LocaleContextHolder.getLocale()}";
+                if(typeof(input) === 'number') {
+                    output = input.toFixed(2);
+                    if(locale.indexOf("de") > -1)
+                        output = output.replace(".",",");
+                }
+                else if(typeof(input) === 'string') {
+                    output = 0.0;
+                    if(input.match(/(\d{1-3}\.?)*\d+,\d{2}/g))
+                        output = parseFloat(input.replace(/\./g,"").replace(/,/g,"."));
+                    else if(input.match(/(\d{1-3},?)*\d+\.\d{2}/g)) {
+                        output = parseFloat(input.replace(/,/g, ""));
                     }
-                });
-
-                </g:if>
-
-                <g:if test="${issueEntitlement}">
-                    var data = {id : "${issueEntitlement.class.name}:${issueEntitlement.id}",
-                                text : "${issueEntitlement.tipp.title.title}"};
-                </g:if>
-
-                $('#newIE').select2({
-                    placeholder: "${message(code:'financials.newCosts.singleEntitlement')}",
-                    /*minimumInputLength: 1,
-                    formatInputTooShort: function () {
-                        return "${message(code:'select2.minChars.note')}";
-                    },*/
-                    global: false,
-                    ajax: {
-                        url: "<g:createLink controller='ajax' action='lookupIssueEntitlements'/>",
-                        data: function (term, page) {
-                            return {
-                                hideDeleted: 'true',
-                                hideIdent: 'false',
-                                inclSubStartDate: 'false',
-                                q: '%' + term + '%',
-                                page_limit: 20,
-                                baseClass: 'com.k_int.kbplus.IssueEntitlement',
-                                sub: $("#pickedSubscription,#newSubscription").val()
-                            };
-                        },
-                        results: function (data, page) {
-                            return {results: data.values};
-                        },
-                        allowClear: true,
-                        formatSelection: function(data) {
-                            return data.text;
-                        }
-                    }
-                });
-                //duplicated call needed to preselect data
-                if(typeof(data) !== 'undefined')
-                    $('#newIE').select2('data',data);
-                end legacy!
-
-
-            };--%>
+                    else console.log("Please check over regex!");
+                    console.log("string input parsed, output is: "+output);
+                }
+                return output;
+            }
 
     </script>
 
