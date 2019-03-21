@@ -563,86 +563,42 @@
                 });
             }
 
-            <%--var ajaxPostFunc = function () {
-
-                console.log( "ajaxPostFunc")
-                DOES NOT WORK AS OF #1053! To be refactored!!!!
-                <g:if test="${!sub}">
-
-                $('#costItem_ajaxModal #newSubscription').select2({
-                    placeholder: "${message(code:'financials.newCosts.enterSubName')}",
-                    minimumInputLength: 1,
-                    formatInputTooShort: function () {
-                        return "${message(code:'select2.minChars.note')}";
-                    },
-                    global: false,
-                    ajax: {
-                        url: "<g:createLink controller='ajax' action='lookupSubscriptions'/>",
-                        dataType: 'json',
-                        data: function (term, page) {
-                            return {
-                                hideDeleted: 'true',
-                                hideIdent: 'false',
-                                inclSubStartDate: 'false',
-                                inst_shortcode: "${contextService.getOrg()?.shortcode}",
-                                q: '%' + term , // contains search term
-                                page_limit: 20,
-                                baseClass:'com.k_int.kbplus.Subscription'
-                            };
-                        },
-                        results: function (data, page) {
-                            return {results: data.values};
+            function convertDouble(input) {
+                var output;
+                //determine locale from server
+                var locale = "${LocaleContextHolder.getLocale()}";
+                var thousandSeparator;
+                var decimalSeparator;
+                if(locale.indexOf("de") > -1) {
+                    thousandSeparator = ",";
+                    decimalSeparator = ".";
+                }
+                else if(locale.indexOf("en") > -1) {
+                    thousandSeparator = ".";
+                    decimalSeparator = ",";
+                }
+                if(typeof(input) === 'number') {
+                    var number = input.toString();
+                    output = "";
+                    for(var i = 0;i < number.length;i++) {
+                        output += input.charAt(i);
+                        if(i % 3 === 0 && i > 0 && i < number.length-2) {
+                            output += thousandSeparator;
                         }
-                    },
-                    allowClear: true,
-                    formatSelection: function(data) {
-                        return data.text;
-                    }
-                });
-
-                </g:if>
-
-                <g:if test="${issueEntitlement}">
-                    var data = {id : "${issueEntitlement.class.name}:${issueEntitlement.id}",
-                                text : "${issueEntitlement.tipp.title.title}"};
-                </g:if>
-
-                $('#newIE').select2({
-                    placeholder: "${message(code:'financials.newCosts.singleEntitlement')}",
-                    /*minimumInputLength: 1,
-                    formatInputTooShort: function () {
-                        return "${message(code:'select2.minChars.note')}";
-                    },*/
-                    global: false,
-                    ajax: {
-                        url: "<g:createLink controller='ajax' action='lookupIssueEntitlements'/>",
-                        data: function (term, page) {
-                            return {
-                                hideDeleted: 'true',
-                                hideIdent: 'false',
-                                inclSubStartDate: 'false',
-                                q: '%' + term + '%',
-                                page_limit: 20,
-                                baseClass: 'com.k_int.kbplus.IssueEntitlement',
-                                sub: $("#pickedSubscription,#newSubscription").val()
-                            };
-                        },
-                        results: function (data, page) {
-                            return {results: data.values};
-                        },
-                        allowClear: true,
-                        formatSelection: function(data) {
-                            return data.text;
+                        else if(i === number.length-2) {
+                            output += decimalSeparator;
                         }
                     }
-                });
-                //duplicated call needed to preselect data
-                if(typeof(data) !== 'undefined')
-                    $('#newIE').select2('data',data);
-                end legacy!
-
-
-            };--%>
+                }
+                else if(typeof(input) === 'string') {
+                    output = 0.0;
+                    if(input.match(/(\d{3}\.)+\d{3},\d{2}/g))
+                        output = parseFloat(input.replace(".","").replace(",","."));
+                    else if(input.match(/(\d{3},)+\d{3}\.\d{2}/g))
+                        output = parseFloat(input.replace(",",""))
+                }
+                return output
+            }
 
     </script>
 
