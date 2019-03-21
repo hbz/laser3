@@ -151,9 +151,12 @@ class MyInstitutionController extends AbstractDebugController {
         result
     }
 
+    @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def manageAffiliationRequests() {
+        redirect controller: 'organisations', action: 'users', id: contextService.getOrg().id
+
         def result = [:]
         result.institution        = contextService.getOrg()
         result.user               = User.get(springSecurityService.principal.id)
@@ -3719,6 +3722,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         render (template: "../templates/filter/orgFilterTable", model: [orgList: result.cons_members, tmplShowCheckbox: true, tmplConfigShow: ['sortname', 'name']])
     }
 
+    @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def actionAffiliationRequestOrg() {

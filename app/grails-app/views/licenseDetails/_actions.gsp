@@ -24,12 +24,14 @@
                 <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalgruppen konfigurieren" />
             </g:if>
 
+            <%--
             <g:if test="${showConsortiaFunctions}">
                 <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
                     <div class="divider"></div>
                     <semui:actionsDropdownItem id="audit_config_opener" message="property.audit.menu"/>
                 </g:if>
             </g:if>
+            --%>
         </g:if>
 
     </semui:actionsDropdown>
@@ -37,7 +39,7 @@
     <g:render template="/templates/documents/modal" model="${[ownobj:license, owntp:'license']}"/>
     <g:render template="/templates/notes/modal_create" model="${[ownobj: license, owntp: 'license']}"/>
 
-    <g:render template="/templates/audit/modal_script" model="${[ownobj: license]}" />
+    <%--<g:render template="/templates/audit/modal_script" model="${[ownobj: license]}" />--%>
 </g:if>
 
 <g:if test="${editable || accessService.checkMinUserOrgRole(user, contextOrg, 'INST_EDITOR')}">

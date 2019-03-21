@@ -1157,6 +1157,7 @@ class AjaxController {
       }
     }
 
+    @Deprecated
     @Secured(['ROLE_USER'])
     def showAuditConfigManager() {
 
@@ -1169,6 +1170,8 @@ class AjaxController {
             ])
         }
     }
+
+    @Deprecated
     @Secured(['ROLE_USER'])
     def processAuditConfigManager() {
 
@@ -1254,6 +1257,57 @@ class AjaxController {
         }
     }
 
+
+    @Secured(['ROLE_USER'])
+    def toggleAudit() {
+        String referer = request.getHeader('referer')
+
+        def owner = genericOIDService.resolveOID(params.owner)
+        if (owner) {
+            def members = owner.getClass().findAllByInstanceOf(owner)
+            def objProps = owner.getClass().controlledProperties
+            def prop = params.property
+
+            if (prop in objProps) {
+                if (! AuditConfig.getConfig(owner, prop)) {
+                    AuditConfig.addConfig(owner, prop)
+
+                    members.each { m ->
+                        m.setProperty(prop, owner.getProperty(prop))
+                        m.save(flush:true)
+                    }
+                }
+                else {
+                    AuditConfig.removeConfig(owner, prop)
+
+                    if (! params.keep) {
+                        members.each { m ->
+                            m.setProperty(prop, null)
+                            m.save(flush: true)
+                        }
+                    }
+
+                    // delete pending changes
+                    // e.g. PendingChange.changeDoc = {changeTarget, changeType, changeDoc:{OID,  event}}
+                    def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
+                    openPD.each { pc ->
+                        def event = JSON.parse(pc.changeDoc)
+                        if (event && event.changeDoc) {
+                            def eventObj = genericOIDService.resolveOID(event.changeDoc.OID)
+                            def eventProp = event.changeDoc.prop
+
+                            if (eventObj?.id == owner.id && eventProp.equalsIgnoreCase(prop)) {
+                                pc.delete(flush: true)
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+        redirect(url: request.getHeader('referer'))
+    }
+
     @Secured(['ROLE_USER'])
     def togglePropertyAuditConfig() {
         def className = params.propClass.split(" ")[1]
@@ -1274,9 +1328,11 @@ class AjaxController {
             def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
             openPD.each { pc ->
                 def event = JSON.parse(pc.changeDoc)
-                def scp = genericOIDService.resolveOID(event.changeDoc.OID)
-                if (scp?.id == property.id) {
-                    pc.delete(flush: true)
+                if (event && event.changeDoc) {
+                    def scp = genericOIDService.resolveOID(event.changeDoc.OID)
+                    if (scp?.id == property.id) {
+                        pc.delete(flush: true)
+                    }
                 }
             }
         }

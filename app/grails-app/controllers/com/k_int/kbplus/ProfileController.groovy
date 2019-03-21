@@ -100,7 +100,7 @@ class ProfileController {
         def userOrg     = UserOrg.findByUserAndId(user, params.assoc)
 
         if (userOrg) {
-            userOrg.status = UserOrg.STATUS_CANCELLED
+            userOrg.delete(flush:true)
         }
 
         redirect(action: "index")
