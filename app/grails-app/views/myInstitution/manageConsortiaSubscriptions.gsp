@@ -23,7 +23,7 @@
 <semui:controlButtons>
     <semui:exportDropdown>
         <semui:exportDropdownItem>
-            <g:if test="${filterSet}">
+            <g:if test="${filterSet || defaultSet}">
                 <g:link class="item js-open-confirm-modal"
                         data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial', default: 'Achtung!  Dennoch fortfahren?')}"
                         data-confirm-term-how="ok" controller="myInstitution" action="manageConsortiaSubscriptions"
@@ -145,7 +145,7 @@
 
                     <div class="field la-field-right-aligned">
                         <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-                        <input name="filterSet" value="${filterSet}" type="hidden">
+                        <input name="filterSet" value="true" type="hidden">
                         <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}">
                     </div>
                 </div>

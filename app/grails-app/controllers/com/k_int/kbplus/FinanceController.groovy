@@ -18,6 +18,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 
+import java.awt.Color
 import java.text.SimpleDateFormat
 import java.time.Year
 
@@ -174,13 +175,13 @@ class FinanceController extends AbstractDebugController {
             providers.put(it.sub,orgs)
         }
         XSSFCellStyle csPositive = workbook.createCellStyle()
-        csPositive.setFillForegroundColor(new XSSFColor(new java.awt.Color(198,239,206)))
+        csPositive.setFillForegroundColor(new XSSFColor(new Color(198,239,206)))
         csPositive.setFillPattern(FillPatternType.SOLID_FOREGROUND)
         XSSFCellStyle csNegative = workbook.createCellStyle()
-        csNegative.setFillForegroundColor(new XSSFColor(new java.awt.Color(255,199,206)))
+        csNegative.setFillForegroundColor(new XSSFColor(new Color(255,199,206)))
         csNegative.setFillPattern(FillPatternType.SOLID_FOREGROUND)
         XSSFCellStyle csNeutral = workbook.createCellStyle()
-        csNeutral.setFillForegroundColor(new XSSFColor(new java.awt.Color(255,235,156)))
+        csNeutral.setFillForegroundColor(new XSSFColor(new Color(255,235,156)))
         csNeutral.setFillPattern(FillPatternType.SOLID_FOREGROUND)
         SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50)
         wb.setCompressTempFiles(true)

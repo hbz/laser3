@@ -12,18 +12,24 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
-import org.apache.poi.hssf.model.*
-import org.apache.poi.hssf.usermodel.*
-import org.apache.poi.hssf.util.HSSFColor
-import org.apache.poi.ss.usermodel.*
 import com.k_int.properties.*
 import de.laser.DashboardDueDate
+import org.apache.poi.hssf.usermodel.HSSFCellStyle
+import org.apache.poi.ss.usermodel.Cell
+import org.apache.poi.ss.usermodel.ClientAnchor
+import org.apache.poi.ss.usermodel.CreationHelper
+import org.apache.poi.ss.usermodel.Drawing
+import org.apache.poi.ss.usermodel.RichTextString
+import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.xssf.streaming.SXSSFSheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
 import org.apache.poi.xssf.usermodel.XSSFColor
+import org.apache.poi.xssf.usermodel.XSSFSheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+
+import java.awt.Color
 import java.sql.Timestamp
 import java.text.DateFormat
 
@@ -584,99 +590,100 @@ from License as l where (
             def sdf = new SimpleDateFormat(g.message(code:'default.date.format.notimenopoint', default:'ddMMyyyy'));
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
-            HSSFWorkbook wb = new HSSFWorkbook();
+            XSSFWorkbook workbook = new XSSFWorkbook()
+            SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50,true)
 
-            HSSFSheet sheet = wb.createSheet(g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions"));
+            SXSSFSheet sheet = wb.createSheet(g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions"))
 
             //the following three statements are required only for HSSF
-            sheet.setAutobreaks(true);
+            sheet.setAutobreaks(true)
 
             //the header row: centered text in 48pt font
-            Row headerRow = sheet.createRow(0);
-            headerRow.setHeightInPoints(16.75f);
+            Row headerRow = sheet.createRow(0)
+            headerRow.setHeightInPoints(16.75f)
             titles.eachWithIndex { titlesName, index ->
-                Cell cell = headerRow.createCell(index);
-                cell.setCellValue(titlesName);
+                Cell cell = headerRow.createCell(index)
+                cell.setCellValue(titlesName)
             }
 
             //freeze the first row
-            sheet.createFreezePane(0, 1);
+            sheet.createFreezePane(0, 1)
 
-            Row row;
-            Cell cell;
-            int rownum = 1;
+            Row row
+            Cell cell
+            int rownum = 1
 
             subscriptions.sort{it.name}
             subscriptions.each{  sub ->
                 int cellnum = 0;
-                row = sheet.createRow(rownum);
+                row = sheet.createRow(rownum)
 
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(sub.name));
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(sub.name)
 
-                cell = row.createCell(cellnum++);
+                cell = row.createCell(cellnum++)
                 //sub.owner.sort{it.reference}
                 sub.owner.each{
-                    cell.setCellValue(new HSSFRichTextString(it.reference));
+                    cell.setCellValue(it.reference)
                 }
-                cell = row.createCell(cellnum++);
+                cell = row.createCell(cellnum++)
                 sub.packages.sort{it.pkg.name}
                 def packages =""
                 sub.packages.each{
-                    packages += (it == sub.packages.last()) ? it.pkg.name : it.pkg.name+', ';
+                    packages += (it == sub.packages.last()) ? it.pkg.name : it.pkg.name+', '
                 }
-                cell.setCellValue(new HSSFRichTextString(packages));
+                cell.setCellValue(packages)
 
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(sub.getConsortia()?.name));
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(sub.getConsortia()?.name)
 
-                cell = row.createCell(cellnum++);
+                cell = row.createCell(cellnum++)
                 def providername = ""
-                def provider = OrgRole.findAllBySubAndRoleType(sub, RefdataValue.getByValueAndCategory('Provider', 'Organisational Role'))
+                def provider = OrgRole.findAllBySubAndRoleType(sub, RDStore.OR_PROVIDER)
                        provider.each {
                        providername += (it == provider.last()) ? it.org.name : it.org.name+", "
                 }
-                cell.setCellValue(new HSSFRichTextString(providername));
-                cell = row.createCell(cellnum++);
+                cell.setCellValue(providername)
+                cell = row.createCell(cellnum++)
                 def agencyname = ""
-                def agency = OrgRole.findAllBySubAndRoleType(sub, RefdataValue.getByValueAndCategory('Agency', 'Organisational Role'))
+                def agency = OrgRole.findAllBySubAndRoleType(sub, RDStore.OR_AGENCY)
                 agency.each {
                     agencyname += (it == agency.last()) ? it.org.name : it.org.name+", "
                 }
-                cell.setCellValue(new HSSFRichTextString(agencyname));
+                cell.setCellValue(agencyname)
 
-                cell = row.createCell(cellnum++);
+                cell = row.createCell(cellnum++)
                 if (sub.startDate) {
-                    cell.setCellValue(new HSSFRichTextString(sdf.format(sub.startDate)));
+                    cell.setCellValue(sdf.format(sub.startDate))
                 }
 
-                cell = row.createCell(cellnum++);
+                cell = row.createCell(cellnum++)
                 if (sub.endDate) {
-                    cell.setCellValue(new HSSFRichTextString(sdf.format(sub.endDate)));
+                    cell.setCellValue(sdf.format(sub.endDate))
                 }
 
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(sub.status?.getI10n("value")));
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(sub.status?.getI10n("value"))
 
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(sub.type?.getI10n("value")));
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(sub.type?.getI10n("value"))
 
                 rownum++
             }
 
             for (int i = 0; i < 22; i++) {
-                sheet.autoSizeColumn(i);
+                sheet.autoSizeColumn(i)
             }
             // Write the output to a file
-            String file = "${datetoday}_"+g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions").replaceAll(' ', '_')+".xls";
+            String file = "${datetoday}_"+g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions").replaceAll(' ', '_')+".xlsx"
             //if(wb instanceof XSSFWorkbook) file += "x";
 
             response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
-            // response.contentType = 'application/xls'
-            response.contentType = 'application/vnd.ms-excel'
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             wb.write(response.outputStream)
             response.outputStream.flush()
-
+            response.outputStream.close()
+            wb.dispose()
         }
         catch ( Exception e ) {
             log.error("Problem",e);
@@ -1192,7 +1199,7 @@ from License as l where (
             flash.message = message(code: 'subscription.created.message', args: [message(code: 'subscription.label', default: 'Package'), basePackage.id])
             redirect controller: 'subscriptionDetails', action: 'index', params: params, id: new_sub.id
         } else {
-            flash.message = message(code: 'subscription.unknown.message',default: "Subscription not found")
+            flash.message = message(code: 'subscription.unknown.message')
             redirect action: 'addSubscription', params: params
         }
     }
@@ -1470,7 +1477,7 @@ ORDER BY p.platform.name""", sub_params);
      * will build the base of the query to gather all the information needed for the view page
      * according to the requested filtering.
      *
-     * @param institution - the {@link #com.k_int.kbplus.Org Org} object representing the institution we're looking at
+     * @param institution - the {@link Org} object representing the institution we're looking at
      * @param date_restriction - 'Subscription valid on' date restriction as a String
      * @return a Map containing the base query as a String and a Map containing the parameters to run the query
      */
@@ -2108,163 +2115,164 @@ AND EXISTS (
             def date = new Date()
             def sdf = new SimpleDateFormat("dd.MM.yyyy")
 
-            HSSFWorkbook workbook = new HSSFWorkbook();
+            XSSFWorkbook wb = new XSSFWorkbook();
+            SXSSFWorkbook workbook = new SXSSFWorkbook(wb,50,true)
 
-            CreationHelper factory = workbook.getCreationHelper();
+            CreationHelper factory = workbook.getCreationHelper()
 
             //
             // Create two sheets in the excel document and name it First Sheet and
             // Second Sheet.
             //
-            HSSFSheet firstSheet = workbook.createSheet(g.message(code: "renewalexport.renewalsworksheet", default: "Renewals Worksheet"));
-            Drawing drawing = firstSheet.createDrawingPatriarch();
+            SXSSFSheet firstSheet = workbook.createSheet(g.message(code: "renewalexport.renewalsworksheet", default: "Renewals Worksheet"))
+            Drawing drawing = firstSheet.createDrawingPatriarch()
 
             // Cell style for a present TI
-            HSSFCellStyle present_cell_style = workbook.createCellStyle();
-            present_cell_style.setFillForegroundColor(HSSFColor.LIGHT_GREEN.index);
-            present_cell_style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+            XSSFCellStyle present_cell_style = workbook.createCellStyle()
+            present_cell_style.setFillForegroundColor(new XSSFColor(new Color(198,239,206)))
+            present_cell_style.setFillPattern(XSSFCellStyle.SOLID_FOREGROUND)
 
             // Cell style for a core TI
-            HSSFCellStyle core_cell_style = workbook.createCellStyle();
-            core_cell_style.setFillForegroundColor(HSSFColor.LIGHT_YELLOW.index);
-            core_cell_style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+            XSSFCellStyle core_cell_style = workbook.createCellStyle()
+            core_cell_style.setFillForegroundColor(new XSSFColor(new Color(255,235,156)))
+            core_cell_style.setFillPattern(XSSFCellStyle.SOLID_FOREGROUND)
 
             //NOT CHANGE
-            HSSFCellStyle notchange_cell_style = workbook.createCellStyle();
-            notchange_cell_style.setFillForegroundColor(HSSFColor.RED.index);
-            notchange_cell_style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+            XSSFCellStyle notchange_cell_style = workbook.createCellStyle()
+            notchange_cell_style.setFillForegroundColor(new XSSFColor(new Color(255,199,206)))
+            notchange_cell_style.setFillPattern(XSSFCellStyle.SOLID_FOREGROUND)
 
-            int rc = 0;
+            int rc = 0
             // header
-            int cc = 0;
-            HSSFRow row = null;
-            HSSFCell cell = null;
+            int cc = 0
+            Row row = null
+            Cell cell = null
 
             log.debug(m.sub_info.toString())
 
             // Blank rows
-            row = firstSheet.createRow(rc++);
-            row = firstSheet.createRow(rc++);
-            cc = 0;
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.subscriberID", default: "Subscriber ID")));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.subscribername", default: "Subscriber Name")));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.subscriberShortcode", default: "Subscriber Shortcode")));
+            row = firstSheet.createRow(rc++)
+            row = firstSheet.createRow(rc++)
+            cc = 0
+            cell = row.createCell(cc++)
+            cell.setCellValue(g.message(code: "renewalexport.subscriberID", default: "Subscriber ID"))
+            cell = row.createCell(cc++)
+            cell.setCellValue(g.message(code: "renewalexport.subscribername", default: "Subscriber Name"))
+            cell = row.createCell(cc++)
+            cell.setCellValue(g.message(code: "renewalexport.subscriberShortcode", default: "Subscriber Shortcode"))
 
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.subscriptionStartDate", default: "Subscription Startdate")));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.subscriptionEndDate", default: "Subscription Enddate")));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.copySubscriptionDoc", default: "Copy Subscription Doc")));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.generated", default: "Generated at")));
+            cell = row.createCell(cc++)
+            cell.setCellValue(g.message(code: "renewalexport.subscriptionStartDate", default: "Subscription Startdate"))
+            cell = row.createCell(cc++)
+            cell.setCellValue(g.message(code: "renewalexport.subscriptionEndDate", default: "Subscription Enddate"))
+            cell = row.createCell(cc++)
+            cell.setCellValue(g.message(code: "renewalexport.copySubscriptionDoc", default: "Copy Subscription Doc"))
+            cell = row.createCell(cc++)
+            cell.setCellValue(g.message(code: "renewalexport.generated", default: "Generated at"))
 
-            row = firstSheet.createRow(rc++);
-            cc = 0;
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("${inst.id}"));
-            cell.setCellStyle(notchange_cell_style);
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString(inst.name));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString(inst.shortcode));
+            row = firstSheet.createRow(rc++)
+            cc = 0
+            cell = row.createCell(cc++)
+            cell.setCellValue(inst.id)
+            cell.setCellStyle(notchange_cell_style)
+            cell = row.createCell(cc++)
+            cell.setCellValue(inst.name)
+            cell = row.createCell(cc++)
+            cell.setCellValue(inst.shortcode)
 
             def subscription = m.sub_info.find{it.sub_startDate}
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("${subscription?.sub_startDate?:''}"));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("${subscription?.sub_endDate?:''}"));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("${subscription?.sub_id?:m.sub_info[0].sub_id}"));
-            cell.setCellStyle(notchange_cell_style);
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("${sdf.format(date)}"));
-            row = firstSheet.createRow(rc++);
+            cell = row.createCell(cc++)
+            cell.setCellValue(subscription?.sub_startDate?:'')
+            cell = row.createCell(cc++)
+            cell.setCellValue(subscription?.sub_endDate?:'')
+            cell = row.createCell(cc++)
+            cell.setCellValue(subscription?.sub_id?:m.sub_info[0].sub_id)
+            cell.setCellStyle(notchange_cell_style)
+            cell = row.createCell(cc++)
+            cell.setCellValue(sdf.format(date))
+            row = firstSheet.createRow(rc++)
 
             // Key
-            row = firstSheet.createRow(rc++);
-            cc = 0;
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.key", default: "Key")));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.inSubscription", default: "In Subscription")));
-            cell.setCellStyle(present_cell_style);
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.coreTitle", default: "Core Title")));
-            cell.setCellStyle(core_cell_style);
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.notinSubscription", default: "Not in Subscription")));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.notChange", default: "Not Change")));
-            cell.setCellStyle(notchange_cell_style);
-            cell = row.createCell(21);
-            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.currentSub", default: "Current Subscription")));
-            cell = row.createCell(22);
-            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.candidates", default: "Candidates")));
+            row = firstSheet.createRow(rc++)
+            cc = 0
+            cell = row.createCell(cc++)
+            cell.setCellValue(g.message(code: "renewalexport.key", default: "Key"))
+            cell = row.createCell(cc++)
+            cell.setCellValue(g.message(code: "renewalexport.inSubscription", default: "In Subscription"))
+            cell.setCellStyle(present_cell_style)
+            cell = row.createCell(cc++)
+            cell.setCellValue(g.message(code: "renewalexport.coreTitle", default: "Core Title"))
+            cell.setCellStyle(core_cell_style)
+            cell = row.createCell(cc++)
+            cell.setCellValue(g.message(code: "renewalexport.notinSubscription", default: "Not in Subscription"))
+            cell = row.createCell(cc++)
+            cell.setCellValue(g.message(code: "renewalexport.notChange", default: "Not Change"))
+            cell.setCellStyle(notchange_cell_style)
+            cell = row.createCell(21)
+            cell.setCellValue(g.message(code: "renewalexport.currentSub", default: "Current Subscription"))
+            cell = row.createCell(22)
+            cell.setCellValue(g.message(code: "renewalexport.candidates", default: "Candidates"))
 
 
-            row = firstSheet.createRow(rc++);
+            row = firstSheet.createRow(rc++)
             cc = 21
             m.sub_info.each { sub ->
-                cell = row.createCell(cc++);
-                cell.setCellValue(new HSSFRichTextString("${sub.sub_id}"));
-                cell.setCellStyle(notchange_cell_style);
+                cell = row.createCell(cc++)
+                cell.setCellValue(sub.sub_id)
+                cell.setCellStyle(notchange_cell_style)
             }
 
             // headings
-            row = firstSheet.createRow(rc++);
-            cc = 0;
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.titleID", default: "Title ID")));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.title", default: "Title")));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("ISSN"));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("eISSN"));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.currentStartDate", default: "Current Startdate")));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.currentEndDate", default: "Current Enddate")));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.currentCoverageDepth", default: "Current Coverage Depth")));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.currentCoverageNote", default: "Current Coverage Note")));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.coreStatus", default: "Core Status")));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.coreStatusCheked", default: "Core Status Checked")));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString(g.message(code: "renewalexport.coreMedium", default: "Core Medium")));
+            row = firstSheet.createRow(rc++)
+            cc = 0
+            cell = row.createCell(cc++)
+            cell.setCellValue(g.message(code: "renewalexport.titleID", default: "Title ID"))
+            cell = row.createCell(cc++)
+            cell.setCellValue(g.message(code: "renewalexport.title", default: "Title"))
+            cell = row.createCell(cc++)
+            cell.setCellValue("ISSN")
+            cell = row.createCell(cc++)
+            cell.setCellValue("eISSN")
+            cell = row.createCell(cc++)
+            cell.setCellValue(g.message(code: "renewalexport.currentStartDate", default: "Current Startdate"))
+            cell = row.createCell(cc++)
+            cell.setCellValue(g.message(code: "renewalexport.currentEndDate", default: "Current Enddate"))
+            cell = row.createCell(cc++)
+            cell.setCellValue(g.message(code: "renewalexport.currentCoverageDepth", default: "Current Coverage Depth"))
+            cell = row.createCell(cc++)
+            cell.setCellValue(g.message(code: "renewalexport.currentCoverageNote", default: "Current Coverage Note"))
+            cell = row.createCell(cc++)
+            cell.setCellValue(g.message(code: "renewalexport.coreStatus", default: "Core Status"))
+            cell = row.createCell(cc++)
+            cell.setCellValue(g.message(code: "renewalexport.coreStatusCheked", default: "Core Status Checked"))
+            cell = row.createCell(cc++)
+            cell.setCellValue(g.message(code: "renewalexport.coreMedium", default: "Core Medium"))
 
             // USAGE History
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Nationale Statistik JR1\n${m.current_year - 4}"));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Nationale Statistik JR1a\n${m.current_year - 4}"));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Nationale Statistik JR1\n${m.current_year - 3}"));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Nationale Statistik JR1a\n${m.current_year - 3}"));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Nationale Statistik JR1\n${m.current_year - 2}"));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Nationale Statistik JR1a\n${m.current_year - 2}"));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Nationale Statistik JR1\n${m.current_year - 1}"));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Nationale Statistik JR1a\n${m.current_year - 1}"));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Nationale Statistik JR1\n${m.current_year}"));
-            cell = row.createCell(cc++);
-            cell.setCellValue(new HSSFRichTextString("Nationale Statistik JR1a\n${m.current_year}"));
+            cell = row.createCell(cc++)
+            cell.setCellValue("Nationale Statistik JR1\n${m.current_year - 4}")
+            cell = row.createCell(cc++)
+            cell.setCellValue("Nationale Statistik JR1a\n${m.current_year - 4}")
+            cell = row.createCell(cc++)
+            cell.setCellValue("Nationale Statistik JR1\n${m.current_year - 3}")
+            cell = row.createCell(cc++)
+            cell.setCellValue("Nationale Statistik JR1a\n${m.current_year - 3}")
+            cell = row.createCell(cc++)
+            cell.setCellValue("Nationale Statistik JR1\n${m.current_year - 2}")
+            cell = row.createCell(cc++)
+            cell.setCellValue("Nationale Statistik JR1a\n${m.current_year - 2}")
+            cell = row.createCell(cc++)
+            cell.setCellValue("Nationale Statistik JR1\n${m.current_year - 1}")
+            cell = row.createCell(cc++)
+            cell.setCellValue("Nationale Statistik JR1a\n${m.current_year - 1}")
+            cell = row.createCell(cc++)
+            cell.setCellValue("Nationale Statistik JR1\n${m.current_year}")
+            cell = row.createCell(cc++)
+            cell.setCellValue("Nationale Statistik JR1a\n${m.current_year}")
 
             m.sub_info.each { sub ->
-                cell = row.createCell(cc++);
-                cell.setCellValue(new HSSFRichTextString("${sub.sub_name}"));
+                cell = row.createCell(cc++)
+                cell.setCellValue(sub.sub_name)
 
                 // Hyperlink link = createHelper.createHyperlink(Hyperlink.LINK_URL);
                 // link.setAddress("http://poi.apache.org/");
@@ -2277,79 +2285,79 @@ AND EXISTS (
                 cc = 0;
 
                 // Internal title ID
-                cell = row.createCell(cc++);
-                cell.setCellValue(new HSSFRichTextString("${title.id}"));
+                cell = row.createCell(cc++)
+                cell.setCellValue(title.id)
                 // Title
-                cell = row.createCell(cc++);
-                cell.setCellValue(new HSSFRichTextString("${title.title ?: ''}"));
+                cell = row.createCell(cc++)
+                cell.setCellValue(title.title ?: '')
 
                 // ISSN
-                cell = row.createCell(cc++);
-                cell.setCellValue(new HSSFRichTextString("${title.issn ?: ''}"));
+                cell = row.createCell(cc++)
+                cell.setCellValue(title.issn ?: '')
 
                 // eISSN
-                cell = row.createCell(cc++);
-                cell.setCellValue(new HSSFRichTextString("${title.eissn ?: ''}"));
+                cell = row.createCell(cc++)
+                cell.setCellValue(title.eissn ?: '')
 
                 // startDate
-                cell = row.createCell(cc++);
-                cell.setCellValue(new HSSFRichTextString("${title.current_start_date ?: ''}"));
+                cell = row.createCell(cc++)
+                cell.setCellValue(title.current_start_date ?: '')
 
                 // endDate
-                cell = row.createCell(cc++);
-                cell.setCellValue(new HSSFRichTextString("${title.current_end_date ?: ''}"));
+                cell = row.createCell(cc++)
+                cell.setCellValue(title.current_end_date ?: '')
 
                 // coverageDepth
-                cell = row.createCell(cc++);
-                cell.setCellValue(new HSSFRichTextString("${title.current_depth ?: ''}"));
+                cell = row.createCell(cc++)
+                cell.setCellValue(title.current_depth ?: '')
 
                 // embargo
-                cell = row.createCell(cc++);
-                cell.setCellValue(new HSSFRichTextString("${title.current_coverage_note ?: ''}"));
+                cell = row.createCell(cc++)
+                cell.setCellValue(title.current_coverage_note ?: '')
 
                 // IsCore
-                cell = row.createCell(cc++);
-                cell.setCellValue(new HSSFRichTextString("${title.core_status ?: ''}"));
+                cell = row.createCell(cc++)
+                cell.setCellValue(title.core_status ?: '')
 
                 // Core Start Date
-                cell = row.createCell(cc++);
-                cell.setCellValue(new HSSFRichTextString("${title.core_status_on ?: ''}"));
+                cell = row.createCell(cc++)
+                cell.setCellValue(title.core_status_on ?: '')
 
                 // Core End Date
-                cell = row.createCell(cc++);
-                cell.setCellValue(new HSSFRichTextString("${title.core_medium ?: ''}"));
+                cell = row.createCell(cc++)
+                cell.setCellValue(title.core_medium ?: '')
 
                 // Usage Stats
-                cell = row.createCell(cc++);
+                cell = row.createCell(cc++)
                 if (title.jr1_last_4_years)
-                    cell.setCellValue(new HSSFRichTextString(title.jr1_last_4_years[4] ?: '0'));
-                cell = row.createCell(cc++);
+                    cell.setCellValue(title.jr1_last_4_years[4] ?: '0')
+                cell = row.createCell(cc++)
                 if (title.jr1_last_4_years)
-                    cell.setCellValue(new HSSFRichTextString(title.jr1a_last_4_years[4] ?: '0'));
-                cell = row.createCell(cc++);
+                    cell.setCellValue(title.jr1a_last_4_years[4] ?: '0')
+                cell = row.createCell(cc++)
                 if (title.jr1_last_4_years)
-                    cell.setCellValue(new HSSFRichTextString(title.jr1_last_4_years[3] ?: '0'));
-                cell = row.createCell(cc++);
+                    cell.setCellValue(title.jr1_last_4_years[3] ?: '0')
+                cell = row.createCell(cc++)
                 if (title.jr1_last_4_years)
-                    cell.setCellValue(new HSSFRichTextString(title.jr1a_last_4_years[3] ?: '0'));
-                cell = row.createCell(cc++);
+                    cell.setCellValue(title.jr1a_last_4_years[3] ?: '0')
+                cell = row.createCell(cc++)
                 if (title.jr1_last_4_years)
-                    cell.setCellValue(new HSSFRichTextString(title.jr1_last_4_years[2] ?: '0'));
-                cell = row.createCell(cc++);
+                    cell.setCellValue(title.jr1_last_4_years[2] ?: '0')
+                cell = row.createCell(cc++)
                 if (title.jr1_last_4_years)
-                    cell.setCellValue(new HSSFRichTextString(title.jr1a_last_4_years[2] ?: '0'));
-                cell = row.createCell(cc++);
+                    cell.setCellValue(title.jr1a_last_4_years[2] ?: '0')
+                cell = row.createCell(cc++)
                 if (title.jr1_last_4_years)
-                    cell.setCellValue(new HSSFRichTextString(title.jr1_last_4_years[1] ?: '0'));
-                cell = row.createCell(cc++);
+                    cell.setCellValue(title.jr1_last_4_years[1] ?: '0')
+                cell = row.createCell(cc++)
                 if (title.jr1_last_4_years)
-                    cell.setCellValue(new HSSFRichTextString(title.jr1a_last_4_years[1] ?: '0'));
-                cell = row.createCell(cc++);
+                    cell.setCellValue(title.jr1a_last_4_years[1] ?: '0')
+                cell = row.createCell(cc++)
                 if (title.jr1_last_4_years)
-                    cell.setCellValue(new HSSFRichTextString(title.jr1_last_4_years[0] ?: '0'));
-                cell = row.createCell(cc++);
+                    cell.setCellValue(title.jr1_last_4_years[0] ?: '0')
+                cell = row.createCell(cc++)
                 if (title.jr1_last_4_years)
-                    cell.setCellValue(new HSSFRichTextString(title.jr1a_last_4_years[0] ?: '0'));
+                    cell.setCellValue(title.jr1a_last_4_years[0] ?: '0')
 
                 m.sub_info.each { sub ->
 
@@ -2357,10 +2365,10 @@ AND EXISTS (
                     def ie_info = m.ti_info[title.title_idx][sub.sub_idx]
                     if (ie_info) {
                         if ((ie_info.core_status) && (ie_info.core_status.contains("True"))) {
-                            cell.setCellValue(new HSSFRichTextString(""));
+                            cell.setCellValue("")
                             cell.setCellStyle(core_cell_style);
                         } else {
-                            cell.setCellValue(new HSSFRichTextString(""));
+                            cell.setCellValue("")
                             cell.setCellStyle(present_cell_style);
                         }
                         if (sub.sub_idx == 0) {
@@ -2374,7 +2382,7 @@ AND EXISTS (
             }
             row = firstSheet.createRow(rc++);
             cell = row.createCell(0);
-            cell.setCellValue(new HSSFRichTextString("END"));
+            cell.setCellValue("END")
 
             // firstSheet.autoSizeRow(6); //adjust width of row 6 (Headings for JUSP Stats)
 //            Row jusp_heads_row = firstSheet.getRow(6);
@@ -2387,11 +2395,12 @@ AND EXISTS (
                 firstSheet.autoSizeColumn(22 + i); //adjust width of the second column
             }
 
-            response.setHeader "Content-disposition", "attachment; filename=\"${g.message(code: "renewalexport.renewals", default: "Renewals")}.xls\""
-            // response.contentType = 'application/xls'
-            response.contentType = 'application/vnd.ms-excel'
+            response.setHeader "Content-disposition", "attachment; filename=\"${g.message(code: "renewalexport.renewals", default: "Renewals")}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             workbook.write(response.outputStream)
             response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
         }
         catch (Exception e) {
             log.error("Problem", e);
@@ -2496,9 +2505,9 @@ AND EXISTS (
         def user = User.get(springSecurityService.principal.id)
 
         if (input_stream) {
-            HSSFWorkbook wb;
+            XSSFWorkbook wb
             try {
-                wb = new HSSFWorkbook(input_stream);
+                wb = new XSSFWorkbook(input_stream)
             } catch (IOException e) {
                 if (e.getMessage().contains("Invalid header signature")) {
                     flash.error = message(code:'myinst.processRenewalUpload.error.invHeader', default:'Error creating workbook. Possible causes: document format, corrupted file.')
@@ -2508,12 +2517,12 @@ AND EXISTS (
                 log.debug("Error creating workbook from input stream. ", e)
                 return result;
             }
-            HSSFSheet firstSheet = wb.getSheetAt(0);
+            XSSFSheet firstSheet = wb.getSheetAt(0);
 
             def sdf = new SimpleDateFormat('dd.MM.yyyy')
 
             // Step 1 - Extract institution id, name and shortcode
-            HSSFRow org_details_row = firstSheet.getRow(2)
+            Row org_details_row = firstSheet.getRow(2)
             String org_name = org_details_row?.getCell(0)?.toString()
             String org_id = org_details_row?.getCell(1)?.toString()
             String org_shortcode = org_details_row?.getCell(2)?.toString()
@@ -2535,7 +2544,7 @@ AND EXISTS (
 
             def sub_info = []
             // Step 2 - Row 5 (6, but 0 based) contains package identifiers starting in column 4(5)
-            HSSFRow package_ids_row = firstSheet.getRow(5)
+            Row package_ids_row = firstSheet.getRow(5)
             for (int i = SO_START_COL; ((i < package_ids_row.getLastCellNum()) && (package_ids_row.getCell(i))); i++) {
                 log.debug("Got package identifier: ${package_ids_row.getCell(i).toString()}");
                 def sub_id = package_ids_row.getCell(i).toString()
@@ -2555,7 +2564,7 @@ AND EXISTS (
             for (int i = SO_START_ROW; ((i < firstSheet.getLastRowNum()) && (processing)); i++) {
                 // log.debug("processing row ${i}");
 
-                HSSFRow title_row = firstSheet.getRow(i)
+                Row title_row = firstSheet.getRow(i)
                 // Title ID
                 def title_id = title_row.getCell(0).toString()
                 if (title_id == 'END') {
@@ -3377,6 +3386,9 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
         du.setBenchMark('filterSubTypes & filterPropList')
 
+        if(params.filterSet)
+            result.filterSet = params.filterSet
+
         result.filterSubTypes = RefdataCategory.getAllRefdataValues('Subscription Type').minus(
                 RefdataValue.getByValueAndCategory('Local Licence', 'Subscription Type')
         )
@@ -3435,10 +3447,14 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         if (params.status?.size() > 0) {
             query += " and subT.status.id = :status "
             qarams.put('status', params.long('status'))
-        } else {
+        } else if(!params.filterSet) {
             query += " and subT.status.id = :status "
             qarams.put('status', RDStore.SUBSCRIPTION_CURRENT.id)
-            params.status = RDStore.SUBSCRIPTION_CURRENT
+            params.status = RDStore.SUBSCRIPTION_CURRENT.id
+            result.defaultSet = true
+        } else {
+            query += " and subT.status.id != :deleted "
+            qarams.put('deleted', RDStore.SUBSCRIPTION_DELETED.id)
         }
 
         if (params.filterPropDef?.size() > 0) {
@@ -3464,6 +3480,9 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         if (params.sort?.size() > 0) {
             orderQuery = " order by " + params.sort + " " + params.order
         }
+
+        if(params.filterSet && !params.member && !params.validOn && !params.status && !params.filterPropDef && !params.filterProp && !params.form && !params.resource && !params.subTypes)
+            result.filterSet = false
 
         log.debug( query + " " + orderQuery )
         // log.debug( qarams )
@@ -3993,67 +4012,68 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             def sdf = new SimpleDateFormat(g.message(code:'default.date.format.notimenopoint', default:'ddMMyyyy'));
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
-            HSSFWorkbook wb = new HSSFWorkbook();
+            XSSFWorkbook workbook = new XSSFWorkbook()
+            SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50,true)
 
-            HSSFSheet sheet = wb.createSheet(message);
+            SXSSFSheet sheet = wb.createSheet(message)
 
             //the following three statements are required only for HSSF
             sheet.setAutobreaks(true);
 
             //the header row: centered text in 48pt font
-            Row headerRow = sheet.createRow(0);
-            headerRow.setHeightInPoints(16.75f);
+            Row headerRow = sheet.createRow(0)
+            headerRow.setHeightInPoints(16.75f)
             titles.eachWithIndex { titlesName, index ->
-                Cell cell = headerRow.createCell(index);
-                cell.setCellValue(titlesName);
+                Cell cell = headerRow.createCell(index)
+                cell.setCellValue(titlesName)
             }
 
             //freeze the first row
-            sheet.createFreezePane(0, 1);
+            sheet.createFreezePane(0, 1)
 
-            Row row;
-            Cell cell;
-            int rownum = 1;
+            Row row
+            Cell cell
+            int rownum = 1
 
             orgs.sort{it.name}
             orgs.each{  org ->
-                int cellnum = 0;
-                row = sheet.createRow(rownum);
+                int cellnum = 0
+                row = sheet.createRow(rownum)
 
                 //Name
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(org.name));
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(org.name)
 
                 //Shortname
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(org.shortname));
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(org.shortname)
 
                 //Sortname
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(org.sortname));
+                cell = row.createCell(cellnum++)
+                cell.setCellValue(org.sortname)
 
 
                 if(addHigherEducationTitles) {
 
                     //libraryType
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.libraryType?.getI10n('value') ?: ' '));
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.libraryType?.getI10n('value') ?: ' ')
 
                     //libraryNetwork
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.libraryNetwork?.getI10n('value') ?: ' '));
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.libraryNetwork?.getI10n('value') ?: ' ')
 
                     //funderType
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.funderType?.getI10n('value') ?: ' '));
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.funderType?.getI10n('value') ?: ' ')
 
                     //federalState
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.federalState?.getI10n('value') ?: ' '));
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.federalState?.getI10n('value') ?: ' ')
 
                     //country
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.country?.getI10n('value') ?: ' '));
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(org.country?.getI10n('value') ?: ' ')
                 }
 
                 propList.each { pd ->
@@ -4101,26 +4121,26 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
                         }
                     }
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(value));
+                    cell = row.createCell(cellnum++)
+                    cell.setCellValue(value)
                 }
 
                 rownum++
             }
 
             for (int i = 0; i < 22; i++) {
-                sheet.autoSizeColumn(i);
+                sheet.autoSizeColumn(i)
             }
             // Write the output to a file
-            String file = "${datetoday}_"+message.replaceAll(' ', '_')+".xls";
+            String file = "${datetoday}_"+message.replaceAll(' ', '_')+".xlsx"
             //if(wb instanceof XSSFWorkbook) file += "x";
 
             response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
-            // response.contentType = 'application/xls'
-            response.contentType = 'application/vnd.ms-excel'
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             wb.write(response.outputStream)
             response.outputStream.flush()
-
+            response.outputStream.close()
+            wb.dispose()
         }
         catch ( Exception e ) {
             log.error("Problem",e);
