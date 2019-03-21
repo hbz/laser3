@@ -651,14 +651,20 @@
   text-align: center;
 }
 .ui.radio.checkbox.la-toggle-radio input:checked ~ label:before {
-  border: none;
-  color: white;
-  background-color: #909090ba;
+  background-color: #d3d3d352;
 }
 
 /* AFTER */
-.ui.checkbox.la-toggle-radio label:after {
-  display: none;
+.ui.checkbox.la-toggle-radio input:checked ~ label:after,
+.ui.radio.checkbox.la-toggle-radio input:checked ~ label:after {
+  content: "\f00c" !important;
+  font-family: Icons !important;
+  -webkit-transform: scale(1.5);
+          transform: scale(1.5);
+  color: #98B500 !important;
+  top: 25px !important;
+  left: 25px !important;
+  background-color: transparent !important;
 }
 
 /* APPEND */
@@ -677,4 +683,11 @@
 .ui.checkbox.la-toggle-radio.la-noChange label:before {
   font-family: Icons;
   content: "\f05e";
+}
+table tr td div.willStay {
+  background-color: #D4E096;
+}
+table tr td div.willBeReplaced {
+  background-color: #EDC0BA;
+  text-decoration: line-through;
 }
