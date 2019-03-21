@@ -35,7 +35,7 @@
 
         <div class="two fields">
             <div class="field">
-                <label>Organisation</label>
+                <label>${orgLabel ?: 'Organisation'}</label>
                 <g:select name="org"
                           from="${availableOrgs}"
                           optionKey="id"
@@ -64,7 +64,7 @@
 <g:if test="${tmplUserCreate}"><%-- /user/create --%>
     <div class="two fields">
         <div class="field">
-            <label>Organisation</label>
+            <label>${orgLabel ?: 'Organisation'}</label>
             <g:select name="org"
                       from="${availableOrgs}"
                       optionKey="id"

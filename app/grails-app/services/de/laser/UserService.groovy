@@ -23,11 +23,6 @@ class UserService {
         try {
             def check = UserOrg.findByOrgAndUserAndFormalRole(org, user, formalRole)
 
-            if (check && check.status == UserOrg.STATUS_CANCELLED) {
-                check.delete()
-                check = null
-            }
-
             if (check) {
                 flash?.error = messageSource.getMessage('profile.processJoinRequest.error', null, LocaleContextHolder.getLocale())
             }

@@ -3,8 +3,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-        <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}" />
-        <title><g:message code="default.list.label" args="[entityName]" /></title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'user.create_new.label')}</title>
     </head>
     <body>
 
@@ -34,7 +33,15 @@
                         <input type="text" name="email" value="${params.email}"/>
                     </div>
 
-                    <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, availableOrgRoles: availableOrgRoles, tmplUserCreate: true]" />
+                    <g:render template="/templates/user/membership_form"
+                              model="[userInstance: user, availableOrgs: availableOrgs, availableOrgRoles: availableOrgRoles, tmplUserCreate: true]" />
+
+                    <g:set var="orgLabel" value="Für Konsorten, bzw. Einrichtung" />
+
+                    <g:if test="${false && availableComboOrgs}">
+                        <g:render template="/templates/user/membership_form"
+                                  model="[userInstance: user, availableOrgs: availableComboOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserCreate: true]" />
+                    </g:if>
 
                     <div class="field">
                         <input type="submit" value="Create &amp; Don't forget to ENABLE" class="ui button"/>

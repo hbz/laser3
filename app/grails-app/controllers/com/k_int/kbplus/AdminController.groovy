@@ -341,8 +341,6 @@ class AdminController extends AbstractDebugController {
           def row = [:]
           row.username = u.username
           row.display = u.display
-          row.instname = u.instname
-          row.instcode = u.instcode
           row.email = u.email
           row.shibbScope = u.shibbScope
           row.enabled = u.enabled
