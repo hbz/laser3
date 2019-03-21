@@ -22,9 +22,7 @@
                 <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${aff.dateRequested}"/> / <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${aff.dateActioned}"/></td>
                 <td class="x">
                     <g:if test="${tmplProfile}">
-                        <g:if test="${aff.status != UserOrg.STATUS_CANCELLED}">
-                            <g:link class="ui button" controller="profile" action="processCancelRequest" params="${[assoc:aff.id]}">${message(code:'default.button.revoke.label', default:'Revoke')}</g:link>
-                        </g:if>
+                        <g:link class="ui button" controller="profile" action="processCancelRequest" params="${[assoc:aff.id]}">${message(code:'default.button.revoke.label', default:'Revoke')}</g:link>
                     </g:if>
                     <g:if test="${tmplUserEdit}">
                         <g:if test="${editor.hasRole('ROLE_ADMIN') || (aff.org == contextService.getOrg())}">

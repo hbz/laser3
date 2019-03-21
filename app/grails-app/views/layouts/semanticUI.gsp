@@ -199,7 +199,9 @@
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="documents" message="default.documents.label" />
 
                             <g:set var="newAffiliationRequests1" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatusAndOrg(0, contextService.getOrg(), [sort:'dateRequested']).size()}" />
-                            <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageAffiliationRequests" message="menu.institutions.affiliation_requests" newAffiliationRequests="${newAffiliationRequests1}" />
+
+                            <semui:securedMainNavItem affiliation="INST_ADM" controller="organisations" action="users" params="[id: contextOrg?.id]"
+                                                      message="menu.institutions.affiliation_requests" newAffiliationRequests="${newAffiliationRequests1}" />
 
 
                             %{--<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgTypeIds())}">--}%
