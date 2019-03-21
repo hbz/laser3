@@ -11,32 +11,34 @@
             targetSubscription: targetSubscription,
             allSubscriptions_readRights: allSubscriptions_readRights,
             allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
-    <hr>
+
     <g:form action="copyElementsIntoSubscription" controller="subscriptionDetails" id="${params.id}"
             params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscription?.id]" method="post" class="ui form newLicence">
-        <table class="ui celled table">
+        <table class="ui celled table table-tworow la-table">
+            <thead>
+                <tr>
+                    <th class="center aligned">${message(code: 'default.copy.label')}</th>
+                    <th class="center aligned">${message(code: 'default.replace.label')}</th>
+                    <th class="center aligned">${message(code: 'default.doNothing.label')}</th>
+                    <th class="six wide">
+                        <g:if test="${sourceSubscription}"><g:link controller="subscriptionDetails" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
+                    </th>
+                    <th class="six wide">
+                        <g:if test="${targetSubscription}"><g:link controller="subscriptionDetails" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
+                    </th>
+                </tr>
+            </thead>
             <tbody>
             <tr>
-                <th>${message(code: 'default.copy.label')}</th>
-                <th>${message(code: 'default.replace.label')}</th>
-                <th>${message(code: 'default.doNothing.label')}</th>
-                <td><b>${message(code: 'subscription.details.copyElementsIntoSubscription.sourceSubscription.name')}:</b>
-                    <g:if test="${sourceSubscription}"><g:link controller="subscriptionDetails" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
-                </td>
-                <td><b>${message(code: 'subscription.details.copyElementsIntoSubscription.targetSubscription.name')}:</b>
-                    <g:if test="${targetSubscription}"><g:link controller="subscriptionDetails" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
-                </td>
-            </tr>
-            <tr>
-                <td style="vertical-align: top">
+                <td class="center aligned" style="vertical-align: top">
 
                 </td>
-                <td style="vertical-align: top">
+                <td class="center aligned" style="vertical-align: top">
                     <div class="ui radio checkbox la-toggle-radio la-replace">
                         <input type="radio" name="subscription.takeDates" value="${REPLACE}" />
                     </div>
                 </td>
-                <td style="vertical-align: top">
+                <td class="center aligned" style="vertical-align: top">
                     <div class="ui radio checkbox la-toggle-radio la-noChange">
                         <input type="radio" name="subscription.takeDates" value="${DO_NOTHING}" checked />
                     </div>
@@ -55,9 +57,9 @@
                 </td>
             </tr>
             <tr>
-                <td style="vertical-align: top"></td>
-                <td style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeOwner" value="${REPLACE}" /></div></td>
-                <td style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeOwner" value="${DO_NOTHING}" checked /></div></td>
+                <td class="center aligned" style="vertical-align: top"></td>
+                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeOwner" value="${REPLACE}" /></div></td>
+                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeOwner" value="${DO_NOTHING}" checked /></div></td>
                 <td style="vertical-align: top" name="subscription.takeOwner.source">
                     <div>
                         <g:if test="${sourceSubscription?.owner}">
@@ -80,9 +82,9 @@
                 </td>
             </tr>
             <tr>
-                <td style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeOrgRelations" value="${COPY}" /></div></td>
-                <td style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeOrgRelations" value="${REPLACE}" /></div></td>
-                <td style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeOrgRelations" value="${DO_NOTHING}" checked /></div></td>
+                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeOrgRelations" value="${COPY}" /></div></td>
+                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeOrgRelations" value="${REPLACE}" /></div></td>
+                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeOrgRelations" value="${DO_NOTHING}" checked /></div></td>
                 <td style="vertical-align: top" name="subscription.takeOrgRelations.source">
                     <div>
                         <g:each in="${source_visibleOrgRelations}" var="source_role">
@@ -110,17 +112,21 @@
                 </td>
             </tr>
             <tr>
-                <td style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takePackages" value="${COPY}" /></div></td>
-                <td style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takePackages" value="${REPLACE}" /></div></td>
-                <td style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takePackages" value="${DO_NOTHING}" checked /></div></td>
+                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takePackages" value="${COPY}" /></div></td>
+                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takePackages" value="${REPLACE}" /></div></td>
+                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takePackages" value="${DO_NOTHING}" checked /></div></td>
                 <td style="vertical-align: top" name="subscription.takePackages.source">
                     <b>${message(code: 'subscription.packages.label')}:</b>
                     <g:each in="${sourceSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
                         <div data-pckOid="${genericOIDService.getOID(sp.pkg)}">
-                            <g:checkBox name="subscription.takePackageIds" value="${genericOIDService.getOID(sp.pkg)}" data-pckId="${sp.pkg?.id}" checked="false"/>
-                            <g:link controller="package" action="show" target="_blank" id="${sp.pkg?.id}">${sp?.pkg?.name}</g:link> ${sp.pkg?.id}
-                            <g:if test="${sp.pkg?.contentProvider}">(${sp.pkg?.contentProvider?.name})</g:if>
-                            <br>
+                            <div class="ui checkbox">
+                                <g:checkBox name="subscription.takePackageIds" value="${genericOIDService.getOID(sp.pkg)}" data-pckId="${sp.pkg?.id}" checked="false"/>
+                                <label>
+                                    <g:link controller="package" action="show" target="_blank" id="${sp.pkg?.id}">${sp?.pkg?.name}</g:link> ${sp.pkg?.id}
+                                    <g:if test="${sp.pkg?.contentProvider}">(${sp.pkg?.contentProvider?.name})</g:if>
+                                </label>
+                            </div>
+
                         </div>
                     </g:each>
                 </td>
@@ -136,19 +142,23 @@
                 </td>
             </tr>
             <tr>
-                <td style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeEntitlements" value="${COPY}" /></div></td>
-                <td style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeEntitlements" value="${REPLACE}" /></div></td>
-                <td style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeEntitlements" value="${DO_NOTHING}" checked /></div></td>
+                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeEntitlements" value="${COPY}" /></div></td>
+                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeEntitlements" value="${REPLACE}" /></div></td>
+                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeEntitlements" value="${DO_NOTHING}" checked /></div></td>
                 <td style="vertical-align: top" name="subscription.takeEntitlements.source">
                     <g:if test="${sourceIEs}">
                         <b>${message(code: 'issueEntitlement.countSubscription')} </b>${sourceIEs?.size()}<br>
                         <g:each in="${sourceIEs}" var="ie">
                             <div data-ieOid="${genericOIDService.getOID(ie)}">
-                                <g:checkBox name="subscription.takeEntitlementIds" value="${genericOIDService.getOID(ie)}" checked="false"/>&nbsp
-                                <semui:listIcon type="${ie.tipp.title.type.getI10n('value')}"/>&nbsp
-                                <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
-                                Tipp PkgId: ${ie.tipp.pkg.id}
-                                Tipp ID: ${ie.tipp.id}
+                                <div class="ui checkbox">
+                                    <g:checkBox name="subscription.takeEntitlementIds" value="${genericOIDService.getOID(ie)}" checked="false"/>&nbsp
+                                    <label>
+                                        <semui:listIcon type="${ie.tipp.title.type.getI10n('value')}"/>&nbsp
+                                        <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
+                                        Tipp PkgId: ${ie.tipp.pkg.id}
+                                        Tipp ID: ${ie.tipp.id}
+                                    </label>
+                                </div>
                             </div>
                         </g:each>
                     </g:if>
@@ -308,12 +318,4 @@
 %{--})--}%
 </r:script>
 
-<style>
-table tr td div.willStay {
-    background-color: yellowgreen !important;
-}
-table tr td div.willBeReplaced {
-    background-color: tomato !important;
-    text-decoration: line-through; !important;
-}
-</style>
+
