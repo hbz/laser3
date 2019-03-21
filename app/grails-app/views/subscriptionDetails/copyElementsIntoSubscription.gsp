@@ -23,12 +23,10 @@
     <semui:subNav>
         <semui:complexSubNavItem controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 1]}" workFlowPart="1" >
             <div class="content" >
-                <div class="title">
-                    Auswahl Eigenschaften
-                </div>
                 <div class="description">
                     <i class="calendar alternate outline icon"></i>Datum
                     <i class="university icon"></i>Organisationen
+                    <i class="gift icon"></i>Pakete
                     <i class="newspaper icon"></i>Titel
                 </div>
             </div>
@@ -36,9 +34,6 @@
 
         <semui:complexSubNavItem controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 2]}"  workFlowPart="2">
             <div class="content">
-                <div class="title">
-                    Weitere Lizenzeigenschaften
-                </div>
                 <div class="description">
                     <i class="file outline icon"></i>Dokumente
                     <i class="sticky note outline icon"></i>Anmerkungen
@@ -48,7 +43,7 @@
         </semui:complexSubNavItem>
 
         <semui:complexSubNavItem controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 3]}"  workFlowPart="3">
-            <i class="big university icon"></i>
+            <i class="university icon"></i>
             <div class="content">
                 <div class="title">
                     Teilnehmer
@@ -57,7 +52,7 @@
         </semui:complexSubNavItem>
 
         <semui:complexSubNavItem controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 4]}"  workFlowPart="4">
-            <i class="big tags icon"></i>
+            <i class="tags icon"></i>
             <div class="content">
                 <div class="title">
                    Merkmale
@@ -65,6 +60,7 @@
             </div>
         </semui:complexSubNavItem>
     </semui:subNav>
+    <br>
     <% /*<div class="ui steps">
         <div class="${workFlowPart == '1' ? 'active' : ''} step">
             <div class="content">

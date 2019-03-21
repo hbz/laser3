@@ -4,7 +4,7 @@
 <%@ page import="static com.k_int.kbplus.SubscriptionDetailsController.REPLACE" %>
 <%@ page import="static com.k_int.kbplus.SubscriptionDetailsController.DO_NOTHING" %>
 <laser:serviceInjection />
-<br>
+
 <semui:form>
     <g:render template="selectSourceAndTargetSubscription" model="[
             sourceSubscription: sourceSubscription,
