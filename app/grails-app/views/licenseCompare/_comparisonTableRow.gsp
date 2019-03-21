@@ -1,7 +1,8 @@
-<%@page import="de.laser.helper.RDStore;com.k_int.kbplus.*" %>
+<%@page import="com.k_int.properties.PropertyDefinition; de.laser.helper.RDStore;com.k_int.kbplus.*" %>
 <%
     String unknownString = raw("<span data-tooltip=\"${RDStore.PERM_UNKNOWN.getI10n("value")}\"><i class=\"question circle icon huge\"></i></span>")
 %>
+<laser:serviceInjection/>
 <tr>
     <th>${key}</th>
     <g:each in="${licenses}" var="l">
@@ -18,8 +19,11 @@
     <tr>
         <td colspan="999">${prop.getValue()}</td>
     </tr>--%>
+    <%
+        PropertyDefinition propKey = (PropertyDefinition) genericOIDService.resolveOID(prop.getKey())
+    %>
     <tr>
-        <td>${prop.getKey()}</td>
+        <td>${propKey.getI10n("name")}</td>
         <g:each in="${licenses}" var="l">
             <g:set var="propValues" value="${prop.getValue()}" />
             <g:if test="${propValues.containsKey(l)}">
@@ -55,9 +59,9 @@
                                                         break
                                                     case RDStore.PERM_PROH_INTERP: value = raw(spanOpen+'<i class="red times circle outline icon huge"></i></span>')
                                                         break
-                                                    case RDStore.PERM_SILENT: value = raw(spanOpen+'<i class="hand point up huge"></i></span>')
+                                                    case RDStore.PERM_SILENT: value = raw(spanOpen+'<i class="hand point up icon huge"></i></span>')
                                                         break
-                                                    case RDStore.PERM_NOT_APPLICABLE: value = raw(spanOpen+'<i class="exclamation huge"></i></span>')
+                                                    case RDStore.PERM_NOT_APPLICABLE: value = raw(spanOpen+'<i class="exclamation icon huge"></i></span>')
                                                         break
                                                     case RDStore.PERM_UNKNOWN: value = raw(spanOpen+'<i class="question circle icon huge"></i></span>')
                                                         break
@@ -73,13 +77,16 @@
                             }
                             else value = unknownString
                         %>
-                        ${value} <div class="ui circular massive label la-long-tooltip" data-tooltip="${propValue?.paragraph}">§</div><br>
+                        ${value}
+                        <g:if test="${propValue?.paragraph}">
+                            <div class="ui circular huge label la-long-tooltip" data-tooltip="${propValue?.paragraph}">§</div><br>
+                        </g:if>
                     </g:each>
                 </td>
             </g:if>
             <g:else>
                 <td>
-                    ${unknownString} <div class="ui circular massive label la-long-tooltip" data-tooltip="${propValue?.paragraph}">§</div>
+                    <g:message code="default.compare.propertyNotSet"/>
                 </td>
             </g:else>
         </g:each>
