@@ -103,17 +103,35 @@
                 </dl>
                 <dl>
                     <dt>
+                        <label>${message(code:'template.addDocument.hasTarget')}</label>
+                    </dt>
+                    <dd>
+                        <%
+                            String selected = docctx?.targetOrg ? "true" : "false"
+                        %>
+                        <g:checkBox name="hasTarget" id="hasTarget" onchange="toggleTarget()" checked="${selected}"/>
+                    </dd>
+                </dl>
+                <dl id="target">
+                    <dt>
                         <label>${message(code:'template.addDocument.targetOrg')}</label>
                     </dt>
                     <dd>
-                        <g:select class="ui dropdown search la-full-width"
-                                  name="targetOrg"
-                                  from="${Org.executeQuery('select o from Org o where o.status != :deleted or o.status is null order by o.sortname asc',[deleted:RDStore.O_STATUS_DELETED])}"
-                                  optionKey="id"
-                                  optionValue="name"
-                                  noSelection="['':'']"
-                                  value="${docctx?.targetOrg?.id}"
-                        />
+                        <g:if test="${targetOrg}">
+                            <input type="hidden" name="targetOrg" value="${targetOrg.id}">
+                            <input type="text" value="${targetOrg.name}" class="la-full-width" readonly>
+                        </g:if>
+                        <g:else>
+                            <g:select class="ui dropdown search la-full-width"
+                                      name="targetOrg"
+                                      from="${Org.executeQuery('select o from Org o where o.status != :deleted or o.status is null order by o.sortname asc',[deleted:RDStore.O_STATUS_DELETED])}"
+                                      optionKey="id"
+                                      optionValue="name"
+                                      noSelection="['':'']"
+                                      value="${docctx?.targetOrg?.id}"
+                                      onchange="showHideTargetableRefdata()"
+                            />
+                        </g:else>
                     </dd>
                 </dl>
             </g:if>

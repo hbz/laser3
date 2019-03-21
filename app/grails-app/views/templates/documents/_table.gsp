@@ -19,27 +19,7 @@
         </thead>
         <tbody>
             <g:each in="${instance.documents.sort{it.owner?.title}}" var="docctx">
-                <%
-                    boolean visible = false
-
-                    switch(docctx.shareConf) {
-                        case RDStore.SHARE_CONF_CREATOR: if(user.id == docctx.owner.creator.id) visible = true
-                            break
-                        case RDStore.SHARE_CONF_UPLOADER_ORG: if(org.id == docctx.owner.owner.id) visible = true
-                            break
-                        case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(org.id == docctx.owner.owner.id || org.id == instance.id) visible = true
-                            break
-                        case RDStore.SHARE_CONF_CONSORTIUM:
-                        case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
-                            break
-                        default:
-                            if(docctx.shareConf) println docctx.shareConf
-                            else visible = true
-                            break
-                    }
-
-                %>
-                <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && (docctx.status?.value != 'Deleted') && visible)}">
+                <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && (docctx.status?.value != 'Deleted'))}">
                     <%--<g:if test="${editable}"><td><input type="checkbox" name="_deleteflag.${docctx.id}" value="true"/></td></g:if> : REMOVED BULK--%>
                     <tr>
                         <td>
@@ -49,17 +29,19 @@
                             ${docctx.owner.filename}
                         </td>
                         <td>
-                            ${docctx.owner.creator}
+                            <g:if test="${docctx.owner.owner.id == org.id || docctx.owner.creator.id == user.id}">
+                                ${docctx.owner.creator}
+                            </g:if>
                         </td>
                         <td>
                             ${docctx.owner?.type?.getI10n('value')}
                         </td>
                         <g:if test="${instance instanceof Org}">
                             <td>
-                                ${docctx.owner.owner.name}
+                                <g:link controller="organisations" action="documents" params="[id:docctx.owner.owner.id]">${docctx.owner.owner.name}</g:link>
                             </td>
                             <td>
-                                ${docctx.targetOrg}
+                                <g:link controller="organisations" action="documents" params="[id:docctx.targetOrg?.id]">${docctx.targetOrg}</g:link>
                             </td>
                             <td>
                                 ${docctx.shareConf.getI10n("value")}
@@ -133,6 +115,8 @@
                 onVisible: function () {
                     r2d2.initDynamicSemuiStuff('#modalCreateDocument');
                     r2d2.initDynamicXEditableStuff('#modalCreateDocument');
+                    toggleTarget();
+                    showHideTargetableRefdata();
                 },
                 detachable: true,
                 closable: false,
@@ -145,4 +129,21 @@
         });
 
     });
+
+    function showHideTargetableRefdata() {
+        console.log($("[name='targetOrg']").val());
+        if($("[name='targetOrg']").val().length === 0) {
+            $("[data-value='com.k_int.kbplus.RefdataValue:${RDStore.SHARE_CONF_UPLOADER_AND_TARGET.id}']").hide();
+        }
+        else {
+            $("[data-value='com.k_int.kbplus.RefdataValue:${RDStore.SHARE_CONF_UPLOADER_AND_TARGET.id}']").show();
+        }
+    }
+
+    function toggleTarget() {
+        if($("#hasTarget")[0].checked)
+            $("#target").show();
+        else
+            $("#target").hide();
+    }
 </r:script>

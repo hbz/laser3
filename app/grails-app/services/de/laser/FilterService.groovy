@@ -168,9 +168,9 @@ class FilterService {
         Map result = [:]
         List query = []
         Map<String,Object> queryParams = [:]
-        if(params.title) {
+        if(params.docTitle) {
             query << "lower(d.title) like lower(:title)"
-            queryParams << [title:"%${params.title}%"]
+            queryParams << [title:"%${params.docTitle}%"]
         }
         if(params.docFilename) {
             query << "lower(d.filename) like lower(:filename)"

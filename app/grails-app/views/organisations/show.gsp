@@ -381,6 +381,9 @@
 
                 </div>
             </div>
+                <aside class="four wide column la-sidekick">
+                    <g:render template="/templates/documents/card" model="${[ownobj: orgInstance,owntp:'organisation']}" />
+                </aside>
         </div>
     </div>
     </div>
