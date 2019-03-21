@@ -518,7 +518,7 @@ class FinanceController extends AbstractDebugController {
         result.orgConfigurations = orgConfigurations
         result.formUrl = g.createLink(controller:"finance",action:"newCostItem",params:[tab:result.tab,mode:"copy"])
         result.mode = "copy"
-        if(result.sub.getConsortia().id != contextService.org.id)
+        if(result.sub.getConsortia()?.id != contextService.org.id)
             result.consCostTransfer = true
         render(template: "/finance/ajaxModal", model: result)
     }
