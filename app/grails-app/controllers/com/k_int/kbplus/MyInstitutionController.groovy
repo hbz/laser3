@@ -591,11 +591,12 @@ from License as l where (
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
             XSSFWorkbook workbook = new XSSFWorkbook()
-            SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50,true)
+            SXSSFWorkbook wb = new SXSSFWorkbook(workbook,100)
 
             SXSSFSheet sheet = wb.createSheet(g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions"))
 
             //the following three statements are required only for HSSF
+            sheet.flushRows(10)
             sheet.setAutobreaks(true)
 
             //the header row: centered text in 48pt font
@@ -613,9 +614,10 @@ from License as l where (
             Cell cell
             int rownum = 1
 
-            subscriptions.sort{it.name}
+            //subscriptions.sort{it.name} obsolete as it is included in the query
             subscriptions.each{  sub ->
-                int cellnum = 0;
+                log.debug("Now processing: #${sub.id} (${sub.name})")
+                int cellnum = 0
                 row = sheet.createRow(rownum)
 
                 cell = row.createCell(cellnum++)
@@ -686,7 +688,7 @@ from License as l where (
             wb.dispose()
         }
         catch ( Exception e ) {
-            log.error("Problem",e);
+            log.error("Problem when processing",e)
             response.sendError(500)
         }
     }
