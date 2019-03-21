@@ -5,6 +5,7 @@ import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.properties.PropertyDefinition
 import com.k_int.kbplus.TitleInstancePackagePlatform
+import com.lowagie.text.pdf.PdfName
 import de.laser.AccessService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
@@ -67,6 +68,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
     def financeService
     def orgTypeService
     def subscriptionsQueryService
+    def subscriptionService
 
     public static final String COPY = "COPY"
     public static final String REPLACE = "REPLACE"
@@ -2537,7 +2539,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 }
             }
             result.visibleOrgRelations.sort { it.org.sortname }
-            result.visibleOrgRelations =  getVisibleOrgRelations(result.subscriptionInstance)
+            result.visibleOrgRelations =  subscriptionService.getVisibleOrgRelations(result.subscriptionInstance)
 
             result.modalPrsLinkRole = RefdataValue.findByValue('Specific subscription editor')
             result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
@@ -2566,33 +2568,33 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result
 
     }
-    private getMySubscriptions_readRights(){
-        def params = [:]
-        List result
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-        result = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
-        params.orgRole = RDStore.OR_SUBSCRIBER.value
-        tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-        result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
-        result.sort{it.name}
-    }
-    private getMySubscriptions_writeRights(){
-        List result
-        Map params = [:]
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-        result = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
-        params = [:]
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        params.orgRole = RDStore.OR_SUBSCRIBER.value
-        params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL_LICENSE.id}"
-        tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-        result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
-        result.sort{it.name}
-    }
+//    private getMySubscriptions_readRights(){
+//        def params = [:]
+//        List result
+//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+//        params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
+//        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+//        result = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
+//        params.orgRole = RDStore.OR_SUBSCRIBER.value
+//        tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+//        result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+//        result.sort{it.name}
+//    }
+//    private getMySubscriptions_writeRights(){
+//        List result
+//        Map params = [:]
+//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+//        params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
+//        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+//        result = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
+//        params = [:]
+//        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+//        params.orgRole = RDStore.OR_SUBSCRIBER.value
+//        params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL_LICENSE.id}"
+//        tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+//        result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+//        result.sort{it.name}
+//    }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -2621,8 +2623,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             result.targetSubscription = Subscription.get(Long.parseLong(params.targetSubscriptionId))
         }
 
-        result.allSubscriptions_readRights = getMySubscriptions_readRights()
-        result.allSubscriptions_writeRights = getMySubscriptions_writeRights()
+        result.allSubscriptions_readRights = subscriptionService.getMySubscriptions_readRights()
+        result.allSubscriptions_writeRights = subscriptionService.getMySubscriptions_writeRights()
 
         switch (params.workFlowPart) {
             case '2':
@@ -2665,58 +2667,39 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result
     }
 
-    private List getIssueEntitlements(Subscription subscription) {
-        List<IssueEntitlement> ies = subscription?
-                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
-                        [sub: subscription, del: RDStore.IE_DELETED])
-                : []
-        ies.sort {it.tipp.title.title}
-        ies
-    }
-    private List getVisibleOrgRelations(Subscription subscription) {
-        // restrict visible for templates/links/orgLinksAsList
-        List visibleOrgRelations = []
-        subscription?.orgRelations?.each { or ->
-            if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ['Subscriber', 'Subscriber_Consortial'])) {
-                visibleOrgRelations << or
-            }
-        }
-        visibleOrgRelations.sort { it.org?.name.toLowerCase() }
-    }
-
     private workFlowPart1() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
 
         if (params?.subscription?.takeDates && ( ! DO_NOTHING.equals(params.subscription.takeDates)) && isBothSubscriptionsSet(baseSub, newSub)) {
-            takeDates(baseSub, newSub)
+            subscriptionService.takeDates(params.subscription.takeDates, baseSub, newSub, flash)
         }
 
         if (params?.subscription?.takeOwner && ( ! DO_NOTHING.equals(params?.subscription?.takeOwner)) && isBothSubscriptionsSet(baseSub, newSub)) {
-            takeOwner(baseSub, newSub)
+            subscriptionService.takeOwner(params?.subscription?.takeOwner, baseSub, newSub, flash)
         }
 
         if (params?.subscription?.takeOrgRelations && ( ! DO_NOTHING.equals(params?.subscription?.takeOrgRelations)) && isBothSubscriptionsSet(baseSub, newSub)) {
-            takeOrgRelations(baseSub, newSub)
+            subscriptionService.takeOrgRelations(params?.subscription?.takeOrgRelations, baseSub, newSub, flash)
         }
 
         if (params?.subscription?.takePackages && ( ! DO_NOTHING.equals(params?.subscription?.takePackages)) && isBothSubscriptionsSet(baseSub, newSub)) {
             List<Package> packagesToTake = params?.list('subscription.takePackageIds').collect{ genericOIDService.resolveOID(it)}
-            takePackages(packagesToTake, newSub)
+            subscriptionService.takePackages(params?.subscription?.takePackages, packagesToTake, newSub, flash)
         }
 
         if (params?.subscription?.takeEntitlements && ( ! DO_NOTHING.equals(params?.subscription?.takeEntitlements)) && isBothSubscriptionsSet(baseSub, newSub)) {
             List<IssueEntitlement> entitlementsToTake = params?.list('subscription.takeEntitlementIds').collect{ genericOIDService.resolveOID(it)}
-            takeEntitlements(entitlementsToTake, newSub)
+            subscriptionService.takeEntitlements(params?.subscription?.takeEntitlements, entitlementsToTake, newSub, flash)
         }
 
-        result.sourceIEs = getIssueEntitlements(baseSub)
-        result.targetIEs = getIssueEntitlements(newSub)
+        result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
+        result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
 
         // restrict visible for templates/links/orgLinksAsList
-        result.source_visibleOrgRelations = getVisibleOrgRelations(baseSub)
-        result.target_visibleOrgRelations = getVisibleOrgRelations(newSub)
+        result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
+        result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(newSub)
 
         params?.workFlowPart = '1'
         params?.workFlowPartNext = '2'
@@ -2732,9 +2715,17 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         if (params.targetSubscriptionId){
             newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
 
-            takeDoks(baseSub, newSub)
-            takeAnnouncements(baseSub, newSub)
-            takeTasks(baseSub, newSub)
+            def toCopyDocs = []
+            params.list('subscription.takeDocs').each { doc -> toCopyDocs << Long.valueOf(doc) }
+            subscriptionService.takeDoks(COPY, baseSub, toCopyDocs, newSub, flash)
+
+            def toCopyAnnouncements = []
+            params.list('subscription.takeAnnouncements').each { announcement -> toCopyAnnouncements << Long.valueOf(announcement) }
+            subscriptionService.takeAnnouncements(COPY, baseSub, toCopyAnnouncements, newSub, flash)
+
+            def toCopyTasks =  []
+            params.list('subscription.takeTasks').each{ tsk -> toCopyTasks << Long.valueOf(tsk) }
+            subscriptionService.takeTasks(COPY, baseSub, toCopyTasks, newSub, flash)
         }
         result.sourceSubscription = baseSub
         result.targetSubscription = newSub
@@ -2874,13 +2865,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
         Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
         List<AbstractProperty> propertiesToTake = params?.list('subscription.takeProperty').collect{ genericOIDService.resolveOID(it)}
-        if (propertiesToTake) {
-            if (baseSub && newSub) {
-                takeProperties(propertiesToTake, newSub)
-            } else {
-                if ( ! baseSub) flash.error += message(code: 'subscription.details.copyElementsIntoSubscription.noSubscriptionSource')
-                if ( ! newSub) flash.error += message(code: 'subscription.details.copyElementsIntoSubscription.noSubscriptionTarget')
-            }
+        if (propertiesToTake && ( ! DO_NOTHING.equals(params.subscription.takeDates)) && isBothSubscriptionsSet(baseSub, newSub)) {
+            subscriptionService.takeProperties(COPY, propertiesToTake, newSub, flash)
         }
         result.sourceSubscription = baseSub
         result.targetSubscription = newSub
@@ -2896,232 +2882,6 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             return false
         }
         return true
-    }
-
-    private boolean takeOwner(Subscription sourceSub, Subscription targetSub) {
-        //Vertrag/License
-        switch (params?.subscription?.takeOwner) {
-            case REPLACE:
-                targetSub.owner = sourceSub.owner ?: null
-                targetSub.save(flush: true)
-                break;
-            case COPY:
-                throw new UnsupportedOperationException("Der Fall " + params?.subscription?.takeOwner + " ist nicht vorgesehen!")
-        }
-    }
-
-    private boolean takeOrgRelations(Subscription sourceSub, Subscription targetSub) {
-        if (params?.subscription?.takeOrgRelations?.equals(REPLACE)) {
-            OrgRole.executeUpdate("delete from OrgRole o where o in (:orgRelations)",[orgRelations: targetSub.orgRelations])
-        }
-        switch (params?.subscription?.takeOrgRelations) {
-            case REPLACE:
-            case COPY:
-                sourceSub.orgRelations?.each { or ->
-                    if (targetSub.orgRelations?.find { it.roleTypeId == or.roleTypeId && it.orgId == or.orgId }) {
-                        flash.error += or?.roleType?.getI10n("value") + " " + or?.org?.name + " wurde nicht hinzugefügt, weil er in der Ziellizenz schon existiert. <br />"
-                    } else {
-                        OrgRole newOrgRole = new OrgRole()
-                        InvokerHelper.setProperties(newOrgRole, or.properties)
-                        newOrgRole.sub = targetSub
-                        newOrgRole.save(flush: true)
-                        }
-//                    }
-                }
-                break;
-        }
-    }
-
-    private boolean takePackages(List<Package> packagesToTake, Subscription targetSub) {
-        if (params?.subscription?.takePackages?.equals(REPLACE)) {
-            //alle IEs löschen, die zu den zu löschenden Packages gehören
-            targetSub.issueEntitlements.each{ ie ->
-                TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(ie.tipp.id)
-                if (targetSub.packages.find { p -> p.pkg.id == tipp.pkg.id } ) {
-                    ie.status = RDStore.IE_DELETED
-                    ie.save(flush: true)
-                }
-            }
-
-            //alle zugeordneten Packages löschen
-            SubscriptionPackage.executeUpdate(
-                    "delete from SubscriptionPackage sp where sp.subscription = :sub ",
-                    [sub: targetSub])
-        }
-
-        switch (params?.subscription?.takePackages) {
-            case REPLACE:
-            case COPY:
-                packagesToTake?.each { pkg ->
-                    if (targetSub.packages?.find { it.pkg?.id == pkg?.id }) {
-                        flash.error = "Das Paket " + pkg.name + " wurde nicht hinzugefügt, weil es in der Ziellizenz schon existiert."
-                    } else {
-                        SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
-                        newSubscriptionPackage.subscription = targetSub
-                        newSubscriptionPackage.pkg = pkg
-                        newSubscriptionPackage.save(flush: true)
-                    }
-                }
-        // fixed hibernate error: java.util.ConcurrentModificationException
-        // change owner before first save
-        //License
-        //newSub.owner = baseSub.owner ?: null
-        //newSub.save(flush: true)
-            break;
-        }
-    }
-
-    private boolean takeEntitlements(List<IssueEntitlement> entitlementsToTake, Subscription targetSub) {
-        if (params?.subscription?.takeEntitlements?.equals(REPLACE)) {
-//            targetSub.issueEntitlements.each {
-            getIssueEntitlements(targetSub).each {
-                it.status = RDStore.IE_DELETED
-                it.save(flush: true)
-            }
-        }
-
-        switch (params?.subscription?.takeEntitlements) {
-            case REPLACE:
-            case COPY:
-                entitlementsToTake.each { ieToTake ->
-                    if (ieToTake.status != RDStore.IE_DELETED) {
-                        def list = getIssueEntitlements(targetSub).findAll{it.tipp.id == ieToTake.tipp.id && it.status != RDStore.IE_DELETED}
-//                        def list = targetSub.issueEntitlements.findAll {it.tipp.id == ieToTake.tipp.id} && it.status != RDStore.IE_DELETED}
-                        if (list?.size() > 0) {
-                            // mich gibts schon! Fehlermeldung ausgeben!
-                            flash.error = ieToTake.tipp.title.title + " wurde nicht hinzugefügt, weil es in der Ziellizenz schon existiert."
-                        } else {
-                            def properties = ieToTake.properties
-                            properties.globalUID = null
-                            IssueEntitlement newIssueEntitlement = new IssueEntitlement()
-                            InvokerHelper.setProperties(newIssueEntitlement, properties)
-                            newIssueEntitlement.subscription = targetSub
-                            newIssueEntitlement.save(flush: true)
-                        }
-                    }
-                }
-                break;
-        }
-    }
-
-    private boolean takeTasks(Subscription sourceSub, Subscription targetSub) {
-//        if (!Task.findAllBySubscription(targetSub)) {
-            //Copy Tasks
-            params.list('subscription.takeTasks').each { tsk ->
-
-                def task = Task.findBySubscriptionAndId(sourceSub, Long.valueOf(tsk))
-                if (task) {
-                    if (task.status != RDStore.TASK_STATUS_DONE) {
-                        Task newTask = new Task()
-                        InvokerHelper.setProperties(newTask, task.properties)
-                        newTask.subscription = targetSub
-                        newTask.save(flush: true)
-                    }
-
-                }
-            }
- //       }
-    }
-
-    private boolean takeAnnouncements(Subscription sourceSub, Subscription targetSub) {
-        //Copy Announcements
-        def toCopyAnnouncements = []
-        params.list('subscription.takeAnnouncements').each { announcement ->
-            toCopyAnnouncements << Long.valueOf(announcement)
-        }
-        //        if (targetSub?.documents?.size() == 0) {//?
-        sourceSub.documents?.each { dctx ->
-            //Copy Announcements
-            if (dctx.id in toCopyAnnouncements) {
-                if ((dctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
-                    Doc newDoc = new Doc()
-                    InvokerHelper.setProperties(newDoc, dctx.owner.properties)
-                    newDoc.save(flush: true)
-                    DocContext newDocContext = new DocContext()
-                    InvokerHelper.setProperties(newDocContext, dctx.properties)
-                    newDocContext.subscription = targetSub
-                    newDocContext.owner = newDoc
-                    newDocContext.save(flush: true)
-                }
-            }
-        }
-        //        }
-    }
-
-    private boolean takeDates(Subscription sourceSub, Subscription targetSub) {
-        switch (params?.subscription?.takeDates) {
-            case REPLACE:
-                targetSub.setStartDate(sourceSub.getStartDate())
-                targetSub.setEndDate(sourceSub.getEndDate())
-                if (targetSub.save(flush: true)) {
-                    log.debug("Save ok")
-                    return true
-                } else {
-                    log.error("Problem saving subscription ${targetSub.errors}")
-                    flash.error("Es ist ein Fehler aufgetreten.")
-                    return false
-                }
-                break;
-
-            case COPY:
-                throw new UnsupportedOperationException("Der Fall " + params?.subscription?.takeDates + " ist nicht vorgesehen!")
-        }
-    }
-
-    private boolean takeDoks(Subscription sourceSub, Subscription targetSub) {
-        //Copy Docs
-        def toCopyDocs = []
-        params.list('subscription.takeDocs').each { doc -> toCopyDocs << Long.valueOf(doc) }
-
-        //        if (targetSub?.documents?.size() == 0) {//?
-        sourceSub.documents?.each { dctx ->
-            //Copy Docs
-            if (dctx.id in toCopyDocs) {
-                if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status?.value != 'Deleted')) {
-                    Doc newDoc = new Doc()
-                    InvokerHelper.setProperties(newDoc, dctx.owner.properties)
-                    newDoc.save(flush: true)
-                    DocContext newDocContext = new DocContext()
-                    InvokerHelper.setProperties(newDocContext, dctx.properties)
-                    newDocContext.subscription = targetSub
-                    newDocContext.owner = newDoc
-                    newDocContext.save(flush: true)
-                }
-            }
-        }
-        //        }
-    }
-
-    private boolean takeProperties(List<AbstractProperty> properties, Subscription targetSub){
-        def contextOrg = contextService.getOrg()
-        def targetProp
-
-        properties?.each { sourceProp ->
-            if (sourceProp instanceof CustomProperty) {
-                targetProp = targetSub.customProperties.find { it.typeId == sourceProp.typeId }
-            }
-            if (sourceProp instanceof PrivateProperty && sourceProp.type?.tenant?.id == contextOrg?.id) {
-                targetProp = targetSub.privateProperties.find { it.typeId == sourceProp.typeId }
-            }
-            boolean isAddNewProp = sourceProp.type?.multipleOccurrence
-            if ( (! targetProp) || isAddNewProp) {
-                if (sourceProp instanceof CustomProperty) {
-                    targetProp = new SubscriptionCustomProperty(type: sourceProp.type, owner: targetSub)
-                } else {
-                    targetProp = new SubscriptionPrivateProperty(type: sourceProp.type, owner: targetSub)
-                }
-            }
-            targetProp = sourceProp.copyInto(targetProp)
-            if (targetProp.save(flush: true)){
-                log.debug("Save ok")
-                return true
-            } else {
-                log.error("Problem saving property ${targetProp.errors}")
-                flash.error += "Es ist ein Fehler beim Speichern von ${sourceProp.value} aufgetreten."
-                return false
-            }
-            //newSub.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
-        }
     }
 
     def copySubscription() {

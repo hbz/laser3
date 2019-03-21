@@ -28,7 +28,9 @@
                 </div>
                 <div class="description">
                     <i class="calendar alternate outline icon"></i>Datum
+                    <i class="balance scale icon"></i>Vertrag
                     <i class="university icon"></i>Organisationen
+                    <i class="gift icon"></i>Pakete
                     <i class="newspaper icon"></i>Titel
                 </div>
             </div>
@@ -37,7 +39,7 @@
         <semui:complexSubNavItem controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 2]}"  workFlowPart="2">
             <div class="content">
                 <div class="title">
-                    Weitere Lizenzeigenschaften
+                    weitere Lizenzeigenschaften
                 </div>
                 <div class="description">
                     <i class="file outline icon"></i>Dokumente
