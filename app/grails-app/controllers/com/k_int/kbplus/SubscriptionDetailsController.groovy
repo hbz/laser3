@@ -37,7 +37,7 @@ import static grails.async.Promises.*
 
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class SubscriptionDetailsController /*extends AbstractDebugController*/ {
+class SubscriptionDetailsController extends AbstractDebugController {
 
     def springSecurityService
     def contextService
