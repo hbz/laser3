@@ -449,6 +449,12 @@ class OrganisationsController extends AbstractDebugController {
 
         result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
+        // forbidden access
+        if (! result.editable && orgInstance.id != contextService.getOrg().id) {
+            redirect controller: 'organisations', action: 'show', id: orgInstance.id
+
+        }
+
       def tracked_roles = ["ROLE_ADMIN":"LAS:eR Administrator"]
 
       if (!orgInstance) {
@@ -456,7 +462,7 @@ class OrganisationsController extends AbstractDebugController {
         redirect action: 'list'
         return
       }
-      result.users = orgInstance.affiliations.collect{ userOrg ->
+      result.users2 = orgInstance.affiliations.collect{ userOrg ->
         def admin_roles = []
         userOrg.user.roles.each{ 
           if (tracked_roles.keySet().contains(it.role.authority)){
@@ -469,7 +475,11 @@ class OrganisationsController extends AbstractDebugController {
         return [userOrg,admin_roles?:null]
 
       }
-      // log.debug(result.users)
+
+        result.users = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_APPROVED, orgInstance, [sort:'dateRequested'])
+        result.pendingRequests = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, orgInstance, [sort:'dateRequested'])
+
+        // log.debug(result.users)
       result.orgInstance = orgInstance
       result
     }
@@ -502,23 +512,10 @@ class OrganisationsController extends AbstractDebugController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-    def revokeRole() {
-      def result = [:]
-      result.user = User.get(springSecurityService.principal.id)
-      UserOrg uo = UserOrg.get(params.grant)
-      if (accessService.checkMinUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
-        uo.status = UserOrg.STATUS_REJECTED
-        uo.save()
-      }
-      redirect action: 'users', id: params.id
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def enableRole() {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
-      UserOrg uo = UserOrg.get(params.grant)
+      UserOrg uo = UserOrg.get(params.assoc)
       if ( accessService.checkMinUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
         uo.status = UserOrg.STATUS_APPROVED
         uo.save();
@@ -531,7 +528,7 @@ class OrganisationsController extends AbstractDebugController {
     def deleteRole() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
-        UserOrg uo = UserOrg.get(params.grant)
+        UserOrg uo = UserOrg.get(params.assoc)
         if ( accessService.checkMinUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
             uo.delete(flush:true);
         }
