@@ -394,7 +394,7 @@
                 </sec:ifAnyGranted>
 
                 <sec:ifAnyGranted roles="ROLE_YODA">
-                    <div class="ui simple dropdown item">
+                    <div class="ui  simple dropdown  item">
                         Yoda
                         <i class="dropdown icon"></i>
 
@@ -461,6 +461,9 @@
                                     <g:link class="item" controller="yoda" action="updateTaxRates">${message(code:'menu.admin.taxTypeCheck')}</g:link>
                                 </div>
                             </div>
+
+                            <div class="divider"></div>
+                            <g:link class="item" controller="yoda" action="inga" >Frontend für Entwickler</g:link>
 
                         </div>
 
