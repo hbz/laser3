@@ -25,6 +25,7 @@
             <div class="content" >
                 <div class="description">
                     <i class="calendar alternate outline icon"></i>Datum
+                    <i class="balance scale icon"></i>Vertrag
                     <i class="university icon"></i>Organisationen
                     <i class="gift icon"></i>Pakete
                     <i class="newspaper icon"></i>Titel
