@@ -34,15 +34,29 @@ class ControlledListService {
      */
     Map getProviders(Map params) {
         LinkedHashMap result = [results:[]]
-        String queryString = 'select o from Org o '
-        LinkedHashMap filter = [:]
-        if(params.query && params.query.length() > 0) {
-            filter.put("query",'%'+params.query+'%')
-            queryString += " where lower(o.name) like lower(:query) "
+        Org org = contextService.getOrg()
+        if(params.forFinanceView) {
+            List subscriptions = Subscription.executeQuery('select s from CostItem ci join ci.sub s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in (:orgRoles)',[org:org,orgRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIA]])
+            Map filter = [provider: RDStore.OR_PROVIDER,subscriptions:subscriptions]
+            String filterString = " "
+            if(params.query && params.query.length() > 0) {
+                filter.put("query",'%'+params.query+'%')
+                filterString += "and lower(oo.name) like lower(:query) "
+            }
+            List providers = Org.executeQuery('select distinct oo.org, oo.org.name from OrgRole oo where oo.sub in (:subscriptions) and oo.roleType = :provider'+filterString+'order by oo.org.name asc',filter)
+            providers.each { p ->
+                result.results.add([name:p[1],value:p[0].class.name + ":" + p[0].id])
+            }
         }
-        List providers = Org.executeQuery(queryString+" order by o.sortname asc",filter)
-        providers.each { p ->
-            if(p.getallOrgRoleTypeIds().contains(RDStore.OR_TYPE_PROVIDER.id)) {
+        else {
+            String queryString = 'select o from Org o where o.type = :provider '
+            LinkedHashMap filter = [provider:RDStore.OT_PROVIDER]
+            if(params.query && params.query.length() > 0) {
+                filter.put("query",'%'+params.query+'%')
+                queryString += " and lower(o.name) like lower(:query) "
+            }
+            List providers = Org.executeQuery(queryString+" order by o.sortname asc",filter)
+            providers.each { p ->
                 result.results.add([name:p.name,value:p.class.name + ":" + p.id])
             }
         }

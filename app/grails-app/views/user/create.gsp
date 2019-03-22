@@ -3,8 +3,7 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI">
-        <g:set var="entityName" value="${message(code: 'user.label', default: 'User')}" />
-        <title><g:message code="default.list.label" args="[entityName]" /></title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'user.create_new.label')}</title>
     </head>
     <body>
 
@@ -34,10 +33,49 @@
                         <input type="text" name="email" value="${params.email}"/>
                     </div>
 
-                    <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, availableOrgRoles: availableOrgRoles, tmplUserCreate: true]" />
+
+                    <div class="two fields">
+                        <div class="field">
+                            <label>Organisation</label>
+                            <g:select name="org"
+                                      from="${availableOrgs}"
+                                      optionKey="id"
+                                      optionValue="name"
+                                      class="ui fluid search dropdown"/>
+                        </div>
+                        <div class="field">
+                            <label>Role</label>
+                            <g:select name="formalRole"
+                                      from="${availableOrgRoles}"
+                                      optionKey="id"
+                                      optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
+                                      class="ui fluid dropdown"/>
+                        </div>
+                    </div>
+
+                    <g:if test="${availableComboOrgs}">
+                        <div class="two fields">
+                            <div class="field">
+                                <label>Für Konsorten, bzw. Einrichtung</label>
+                                <g:select name="comboOrg"
+                                          from="${availableComboOrgs}"
+                                          optionKey="id"
+                                          optionValue="name"
+                                          class="ui fluid search dropdown"/>
+                            </div>
+                            <div class="field">
+                                <label>Role</label>
+                                <g:select name="comboFormalRole"
+                                          from="${availableOrgRoles}"
+                                          optionKey="id"
+                                          optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
+                                          class="ui fluid dropdown"/>
+                            </div>
+                        </div>
+                    </g:if>
 
                     <div class="field">
-                        <input type="submit" value="Create &amp; Don't forget to ENABLE" class="ui button"/>
+                        <input type="submit" value="Anlegen" class="ui button"/>
                     </div>
 
                 </fieldset>

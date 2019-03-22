@@ -86,3 +86,12 @@
         <input type="submit" class="ui button js-click-control" value="Ausgewählte Merkmale in Ziellizenz kopieren" />
     </g:form>
 </semui:form>
+<style>
+/*table  {*/
+    /*table-layout: fixed;*/
+    /*width: 100%;*/
+/*}*/
+/*table td {*/
+    /*vertical-align: top;*/
+/*}*/
+</style>

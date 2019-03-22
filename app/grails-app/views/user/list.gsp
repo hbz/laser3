@@ -1,4 +1,5 @@
 <%@ page import="com.k_int.kbplus.*; com.k_int.kbplus.auth.*" %>
+<laser:serviceInjection />
 <!doctype html>
 <html>
   <head>
@@ -14,10 +15,11 @@
             <g:render template="actions" />
         </semui:controlButtons>
 
-            <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'user.show_all.label')}
-                <semui:totalNumber total="${total}"/>
-            </h1>
+        <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'user.show_all.label')}
+            <semui:totalNumber total="${total}"/>
+        </h1>
 
+        <sec:ifAnyGranted roles="ROLE_ADMIN">
             <semui:filter>
                 <g:form action="list" method="get" class="ui form">
                     <g:set value="${Role.findAll()}" var="auth_values"/>
@@ -39,8 +41,37 @@
                     </div>
               </g:form>
             </semui:filter>
+        </sec:ifAnyGranted>
+
+        <sec:ifNotGranted roles="ROLE_ADMIN">
+            <semui:filter>
+                <g:form action="list" method="get" class="ui form">
+                    <g:set value="${Role.findAllByRoleType('user')}" var="auth_values"/>
+
+                    <div class="three fields">
+                        <div class="field">
+                            <label>Name contains</label>
+                            <input type="text" name="name" value="${params.name}"/>
+                        </div>
+                        <div class="field">
+                            <label>Role</label>
+                            <g:select from="${auth_values}" noSelection="${['null':'-Any role-']}" class="ui dropdown"
+                                      value="authority" optionKey="id" optionValue="authority" name="authority" />
+                        </div>
+                        <div class="field la-field-right-aligned">
+                            <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
+                            <input type="submit" value="Search" class="ui secondary button"/>
+                        </div>
+                    </div>
+                </g:form>
+            </semui:filter>
+        </sec:ifNotGranted>
+
 
             <semui:messages data="${flash}" />
+
+            <sec:ifNotGranted roles="ROLE_ADMIN"> TODO: COMBO
+            </sec:ifNotGranted>
         
             <table class="ui sortable celled la-table la-table-small table">
                 <thead>
@@ -71,9 +102,23 @@
                             </td>
                             <td>${us.getDisplayName()}</td>
                             <td>
-                                <g:each in="${us.getAuthorizedAffiliations()}" var="affi">
-                                    ${affi.org?.getDesignation()} <span>(${affi.formalRole.authority})</span> <br />
-                                </g:each>
+                                <sec:ifAnyGranted roles="ROLE_ADMIN">
+                                    <g:each in="${us.getAuthorizedAffiliations()}" var="affi">
+                                        ${affi.org?.getDesignation()} <span>(${affi.formalRole.authority})</span> <br />
+                                    </g:each>
+                                </sec:ifAnyGranted>
+                                <sec:ifNotGranted roles="ROLE_ADMIN">
+                                    <% int affiCount = 0 %>
+                                    <g:each in="${us.getAuthorizedAffiliations()}" var="affi">
+                                        <g:if test="${affi.org.id == contextService.getOrg().id}">
+                                            ${affi.org?.getDesignation()} <span>(${affi.formalRole.authority})</span> <br />
+                                            <% affiCount++ %>
+                                        </g:if>
+                                    </g:each>
+                                    <g:if test="${affiCount != us.getAuthorizedAffiliations().size()}">
+                                        und ${us.getAuthorizedAffiliations().size() - affiCount} weitere ..
+                                    </g:if>
+                                </sec:ifNotGranted>
                             </td>
                             <td>
                                 <sec:ifAnyGranted roles="ROLE_YODA">

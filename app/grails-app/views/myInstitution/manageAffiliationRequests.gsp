@@ -7,6 +7,9 @@
 
 <body>
 
+<h1>THIS PAGE IS DEPRECATED</h1>
+
+
     <semui:breadcrumbs>
         <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
         <semui:crumb message="menu.institutions.affiliation_requests" class="active" />

@@ -51,7 +51,7 @@ class UserController extends AbstractDebugController {
         }
 
         if (params.name && params.name != '' ) {
-            whereQuery.add('(lower(username) like :name or lower(display) like :name or lower(instname) like :name)')
+            whereQuery.add('(lower(username) like :name or lower(display) like :name)')
             queryParams.put('name', "%${params.name.toLowerCase()}%")
         }
 
@@ -100,6 +100,9 @@ class UserController extends AbstractDebugController {
 
             if (! result.editor.hasRole('ROLE_ADMIN')) {
                 result.availableOrgs = contextService.getOrg()
+                result.availableComboOrgs = Combo.executeQuery(
+                        'select c.fromOrg from Combo c where c.toOrg = :ctxOrg order by c.fromOrg.name', [ctxOrg: contextService.getOrg()]
+                )
                 result.availableOrgRoles = Role.findAllByRoleType('user')
             }
             else {
@@ -189,6 +192,10 @@ class UserController extends AbstractDebugController {
 
         if (! result.editor.hasRole('ROLE_ADMIN')) {
             result.availableOrgs = contextService.getOrg()
+            result.availableComboOrgs = Combo.executeQuery(
+                    'select c.fromOrg from Combo c where c.toOrg = :ctxOrg order by c.fromOrg.name', [ctxOrg: contextService.getOrg()]
+            )
+
             result.availableOrgRoles = Role.findAllByRoleType('user')
         }
         else {
@@ -199,6 +206,7 @@ class UserController extends AbstractDebugController {
         switch (request.method) {
             case 'POST':
                 def user = new User(params)
+
                 if (! user.save(flush: true)) {
                     render view: 'create', model: [
                             userInstance: user,
@@ -217,6 +225,13 @@ class UserController extends AbstractDebugController {
                     Role formalRole = Role.get(params.formalRole)
                     if (org && formalRole) {
                         userService.createAffiliation(user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
+                    }
+                }
+                if (params.comboOrg && params.comboFormalRole) {
+                    Org org2 = Org.get(params.comboOrg)
+                    Role formalRole2 = Role.get(params.comboFormalRole)
+                    if (org2 && formalRole2) {
+                        userService.createAffiliation(user, org2, formalRole2, UserOrg.STATUS_APPROVED, flash)
                     }
                 }
 

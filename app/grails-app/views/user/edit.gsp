@@ -41,29 +41,7 @@
                     <input type="text" readonly="readonly" value="${user.email}">
                 </div>
             </div>
-
-            <div class="ui segment form">
-                <g:if test="${editable}">
-
-                    <div class="ui field">
-                        <label>Enabled</label>
-                        <semui:xEditableBoolean owner="${user}" field="enabled" />
-                    </div>
-
-                    <g:form controller="user" action="newPassword" params="${[id: user.id]}">
-                        <div class="ui two fields">
-                            <div class="ui field">
-                                <label>Passwort</label>
-                                <input type="submit" class="ui button orange" value="Neues Passwort per Mail verschicken">
-                            </div>
-                        </div>
-                    </g:form>
-
-                </g:if>
-            </div>
-
-
-        </div>
+        </div><!-- .eight -->
 
         <g:if test="${editable}">
             <div class="column wide eight">
@@ -85,8 +63,30 @@
                     </g:if>
 
                 </div>
-            </div>
+            </div><!-- .eight -->
         </g:if>
+
+        <div class="column wide eight">
+            <div class="ui segment form">
+                <g:if test="${editable}">
+
+                    <div class="ui field">
+                        <label>Enabled</label>
+                        <semui:xEditableBoolean owner="${user}" field="enabled" />
+                    </div>
+
+                    <g:form controller="user" action="newPassword" params="${[id: user.id]}">
+                        <div class="ui two fields">
+                            <div class="ui field">
+                                <label>Passwort</label>
+                                <input type="submit" class="ui button orange" value="Neues Passwort per Mail verschicken">
+                            </div>
+                        </div>
+                    </g:form>
+
+                </g:if>
+            </div>
+        </div><!-- .eight -->
 
     </div><!-- grid -->
 
@@ -97,6 +97,12 @@
     <g:if test="${editable}">
         <div class="ui segment form">
             <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, availableOrgRoles: availableOrgRoles, tmplUserEdit: true]" />
+
+            <g:if test="${availableComboOrgs}">
+                <g:set var="orgLabel" value="Für Konsorten, bzw. Einrichtung" />
+
+                <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableComboOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserEdit: true]" />
+            </g:if>
         </div>
     </g:if>
 

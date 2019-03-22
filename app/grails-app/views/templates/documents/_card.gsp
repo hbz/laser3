@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.DocContext" %>
+<%@ page import="com.k_int.kbplus.*" %>
 
 <%
     List<DocContext> baseItems = []
@@ -34,7 +34,7 @@
                         </g:link>(${docctx.owner.type.getI10n("value")})
                     </div>
                     <div class="center aligned four wide column">
-                        <g:if test="${ownobj.showUIShareButton()}">
+                        <g:if test="${!(ownobj instanceof Org) && ownobj.showUIShareButton()}">
                             <g:if test="${docctx.isShared}">
 
                                     <g:remoteLink class="ui mini icon button green js-no-wait-wheel"
@@ -109,6 +109,8 @@
         if (r2d2) {
             r2d2.initDynamicSemuiStuff('#container-documents');
         }
+
+
     });
 
 </script>
