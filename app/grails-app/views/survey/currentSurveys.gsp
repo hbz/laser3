@@ -21,11 +21,13 @@
     <g:render template="actions"/>
 </semui:controlButtons>
 
-<semui:messages data="${flash}"/>
+
 
 <h1 class="ui left aligned icon header"><semui:headerIcon/>${institution?.name} - ${message(code: 'currentSurveys.label', default: 'Current Surveys')}
 <semui:totalNumber total="${countSurvey}"/>
 </h1>
+
+<semui:messages data="${flash}"/>
 
 <semui:filter>
 
@@ -44,7 +46,10 @@
                               title="${message(code: 'default.startDate.label', default: 'Start Date')}"/>
             <g:sortableColumn params="${params}" property="si.endDate"
                               title="${message(code: 'default.endDate.label', default: 'End Date')}"/>
-            <th rowspan="2" class="two wide"></th>
+            <th>${message(code: 'surveyInfo.members')}</th>
+            <th>${message(code: 'surveyInfo.property')}</th>
+            <th>${message(code: 'surveyInfo.evaluation')}</th>
+            <th></th>
 
         </tr>
 
@@ -69,8 +74,20 @@
                     <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
                 </td>
 
+                <td>
+
+                </td>
+                <td>
+
+                </td>
+                <td>
+
+                </td>
                 <td class="x">
 
+                <g:if test="${editable}">
+                <g:link controller="survey" action="showSurveyInfo" id="${s.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                </g:if>
                 </td>
             </tr>
 

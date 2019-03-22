@@ -20,13 +20,15 @@ class SurveyInfo {
     Date dateCreated
     Date lastUpdated
 
+    List surveyConfigs
+
     static hasMany = [
-            surveyConfig: SurveyConfig
+            surveyConfigs: SurveyConfig
     ]
 
     static constraints = {
         endDate (nullable:true, blank:false)
-        surveyConfig (nullable:true, blank:false)
+        surveyConfigs (nullable:true, blank:false)
         comment (nullable:true, blank:true)
 
     }
