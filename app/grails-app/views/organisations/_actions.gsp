@@ -66,8 +66,8 @@
     });
 
     function showHideTargetableRefdata() {
-        console.log($("[name='targetOrg']").val());
-        if($("[name='targetOrg']").val().length === 0) {
+        console.log($(org).val());
+        if($(org).val().length === 0) {
             $("[data-value='com.k_int.kbplus.RefdataValue:${RDStore.SHARE_CONF_UPLOADER_AND_TARGET.id}']").hide();
         }
         else {

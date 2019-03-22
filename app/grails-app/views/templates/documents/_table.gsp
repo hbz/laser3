@@ -18,7 +18,7 @@
             </tr>
         </thead>
         <tbody>
-            <g:each in="${instance.documents.sort{it.owner?.title}}" var="docctx">
+            <g:each in="${instance.documents}" var="docctx">
                 <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && (docctx.status?.value != 'Deleted'))}">
                     <%--<g:if test="${editable}"><td><input type="checkbox" name="_deleteflag.${docctx.id}" value="true"/></td></g:if> : REMOVED BULK--%>
                     <tr>
@@ -131,8 +131,8 @@
     });
 
     function showHideTargetableRefdata() {
-        console.log($("[name='targetOrg']").val());
-        if($("[name='targetOrg']").val().length === 0) {
+        console.log($(org).val());
+        if($(org).val().length === 0) {
             $("[data-value='com.k_int.kbplus.RefdataValue:${RDStore.SHARE_CONF_UPLOADER_AND_TARGET.id}']").hide();
         }
         else {

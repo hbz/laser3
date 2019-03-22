@@ -18,7 +18,7 @@ class OrgDocumentService {
     Map getDocuments(User user, Org org, Map params) {
         Map filterQuery = filterService.getDocumentQuery(params)
         Set<DocContext> allDocuments = []
-        allDocuments.addAll(DocContext.executeQuery('select dc from DocContext dc join dc.owner d where (d.owner = :org or dc.targetOrg = :org)'+filterQuery.query,[org:org]+filterQuery.queryParams))
+        allDocuments.addAll(DocContext.executeQuery('select dc from DocContext dc join dc.owner d where (d.owner = :org or dc.org = :org)'+filterQuery.query,[org:org]+filterQuery.queryParams))
         //get documents shared for consortia
         if(!org.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id) && org.getallOrgTypeIds().contains(RDStore.OT_INSTITUTION.id)) {
             List consortia = Combo.findAllByFromOrgAndType(org, RefdataValue.getByValueAndCategory('Consortium','Combo Type')).collect {
@@ -44,7 +44,7 @@ class OrgDocumentService {
                     break
                 case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true
                     break
-                case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || contextService.org.id == docctx.targetOrg.id) visible = true
+                case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || contextService.org.id == docctx.org.id) visible = true
                     break
                 case RDStore.SHARE_CONF_CONSORTIUM:
                 case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?

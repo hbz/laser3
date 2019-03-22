@@ -1110,10 +1110,7 @@ from License as l where (
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     Map documents() {
-        User user = User.get(springSecurityService.principal.id)
-        Org org = contextService.org
-        Map ret = orgDocumentService.getDocuments(user,org,params)
-        Map result = [user:user,org:ret.org,availableUsers:ret.availableUsers,editable:accessService.checkMinUserOrgRole(user,ret.org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]
+        Map result = setResultGenerics()
         result
     }
 
@@ -3699,6 +3696,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result.user         = User.get(springSecurityService.principal.id)
         //result.institution  = Org.findByShortcode(params.shortcode)
         result.institution  = contextService.getOrg()
+        result.editable = (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))
         result
     }
 

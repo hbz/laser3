@@ -189,7 +189,7 @@ class FilterService {
             queryParams << [owner: Org.get(params.docOwnerOrg)]
         }
         if(params.docTargetOrg) {
-            query << "dc.targetOrg = :target"
+            query << "dc.org = :target"
             queryParams << [target: Org.get(params.docTargetOrg)]
         }
         if(params.docShareConf) {

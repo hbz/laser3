@@ -389,9 +389,7 @@ class OrganisationsController extends AbstractDebugController {
        //}
 
         //documents
-        du.setBenchMark('documents')
-        Map docMap = orgDocumentService.getDocuments(result.user,result.orgInstance,params)
-        result.orgInstance = docMap.org
+        //du.setBenchMark('documents')
 
         List bm = du.stopBenchMark()
         result.benchMark = bm
