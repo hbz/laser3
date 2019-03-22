@@ -1,4 +1,4 @@
-<%@ page import="de.laser.SubscriptionsQueryService; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; de.laser.helper.RDStore" %>
+<%@ page import="com.k_int.kbplus.Person; de.laser.SubscriptionsQueryService; com.k_int.kbplus.Subscription; java.text.SimpleDateFormat; de.laser.helper.RDStore" %>
 <laser:serviceInjection />
 <semui:form>
 	<g:render template="selectSourceAndTargetSubscription" model="[
@@ -17,9 +17,9 @@
 
 		<table class="ui celled table">
 			<tbody>
-			<g:if test="${validSubChilds}">
+			<g:if test="${validSourceSubChilds}">
 				<br><b>${message(code: 'subscription.renewSubscriptionConsortia.addMembers')}</b><br>
-				<g:each in="${[validSubChilds]}" status="i" var="outerLoop">
+				<g:each in="${[validSourceSubChilds]}" status="i" var="outerLoop">
 					<table class="ui celled la-table table">
 						<thead>
 						<tr>
@@ -49,7 +49,7 @@
 									<td>
 										<g:link controller="organisations" action="show" id="${subscr.id}">${subscr}</g:link>
 										<div class="ui list">
-											<g:each in="${Person.getPublicByOrgAndFunc(subscr, 'General contact person')}"
+											<g:each in="${com.k_int.kbplus.Person.getPublicByOrgAndFunc(subscr, 'General contact person')}"
 													var="gcp">
 												<div class="item">
 													<g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>
