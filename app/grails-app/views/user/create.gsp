@@ -33,18 +33,45 @@
                         <input type="text" name="email" value="${params.email}"/>
                     </div>
 
-                    <g:render template="/templates/user/membership_form"
-                              model="[userInstance: user, availableOrgs: availableOrgs, availableOrgRoles: availableOrgRoles, tmplUserCreate: true]" />
-
-                    <g:set var="orgLabel" value="Für Konsorten, bzw. Einrichtung" />
-
-                    <g:if test="${false && availableComboOrgs}">
-                        <g:render template="/templates/user/membership_form"
-                                  model="[userInstance: user, availableOrgs: availableComboOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserCreate: true]" />
+                    <g:if test="${availableComboOrgs}">
+                        <div class="three fields">
                     </g:if>
+                    <g:else>
+                        <div class="two fields">
+                    </g:else>
+
+                            <div class="field">
+                                <label>Organisation</label>
+                                <g:select name="org"
+                                          from="${availableOrgs}"
+                                          optionKey="id"
+                                          optionValue="name"
+                                          class="ui fluid search dropdown"/>
+                            </div>
+
+                        <g:if test="${availableComboOrgs}">
+                            <div class="field">
+                                <label>Für Konsorten, bzw. Einrichtung</label>
+                                <g:select name="org"
+                                          from="${availableComboOrgs}"
+                                          optionKey="id"
+                                          optionValue="name"
+                                          class="ui fluid search dropdown"/>
+                            </div>
+                        </g:if>
+
+                            <div class="field">
+                                <label>Role</label>
+                                <g:select name="formalRole"
+                                          from="${availableOrgRoles}"
+                                          optionKey="id"
+                                          optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
+                                          class="ui fluid dropdown"/>
+                            </div>
+                    </div>
 
                     <div class="field">
-                        <input type="submit" value="Create &amp; Don't forget to ENABLE" class="ui button"/>
+                        <input type="submit" value="Anlegen" class="ui button"/>
                     </div>
 
                 </fieldset>

@@ -98,7 +98,7 @@
         <div class="ui segment form">
             <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableOrgs, availableOrgRoles: availableOrgRoles, tmplUserEdit: true]" />
 
-            <g:if test="${false && availableComboOrgs}">
+            <g:if test="${availableComboOrgs}">
                 <g:set var="orgLabel" value="Für Konsorten, bzw. Einrichtung" />
 
                 <g:render template="/templates/user/membership_form" model="[userInstance: user, availableOrgs: availableComboOrgs, availableOrgRoles: availableOrgRoles, orgLabel: orgLabel, tmplUserEdit: true]" />

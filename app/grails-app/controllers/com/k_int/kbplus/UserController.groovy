@@ -206,6 +206,7 @@ class UserController extends AbstractDebugController {
         switch (request.method) {
             case 'POST':
                 def user = new User(params)
+
                 if (! user.save(flush: true)) {
                     render view: 'create', model: [
                             userInstance: user,
@@ -220,10 +221,13 @@ class UserController extends AbstractDebugController {
                 defaultRole.save(flush: true)
 
                 if (params.org && params.formalRole) {
-                    Org org = Org.get(params.org)
                     Role formalRole = Role.get(params.formalRole)
-                    if (org && formalRole) {
-                        userService.createAffiliation(user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
+
+                    params.list('org').each{ it ->
+                        Org org = Org.get(it)
+                        if (org && formalRole) {
+                            userService.createAffiliation(user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
+                        }
                     }
                 }
 

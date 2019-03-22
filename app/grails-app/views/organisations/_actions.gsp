@@ -28,6 +28,11 @@
             <semui:actionsDropdownItem message="template.documents.add" controller="organisations" action="editDocument" params="[org:org.id]"/>
         </semui:actionsDropdown>
     </g:if>
+    <g:if test="${actionName == 'users'}">
+        <semui:actionsDropdown>
+            <semui:actionsDropdownItem controller="user" action="create" message="user.create_new.label" />
+        </semui:actionsDropdown>
+    </g:if>
 </g:if>
 <r:script>
     var isClicked = false;
