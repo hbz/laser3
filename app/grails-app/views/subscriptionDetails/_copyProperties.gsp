@@ -11,7 +11,7 @@
     <hr>
     <g:form action="copyElementsIntoSubscription" controller="subscriptionDetails" id="${params.id ?: params.sourceSubscriptionId}"
             params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId]" method="post" class="ui form newLicence">
-        <table class="ui celled table">
+        <table class="ui celled table" style="table-layout: fixed; width: 100%">
             <tbody>
                 <tr>
                     <td><b>${message(code: 'subscription.details.copyElementsIntoSubscription.sourceSubscription.name')}:</b>
