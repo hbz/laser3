@@ -14,7 +14,6 @@ import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
 import com.k_int.properties.*
 import de.laser.DashboardDueDate
-import org.apache.poi.hssf.usermodel.HSSFCellStyle
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.ClientAnchor
 import org.apache.poi.ss.usermodel.CreationHelper
@@ -29,6 +28,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+import javax.validation.constraints.Null
 import java.awt.Color
 import java.sql.Timestamp
 import java.text.DateFormat
@@ -582,115 +582,86 @@ from License as l where (
 
 
     private def exportcurrentSubscription(subscriptions) {
-        try {
-            String[] titles = [
-                    'Name', g.message(code:'subscription.owner.label'), g.message(code:'subscription.packages.label'), g.message(code:'consortium.label'), g.message(code:'default.provider.label'), g.message(code:'default.agency.label'),
-                    g.message(code:'subscription.startDate.label'), g.message(code:'subscription.endDate.label'), 'Status', 'Typ' ]
-
-            def sdf = new SimpleDateFormat(g.message(code:'default.date.format.notimenopoint', default:'ddMMyyyy'));
-            def datetoday = sdf.format(new Date(System.currentTimeMillis()))
-
-            XSSFWorkbook workbook = new XSSFWorkbook()
-            SXSSFWorkbook wb = new SXSSFWorkbook(workbook,100)
-
-            SXSSFSheet sheet = wb.createSheet(g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions"))
-
-            //the following three statements are required only for HSSF
-            sheet.flushRows(10)
-            sheet.setAutobreaks(true)
-
-            //the header row: centered text in 48pt font
-            Row headerRow = sheet.createRow(0)
-            headerRow.setHeightInPoints(16.75f)
-            titles.eachWithIndex { titlesName, index ->
-                Cell cell = headerRow.createCell(index)
-                cell.setCellValue(titlesName)
-            }
-
-            //freeze the first row
-            sheet.createFreezePane(0, 1)
-
-            Row row
-            Cell cell
-            int rownum = 1
-
-            //subscriptions.sort{it.name} obsolete as it is included in the query
-            subscriptions.each{  sub ->
-                log.debug("Now processing: #${sub.id} (${sub.name})")
-                int cellnum = 0
-                row = sheet.createRow(rownum)
-
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(sub.name)
-
-                cell = row.createCell(cellnum++)
-                //sub.owner.sort{it.reference}
-                sub.owner.each{
-                    cell.setCellValue(it.reference)
-                }
-                cell = row.createCell(cellnum++)
-                sub.packages.sort{it.pkg.name}
-                def packages =""
-                sub.packages.each{
-                    packages += (it == sub.packages.last()) ? it.pkg.name : it.pkg.name+', '
-                }
-                cell.setCellValue(packages)
-
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(sub.getConsortia()?.name)
-
-                cell = row.createCell(cellnum++)
-                def providername = ""
-                def provider = OrgRole.findAllBySubAndRoleType(sub, RDStore.OR_PROVIDER)
-                       provider.each {
-                       providername += (it == provider.last()) ? it.org.name : it.org.name+", "
-                }
-                cell.setCellValue(providername)
-                cell = row.createCell(cellnum++)
-                def agencyname = ""
-                def agency = OrgRole.findAllBySubAndRoleType(sub, RDStore.OR_AGENCY)
-                agency.each {
-                    agencyname += (it == agency.last()) ? it.org.name : it.org.name+", "
-                }
-                cell.setCellValue(agencyname)
-
-                cell = row.createCell(cellnum++)
-                if (sub.startDate) {
-                    cell.setCellValue(sdf.format(sub.startDate))
-                }
-
-                cell = row.createCell(cellnum++)
-                if (sub.endDate) {
-                    cell.setCellValue(sdf.format(sub.endDate))
-                }
-
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(sub.status?.getI10n("value"))
-
-                cell = row.createCell(cellnum++)
-                cell.setCellValue(sub.type?.getI10n("value"))
-
-                rownum++
-            }
-
-            for (int i = 0; i < 22; i++) {
-                sheet.autoSizeColumn(i)
-            }
-            // Write the output to a file
-            String file = "${datetoday}_"+g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions").replaceAll(' ', '_')+".xlsx"
-            //if(wb instanceof XSSFWorkbook) file += "x";
-
-            response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
+        String[] titles = ['Name', g.message(code: 'subscription.owner.label'), g.message(code: 'subscription.packages.label'), g.message(code: 'consortium.label'), g.message(code: 'default.provider.label'), g.message(code: 'default.agency.label'), g.message(code: 'subscription.startDate.label'), g.message(code: 'subscription.endDate.label'), 'Status', 'Typ']
+        def sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notimenopoint', default: 'ddMMyyyy'));
+        def datetoday = sdf.format(new Date(System.currentTimeMillis()))
+        XSSFWorkbook workbook = new XSSFWorkbook()
+        SXSSFWorkbook wb = new SXSSFWorkbook(workbook,2)
+        wb.setCompressTempFiles(true)
+        SXSSFSheet sheet = wb.createSheet(g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions"))
+        sheet.setAutobreaks(true)
+        //the header row: centered text in 48pt font
+        Row headerRow = sheet.createRow(0)
+        headerRow.setHeightInPoints(16.75f)
+        titles.eachWithIndex { titlesName, index ->
+            Cell cell = headerRow.createCell(index)
+            cell.setCellValue(titlesName)
         }
-        catch ( Exception e ) {
-            log.error("Problem when processing",e)
-            response.sendError(500)
+        //freeze the first row
+        sheet.createFreezePane(0, 1)
+        Row row
+        Cell cell
+        int rownum = 1
+        //subscriptions.sort{it.name} obsolete as it is included in the query
+        subscriptions.each { sub ->
+            int cellnum = 0
+            row = sheet.createRow(rownum)
+            cell = row.createCell(cellnum++)
+            cell.setCellValue(sub.name ?: "")
+            cell = row.createCell(cellnum++)
+            //sub.owner.sort{it.reference}
+            sub.owner?.each {
+                cell.setCellValue(it.reference ?: "")
+            }
+            cell = row.createCell(cellnum++)
+            sub.packages.sort { it.pkg.name }
+            String packages = ""
+            sub.packages.each {
+                packages += (it == sub.packages.last()) ? it.pkg.name : it.pkg.name + ', '
+            }
+            cell.setCellValue(packages)
+            cell = row.createCell(cellnum++)
+            cell.setCellValue(sub.getConsortia()?.name ?: '')
+            cell = row.createCell(cellnum++)
+            def providername = ""
+            def provider = OrgRole.findAllBySubAndRoleType(sub, RDStore.OR_PROVIDER)
+            provider.each {
+                providername += (it == provider.last()) ? it.org.name : it.org.name + ", "
+            }
+            cell.setCellValue(providername)
+            cell = row.createCell(cellnum++)
+            def agencyname = ""
+            def agency = OrgRole.findAllBySubAndRoleType(sub, RDStore.OR_AGENCY)
+            agency.each {
+                agencyname += (it == agency.last()) ? it.org.name : it.org.name + ", "
+            }
+            cell.setCellValue(agencyname)
+            cell = row.createCell(cellnum++)
+            if (sub.startDate) {
+                cell.setCellValue(sdf.format(sub.startDate))
+            }
+            cell = row.createCell(cellnum++)
+            if (sub.endDate) {
+                cell.setCellValue(sdf.format(sub.endDate))
+            }
+            cell = row.createCell(cellnum++)
+            cell.setCellValue(sub.status?.getI10n("value"))
+            cell = row.createCell(cellnum++)
+            cell.setCellValue(sub.type?.getI10n("value"))
+            rownum++
         }
+        for (int i = 0; i < 22; i++) {
+            sheet.autoSizeColumn(i)
+        }
+        // Write the output to a file
+        String file = "${datetoday}_" + g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions").replaceAll(' ', '_') + ".xlsx"
+        //if(wb instanceof XSSFWorkbook) file += "x";
+        response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
+        response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        wb.write(response.outputStream)
+        response.outputStream.flush()
+        response.outputStream.close()
+        wb.dispose()
     }
 
     @Deprecated
