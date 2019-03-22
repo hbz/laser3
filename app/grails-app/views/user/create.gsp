@@ -33,42 +33,46 @@
                         <input type="text" name="email" value="${params.email}"/>
                     </div>
 
+
+                    <div class="two fields">
+                        <div class="field">
+                            <label>Organisation</label>
+                            <g:select name="org"
+                                      from="${availableOrgs}"
+                                      optionKey="id"
+                                      optionValue="name"
+                                      class="ui fluid search dropdown"/>
+                        </div>
+                        <div class="field">
+                            <label>Role</label>
+                            <g:select name="formalRole"
+                                      from="${availableOrgRoles}"
+                                      optionKey="id"
+                                      optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
+                                      class="ui fluid dropdown"/>
+                        </div>
+                    </div>
+
                     <g:if test="${availableComboOrgs}">
-                        <div class="three fields">
-                    </g:if>
-                    <g:else>
                         <div class="two fields">
-                    </g:else>
-
-                            <div class="field">
-                                <label>Organisation</label>
-                                <g:select name="org"
-                                          from="${availableOrgs}"
-                                          optionKey="id"
-                                          optionValue="name"
-                                          class="ui fluid search dropdown"/>
-                            </div>
-
-                        <g:if test="${availableComboOrgs}">
                             <div class="field">
                                 <label>Für Konsorten, bzw. Einrichtung</label>
-                                <g:select name="org"
+                                <g:select name="comboOrg"
                                           from="${availableComboOrgs}"
                                           optionKey="id"
                                           optionValue="name"
                                           class="ui fluid search dropdown"/>
                             </div>
-                        </g:if>
-
                             <div class="field">
                                 <label>Role</label>
-                                <g:select name="formalRole"
+                                <g:select name="comboFormalRole"
                                           from="${availableOrgRoles}"
                                           optionKey="id"
                                           optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
                                           class="ui fluid dropdown"/>
                             </div>
-                    </div>
+                        </div>
+                    </g:if>
 
                     <div class="field">
                         <input type="submit" value="Anlegen" class="ui button"/>

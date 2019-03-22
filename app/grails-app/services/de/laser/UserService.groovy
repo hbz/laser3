@@ -39,7 +39,7 @@ class UserService {
                     uo.dateActioned = uo.dateRequested
                 }
                 if (uo.save(flush:true)) {
-                    flash?.message = "OK"
+                    flash?.message = "Die neue Organisations-Zugehörigkeit wurde angelegt."
 
                     if (uoStatus == UserOrg.STATUS_APPROVED) {
                         // TODO: only send if manually approved
@@ -48,7 +48,7 @@ class UserService {
                     }
                 }
                 else {
-                    flash?.error = "Problem requesting affiliation"
+                    flash?.error = "Die neue Organisations-Zugehörigkeit konnte nicht angelegt werden."
                 }
             }
         }

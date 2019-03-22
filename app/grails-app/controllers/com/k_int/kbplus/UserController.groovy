@@ -221,13 +221,17 @@ class UserController extends AbstractDebugController {
                 defaultRole.save(flush: true)
 
                 if (params.org && params.formalRole) {
+                    Org org = Org.get(params.org)
                     Role formalRole = Role.get(params.formalRole)
-
-                    params.list('org').each{ it ->
-                        Org org = Org.get(it)
-                        if (org && formalRole) {
-                            userService.createAffiliation(user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
-                        }
+                    if (org && formalRole) {
+                        userService.createAffiliation(user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
+                    }
+                }
+                if (params.comboOrg && params.comboFormalRole) {
+                    Org org2 = Org.get(params.comboOrg)
+                    Role formalRole2 = Role.get(params.comboFormalRole)
+                    if (org2 && formalRole2) {
+                        userService.createAffiliation(user, org2, formalRole2, UserOrg.STATUS_APPROVED, flash)
                     }
                 }
 

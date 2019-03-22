@@ -25,6 +25,8 @@
 
     <g:if test="${pendingRequests && editable}">
 
+        <h3 class="ui header">Offene Anfragen</h3>
+
         <table class="ui celled la-table table">
             <thead>
             <tr>
