@@ -404,6 +404,8 @@ class OrganisationsController extends AbstractDebugController {
         result
     }
 
+    /*
+    deactivated but kept for potential further use
     @Secured(['ROLE_USER'])
     def documents() {
         User user = User.get(springSecurityService.principal.id)
@@ -412,6 +414,7 @@ class OrganisationsController extends AbstractDebugController {
         Map result = [user:user,org:ret.org,availableUsers:ret.availableUsers,editable:accessService.checkMinUserOrgRole(user,ret.org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]
         result
     }
+    */
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })

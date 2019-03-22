@@ -122,6 +122,8 @@
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.institutions.myTitles" />
 
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="documents" message="menu.institutions.myDocuments" />
+
                             <g:if test="${RDStore.OT_CONSORTIUM.id in  contextService.org.getallOrgTypeIds()}">
                                 <div class="divider"></div>
 
@@ -195,8 +197,6 @@
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="changes" message="menu.institutions.todo" />
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />
-
-                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="documents" message="default.documents.label" />
 
                             <g:set var="newAffiliationRequests1" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatusAndOrg(0, contextService.getOrg(), [sort:'dateRequested']).size()}" />
 

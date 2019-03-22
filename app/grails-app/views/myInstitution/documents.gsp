@@ -1,4 +1,5 @@
 <%@page import="com.k_int.kbplus.*" %>
+<laser:serviceInjection/>
 <!doctype html>
 <html>
   <head>
@@ -14,16 +15,16 @@
       List documentTypes = RefdataCategory.getAllRefdataValues("Document Type")-notAvailable
     %>
     <semui:breadcrumbs>
-      <semui:crumb controller="myInstitution" action="dashboard" text="${org.getDesignation()}" />
+      <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.org.getDesignation()}" />
       <semui:crumb message="default.documents.label" class="active"/>
     </semui:breadcrumbs>
 
     <semui:controlButtons>
-      <g:render template="actions" model="[org:org]" />
+      <g:render template="actions" />
     </semui:controlButtons>
     <semui:messages data="${flash}" />
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${org.name}</h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${contextService.org.name}</h1>
 
     <semui:filter>
       <g:form class="ui form" controller="myInstitution" action="documents">
@@ -52,10 +53,13 @@
             <label for="docOwnerOrg">${message(code:'org.docs.table.ownerOrg')}</label>
             <g:select class="ui fluid search dropdown" name="docOwnerOrg" from="${Org.executeQuery("select o from Org o order by o.name")}" optionKey="id" optionValue="name" value="${params.docOwnerOrg}" noSelection="['':'']"/>
           </div>
+          <%--
+          disabled UFN, as of March 21st, 2019 - postponed to at least quartal II
           <div class="field">
             <label for="docTargetOrg">${message(code:'org.docs.table.targetOrg')}</label>
             <g:select class="ui fluid search dropdown" name="docTargetOrg" from="${Org.executeQuery("select o from Org o order by o.name")}" optionKey="id" optionValue="name" value="${params.docTargetOrg}" noSelection="['':'']"/>
           </div>
+          --%>
         </div>
         <div class="two fields">
           <div class="field">
@@ -72,6 +76,6 @@
       </g:form>
     </semui:filter>
 
-    <g:render template="/templates/documents/table" model="${[instance:org, context:'documents', redirect:'documents', consortiaMembers: consortiaMembers]}"/>
+    <g:render template="/templates/documents/table" model="${[instance:contextService.org, context:'documents', redirect:'documents', consortiaMembers: consortiaMembers]}"/>
   </body>
 </html>

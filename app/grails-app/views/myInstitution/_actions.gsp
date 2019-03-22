@@ -28,7 +28,7 @@
 </g:if>
 
 <g:if test="${actionName in ['manageConsortia', 'addConsortiaMembers']}">
-    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") && (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgTypeIds())}">
+    <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") && (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextOrg.getallOrgTypeIds())}">
         <semui:actionsDropdown>
             <semui:actionsDropdownItem controller="myInstitution" action="addConsortiaMembers" message="menu.institutions.add_consortia_members" />
             <g:if test="${actionName in ['manageConsortia']}">
@@ -46,11 +46,9 @@
     </g:if>
 </g:if>
 
+<%-- continue here: create semui actions dropdown, restore action switch --%>
+ <g:if test="${editable}">
+     <semui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument" />
+ </g:if>
 
-<g:if test="${actionName == 'documents'}">
-    <g:if test="${editable}">
-        <semui:actionsDropdown>
-            <semui:actionsDropdownItem message="template.documents.add" controller="myInstitution" action="editDocument"/>
-        </semui:actionsDropdown>
-    </g:if>
-</g:if>
+<g:render template="/templates/documents/modal" model="${[ownobj: contextOrg, owntp: 'org']}"/>

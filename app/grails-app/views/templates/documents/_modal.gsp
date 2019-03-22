@@ -58,6 +58,23 @@
                         var name = e.target.files[0].name;
                         $('input:text', $(e.target).parent()).val(name);
                     });
+
+                    function showHideTargetableRefdata() {
+                        console.log($(org).val());
+                        if($(org).val().length === 0) {
+                            $("[data-value='com.k_int.kbplus.RefdataValue:${RDStore.SHARE_CONF_UPLOADER_AND_TARGET.id}']").hide();
+                        }
+                        else {
+                            $("[data-value='com.k_int.kbplus.RefdataValue:${RDStore.SHARE_CONF_UPLOADER_AND_TARGET.id}']").show();
+                        }
+                    }
+
+                    function toggleTarget() {
+                        if($("#hasTarget")[0].checked)
+                            $("#target").show();
+                        else
+                            $("#target").hide();
+                    }
                 </script>
             </g:if>
             <dl>
