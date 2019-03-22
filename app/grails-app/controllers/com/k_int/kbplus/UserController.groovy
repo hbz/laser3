@@ -36,15 +36,17 @@ class UserController extends AbstractDebugController {
         List whereQuery = []
         Map queryParams = [:]
 
-        if (! result.editor.hasRole('ROLE_ADMIN')) {
+        if (! result.editor.hasRole('ROLE_ADMIN') || params.org) {
             // only context org depending
             baseQuery.add('UserOrg uo')
-            whereQuery.add('( uo.user = u and uo.org = :ctxOrg )')
+            whereQuery.add('( uo.user = u and uo.org = :org )')
             //whereQuery.add('( uo.user = u and uo.org = :ctxOrg ) or not exists ( SELECT uoCheck from UserOrg uoCheck where uoCheck.user = u ) )')
-            queryParams.put('ctxOrg', contextService.getOrg())
+
+            Org comboOrg = params.org ? Org.get(params.org) : contextService.getOrg()
+            queryParams.put('org', comboOrg)
         }
 
-        if (params.authority && params.authority != 'null') {
+        if (params.authority) {
             baseQuery.add('UserRole ur')
             whereQuery.add('ur.user = u and ur.role = :role')
             queryParams.put('role', Role.get(params.authority.toLong()))
@@ -63,6 +65,10 @@ class UserController extends AbstractDebugController {
                 params */
         )
 
+        result.availableComboOrgs = Combo.executeQuery(
+                'select c.fromOrg from Combo c where c.toOrg = :ctxOrg order by c.fromOrg.name', [ctxOrg: contextService.getOrg()]
+        )
+        result.availableComboOrgs.add(contextService.getOrg())
         result.total = result.users.size()
 
         result

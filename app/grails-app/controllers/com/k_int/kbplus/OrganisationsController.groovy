@@ -32,6 +32,7 @@ class OrganisationsController extends AbstractDebugController {
     def propertyService
     def orgDocumentService
     def docstoreService
+    def userService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -496,6 +497,8 @@ class OrganisationsController extends AbstractDebugController {
         def orgInstance = Org.get(params.id)
 
         result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+
+        result.editable = result.editable || userService.hasInstAdmPivileges(result.user, orgInstance)
 
         // forbidden access
         if (! result.editable && orgInstance.id != contextService.getOrg().id) {

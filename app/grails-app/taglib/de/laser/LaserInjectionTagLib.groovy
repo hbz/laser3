@@ -8,12 +8,13 @@ class LaserInjectionTagLib {
     def yodaService
     def subscriptionsQueryService
     def genericOIDService
+    def userService
 
     static namespace = "laser"
 
     def serviceInjection = { attrs, body ->
         // HTML Comment not useful in Txt Mail
-        //out << "<!-- serviceInjection: springSecurityService, contextService, accessService, auditService, yodaService, subscriptionsQueryService, genericOIDService -->"
+        //out << "<!-- serviceInjection: springSecurityService, contextService, accessService, auditService, yodaService, subscriptionsQueryService, genericOIDService, userService -->"
 
         g.set( var:'springSecurityService', bean:'springSecurityService' )
         g.set( var:'contextService', bean:'contextService' )
@@ -22,5 +23,6 @@ class LaserInjectionTagLib {
         g.set( var:'yodaService', bean:'yodaService' )
         g.set( var:'genericOIDService', bean:'genericOIDService' )
         g.set( var:'subscriptionsQueryService', bean:'subscriptionsQueryService' )
+        g.set( var:'userService', bean:'userService' )
     }
 }

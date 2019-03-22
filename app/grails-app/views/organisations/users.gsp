@@ -76,6 +76,9 @@
                 </tr>
             </g:each>
         </table>
+
+        <h3 class="ui header">${message(code: 'profile.membership.existing')}</h3>
+
     </g:if>
 
     <table class="ui celled la-table table">

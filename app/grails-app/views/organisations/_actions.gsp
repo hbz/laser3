@@ -30,7 +30,7 @@
     </g:if>
     <g:if test="${actionName == 'users'}">
         <semui:actionsDropdown>
-            <semui:actionsDropdownItem controller="user" action="create" message="user.create_new.label" />
+            <semui:actionsDropdownItem controller="user" action="create" message="user.create_new.label" params="[org: orgInstance.id]" />
         </semui:actionsDropdown>
     </g:if>
 </g:if>
