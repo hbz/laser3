@@ -2739,9 +2739,11 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
     private workFlowPart3() {
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
-        Subscription newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
         result.validSourceSubChilds = subscriptionService.getValidSubChilds(baseSub)
-        result.validTargetSubChilds = subscriptionService.getValidSubChilds(baseSub)
+        if (params.targetSubscriptionId) {
+            Subscription newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
+            result.validTargetSubChilds = subscriptionService.getValidSubChilds(newSub)
+        }
 
 
 //        def newSubConsortia = Subscription.get(params.newSubscription)

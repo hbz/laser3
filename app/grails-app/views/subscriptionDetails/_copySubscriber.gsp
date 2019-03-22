@@ -20,96 +20,143 @@
 			<g:if test="${validSourceSubChilds}">
 				<br><b>${message(code: 'subscription.renewSubscriptionConsortia.addMembers')}</b><br>
 				<g:each in="${[validSourceSubChilds]}" status="i" var="outerLoop">
-					<table class="ui celled la-table table">
-						<thead>
+					<table>
 						<tr>
-							<th>
-								<g:if test="${outerLoop}">
-									<g:checkBox name="subListToggler" id="subListToggler" checked="false"/>
-								</g:if>
-							</th>
-							<th>${message(code: 'sidewide.number')}</th>
-							<th>${message(code: 'default.sortname.label')}</th>
-							<th>${message(code: 'subscriptionDetails.members.members')}</th>
-							<th>${message(code: 'default.startDate.label')}</th>
-							<th>${message(code: 'default.endDate.label')}</th>
-							<th>${message(code: 'subscription.details.status')}</th>
-						</tr>
-						</thead>
-						<tbody>
-						<g:each in="${outerLoop}" status="j" var="sub">
-							<tr>
-								<g:each in="${sub.getAllSubscribers()}" var="subscr">
-									<td>
-										<g:checkBox type="text" name="selectedSubs" value="${sub.id}"
-													checked="false"/>
-									</td>
-									<td>${j + 1}</td>
-									<td>${subscr.sortname}</td>
-									<td>
-										<g:link controller="organisations" action="show" id="${subscr.id}">${subscr}</g:link>
-										<div class="ui list">
-											<g:each in="${com.k_int.kbplus.Person.getPublicByOrgAndFunc(subscr, 'General contact person')}"
-													var="gcp">
-												<div class="item">
-													<g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>
-													(${rdvGcpI10n})
-												</div>
+							<td>
+							%{---------------------------------------}%
+								<table class="ui celled la-table table">
+									<thead>
+									<tr>
+										<th>
+											<g:if test="${outerLoop}">
+												<g:checkBox name="subListToggler" id="subListToggler" checked="false"/>
+											</g:if>
+											</th>
+											%{--<th>${message(code: 'sidewide.number')}</th>--}%
+											<th>${message(code: 'default.sortname.label')}</th>
+											%{--<th>${message(code: 'subscriptionDetails.members.members')}</th>--}%
+											<th>${message(code: 'default.startDate.label')}</th>
+											<th>${message(code: 'default.endDate.label')}</th>
+											<th>${message(code: 'subscription.details.status')}</th>
+											</tr>
+											</thead>
+											<tbody>
+											<g:each in="${outerLoop}" status="j" var="sub">
+												<tr>
+													<g:each in="${sub.getAllSubscribers()}" var="subscr">
+														<td><g:checkBox type="text" name="selectedSubs" value="${sub.id}" checked="false"/></td>
+														%{--<td>${j + 1}</td>--}%
+														<td>${subscr.sortname}</td>
+														%{--<td>--}%
+															%{--<g:link controller="organisations" action="show" id="${subscr.id}">${subscr}</g:link>--}%
+															%{--<div class="ui list">--}%
+																%{--<g:each in="${com.k_int.kbplus.Person.getPublicByOrgAndFunc(subscr, 'General contact person')}" var="gcp">--}%
+																	%{--<div class="item">--}%
+																		%{--<g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>--}%
+																		%{--(${rdvGcpI10n})--}%
+																	%{--</div>--}%
+																%{--</g:each>--}%
+																%{--<g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(subscr, 'General contact person', contextService.getOrg())}" var="gcp">--}%
+																	%{--<div class="item">--}%
+																		%{--<g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>--}%
+																		%{--(${rdvGcpI10n} <i class="address book outline icon" style="display:inline-block"></i>)--}%
+																	%{--</div>--}%
+																%{--</g:each>--}%
+																%{--<g:each in="${Person.getPublicByOrgAndObjectResp(subscr, sub, 'Specific subscription editor')}" var="sse">--}%
+																	%{--<div class="item">--}%
+																		%{--<g:link controller="person" action="show" id="${sse.id}">${sse}</g:link>--}%
+																		%{--(${rdvSseI10n})--}%
+																	%{--</div>--}%
+																%{--</g:each>--}%
+																%{--<g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(subscr, sub, 'Specific subscription editor', contextService.getOrg())}" var="sse">--}%
+																	%{--<div class="item">--}%
+																		%{--<g:link controller="person" action="show" id="${sse.id}">${sse}</g:link>--}%
+																		%{--(${rdvSseI10n} <i class="address book outline icon" style="display:inline-block"></i>)--}%
+																	%{--</div>--}%
+																%{--</g:each>--}%
+															%{--</div>--}%
+														%{--</td>--}%
+													</g:each>
+													<g:if test="${!sub.getAllSubscribers()}">
+														<td></td>
+														<td></td>
+													</g:if>
+													<td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
+													<td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
+													<td>${sub.status.getI10n('value')}</td>
+												</tr>
 											</g:each>
-											<g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(subscr, 'General contact person', contextService.getOrg())}"
-													var="gcp">
-												<div class="item">
-													<g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>
-													(${rdvGcpI10n} <i class="address book outline icon" style="display:inline-block"></i>)
-												</div>
-											</g:each>
-											<g:each in="${Person.getPublicByOrgAndObjectResp(subscr, sub, 'Specific subscription editor')}"
-													var="sse">
-												<div class="item">
-													<g:link controller="person" action="show" id="${sse.id}">${sse}</g:link>
-													(${rdvSseI10n})
-												</div>
-											</g:each>
-											<g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(subscr, sub, 'Specific subscription editor', contextService.getOrg())}"
-													var="sse">
-												<div class="item">
-													<g:link controller="person" action="show" id="${sse.id}">${sse}</g:link>
-													(${rdvSseI10n} <i class="address book outline icon" style="display:inline-block"></i>)
-												</div>
-											</g:each>
-
-										</div>
-									</td>
-
+											</tbody>
+											</table>
+										</g:each>
+							</td>
+							<td>
+							%{---------------------------------------}%
+								<g:each in="${[validTargetSubChilds]}" status="i" var="outerLoop">
+									<table class="ui celled la-table table">
+										<thead>
+										<tr>
+											%{--<th>${message(code: 'sidewide.number')}</th>--}%
+											<th>${message(code: 'default.sortname.label')}</th>
+											%{--<th>${message(code: 'subscriptionDetails.members.members')}</th>--}%
+											<th>${message(code: 'default.startDate.label')}</th>
+											<th>${message(code: 'default.endDate.label')}</th>
+											<th>${message(code: 'subscription.details.status')}</th>
+										</tr>
+										</thead>
+										<tbody>
+										<g:each in="${outerLoop}" status="j" var="sub">
+											<tr>
+												<g:each in="${sub.getAllSubscribers()}" var="subscr">
+													%{--<td>${j + 1}</td>--}%
+													<td>${subscr.sortname}</td>
+													%{--<td>--}%
+														%{--<g:link controller="organisations" action="show" id="${subscr.id}">${subscr}</g:link>--}%
+														%{--<div class="ui list">--}%
+															%{--<g:each in="${com.k_int.kbplus.Person.getPublicByOrgAndFunc(subscr, 'General contact person')}" var="gcp">--}%
+																%{--<div class="item">--}%
+																	%{--<g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>--}%
+																	%{--(${rdvGcpI10n})--}%
+																%{--</div>--}%
+															%{--</g:each>--}%
+															%{--<g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(subscr, 'General contact person', contextService.getOrg())}" var="gcp">--}%
+																%{--<div class="item">--}%
+																	%{--<g:link controller="person" action="show" id="${gcp.id}">${gcp}</g:link>--}%
+																	%{--(${rdvGcpI10n} <i class="address book outline icon" style="display:inline-block"></i>)--}%
+																%{--</div>--}%
+															%{--</g:each>--}%
+															%{--<g:each in="${Person.getPublicByOrgAndObjectResp(subscr, sub, 'Specific subscription editor')}" var="sse">--}%
+																%{--<div class="item">--}%
+																	%{--<g:link controller="person" action="show" id="${sse.id}">${sse}</g:link>--}%
+																	%{--(${rdvSseI10n})--}%
+																%{--</div>--}%
+															%{--</g:each>--}%
+															%{--<g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(subscr, sub, 'Specific subscription editor', contextService.getOrg())}" var="sse">--}%
+																%{--<div class="item">--}%
+																	%{--<g:link controller="person" action="show" id="${sse.id}">${sse}</g:link>--}%
+																	%{--(${rdvSseI10n} <i class="address book outline icon" style="display:inline-block"></i>)--}%
+																%{--</div>--}%
+															%{--</g:each>--}%
+														%{--</div>--}%
+													%{--</td>--}%
+												</g:each>
+												<g:if test="${!sub.getAllSubscribers()}">
+													<td></td>
+													<td></td>
+												</g:if>
+												<td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
+												<td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
+												<td>${sub.status.getI10n('value')}</td>
+											</tr>
+										</g:each>
+										</tbody>
+									</table>
 								</g:each>
-								<g:if test="${!sub.getAllSubscribers()}">
-									<td></td>
-									<td></td>
-								</g:if>
-								<td>
-									<g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/>
-								</td>
-								<td>
-									<g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/>
-								</td>
-								<td>
-									${sub.status.getI10n('value')}
-								</td>
-							</tr>
-						</g:each>
-						</tbody>
-					</table>
-				</g:each>
 
-				<script language="JavaScript">
-					$('#subListToggler').click(function () {
-						if ($(this).prop('checked')) {
-							$("tr[class!=disabled] input[name=selectedSubs]").prop('checked', true)
-						} else {
-							$("tr[class!=disabled] input[name=selectedSubs]").prop('checked', false)
-						}
-					})
-				</script>
+							%{---------------------------------------}%
+							</td>
+					</table>
+
 				<input type="submit" class="ui button js-click-control" value="${message(code: 'subscription.renewSubscriptionConsortia.finish')}"/>
 			</g:if>
 			<g:else>
@@ -119,3 +166,21 @@
 		</g:else>
 	</g:form>
 </semui:form>
+<script language="JavaScript">
+	$('#subListToggler').click(function () {
+		if ($(this).prop('checked')) {
+			$("tr[class!=disabled] input[name=selectedSubs]").prop('checked', true)
+		} else {
+			$("tr[class!=disabled] input[name=selectedSubs]").prop('checked', false)
+		}
+	})
+</script>
+<style>
+	table  {
+		table-layout: fixed;
+		width: 100%;
+	}
+	table td {
+		vertical-align: top;
+	}
+</style>
