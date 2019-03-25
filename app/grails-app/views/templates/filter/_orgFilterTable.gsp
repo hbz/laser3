@@ -266,13 +266,11 @@
             <g:if test="${tmplConfigShow?.contains('consortiaToggle')}">
                 <td>
                     <%-- here: switch if in consortia or not --%>
-                    <%-- if not in consortium: class="ui green icon plus button" --%>
                     <g:if test="${!consortiaMemberIds.contains(org.id)}">
                         <g:link class="ui icon positive button" data-tooltip="${message(code:'org.consortiaToggle.add.label')}" controller="organisations" action="toggleCombo" params="${params+[direction:'add',fromOrg:org.id]}">
                             <i class="plus icon"></i>
                         </g:link>
                     </g:if>
-                    <%-- else if in consortium: class="ui red icon minus button" --%>
                     <g:elseif test="${consortiaMemberIds.contains(org.id)}">
                         <g:link class="ui icon negative button" data-tooltip="${message(code:'org.consortiaToggle.remove.label')}" controller="organisations" action="toggleCombo" params="${params+[direction:'remove',fromOrg:org.id]}">
                             <i class="minus icon"></i>
