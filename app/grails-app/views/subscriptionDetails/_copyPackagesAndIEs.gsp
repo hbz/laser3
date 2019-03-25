@@ -99,19 +99,6 @@
 </semui:form>
 
 <r:script>
-    // $('input:checkbox').change( function(event) {
-    //     // TODO Logik überprüfen, wann gewarnt werden soll!
-    //     if (this.checked) {
-    //         var pkgId = $(this).attr('data-pkgId');
-    //         $('.table tr div[data-pkgId="' + pkgId + '"]').addClass('willBeReplaced')
-    //     } else {
-    //         var pkgId = $(this).attr('data-pkgId');
-    //         $('.table tr div[data-pkgId="' + pkgId + '"]').removeClass('willBeReplaced')
-    //     }
-    // })
-
-    %{--$('input:checkbox').change( function(event) {--}%
-    // FUNKTIONIERT
     $('input:radio[name="subscription.takePackages"]').change( function(event) {
         if (this.checked && this.value=='COPY') {
             $('.table tr td[name="subscription.takePackages.target"] div').addClass('willStay')
@@ -119,7 +106,6 @@
         }
         if (this.checked && this.value=='REPLACE') {
             $('.table tr td[name="subscription.takePackages.target"] div').addClass('willBeReplaced')
-            // TODO: Was ist wenn Lizenz-Hinzufügen/-Ersetzen gleichzeitig ausgewählt ist?
             var pkgIds = $(this).attr('data-pkgIds')
             if (pkgIds != null) {
                 pkgIds = pkgIds.split(",");
@@ -129,9 +115,10 @@
             }
         }
         if (this.checked && this.value=='DO_NOTHING') {
-            $('.table tr td[name="subscription.takePackages.source"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takePackages.target"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takePackages.target"] div').removeClass('willBeReplaced')
+            $('.table tr td[name="subscription.takePackages.source"] div').removeClass('willStay');
+            $('.table tr td[name="subscription.takePackages.target"] div').removeClass('willStay');
+            $('.table tr td[name="subscription.takePackages.target"] div').removeClass('willBeReplaced');
+            $('.table tr input[name="subscription.takePackageIds"]').prop("checked", false);
         }
     })
     $('input[name="subscription.takePackageIds"]').change( function(event) {
@@ -141,7 +128,6 @@
         } else {
             $('.table tr td[name="subscription.takePackages.source"] div[data-pckOid="' + pckOId + '"]').removeClass('willStay')
         }
-        // $('.table tr div[data-pkgId="' + pkgId + '"]').addClass('willBeReplaced')
     })
     $('input:radio[name="subscription.takeEntitlements"]').change( function(event) {
         if (this.checked && this.value=='COPY') {
@@ -150,11 +136,16 @@
         }
         if (this.checked && this.value=='REPLACE') {
             $('.table tr td[name="subscription.takeEntitlements.target"] div').addClass('willBeReplaced')
+            $('.table tr td[name="subscription.takeEntitlements.target"] div').removeClass('willStay')
         }
         if (this.checked && this.value=='DO_NOTHING') {
             $('.table tr td[name="subscription.takeEntitlements.source"] div').removeClass('willStay')
             $('.table tr td[name="subscription.takeEntitlements.target"] div').removeClass('willStay')
             $('.table tr td[name="subscription.takeEntitlements.target"] div').removeClass('willBeReplaced')
+            if ( $('input:radio[name="subscription.takePackages"]').checked) {
+
+            }
+            $('.table tr input[name="subscription.takeEntitlementIds"]').prop("checked", false);
         }
     })
     $('input[name="subscription.takeEntitlementIds"]').change( function(event) {
