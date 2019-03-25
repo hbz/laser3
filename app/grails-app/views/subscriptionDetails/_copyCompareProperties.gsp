@@ -1,88 +1,50 @@
-<%@ page import="com.k_int.kbplus.abstract_domain.PrivateProperty; com.k_int.kbplus.abstract_domain.CustomProperty; com.k_int.properties.PropertyDefinition; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription" %>
-<%@ page import="com.k_int.kbplus.RefdataValue; de.laser.helper.RDStore" %>
-<% def contextService = grailsApplication.mainContext.getBean("contextService");
-   def contextOrg = contextService.org%>
-<semui:form>
-    <g:render template="selectSourceAndTargetSubscription" model="[
-            sourceSubscription: sourceSubscription,
-            targetSubscription: targetSubscription,
-            allSubscriptions_readRights: allSubscriptions_readRights,
-            allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
-    <hr>
-    <g:form action="copyElementsIntoSubscription" controller="subscriptionDetails" id="${params.id ?: params.sourceSubscriptionId}"
-            params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId]" method="post" class="ui form newLicence">
-        <table class="ui celled table" style="table-layout: fixed; width: 100%">
-            <tbody>
-                <tr>
-                    <td><b>${message(code: 'subscription.details.copyElementsIntoSubscription.sourceSubscription.name')}:</b>
-                    <g:if test="${sourceSubscription}"><g:link controller="subscriptionDetails" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
-                    </td>
-                    <td><b>${message(code: 'subscription.details.copyElementsIntoSubscription.targetSubscription.name')}:</b>
-                        <g:if test="${targetSubscription}"><g:link controller="subscriptionDetails" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="vertical-align: top">
-                        <g:if test="${sourceSubscription}">
-                            ${message(code: 'subscription.takeCustomProperties')}
-                            <g:render template="/templates/properties/selectableProperties" model="${[
-                                    show_checkboxes: true,
-                                    showCopyConflicts: false,
-                                    prop_desc: PropertyDefinition.SUB_PROP,
-                                    ownobj: sourceSubscription,
-                                    showPropClass: CustomProperty.class,
-                                    forced_not_editable: true,
-                                    custom_props_div: "custom_props_div_${contextOrg.id}",
-                                    tenant: contextOrg]}"/>
-                        </g:if>
-                    </td>
-                    <td style="vertical-align: top">
-                        <g:if test="${targetSubscription}">
-                            ${message(code: 'subscription.takeCustomProperties')}
-                            <g:render template="/templates/properties/selectableProperties" model="${[
-                                    show_checkboxes: false,
-                                    showCopyConflicts: true,
-                                    prop_desc: PropertyDefinition.SUB_PROP,
-                                    ownobj: targetSubscription,
-                                    showPropClass: CustomProperty.class,
-                                    forced_not_editable: true,
-                                    custom_props_div: "custom_props_div_${contextOrg.id}",
-                                    tenant: contextOrg]}"/>
-                        </g:if>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="vertical-align: top">
-                        <g:if test="${sourceSubscription}">
-                            ${message(code: 'subscription.takePrivateProperties')}
-                            <g:render template="/templates/properties/selectableProperties" model="${[
-                                show_checkboxes: true,
-                                showCopyConflicts: false,
-                                prop_desc: PropertyDefinition.SUB_PROP,
-                                ownobj: sourceSubscription,
-                                showPropClass: PrivateProperty.class,
-                                forced_not_editable: true,
-                                custom_props_div: "custom_props_div_${contextOrg.id}",
-                                tenant: contextOrg]}"/>
-                        </g:if>
-                    </td>
-                    <td style="vertical-align: top">
-                        <g:if test="${targetSubscription}">
-                            ${message(code: 'subscription.takePrivateProperties')}
-                            <g:render template="/templates/properties/selectableProperties" model="${[
-                                show_checkboxes: false,
-                                showCopyConflicts: true,
-                                prop_desc: PropertyDefinition.SUB_PROP,
-                                ownobj: targetSubscription,
-                                showPropClass: PrivateProperty.class,
-                                forced_not_editable: true,
-                                custom_props_div: "custom_props_div_${contextOrg.id}",
-                                tenant: contextOrg]}"/>
-                        </g:if>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <input type="submit" class="ui button js-click-control" value="Ausgewählte Merkmale in Ziellizenz kopieren" />
-    </g:form>
-</semui:form>
+<%@page import="com.k_int.kbplus.License"%>
+<laser:serviceInjection/>
+<!doctype html>
+<html>
+<head>
+    <meta name="layout" content="semanticUI" />
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.institutions.comp_lic')}</title>
+</head>
+<body>
+<semui:breadcrumbs>
+    <semui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}" />
+    <semui:crumb class="active" message="menu.institutions.comp_lic" />
+<%--<li class="dropdown pull-right">
+    <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">Exports<strong class="caret"></strong></a>&nbsp;
+    <ul class="dropdown-menu filtering-dropdown-menu" role="menu" aria-labelledby="export-menu">
+        <li>
+            <g:link action="compare" params="${params+[format:'csv']}">CSV Export</g:link>
+        </li>
+    </ul>
+</li>--%>
+</semui:breadcrumbs>
+<h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.comp_lic')}</h1>
+<g:render template="selectionForm" model="${[selectedLicenses:licenses]}" />
+<div class="ui grid">
+    <table class="ui la-table la-table-small table">
+        <g:set var="licenseCount" value="${licenses.size()}"/>
+        <thead>
+        <th colspan="${licenseCount}">${message(code:'property.table.property')}</th>
+        </thead>
+        <tbody>
+        <g:each in="${groupedProperties}" var="groupedProps">
+        <%-- leave it for debugging
+        <tr>
+            <td colspan="999">${groupedProps}</td>
+        </tr>--%>
+            <g:if test="${groupedProps.getValue()}">
+                <g:render template="comparisonTableRow" model="[group:groupedProps.getValue().groupTree,key:groupedProps.getKey().name,propBinding:groupedProps.getValue().binding,licenses:licenses]" />
+            </g:if>
+        </g:each>
+        <g:if test="${orphanedProperties.size() > 0}">
+            <g:render template="comparisonTableRow" model="[group:orphanedProperties,key:message(code:'license.properties'),licenses:licenses]" />
+        </g:if>
+        <g:if test="${privateProperties.size() > 0}">
+            <g:render template="comparisonTableRow" model="[group:privateProperties,key:message(code:'license.properties.private')+' '+contextService.getOrg().name,licenses:licenses]" />
+        </g:if>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
