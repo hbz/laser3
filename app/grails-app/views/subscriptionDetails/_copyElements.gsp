@@ -118,30 +118,6 @@
 </semui:form>
 
 <r:script>
-    // $('input:checkbox').change( function(event) {
-    //     // TODO Logik überprüfen, wann gewarnt werden soll!
-    //     if (this.checked) {
-    //         var pkgId = $(this).attr('data-pckId');
-    //         $('.table tr div[data-pckId="' + pkgId + '"]').addClass('willBeReplaced')
-    //     } else {
-    //         var pkgId = $(this).attr('data-pckId');
-    //         $('.table tr div[data-pckId="' + pkgId + '"]').removeClass('willBeReplaced')
-    //     }
-    // })
-
-    %{--$('input:checkbox').change( function(event) {--}%
-%{--// TODO Logik überprüfen, wann gewarnt werden soll!--}%
-%{--if (this.checked) {--}%
-%{--var prefix = ${this}.name();--}%
-%{--$('.table tr[name="' + prefix + '.source"]').addClass('willStay')--}%
-%{--$('.table tr[name="' + prefix + '.target"]').addClass('willBeReplaced')--}%
-%{--} else {--}%
-%{--var prefix = ${this}.name();--}%
-%{--$('.table tr[name="' + prefix + '.source"]').removeClass('willStay')--}%
-%{--$('.table tr[name="' + prefix + '.target"]').removeClass('willBeReplaced')--}%
-%{--}--}%
-%{--})--}%
-    // FUNKTIONIERT
     $('input:radio[name="subscription.takeDates"]').change( function(event) {
         if (this.checked && this.value=='REPLACE') {
             $('.table tr td[name="subscription.takeDates.source"] div').addClass('willStay')
@@ -189,66 +165,6 @@
             $('.table tr td[name="subscription.takeOrgRelations.target"] div').removeClass('willBeReplaced')
         }
     })
-    $('input:radio[name="subscription.takePackages"]').change( function(event) {
-        if (this.checked && this.value=='COPY') {
-            $('.table tr td[name="subscription.takePackages.target"] div').addClass('willStay')
-            $('.table tr td[name="subscription.takePackages.target"] div').removeClass('willBeReplaced')
-        }
-        if (this.checked && this.value=='REPLACE') {
-            $('.table tr td[name="subscription.takePackages.target"] div').addClass('willBeReplaced')
-        }
-        if (this.checked && this.value=='DO_NOTHING') {
-            $('.table tr td[name="subscription.takePackages.source"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takePackages.target"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takePackages.target"] div').removeClass('willBeReplaced')
-        }
-    })
-    $('input[name="subscription.takePackageIds"]').change( function(event) {
-        var pckOId = this.value
-        if (this.checked) {
-            $('.table tr td[name="subscription.takePackages.source"] div[data-pckOid="' + pckOId + '"]').addClass('willStay')
-        } else {
-            $('.table tr td[name="subscription.takePackages.source"] div[data-pckOid="' + pckOId + '"]').removeClass('willStay')
-        }
-        // $('.table tr div[data-pckId="' + pkgId + '"]').addClass('willBeReplaced')
-    })
-    $('input:radio[name="subscription.takeEntitlements"]').change( function(event) {
-        if (this.checked && this.value=='COPY') {
-            $('.table tr td[name="subscription.takeEntitlements.target"] div').addClass('willStay')
-            $('.table tr td[name="subscription.takeEntitlements.target"] div').removeClass('willBeReplaced')
-        }
-        if (this.checked && this.value=='REPLACE') {
-            $('.table tr td[name="subscription.takeEntitlements.target"] div').addClass('willBeReplaced')
-        }
-        if (this.checked && this.value=='DO_NOTHING') {
-            $('.table tr td[name="subscription.takeEntitlements.source"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takeEntitlements.target"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takeEntitlements.target"] div').removeClass('willBeReplaced')
-        }
-    })
-    $('input[name="subscription.takeEntitlementIds"]').change( function(event) {
-        var pckOId = this.value
-        if (this.checked) {
-            $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieOid="' + pckOId + '"]').addClass('willStay')
-        } else {
-            $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieOid="' + pckOId + '"]').removeClass('willStay')
-        }
-    })
-
-    // GEHT LEIDER NICHT
-%{--$('input:radio[name="subscription.takeDates"]').change( function(event) {--}%
-%{--alert("Enter")--}%
-%{--var name = ${this}.name--}%
-%{--if (this.checked && this.value=='REPLACE') {--}%
-%{--alert("gechecked"+name)--}%
-%{--$('.table tr td[name="' + name + '.source"] div').addClass('willStay')--}%
-%{--$('.table tr td[name="' + name + '.target"] div').addClass('willBeReplaced')--}%
-%{--} else {--}%
-%{--alert("nicht gechecked"+name)--}%
-%{--$('.table tr td[name="' + name + '.source"] div').removeClass('willStay')--}%
-%{--$('.table tr td[name="' + name + '.target"] div').removeClass('willBeReplaced')--}%
-%{--}--}%
-%{--})--}%
 </r:script>
 
 

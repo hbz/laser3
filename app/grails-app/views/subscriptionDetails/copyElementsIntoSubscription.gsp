@@ -82,11 +82,13 @@
         <g:render template="copyProperties" />
     </g:elseif>
     <g:elseif test="${workFlowPart == '5'}">
-        <g:render template="copyPackagesAndIEs" model="${[source_validSubChilds: source_validSubChilds, target_validSubChilds: target_validSubChilds]}"/>
+        %{--<g:render template="copyPackagesAndIEs" model="${[source_validSubChilds: source_validSubChilds, target_validSubChilds: target_validSubChilds]}"/>--}%
+        <g:render template="copyPackagesAndIEs" />
     </g:elseif>
     %{--workFlowPart == '1'--}%
     <g:else>
-        <g:render template="copyElements" model="${[source_validSubChilds: source_validSubChilds, target_validSubChilds: target_validSubChilds]}"/>
+        %{--<g:render template="copyElements" model="${[source_validSubChilds: source_validSubChilds, target_validSubChilds: target_validSubChilds]}"/>--}%
+        <g:render template="copyElements" />
     </g:else>
 </body>
 </html>

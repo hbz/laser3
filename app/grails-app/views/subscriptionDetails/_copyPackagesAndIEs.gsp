@@ -31,15 +31,15 @@
             <tbody>
             <tr>
                 <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takePackages" value="${COPY}" /></div></td>
-                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takePackages" value="${REPLACE}" />
-                ACHTUNG zugehörige Titel werden gelöscht</div></td>
+                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-replace">
+                    <input type="radio" name="subscription.takePackages" value="${REPLACE}" data-pkgIds="${targetSubscription?.packages?.collect {it.pkgId}?.join(',')}"/></div></td>
                 <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takePackages" value="${DO_NOTHING}" checked /></div></td>
                 <td style="vertical-align: top" name="subscription.takePackages.source">
-                    <b>${message(code: 'subscription.packages.label')}: ${sourceSubscription?.packages?.size()}</b>
+                    <b><i class="gift icon"></i>&nbsp${message(code: 'subscription.packages.label')}: ${sourceSubscription?.packages?.size()}</b>
                     <g:each in="${sourceSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
                         <div data-pckOid="${genericOIDService.getOID(sp.pkg)}">
                             <div class="ui checkbox">
-                                <g:checkBox name="subscription.takePackageIds" value="${genericOIDService.getOID(sp.pkg)}" data-pckId="${sp.pkg?.id}" checked="false"/>
+                                <g:checkBox name="subscription.takePackageIds" value="${genericOIDService.getOID(sp.pkg)}" data-pkgId="${sp.pkg?.id}" checked="false"/>
                                 <label>
                                     <g:link controller="package" action="show" target="_blank" id="${sp.pkg?.id}">${sp?.pkg?.name}</g:link>
                                     <semui:debugInfo>PkgId: ${sp.pkg?.id}</semui:debugInfo>
@@ -51,7 +51,7 @@
                     </g:each>
                 </td>
                 <td style="vertical-align: top" name="subscription.takePackages.target">
-                    <b>${message(code: 'subscription.packages.label')}: ${targetSubscription?.packages?.size()}</b>
+                    <b><i class="gift icon"></i>&nbsp${message(code: 'subscription.packages.label')}: ${targetSubscription?.packages?.size()}</b>
                     <div>
                         <g:each in="${targetSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
                             <g:link controller="packageDetails" action="show" target="_blank" id="${sp.pkg?.id}">${sp?.pkg?.name}</g:link>
@@ -67,7 +67,7 @@
                 <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeEntitlements" value="${REPLACE}" /></div></td>
                 <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeEntitlements" value="${DO_NOTHING}" checked /></div></td>
                 <td style="vertical-align: top" name="subscription.takeEntitlements.source">
-                    <b>${message(code: 'issueEntitlement.countSubscription')} </b>${sourceSubscription? sourceIEs?.size() : ""}<br>
+                    <b><i class="newspaper icon"></i>&nbsp${message(code: 'issueEntitlement.countSubscription')} </b>${sourceSubscription? sourceIEs?.size() : ""}<br>
                     <g:each in="${sourceIEs}" var="ie">
                         <div data-ieOid="${genericOIDService.getOID(ie)}">
                             <div class="ui checkbox">
@@ -82,9 +82,9 @@
                     </g:each>
                 </td>
                 <td style="vertical-align: top" name="subscription.takeEntitlements.target">
-                    <b>${message(code: 'issueEntitlement.countSubscription')} </b>${targetSubscription? targetIEs?.size(): ""} <br />
+                    <b><i class="newspaper icon"></i>&nbsp${message(code: 'issueEntitlement.countSubscription')} </b>${targetSubscription? targetIEs?.size(): ""} <br />
                     <g:each in="${targetIEs}" var="ie">
-                        <div data-pckId="${ie?.tipp?.pkg?.id}">
+                        <div data-pkgId="${ie?.tipp?.pkg?.id}">
                             <semui:listIcon type="${ie.tipp.title.type.getI10n('value')}"/>
                             <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
                             <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
@@ -102,74 +102,16 @@
     // $('input:checkbox').change( function(event) {
     //     // TODO Logik überprüfen, wann gewarnt werden soll!
     //     if (this.checked) {
-    //         var pkgId = $(this).attr('data-pckId');
-    //         $('.table tr div[data-pckId="' + pkgId + '"]').addClass('willBeReplaced')
+    //         var pkgId = $(this).attr('data-pkgId');
+    //         $('.table tr div[data-pkgId="' + pkgId + '"]').addClass('willBeReplaced')
     //     } else {
-    //         var pkgId = $(this).attr('data-pckId');
-    //         $('.table tr div[data-pckId="' + pkgId + '"]').removeClass('willBeReplaced')
+    //         var pkgId = $(this).attr('data-pkgId');
+    //         $('.table tr div[data-pkgId="' + pkgId + '"]').removeClass('willBeReplaced')
     //     }
     // })
 
     %{--$('input:checkbox').change( function(event) {--}%
-%{--// TODO Logik überprüfen, wann gewarnt werden soll!--}%
-%{--if (this.checked) {--}%
-%{--var prefix = ${this}.name();--}%
-%{--$('.table tr[name="' + prefix + '.source"]').addClass('willStay')--}%
-%{--$('.table tr[name="' + prefix + '.target"]').addClass('willBeReplaced')--}%
-%{--} else {--}%
-%{--var prefix = ${this}.name();--}%
-%{--$('.table tr[name="' + prefix + '.source"]').removeClass('willStay')--}%
-%{--$('.table tr[name="' + prefix + '.target"]').removeClass('willBeReplaced')--}%
-%{--}--}%
-%{--})--}%
     // FUNKTIONIERT
-    $('input:radio[name="subscription.takeDates"]').change( function(event) {
-        if (this.checked && this.value=='REPLACE') {
-            $('.table tr td[name="subscription.takeDates.source"] div').addClass('willStay')
-            $('.table tr td[name="subscription.takeDates.target"] div').addClass('willBeReplaced')
-        } else {
-            $('.table tr td[name="subscription.takeDates.source"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takeDates.target"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takeDates.target"] div').removeClass('willBeReplaced')
-        }
-    })
-    $('input:radio[name="subscription.takeOwner"]').change( function(event) {
-        if (this.checked && this.value=='REPLACE') {
-            $('.table tr td[name="subscription.takeOwner.source"] div').addClass('willStay')
-            $('.table tr td[name="subscription.takeOwner.target"] div').addClass('willBeReplaced')
-        } else {
-            $('.table tr td[name="subscription.takeOwner.source"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willBeReplaced')
-        }
-    })
-    $('input:radio[name="subscription.takeOwner"]').change( function(event) {
-        if (this.checked && this.value=='COPY') {
-            $('.table tr td[name="subscription.takeOwner.source"] div').addClass('willStay')
-            $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willBeReplaced')
-        }
-        if (this.checked && this.value=='DO_NOTHING') {
-            $('.table tr td[name="subscription.takeOwner.source"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willBeReplaced')
-        }
-    })
-    $('input:radio[name="subscription.takeOrgRelations"]').change( function(event) {
-        if (this.checked && this.value=='COPY') {
-            $('.table tr td[name="subscription.takeOrgRelations.source"] div').addClass('willStay')
-            $('.table tr td[name="subscription.takeOrgRelations.target"] div').addClass('willStay')
-            $('.table tr td[name="subscription.takeOrgRelations.target"] div').removeClass('willBeReplaced')
-        }
-        if (this.checked && this.value=='REPLACE') {
-            $('.table tr td[name="subscription.takeOrgRelations.source"] div').addClass('willStay')
-            $('.table tr td[name="subscription.takeOrgRelations.target"] div').addClass('willBeReplaced')
-        }
-        if (this.checked && this.value=='DO_NOTHING') {
-            $('.table tr td[name="subscription.takeOrgRelations.source"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takeOrgRelations.target"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takeOrgRelations.target"] div').removeClass('willBeReplaced')
-        }
-    })
     $('input:radio[name="subscription.takePackages"]').change( function(event) {
         if (this.checked && this.value=='COPY') {
             $('.table tr td[name="subscription.takePackages.target"] div').addClass('willStay')
@@ -177,6 +119,14 @@
         }
         if (this.checked && this.value=='REPLACE') {
             $('.table tr td[name="subscription.takePackages.target"] div').addClass('willBeReplaced')
+            // TODO: Was ist wenn Lizenz-Hinzufügen/-Ersetzen gleichzeitig ausgewählt ist?
+            var pkgIds = $(this).attr('data-pkgIds')
+            if (pkgIds != null) {
+                pkgIds = pkgIds.split(",");
+                for (var i = 0; i<pkgIds.length; i++){
+                    $('.table tr div[data-pkgId="' + pkgIds[i] + '"]').addClass('willBeReplaced')
+                }
+            }
         }
         if (this.checked && this.value=='DO_NOTHING') {
             $('.table tr td[name="subscription.takePackages.source"] div').removeClass('willStay')
@@ -191,7 +141,7 @@
         } else {
             $('.table tr td[name="subscription.takePackages.source"] div[data-pckOid="' + pckOId + '"]').removeClass('willStay')
         }
-        // $('.table tr div[data-pckId="' + pkgId + '"]').addClass('willBeReplaced')
+        // $('.table tr div[data-pkgId="' + pkgId + '"]').addClass('willBeReplaced')
     })
     $('input:radio[name="subscription.takeEntitlements"]').change( function(event) {
         if (this.checked && this.value=='COPY') {
@@ -215,21 +165,6 @@
             $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieOid="' + pckOId + '"]').removeClass('willStay')
         }
     })
-
-    // GEHT LEIDER NICHT
-%{--$('input:radio[name="subscription.takeDates"]').change( function(event) {--}%
-%{--alert("Enter")--}%
-%{--var name = ${this}.name--}%
-%{--if (this.checked && this.value=='REPLACE') {--}%
-%{--alert("gechecked"+name)--}%
-%{--$('.table tr td[name="' + name + '.source"] div').addClass('willStay')--}%
-%{--$('.table tr td[name="' + name + '.target"] div').addClass('willBeReplaced')--}%
-%{--} else {--}%
-%{--alert("nicht gechecked"+name)--}%
-%{--$('.table tr td[name="' + name + '.source"] div').removeClass('willStay')--}%
-%{--$('.table tr td[name="' + name + '.target"] div').removeClass('willBeReplaced')--}%
-%{--}--}%
-%{--})--}%
 </r:script>
 
 

@@ -3035,8 +3035,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
 
         // restrict visible for templates/links/orgLinksAsList
-        result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
-        result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(newSub)
+//        result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
+//        result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(newSub)
 
         params?.workFlowPart = '5'
         params?.workFlowPartNext = '2'
