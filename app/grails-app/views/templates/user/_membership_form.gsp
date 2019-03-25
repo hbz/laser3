@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.auth.UserOrg" %>
+<%@ page import="com.k_int.kbplus.auth.*" %>
 
 <g:if test="${tmplProfile}"><%-- /profile/index --%>
     <g:form name="affiliationRequestForm" controller="profile" action="processJoinRequest" class="ui form" method="get">
@@ -19,6 +19,7 @@
                           from="${availableOrgRoles}"
                           optionKey="id"
                           optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
+                          value="${Role.findByAuthority('INST_USER').id}"
                           class="ui fluid dropdown"/>
             </div>
         </div>
@@ -49,6 +50,7 @@
                           from="${availableOrgRoles}"
                           optionKey="id"
                           optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
+                          value="${Role.findByAuthority('INST_USER').id}"
                           class="ui fluid dropdown"/>
             </div>
         </div>

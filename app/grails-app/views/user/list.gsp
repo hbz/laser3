@@ -24,15 +24,20 @@
                 <g:form action="list" method="get" class="ui form">
                     <g:set value="${Role.findAll()}" var="auth_values"/>
 
-                    <div class="three fields">
+                    <div class="four fields">
                         <div class="field">
                             <label>Name contains</label>
                             <input type="text" name="name" value="${params.name}"/>
                         </div>
                         <div class="field">
                             <label>Role</label>
-                            <g:select from="${auth_values}" noSelection="${['null':'-Any role-']}" class="ui dropdown"
-                                      value="authority" optionKey="id" optionValue="authority" name="authority" />
+                            <g:select from="${auth_values}" noSelection="${['':'Any']}" class="ui dropdown"
+                                      value="${params.authority}" optionKey="id" optionValue="authority" name="authority" />
+                        </div>
+                        <div class="field">
+                            <label>Organisation</label>
+                            <g:select from="${availableComboOrgs}" noSelection="${['':'Any']}" class="ui search dropdown"
+                                      value="${params.org}" optionKey="id" optionValue="${{it.getDesignation()}}" name="org" />
                         </div>
                         <div class="field la-field-right-aligned">
                             <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
@@ -48,15 +53,20 @@
                 <g:form action="list" method="get" class="ui form">
                     <g:set value="${Role.findAllByRoleType('user')}" var="auth_values"/>
 
-                    <div class="three fields">
+                    <div class="four fields">
                         <div class="field">
                             <label>Name contains</label>
                             <input type="text" name="name" value="${params.name}"/>
                         </div>
                         <div class="field">
                             <label>Role</label>
-                            <g:select from="${auth_values}" noSelection="${['null':'-Any role-']}" class="ui dropdown"
-                                      value="authority" optionKey="id" optionValue="authority" name="authority" />
+                            <g:select from="${auth_values}" noSelection="${['':'Any']}" class="ui search dropdown"
+                                      value="${params.authority}" optionKey="id" optionValue="authority" name="authority" />
+                        </div>
+                        <div class="field">
+                            <label>Organisation</label>
+                            <g:select from="${availableComboOrgs}" noSelection="${['':"${contextService.getOrg().getDesignation()}"]}" class="ui search dropdown"
+                                      value="${params.org}" optionKey="id" optionValue="${{it.getDesignation()}}" name="org" />
                         </div>
                         <div class="field la-field-right-aligned">
                             <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.filterreset.label')}</a>
@@ -70,9 +80,6 @@
 
             <semui:messages data="${flash}" />
 
-            <sec:ifNotGranted roles="ROLE_ADMIN"> TODO: COMBO
-            </sec:ifNotGranted>
-        
             <table class="ui sortable celled la-table la-table-small table">
                 <thead>
                     <tr>
@@ -84,7 +91,9 @@
                         <th>Display Name</th>
                         <th>Institution</th>
                         <th>Enabled</th>
-                        <th>API</th>
+                        <sec:ifAnyGranted roles="ROLE_ADMIN">
+                            <th>API</th>
+                        </sec:ifAnyGranted>
                         <th></th>
                     </tr>
                 </thead>
@@ -128,25 +137,27 @@
                                     ${fieldValue(bean: us, field: "enabled")}
                                 </sec:ifNotGranted>
                             </td>
-                            <td>
-                                <div class="ui list">
-                                    <g:if test="${UserRole.findByUserAndRole(us, Role.findByAuthority('ROLE_API'))}">
-                                        <div class="item"><i class="icon circle outline"></i> API</div>
-                                    </g:if>
+                            <sec:ifAnyGranted roles="ROLE_ADMIN">
+                                <td>
+                                    <div class="ui list">
+                                        <g:if test="${UserRole.findByUserAndRole(us, Role.findByAuthority('ROLE_API'))}">
+                                            <div class="item"><i class="icon circle outline"></i> API</div>
+                                        </g:if>
 
-                                    <g:if test="${UserRole.findByUserAndRole(us, Role.findByAuthority('ROLE_API_READER'))}">
-                                        <div class="item"><i class="icon check circle outline"></i> Lesend</div>
-                                    </g:if>
+                                        <g:if test="${UserRole.findByUserAndRole(us, Role.findByAuthority('ROLE_API_READER'))}">
+                                            <div class="item"><i class="icon check circle outline"></i> Lesend</div>
+                                        </g:if>
 
-                                    <g:if test="${UserRole.findByUserAndRole(us, Role.findByAuthority('ROLE_API_WRITER'))}">
-                                        <div class="item"><i class="icon check circle"></i> Schreibend</div>
-                                    </g:if>
+                                        <g:if test="${UserRole.findByUserAndRole(us, Role.findByAuthority('ROLE_API_WRITER'))}">
+                                            <div class="item"><i class="icon check circle"></i> Schreibend</div>
+                                        </g:if>
 
-                                    <g:if test="${UserRole.findByUserAndRole(us, Role.findByAuthority('ROLE_API_DATAMANAGER'))}">
-                                        <div class="item"><i class="icon circle"></i> Datamanager</div>
-                                    </g:if>
-                                </div>
-                            </td>
+                                        <g:if test="${UserRole.findByUserAndRole(us, Role.findByAuthority('ROLE_API_DATAMANAGER'))}">
+                                            <div class="item"><i class="icon circle"></i> Datamanager</div>
+                                        </g:if>
+                                    </div>
+                                </td>
+                            </sec:ifAnyGranted>
                             <td class="x">
                                 <g:if test="${editor.hasRole('ROLE_ADMIN') || us.getAuthorizedAffiliations().collect{ it.org.id }.unique().size() == 1}">
                                     <g:link action="edit" id="${us.id}" class="ui icon button"><i class="write icon"></i></g:link>

@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.*" %>
+<%@ page import="com.k_int.kbplus.*;com.k_int.kbplus.auth.Role" %>
 <!doctype html>
 <html>
     <head>
@@ -41,6 +41,7 @@
                                       from="${availableOrgs}"
                                       optionKey="id"
                                       optionValue="name"
+                                      value="${params.org}"
                                       class="ui fluid search dropdown"/>
                         </div>
                         <div class="field">
@@ -49,6 +50,7 @@
                                       from="${availableOrgRoles}"
                                       optionKey="id"
                                       optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
+                                      value="${Role.findByAuthority('INST_USER').id}"
                                       class="ui fluid dropdown"/>
                         </div>
                     </div>
@@ -61,6 +63,7 @@
                                           from="${availableComboOrgs}"
                                           optionKey="id"
                                           optionValue="name"
+                                          value="${params.org}"
                                           class="ui fluid search dropdown"/>
                             </div>
                             <div class="field">
@@ -69,6 +72,7 @@
                                           from="${availableOrgRoles}"
                                           optionKey="id"
                                           optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
+                                          value="${Role.findByAuthority('INST_USER').id}"
                                           class="ui fluid dropdown"/>
                             </div>
                         </div>
