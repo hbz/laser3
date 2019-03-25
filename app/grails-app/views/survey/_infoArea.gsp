@@ -1,4 +1,4 @@
-<g:if test="${surveyInfo}">
+<g:if test="${surveyInfo && actionName != 'showSurveyInfo'}">
     <semui:card message="showSurveyInfo.step.first.title" class=" ">
         <div class="content">
             <dl>
@@ -30,7 +30,7 @@
     </semui:card>
 </g:if>
 
-<g:if test="${surveyConfigs}">
+<g:if test="${surveyConfigs && actionName != 'showSurveyConfig'}">
     <semui:card message="surveyInfo.property" class="">
         <div class="content">
             <g:each in="${surveyConfigs}" var="config" status="i">

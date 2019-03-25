@@ -17,11 +17,13 @@ class SurveyConfig {
     SurveyInfo surveyInfo
 
     String type
+    String header
+    String comment
 
     Date dateCreated
     Date lastUpdated
 
-
+    ArrayList orgIDs
 
     static hasMany = [
             docs: Doc,
@@ -32,6 +34,9 @@ class SurveyConfig {
         docs (nullable:true, blank:false)
         subscription (nullable:true, blank:false)
         surveyProperty (nullable:true, blank:false)
+        orgIDs (nullable:true, blank:false)
+        header(nullable:true, blank:false)
+        comment  (nullable:true, blank:false)
     }
 
     static mapping = {
@@ -39,6 +44,10 @@ class SurveyConfig {
         version column: 'surConf_version'
 
         type column: 'surConf_type'
+        header column: 'surConf_header'
+        comment  column: 'surConf_comment'
+
+        orgIDs column: 'surConf_orgIDs'
 
         dateCreated column: 'surConf_dateCreated'
         lastUpdated column: 'surConf_lastUpdated'
@@ -53,7 +62,7 @@ class SurveyConfig {
     @Transient
     static def validTypes = [
             'Subscription'             : ['de': 'Lizenz', 'en': 'Subscription'],
-            'SurveyProperty'              : ['de': 'Umfrage-Merkmal', 'en': 'Survey-Property']
+            'SurveyProperty'              : ['de': 'Abfrage-Merkmal', 'en': 'Survey-Property']
     ]
 
     static getLocalizedValue(key){

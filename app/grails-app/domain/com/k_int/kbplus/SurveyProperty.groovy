@@ -5,6 +5,7 @@ import de.laser.domain.I10nTranslation
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
+import javax.validation.UnexpectedTypeException
 
 class SurveyProperty extends AbstractI10nTranslatable {
 
@@ -25,21 +26,21 @@ class SurveyProperty extends AbstractI10nTranslatable {
 
     @Transient
     static def validTypes = [
-            'class java.lang.Integer'             : ['de': 'Zahl', 'en': 'Number'],
-            'class java.lang.String'              : ['de': 'Text', 'en': 'Text'],
-            'class com.k_int.kbplus.RefdataValue' : ['de': 'Referenzwert', 'en': 'Refdata'],
-            'class java.math.BigDecimal'          : ['de': 'Dezimalzahl', 'en': 'Decimal'],
-            'class java.util.Date'                : ['de': 'Datum', 'en': 'Date'],
-            'class java.net.URL'                  : ['de': 'Url', 'en': 'Url']
+            'class java.lang.Integer'            : ['de': 'Zahl', 'en': 'Number'],
+            'class java.lang.String'             : ['de': 'Text', 'en': 'Text'],
+            'class com.k_int.kbplus.RefdataValue': ['de': 'Referenzwert', 'en': 'Refdata'],
+            'class java.math.BigDecimal'         : ['de': 'Dezimalzahl', 'en': 'Decimal'],
+            'class java.util.Date'               : ['de': 'Datum', 'en': 'Date'],
+            'class java.net.URL'                 : ['de': 'Url', 'en': 'Url']
     ]
 
     static constraints = {
-        owner (nullable:true, blank:false)
-        introduction (nullable:true, blank:false)
-        comment (nullable:true, blank:false)
-        explain (nullable:true, blank:false)
-        hardData (nullable: false, blank: false, default: false)
-        refdataCategory (nullable:true, blank:false)
+        owner(nullable: true, blank: false)
+        introduction(nullable: true, blank: false)
+        comment(nullable: true, blank: false)
+        explain(nullable: true, blank: false)
+        hardData(nullable: false, blank: false, default: false)
+        refdataCategory(nullable: true, blank: false)
     }
 
     static mapping = {
@@ -59,7 +60,7 @@ class SurveyProperty extends AbstractI10nTranslatable {
         lastUpdated column: 'surPro_lastUpdated'
     }
 
-    static getLocalizedValue(key){
+    static getLocalizedValue(key) {
         def locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale().toString())
 
         //println locale
@@ -71,7 +72,7 @@ class SurveyProperty extends AbstractI10nTranslatable {
     }
 
     def afterInsert() {
-        I10nTranslation.createOrUpdateI10n(this, 'name',  [de: this.name, en: this.name])
+        I10nTranslation.createOrUpdateI10n(this, 'name', [de: this.name, en: this.name])
         I10nTranslation.createOrUpdateI10n(this, 'explain', [de: this.explain, en: this.explain])
         I10nTranslation.createOrUpdateI10n(this, 'introduction', [de: this.introduction, en: this.introduction])
     }
@@ -79,6 +80,42 @@ class SurveyProperty extends AbstractI10nTranslatable {
     def afterDelete() {
         def rc = this.getClass().getName()
         def id = this.getId()
-        I10nTranslation.where{referenceClass == rc && referenceId == id}.deleteAll()
+        I10nTranslation.where { referenceClass == rc && referenceId == id }.deleteAll()
+    }
+
+    private static def typeIsValid(key) {
+        if (validTypes.containsKey(key)) {
+            return true;
+        } else {
+            log.error("Provided prop type ${key} is not valid. Allowed types are ${validTypes}")
+            throw new UnexpectedTypeException()
+        }
+    }
+
+    static def loc(String name, String typeClass, RefdataCategory rdc, String explain, String comment, String introduction, Org owner) {
+
+        typeIsValid(typeClass)
+
+        def prop = findWhere(
+                name: name,
+                type: typeClass,
+                owner: owner
+        )
+
+        if (!prop) {
+            log.debug("No SurveyProperty match for ${name} : ${typeClass} ( ${explain} ) @ ${owner?.name}. Creating new one ..")
+
+            prop = new SurveyProperty(
+                    name: name,
+                    type: typeClass,
+                    explain: explain ?: null,
+                    comment: comment ?: null,
+                    introduction: introduction ?: null,
+                    refdataCategory: rdc?.desc,
+                    owner: owner
+            )
+            prop.save(flush: true)
+        }
+        prop
     }
 }

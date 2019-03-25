@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.User
+import com.k_int.properties.PropertyDefinition
 import de.laser.helper.DateUtil
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
@@ -31,6 +32,7 @@ class SurveyController {
 
         result
     }
+
     @Secured(['ROLE_YODA'])
     def showSurveyInfo() {
         def result = [:]
@@ -41,14 +43,17 @@ class SurveyController {
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
-            redirect action: 'currentSurveys'
+            redirect(url: request.getHeader('referer'))
         }
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
+
+        result.surveyConfigs = result.surveyInfo?.surveyConfigs?.sort { it?.configOrder }
         result
 
 
     }
+
     @Secured(['ROLE_YODA'])
     def locSurveyInfo() {
 
@@ -60,7 +65,7 @@ class SurveyController {
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
-            redirect action: 'currentSurveys'
+            redirect(url: request.getHeader('referer'))
         }
 
 
@@ -75,9 +80,9 @@ class SurveyController {
             //surveyInfo.type = RefdataValue.get(params.type)
 
             if (surveyInfo.isDirty()) {
-                if(surveyInfo.save(flush: true)) {
+                if (surveyInfo.save(flush: true)) {
                     flash.message = g.message(code: "showSurveyInfo.save.successfully")
-                }else {
+                } else {
                     flash.error = g.message(code: "showSurveyInfo.save.fail")
                 }
             }
@@ -99,6 +104,7 @@ class SurveyController {
 
 
     }
+
     @Secured(['ROLE_YODA'])
     def showSurveyConfig() {
         def result = [:]
@@ -109,7 +115,7 @@ class SurveyController {
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
-            redirect action: 'currentSurveys'
+            redirect(url: request.getHeader('referer'))
         }
 
 
@@ -126,11 +132,12 @@ class SurveyController {
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
-        result.surveyConfigs = result.surveyInfo.surveyConfigs.sort{it?.configOrder}
+        result.surveyConfigs = result.surveyInfo.surveyConfigs.sort { it?.configOrder }
 
         result
 
     }
+
     @Secured(['ROLE_YODA'])
     def addSurveyConfig() {
 
@@ -142,7 +149,7 @@ class SurveyController {
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
-            redirect action: 'currentSurveys'
+            redirect(url: request.getHeader('referer'))
         }
 
         def surveyInfo = SurveyInfo.get(params.id) ?: null
@@ -171,25 +178,44 @@ class SurveyController {
                     flash.error = g.message(code: "showSurveyConfig.exists")
                 }
             }
-                if (params.property) {
-                    def property = SurveyProperty.get(Long.parseLong(params.property))
-                    def surveyConfigProp = property ? SurveyConfig.findAllBySurveyPropertyAndSurveyInfo(property, surveyInfo) : null
-                    if (!surveyConfigProp && property) {
-                        surveyConfigProp = new SurveyConfig(
-                                surveyProperty: property,
-                                configOrder: surveyInfo.surveyConfigs.size()+1,
-                                type: 'SurveyProperty'
+            if (params.property) {
+                def property = SurveyProperty.get(Long.parseLong(params.property))
+                def surveyConfigProp = property ? SurveyConfig.findAllBySurveyPropertyAndSurveyInfo(property, surveyInfo) : null
+                if (!surveyConfigProp && property) {
+                    surveyConfigProp = new SurveyConfig(
+                            surveyProperty: property,
+                            configOrder: surveyInfo.surveyConfigs.size() + 1,
+                            type: 'SurveyProperty'
 
-                        )
-                        surveyInfo.addToSurveyConfigs(surveyConfigProp)
-                        surveyInfo.save(flush: true)
+                    )
+                    surveyInfo.addToSurveyConfigs(surveyConfigProp)
+                    surveyInfo.save(flush: true)
 
-                        flash.message = g.message(code: "showSurveyConfig.add.successfully")
+                    flash.message = g.message(code: "showSurveyConfig.add.successfully")
 
-                    }else {
-                        flash.error = g.message(code: "showSurveyConfig.exists")
-                    }
+                } else {
+                    flash.error = g.message(code: "showSurveyConfig.exists")
                 }
+            }
+            if (params.propertytoSub) {
+                def property = SurveyProperty.get(Long.parseLong(params.propertytoSub))
+                def surveyConfig = SurveyConfig.get(Long.parseLong(params.surveyConfig))
+
+                def propertytoSub = property ? SurveyConfigProperties.findAllBySurveyPropertyAndSurveyConfig(property, surveyConfig) : null
+                if (!propertytoSub && property && surveyConfig) {
+                    propertytoSub = new SurveyConfigProperties(
+                            surveyConfig:  surveyConfig,
+                            surveyProperty: property
+
+                    )
+                    propertytoSub.save(flush: true)
+
+                    flash.message = g.message(code: "showSurveyConfig.add.successfully")
+
+                } else {
+                    flash.error = g.message(code: "showSurveyConfig.exists")
+                }
+            }
 
             redirect action: 'showSurveyConfig', id: surveyInfo.id
 
@@ -198,7 +224,7 @@ class SurveyController {
         }
     }
 
-    def deleteSurveyConfig(){
+    def deleteSurveyConfig() {
         def result = [:]
         result.institution = contextService.getOrg()
         result.user = User.get(springSecurityService.principal.id)
@@ -207,7 +233,7 @@ class SurveyController {
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
-            redirect action: 'currentSurveys'
+            redirect(url: request.getHeader('referer'))
         }
 
         def surveyConfig = SurveyConfig.get(params.id)
@@ -216,6 +242,10 @@ class SurveyController {
 
 
         try {
+
+            SurveyConfigProperties.findAllBySurveyConfig(surveyConfig).each {
+                it.delete(flush: true)
+            }
             surveyConfig.delete(flush: true)
             flash.message = g.message(code: "default.deleted.message", args: [g.message(code: "surveyConfig.label"), ''])
         }
@@ -223,12 +253,87 @@ class SurveyController {
             flash.error = g.message(code: "default.not.deleted.message", args: [g.message(code: "surveyConfig.label"), ''])
         }
 
-         redirect(url: request.getHeader('referer'))
+        redirect(url: request.getHeader('referer'))
 
     }
 
-    private getSurveyProperties(Org contextOrg)
-    {
+    def deleteSurveyPropfromSub() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        def surveyConfigProp = SurveyConfigProperties.get(params.id)
+
+        try {
+            surveyConfigProp.delete(flush: true)
+            flash.message = g.message(code: "default.deleted.message", args: [g.message(code: "surveyConfig.label"), ''])
+        }
+        catch (DataIntegrityViolationException e) {
+            flash.error = g.message(code: "default.not.deleted.message", args: [g.message(code: "surveyConfig.label"), ''])
+        }
+
+        redirect(url: request.getHeader('referer'))
+
+    }
+
+    def addSurveyProperty() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        def surveyProperty = SurveyProperty.findWhere(
+                name:   params.name,
+                type:   params.type,
+                owner: result.institution,
+        )
+
+        if((!surveyProperty) && params.name && params.type) {
+            def rdc
+            if (params.refdatacategory) {
+                rdc = RefdataCategory.findById(Long.parseLong(params.refdatacategory))
+            }
+            surveyProperty = SurveyProperty.loc(
+                    params.name,
+                    params.type,
+                    rdc,
+                    params.explain,
+                    params.comment,
+                    params.introduction,
+                    result.institution
+            )
+
+            if (surveyProperty.save(flush: true)) {
+                flash.message = message(code: 'surveyProperty.create.successfully', args:[surveyProperty.name])
+            }
+            else {
+                flash.error = message(code: 'surveyProperty.create.fail')
+            }
+        } else if (surveyProperty)
+        {
+            flash.error = message(code: 'surveyProperty.create.exist')
+        }else {
+            flash.error = message(code: 'surveyProperty.create.fail')
+        }
+
+        redirect(url: request.getHeader('referer'))
+
+    }
+
+    private getSurveyProperties(Org contextOrg) {
         def properties = []
 
         //private Property
@@ -242,6 +347,8 @@ class SurveyController {
             properties << prop
 
         }
+
+        properties.sort{a,b -> a.getI10n('name').compareToIgnoreCase b.getI10n('name')}
 
         return properties
     }
