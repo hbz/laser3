@@ -141,7 +141,7 @@
                     <td><input type="checkbox" name="_bulkflag.${tipp.id}" class="bulkcheck" ${checked[t]}/></td>
                     <td>${counter++}</td>
                     <td>
-                        <semui:listIcon type="${tipp.title.type}"/>
+                        <semui:listIcon type="${tipp.title?.type?.value}"/>
                       <g:link controller="tipp" id="${tipp.id}" action="show">${tipp.title.title}</g:link>
                       <br/>
                       <span class="pull-right">
