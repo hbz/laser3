@@ -472,7 +472,8 @@
                 if (! isError("#newCostInBillingCurrency") && ! isError("#newCostCurrencyRate")) {
                     var input = $(this).siblings("input");
                     input.transition('glow');
-                    input.val((convertDouble($("#newCostInBillingCurrency").val()) * $("#newCostCurrencyRate").val()).toFixed(2));
+                    var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency").val());
+                    input.val(convertDouble(parsedBillingCurrency * $("#newCostCurrencyRate").val()));
 
                     $(".la-account-currency").find(".field").removeClass("error");
                     calcTaxResults()
@@ -482,7 +483,9 @@
                 if (! isError("#newCostInLocalCurrency") && ! isError("#newCostInBillingCurrency")) {
                     var input = $(this).siblings("input");
                     input.transition('glow');
-                    input.val((convertDouble($("#newCostInLocalCurrency").val()) / convertDouble($("#newCostInBillingCurrency").val())).toFixed(9));
+                    var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency").val());
+                    var parsedBillingCurrency = convertDouble($("#newCostInBillingCurrency").val());
+                    input.val((parsedLocalCurrency / parsedBillingCurrency).toFixed(9));
 
                     $(".la-account-currency").find(".field").removeClass("error");
                     calcTaxResults()
@@ -492,7 +495,8 @@
                 if (! isError("#newCostInLocalCurrency") && ! isError("#newCostCurrencyRate")) {
                     var input = $(this).siblings("input");
                     input.transition('glow');
-                    input.val((convertDouble($("#newCostInLocalCurrency").val()) / $("#newCostCurrencyRate").val()).toFixed(2));
+                    var parsedLocalCurrency = convertDouble($("#newCostInLocalCurrency").val());
+                    input.val(convertDouble(parsedLocalCurrency / $("#newCostCurrencyRate").val()));
 
                     $(".la-account-currency").find(".field").removeClass("error");
                     calcTaxResults()

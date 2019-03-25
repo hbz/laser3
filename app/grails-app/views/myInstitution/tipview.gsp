@@ -96,7 +96,7 @@
           </tbody>
         </table>
 
-          <semui:paginate action="tipview" max="${user?.defaultPageSize?:10}" params="${[:]+params}" next="Next" prev="Prev" total="${tips.totalCount}" />
+          <semui:paginate action="tipview" max="${user?.getDefaultPageSizeTMP()?:10}" params="${[:]+params}" next="Next" prev="Prev" total="${tips.totalCount}" />
 
         <div id="magicArea">
         </div>

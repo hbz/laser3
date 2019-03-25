@@ -32,6 +32,7 @@ class OrganisationsController extends AbstractDebugController {
     def propertyService
     def orgDocumentService
     def docstoreService
+    def userService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -48,6 +49,12 @@ class OrganisationsController extends AbstractDebugController {
         def orgInstance = Org.get(params.id)
 
         result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+
+        // forbidden access
+        if (! result.editable && orgInstance.id != contextService.getOrg().id) {
+            redirect controller: 'organisations', action: 'show', id: orgInstance.id
+
+        }
 
         // TODO: deactived
       /*
@@ -492,39 +499,25 @@ class OrganisationsController extends AbstractDebugController {
 
         result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
+        result.editable = result.editable || userService.hasInstAdmPivileges(result.user, orgInstance)
+
         // forbidden access
         if (! result.editable && orgInstance.id != contextService.getOrg().id) {
             redirect controller: 'organisations', action: 'show', id: orgInstance.id
 
         }
 
-      def tracked_roles = ["ROLE_ADMIN":"LAS:eR Administrator"]
-
       if (!orgInstance) {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
         redirect action: 'list'
         return
       }
-      result.users2 = orgInstance.affiliations.collect{ userOrg ->
-        def admin_roles = []
-        userOrg.user.roles.each{ 
-          if (tracked_roles.keySet().contains(it.role.authority)){
-            def role_match = tracked_roles.get(it.role.authority)+" (${it.role.authority})"
-            admin_roles += role_match
-          }
-        }
-        // log.debug("Found roles: ${admin_roles} for user ${userOrg.user.displayName}")
 
-        return [userOrg,admin_roles?:null]
+        result.pendingRequests = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, orgInstance, [sort:'dateRequested', order:'desc'])
+        result.users = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_APPROVED, orgInstance, [sort:'user.username', order: 'asc'])
 
-      }
-
-        result.users = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_APPROVED, orgInstance, [sort:'dateRequested'])
-        result.pendingRequests = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, orgInstance, [sort:'dateRequested'])
-
-        // log.debug(result.users)
-      result.orgInstance = orgInstance
-      result
+        result.orgInstance = orgInstance
+        result
     }
 
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR','ROLE_ORG_COM_EDITOR'])
@@ -555,27 +548,25 @@ class OrganisationsController extends AbstractDebugController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-    def enableRole() {
+    def processAffiliation() {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
       UserOrg uo = UserOrg.get(params.assoc)
-      if ( accessService.checkMinUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
-        uo.status = UserOrg.STATUS_APPROVED
-        uo.save();
+      if (accessService.checkMinUserOrgRole(result.user, uo.org, 'INST_ADM')) {
+
+          if (params.cmd == 'approve') {
+              uo.status = UserOrg.STATUS_APPROVED
+              uo.save(flush: true)
+          }
+          else if (params.cmd == 'reject') {
+              uo.status = UserOrg.STATUS_REJECTED
+              uo.save(flush: true)
+          }
+          else if (params.cmd == 'delete') {
+              uo.delete(flush: true)
+          }
       }
       redirect action: 'users', id: params.id
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-    def deleteRole() {
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        UserOrg uo = UserOrg.get(params.assoc)
-        if ( accessService.checkMinUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
-            uo.delete(flush:true);
-        }
-        redirect action: 'users', id: params.id
     }
 
     @Secured(['ROLE_USER'])

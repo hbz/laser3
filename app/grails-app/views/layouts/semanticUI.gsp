@@ -203,6 +203,8 @@
                             <semui:securedMainNavItem affiliation="INST_ADM" controller="organisations" action="users" params="[id: contextOrg?.id]"
                                                       message="menu.institutions.affiliation_requests" newAffiliationRequests="${newAffiliationRequests1}" />
 
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="documents" message="default.documents.label" />
+
 
                             %{--<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgTypeIds())}">--}%
                                 %{--<semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.manage_consortia" />--}%
@@ -227,6 +229,12 @@
                                 <g:link class="item" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</g:link>
                                 <%--<semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="changeLog" message="menu.institutions.change_log" />--%>
                             </sec:ifAnyGranted>
+
+                            <g:set var="myInstNewAffils" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatusAndOrg(0, contextService.getOrg(), [sort:'dateRequested']).size()}" />
+
+                            <semui:securedMainNavItem affiliation="INST_ADM" controller="organisations" action="users" params="[id: contextOrg?.id]"
+                                                      message="menu.institutions.users" newAffiliationRequests="${myInstNewAffils}" />
+
 
                         </div>
                     </div>
