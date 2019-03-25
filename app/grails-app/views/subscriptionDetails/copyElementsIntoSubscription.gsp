@@ -43,14 +43,14 @@
             </div>
         </semui:complexSubNavItem>
 
-        <semui:complexSubNavItem controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 3]}"  workFlowPart="3">
-            <i class="university icon"></i>
-            <div class="content">
-                <div class="title">
-                    Teilnehmer
-                </div>
-            </div>
-        </semui:complexSubNavItem>
+        %{--<semui:complexSubNavItem controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 3]}"  workFlowPart="3">--}%
+            %{--<i class="university icon"></i>--}%
+            %{--<div class="content">--}%
+                %{--<div class="title">--}%
+                    %{--Teilnehmer--}%
+                %{--</div>--}%
+            %{--</div>--}%
+        %{--</semui:complexSubNavItem>--}%
 
         <semui:complexSubNavItem controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 4]}"  workFlowPart="4">
             <i class="tags icon"></i>
