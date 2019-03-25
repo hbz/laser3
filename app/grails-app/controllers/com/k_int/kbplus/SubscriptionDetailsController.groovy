@@ -2692,12 +2692,15 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 result << workFlowPart4();
 //                result << workFlowPart4_neu();
                 break;
+            case '5':
+                result << workFlowPart5();
+                break;
             default:
                 result << workFlowPart1();
                 break;
         }
 
-//        TODO: Unusede? Entf?
+//        TODO: Unuseded Entf?
 //        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(result.subscriptionInstance.class.name, result.subscriptionInstance.id)
 //        result.navPrevSubscription = links.prevLink
 //        result.navNextSubscription = links.nextLink
@@ -2740,16 +2743,6 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             subscriptionService.takeOrgRelations(params?.subscription?.takeOrgRelations, baseSub, newSub, flash)
         }
 
-        if (params?.subscription?.takePackages && ( ! DO_NOTHING.equals(params?.subscription?.takePackages)) && isBothSubscriptionsSet(baseSub, newSub)) {
-            List<Package> packagesToTake = params?.list('subscription.takePackageIds').collect{ genericOIDService.resolveOID(it)}
-            subscriptionService.takePackages(params?.subscription?.takePackages, packagesToTake, newSub, flash)
-        }
-
-        if (params?.subscription?.takeEntitlements && ( ! DO_NOTHING.equals(params?.subscription?.takeEntitlements)) && isBothSubscriptionsSet(baseSub, newSub)) {
-            List<IssueEntitlement> entitlementsToTake = params?.list('subscription.takeEntitlementIds').collect{ genericOIDService.resolveOID(it)}
-            subscriptionService.takeEntitlements(params?.subscription?.takeEntitlements, entitlementsToTake, newSub, flash)
-        }
-
         result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
         result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
 
@@ -2768,21 +2761,28 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
         Subscription newSub = null
-        if (params.targetSubscriptionId){
+        if (params.targetSubscriptionId) {
             newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
-
-            def toCopyDocs = []
-            params.list('subscription.takeDocs').each { doc -> toCopyDocs << Long.valueOf(doc) }
-            subscriptionService.takeDoks(COPY, baseSub, toCopyDocs, newSub, flash)
-
-            def toCopyAnnouncements = []
-            params.list('subscription.takeAnnouncements').each { announcement -> toCopyAnnouncements << Long.valueOf(announcement) }
-            subscriptionService.takeAnnouncements(COPY, baseSub, toCopyAnnouncements, newSub, flash)
-
-            def toCopyTasks =  []
-            params.list('subscription.takeTasks').each{ tsk -> toCopyTasks << Long.valueOf(tsk) }
-            subscriptionService.takeTasks(COPY, baseSub, toCopyTasks, newSub, flash)
         }
+
+        if (params?.subscription?.takeDocs && ( ! DO_NOTHING.equals(params.subscription.takeDocs)) && isBothSubscriptionsSet(baseSub, newSub)) {
+            def toCopyDocs = []
+            params.list('subscription.takeDocIds').each { doc -> toCopyDocs << Long.valueOf(doc) }
+            subscriptionService.takeDoks(params.subscription.takeDocs, baseSub, toCopyDocs, newSub, flash)
+        }
+
+        if (params?.subscription?.takeAnnouncements && ( ! DO_NOTHING.equals(params.subscription.takeAnnouncements)) && isBothSubscriptionsSet(baseSub, newSub)) {
+            def toCopyAnnouncements = []
+            params.list('subscription.takeAnnouncementIds').each { announcement -> toCopyAnnouncements << Long.valueOf(announcement) }
+            subscriptionService.takeAnnouncements(params.subscription.takeAnnouncements, baseSub, toCopyAnnouncements, newSub, flash)
+        }
+
+        if (params?.subscription?.takeTasks && ( ! DO_NOTHING.equals(params.subscription.takeTasks)) && isBothSubscriptionsSet(baseSub, newSub)) {
+            def toCopyTasks =  []
+            params.list('subscription.takeTaskIds').each{ tsk -> toCopyTasks << Long.valueOf(tsk) }
+            subscriptionService.takeTasks(params.subscription.takeTasks, baseSub, toCopyTasks, newSub, flash)
+        }
+
         result.sourceSubscription = baseSub
         result.targetSubscription = newSub
         result.sourceTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.sourceSubscription)
@@ -3016,6 +3016,34 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
     }
 
 
+    private workFlowPart5() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+
+        if (params?.subscription?.takePackages && ( ! DO_NOTHING.equals(params?.subscription?.takePackages)) && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<Package> packagesToTake = params?.list('subscription.takePackageIds').collect{ genericOIDService.resolveOID(it)}
+            subscriptionService.takePackages(params?.subscription?.takePackages, packagesToTake, newSub, flash)
+        }
+
+        if (params?.subscription?.takeEntitlements && ( ! DO_NOTHING.equals(params?.subscription?.takeEntitlements)) && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<IssueEntitlement> entitlementsToTake = params?.list('subscription.takeEntitlementIds').collect{ genericOIDService.resolveOID(it)}
+            subscriptionService.takeEntitlements(params?.subscription?.takeEntitlements, entitlementsToTake, newSub, flash)
+        }
+
+        result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
+        result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
+
+        // restrict visible for templates/links/orgLinksAsList
+        result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
+        result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(newSub)
+
+        params?.workFlowPart = '5'
+        params?.workFlowPartNext = '2'
+        result.newSub = newSub
+        result.subscription = baseSub
+        result
+    }
 
 
     private boolean isBothSubscriptionsSet(Subscription baseSub, Subscription newSub) {

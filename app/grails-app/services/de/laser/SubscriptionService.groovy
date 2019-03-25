@@ -101,7 +101,7 @@ class SubscriptionService {
     }
 
     boolean takeOrgRelations(String aktion, Subscription sourceSub, Subscription targetSub, def flash) {
-        if (REPLACE.equals(aktion)) {
+        if (REPLACE.equals(aktion) && targetSub?.orgRelations?.size() > 0) {
             OrgRole.executeUpdate("delete from OrgRole o where o in (:orgRelations)",[orgRelations: targetSub.orgRelations])
         }
         switch (aktion) {
@@ -197,57 +197,52 @@ class SubscriptionService {
     boolean takeTasks(String aktion, Subscription sourceSub, def toCopyTasks, Subscription targetSub, def flash) {
         switch (aktion) {
             case COPY:
-    //        if (!Task.findAllBySubscription(targetSub)) {
-            //Copy Tasks
-    //        params.list('subscription.takeTasks').each { tsk ->
-            toCopyTasks.each { tsk ->
-
-                def task = Task.findBySubscriptionAndId(sourceSub, tsk)
-                if (task) {
-                    if (task.status != RDStore.TASK_STATUS_DONE) {
-                        Task newTask = new Task()
-                        InvokerHelper.setProperties(newTask, task.properties)
-                        newTask.subscription = targetSub
-                        newTask.save(flush: true)
+                toCopyTasks.each { tsk ->
+                    def task = Task.findBySubscriptionAndId(sourceSub, tsk)
+                    if (task) {
+                        if (task.status != RDStore.TASK_STATUS_DONE) {
+                            Task newTask = new Task()
+                            InvokerHelper.setProperties(newTask, task.properties)
+                            newTask.subscription = targetSub
+                            newTask.save(flush: true)
+                        }
                     }
-
                 }
-            }
                 break;
             case REPLACE:
                 throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
         }
-        //       }
     }
 
     boolean takeAnnouncements(String aktion, Subscription sourceSub, def toCopyAnnouncements, Subscription targetSub, def flash) {
-        switch (aktion) {
-            case COPY:
-    //        def toCopyAnnouncements = []
-    //        params.list('subscription.takeAnnouncements').each { announcement ->
-    //            toCopyAnnouncements << Long.valueOf(announcement)
-    //        }
-            //        if (targetSub?.documents?.size() == 0) {//?
-            sourceSub.documents?.each { dctx ->
-                //Copy Announcements
-                if (dctx.id in toCopyAnnouncements) {
-                    if ((dctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
-                        Doc newDoc = new Doc()
-                        InvokerHelper.setProperties(newDoc, dctx.owner.properties)
-                        newDoc.save(flush: true)
-                        DocContext newDocContext = new DocContext()
-                        InvokerHelper.setProperties(newDocContext, dctx.properties)
-                        newDocContext.subscription = targetSub
-                        newDocContext.owner = newDoc
-                        newDocContext.save(flush: true)
-                    }
+        if (REPLACE.equals(aktion)) {
+            targetSub.documents.each {
+                if ((it.owner?.contentType == Doc.CONTENT_TYPE_STRING  && !(it.domain))){
+                    it.status = RDStore.IE_DELETED
+                    it.save(flush: true)
                 }
             }
-                break
-            case REPLACE:
-                throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
         }
-        //        }
+
+        switch (aktion) {
+            case COPY:
+            case REPLACE:
+                sourceSub.documents?.each { dctx ->
+                    if (dctx.id in toCopyAnnouncements) {
+                        if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
+                            Doc newDoc = new Doc()
+                            InvokerHelper.setProperties(newDoc, dctx.owner.properties)
+                            newDoc.save(flush: true)
+                            DocContext newDocContext = new DocContext()
+                            InvokerHelper.setProperties(newDocContext, dctx.properties)
+                            newDocContext.subscription = targetSub
+                            newDocContext.owner = newDoc
+                            newDocContext.save(flush: true)
+                        }
+                    }
+                }
+                break
+        }
     }
 
     boolean takeDates(String aktion, Subscription sourceSub, Subscription targetSub, def flash) {
@@ -271,16 +266,22 @@ class SubscriptionService {
     }
 
     boolean takeDoks(String aktion, Subscription sourceSub, def toCopyDocs, Subscription targetSub, def flash) {
+        if (REPLACE.equals(aktion)) {
+            targetSub.documents.each {
+                if ((it.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (it.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) {
+                    it.status = RDStore.IE_DELETED
+                    it.save(flush: true)
+                }
+            }
+        }
+
         switch (aktion) {
+            case REPLACE:
             case COPY:
-    //        def toCopyDocs = []
-    //        params.list('subscription.takeDocs').each { doc -> toCopyDocs << Long.valueOf(doc) }
-    //
-            //        if (targetSub?.documents?.size() == 0) {//?
             sourceSub.documents?.each { dctx ->
                 //Copy Docs
                 if (dctx.id in toCopyDocs) {
-                    if (((dctx.owner?.contentType == 1) || (dctx.owner?.contentType == 3)) && (dctx.status?.value != 'Deleted')) {
+                    if (((dctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (dctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (dctx.status?.value != 'Deleted')) {
                         Doc newDoc = new Doc()
                         InvokerHelper.setProperties(newDoc, dctx.owner.properties)
                         newDoc.save(flush: true)
@@ -292,11 +293,7 @@ class SubscriptionService {
                     }
                 }
             }
-                break;
-            case REPLACE:
-                throw new UnsupportedOperationException("Der Fall " + aktion + " ist nicht vorgesehen!")
         }
-        //        }
     }
 
     boolean takeProperties(String aktion, List<AbstractProperty> properties, Subscription targetSub, def flash){

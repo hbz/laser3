@@ -30,85 +30,66 @@
             </thead>
             <tbody>
             <tr>
-                <td class="center aligned" style="vertical-align: top">
+                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takePackages" value="${COPY}" /></div></td>
+                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takePackages" value="${REPLACE}" />
+                ACHTUNG zugehörige Titel werden gelöscht</div></td>
+                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takePackages" value="${DO_NOTHING}" checked /></div></td>
+                <td style="vertical-align: top" name="subscription.takePackages.source">
+                    <b>${message(code: 'subscription.packages.label')}: ${sourceSubscription?.packages?.size()}</b>
+                    <g:each in="${sourceSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
+                        <div data-pckOid="${genericOIDService.getOID(sp.pkg)}">
+                            <div class="ui checkbox">
+                                <g:checkBox name="subscription.takePackageIds" value="${genericOIDService.getOID(sp.pkg)}" data-pckId="${sp.pkg?.id}" checked="false"/>
+                                <label>
+                                    <g:link controller="package" action="show" target="_blank" id="${sp.pkg?.id}">${sp?.pkg?.name}</g:link>
+                                    <semui:debugInfo>PkgId: ${sp.pkg?.id}</semui:debugInfo>
+                                    <g:if test="${sp.pkg?.contentProvider}">(${sp.pkg?.contentProvider?.name})</g:if>
+                                </label>
+                            </div>
 
+                        </div>
+                    </g:each>
                 </td>
-                <td class="center aligned" style="vertical-align: top">
-                    <div class="ui radio checkbox la-toggle-radio la-replace">
-                        <input type="radio" name="subscription.takeDates" value="${REPLACE}" />
-                    </div>
-                </td>
-                <td class="center aligned" style="vertical-align: top">
-                    <div class="ui radio checkbox la-toggle-radio la-noChange">
-                        <input type="radio" name="subscription.takeDates" value="${DO_NOTHING}" checked />
-                    </div>
-                </td>
-                <td style="vertical-align: top" name="subscription.takeDates.source">
+                <td style="vertical-align: top" name="subscription.takePackages.target">
+                    <b>${message(code: 'subscription.packages.label')}: ${targetSubscription?.packages?.size()}</b>
                     <div>
-                        <g:formatDate date="${sourceSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
-                        ${sourceSubscription?.endDate ? (' - ' + formatDate(date: sourceSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}
-                    </div>
-                </td>
-                <td style="vertical-align: top" name="subscription.takeDates.target">
-                    <div>
-                        <g:formatDate date="${targetSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
-                        ${targetSubscription?.endDate ? (' - ' + formatDate(date: targetSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}
+                        <g:each in="${targetSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
+                            <g:link controller="packageDetails" action="show" target="_blank" id="${sp.pkg?.id}">${sp?.pkg?.name}</g:link>
+                            <semui:debugInfo>PkgId: ${sp.pkg?.id}</semui:debugInfo>
+                            <g:if test="${sp.pkg?.contentProvider}">(${sp.pkg?.contentProvider?.name})</g:if>
+                            <br>
+                        </g:each>
                     </div>
                 </td>
             </tr>
             <tr>
-                <td class="center aligned" style="vertical-align: top"></td>
-                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeOwner" value="${REPLACE}" /></div></td>
-                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeOwner" value="${DO_NOTHING}" checked /></div></td>
-                <td style="vertical-align: top" name="subscription.takeOwner.source">
-                    <div>
-                        <g:if test="${sourceSubscription?.owner}">
-                            <b>${message(code: 'license')}:</b>
-                            <g:link controller="licenseDetails" action="show" target="_blank" id="${sourceSubscription.owner.id}">
-                                ${sourceSubscription.owner}
-                            </g:link>
-                        </g:if>
-                    </div>
+                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeEntitlements" value="${COPY}" /></div></td>
+                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeEntitlements" value="${REPLACE}" /></div></td>
+                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeEntitlements" value="${DO_NOTHING}" checked /></div></td>
+                <td style="vertical-align: top" name="subscription.takeEntitlements.source">
+                    <b>${message(code: 'issueEntitlement.countSubscription')} </b>${sourceSubscription? sourceIEs?.size() : ""}<br>
+                    <g:each in="${sourceIEs}" var="ie">
+                        <div data-ieOid="${genericOIDService.getOID(ie)}">
+                            <div class="ui checkbox">
+                                <g:checkBox name="subscription.takeEntitlementIds" value="${genericOIDService.getOID(ie)}" checked="false"/>&nbsp
+                                <label>
+                                    <semui:listIcon type="${ie.tipp.title.type.getI10n('value')}"/>&nbsp
+                                    <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
+                                    <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
+                                </label>
+                            </div>
+                        </div>
+                    </g:each>
                 </td>
-                <td style="vertical-align: top" name="subscription.takeOwner.target">
-                    <div>
-                        <g:if test="${targetSubscription?.owner}">
-                            <b>${message(code: 'license')}:</b>
-                            <g:link controller="licenseDetails" action="show" target="_blank" id="${targetSubscription?.owner?.id}">
-                                ${targetSubscription?.owner}
-                            </g:link>
-                        </g:if>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeOrgRelations" value="${COPY}" /></div></td>
-                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeOrgRelations" value="${REPLACE}" /></div></td>
-                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeOrgRelations" value="${DO_NOTHING}" checked /></div></td>
-                <td style="vertical-align: top" name="subscription.takeOrgRelations.source">
-                    <div>
-                        <g:each in="${source_visibleOrgRelations}" var="source_role">
-                            <g:if test="${source_role.org}">
-                                <b>${source_role?.roleType?.getI10n("value")}:</b>
-                                <g:link controller="Organisations" action="show" target="_blank" id="${source_role.org.id}">
-                                    ${source_role?.org?.name}
-                                </g:link><br>
-                            </g:if>
-                        </g:each>
-                    </div>
-                </td>
-                <td style="vertical-align: top" name="subscription.takeOrgRelations.target">
-                    <div>
-                        <g:each in="${target_visibleOrgRelations}" var="target_role">
-                            <g:if test="${target_role.org}">
-                                <b>${target_role?.roleType?.getI10n("value")}:</b>
-                                <g:link controller="Organisations" action="show" target="_blank" id="${target_role.org.id}">
-                                    ${target_role?.org?.name}
-                                </g:link>
-                                <br>
-                            </g:if>
-                        </g:each>
-                    </div>
+                <td style="vertical-align: top" name="subscription.takeEntitlements.target">
+                    <b>${message(code: 'issueEntitlement.countSubscription')} </b>${targetSubscription? targetIEs?.size(): ""} <br />
+                    <g:each in="${targetIEs}" var="ie">
+                        <div data-pckId="${ie?.tipp?.pkg?.id}">
+                            <semui:listIcon type="${ie.tipp.title.type.getI10n('value')}"/>
+                            <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
+                            <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
+                        </div>
+                    </g:each>
                 </td>
             </tr>
             </tbody>

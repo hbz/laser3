@@ -61,10 +61,10 @@ class DocContext implements ShareableTrait {
     domain(nullable:true, blank:false)
     status(nullable:true, blank:false)
     globannounce(nullable:true, blank:true)
-      sharedFrom(nullable:true, blank:true)
-      isShared(nullable:true, blank:false, default:false)
-      targetOrg(nullable: true,blank: false)
-      shareConf(nullable: true,blank: false)
+    sharedFrom(nullable:true, blank:true)
+    isShared(nullable:true, blank:false, default:false)
+    targetOrg(nullable: true,blank: false)
+    shareConf(nullable: true,blank: false)
   }
 
     void afterUpdate(PostUpdateEvent event) {
