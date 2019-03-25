@@ -1,5 +1,6 @@
 package de.laser
 
+import com.k_int.kbplus.Combo
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
@@ -14,19 +15,29 @@ import org.springframework.context.i18n.LocaleContextHolder
 class UserService {
 
     GrailsApplication grailsApplication
+    def accessService
 
     def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
     def mailService = Holders.grailsApplication.mainContext.getBean('mailService')
 
-    def createAffiliation(User user, Org org, Role formalRole, def uoStatus, def flash){
+    boolean hasInstAdmPivileges(User user, Org org) {
+        boolean result = false
+
+        List<Org> topOrgs = Org.executeQuery(
+                'select c.toOrg from Combo c where c.fromOrg = :org', [org: org]
+        )
+        topOrgs.each{ top ->
+            if (accessService.checkMinUserOrgRole(user, top, 'INST_ADM')) {
+                result = true
+            }
+        }
+        result
+    }
+
+    def createAffiliation(User user, Org org, Role formalRole, def uoStatus, def flash) {
 
         try {
             def check = UserOrg.findByOrgAndUserAndFormalRole(org, user, formalRole)
-
-            if (check && check.status == UserOrg.STATUS_CANCELLED) {
-                check.delete()
-                check = null
-            }
 
             if (check) {
                 flash?.error = messageSource.getMessage('profile.processJoinRequest.error', null, LocaleContextHolder.getLocale())
@@ -44,7 +55,7 @@ class UserService {
                     uo.dateActioned = uo.dateRequested
                 }
                 if (uo.save(flush:true)) {
-                    flash?.message = "OK"
+                    flash?.message = "Die neue Organisations-Zugehörigkeit wurde angelegt."
 
                     if (uoStatus == UserOrg.STATUS_APPROVED) {
                         // TODO: only send if manually approved
@@ -53,7 +64,7 @@ class UserService {
                     }
                 }
                 else {
-                    flash?.error = "Problem requesting affiliation"
+                    flash?.error = "Die neue Organisations-Zugehörigkeit konnte nicht angelegt werden."
                 }
             }
         }
