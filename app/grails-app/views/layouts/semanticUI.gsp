@@ -470,7 +470,7 @@
                             </div>
 
                             <div class="divider"></div>
-                            <g:link class="item" controller="yoda" action="inga" >Frontend für Entwickler</g:link>
+                            <g:link class="item" controller="yoda" action="frontend" >Frontend für Entwickler</g:link>
 
                         </div>
 
@@ -622,7 +622,7 @@
                                             $('.card.la-js-hideable').not( ":has(.la-js-dont-hide-this-card)" ).addClass('hidden');
                                             $('.la-js-hide-this-card').addClass('hidden');
                                             $('.ui.form').not('.ui.modal .ui.form').addClass('hidden');
-                                            $('#collapseableSubDetails').not('.ui.modal').find('.button').not('.ui.modal .button, .la-url-button').addClass('hidden');
+                                            $('#collapseableSubDetails').not('.ui.modal').find('.button').not('.ui.modal .button, .la-js-dont-hide-button').addClass('hidden');
                                             $(toggleButton).removeAttr();
                                             $(toggleButton).attr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
                                             $( toggleIcon ).addClass( "slash" );
