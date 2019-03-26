@@ -2,6 +2,7 @@ package com.k_int.kbplus
 
 import com.k_int.kbplus.auth.Role
 import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.UserOrg
 import com.k_int.kbplus.auth.UserRole
 import de.laser.SystemEvent
 import de.laser.domain.SystemProfiler
@@ -33,6 +34,7 @@ class YodaController {
     def subscriptionUpdateService
     def executorService
     def costItemUpdateService
+    def documentUpdateService
     def quartzScheduler
 
     static boolean ftupdate_running = false
@@ -604,6 +606,20 @@ class YodaController {
     def updateTaxRates(){
         flash.message = "Kosten werden in das neue Steuermodell überführt ..."
         costItemUpdateService.updateTaxRates()
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_YODA'])
+    def showOldDocumentOwners(){
+        List currentDocuments = DocContext.executeQuery('select dc from DocContext dc where dc.owner.creator != null and dc.owner.owner = null and dc.sharedFrom = null order by dc.owner.creator.display asc')
+        Map result = [currentDocuments:currentDocuments]
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def updateShareConfigurations(){
+        flash.message = "Überarbeite Sichtbarkeitseinstellungen und Eigentümerverhältnisse ..."
+        documentUpdateService.updateShareConfigurations()
         redirect(url: request.getHeader('referer'))
     }
 

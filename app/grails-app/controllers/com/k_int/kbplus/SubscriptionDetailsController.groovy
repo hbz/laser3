@@ -65,6 +65,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
     def financeService
     def orgTypeService
     def subscriptionsQueryService
+    def orgDocumentService
 
     private static String INVOICES_FOR_SUB_HQL =
             'select co.invoice, sum(co.costInLocalCurrency), sum(co.costInBillingCurrency), co from CostItem as co where co.sub = :sub group by co.invoice order by min(co.invoice.startDate) desc';

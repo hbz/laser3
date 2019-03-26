@@ -2,6 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.BudgetCode
 import com.k_int.kbplus.CostItem
+import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.Invoice
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.License
@@ -303,6 +304,36 @@ class ControlledListService {
         references.each { r ->
             log.debug(r)
             result.results.add([name:r.reference,value:r.reference])
+        }
+        result
+    }
+
+    Map getElements(Map params) {
+        Map result = [results:[]]
+        Org org = contextService.getOrg()
+        if(params.org == "true") {
+            List allOrgs = DocContext.executeQuery('select dc.org from DocContext dc where dc.owner.owner = :ctxOrg and dc.org != null and (lower(dc.org.name) like lower(:query) or lower(dc.org.sortname) like lower(:query)) order by dc.org.sortname asc',[ctxOrg:org,query:"%${params.query}%"])
+            allOrgs.each { it ->
+                result.results.add([name:"(${messageSource.getMessage('spotlight.organisation',null,LocaleContextHolder.locale)}) ${it.name}",value:"${it.class.name}:${it.id}"])
+            }
+        }
+        if(params.license == "true") {
+            List allLicenses = DocContext.executeQuery('select dc.license from DocContext dc where dc.owner.owner = :ctxOrg and dc.license != null and lower(dc.license.reference) like lower(:query) order by dc.license.reference asc',[ctxOrg:org,query:"%${params.query}%"])
+            allLicenses.each { it ->
+                result.results.add([name:"(${messageSource.getMessage('spotlight.license',null,LocaleContextHolder.locale)}) ${it.reference}",value:"${it.class.name}:${it.id}"])
+            }
+        }
+        if(params.subscription == "true") {
+            List allSubscriptions = DocContext.executeQuery('select dc.subscription from DocContext dc where dc.owner.owner = :ctxOrg and dc.subscription != null and lower(dc.subscription.name) like lower(:query) order by dc.subscription.name asc',[ctxOrg:org,query:"%${params.query}%"])
+            allSubscriptions.each { it ->
+                result.results.add([name:"(${messageSource.getMessage('spotlight.subscription',null,LocaleContextHolder.locale)}) ${it.name}",value:"${it.class.name}:${it.id}"])
+            }
+        }
+        if(params.package == "true") {
+            List allPackages = DocContext.executeQuery('select dc.pkg from DocContext dc where dc.owner.owner = :ctxOrg and dc.pkg != null and lower(dc.pkg.name) like lower(:query) order by dc.pkg.name asc', [ctxOrg: org, query: "%${params.query}%"])
+            allPackages.each { it ->
+                result.results.add([name: "(${messageSource.getMessage('spotlight.package', null, LocaleContextHolder.locale)}) ${it.name}", value: "${it.class.name}:${it.id}"])
+            }
         }
         result
     }

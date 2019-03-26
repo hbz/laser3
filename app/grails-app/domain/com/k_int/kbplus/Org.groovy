@@ -75,9 +75,6 @@ class Org
 
     Set ids = []
 
-    @Transient
-    def documents
-
     static mappedBy = [
         ids:              'org',
         outgoingCombos:   'fromOrg',
@@ -88,7 +85,8 @@ class Org
         addresses:        'org',
         affiliations:     'org',
         customProperties: 'owner',
-        privateProperties:'owner'
+        privateProperties:'owner',
+        documents:        'org'
     ]
 
     static hasMany = [
@@ -103,6 +101,7 @@ class Org
         customProperties:   OrgCustomProperty,
         privateProperties:  OrgPrivateProperty,
         orgType:            RefdataValue,
+        documents:          DocContext
     ]
 
     static mapping = {
@@ -139,7 +138,6 @@ class Org
                 key:    'org_id',
                 column: 'refdata_value_id', type:   'BIGINT'
         ], lazy: false
-
         addresses   lazy: false
         contacts    lazy: false
     }

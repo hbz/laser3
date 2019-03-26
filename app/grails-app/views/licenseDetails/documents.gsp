@@ -20,7 +20,7 @@
 
     <g:render template="nav" />
 
-    <g:render template="/templates/documents/table" model="${[instance:license, redirect:'documents']}"/>
+    <g:render template="/templates/documents/table" model="${[instance:license, org:institution, redirect:'documents',owntp:'license']}"/>
 
 </body>
 </html>

@@ -25,6 +25,7 @@ class PackageController extends AbstractDebugController {
     def addressbookService
     def docstoreService
     def GOKbService
+    def orgDocumentService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -663,6 +664,7 @@ select s from Subscription as s where
     def documents() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
+        result.institution = contextService.org
         result.packageInstance = Package.get(params.id)
         result.editable = isEditable()
 

@@ -407,9 +407,7 @@ class OrganisationsController extends AbstractDebugController {
        //}
 
         //documents
-        du.setBenchMark('documents')
-        Map docMap = orgDocumentService.getDocuments(result.user,result.orgInstance,params)
-        result.orgInstance = docMap.org
+        //du.setBenchMark('documents')
 
         List bm = du.stopBenchMark()
         result.benchMark = bm
@@ -426,10 +424,8 @@ class OrganisationsController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def documents() {
-        User user = User.get(springSecurityService.principal.id)
-        Org org = Org.get(params.id)
-        Map ret = orgDocumentService.getDocuments(user,org,params)
-        Map result = [user:user,org:ret.org,availableUsers:ret.availableUsers,editable:accessService.checkMinUserOrgRole(user,ret.org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]
+        Map result = setResultGenerics()
+        result.org = Org.get(params.id)
         result
     }
 
@@ -437,7 +433,6 @@ class OrganisationsController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def editDocument() {
         Map result = setResultGenerics()
-        result.targetOrg = Org.get(params.org)
         result.ownobj = result.institution
         result.owntp = 'organisation'
         if(params.id) {

@@ -1,7 +1,9 @@
 package de.laser
 
+import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
 import java.text.DateFormat
@@ -10,6 +12,7 @@ class FilterService {
 
     private static final Long FAKE_CONSTRAINT_ORGID_WITHOUT_HITS = new Long(-1)
     def springSecurityService
+    def genericOIDService
 
     Map<String, Object> getOrgQuery(Map params) {
         Map<String, Object> result = [:]
@@ -184,17 +187,40 @@ class FilterService {
             query << "d.type = :type"
             queryParams << [type: RefdataValue.get(params.docType)]
         }
-        if(params.docOwnerOrg) {
-            query << "d.owner = :owner"
-            queryParams << [owner: Org.get(params.docOwnerOrg)]
-        }
-        if(params.docTargetOrg) {
-            query << "dc.targetOrg = :target"
-            queryParams << [target: Org.get(params.docTargetOrg)]
-        }
-        if(params.docShareConf) {
-            query << "dc.shareConf = :shareConf"
-            queryParams << [shareConf: RefdataValue.get(params.docShareConf)]
+        if(params.docTarget) {
+            //sorry, I hate def, but here, I cannot avoid using it ...
+            List targetOIDs = params.docTarget.split(",")
+            Set targetQuery = []
+            List subs = [], orgs = [], licenses = [], pkgs = []
+            targetOIDs.each { t ->
+                def target = genericOIDService.resolveOID(t)
+                switch(target.class.name) {
+                    case Subscription.class.name: targetQuery << "dc.subscription in (:subs)"
+                        subs << target
+                        break
+                    case Org.class.name: targetQuery << "dc.org in (:orgs)"
+                        orgs << target
+                        break
+                    case License.class.name: targetQuery << "dc.license in (:licenses)"
+                        licenses << target
+                        break
+                    case com.k_int.kbplus.Package.class.name: targetQuery << "dc.pkg in (:pkgs)"
+                        pkgs << target
+                        break
+                    default: log.debug(target.class.name)
+                        break
+                }
+            }
+            if(subs)
+                queryParams.subs = subs
+            if(orgs)
+                queryParams.orgs = orgs
+            if(licenses)
+                queryParams.licenses = licenses
+            if(pkgs)
+                queryParams.pkgs = pkgs
+            if(targetQuery)
+                query << "(${targetQuery.join(" or ")})"
         }
         if(query.size() > 0)
             result.query = " and "+query.join(" and ")
