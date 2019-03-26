@@ -108,7 +108,7 @@
                                 <dd><semui:auditButton auditable="[subscriptionInstance, 'status']"/></dd>
                             </dl>
                             <dl>
-                                <semui:label message="subscription.details.type" />
+                                <dt class="control-label">${message(code: 'subscription.details.type')}</dt>
                                 <dd>
                                     <%-- TODO: subscribers may not edit type, but admins and yoda --%>
                                     <g:if test="${subscriptionInstance.getAllSubscribers().contains(contextOrg)}">

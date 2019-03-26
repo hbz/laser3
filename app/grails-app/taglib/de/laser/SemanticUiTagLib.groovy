@@ -197,16 +197,6 @@ class SemanticUiTagLib {
                 break
         }
     }
-    def label = { attrs, body ->
-
-        def text = attrs.text ? attrs.text : ''
-        def message = attrs.message ? "${message(code: attrs.message)}" : ''
-        def label = (text && message) ? text + " - " + message : text + message
-
-        out << '<dt class="control-label">' + label
-
-        out << '</dt>'
-    }
 
     def auditButton = { attrs, body ->
 
@@ -239,7 +229,7 @@ class SemanticUiTagLib {
                         String oid = "${obj.getClass().getName()}:${obj.getId()}"
 
                         if (auditService.getAuditConfig(obj, objAttr)) {
-                            out << '&nbsp; <div class="ui simple dropdown icon mini green button">'
+                            out << '&nbsp; <div class="ui simple dropdown icon mini green button la-js-dont-hide-button">'
                             out   << '<i class="icon thumbtack"></i>'
 
                             out   << '<div class="menu">'
@@ -264,7 +254,7 @@ class SemanticUiTagLib {
                                     controller: 'ajax',
                                     action: 'toggleAudit',
                                     params: ['owner': oid, 'property': [objAttr]],
-                                    class: 'ui icon mini button'
+                                    class: 'ui icon mini button la-js-dont-hide-button'
                             )
                             out <<  '</span>'
                         }
