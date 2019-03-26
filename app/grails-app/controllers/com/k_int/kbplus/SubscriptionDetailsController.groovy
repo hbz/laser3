@@ -5,6 +5,8 @@ import com.k_int.kbplus.abstract_domain.CustomProperty
 import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.properties.PropertyDefinition
 import com.k_int.kbplus.TitleInstancePackagePlatform
+import com.k_int.properties.PropertyDefinitionGroup
+import com.k_int.properties.PropertyDefinitionGroupBinding
 import com.lowagie.text.pdf.PdfName
 import de.laser.AccessService
 import de.laser.controller.AbstractDebugController
@@ -69,6 +71,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
     def orgTypeService
     def subscriptionsQueryService
     def subscriptionService
+    def comparisonService
 
     public static final String COPY = "COPY"
     public static final String REPLACE = "REPLACE"
@@ -2683,17 +2686,21 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 result << workFlowPart2();
                 break;
             case '3':
-//                result << workFlowPart3();
+                result << workFlowPart3();
                 break;
             case '4':
                 result << workFlowPart4();
+//                result << workFlowPart4_neu();
+                break;
+            case '5':
+                result << workFlowPart5();
                 break;
             default:
                 result << workFlowPart1();
                 break;
         }
 
-//        TODO: Unusede? Entf?
+//        TODO: Unuseded Entf?
 //        LinkedHashMap<String,List> links = navigationGenerationService.generateNavigation(result.subscriptionInstance.class.name, result.subscriptionInstance.id)
 //        result.navPrevSubscription = links.prevLink
 //        result.navNextSubscription = links.nextLink
@@ -2736,16 +2743,6 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
             subscriptionService.takeOrgRelations(params?.subscription?.takeOrgRelations, baseSub, newSub, flash)
         }
 
-        if (params?.subscription?.takePackages && ( ! DO_NOTHING.equals(params?.subscription?.takePackages)) && isBothSubscriptionsSet(baseSub, newSub)) {
-            List<Package> packagesToTake = params?.list('subscription.takePackageIds').collect{ genericOIDService.resolveOID(it)}
-            subscriptionService.takePackages(params?.subscription?.takePackages, packagesToTake, newSub, flash)
-        }
-
-        if (params?.subscription?.takeEntitlements && ( ! DO_NOTHING.equals(params?.subscription?.takeEntitlements)) && isBothSubscriptionsSet(baseSub, newSub)) {
-            List<IssueEntitlement> entitlementsToTake = params?.list('subscription.takeEntitlementIds').collect{ genericOIDService.resolveOID(it)}
-            subscriptionService.takeEntitlements(params?.subscription?.takeEntitlements, entitlementsToTake, newSub, flash)
-        }
-
         result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
         result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
 
@@ -2764,150 +2761,156 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
         Subscription newSub = null
-        if (params.targetSubscriptionId){
+        if (params.targetSubscriptionId) {
             newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
-
-            def toCopyDocs = []
-            params.list('subscription.takeDocs').each { doc -> toCopyDocs << Long.valueOf(doc) }
-            subscriptionService.takeDoks(COPY, baseSub, toCopyDocs, newSub, flash)
-
-            def toCopyAnnouncements = []
-            params.list('subscription.takeAnnouncements').each { announcement -> toCopyAnnouncements << Long.valueOf(announcement) }
-            subscriptionService.takeAnnouncements(COPY, baseSub, toCopyAnnouncements, newSub, flash)
-
-            def toCopyTasks =  []
-            params.list('subscription.takeTasks').each{ tsk -> toCopyTasks << Long.valueOf(tsk) }
-            subscriptionService.takeTasks(COPY, baseSub, toCopyTasks, newSub, flash)
         }
+
+        if (params?.subscription?.takeDocs && ( ! DO_NOTHING.equals(params.subscription.takeDocs)) && isBothSubscriptionsSet(baseSub, newSub)) {
+            def toCopyDocs = []
+            params.list('subscription.takeDocIds').each { doc -> toCopyDocs << Long.valueOf(doc) }
+            subscriptionService.takeDoks(params.subscription.takeDocs, baseSub, toCopyDocs, newSub, flash)
+        }
+
+        if (params?.subscription?.takeAnnouncements && ( ! DO_NOTHING.equals(params.subscription.takeAnnouncements)) && isBothSubscriptionsSet(baseSub, newSub)) {
+            def toCopyAnnouncements = []
+            params.list('subscription.takeAnnouncementIds').each { announcement -> toCopyAnnouncements << Long.valueOf(announcement) }
+            subscriptionService.takeAnnouncements(params.subscription.takeAnnouncements, baseSub, toCopyAnnouncements, newSub, flash)
+        }
+
+        if (params?.subscription?.takeTasks && ( ! DO_NOTHING.equals(params.subscription.takeTasks)) && isBothSubscriptionsSet(baseSub, newSub)) {
+            def toCopyTasks =  []
+            params.list('subscription.takeTaskIds').each{ tsk -> toCopyTasks << Long.valueOf(tsk) }
+            subscriptionService.takeTasks(params.subscription.takeTasks, baseSub, toCopyTasks, newSub, flash)
+        }
+
         result.sourceSubscription = baseSub
         result.targetSubscription = newSub
         result.sourceTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.sourceSubscription)
         result.targetTasks = taskService.getTasksByResponsiblesAndObject(result.user, contextService.org, result.targetSubscription)
-
         params.workFlowPart = '2'
         params.workFlowPartNext = '3'
-
-        //TODO entf? nur für WF3
-        //if orgrole ist subconsortia
-//        def validSubChilds = Subscription.findAllByInstanceOfAndStatusNotEqual(baseSub, RDStore.SUBSCRIPTION_DELETED)
-//        result.validSubChilds = validSubChilds.sort { a, b ->
-//            def sa = a.getSubscriber()
-//            def sb = b.getSubscriber()
-//            (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
-//        }
         result
     }
 
     private workFlowPart3() {
-        def newSubConsortia = Subscription.get(params.newSubscription)
-        def subMembers = []
-
-        params.list('selectedSubs').each { it -> subMembers << Long.valueOf(it) }
-
-        subMembers.each { sub -> def subMember = Subscription.findById(sub)
-
-            //ChildSub Exist
-            ArrayList<Links> prevLinks = Links.findAllByDestinationAndLinkTypeAndObjectType(subMember.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
-            if (prevLinks.size() == 0) {
-
-                /* Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
-                    [result.subscriptionInstance, it.id])*/
-
-                def newSubscription = new Subscription(
-                        type: subMember.type,
-                        status: newSubConsortia.status,
-                        name: subMember.name,
-                        startDate: newSubConsortia.startDate,
-                        endDate: newSubConsortia.endDate,
-                        manualRenewalDate: subMember.manualRenewalDate,
-                        /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
-                        identifier: java.util.UUID.randomUUID().toString(),
-                        instanceOf: newSubConsortia?.id,
-                        //previousSubscription: subMember?.id,
-                        isSlaved: subMember.isSlaved,
-                        isPublic: subMember.isPublic,
-                        impId: java.util.UUID.randomUUID().toString(),
-                        owner: newSubConsortia.owner?.id ? subMember.owner?.id : null,
-                        resource: newSubConsortia.resource ?: null,
-                        form: newSubConsortia.form ?: null
-                )
-                newSubscription.save(flush: true)
-                //ERMS-892: insert preceding relation in new data model
-                if(subMember) {
-                    Links prevLink = new Links(source:newSubscription.id,destination:subMember.id,linkType:RDStore.LINKTYPE_FOLLOWS,objectType:Subscription.class.name,owner:contextService.org)
-                    if(!prevLink.save()) {
-                        log.error("Subscription linking failed, please check: ${prevLink.errors}")
-                    }
-                }
-
-                if (subMember.customProperties) {
-                    //customProperties
-                    for (prop in subMember.customProperties) {
-                        def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscription)
-                        copiedProp = prop.copyInto(copiedProp)
-                        copiedProp.save(flush: true)
-                        //newSubscription.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
-                    }
-                }
-                if (subMember.privateProperties) {
-                    //privatProperties
-                    List tenantOrgs = OrgRole.executeQuery('select o.org from OrgRole as o where o.sub = :sub and o.roleType in (:roleType)',[sub:subMember,roleType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIPTION_CONSORTIA]]).collect {
-                        it -> it.id
-                    }
-                    subMember.privateProperties?.each { prop ->
-                        if (tenantOrgs.indexOf(prop.type?.tenant?.id) > -1) {
-                            def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscription)
-                            copiedProp = prop.copyInto(copiedProp)
-                            copiedProp.save(flush: true)
-                            //newSubscription.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
-                        }
-                    }
-                }
-
-                if (subMember.packages && newSubConsortia.packages) {
-                    //Package
-                    subMember.packages?.each { pkg ->
-                        SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
-                        InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
-                        newSubscriptionPackage.subscription = newSubscription
-                        newSubscriptionPackage.save(flush: true)
-                    }
-                }
-                if (subMember.issueEntitlements && newSubConsortia.issueEntitlements) {
-                    subMember.issueEntitlements?.each { ie ->
-                        if (ie.status != RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')) {
-                            def ieProperties = ie.properties
-                            ieProperties.globalUID = null
-
-                            IssueEntitlement newIssueEntitlement = new IssueEntitlement()
-                            InvokerHelper.setProperties(newIssueEntitlement, ieProperties)
-                            newIssueEntitlement.subscription = newSubscription
-                            newIssueEntitlement.save(flush: true)
-                        }
-                    }
-                }
-
-                //OrgRole
-                subMember.orgRelations?.each { or ->
-                    if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || (newSubConsortia.orgRelations.size() >= 1)) {
-                        OrgRole newOrgRole = new OrgRole()
-                        InvokerHelper.setProperties(newOrgRole, or.properties)
-                        newOrgRole.sub = newSubscription
-                        newOrgRole.save(flush: true)
-                    }
-                }
-
-                if (subMember.prsLinks && newSubConsortia.prsLinks) {
-                    //PersonRole
-                    subMember.prsLinks?.each { prsLink ->
-                        PersonRole newPersonRole = new PersonRole()
-                        InvokerHelper.setProperties(newPersonRole, prsLink.properties)
-                        newPersonRole.sub = newSubscription
-                        newPersonRole.save(flush: true)
-                    }
-                }
-            }
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ? Long.parseLong(params.sourceSubscriptionId): Long.parseLong(params.id))
+        result.validSourceSubChilds = subscriptionService.getValidSubChilds(baseSub)
+        if (params.targetSubscriptionId) {
+            Subscription newSub = Subscription.get(Long.parseLong(params.targetSubscriptionId))
+            result.validTargetSubChilds = subscriptionService.getValidSubChilds(newSub)
         }
+
+
+//        def newSubConsortia = Subscription.get(params.newSubscription)
+//        def subMembers = []
+//
+//        params.list('selectedSubs').each { it -> subMembers << Long.valueOf(it) }
+//
+//        subMembers.each { sub -> def subMember = Subscription.findById(sub)
+//
+//            //ChildSub Exist
+//            ArrayList<Links> prevLinks = Links.findAllByDestinationAndLinkTypeAndObjectType(subMember.id,RDStore.LINKTYPE_FOLLOWS,Subscription.class.name)
+//            if (prevLinks.size() == 0) {
+//
+//                /* Subscription.executeQuery("select s from Subscription as s join s.orgRelations as sor where s.instanceOf = ? and sor.org.id = ?",
+//                    [result.subscriptionInstance, it.id])*/
+//
+//                def newSubscription = new Subscription(
+//                        type: subMember.type,
+//                        status: newSubConsortia.status,
+//                        name: subMember.name,
+//                        startDate: newSubConsortia.startDate,
+//                        endDate: newSubConsortia.endDate,
+//                        manualRenewalDate: subMember.manualRenewalDate,
+//                        /* manualCancellationDate: result.subscriptionInstance.manualCancellationDate, */
+//                        identifier: java.util.UUID.randomUUID().toString(),
+//                        instanceOf: newSubConsortia?.id,
+//                        //previousSubscription: subMember?.id,
+//                        isSlaved: subMember.isSlaved,
+//                        isPublic: subMember.isPublic,
+//                        impId: java.util.UUID.randomUUID().toString(),
+//                        owner: newSubConsortia.owner?.id ? subMember.owner?.id : null,
+//                        resource: newSubConsortia.resource ?: null,
+//                        form: newSubConsortia.form ?: null
+//                )
+//                newSubscription.save(flush: true)
+//                //ERMS-892: insert preceding relation in new data model
+//                if(subMember) {
+//                    Links prevLink = new Links(source:newSubscription.id,destination:subMember.id,linkType:RDStore.LINKTYPE_FOLLOWS,objectType:Subscription.class.name,owner:contextService.org)
+//                    if(!prevLink.save()) {
+//                        log.error("Subscription linking failed, please check: ${prevLink.errors}")
+//                    }
+//                }
+//
+//                if (subMember.customProperties) {
+//                    //customProperties
+//                    for (prop in subMember.customProperties) {
+//                        def copiedProp = new SubscriptionCustomProperty(type: prop.type, owner: newSubscription)
+//                        copiedProp = prop.copyInto(copiedProp)
+//                        copiedProp.save(flush: true)
+//                        //newSubscription.addToCustomProperties(copiedProp) // ERROR Hibernate: Found two representations of same collection
+//                    }
+//                }
+//                if (subMember.privateProperties) {
+//                    //privatProperties
+//                    List tenantOrgs = OrgRole.executeQuery('select o.org from OrgRole as o where o.sub = :sub and o.roleType in (:roleType)',[sub:subMember,roleType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIPTION_CONSORTIA]]).collect {
+//                        it -> it.id
+//                    }
+//                    subMember.privateProperties?.each { prop ->
+//                        if (tenantOrgs.indexOf(prop.type?.tenant?.id) > -1) {
+//                            def copiedProp = new SubscriptionPrivateProperty(type: prop.type, owner: newSubscription)
+//                            copiedProp = prop.copyInto(copiedProp)
+//                            copiedProp.save(flush: true)
+//                            //newSubscription.addToPrivateProperties(copiedProp)  // ERROR Hibernate: Found two representations of same collection
+//                        }
+//                    }
+//                }
+//
+//                if (subMember.packages && newSubConsortia.packages) {
+//                    //Package
+//                    subMember.packages?.each { pkg ->
+//                        SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
+//                        InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
+//                        newSubscriptionPackage.subscription = newSubscription
+//                        newSubscriptionPackage.save(flush: true)
+//                    }
+//                }
+//                if (subMember.issueEntitlements && newSubConsortia.issueEntitlements) {
+//                    subMember.issueEntitlements?.each { ie ->
+//                        if (ie.status != RefdataValue.getByValueAndCategory('Deleted', 'Entitlement Issue Status')) {
+//                            def ieProperties = ie.properties
+//                            ieProperties.globalUID = null
+//
+//                            IssueEntitlement newIssueEntitlement = new IssueEntitlement()
+//                            InvokerHelper.setProperties(newIssueEntitlement, ieProperties)
+//                            newIssueEntitlement.subscription = newSubscription
+//                            newIssueEntitlement.save(flush: true)
+//                        }
+//                    }
+//                }
+//
+//                //OrgRole
+//                subMember.orgRelations?.each { or ->
+//                    if ((or.org?.id == contextService.getOrg()?.id) || (or.roleType.value in ['Subscriber', 'Subscriber_Consortial']) || (newSubConsortia.orgRelations.size() >= 1)) {
+//                        OrgRole newOrgRole = new OrgRole()
+//                        InvokerHelper.setProperties(newOrgRole, or.properties)
+//                        newOrgRole.sub = newSubscription
+//                        newOrgRole.save(flush: true)
+//                    }
+//                }
+//
+//                if (subMember.prsLinks && newSubConsortia.prsLinks) {
+//                    //PersonRole
+//                    subMember.prsLinks?.each { prsLink ->
+//                        PersonRole newPersonRole = new PersonRole()
+//                        InvokerHelper.setProperties(newPersonRole, prsLink.properties)
+//                        newPersonRole.sub = newSubscription
+//                        newPersonRole.save(flush: true)
+//                    }
+//                }
+//            }
+//        }
 //        redirect controller: 'subscriptionDetails', action: 'show', params: [id: newSubConsortia?.id]#
         result
     }
@@ -2926,6 +2929,122 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         params.workFlowPartNext = '4'
         result
     }
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    Map workFlowPart4_neu(){
+        LinkedHashMap result = [groupedProperties:[:],orphanedProperties:[:],privateProperties:[:]]
+        Org org = contextService.getOrg()
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        List<Subscription> subsToCompare = [baseSub]
+        if (params.targetSubscriptionId) {
+            Subscription newSub = Subscription.get(params.targetSubscriptionId)
+            subsToCompare.add(newSub)
+        }
+        subsToCompare.each{ sub ->
+            Map allPropDefGroups = sub.getCalculatedPropDefGroups(org)
+            allPropDefGroups.entrySet().each { propDefGroupWrapper ->
+                //group group level
+                //There are: global, local, member (consortium@subscriber) property *groups* and orphaned *properties* which is ONE group
+                String wrapperKey = propDefGroupWrapper.getKey()
+                if(wrapperKey.equals("orphanedProperties")) {
+                    TreeMap orphanedProperties = result.orphanedProperties
+                    orphanedProperties = comparisonService.buildComparisonTree(orphanedProperties,sub,propDefGroupWrapper.getValue())
+                    result.orphanedProperties = orphanedProperties
+                }
+                else {
+                    LinkedHashMap groupedProperties = result.groupedProperties
+                    //group level
+                    //Each group may have different property groups
+                    propDefGroupWrapper.getValue().each { propDefGroup ->
+                        PropertyDefinitionGroup groupKey
+                        PropertyDefinitionGroupBinding groupBinding
+                        switch(wrapperKey) {
+                            case "global":
+                                groupKey = (PropertyDefinitionGroup) propDefGroup
+                                if(groupKey.visible == RDStore.YN_YES)
+                                    groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,null,sub))
+                                break
+                            case "local":
+                                try {
+                                    groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
+                                    groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
+                                    if(groupBinding.visible == RDStore.YN_YES) {
+                                        groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,groupBinding,sub))
+                                    }
+                                }
+                                catch (ClassCastException e) {
+                                    log.error("Erroneous values in calculated property definition group! Stack trace as follows:")
+                                    e.printStackTrace()
+                                }
+                                break
+                            case "member":
+                                try {
+                                    groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
+                                    groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
+                                    if(groupBinding.visible == RDStore.YN_YES && groupBinding.visibleForConsortiaMembers == RDStore.YN_YES) {
+                                        groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,groupBinding,sub))
+                                    }
+                                }
+                                catch (ClassCastException e) {
+                                    log.error("Erroneous values in calculated property definition group! Stack trace as follows:")
+                                    e.printStackTrace()
+                                }
+                                break
+                        }
+                    }
+                    result.groupedProperties = groupedProperties
+                }
+            }
+            TreeMap privateProperties = result.privateProperties
+            privateProperties = comparisonService.buildComparisonTree(privateProperties,sub,sub.privateProperties)
+            result.privateProperties = privateProperties
+        }
+//        result.licenses = licenses
+//        result.institution = org
+//        String filename = "license_compare_${result.institution.name}"
+//        withFormat{
+//            html result
+//            csv{
+//                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+//                response.contentType = "text/csv"
+//                def out = response.outputStream
+//                exportService.StreamOutLicenseCSV(out, result,result.licenses)
+//                out.close()
+//            }
+//        }
+        result
+    }
+
+
+    private workFlowPart5() {
+        def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
+        Subscription baseSub = Subscription.get(params.sourceSubscriptionId ?: params.id)
+        Subscription newSub = params.targetSubscriptionId ? Subscription.get(params.targetSubscriptionId) : null
+
+        if (params?.subscription?.takePackages && ( ! DO_NOTHING.equals(params?.subscription?.takePackages)) && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<Package> packagesToTake = params?.list('subscription.takePackageIds').collect{ genericOIDService.resolveOID(it)}
+            subscriptionService.takePackages(params?.subscription?.takePackages, packagesToTake, newSub, flash)
+        }
+
+        if (params?.subscription?.takeEntitlements && ( ! DO_NOTHING.equals(params?.subscription?.takeEntitlements)) && isBothSubscriptionsSet(baseSub, newSub)) {
+            List<IssueEntitlement> entitlementsToTake = params?.list('subscription.takeEntitlementIds').collect{ genericOIDService.resolveOID(it)}
+            subscriptionService.takeEntitlements(params?.subscription?.takeEntitlements, entitlementsToTake, newSub, flash)
+        }
+
+        result.sourceIEs = subscriptionService.getIssueEntitlements(baseSub)
+        result.targetIEs = subscriptionService.getIssueEntitlements(newSub)
+
+        // restrict visible for templates/links/orgLinksAsList
+//        result.source_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(baseSub)
+//        result.target_visibleOrgRelations = subscriptionService.getVisibleOrgRelations(newSub)
+
+        params?.workFlowPart = '5'
+        params?.workFlowPartNext = '2'
+        result.newSub = newSub
+        result.subscription = baseSub
+        result
+    }
+
 
     private boolean isBothSubscriptionsSet(Subscription baseSub, Subscription newSub) {
         if (! baseSub || !newSub) {
