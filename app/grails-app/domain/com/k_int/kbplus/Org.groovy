@@ -46,9 +46,6 @@ class Org
     Date lastUpdated
     String categoryId
 
-    int fteStudents
-    int fteStaff
-
     @RefdataAnnotation(cat = '?')
     RefdataValue sector
 
@@ -119,8 +116,6 @@ class Org
           sortname          column:'org_sortname', index:'org_sortname_idx'
                url          column:'org_url'
             urlGov          column:'org_url_gov'
-       fteStudents          column:'org_fte_students'
-          fteStaff          column:'org_fte_staff'
            comment          column:'org_comment'
            ipRange          column:'org_ip_range'
          shortcode          column:'org_shortcode', index:'org_shortcode_idx'
@@ -156,8 +151,6 @@ class Org
             sortname(nullable:true, blank:true, maxSize:255)
                  url(nullable:true, blank:true, maxSize:512)
               urlGov(nullable:true, blank:true, maxSize:512)
-         fteStudents(nullable:true, blank:true)
-            fteStaff(nullable:true, blank:true)
                impId(nullable:true, blank:true, maxSize:255)
              comment(nullable:true, blank:true, maxSize:2048)
              ipRange(nullable:true, blank:true, maxSize:1024)
