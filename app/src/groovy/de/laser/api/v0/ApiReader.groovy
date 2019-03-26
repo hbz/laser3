@@ -210,8 +210,8 @@ class ApiReader {
         result.comment      = org.comment
         result.name         = org.name
         result.scope        = org.scope
-        result.fteStudents  = org.fteStudents
-        result.fteStaff     = org.fteStaff
+        //result.fteStudents  = org.fteStudents // TODO dc/table numbers
+        //result.fteStaff     = org.fteStaff // TODO dc/table numbers
 
         // RefdataValues
 
