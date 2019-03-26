@@ -1111,6 +1111,9 @@ from License as l where (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     Map documents() {
         Map result = setResultGenerics()
+        Map documents = orgDocumentService.getDocuments(result.user,result.institution,params)
+        result.documents = documents.documents
+        result.availableUsers = documents.availableUsers
         result
     }
 

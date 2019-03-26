@@ -659,6 +659,11 @@ class AjaxController {
       render controlledListService.getReferences(params) as JSON
   }
 
+  @Secured(['ROLE_USER'])
+  def lookupCombined() {
+      render controlledListService.getElements(params) as JSON
+  }
+
   /**
    * connects the context subscription with the given pair.
    *

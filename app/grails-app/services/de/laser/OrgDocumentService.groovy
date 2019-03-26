@@ -26,7 +26,7 @@ class OrgDocumentService {
             }
             allDocuments.addAll(DocContext.executeQuery('select dc from DocContext dc join dc.owner d where d.owner in :consortia'+filterQuery.query,[consortia:consortia]+filterQuery.queryParams))
         }
-        org.documents = []
+        List documents = []
         allDocuments.each { docctx ->
 
             boolean inOwnerOrg = false
@@ -56,7 +56,7 @@ class OrgDocumentService {
             }
 
             if(visible)
-                org.documents.add(docctx)
+                documents.add(docctx)
         }
         List allUploaders = Doc.executeQuery('select dc.shareConf,d.creator from DocContext dc join dc.owner d where d.owner = :org order by d.creator.display asc',[org:org])
         Set availableUsers = []
@@ -67,6 +67,6 @@ class OrgDocumentService {
             }
             else availableUsers.add(row[1])
         }
-        return [user:user,org:org,availableUsers:availableUsers]
+        return [documents:documents,availableUsers:availableUsers]
     }
 }

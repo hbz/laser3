@@ -12,9 +12,17 @@
             baseItems << it
         }
     }
+
+    String documentMessage
+    switch(ownobj.class.name) {
+        case Org.class.name: documentMessage = "menu.institutions.myDocuments"
+            break
+        default: documentMessage = "license.documents"
+            break
+    }
 %>
 
-<semui:card message="license.documents" class="documents la-js-hideable ${css_class}" href="#modalCreateDocument" editable="${editable}">
+<semui:card message="${documentMessage}" class="documents la-js-hideable ${css_class}" href="#modalCreateDocument" editable="${editable}">
     <g:each in="${baseItems}" var="docctx">
         <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted'))}">
             <div class="ui small feed content la-js-dont-hide-this-card">

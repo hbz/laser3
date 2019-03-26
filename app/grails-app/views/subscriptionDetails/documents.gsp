@@ -25,7 +25,7 @@
 
     <semui:messages data="${flash}" />
 
-    <g:render template="/templates/documents/table" model="${[instance:subscriptionInstance, context:'documents', redirect:'documents']}"/>
+    <g:render template="/templates/documents/table" model="${[instance:subscriptionInstance, context:'documents', redirect:'documents', owntp: 'subscription']}"/>
 
   </body>
 </html>

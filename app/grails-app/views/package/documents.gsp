@@ -42,7 +42,7 @@
 
     <g:render template="nav" />
 
-    <g:render template="/templates/documents/table" model="${[instance:packageInstance,context:'pkg',redirect:'documents']}"/>
+    <g:render template="/templates/documents/table" model="${[instance:packageInstance,context:'pkg',redirect:'documents',owntp:'package']}"/>
 
 </body>
 

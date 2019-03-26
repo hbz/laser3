@@ -1,7 +1,9 @@
 package de.laser
 
+import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
 import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
 import java.text.DateFormat
@@ -10,6 +12,7 @@ class FilterService {
 
     private static final Long FAKE_CONSTRAINT_ORGID_WITHOUT_HITS = new Long(-1)
     def springSecurityService
+    def genericOIDService
 
     Map<String, Object> getOrgQuery(Map params) {
         Map<String, Object> result = [:]
@@ -184,17 +187,20 @@ class FilterService {
             query << "d.type = :type"
             queryParams << [type: RefdataValue.get(params.docType)]
         }
-        if(params.docOwnerOrg) {
-            query << "d.owner = :owner"
-            queryParams << [owner: Org.get(params.docOwnerOrg)]
-        }
-        if(params.docTargetOrg) {
-            query << "dc.org = :target"
-            queryParams << [target: Org.get(params.docTargetOrg)]
-        }
-        if(params.docShareConf) {
-            query << "dc.shareConf = :shareConf"
-            queryParams << [shareConf: RefdataValue.get(params.docShareConf)]
+        if(params.docTarget) {
+            //sorry, I hate def, but here, I cannot avoid using it ...
+            def target = genericOIDService.resolveOID(params.docTarget)
+            switch(target.class.name) {
+                case Subscription.class.name: query << "dc.subscription = :target"
+                    break
+                case Org.class.name: query << "dc.org = :target"
+                    break
+                case License.class.name: query << "dc.license = :target"
+                    break
+                case Package.class.name: query << "dc.pkg = :target"
+                    break
+            }
+            queryParams << [target: target]
         }
         if(query.size() > 0)
             result.query = " and "+query.join(" and ")
