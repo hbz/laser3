@@ -47,15 +47,33 @@ class AdminController extends AbstractDebugController {
   @Secured(['ROLE_ADMIN'])
   def index() { }
 
-  @Secured(['ROLE_ADMIN'])
-  def manageAffiliationRequests() {
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
+    @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
+    @Secured(closure = {
+        ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') ||
+            ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM")
+    })
+    def manageAffiliationRequests() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
 
-    // List all pending requests...
-    result.pendingRequests = UserOrg.findAllByStatus(0, [sort:'dateRequested'])
-    result
-  }
+        if (! result.user.hasRole('ROLE_ADMIN')) {
+            Org ctx = contextService.getOrg()
+
+            List <Org> orgList = Org.executeQuery('SELECT c.fromOrg from Combo c WHERE c.toOrg = :ctx', [ctx: ctx])
+            orgList.add(ctx)
+
+            result.pendingRequests = UserOrg.executeQuery(
+                    'SELECT uo FROM UserOrg uo WHERE uo.status = :status AND uo.org in (:orgList)',
+                    [status: UserOrg.STATUS_PENDING, orgList: orgList],
+                    [sort: 'dateRequested']
+            )
+        }
+        else {
+            result.pendingRequests = UserOrg.findAllByStatus(UserOrg.STATUS_PENDING, [sort: 'dateRequested'])
+        }
+
+        result
+    }
 
   @Secured(['ROLE_ADMIN'])
   def updatePendingChanges() {
