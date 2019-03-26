@@ -255,8 +255,16 @@ class OrganisationsController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_ADM")') //TODO temporary, to be changed as soon as ERMS-1078 is decided!
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     Map findInstitutionMatches() {
-
-        Map result=[institutionMatches:[]]
+        Map consortiaMap = [:]
+        Combo.findAllByType(RefdataValue.getByValueAndCategory('Consortium','Combo Type')).each { lObj ->
+            Combo link = (Combo) lObj
+            List consortia = consortiaMap.get(link.fromOrg.id)
+            if(!consortia)
+                consortia = [link.toOrg.id]
+            else consortia << link.toOrg.id
+            consortiaMap.put(link.fromOrg.id,consortia)
+        }
+        Map result=[institutionMatches:[],consortia:consortiaMap]
         if ( params.proposedInstitution ) {
             result.institutionMatches.addAll(Org.executeQuery("select o from Org as o where exists (select roletype from o.orgType as roletype where roletype = :institution ) and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName ) ",
                     [institution: RDStore.OT_INSTITUTION, searchName: "%${params.proposedInstitution.toLowerCase()}%"]))
@@ -349,7 +357,10 @@ class OrganisationsController extends AbstractDebugController {
             result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_COM_EDITOR,ROLE_ORG_EDITOR')
         }else {
             du.setBenchMark('editable2')
-            if(RDStore.OT_CONSORTIUM.id in org.getallOrgTypeIds() && accessService.checkMinUserOrgRole(result.user,org,'INST_ADM'))
+            List<Long> consortia = Combo.findAllByTypeAndFromOrg(RefdataValue.getByValueAndCategory('Consortium','Combo Type'),orgInstance).collect { it ->
+                it.toOrg.id
+            }
+            if(RDStore.OT_CONSORTIUM.id in org.getallOrgTypeIds() && consortia.size() == 1 && consortia.contains(org.id) && accessService.checkMinUserOrgRole(result.user,org,'INST_ADM'))
                 result.editable = true
             else
                 result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
