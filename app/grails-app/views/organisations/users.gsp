@@ -99,6 +99,12 @@
             <tr>
                 <td>
                     ${uo.user.username}
+
+                    <g:if test="${! uo.user.enabled}">
+                        <span data-position="top left" data-tooltip="Dieser Zugang ist derzeit deaktiviert.">
+                            <i class="icon minus circle red"></i>
+                        </span>
+                    </g:if>
                 </td>
                 <td>
                     ${uo.user.displayName}
