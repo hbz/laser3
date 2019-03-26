@@ -16,23 +16,22 @@
         <g:if test="${editable}">
             <g:form class="ui form" action="create" method="post">
                 <fieldset>
-                    <div class="field">
+                    <div class="field required">
                         <label>Username</label>
                         <input type="text" name="username" value="${params.username}"/>
                     </div>
-                    <div class="field">
+                    <div class="field required">
                         <label>Dispay Name</label>
                         <input type="text" name="display" value="${params.display}"/>
                     </div>
-                    <div class="field">
+                    <div class="field required">
                         <label>Password</label>
                         <input type="text" name="password" value="${params.password}"/>
                     </div>
-                    <div class="field">
-                        <label>eMail</label>
+                    <div class="field required">
+                        <label>E-Mail</label>
                         <input type="text" name="email" value="${params.email}"/>
                     </div>
-
 
                     <div class="two fields">
                         <div class="field">

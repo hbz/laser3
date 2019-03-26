@@ -214,6 +214,8 @@ class UserController extends AbstractDebugController {
                 def user = new User(params)
 
                 if (! user.save(flush: true)) {
+                    flash.error = message(code: 'default.not.created.message', args: [user])
+
                     render view: 'create', model: [
                             userInstance: user,
                             editable: result.editable,
@@ -245,9 +247,6 @@ class UserController extends AbstractDebugController {
                 redirect action: 'edit', id: user.id
                 break
         }
-
-
-
         result
     }
 
