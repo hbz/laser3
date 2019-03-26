@@ -4,7 +4,9 @@ import com.k_int.kbplus.*
 import com.k_int.properties.*
 import de.laser.domain.StatsTripleCursor
 import de.laser.usage.StatsSyncServiceOptions
+import de.laser.usage.SushiClient
 import groovy.json.JsonOutput
+import groovy.time.TimeCategory
 import groovyx.net.http.*
 
 import java.security.MessageDigest
@@ -65,8 +67,7 @@ class StatsSyncService {
         availableReportCache = [:]
     }
 
-    private String getTitleInstancesForUsageQuery()
-    {
+    private String getTitleInstancesForUsageQuery() {
         // Distinct list of titles ids, the content provider, subscribing organisation and the zdbid
        def hql =  "select distinct ie.tipp.title.id, po.org.id, orgrel.org.id, zdbtitle.id from IssueEntitlement as ie " +
             "join ie.tipp.pkg.orgs as po " +
@@ -85,8 +86,7 @@ class StatsSyncService {
         return hql
     }
 
-    def addFilters(params)
-    {
+    def addFilters(params) {
         queryParams = [:]
         if (params.supplier != 'null'){
             queryParams['supplier'] = params.supplier as long
@@ -94,25 +94,6 @@ class StatsSyncService {
         if (params.institution != 'null'){
             queryParams['institution'] = params.institution as long
         }
-    }
-
-    private getReportType(report) {
-        def result
-        switch (report) {
-            case "JR1":
-                result = "journal"
-            break
-            case "JR1GOA":
-                result = "journal"
-            break
-            case "DB1":
-                result = "database"
-            break
-            default:
-                result = "journal"
-            break
-        }
-        return result
     }
 
     def doSync() {
@@ -207,7 +188,7 @@ class StatsSyncService {
         }
     }
 
-    private getObjectsForItem(listItem) {
+    ArrayList getObjectsForItem(listItem) {
        [
             TitleInstance.get(listItem[0]),
             Org.get(listItem[1]),
@@ -216,8 +197,7 @@ class StatsSyncService {
         ]
     }
 
-    def getRelevantReportList(queryParams)
-    {
+    def getRelevantReportList(queryParams) {
         def reports = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('FactType'))
         def availableReports = getAvailableReportsForPlatform(queryParams)
         reports.removeAll {
@@ -230,77 +210,63 @@ class StatsSyncService {
         return reports
     }
 
+    StatsSyncServiceOptions initializeStatsSyncServiceOptions(listItem, mostRecentClosedPeriod) {
+        def options = new StatsSyncServiceOptions()
+        def itemObjects = getObjectsForItem(listItem)
+        options.setItemObjects(itemObjects)
+        options.setBasicQueryParams()
+        options.mostRecentClosedPeriod = mostRecentClosedPeriod
+        return options
+    }
+
+    def getCursor(options) {
+        // There could be more than one (if we have gaps in usage), get the newest one
+        def csr = StatsTripleCursor.findByTitleIdAndSupplierIdAndCustomerIdAndFactType(
+            options.statsTitleIdentifier, options.platform, options.customer, options.factType,
+            [sort: "availTo", order: "desc"])
+        if (csr == null) {
+            csr = new StatsTripleCursor(
+                titleId: options.statsTitleIdentifier,
+                supplierId: options.platform,
+                customerId: options.customer,
+                availFrom: new SimpleDateFormat("yyyy-MM-dd").parse(SYNC_STATS_FROM),
+                availTo: null,
+                factType: options.factType
+            )
+            csr.numFacts = 0
+        }
+        return csr
+    }
+
     def processListItem(listItem, mostRecentClosedPeriod) {
-        def uri = new URIBuilder(grailsApplication.config.statsApiUrl)
-        def baseUrl = uri.getScheme()+"://"+uri.getHost()
-        def basePath = uri.getPath().endsWith('/') ? uri.getPath() : uri.getPath() + '/'
-        def path = basePath + 'Sushiservice/GetReport'
-        def stats_api_endpoint = new RESTClient(baseUrl)
+        def sushiClient = new SushiClient()
         def start_time = System.currentTimeMillis()
 
         Fact.withNewTransaction { status ->
-            def options = new StatsSyncServiceOptions()
-            options.setItemObjects(getObjectsForItem(listItem))
-            options.setQueryParams()
-            options.mostRecentClosedPeriod = mostRecentClosedPeriod
-            def reports = getRelevantReportList(options.getQueryParams())
+            def options = initializeStatsSyncServiceOptions(listItem, mostRecentClosedPeriod)
+            def reports = getRelevantReportList(options.getBasicQueryParams())
             StatsTripleCursor csr = null
 
             reports.each { statsReport ->
-                def matcher = statsReport.value =~ /^(.*).(\d)$/
-                def report = matcher[0][1]
-                def version = matcher[0][2]
-                def reportType = getReportType(report)
-                def factType = RefdataCategory.lookupOrCreate('FactType', statsReport.toString())
+                options.setReportSpecificQueryParams(statsReport)
                 // we could use a more complex structure, e.g. to try to seperate the SUSHI Exceptions from API
                 // for now use a list of error messages
                 def jsonErrors = []
-                // There could be more than one (if we have gaps in usage), get the newest one
-                csr = StatsTripleCursor.findByTitleIdAndSupplierIdAndCustomerIdAndFactType(
-                    options.statsTitleIdentifier, options.platform, options.customer, factType,
-                    [sort: "availTo", order: "desc"])
-                if (csr == null) {
-                    csr = new StatsTripleCursor(
-                        titleId: options.statsTitleIdentifier,
-                        supplierId: options.platform,
-                        customerId: options.customer,
-                        availFrom: SYNC_STATS_FROM,
-                        availTo: null,
-                        factType: factType
-                    )
-                    csr.numFacts = 0
-                }
-                // TODO use date representation of mostRecentClosedPeriod? Rename? Maybe
-                if ((csr.availTo == null) || (csr.availTo < mostRecentClosedPeriod)) {
-                    def fromPeriodForAPICall = getFromPeriodForAPICall(csr)
+                csr = getCursor(options)
+                def mostRecentClosedDate = new SimpleDateFormat("yyyy-MM-dd").parse(options.mostRecentClosedPeriod)
+                if ((csr.availTo == null) || (csr.availTo < mostRecentClosedDate)) {
+                    options.from = getFromPeriodForAPICall(csr)
+                    sushiClient.clientOptions = options
                     try {
-                        def endDate = getDateForLastDayOfMonth(mostRecentClosedPeriod)
-                        log.debug("Calling STATS API:  ${report}, Title with ID ${options.statsTitleIdentifier}")
-                        log.debug("Period Begin: ${fromPeriodForAPICall}, Period End: ${endDate}")
-                        stats_api_endpoint.get(
-                            path: path,
-                            contentType: ANY, // We get no XmlSlurper Objects for value XML
-                            query: [
-                                APIKey        : options.apiKey,
-                                RequestorID   : options.requestor,
-                                CustomerID    : options.customer,
-                                Report        : report,
-                                Release       : version,
-                                BeginDate     : fromPeriodForAPICall,
-                                EndDate       : endDate,
-                                Platform      : options.platform,
-                                ItemIdentifier: "${reportType}:zdbid:" + options.statsTitleIdentifier
-                            ]) { response, xml ->
-                            if (xml) {
-                                def authenticationError = getSushiErrorMessage(xml)
-                                if (authenticationError) {
-                                    jsonErrors.add(authenticationError)
-                                    csr.jerror = JsonOutput.toJson(jsonErrors)
-                                }
-                                if (responseHasUsageData(xml, options.statsTitleIdentifier)) {
-                                  writeUsageRecords(xml, options, csr)
-                                }
-                            }
+                        sushiClient.query()
+                        def xml = sushiClient.getResult()
+                        def authenticationError = getSushiErrorMessage(xml)
+                        if (authenticationError) {
+                            jsonErrors.add(authenticationError)
+                            csr.jerror = JsonOutput.toJson(jsonErrors)
+                        }
+                        if (responseHasUsageData(xml, options.statsTitleIdentifier)) {
+                            writeUsageRecords(xml, options, csr)
                         }
                     } catch (Exception e) {
                         log.error("Error fetching data")
@@ -320,8 +286,7 @@ class StatsSyncService {
         }
     }
 
-    def writeUsageRecords(xml, options, csr)
-    {
+    def writeUsageRecords(xml, options, csr) {
         checkStatsTitleCount(xml)
         def itemPerformances = xml.depthFirst().findAll {
             it.name() == 'ItemPerformance'
@@ -365,7 +330,6 @@ class StatsSyncService {
                             ++factCount
                             ++newFactCount
                             DateTimeFormatter formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd')
-                            //csr.haveUpTo = YearMonth.parse(key, formatter).toString()
                         }
                     }
                 }
@@ -376,30 +340,32 @@ class StatsSyncService {
                     csr.save(flush: true)
 
                 } else {
-                    def newYearMonth = getFromPeriodForAPICall(csr)
-                    if (newYearMonth == it.begin) { // no gap for new range
-                        csr.availTo = new SimpleDateFormat('yyyy-MM').parse(it.end) // update to last month for that range
-                        csr.numFacts = factCount
-                        csr.save(flush: true)
-                    } else { // there is a gap, new csr
-                        csr = new StatsTripleCursor()
-                        // TODO set attributes
+                    def newFromPeriod = getFromPeriodForAPICall(csr).substring(0,7)
+                    if (newFromPeriod != it.begin) { // gap for new range
+                        log.warn("usage data gap found before ${it.begin}")
                     }
+                    csr = new StatsTripleCursor()
+                    csr.availFrom = new SimpleDateFormat('yyyy-MM').parse(it.begin) // update
+                    csr.availTo = new SimpleDateFormat('yyyy-MM').parse(it.end) // update to last month for that range
+                    csr.customerId = options.customer
+                    csr.numFacts = factCount
+                    csr.titleId = options.statsTitleIdentifier
+                    csr.supplierId = options.platform
+                    csr.factType = options.factType
+                    csr.save(flush: true)
                 }
             }
         }
     }
 
-    def getItemPerformancesForRange(itemPerformances, range)
-    {
+    def getItemPerformancesForRange(itemPerformances, range) {
         itemPerformances.findAll {
             it.Period.Begin.text().substring(0,7) >= range["begin"] &&
                 it.Period.End.text().substring(0,7) <= range["end"]
         }
     }
 
-    def getRangeBeforeFirstItemPerformanceElement(itemPerformances, notProcessedMonths)
-    {
+    def getRangeBeforeFirstItemPerformanceElement(itemPerformances, notProcessedMonths) {
         def rangeMap = [:]
         def firstItemPerformanceBeginPeriod = itemPerformances.first().Period.Begin.text().substring(0,7)
         def lastItemPerformanceBeginPeriod = itemPerformances.last().Period.Begin.text().substring(0,7)
@@ -422,8 +388,7 @@ class StatsSyncService {
         return rangeMap
     }
 
-    def getUsageRanges(ArrayList itemPerformances, notProcessedMonths)
-    {
+    def getUsageRanges(ArrayList itemPerformances, notProcessedMonths) {
         def ranges = []
         // Add begin end period for zero usage before first ItemPerformance and filter out months not available before that.
         // At the moment we begin SYNC_STATS_FROM. We would have to extend the NatStat API to improve that (i.e.
@@ -471,8 +436,7 @@ class StatsSyncService {
      * @param xml
      * @return
      */
-    def getNotProcessedMonths(xml)
-    {
+    def getNotProcessedMonths(xml) {
         if (xml.Exception.isEmpty() == false && xml.Exception.Number == '3031') {
             def exceptionData = xml.Exception.Data
             def matcher = exceptionData =~ /\d{4}-\d{2}/
@@ -486,8 +450,7 @@ class StatsSyncService {
     }
 
 
-    def checkStatsTitleCount(xml)
-    {
+    def checkStatsTitleCount(xml) {
         def statsTitles = xml.depthFirst().findAll {
             it.name() == 'ItemName'
         }
@@ -499,205 +462,30 @@ class StatsSyncService {
     }
 
     def getFromPeriodForAPICall(csr) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd')
+        def acceptedFormat = "yyyy-MM-dd"
         def fromPeriodForAPICall
-        // set correct begin date for API call
+        // Latest stored month + 1
         if (csr.availTo) {
-            YearMonth localDate = YearMonth.parse(csr.availTo, formatter)
-            fromPeriodForAPICall = localDate.plusMonths(1).toString()
+            use(TimeCategory) {
+                fromPeriodForAPICall = csr.availTo + 1.month
+            }
         } else {
             if (!csr.availFrom){
                 return SYNC_STATS_FROM
             }
-            YearMonth fromPeriodLocalDate = YearMonth.parse(csr.availFrom, formatter)
-            fromPeriodForAPICall = fromPeriodLocalDate.plusMonths(1).toString()
+            use(TimeCategory) {
+                fromPeriodForAPICall = csr.availFrom
+            }
         }
-        return fromPeriodForAPICall + '-01'
+        return fromPeriodForAPICall.format(acceptedFormat)
     }
 
-    def processListItemOld(listItem, mostRecentClosedPeriod) {
-        def uri = new URIBuilder(grailsApplication.config.statsApiUrl)
-        def baseUrl = uri.getScheme()+"://"+uri.getHost()
-        def basePath = uri.getPath().endsWith('/') ? uri.getPath() : uri.getPath() + '/'
-        def path = basePath + 'Sushiservice/GetReport'
-        def stats_api_endpoint = new RESTClient(baseUrl)
-        def timeStampFormat = new SimpleDateFormat('yyyy-MM-dd')
-        def start_time = System.currentTimeMillis()
-
-        Fact.withNewTransaction { status ->
-
-            def title_inst = TitleInstance.get(listItem[0])
-            def supplier_inst = Org.get(listItem[1])
-            def org_inst = Org.get(listItem[2])
-            def title_io_inst = IdentifierOccurrence.get(listItem[3])
-            def statsTitleIdentifier = title_io_inst.identifier.value
-
-            def platform = supplier_inst.getIdentifierByType('statssid').value
-            def customer = org_inst.getIdentifierByType('wibid').value
-            def apiKey = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("API Key"), org_inst)
-            def requestor = OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), org_inst)
-            def queryParams = [platform:platform, customer:customer, apiKey: apiKey, requestor:requestor]
-            def availableReports = getAvailableReportsForPlatform(queryParams)
-            def reports = RefdataValue.findAllByOwner(RefdataCategory.findByDesc('FactType'))
-            reports.removeAll {
-                if (it.value.startsWith('STATS')){
-                    log.warn('STATS prefix deprecated please remove Refdatavalues')
-                }
-                def reportInAvailableReport = it.value in availableReports
-                (it.value.startsWith('STATS') || !reportInAvailableReport)
-            }
-
-            def csr = null
-
-            reports.each { statsReport ->
-                def factCount = 0
-                def matcher = statsReport.value =~ /^(.*).(\d)$/
-                def report = matcher[0][1]
-                def version = matcher[0][2]
-                def reportType = getReportType(report)
-                def titleId = title_io_inst.identifier.value
-                def factType = RefdataCategory.lookupOrCreate('FactType', statsReport.toString())
-
-                // we could use a more complex structure, e.g. to try to seperate the SUSHI Exceptions from API
-                // for now use a list of error messages
-                def jsonErrors = []
-                csr = StatsTripleCursor.findAllByTitleIdAndSupplierIdAndCustomerIdAndFactType(statsTitleIdentifier, platform, customer, factType, [sort: "availto", order: "desc"]).first()
-                if (csr == null) {
-                    csr = new StatsTripleCursor(
-                        titleId: statsTitleIdentifier,
-                        supplierId: platform,
-                        customerId: customer,
-                        availFrom: SYNC_STATS_FROM,
-                        availTo: null,
-                        factType: factType
-                    )
-                    csr.numFacts = 0
-                }
-                if ((csr.haveUpTo == null) || (csr.haveUpTo < mostRecentClosedPeriod)) {
-                    def fromPeriod = SYNC_STATS_FROM
-                    if (csr.haveUpTo){
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern('yyyy-MM')
-                        YearMonth localDate = YearMonth.parse(csr.haveUpTo, formatter)
-                        fromPeriod = localDate.plusMonths(1).toString()
-                    }
-                    try {
-                        def beginDate = "${fromPeriod}-01"
-                        def endDate = getDateForLastDayOfMonth(mostRecentClosedPeriod)
-                        log.debug("Calling STATS API:  ${report}, Title with ID ${titleId}")
-                        log.debug("Period Begin: ${beginDate}, Period End: ${endDate}")
-                        stats_api_endpoint.get(
-                                path: path,
-                                contentType: ANY, // We get no XmlSlurper Objects for value XML
-                                query: [
-                                        APIKey        : apiKey,
-                                        RequestorID   : requestor,
-                                        CustomerID    : customer,
-                                        Report        : report,
-                                        Release       : version,
-                                        BeginDate     : beginDate,
-                                        EndDate       : endDate,
-                                        Platform      : platform,
-                                        ItemIdentifier: "${reportType}:zdbid:" + titleId
-                                ]) { response, xml ->
-                            if (xml) {
-                                def authenticationError = getSushiErrorMessage(xml)
-                                if (authenticationError){
-                                    jsonErrors.add(authenticationError)
-                                    csr.jerror = JsonOutput.toJson(jsonErrors)
-                                }
-                                if (responseHasUsageData(xml, titleId)) {
-                                    def statsTitles = xml.depthFirst().findAll {
-                                        it.name() == 'ItemName'
-                                    }
-                                    if (statsTitles.size() > 1) {
-                                        log.warn('Found more than one item for the given Identifier')
-                                        log.warn('Titles delivered by API: ')
-                                        log.warn(statsTitles)
-                                    }
-                                    def itemPerformances = xml.depthFirst().findAll {
-                                        it.name() == 'ItemPerformance'
-                                    }
-                                    def usageMap = getPeriodUsageMap(itemPerformances)
-                                    def cal = new GregorianCalendar()
-
-                                    usageMap.each { key, countPerMetric ->
-                                        def fact = [:]
-                                        countPerMetric.each { metric, count ->
-                                            fact.from = timeStampFormat.parse(key)
-                                            fact.to =timeStampFormat.parse(getDateForLastDayOfMonth(key))
-                                            cal.setTime(fact.to)
-                                            fact.reportingYear=cal.get(Calendar.YEAR)
-                                            fact.reportingMonth=cal.get(Calendar.MONTH)+1
-                                            fact.type = statsReport.toString()
-                                            fact.value = count
-                                            fact.uid = "${titleId}:${platform}:${customer}:${key}:${metric}:${statsReport.value}"
-                                            fact.metric = RefdataValue.getByValueAndCategory(metric,'FactMetric')
-                                            fact.title = title_inst
-                                            fact.supplier = supplier_inst
-                                            fact.inst = org_inst
-                                            fact.juspio = title_io_inst
-                                            if (factService.registerFact(fact)) {
-                                                ++factCount
-                                                ++newFactCount
-                                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern('yyyy-MM-dd')
-                                                csr.haveUpTo = YearMonth.parse(key, formatter).toString()
-                                            }
-                                        }
-                                    }
-                                    log.debug("Title: ${title_inst.title}")
-                                    log.debug("ID: ${titleId}")
-
-                                }
-                            } else {
-                                def errorMessage = "No xml object returned, response status: ${response.statusLine}"
-                                log.error(errorMessage)
-                                jsonErrors.add(errorMessage)
-                                csr.jerror = JsonOutput.toJson(jsonErrors)
-                            }
-                        }
-
-                    } catch (Exception e) {
-                        log.error("Error fetching data")
-                        log.error(e.message)
-                        jsonErrors.add(e.message)
-                        def jsonError = JsonOutput.toJson(jsonErrors)
-                        if (jsonError) {
-                            csr.jerror = jsonError
-                        }
-                    }
-                    csr.numFacts = (csr.numFacts) ? csr.numFacts + factCount : factCount
-                    try {
-                        csr.save(flush: true)
-                    } catch (Exception e) {
-                        log.error(e.message)
-                        jsonErrors.add(e.message)
-                        def jsonError = JsonOutput.toJson(jsonErrors)
-                        if (jsonError) {
-                            csr.jerror = jsonError
-                        }
-                        exceptionCount++
-                    }
-                }
-            }
-            // TODO remove?
-            // Exceptions are all catched, do we really want to save here when there were certain exceptions?
-            // For now save the csr which should contain an error message
-            if (csr != null) {
-                csr.save(flush: true)
-            }
-            cleanUpGorm()
-            def elapsed = System.currentTimeMillis() - start_time;
-            totalTime+=elapsed
-            incrementActivityHistogram()
-        }
-    }
-
-    private String getMostRecentClosedPeriod()
-    {
-        def c = new GregorianCalendar()
-        c.add(Calendar.MONTH,-2) // -2 TODO change back
-        // Remember months are zero based - hence the +1 in this line!
-        return "${c.get(Calendar.YEAR)}-${String.format('%02d',c.get(Calendar.MONTH)+1)}"
+    private String getMostRecentClosedPeriod() {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        cal.add(Calendar.MONTH, -2)
+        cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH))
+        return cal.format('yyyy-MM-dd')
     }
 
     private isAllowedMetric(metric) {
@@ -744,7 +532,7 @@ class StatsSyncService {
         return "${cal.get(Calendar.YEAR)}-${String.format('%02d',cal.get(Calendar.MONTH)+1)}-${cal.get(Calendar.DAY_OF_MONTH)}"
     }
 
-    private getSushiErrorMessage(xml){
+    private getSushiErrorMessage(xml) {
         if (xml.Exception.isEmpty() == false) {
             def errorNumber = xml.Exception.Number
             def sushiErrorList = ['2000', '2020', '3000', '3062']
