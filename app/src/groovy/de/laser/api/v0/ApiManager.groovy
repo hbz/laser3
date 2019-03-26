@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.37'
+    static final VERSION = '0.38'
     static final NOT_SUPPORTED = false
 
     /**
@@ -114,7 +114,7 @@ class ApiManager {
                 return Constants.HTTP_NOT_ACCEPTABLE
             }
         }
-        else if (NOT_SUPPORTED && 'organisation'.equalsIgnoreCase(obj)) {
+        else if ('organisation'.equalsIgnoreCase(obj)) {
             if (format in ApiReader.SUPPORTED_FORMATS.organisation) {
                 result = ApiOrg.findOrganisationBy(query, value)
 

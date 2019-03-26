@@ -562,14 +562,17 @@ class OrganisationsController extends AbstractDebugController {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
       UserOrg uo = UserOrg.get(params.assoc)
-      if (accessService.checkMinUserOrgRole(result.user, uo.org, 'INST_ADM')) {
+
+      if (userService.hasInstAdmPivileges(result.user, Org.get(params.id))) {
 
           if (params.cmd == 'approve') {
               uo.status = UserOrg.STATUS_APPROVED
+              uo.dateActioned = System.currentTimeMillis()
               uo.save(flush: true)
           }
           else if (params.cmd == 'reject') {
               uo.status = UserOrg.STATUS_REJECTED
+              uo.dateActioned = System.currentTimeMillis()
               uo.save(flush: true)
           }
           else if (params.cmd == 'delete') {

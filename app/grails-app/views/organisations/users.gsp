@@ -30,13 +30,13 @@
         <table class="ui celled la-table table">
             <thead>
             <tr>
-                <th>Account</th>
-                <th>${message(code:'user.label')}</th>
+                <th>${message(code:'user.username.label')}</th>
+                <th>${message(code:'user.displayName.label')}</th>
                 <th>${message(code:'user.email')}</th>
                 <th>${message(code:'profile.membership.role')}</th>
                 <th>${message(code: "profile.membership.date2")}</th>
                 <th>${message(code:'user.status')}</th>
-                <th>${message(code:'user.actions')}</th>
+                <th></th>
             </tr>
             </thead>
 
@@ -81,16 +81,20 @@
 
     </g:if>
 
+    <sec:ifNotGranted roles="ROLE_ADMIN">
+        <div class="ui info message">${message(code:'user.edit.info')}</div>
+    </sec:ifNotGranted>
+
     <table class="ui celled la-table table">
         <thead>
         <tr>
-            <th>Account</th>
-            <th>${message(code:'user.label')}</th>
+            <th>${message(code:'user.username.label')}</th>
+            <th>${message(code:'user.displayName.label')}</th>
             <th>${message(code:'user.email')}</th>
             <th>${message(code:'profile.membership.role')}</th>
             <%--<th>${message(code:'user.sys_role', default:'System Role')}</th>--%>
             <g:if test="${editable}">
-                <th>${message(code:'user.actions')}</th>
+                <th></th>
             </g:if>
         </tr>
         </thead>
@@ -99,6 +103,12 @@
             <tr>
                 <td>
                     ${uo.user.username}
+
+                    <g:if test="${! uo.user.enabled}">
+                        <span data-position="top left" data-tooltip="${message(code:'user.disabled.text')}">
+                            <i class="icon minus circle red"></i>
+                        </span>
+                    </g:if>
                 </td>
                 <td>
                     ${uo.user.displayName}
@@ -109,19 +119,20 @@
                 <td>
                     <g:message code="cv.roles.${uo.formalRole?.authority}"/>
                 </td>
-                <%--<td>
-                    <g:if test="${userOrg[1]}">
-                        <g:each in="${userOrg[1]}" var="admRole">
-                            ${admRole} <br />
-                        </g:each>
-                    </g:if>
-                </td>--%>
 
                 <g:if test="${editable}">
                     <td class="x">
-                        <g:link controller="user" action="edit" id="${uo.user.id}" class="ui icon button">
-                            <i class="icon write"></i>
-                        </g:link>
+                        <%
+                            boolean checkEditable = Org.executeQuery(
+                                    'SELECT DISTINCT uo.org from UserOrg uo where uo.user = :user',
+                                    [user: uo.user]
+                            ).size() == 1
+                        %>
+                        <g:if test="${checkEditable}">
+                            <g:link controller="user" action="edit" id="${uo.user.id}" class="ui icon button">
+                                <i class="icon write"></i>
+                            </g:link>
+                        </g:if>
 
                         <g:link class="ui icon negative button js-open-confirm-modal"
                                 data-confirm-term-what="user"
