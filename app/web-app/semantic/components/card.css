@@ -1053,9 +1053,8 @@ a.ui.card:hover,
 .la-inline-lists dl dt,
 .la-inline-lists dl dd {
   display: table-cell;
-  vertical-align: top;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
 }
 .la-inline-lists dl dd {
   padding-left: 1rem;
