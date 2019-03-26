@@ -65,7 +65,8 @@
           <dt>${message(code:'title.search.offset.text', args:[offset+1,lasttipp,num_tipp_rows])}
 
           </dt>
-          <dd>
+
+        %{--  <dd>
 
           <table class="ui celled la-table table">
             <g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
@@ -145,12 +146,17 @@
             </tbody>
             </g:form>
           </table>
-          </dd>
+          </dd>--}%
+
+
+        <g:render template="/templates/tipps/table" model="[tipps: titlesList, showPackage: false, showPlattform: true, showBulkFlag: false]"/>
+
         </dl>
 
           <g:if test="${titlesList}" >
             <semui:paginate  action="${params.action}" controller="package" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_tipp_rows}" />
           </g:if>
+
 
         <%--
         <g:if test="${editable}">
