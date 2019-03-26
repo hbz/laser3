@@ -135,7 +135,7 @@ class Org
     costConfigurationPreset column:'org_config_preset_rv_fk'
 
         orgType             joinTable: [
-                name:   'org_roletype',
+                name:   'org_type',
                 key:    'org_id',
                 column: 'refdata_value_id', type:   'BIGINT'
         ], lazy: false

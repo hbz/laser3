@@ -25,3 +25,7 @@ DELETE FROM public.setting WHERE set_name = 'AutoApproveMemberships';
 
 DELETE FROM public.user_org WHERE status = 4; -- STATUS_CANCELLED
 UPDATE public.user_org SET status = 1 WHERE status = 3; -- change STATUS_AUTO_APPROVED to STATUS_APPROVED
+
+-- 2019-03-26
+-- renaming joinTable / execute before start
+ALTER TABLE public.org_roletype RENAME TO org_type;
