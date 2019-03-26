@@ -109,19 +109,20 @@
                 <td>
                     <g:message code="cv.roles.${uo.formalRole?.authority}"/>
                 </td>
-                <%--<td>
-                    <g:if test="${userOrg[1]}">
-                        <g:each in="${userOrg[1]}" var="admRole">
-                            ${admRole} <br />
-                        </g:each>
-                    </g:if>
-                </td>--%>
 
                 <g:if test="${editable}">
                     <td class="x">
-                        <g:link controller="user" action="edit" id="${uo.user.id}" class="ui icon button">
-                            <i class="icon write"></i>
-                        </g:link>
+                        <%
+                            boolean checkEditable = Org.executeQuery(
+                                    'SELECT DISTINCT uo.org from UserOrg uo where uo.user = :user',
+                                    [user: uo.user]
+                            ).size() == 1
+                        %>
+                        <g:if test="${checkEditable}">
+                            <g:link controller="user" action="edit" id="${uo.user.id}" class="ui icon button">
+                                <i class="icon write"></i>
+                            </g:link>
+                        </g:if>
 
                         <g:link class="ui icon negative button js-open-confirm-modal"
                                 data-confirm-term-what="user"
