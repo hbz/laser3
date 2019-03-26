@@ -2,11 +2,13 @@ package com.k_int.kbplus
 
 import de.laser.domain.AbstractI10nTranslatable
 import de.laser.domain.I10nTranslation
+import groovy.util.logging.Log4j
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 import javax.validation.UnexpectedTypeException
 
+@Log4j
 class SurveyProperty extends AbstractI10nTranslatable {
 
     String name
