@@ -189,18 +189,38 @@ class FilterService {
         }
         if(params.docTarget) {
             //sorry, I hate def, but here, I cannot avoid using it ...
-            def target = genericOIDService.resolveOID(params.docTarget)
-            switch(target.class.name) {
-                case Subscription.class.name: query << "dc.subscription = :target"
-                    break
-                case Org.class.name: query << "dc.org = :target"
-                    break
-                case License.class.name: query << "dc.license = :target"
-                    break
-                case Package.class.name: query << "dc.pkg = :target"
-                    break
+            List targetOIDs = params.docTarget.split(",")
+            Set targetQuery = []
+            List subs = [], orgs = [], licenses = [], pkgs = []
+            targetOIDs.each { t ->
+                def target = genericOIDService.resolveOID(t)
+                switch(target.class.name) {
+                    case Subscription.class.name: targetQuery << "dc.subscription in (:subs)"
+                        subs << target
+                        break
+                    case Org.class.name: targetQuery << "dc.org in (:orgs)"
+                        orgs << target
+                        break
+                    case License.class.name: targetQuery << "dc.license in (:licenses)"
+                        licenses << target
+                        break
+                    case com.k_int.kbplus.Package.class.name: targetQuery << "dc.pkg in (:pkgs)"
+                        pkgs << target
+                        break
+                    default: log.debug(target.class.name)
+                        break
+                }
             }
-            queryParams << [target: target]
+            if(subs)
+                queryParams.subs = subs
+            if(orgs)
+                queryParams.orgs = orgs
+            if(licenses)
+                queryParams.licenses = licenses
+            if(pkgs)
+                queryParams.pkgs = pkgs
+            if(targetQuery)
+                query << "(${targetQuery.join(" or ")})"
         }
         if(query.size() > 0)
             result.query = " and "+query.join(" and ")

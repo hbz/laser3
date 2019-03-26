@@ -10,7 +10,6 @@ import de.laser.helper.DateUtil
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import org.apache.poi.hssf.model.*
 import org.apache.poi.hssf.usermodel.*
 import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
@@ -1111,24 +1110,13 @@ from License as l where (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     Map documents() {
         Map result = setResultGenerics()
-        Map documents = orgDocumentService.getDocuments(result.user,result.institution,params)
-        result.documents = documents.documents
-        result.availableUsers = documents.availableUsers
+        Set documents = orgDocumentService.getAllDocuments(result.institution,params)
+        result.max = params.max ? Integer.parseInt(params.max) : (int) result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        result.documents = documents.drop(result.offset).take(result.max)
+        result.totalSize = documents.size()
+        result.availableUsers = orgDocumentService.getAvailableUploaders(result.user)
         result
-    }
-
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-    def editDocument() {
-        Map result = setResultGenerics()
-        result.ownobj = result.institution
-        result.owntp = 'organisation'
-        if(params.id) {
-            result.docctx = DocContext.get(params.id)
-            result.doc = result.docctx.owner
-        }
-
-        render template: "/templates/documents/modal", model: result
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')

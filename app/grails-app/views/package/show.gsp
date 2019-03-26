@@ -1,4 +1,5 @@
 <%@ page import="com.k_int.kbplus.Package;com.k_int.kbplus.RefdataCategory;org.springframework.web.servlet.support.RequestContextUtils" %>
+<laser:serviceInjection/>
 <!doctype html>
 <html>
     <head>

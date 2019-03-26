@@ -329,7 +329,7 @@ class ControlledListService {
                 result.results.add([name:"(${messageSource.getMessage('spotlight.subscription',null,LocaleContextHolder.locale)}) ${it.name}",value:"${it.class.name}:${it.id}"])
             }
         }
-        if(params.pkg == "true") {
+        if(params.package == "true") {
             List allPackages = DocContext.executeQuery('select dc.pkg from DocContext dc where dc.owner.owner = :ctxOrg and dc.pkg != null and lower(dc.pkg.name) like lower(:query) order by dc.pkg.name asc', [ctxOrg: org, query: "%${params.query}%"])
             allPackages.each { it ->
                 result.results.add([name: "(${messageSource.getMessage('spotlight.package', null, LocaleContextHolder.locale)}) ${it.name}", value: "${it.class.name}:${it.id}"])

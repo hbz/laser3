@@ -17,7 +17,46 @@
         </thead>
         <tbody>
             <g:each in="${instance.documents}" var="docctx">
-                <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && (docctx.status?.value != 'Deleted'))}">
+                <%
+                    def ownerObj
+                    if(instance instanceof LinkedHashMap) {
+                        if(docctx.org)
+                            ownerObj = docctx.org
+                        else if(docctx.license)
+                            ownerObj = docctx.license
+                        else if(docctx.subscription)
+                            ownerObj = docctx.subscription
+                        else if(docctx.pkg)
+                            ownerObj = docctx.pkg
+                    }
+                    else ownerObj = instance
+                    boolean inOwnerOrg = false
+                    boolean isCreator = false
+
+                    if(docctx.owner.owner.id == org.id)
+                        inOwnerOrg = true
+                    if(docctx.owner.creator.id == user.id)
+                        isCreator = true
+                    boolean visible = false
+
+                    switch(docctx.shareConf) {
+                        case RDStore.SHARE_CONF_CREATOR: if(isCreator) visible = true
+                            break
+                        case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true
+                            break
+                        case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || org.id == docctx.org.id) visible = true
+                            break
+                        case RDStore.SHARE_CONF_CONSORTIUM:
+                        case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
+                            break
+                        default:
+                            if(docctx.shareConf) log.debug(docctx.shareConf)
+                            else visible = true
+                            break
+                    }
+
+                %>
+                <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && (docctx.status?.value != 'Deleted') && visible)}">
                     <tr>
                         <td>
                             ${docctx.owner.title}
@@ -26,7 +65,7 @@
                             ${docctx.owner.filename}
                         </td>
                         <td>
-                            <g:if test="${docctx?.owner?.owner?.id == org?.id || docctx.owner.creator.id == user.id}">
+                            <g:if test="${docctx.owner.owner.id == org.id || docctx.owner.creator.id == user.id}">
                                 ${docctx.owner.creator}
                             </g:if>
                         </td>
@@ -38,17 +77,17 @@
                                 <g:link controller="organisations" action="show" params="[id:docctx.org.id]"><i class="university icon small"></i> ${docctx.org.name}</g:link>
                             </g:if>
                             <g:elseif test="${docctx.license}">
-                                <g:link controller="licenseDetails" action="show" params="[id:docctx.license.id]"><i class="balance scale icon small"></i> ${docctx.license.name}</g:link>
+                                <g:link controller="licenseDetails" action="show" params="[id:docctx.license.id]"><i class="balance scale icon small"></i> ${docctx.license.reference}</g:link>
                             </g:elseif>
                             <g:elseif test="${docctx.subscription}">
                                 <g:link controller="subscriptionDetails" action="show" params="[id:docctx.subscription.id]"><i class="folder open icon small"></i> ${docctx.subscription.name}</g:link>
                             </g:elseif>
                             <g:elseif test="${docctx.pkg}">
-                                <g:link controller="packageDetails" action="show" params="[id:docctx.pkg.id]"><i class="gift icon small"></i> ${docctx.pkg.name}</g:link>
+                                <g:link controller="package" action="show" params="[id:docctx.pkg.id]"><i class="gift icon small"></i> ${docctx.pkg.name}</g:link>
                             </g:elseif>
                         </td>
                         <td>
-                            ${docctx.shareConf.getI10n("value")}
+                            ${docctx.shareConf?.getI10n("value")}
                         </td>
                         <td class="x">
                             <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
@@ -56,11 +95,11 @@
                                     <g:if test="${docctx.sharedFrom}">
                                         [ Wird geteilt ]
                                     </g:if>
-                                    <g:if test="${instance.respondsTo('showUIShareButton') && showUIShareButton()}">
+                                    <g:if test="${instance.respondsTo('showUIShareButton') && instance.showUIShareButton()}">
                                         <g:if test="${docctx.isShared}">
                                             <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip.on')}">
                                                 <g:link controller="ajax" action="toggleShare" class="ui icon button green"
-                                                        params='[owner:"${instance.class.name}:${instance.id}", sharedObject:"${docctx.class.name}:${docctx.id}", reload:true]'>
+                                                        params='[owner:"${instance.class.name ?: ownerObj.class.name}:${instance.id ?: ownerObj.id}", sharedObject:"${docctx.class.name}:${docctx.id}", reload:true]'>
                                                     <i class="alternate share icon"></i>
                                                 </g:link>
                                             </span>
@@ -68,7 +107,7 @@
                                         <g:else>
                                             <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip.off')}">
                                                 <g:link controller="ajax" action="toggleShare" class="ui icon button"
-                                                        params='[owner:"${instance.class.name}:${instance.id}", sharedObject:"${docctx.class.name}:${docctx.id}", reload:true]'>
+                                                        params='[owner:"${instance.class.name ?: ownerObj.class.name}:${instance.id ?: ownerObj.id}", sharedObject:"${docctx.class.name}:${docctx.id}", reload:true]'>
                                                     <i class="alternate share icon"></i>
                                                 </g:link>
                                             </span>
@@ -79,7 +118,7 @@
                                 <button type="button" class="ui icon button" data-semui="modal" href="#modalEditDocument_${docctx.id}" data-tooltip="${message(code:"template.documents.edit")}" params="[id:docctx.id]"><i class="pencil icon"></i></button>
                                 <g:link conter="${controllerName}" action="deleteDocuments" class="ui icon negative button js-open-confirm-modal"
                                         data-confirm-term-what="document" data-confirm-term-what-detail="${docctx.owner.title}" data-confirm-term-how="delete"
-                                        params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${redirect}"]'>
+                                        params='[instanceId:"${instance.id ? instance.id : ownerObj.id}", deleteId:"${docctx.id}", redirectAction:"${redirect}"]'>
                                     <i class="trash alternate icon"></i>
                                 </g:link>
                             </g:if>
@@ -93,7 +132,6 @@
 <%-- a form within a form is not permitted --%>
 <g:each in="${instance.documents}" var="docctx">
     <%
-
         if(instance instanceof LinkedHashMap) {
             if(docctx.org)
                 ownerObj = docctx.org

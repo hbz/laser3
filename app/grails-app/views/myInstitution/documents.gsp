@@ -22,6 +22,8 @@
 
     <g:render template="/templates/documents/filter" model="${[availableUsers:availableUsers]}"/>
 
-    <g:render template="/templates/documents/table" model="${[instance:[documents:documents], context:'documents', redirect:'documents', owntp: 'org']}"/>
+    <g:render template="/templates/documents/table" model="${[instance:[documents:documents], org: institution, context:'documents', redirect:'documents', owntp: 'org']}"/>
+
+    <semui:paginate action="documents" params="${params}" total="${totalSize}"/>
   </body>
 </html>

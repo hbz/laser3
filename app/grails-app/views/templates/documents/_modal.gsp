@@ -90,7 +90,7 @@
                     <%
                         String value = "${RefdataValue.class.name}:${RDStore.SHARE_CONF_UPLOADER_ORG.id}"
                         if(docctx) {
-                            value = "${RefdataValue.class.name}:${docctx.shareConf.id}"
+                            value = "${RefdataValue.class.name}:${docctx.shareConf?.id}"
                         }
                         List allConfigs = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.owner.desc = 'Share Configuration' and rdv.hardData = true order by rdv.order asc")
                         List availableConfigs = []
