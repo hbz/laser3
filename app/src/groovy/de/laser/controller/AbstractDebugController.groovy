@@ -3,6 +3,8 @@ package de.laser.controller
 import de.laser.domain.SystemProfiler
 import de.laser.helper.DebugUtil
 import grails.converters.JSON
+import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 abstract class AbstractDebugController {
 
@@ -16,7 +18,18 @@ abstract class AbstractDebugController {
         def delta = debugUtil.stopSimpleBench(this.class.simpleName + ' ' + session.id)
 
         if (delta >= SystemProfiler.THRESHOLD_MS) {
-            def json = (params as JSON)
+
+            Map paramsToLog = [:]
+            params.each{ key, value ->
+                if (value instanceof String) {
+                    paramsToLog.put(key, value)
+                }
+                else {
+                    paramsToLog.put(key, value.getClass())
+                }
+            }
+            def json = (paramsToLog as JSON)
+
             (new SystemProfiler(
                     uri:      actionUri,
                     params:   json?.toString(),

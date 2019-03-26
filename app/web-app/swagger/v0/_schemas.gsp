@@ -293,6 +293,63 @@
           $ref: "#/components/schemas/OrganisationStub"
 
 
+    Organisation:
+      allOf:
+        - $ref: "#/definitions/OrganisationStub"
+      properties:
+        addresses:
+          type: array
+          items:
+            $ref: "#/definitions/Address"
+        comment:
+          type: string
+        contacts:
+          type: array
+          items:
+            $ref: "#/definitions/Contact"
+        fteStudents:
+          type: integer
+        fteStaff:
+          type: integer
+        impId:
+          type: string
+          example: "9ef8a0d4-a87c-4b39-71b9-c29b269f311b"
+        persons: # mapping attr prsLinks
+          type: array
+          items:
+            $ref: "#/definitions/Person" # resolved PersonRole
+        properties: # mapping attr customProperties and privateProperties
+          type: array
+          items:
+            $ref: "#/definitions/Property"
+        roleType:
+          type: array
+          items:
+            $ref: "#/definitions/OrgRoleType"
+          description: Mapping RefdataCategory "OrgRoleType"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgRoleType').collect{ it.value }.join(', ') }]
+        scope:
+          type: string
+        sector:
+          #deprecated: true
+          type: string
+          description: Mapping RefdataCategory "OrgSector"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgSector').collect{ it.value }.join(', ') }]
+        status:
+          type: string
+          description: Mapping RefdataCategory
+          enum:
+            [""]
+        type:
+          #deprecated: true
+          type: string
+          description: Mapping RefdataCategory "OrgType"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgType').collect{ it.value }.join(', ') }]
+
+
     Property:
       type: object
       properties:

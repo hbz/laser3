@@ -1,7 +1,13 @@
-Für den Benutzer ${user.display} (${user.username}) wurde von einem Administrator
+Sehr geehrte/r ${user.display},
 
-ein neues Passwort vergeben: ${newPass}
+für Sie wurde von einem Administrator ein neues Passwort vergeben:
 
-Sie können das Passwort natürlich im Nutzerprofil ändern.
+${serverURL}
+
+Kontoname: ${user.username}
+
+Passwort: ${newPass}
+
+Sie können das Passwort im Nutzerprofil ändern.
 
 <g:render template="/mailTemplates/text/signature" />

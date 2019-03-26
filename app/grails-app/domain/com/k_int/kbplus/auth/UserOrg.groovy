@@ -11,9 +11,9 @@ class UserOrg implements Comparable {
     static STATUS_APPROVED      = 1
     static STATUS_REJECTED      = 2
     // static STATUS_AUTO_APPROVED = 3
-    static STATUS_CANCELLED     = 4
+    // static STATUS_CANCELLED     = 4
 
-    int status  // 0=Pending, 1=Approved, 2=Rejected, 3=AutoApproved
+    int status  // 0=Pending, 1=Approved, 2=Rejected
 
     Long dateRequested
     Long dateActioned

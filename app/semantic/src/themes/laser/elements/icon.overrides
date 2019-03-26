@@ -1773,7 +1773,6 @@ i.icon.la-append:before { content: "\e90c"; }
 i.icon.la-replace:before { content: "\e90d"; }
 
 
-
 /*******************************
            Laser Icons
 *******************************/

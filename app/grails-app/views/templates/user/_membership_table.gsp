@@ -14,29 +14,49 @@
         </tr>
         </thead>
         <tbody>
+
+        <% int affiCount = 0 %>
         <g:each in="${userInstance.affiliations}" var="aff">
-            <tr>
-                <td><g:link controller="organisations" action="show" id="${aff.org.id}">${aff.org.name}</g:link></td>
-                <td><g:message code="cv.roles.${aff.formalRole?.authority}"/></td>
-                <td><g:message code="cv.membership.status.${aff.status}"/></td>
-                <td><g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${aff.dateRequested}"/> / <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${aff.dateActioned}"/></td>
-                <td class="x">
-                    <g:if test="${tmplProfile}">
-                        <g:if test="${aff.status != UserOrg.STATUS_CANCELLED}">
+            <g:if test="${tmplProfile || (editor.hasRole('ROLE_ADMIN') || (aff.org == contextService.getOrg()))}">
+                <% affiCount++ %>
+                <tr>
+                    <td>
+                        <g:link controller="organisations" action="show" id="${aff.org.id}">${aff.org.name}</g:link>
+                    </td>
+                    <td>
+                        <g:message code="cv.roles.${aff.formalRole?.authority}"/>
+                    </td>
+                    <td>
+                        <g:message code="cv.membership.status.${aff.status}"/>
+                    </td>
+                    <td>
+                        <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${aff.dateRequested}"/>
+                        /
+                        <g:formatDate format="${message(code:'default.date.format.notime', default:'yyyy-MM-dd')}" date="${aff.dateActioned}"/>
+                    </td>
+                    <td class="x">
+                        <g:if test="${tmplProfile}">
                             <g:link class="ui button" controller="profile" action="processCancelRequest" params="${[assoc:aff.id]}">${message(code:'default.button.revoke.label', default:'Revoke')}</g:link>
                         </g:if>
-                    </g:if>
-                    <g:if test="${tmplUserEdit}">
-                        <g:if test="${editor.hasRole('ROLE_ADMIN') || (aff.org == contextService.getOrg())}">
-                            <g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${userInstance.class.name}:${userInstance.id}",contextProperty:"affiliations",targetOid:"${aff.class.name}:${aff.id}"]}'
-                                    class="ui icon negative button">
-                                <i class="trash alternate icon"></i>
-                            </g:link>
+                        <g:if test="${tmplUserEdit}">
+                            <g:if test="${editor.hasRole('ROLE_ADMIN') || (aff.org == contextService.getOrg())}">
+                                <g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${userInstance.class.name}:${userInstance.id}",contextProperty:"affiliations",targetOid:"${aff.class.name}:${aff.id}"]}'
+                                        class="ui icon negative button">
+                                    <i class="trash alternate icon"></i>
+                                </g:link>
+                            </g:if>
                         </g:if>
-                    </g:if>
+                    </td>
+                </tr>
+            </g:if>
+        </g:each>
+        <g:if test="${affiCount != userInstance.affiliations?.size()}">
+            <tr>
+                <td colspan="5">
+                    und ${userInstance.affiliations.size() - affiCount} weitere ..
                 </td>
             </tr>
-        </g:each>
+        </g:if>
         </tbody>
     </table>
 </div><!--.column-->

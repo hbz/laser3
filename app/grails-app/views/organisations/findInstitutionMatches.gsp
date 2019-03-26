@@ -1,4 +1,5 @@
-<%@ page import="com.k_int.kbplus.Org" %>
+<%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.Org; grails.plugin.springsecurity.SpringSecurityUtils" %>
+<laser:serviceInjection/>
 <!doctype html>
 <html>
 	<head>
@@ -51,7 +52,12 @@
 							<tbody>
 							<g:each in="${institutionMatches}" var="institutionInstance">
 								<tr>
-									<td>${institutionInstance.name} <g:link controller="organisations" action="show" id="${institutionInstance.id}" params="${[institutionalView: true]}">(${message(code:'default.button.edit.label', default:'Edit')})</g:link></td>
+									<td>
+										${institutionInstance.name}
+										<g:if test="${(contextService.org.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id) && consortia.get(institutionInstance.id).contains(contextService.org.id) && consortia.get(institutionInstance.id)?.size() == 1) || SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN,ROLE_YODA")}">
+											<g:link controller="organisations" action="show" id="${institutionInstance.id}" params="${[institutionalView: true]}">(${message(code:'default.button.edit.label', default:'Edit')})</g:link>
+										</g:if>
+									</td>
 									<td><ul>
 											<li><g:message code="org.globalUID.label" default="Global UID" />: <g:fieldValue bean="${institutionInstance}" field="globalUID"/></li>
 											<g:if test="${institutionInstance.impId}">
@@ -71,6 +77,11 @@
 							</bootstrap:alert>
 							<g:link controller="organisations" action="createInstitution" class="ui negative button" params="${[institution:params.proposedInstitution]}">${message(code:'org.findInstitutionMatches.matches.create', default:'Create New Institution with the Name', args: [params.proposedInstitution])}</g:link>
 						</g:if>
+						<g:else if="${params.proposedInstitution.isEmpty()}">
+							<bootstrap:alert class="alert-info">
+								${message(code:'org.findInstitutionMatches.matchNoName', args:[params.proposedInstitution])}
+							</bootstrap:alert>
+						</g:else>
 					</g:if>
 					<g:elseif test="${params.proposedInstitution && !params.proposedInstitution.isEmpty()}">
 						<bootstrap:alert class="alert-info">${message(code:'org.findInstitutionMatches.no_match', args:[params.proposedInstitution])}</bootstrap:alert>

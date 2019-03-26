@@ -96,12 +96,12 @@ class LicenseCompareController extends AbstractDebugController {
             PropertyDefinitionGroup groupKey
             PropertyDefinitionGroupBinding groupBinding
             switch(wrapperKey) {
-              case "global": println "processing global scope"
+              case "global":
                 groupKey = (PropertyDefinitionGroup) propDefGroup
                 if(groupKey.visible == RDStore.YN_YES)
                   groupedProperties.put(groupKey,comparisonService.getGroupedPropertyTrees(groupedProperties,groupKey,null,lic))
                 break
-              case "local": println "processing local scope"
+              case "local":
                 try {
                   groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
                   groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)
@@ -114,7 +114,7 @@ class LicenseCompareController extends AbstractDebugController {
                   e.printStackTrace()
                 }
                 break
-              case "member": println "processing member scope"
+              case "member":
                 try {
                   groupKey = (PropertyDefinitionGroup) propDefGroup.get(0)
                   groupBinding = (PropertyDefinitionGroupBinding) propDefGroup.get(1)

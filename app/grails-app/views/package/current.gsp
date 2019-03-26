@@ -266,10 +266,10 @@
                             </g:if>
                             <g:else>${message(code:'default.unknown')}</g:else>
                             <g:if test="${t?.platform.name}">
-                                <g:link class="ui icon mini  button la-url-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.changePlattform')}" controller="platform" action="show" id="${t?.platform.id}"><i class="pencil alternate icon"></i></g:link>
+                                <g:link class="ui icon mini  button la-js-dont-hide-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.changePlattform')}" controller="platform" action="show" id="${t?.platform.id}"><i class="pencil alternate icon"></i></g:link>
                             </g:if>
                             <g:if test="${t.hostPlatformURL}">
-                                <a class="ui icon mini blue button la-url-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.callUrl')}" href="${t.hostPlatformURL.contains('http') ? t.hostPlatformURL :'http://'+t.hostPlatformURL}" target="_blank"><i class="share square icon"></i></a>
+                                <a class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.callUrl')}" href="${t.hostPlatformURL.contains('http') ? t.hostPlatformURL :'http://'+t.hostPlatformURL}" target="_blank"><i class="share square icon"></i></a>
                             </g:if>
                         </div>
                     </div>

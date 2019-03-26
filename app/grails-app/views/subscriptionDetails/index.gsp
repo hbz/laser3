@@ -213,10 +213,10 @@
                                             <g:else>${message(code:'default.unknown')}</g:else>
 
                                             <g:if test="${ie.tipp?.platform.name}">
-                                                <g:link  class="ui icon mini  button la-url-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.changePlattform')}" controller="platform" action="show" id="${ie.tipp?.platform.id}"><i class="pencil alternate icon"></i></g:link>
+                                                <g:link  class="ui icon mini  button la-js-dont-hide-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.changePlattform')}" controller="platform" action="show" id="${ie.tipp?.platform.id}"><i class="pencil alternate icon"></i></g:link>
                                             </g:if>
                                             <g:if test="${ie.tipp?.hostPlatformURL}">
-                                                <a class="ui icon mini blue button la-url-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.callUrl')}" href="${ie.tipp?.hostPlatformURL.contains('http') ? ie.tipp?.hostPlatformURL :'http://'+ie.tipp?.hostPlatformURL}" target="_blank"><i class="share square icon"></i></a>
+                                                <a class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.callUrl')}" href="${ie.tipp?.hostPlatformURL.contains('http') ? ie.tipp?.hostPlatformURL :'http://'+ie.tipp?.hostPlatformURL}" target="_blank"><i class="share square icon"></i></a>
                                             </g:if>
 
                                             <g:if test="${ie.availabilityStatus?.value=='Expected'}">

@@ -198,14 +198,7 @@ class SemanticUiTagLib {
         }
     }
 
-
     def auditButton = { attrs, body ->
-
-        def text = attrs.text ? attrs.text : ''
-        def message = attrs.message ? "${message(code: attrs.message)}" : ''
-        def label = (text && message) ? text + " - " + message : text + message
-
-        out << '<dt class="control-label">' + label
 
         if (attrs.auditable) {
             try {
@@ -236,17 +229,17 @@ class SemanticUiTagLib {
                         String oid = "${obj.getClass().getName()}:${obj.getId()}"
 
                         if (auditService.getAuditConfig(obj, objAttr)) {
-                            out << '&nbsp; <div class="ui simple dropdown icon mini green button" data-tooltip="Wert wird vererbt" data-position="top right">'
+                            out << '&nbsp; <div class="ui simple dropdown icon mini green button la-js-dont-hide-button">'
                             out   << '<i class="icon thumbtack"></i>'
 
                             out   << '<div class="menu">'
-                            out << g.link( 'Deaktivieren. Wert für Teilnehmer löschen',
+                            out << g.link( 'Vererbung deaktivieren. Wert für Teilnehmer <b>löschen</b>',
                                     controller: 'ajax',
                                     action: 'toggleAudit',
                                     params: ['owner': oid, 'property': [objAttr]],
                                     class: 'item'
                             )
-                            out << g.link( 'Deaktivieren. Wert für Teilnehmer erhalten',
+                            out << g.link( 'Verarbeitung deaktivieren. Wert für Teilnehmer <b>erhalten</b>',
                                     controller: 'ajax',
                                     action: 'toggleAudit',
                                     params: ['owner': oid, 'property': [objAttr], keep: true],
@@ -256,13 +249,14 @@ class SemanticUiTagLib {
                             out << '</div>'
                         }
                         else {
-                            out << ' &nbsp; '
-                            out << g.link( '<i class="icon thumbtack"></i>',
+                            out << ' &nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird nicht vererbt">'
+                            out << g.link( '<i class="icon la-thumbtack slash"></i>',
                                     controller: 'ajax',
                                     action: 'toggleAudit',
                                     params: ['owner': oid, 'property': [objAttr]],
-                                    class: 'ui icon mini button'
+                                    class: 'ui icon mini button la-js-dont-hide-button'
                             )
+                            out <<  '</span>'
                         }
                     }
                 }

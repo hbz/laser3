@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI">
-    <title>${message(code:'laser', default:'LAS:eR')} : ingas playground</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : Frontend for Developers</title>
     <style>
     #example .column .icon {
         opacity: 1;
