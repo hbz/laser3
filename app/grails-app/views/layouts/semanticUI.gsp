@@ -464,7 +464,7 @@
                             </div>
 
                             <div class="divider"></div>
-                            <g:link class="item" controller="yoda" action="inga" >Frontend für Entwickler</g:link>
+                            <g:link class="item" controller="yoda" action="frontend" >Frontend für Entwickler</g:link>
 
                         </div>
 
