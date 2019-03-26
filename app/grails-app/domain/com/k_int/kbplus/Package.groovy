@@ -433,7 +433,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                      title: [
                        name:tip.title.title,
                        impId:tip.title.impId,
-                       identifiers:[]
+                       identifiers:[],
+                       titleType: tip.title.class.name ?: null
                      ],
                      titleId:title_id,
                      titleUuid:tip.title.gokbId,
