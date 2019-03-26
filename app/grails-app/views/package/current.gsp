@@ -136,8 +136,9 @@
               </div>
           </div>
         </g:if>
-
-        <g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
+        <div class="row">
+            <div class="column">
+                <g:form action="packageBatchUpdate" params="${[id:packageInstance?.id]}">
             <g:if test="${editable}">
           <table class="ui celled la-table table ignore-floatThead la-bulk-header">
 
@@ -200,8 +201,8 @@
             <g:render template="/templates/tipps/table" model="[tipps: titlesList, showPackage: false, showPlattform: true, showBulkFlag: true]"/>
 
         </g:form>
-          </dd>
-        </dl>
+            </div>
+        </div>
     </div>
 
           <g:if test="${titlesList}" >
