@@ -234,6 +234,9 @@ class BootStrap {
         log.debug("createSubscriptionProperties ..")
         createSubscriptionProperties()
 
+        log.debug("createSurveyProperties ..")
+        createSurveyProperties()
+
         //log.debug("createPrivateProperties ..")
         //createPrivateProperties()
 
@@ -1158,6 +1161,15 @@ class BootStrap {
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
     }
 
+    def createSurveyProperties() {
+
+        def requiredProps = [
+                [name: [en: "Continue to license", de: "Weiter lizenzieren?"], type: OT.Rdv, cat:'YN'],
+                [name: [en: "Interested", de: "Interessiert?"], type: OT.Rdv, cat:'YN']
+        ]
+        createSurveyPropertiesWithI10nTranslations(requiredProps)
+    }
+
     def createPrivateProperties() {
 
         def allOrgDescr = [en: PropertyDefinition.ORG_PROP, de: PropertyDefinition.ORG_PROP]
@@ -1234,6 +1246,56 @@ class BootStrap {
 
             if (default_prop.expl) {
                 I10nTranslation.createOrUpdateI10n(prop, 'expl', default_prop.expl)
+            }
+        }
+    }
+
+    def createSurveyPropertiesWithI10nTranslations(requiredProps) {
+
+        requiredProps.each { default_prop ->
+            def surveyProperty   = null
+            def owner = null
+
+            if (default_prop.owner) {
+                owner = Org.findByShortname(default_prop.owner)
+
+                if (owner) {
+                    surveyProperty = SurveyProperty.findByNameAndOwner(default_prop.name['en'], owner)
+                } else {
+                    log.debug("Unable to locate owner: ${default_prop.owner} .. ignored")
+                    return
+                }
+            } else {
+                surveyProperty = SurveyProperty.findWhere(name: default_prop.name['en'], owner: null)
+            }
+
+            if (! surveyProperty) {
+                if (owner) {
+                    log.debug("Unable to locate private survey property definition for ${default_prop.name['en']} for owner: ${owner} .. creating")
+                    surveyProperty = new SurveyProperty(name: default_prop.name['en'], owner: owner)
+                } else {
+                    log.debug("Unable to locate survey property definition for ${default_prop.name['en']} .. creating")
+                    surveyProperty = new SurveyProperty(name: default_prop.name['en'])
+                }
+            }
+
+            if (default_prop.cat != null) {
+                surveyProperty.setRefdataCategory(default_prop.cat)
+            }
+
+            surveyProperty.type  = default_prop.type
+            //prop.softData = false
+            surveyProperty.hardData = BOOTSTRAP
+            surveyProperty.save(failOnError: true)
+
+            I10nTranslation.createOrUpdateI10n(surveyProperty, 'name', default_prop.name)
+
+            if (default_prop.explain) {
+                I10nTranslation.createOrUpdateI10n(surveyProperty, 'explain', default_prop.expl)
+            }
+
+            if (default_prop.introduction) {
+                I10nTranslation.createOrUpdateI10n(surveyProperty, 'introduction', default_prop.expl)
             }
         }
     }
@@ -1400,6 +1462,8 @@ class BootStrap {
         RefdataCategory.loc('Number Type',                                  [en: 'Number Type', de: 'Zahlen-Typ'], BOOTSTRAP)
         RefdataCategory.loc('User.Settings.Dashboard.Tab',                  [en: 'Dashboard Tab', de: 'Dashbord Tab'], BOOTSTRAP)
         RefdataCategory.loc('Survey Type',                  [en: 'Survey Type', de: 'Umfrage-Typ'], BOOTSTRAP)
+        RefdataCategory.loc('Survey Status',                  [en: 'Survey Status', de: 'Umfrage-Status'], BOOTSTRAP)
+
         // refdata values
 
         RefdataValue.loc('YN',   [en: 'Yes', de: 'Ja'], BOOTSTRAP)
@@ -2087,6 +2151,13 @@ class BootStrap {
 
         RefdataValue.loc('Survey Type',      [key: 'renewal', en: 'Renewal Survey', de: 'Verlängerungsumfrage'], BOOTSTRAP)
         RefdataValue.loc('Survey Type',      [key: 'interest', en: 'Interest Survey', de: 'Interessenumfrage'], BOOTSTRAP)
+
+        RefdataValue.loc('Survey Status',      [en: 'Ready', de: 'Bereit'], BOOTSTRAP)
+        RefdataValue.loc('Survey Status',      [en: 'In Processing', de: 'In Bearbeitung'], BOOTSTRAP)
+        RefdataValue.loc('Survey Status',      [en: 'In Evaluation', de: 'In Auswertung'], BOOTSTRAP)
+        RefdataValue.loc('Survey Status',      [en: 'Abgeschlossen', de: 'Completed'], BOOTSTRAP)
+        RefdataValue.loc('Survey Status',      [en: 'Survey started', de: 'Umfrage gestartet'], BOOTSTRAP)
+        RefdataValue.loc('Survey Status',      [en: 'Survey started', de: 'Umfrage beendet'], BOOTSTRAP)
 
     }
 
