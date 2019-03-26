@@ -20,8 +20,9 @@ class UserService {
     def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
     def mailService = Holders.grailsApplication.mainContext.getBean('mailService')
 
+    // checking org and combo related orgs
     boolean hasInstAdmPivileges(User user, Org org) {
-        boolean result = false
+        boolean result = accessService.checkMinUserOrgRole(user, org, 'INST_ADM')
 
         List<Org> topOrgs = Org.executeQuery(
                 'select c.toOrg from Combo c where c.fromOrg = :org', [org: org]
@@ -30,6 +31,17 @@ class UserService {
             if (accessService.checkMinUserOrgRole(user, top, 'INST_ADM')) {
                 result = true
             }
+        }
+        result
+    }
+
+    // checking user.userOrg against editor.userOrg
+    boolean isUserEditableForInstAdm(User user, User editor) {
+        boolean result = false
+        List<Org> userOrgs = user.getAuthorizedAffiliations().collect{ it.org }
+
+        userOrgs.each { org ->
+            result = result || hasInstAdmPivileges(editor, org)
         }
         result
     }

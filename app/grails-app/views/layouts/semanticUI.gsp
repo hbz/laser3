@@ -400,7 +400,7 @@
                 </sec:ifAnyGranted>
 
                 <sec:ifAnyGranted roles="ROLE_YODA">
-                    <div class="ui  simple dropdown  item">
+                    <div class="ui simple dropdown item">
                         Yoda
                         <i class="dropdown icon"></i>
 
@@ -408,22 +408,28 @@
 
                             <g:link class="item" controller="yoda" action="dashboard">Dashboard</g:link>
 
-                            <div class="divider"></div>
+                            <div class="ui dropdown item">
+                                Dagobah
+                                <i class="dropdown icon"></i>
 
-                            <g:link class="item" controller="yoda" action="settings">System Settings</g:link>
-                            <g:link class="item" controller="yoda" action="manageSystemMessage">${message(code: 'menu.admin.systemMessage', default: 'System Message')}</g:link>
-                            <g:link class="item" controller="yoda" action="appConfig">App Config</g:link>
+                                <div class="menu">
+
+                                    <g:link class="item" controller="yoda" action="settings">System Settings</g:link>
+                                    <g:link class="item" controller="yoda" action="manageSystemMessage">${message(code: 'menu.admin.systemMessage', default: 'System Message')}</g:link>
+                                    <g:link class="item" controller="yoda" action="appConfig">App Config</g:link>
 
 
-                            <g:link class="item" controller="yoda" action="profiler">${message(code:'menu.yoda.profiler')}</g:link>
-                            <g:link class="item" controller="yoda" action="quartzInfo">${message(code:'menu.yoda.quartzInfo')}</g:link>
-                            <g:link class="item" controller="yoda" action="cacheInfo">${message(code:'menu.yoda.cacheInfo')}</g:link>
+                                    <g:link class="item" controller="yoda" action="profiler">${message(code:'menu.yoda.profiler')}</g:link>
+                                    <g:link class="item" controller="yoda" action="quartzInfo">${message(code:'menu.yoda.quartzInfo')}</g:link>
+                                    <g:link class="item" controller="yoda" action="cacheInfo">${message(code:'menu.yoda.cacheInfo')}</g:link>
 
-                            <g:link class="item" controller="yoda" action="appSecurity">Security</g:link>
-                            <g:link class="item" controller="yoda" action="userMatrix">${message(code:'menu.yoda.userMatrix')}</g:link>
-                            <g:link class="item" controller="yoda" action="userRoleDefinitions">${message(code:'menu.yoda.userRoleDefinitions')}</g:link>
+                                    <g:link class="item" controller="yoda" action="appSecurity">Security</g:link>
+                                    <g:link class="item" controller="yoda" action="userMatrix">${message(code:'menu.yoda.userMatrix')}</g:link>
+                                    <g:link class="item" controller="yoda" action="userRoleDefinitions">${message(code:'menu.yoda.userRoleDefinitions')}</g:link>
 
-                            <%--<a class="item" href="${g.createLink(uri:'/monitoring')}">App Monitoring</a>--%>
+                                    <%--<a class="item" href="${g.createLink(uri:'/monitoring')}">App Monitoring</a>--%>
+                                </div>
+                            </div>
 
                             <div class="divider"></div>
 
@@ -467,7 +473,7 @@
                             </div>
 
                             <div class="divider"></div>
-                            <g:link class="item" controller="yoda" action="inga" >Frontend für Entwickler</g:link>
+                            <g:link class="item" controller="yoda" action="frontend" >Frontend für Entwickler</g:link>
 
                         </div>
 
@@ -619,7 +625,7 @@
                                             $('.card.la-js-hideable').not( ":has(.la-js-dont-hide-this-card)" ).addClass('hidden');
                                             $('.la-js-hide-this-card').addClass('hidden');
                                             $('.ui.form').not('.ui.modal .ui.form').addClass('hidden');
-                                            $('#collapseableSubDetails').not('.ui.modal').find('.button').not('.ui.modal .button, .la-url-button').addClass('hidden');
+                                            $('#collapseableSubDetails').not('.ui.modal').find('.button').not('.ui.modal .button, .la-js-dont-hide-button').addClass('hidden');
                                             $(toggleButton).removeAttr();
                                             $(toggleButton).attr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
                                             $( toggleIcon ).addClass( "slash" );

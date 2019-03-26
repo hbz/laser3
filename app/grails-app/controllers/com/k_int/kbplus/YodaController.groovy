@@ -624,7 +624,7 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
-    def inga() {
+    def frontend() {
         Map result = [test:123]
         result
     }

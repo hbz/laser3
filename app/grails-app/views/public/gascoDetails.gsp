@@ -68,7 +68,7 @@
                 <tr>
                     <td>${counter + 1}</td>
                     <td>
-                        <semui:listIcon type="${tipp.title.type}"/>
+                        <semui:listIcon type="${tipp?.title?.type?.value}"/>
                         <strong>${tipp.title.title}</strong>
                         <br />
 
@@ -126,7 +126,7 @@
         <tr>
             <td>${counter + 1}</td>
             <td>
-                <semui:listIcon type="${ie.tipp?.title.type}"/>
+                <semui:listIcon type="${ie.tipp?.title?.type?.value}"/>
                 <strong>${ie.tipp.title.title}</strong>
                 <br />
 

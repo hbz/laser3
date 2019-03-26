@@ -200,18 +200,18 @@ class ApiReader {
      * @param com.k_int.kbplus.Org context
      * @return
      */
-    @Deprecated
     static exportOrganisation(Org org, Org context) {
         def result = [:]
 
         org = GrailsHibernateUtil.unwrapIfProxy(org)
 
         result.globalUID    = org.globalUID
+        result.gokbId       = org.gokbId
         result.comment      = org.comment
         result.name         = org.name
         result.scope        = org.scope
-        result.fteStudents  = org.fteStudents
-        result.fteStaff     = org.fteStaff
+        //result.fteStudents  = org.fteStudents // TODO dc/table numbers
+        //result.fteStaff     = org.fteStaff // TODO dc/table numbers
 
         // RefdataValues
 
