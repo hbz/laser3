@@ -82,6 +82,8 @@ class UserController extends AbstractDebugController {
     def edit() {
         def result = setResultGenerics()
 
+        result.editable = result.editable || userService.isUserEditableForInstAdm(result.user, result.editor)
+
         if (! result.editable) {
             redirect action: 'list'
             return
@@ -137,6 +139,8 @@ class UserController extends AbstractDebugController {
     def newPassword() {
         def result = setResultGenerics()
 
+        result.editable = result.editable || userService.isUserEditableForInstAdm(result.user, result.editor)
+
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions', default: 'KEINE BERECHTIGUNG')
             redirect controller: 'user', action: 'edit', id: params.id
@@ -167,6 +171,9 @@ class UserController extends AbstractDebugController {
     })
     def addAffiliation(){
         def result = setResultGenerics()
+
+        result.editable = result.editable || userService.isUserEditableForInstAdm(result.user, result.editor)
+
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions', default: 'KEINE BERECHTIGUNG')
             redirect controller: 'user', action: 'edit', id: params.id
@@ -201,6 +208,7 @@ class UserController extends AbstractDebugController {
             result.availableComboOrgs = Combo.executeQuery(
                     'select c.fromOrg from Combo c where c.toOrg = :ctxOrg order by c.fromOrg.name', [ctxOrg: contextService.getOrg()]
             )
+            result.availableComboOrgs.push(contextService.getOrg())
 
             result.availableOrgRoles = Role.findAllByRoleType('user')
         }
