@@ -21,12 +21,12 @@
             <div class="ui segment form">
 
                 <div class="ui field">
-                    <label>Benutzername</label>
+                    <label>${message(code:'user.username.label')}</label>
                     <input type="text" readonly="readonly" value="${user.username}">
                 </div>
 
                 <div class="ui field">
-                    <label>Anzeigename</label>
+                    <label>${message(code:'user.displayName.label')}</label>
                     <g:if test="${editable}">
                         <span id="displayEdit"
                               class="xEditableValue"
@@ -42,22 +42,22 @@
                 </div>
 
                 <div class="ui field">
-                    <label>E-Mail</label>
+                    <label>${message(code:'user.email')}</label>
                     <semui:xEditable owner="${user}" field="email" />
                 </div>
 
                 <g:if test="${editable}">
 
                     <div class="ui field">
-                        <label>Enabled</label>
+                        <label>${message(code:'user.enabled.label')}</label>
                         <semui:xEditableBoolean owner="${user}" field="enabled" />
                     </div>
 
                     <g:form controller="user" action="newPassword" params="${[id: user.id]}">
                         <div class="ui two fields">
                             <div class="ui field">
-                                <label>Passwort</label>
-                                <input type="submit" class="ui button orange" value="Neues Passwort per Mail verschicken">
+                                <label>${message(code:'user.password.label')}</label>
+                                <input type="submit" class="ui button orange" value="${message(code:'user.newPassword.text')}">
                             </div>
                         </div>
                     </g:form>
@@ -117,7 +117,7 @@
             <thead>
               <tr>
                 <th>${message(code:'user.role', default:'Role')}</th>
-                <th>${message(code:'user.actions', default:'Actions')}</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>

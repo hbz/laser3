@@ -26,16 +26,16 @@
 
                     <div class="four fields">
                         <div class="field">
-                            <label>Name contains</label>
+                            <label>${message(code:'default.search.text')}</label>
                             <input type="text" name="name" value="${params.name}"/>
                         </div>
                         <div class="field">
-                            <label>Role</label>
+                            <label>${message(code:'user.role')}</label>
                             <g:select from="${auth_values}" noSelection="${['':'Any']}" class="ui dropdown"
                                       value="${params.authority}" optionKey="id" optionValue="authority" name="authority" />
                         </div>
                         <div class="field">
-                            <label>Organisation</label>
+                            <label>${message(code:'user.org')}</label>
                             <g:select from="${availableComboOrgs}" noSelection="${['':'Any']}" class="ui search dropdown"
                                       value="${params.org}" optionKey="id" optionValue="${{it.getDesignation()}}" name="org" />
                         </div>
@@ -55,16 +55,16 @@
 
                     <div class="four fields">
                         <div class="field">
-                            <label>Name contains</label>
+                            <label>${message(code:'default.search.text')}</label>
                             <input type="text" name="name" value="${params.name}"/>
                         </div>
                         <div class="field">
-                            <label>Role</label>
+                            <label>${message(code:'user.role')}</label>
                             <g:select from="${auth_values}" noSelection="${['':'Any']}" class="ui search dropdown"
                                       value="${params.authority}" optionKey="id" optionValue="authority" name="authority" />
                         </div>
                         <div class="field">
-                            <label>Organisation</label>
+                            <label>${message(code:'user.org')}</label>
                             <g:select from="${availableComboOrgs}" noSelection="${['':"${contextService.getOrg().getDesignation()}"]}" class="ui search dropdown"
                                       value="${params.org}" optionKey="id" optionValue="${{it.getDesignation()}}" name="org" />
                         </div>
@@ -77,6 +77,10 @@
             </semui:filter>
         </sec:ifNotGranted>
 
+        <sec:ifNotGranted roles="ROLE_ADMIN">
+            <div class="ui info message">${message(code:'user.edit.info')}</div>
+        </sec:ifNotGranted>
+
 
             <semui:messages data="${flash}" />
 
@@ -87,10 +91,10 @@
                         <g:sortableColumn property="u.display" params="${params}" title="${message(code: 'user.display.label', default: 'Display Name')}" />
                         <g:sortableColumn property="uo.org.instname" params="${params}" title="${message(code: 'user.instname.label', default: 'Institution')}" />
                         --%>
-                        <th>User Name</th>
-                        <th>Display Name</th>
-                        <th>Institution</th>
-                        <th>Enabled</th>
+                        <th>${message(code:'user.username.label')}</th>
+                        <th>${message(code:'user.displayName.label')}</th>
+                        <th>${message(code:'user.org')}</th>
+                        <th>${message(code:'user.enabled.label')}</th>
                         <sec:ifAnyGranted roles="ROLE_ADMIN">
                             <th>API</th>
                         </sec:ifAnyGranted>
@@ -134,7 +138,11 @@
                                     <semui:xEditableBoolean owner="${us}" field="enabled"/>
                                 </sec:ifAnyGranted>
                                 <sec:ifNotGranted roles="ROLE_YODA">
-                                    ${fieldValue(bean: us, field: "enabled")}
+                                    <g:if test="${! us.enabled}">
+                                        <span data-position="top left" data-tooltip="${message(code:'user.disabled.text')}">
+                                            <i class="icon minus circle red"></i>
+                                        </span>
+                                    </g:if>
                                 </sec:ifNotGranted>
                             </td>
                             <sec:ifAnyGranted roles="ROLE_ADMIN">

@@ -15,7 +15,8 @@
         <semui:crumb class="active" id="${issueEntitlementInstance?.id}" text="${issueEntitlementInstance?.tipp.title.title}" />
     </semui:breadcrumbs>
 
-    <h1 class="ui header"><semui:headerTitleIcon type="${issueEntitlementInstance?.tipp?.title.type.getI10n('value')}"/>
+
+    <h1 class="ui left aligned icon header"><semui:headerTitleIcon type="${issueEntitlementInstance?.tipp?.title?.type?.value}"/>
 
         ${message(code:'issueEntitlement.for_title.label', default:'Issue Entitlements for')} "${issueEntitlementInstance?.tipp.title.title}"
     </h1>
