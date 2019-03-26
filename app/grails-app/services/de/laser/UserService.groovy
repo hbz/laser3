@@ -22,7 +22,7 @@ class UserService {
 
     // checking org and combo related orgs
     boolean hasInstAdmPivileges(User user, Org org) {
-        boolean result = false
+        boolean result = accessService.checkMinUserOrgRole(user, org, 'INST_ADM')
 
         List<Org> topOrgs = Org.executeQuery(
                 'select c.toOrg from Combo c where c.fromOrg = :org', [org: org]
