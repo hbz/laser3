@@ -30,10 +30,10 @@
             </thead>
             <tbody class="top aligned">
             <tr>
-                <td class="center aligned" ><div class="ui checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takePackages" value="${COPY}" /></div></td>
-                <td class="center aligned" ><div class="ui checkbox la-toggle-radio la-replace">
+                <td class="center aligned"><div class="ui checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takePackages" value="${COPY}" /></div></td>
+                <td class="center aligned"><div class="ui checkbox la-toggle-radio la-replace">
                     <input type="radio" name="subscription.takePackages" value="${REPLACE}" data-pkgIds="${targetSubscription?.packages?.collect {it.pkgId}?.join(',')}"/></div></td>
-                <td class="center aligned" ><div class="ui checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takePackages" value="${DO_NOTHING}" checked /></div></td>
+                <td class="center aligned"><div class="ui checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takePackages" value="${DO_NOTHING}" checked /></div></td>
                 <td  name="subscription.takePackages.source">
                     <b><i class="gift icon"></i>&nbsp${message(code: 'subscription.packages.label')}: ${sourceSubscription?.packages?.size()}</b>
                     <g:each in="${sourceSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
@@ -63,9 +63,9 @@
                 </td>
             </tr>
             <tr>
-                <td class="center aligned" ><div class="ui checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeEntitlements" value="${COPY}" /></div></td>
-                <td class="center aligned" ><div class="ui checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeEntitlements" value="${REPLACE}" /></div></td>
-                <td class="center aligned" ><div class="ui checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeEntitlements" value="${DO_NOTHING}" checked /></div></td>
+                <td class="center aligned"><div class="ui checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeEntitlements" value="${COPY}" /></div></td>
+                <td class="center aligned"><div class="ui checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeEntitlements" value="${REPLACE}" /></div></td>
+                <td class="center aligned"><div class="ui checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeEntitlements" value="${DO_NOTHING}" checked /></div></td>
                 <td  name="subscription.takeEntitlements.source">
                     <b><i class="book icon"></i>&nbsp${message(code: 'issueEntitlement.countSubscription')} </b>${sourceSubscription? sourceIEs?.size() : ""}<br>
                     <g:each in="${sourceIEs}" var="ie">
@@ -94,7 +94,9 @@
             </tr>
             </tbody>
         </table>
-        <input type="submit" class="ui button js-click-control" value="Ausgewählte Elemente kopieren/überschreiben" />
+        <div class="sixteen wide field" style="text-align: right;">
+            <input type="submit" class="ui button js-click-control" value="Ausgewählte Elemente kopieren/überschreiben" />
+        </div>
     </g:form>
 </semui:form>
 

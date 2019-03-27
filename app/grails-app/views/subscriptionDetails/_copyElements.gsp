@@ -113,7 +113,9 @@
             </tr>
             </tbody>
         </table>
-        <input type="submit" class="ui button js-click-control" value="Ausgewählte Elemente kopieren/überschreiben" />
+        <div class="sixteen wide field" style="text-align: right;">
+            <input type="submit" class="ui button js-click-control" value="Ausgewählte Elemente kopieren/überschreiben" />
+        </div>
     </g:form>
 </semui:form>
 
