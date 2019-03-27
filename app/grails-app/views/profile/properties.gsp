@@ -21,7 +21,7 @@
         <g:if test="${entry.key != "System Config"}">
         <div class="title">
             <i class="dropdown icon"></i>
-            <g:message code="propertyDefinitions.${entry.key}.label" default="${entry.key}" />xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+            <g:message code="propertyDefinitions.${entry.key}.label" default="${entry.key}" />
         </div>
         <div class="content">
             <table class="ui celled la-table la-table-small table">
@@ -29,6 +29,8 @@
                 <tr>
                     <th>DE</th>
                     <th>EN</th>
+                    <th>Erklärung</th>
+                    <th>Explanation</th>
                     <th></th>
                     <th></th>
                 </tr>
@@ -36,9 +38,12 @@
                 <tbody>
                     <g:each in="${entry.value}" var="pd">
                         <g:set var="pdI10nName" value="${I10nTranslation.createI10nOnTheFly(pd, 'name')}" />
+                        <g:set var="pdI10nExpl" value="${I10nTranslation.createI10nOnTheFly(pd, 'expl')}" />
                         <tr>
                             <td>${pdI10nName.valueDe}</td>
                             <td>${pdI10nName.valueEn}</td>
+                            <td>${pdI10nExpl?.valueDe}</td>
+                            <td>${pdI10nExpl?.valueEn}</td>
                             <td>
                                 <g:set var="pdRdc" value="${pd.type?.split('\\.').last()}"/>
                                 <g:if test="${'RefdataValue'.equals(pdRdc)}">
@@ -62,6 +67,7 @@
                                     </span>
                                 </g:if>
                             </td>
+
                         </tr>
                     </g:each>
                 </tbody>

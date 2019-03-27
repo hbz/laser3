@@ -38,12 +38,12 @@
                         <tr>
                             <th></th>
                             <th>${message(code:'propertyDefinition.name.label', default:'Name')}</th>
-                            <th>Name (DE)</th>
-                            <th>Name (EN)</th>
+                            <th>DE</th>
+                            <th>EN</th>
+                            <th>Erklärung</th>
+                            <th>Explanation</th>
                             <th></th>
                             <th></th>
-                            <th>DE: Erklärung</th>
-                            <th>EN: Explanation</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -99,6 +99,22 @@
                                         </g:else>
                                     </td>
                                     <td>
+                                        <g:if test="${!pd.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                            <semui:xEditable owner="${pdI10nExpl}" field="valueDe" type="textarea" />
+                                        </g:if>
+                                        <g:else>
+                                            ${pdI10nExpl?.valueDe}
+                                        </g:else>
+                                    </td>
+                                    <td>
+                                        <g:if test="${!pd.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                            <semui:xEditable owner="${pdI10nExpl}" field="valueEn" type="textarea" />
+                                        </g:if>
+                                        <g:else>
+                                            ${pdI10nExpl?.valueEn}
+                                        </g:else>
+                                    </td>
+                                    <td>
                                         <g:set var="pdRdc" value="${pd.type?.split('\\.').last()}"/>
                                         <g:if test="${'RefdataValue'.equals(pdRdc)}">
                                             <span data-position="top right" data-tooltip="${pd.refdataCategory}">
@@ -124,23 +140,6 @@
                                             </g:if>
                                         </sec:ifAnyGranted>
 
-                                    </td>
-
-                                    <td>
-                                        <g:if test="${!pd.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pdI10nExpl}" field="valueDe" type="textarea" />
-                                        </g:if>
-                                        <g:else>
-                                            ${pdI10nExpl?.valueDe}
-                                        </g:else>
-                                    </td>
-                                    <td>
-                                        <g:if test="${!pd.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pdI10nExpl}" field="valueEn" type="textarea" />
-                                        </g:if>
-                                        <g:else>
-                                            ${pdI10nExpl?.valueEn}
-                                        </g:else>
                                     </td>
 
                                 </tr>
