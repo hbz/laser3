@@ -45,12 +45,14 @@
                 </td>
                 <td style="vertical-align: top" name="subscription.takeDates.source">
                     <div>
+                        <b><i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}:</b>&nbsp
                         <g:formatDate date="${sourceSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
                         ${sourceSubscription?.endDate ? (' - ' + formatDate(date: sourceSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}
                     </div>
                 </td>
                 <td style="vertical-align: top" name="subscription.takeDates.target">
                     <div>
+                        <b><i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}:</b>&nbsp
                         <g:formatDate date="${targetSubscription?.startDate}" format="${message(code: 'default.date.format.notime')}"/>
                         ${targetSubscription?.endDate ? (' - ' + formatDate(date: targetSubscription?.endDate, format: message(code: 'default.date.format.notime'))) : ''}
                     </div>
@@ -62,8 +64,8 @@
                 <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeOwner" value="${DO_NOTHING}" checked /></div></td>
                 <td style="vertical-align: top" name="subscription.takeOwner.source">
                     <div>
+                        <b><i class="balance scale icon"></i>${message(code: 'license')}:</b>
                         <g:if test="${sourceSubscription?.owner}">
-                            <b>${message(code: 'license')}:</b>
                             <g:link controller="licenseDetails" action="show" target="_blank" id="${sourceSubscription.owner.id}">
                                 ${sourceSubscription.owner}
                             </g:link>
@@ -72,8 +74,8 @@
                 </td>
                 <td style="vertical-align: top" name="subscription.takeOwner.target">
                     <div>
+                        <b><i class="balance scale icon"></i>${message(code: 'license')}:</b>
                         <g:if test="${targetSubscription?.owner}">
-                            <b>${message(code: 'license')}:</b>
                             <g:link controller="licenseDetails" action="show" target="_blank" id="${targetSubscription?.owner?.id}">
                                 ${targetSubscription?.owner}
                             </g:link>
@@ -87,9 +89,12 @@
                 <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeOrgRelations" value="${DO_NOTHING}" checked /></div></td>
                 <td style="vertical-align: top" name="subscription.takeOrgRelations.source">
                     <div>
+                        <g:if test="${ ! source_visibleOrgRelations}">
+                            <b><i class="university icon"></i>&nbsp${message(code: 'subscription.organisations.label')}:</b>
+                        </g:if>
                         <g:each in="${source_visibleOrgRelations}" var="source_role">
                             <g:if test="${source_role.org}">
-                                <b>${source_role?.roleType?.getI10n("value")}:</b>
+                                <b><i class="university icon"></i>&nbsp${source_role?.roleType?.getI10n("value")}:</b>
                                 <g:link controller="Organisations" action="show" target="_blank" id="${source_role.org.id}">
                                     ${source_role?.org?.name}
                                 </g:link><br>
@@ -99,9 +104,12 @@
                 </td>
                 <td style="vertical-align: top" name="subscription.takeOrgRelations.target">
                     <div>
+                        <g:if test="${ ! target_visibleOrgRelations}">
+                            <b><i class="university icon"></i>&nbsp${message(code: 'subscription.organisations.label')}:</b>
+                        </g:if>
                         <g:each in="${target_visibleOrgRelations}" var="target_role">
                             <g:if test="${target_role.org}">
-                                <b>${target_role?.roleType?.getI10n("value")}:</b>
+                                <b><i class="university icon"></i>&nbsp${target_role?.roleType?.getI10n("value")}:</b>
                                 <g:link controller="Organisations" action="show" target="_blank" id="${target_role.org.id}">
                                     ${target_role?.org?.name}
                                 </g:link>

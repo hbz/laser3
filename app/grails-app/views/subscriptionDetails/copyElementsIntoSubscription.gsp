@@ -24,9 +24,9 @@
         <semui:complexSubNavItem controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 1]}" workFlowPart="1" >
             <div class="content" >
                 <div class="description">
-                    <i class="calendar alternate outline icon"></i>Datum
-                    <i class="balance scale icon"></i>Vertrag
-                    <i class="university icon"></i>Organisationen
+                    <i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}
+                    <i class="balance scale icon"></i>${message(code: 'license')}
+                    <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
                 </div>
             </div>
         </semui:complexSubNavItem>

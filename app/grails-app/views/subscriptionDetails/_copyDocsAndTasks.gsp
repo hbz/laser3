@@ -27,12 +27,13 @@
             </thead>
             <tbody class="top aligned">
                 <tr><td colspan="5"></td></tr>
-                <tr><th colspan="5"><i class="file outline icon"></i>&nbsp${message(code: 'subscription.takeDocs')}</th></tr>
+                %{--<tr><th colspan="5"><i class="file outline icon"></i>&nbsp${message(code: 'subscription.takeDocs')}</th></tr>--}%
                 <tr>
                     <td class="center aligned"><div class="ui checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeDocs" value="${COPY}" /></div></td>
                     <td class="center aligned"><div class="ui checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeDocs" value="${REPLACE}" /></div></td>
                     <td class="center aligned"><div class="ui checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeDocs" value="${DO_NOTHING}" checked /></div></td>
                     <td  name="subscription.takeDocs.source">
+                        <b><i class="file outline icon"></i>&nbsp${message(code: 'subscription.takeDocs')}:</b><br />
                         <g:each in="${sourceSubscription.documents.sort { it.owner?.title }}" var="docctx">
                             <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted'))}">
                                 <div data-id="${docctx.id}">
@@ -59,6 +60,7 @@
                         </g:each>
                     </td>
                     <td  name="subscription.takeDocs.target">
+                        <b><i class="file outline icon"></i>&nbsp${message(code: 'subscription.takeDocs')}:</b><br />
                         <div>
                             <g:if test="${targetSubscription}">
                                 <g:each in="${targetSubscription?.documents.sort { it.owner?.title }}" var="docctx">
@@ -76,6 +78,7 @@
                                                 </g:else>
                                             </g:else>
                                         </g:link>(${docctx.owner.type.getI10n("value")})
+                                        <br />
                                     </g:if>
                                 </g:each>
                             </g:if>
@@ -83,13 +86,14 @@
                     </td>
                 </tr>
 
-                <tr><th colspan="5"><i class="sticky note outline icon"></i>&nbsp${message(code: 'subscription.takeAnnouncements')}</th></tr>
+                %{--<tr><th colspan="5"><i class="sticky note outline icon"></i>&nbsp${message(code: 'subscription.takeAnnouncements')}</th></tr>--}%
 
                 <tr>
                     <td class="center aligned"><div class="ui checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeAnnouncements" value="${COPY}" /></div></td>
                     <td class="center aligned"><div class="ui checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeAnnouncements" value="${REPLACE}" /></div></td>
                     <td class="center aligned"><div class="ui checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeAnnouncements" value="${DO_NOTHING}" checked /></div></td>
                     <td  name="subscription.takeAnnouncements.source">
+                        <b><i class="sticky note outline icon"></i>&nbsp${message(code: 'subscription.takeAnnouncements')}:</b><br />
                         <g:each in="${sourceSubscription.documents.sort { it.owner?.title }}" var="docctx">
                             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted'))}">
                                 <div data-id="${docctx.id}">
@@ -114,6 +118,7 @@
                         </g:each>
                     </td>
                     <td  name="subscription.takeAnnouncements.target">
+                        <b><i class="sticky note outline icon"></i>&nbsp${message(code: 'subscription.takeAnnouncements')}:</b><br />
                         <div>
                             <g:if test="${targetSubscription}">
                                 <g:each in="${targetSubscription?.documents.sort { it.owner?.title }}" var="docctx">
@@ -128,6 +133,7 @@
                                             <g:formatDate
                                                     format="${message(code: 'default.date.format.notime')}"
                                                     date="${docctx.owner.dateCreated}"/>)
+                                        <br />
                                     </g:if>
                                 </g:each>
                             </g:if>
@@ -135,13 +141,14 @@
                     </td>
                 </tr>
 
-                <tr><th colspan="5"><i class="checked calendar icon"></i>&nbsp${message(code: 'subscription.takeTasks')}</th></tr>
+                %{--<tr><th colspan="5"><i class="checked calendar icon"></i>&nbsp${message(code: 'subscription.takeTasks')}</th></tr>--}%
 
                 <tr>
                     <td class="center aligned"><div class="ui checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeTasks" value="${COPY}" /></div></td>
                     <td class="center aligned"></td>
                     <td class="center aligned"><div class="ui checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeTasks" value="${DO_NOTHING}" checked /></div></td>
                     <td  name="subscription.takeTasks.source">
+                        <b><i class="checked calendar icon"></i>&nbsp${message(code: 'subscription.takeTasks')}:</b><br />
                         <g:each in="${sourceTasks}" var="tsk">
                             <div data-id="${tsk?.id}">
                                 <div class="ui checkbox">
@@ -155,10 +162,12 @@
                         </g:each>
                     </td>
                     <td  name="subscription.takeTasks.target">
+                        <b><i class="checked calendar icon"></i>&nbsp${message(code: 'subscription.takeTasks')}:</b><br />
                         <div>
                             <g:each in="${targetTasks}" var="tsk">
                                 <b>${tsk?.title}</b> (${message(code: 'task.endDate.label')}
                                 <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tsk?.endDate}"/>)
+                                <br />
                             </g:each>
                         </div>
                     </td>
