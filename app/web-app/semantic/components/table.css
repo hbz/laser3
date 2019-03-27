@@ -1181,6 +1181,8 @@
   padding: 0.5rem 0;
   cursor: pointer;
   color: gray;
+}
+.ui.table tr th:not('.sortable') a {
   text-decoration: underline;
 }
 

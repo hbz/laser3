@@ -28703,6 +28703,9 @@ Floated Menu / Item
   padding: 0.5rem 0;
   cursor: pointer;
   color: gray;
+}
+
+.ui.table tr th:not('.sortable') a {
   text-decoration: underline;
 }
 
@@ -33284,6 +33287,11 @@ table tr td div.willStay {
 table tr td div.willBeReplaced {
   background-color: #EDC0BA;
   text-decoration: line-through;
+}
+
+table tr td div.willBeReplacedStrong {
+  background-color: #EDC0BA !important;
+  text-decoration: line-through !important;
 }
 
 .la-test {

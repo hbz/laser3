@@ -696,6 +696,10 @@ table tr td div.willBeReplaced {
   background-color: #EDC0BA;
   text-decoration: line-through;
 }
+table tr td div.willBeReplacedStrong {
+  background-color: #EDC0BA !important;
+  text-decoration: line-through !important;
+}
 .la-test {
   padding: 3px 0;
 }
