@@ -40,23 +40,23 @@ class SurveyConfig {
     }
 
     static mapping = {
-        id column: 'surConf_id'
-        version column: 'surConf_version'
+        id column: 'surconf_id'
+        version column: 'surconf_version'
 
-        type column: 'surConf_type'
-        header column: 'surConf_header'
-        comment  column: 'surConf_comment'
+        type column: 'surconf_type'
+        header column: 'surconf_header'
+        comment  column: 'surconf_comment'
 
-        orgIDs column: 'surConf_orgIDs'
+        orgIDs column: 'surconf_org_ids'
 
-        dateCreated column: 'surConf_dateCreated'
-        lastUpdated column: 'surConf_lastUpdated'
+        dateCreated column: 'surconf_dateCreated'
+        lastUpdated column: 'surconf_lastUpdated'
 
-        surveyInfo column: 'surConf_surInfo_fk'
-        subscription column: 'surConf_sub_fk'
-        surveyProperty column: 'surConf_surProp_fk'
+        surveyInfo column: 'surconf_surinfo_fk'
+        subscription column: 'surconf_sub_fk'
+        surveyProperty column: 'surconf_surprop_fk'
 
-        configOrder column: 'surConf_configOrder'
+        configOrder column: 'surconf_config_order_fk'
     }
 
     @Transient

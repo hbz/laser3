@@ -46,20 +46,20 @@ class SurveyProperty extends AbstractI10nTranslatable {
     }
 
     static mapping = {
-        id column: 'surPro_id'
-        version column: 'surPro_version'
+        id column: 'surpro_id'
+        version column: 'surpro_version'
 
-        name column: 'surPro_name'
-        type column: 'surPro_type', type: 'text'
-        explain column: 'surPro_explain', type: 'text'
-        comment column: 'surPro_comment', type: 'text'
-        introduction column: 'surPro_introduction', type: 'text'
-        refdataCategory column: 'surPro_refdataCategory'
+        name column: 'surpro_name'
+        type column: 'surpro_type', type: 'text'
+        explain column: 'surpro_explain', type: 'text'
+        comment column: 'surpro_comment', type: 'text'
+        introduction column: 'surpro_introduction', type: 'text'
+        refdataCategory column: 'surpro_refdataCategory'
 
-        owner column: 'surPro_org_fk'
+        owner column: 'surpro_org_fk'
 
-        dateCreated column: 'surPro_dateCreated'
-        lastUpdated column: 'surPro_lastUpdated'
+        dateCreated column: 'surpro_dateCreated'
+        lastUpdated column: 'surpro_lastUpdated'
     }
 
     static getLocalizedValue(key) {

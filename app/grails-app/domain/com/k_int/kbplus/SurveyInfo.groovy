@@ -34,19 +34,19 @@ class SurveyInfo {
     }
 
     static mapping = {
-        id column: 'surIn_id'
-        version column: 'surIn_version'
+        id column: 'surin_id'
+        version column: 'surin_version'
 
-        name column: 'surIn_name'
-        startDate column: 'surIn_startDate'
-        endDate column: 'surIn_endDate'
-        comment column: 'surIn_comment', type: 'text'
+        name column: 'surin_name'
+        startDate column: 'surin_startDate'
+        endDate column: 'surin_endDate'
+        comment column: 'surin_comment', type: 'text'
 
-        dateCreated column: 'surIn_dateCreated'
-        lastUpdated column: 'surIn_lastUpdated'
+        dateCreated column: 'surin_dateCreated'
+        lastUpdated column: 'surin_lastUpdated'
 
-        owner column: 'surIn_owner_org_fk'
-        type column: 'surIn_type_rv_fk '
+        owner column: 'surin_owner_org_fk'
+        type column: 'surin_type_rv_fk '
 
 
 

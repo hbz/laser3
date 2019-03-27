@@ -13,13 +13,13 @@ class SurveyConfigProperties {
 
     }
     static mapping = {
-        id column: 'surConPro_id'
-        version column: 'surConPro_version'
+        id column: 'surconpro_id'
+        version column: 'surconpro_version'
 
-        dateCreated column: 'surConPro_dateCreated'
-        lastUpdated column: 'surConPro_lastUpdated'
+        dateCreated column: 'surconpro_dateCreated'
+        lastUpdated column: 'surconpro_lastUpdated'
 
-        surveyConfig column: 'surConPro_surveyConfig'
-        surveyProperty column: 'surConPro_surveyProperty'
+        surveyConfig column: 'surconpro_survey_config_fk'
+        surveyProperty column: 'surconpro_survey_property_fk'
     }
 }
