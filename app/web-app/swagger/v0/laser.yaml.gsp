@@ -49,7 +49,7 @@ components:
       schema:
         type: string
       required: false
-      description: Concrete globalUID, if user has memberships in multiple organisations
+      description: Concrete globalUID of context organisation
 
     authorization:
       name: x-authorization

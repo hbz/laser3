@@ -12,7 +12,7 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
 import org.springframework.context.i18n.LocaleContextHolder
 
 //@CompileStatic
-class UserService {
+class InstAdmService {
 
     GrailsApplication grailsApplication
     def accessService
@@ -88,7 +88,7 @@ class UserService {
     def sendMail(User user, String subj, String view, Map model) {
 
         if (grailsApplication.config.getCurrentServer() == ContextService.SERVER_LOCAL) {
-            println "--- UserService.sendMail() --- IGNORED SENDING MAIL because of SERVER_LOCAL ---"
+            println "--- instAdmService.sendMail() --- IGNORED SENDING MAIL because of SERVER_LOCAL ---"
             return
         }
 

@@ -425,8 +425,12 @@ class ApiReader {
 
     // ################### HELPER ###################
 
-    static isDataManager(User user) {
-        def role = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API_DATAMANAGER'))
-        return ! role.isEmpty()
+    static isDataManager(Org org) {
+        def apiLevel = OrgSettings.get(org, OrgSettings.KEYS.API_LEVEL)
+
+        if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
+            return ApiManager.API_LEVEL_DATAMANAGER == apiLevel.getValue()
+        }
+        return false
     }
 }

@@ -15,8 +15,12 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.39'
+    static final VERSION = '0.40'
     static final NOT_SUPPORTED = false
+
+    static final API_LEVEL_READ         = 'API_LEVEL_READ'
+    static final API_LEVEL_WRITE        = 'API_LEVEL_WRITE'
+    static final API_LEVEL_DATAMANAGER  = 'API_LEVEL_DATAMANAGER'
 
     /**
      * @return Object
@@ -25,11 +29,11 @@ class ApiManager {
      * @return NOT_ACCEPTABLE: if requested format(response) is not supported
      * @return NOT_IMPLEMENTED: if requested method(object type) is not supported
      */
-    static read(String obj, String query, String value, User user, Org contextOrg, String format) {
+    static read(String obj, String query, String value, Org contextOrg, String format) {
         def result
 
         def failureCodes  = [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED]
-        def accessDueDatamanager = ApiReader.isDataManager(user)
+        def accessDueDatamanager = ApiReader.isDataManager(contextOrg)
 
         log.debug("API-READ (" + VERSION + "): ${obj} (${format}) -> ${query}:${value}")
 
@@ -177,8 +181,10 @@ class ApiManager {
     }
 
     @Deprecated
-    static write(String obj, JSONObject data, User user, Org contextOrg) {
+    static write(String obj, JSONObject data, Org contextOrg) {
         def result
+
+        // TODO check isDataManager, etc for contextOrg
 
         // check existing resources
         def conflict = false
