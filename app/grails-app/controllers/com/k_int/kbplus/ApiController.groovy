@@ -26,13 +26,17 @@ class ApiController extends AbstractDebugController {
     def index() {
         log.debug("API")
 
-        if (! springSecurityService.isLoggedIn()) {
-            return false
+        Map result = [:]
+        User user
+        Org org
+
+        if (springSecurityService.isLoggedIn()) {
+            user = User.get(springSecurityService.principal.id)
+            org = contextService.getOrg()
         }
 
-        Map result = [:]
-        User user = User.get(springSecurityService.principal.id)
-        Org org = contextService.getOrg()
+        def apiKey = OrgSettings.get(org, OrgSettings.KEYS.API_KEY)
+        def apiPass = OrgSettings.get(org, OrgSettings.KEYS.API_PASSWORD)
 
         switch ( (params.version ?: 'v0').toLowerCase() ) {
             case '1':
@@ -44,8 +48,8 @@ class ApiController extends AbstractDebugController {
                 render view: 'v1', model: result
                 break
             default:
-                result.apiKey  = OrgSettings.get(org, OrgSettings.KEYS.API_KEY)?.getValue()
-                result.apiPassword = OrgSettings.get(org, OrgSettings.KEYS.API_PASSWORD)?.getValue()
+                result.apiKey  = (apiKey != OrgSettings.SETTING_NOT_FOUND) ? apiKey.getValue() : ''
+                result.apiPassword = (apiPass != OrgSettings.SETTING_NOT_FOUND) ? apiPass.getValue() : ''
                 result.apiContext = org?.globalUID ?: ''
                 result.apiVersion = 'v0'
                 render view: 'v0', model: result
