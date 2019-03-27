@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} Manage Affiliation Requests</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : Manage Affiliation Requests</title>
   </head>
 
   <body>

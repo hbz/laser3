@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
-		<title>${message(code: 'menu.admin.manageRefdatas')}</title>
+		<title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.admin.manageRefdatas')}</title>
 	</head>
 
         <semui:debugInfo>

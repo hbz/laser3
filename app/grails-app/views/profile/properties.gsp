@@ -16,6 +16,7 @@
 
 
 <h3>${message(code: 'propertyDefinition.plural', default: 'Properties')}</h3>
+
 <div class="ui styled fluid accordion">
     <g:each in="${propertyDefinitions}" var="entry">
         <g:if test="${entry.key != "System Config"}">
