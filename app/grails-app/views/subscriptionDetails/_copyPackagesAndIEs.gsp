@@ -28,13 +28,13 @@
                     </th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="top aligned">
             <tr>
-                <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takePackages" value="${COPY}" /></div></td>
-                <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-replace">
+                <td class="center aligned" ><div class="ui checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takePackages" value="${COPY}" /></div></td>
+                <td class="center aligned" ><div class="ui checkbox la-toggle-radio la-replace">
                     <input type="radio" name="subscription.takePackages" value="${REPLACE}" data-pkgIds="${targetSubscription?.packages?.collect {it.pkgId}?.join(',')}"/></div></td>
-                <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takePackages" value="${DO_NOTHING}" checked /></div></td>
-                <td style="vertical-align: top" name="subscription.takePackages.source">
+                <td class="center aligned" ><div class="ui checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takePackages" value="${DO_NOTHING}" checked /></div></td>
+                <td  name="subscription.takePackages.source">
                     <b><i class="gift icon"></i>&nbsp${message(code: 'subscription.packages.label')}: ${sourceSubscription?.packages?.size()}</b>
                     <g:each in="${sourceSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
                         <div data-pckOid="${genericOIDService.getOID(sp.pkg)}">
@@ -50,7 +50,7 @@
                         </div>
                     </g:each>
                 </td>
-                <td style="vertical-align: top" name="subscription.takePackages.target">
+                <td  name="subscription.takePackages.target">
                     <b><i class="gift icon"></i>&nbsp${message(code: 'subscription.packages.label')}: ${targetSubscription?.packages?.size()}</b>
                     <div>
                         <g:each in="${targetSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
@@ -63,10 +63,10 @@
                 </td>
             </tr>
             <tr>
-                <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeEntitlements" value="${COPY}" /></div></td>
-                <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeEntitlements" value="${REPLACE}" /></div></td>
-                <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeEntitlements" value="${DO_NOTHING}" checked /></div></td>
-                <td style="vertical-align: top" name="subscription.takeEntitlements.source">
+                <td class="center aligned" ><div class="ui checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeEntitlements" value="${COPY}" /></div></td>
+                <td class="center aligned" ><div class="ui checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeEntitlements" value="${REPLACE}" /></div></td>
+                <td class="center aligned" ><div class="ui checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeEntitlements" value="${DO_NOTHING}" checked /></div></td>
+                <td  name="subscription.takeEntitlements.source">
                     <b><i class="book icon"></i>&nbsp${message(code: 'issueEntitlement.countSubscription')} </b>${sourceSubscription? sourceIEs?.size() : ""}<br>
                     <g:each in="${sourceIEs}" var="ie">
                         <div data-ieOid="${genericOIDService.getOID(ie)}">
@@ -81,7 +81,7 @@
                         </div>
                     </g:each>
                 </td>
-                <td style="vertical-align: top" name="subscription.takeEntitlements.target">
+                <td  name="subscription.takeEntitlements.target">
                     <b><i class="book icon"></i>&nbsp${message(code: 'issueEntitlement.countSubscription')} </b>${targetSubscription? targetIEs?.size(): ""} <br />
                     <g:each in="${targetIEs}" var="ie">
                         <div data-pkgId="${ie?.tipp?.pkg?.id}">
