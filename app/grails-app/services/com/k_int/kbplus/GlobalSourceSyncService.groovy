@@ -6,6 +6,8 @@ import com.k_int.kbplus.auth.User
 import de.laser.oai.OaiClientLaser
 import org.springframework.transaction.annotation.*
 
+import java.text.SimpleDateFormat
+
 /*
  *  Implementing new rectypes..
  *  the reconciler closure is responsible for reconciling the previous version of a record and the latest version
@@ -400,22 +402,24 @@ class GlobalSourceSyncService {
       def tipp_status = RefdataCategory.lookupOrCreate(RefdataCategory.TIPP_STATUS,tipp_status_str);
 
       if ( auto_accept ) {
-        def new_tipp = new TitleInstancePackagePlatform()
+        TitleInstancePackagePlatform new_tipp = new TitleInstancePackagePlatform()
         new_tipp.pkg = ctx;
         new_tipp.platform = plat_instance;
         new_tipp.title = title_instance;
         new_tipp.status = tipp_status;
         new_tipp.impId = tipp.tippUuid ?: tipp.tippId;
         new_tipp.gokbId = tipp.tippUuid ?: null;
+        new_tipp.accessStartDate = tipp.accessStart
+        new_tipp.accessEndDate = tipp.accessEnd
 
         // We rely upon there only being 1 coverage statement for now, it seems likely this will need
         // to change in the future.
         // tipp.coverage.each { cov ->
         def cov = tipp.coverage[0]
-        new_tipp.startDate = ((cov.startDate != null) && (cov.startDate.length() > 0)) ? sdf.parse(cov.startDate) : null;
+        new_tipp.startDate = cov.startDate
         new_tipp.startVolume = cov.startVolume;
         new_tipp.startIssue = cov.startIssue;
-        new_tipp.endDate = ((cov.endDate != null) && (cov.endDate.length() > 0)) ? sdf.parse(cov.endDate) : null;
+        new_tipp.endDate = cov.endDate
         new_tipp.endVolume = cov.endVolume;
         new_tipp.endIssue = cov.endIssue;
         new_tipp.embargo = cov.embargo;
@@ -447,15 +451,18 @@ class GlobalSourceSyncService {
                 impId        : tipp.tippUuid ?: tipp.tippId,
                 gokbId       : tipp.tippUuid ?: null,
                 status       : [id: tipp_status.id],
-                startDate    : ((cov.startDate != null) && (cov.startDate.length() > 0)) ? sdf.parse(cov.startDate) : null,
+                startDate    : cov.startDate,
                 startVolume  : cov.startVolume,
                 startIssue   : cov.startIssue,
-                endDate      : ((cov.endDate != null) && (cov.endDate.length() > 0)) ? sdf.parse(cov.endDate) : null,
+                endDate      : cov.endDate,
                 endVolume    : cov.endVolume,
                 endIssue     : cov.endIssue,
                 embargo      : cov.embargo,
                 coverageDepth: cov.coverageDepth,
-                coverageNote : cov.coverageNote];
+                coverageNote : cov.coverageNote,
+                accessStartDate  : tipp.accessStart,
+                accessEndDate    : tipp.accessEnd,
+        ]
 
         changeNotificationService.registerPendingChange(
                 PendingChange.PROP_PKG,
@@ -781,7 +788,7 @@ class GlobalSourceSyncService {
     md.gokb.package.identifiers.identifier.each { id ->
       result.parsed_rec.identifiers.add([namespace:id.'@namespace'.text(), value:id.'@value'.text()])
     }
-
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
     int ctr=0
     md.gokb.package.TIPPs.TIPP.each { tip ->
       log.debug("Processing tipp ${ctr++} from package ${result.parsed_rec.packageId} - ${result.title} (source:${synctask.uri})");
@@ -806,15 +813,15 @@ class GlobalSourceSyncService {
               identifiers : [],
               tippId      : tip.'@id'.text(),
               tippUuid    : tip.'@uuid'?.text()?: '',
-              accessStart : tip.access.'@start'.text(),
-              accessEnd   : tip.access.'@end'.text(),
+              accessStart : tip.access.'@start'.text() ? sdf.parse(tip.access.'@start'.text()).format('yyyy-MM-dd HH:mm:ss.S') : '',
+              accessEnd   : tip.access.'@end'.text() ? sdf.parse(tip.access.'@end'.text()).format('yyyy-MM-dd HH:mm:ss.S') : '',
               medium      : tip.medium.text()
       ];
 
       tip.coverage.each { cov ->
         newtip.coverage.add([
-                startDate    : cov.'@startDate'.text(),
-                endDate      : cov.'@endDate'.text(),
+                startDate    : cov.'@startDate'.text() ? sdf.parse(cov.'@startDate'.text()).format('yyyy-MM-dd HH:mm:ss.S') : '',
+                endDate      : cov.'@endDate'.text() ? sdf.parse(cov.'@endDate'.text()).format('yyyy-MM-dd HH:mm:ss.S') : '',
                 startVolume  : cov.'@startVolume'.text(),
                 endVolume    : cov.'@endVolume'.text(),
                 startIssue   : cov.'@startIssue'.text(),

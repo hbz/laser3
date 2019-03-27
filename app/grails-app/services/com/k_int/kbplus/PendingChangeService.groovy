@@ -112,11 +112,15 @@ class PendingChangeService {
                             def new_instance = new_domain_class.getClazz().newInstance()
                             // like bindData(destination, map), that only exists in controllers
 
+                            def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S")
                             if(event.changeDoc?.startDate || event.changeDoc?.endDate)
                             {
-                                def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
                                 event.changeDoc?.startDate = ((event.changeDoc?.startDate != null) && (event.changeDoc?.startDate.length() > 0)) ? sdf.parse(event.changeDoc?.startDate) : null
                                 event.changeDoc?.endDate = ((event.changeDoc?.endDate != null) && (event.changeDoc?.endDate.length() > 0)) ? sdf.parse(event.changeDoc?.endDate) : null
+                            }
+                            if(event.changeDoc?.accessStartDate || event.changeDoc?.accessEndDate) {
+                                event.changeDoc?.accessStartDate = ((event.changeDoc?.accessStartDate != null) && (event.changeDoc?.accessStartDate.length() > 0)) ? sdf.parse(event.changeDoc?.accessStartDate) : null
+                                event.changeDoc?.accessEndDate = ((event.changeDoc?.accessEndDate != null) && (event.changeDoc?.accessEndDate.length() > 0)) ? sdf.parse(event.changeDoc?.accessEndDate) : null
                             }
 
                             DataBindingUtils.bindObjectToInstance(new_instance, event.changeDoc)
@@ -131,20 +135,25 @@ class PendingChangeService {
                         if ( ( event.changeTarget != null ) && ( event.changeTarget.length() > 0 ) ) {
                             def target_object = genericOIDService.resolveOID(event.changeTarget);
                             if ( target_object ) {
-                                DataBindingUtils.bindObjectToInstance(target_object, event.changeDoc)
-
+                                def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S")
                                 if(event.changeDoc?.startDate || event.changeDoc?.endDate)
                                 {
-                                    def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
                                     event.changeDoc?.startDate = ((event.changeDoc?.startDate != null) && (event.changeDoc?.startDate.length() > 0)) ? sdf.parse(event.changeDoc?.startDate) : null
                                     event.changeDoc?.endDate = ((event.changeDoc?.endDate != null) && (event.changeDoc?.endDate.length() > 0)) ? sdf.parse(event.changeDoc?.endDate) : null
                                 }
+                                if(event.changeDoc?.accessStartDate || event.changeDoc?.accessEndDate) {
+                                    event.changeDoc?.accessStartDate = ((event.changeDoc?.accessStartDate != null) && (event.changeDoc?.accessStartDate.length() > 0)) ? sdf.parse(event.changeDoc?.accessStartDate) : null
+                                    event.changeDoc?.accessEndDate = ((event.changeDoc?.accessEndDate != null) && (event.changeDoc?.accessEndDate.length() > 0)) ? sdf.parse(event.changeDoc?.accessEndDate) : null
+                                }
+                                DataBindingUtils.bindObjectToInstance(target_object, event.changeDoc)
 
                                 if(target_object.save())
                                 {
                                     saveWithoutError = true
                                 }
-
+                                else {
+                                    log.error(target_object.getErrors())
+                                }
                             }
                         }
                         break;
@@ -188,7 +197,7 @@ class PendingChangeService {
             change.actionDate = new Date()
             change.user = user
             change.status = RefdataValue.getByValueAndCategory("Rejected","PendingChangeStatus")
-
+            change.save(flush:true)
            /* def change_audit_object = null
             if ( change.license ) change_audit_object = change.license;
             if ( change.subscription ) change_audit_object = change.subscription;
