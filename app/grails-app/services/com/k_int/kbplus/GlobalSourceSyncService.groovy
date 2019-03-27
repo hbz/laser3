@@ -88,12 +88,12 @@ class GlobalSourceSyncService {
       def toset = []
 
       historyEvent.from.each { he ->
-        def participant = TitleInstance.lookupOrCreate(he.ids,he.title,newtitle.type,he.uuid)
+        def participant = TitleInstance.lookupOrCreate(he.ids,he.title,newtitle.titleType,he.uuid)
         fromset.add(participant)
       }
 
       historyEvent.to.each { he ->
-        def participant = TitleInstance.lookupOrCreate(he.ids,he.title,newtitle.type,he.uuid)
+        def participant = TitleInstance.lookupOrCreate(he.ids,he.title,newtitle.titleType,he.uuid)
         toset.add(participant)
       }
 
@@ -151,7 +151,7 @@ class GlobalSourceSyncService {
     result.parsed_rec.publishers = []
     result.parsed_rec.status = md.gokb.title.status.text()
     result.parsed_rec.medium = md.gokb.title.medium.text()
-    result.parsed_rec.type = md.gokb.title.type?.text() ?: null
+    result.parsed_rec.titleType = md.gokb.title.type?.text() ?: null
 
     //Ebooks Fields
     result.parsed_rec.editionNumber = md.gokb.title.editionNumber?.text() ?: null
@@ -480,7 +480,7 @@ class GlobalSourceSyncService {
       def title_of_tipp_to_update = TitleInstance.findByGokbId(tipp.title.gokbId)
 
       if(!title_of_tipp_to_update) {
-        title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name, tipp.title.type, tipp.title.gokbId)
+        title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name, tipp.title.titleType, tipp.title.gokbId)
       }
 
       /*if (grailsApplication.config.globalDataSync.replaceLocalImpIds.TitleInstance &&
@@ -608,10 +608,10 @@ class GlobalSourceSyncService {
 
       // Find title with ID tipp... in package ctx
 
-      def title_of_tipp_to_update = TitleInstance.findByGokbId(tipp.title.impId)
+      def title_of_tipp_to_update = TitleInstance.findByGokbId(tipp.title.gokbId)
 
       if(!title_of_tipp_to_update) {
-        title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name, tipp.title.type, tipp.title.gokbId)
+        title_of_tipp_to_update = TitleInstance.lookupOrCreate(tipp.title.identifiers, tipp.title.name, tipp.title.titleType, tipp.title.gokbId)
       }
 
       /*if (grailsApplication.config.globalDataSync.replaceLocalImpIds.TitleInstance &&
@@ -855,8 +855,8 @@ class GlobalSourceSyncService {
     // otherwise create a new title and link to it. See if we can locate a title.
     def title_type = null
 
-    if(newtitle.type) {
-      title_type = newtitle.type
+    if(newtitle.titleType) {
+      title_type = newtitle.titleType
     }else{
       title_type = newtitle.medium + "Instance"
     }
@@ -1358,12 +1358,12 @@ class GlobalSourceSyncService {
                 def toset = []
 
                 historyEvent.from.each { he ->
-                  def participant = TitleInstance.lookupOrCreate(he.ids, he.title, titleinfo.type, he.uuid)
+                  def participant = TitleInstance.lookupOrCreate(he.ids, he.title, titleinfo.titleType, he.uuid)
                   fromset.add(participant)
                 }
 
                 historyEvent.to.each { he ->
-                  def participant = TitleInstance.lookupOrCreate(he.ids, he.title, titleinfo.type, he.uuid)
+                  def participant = TitleInstance.lookupOrCreate(he.ids, he.title, titleinfo.titleType, he.uuid)
                   toset.add(participant)
                 }
 

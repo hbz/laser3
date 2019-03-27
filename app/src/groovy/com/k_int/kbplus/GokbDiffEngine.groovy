@@ -103,7 +103,7 @@ public class GokbDiffEngine {
             result.add([field: 'accessEnd', newValue: tippb.accessEnd, oldValue: tippa.accessEnd])
         }
 
-        if ((tippa.titleName ?: '').toString().compareTo((tippb.titleName ?: '').toString()) == 0) {
+        if ((tippa?.title?.name ?: '').toString().compareTo((tippb?.title?.name ?: '').toString()) == 0) {
         } else {
             result.add([field: 'titleName', newValue: tippb?.title?.name, oldValue: tippa?.title?.name])
         }
@@ -139,7 +139,7 @@ public class GokbDiffEngine {
 
             def title_of_tipp_to_update = TitleInstance.findByGokbId(newTipp.title.gokbId)
             if (!title_of_tipp_to_update) {
-                title_of_tipp_to_update = TitleInstance.lookupOrCreate(newTipp.title.identifiers, newTipp.title.name, newTipp.title.type, newTipp.title.gokbId)
+                title_of_tipp_to_update = TitleInstance.lookupOrCreate(newTipp.title.identifiers, newTipp.title.name, newTipp.title.titleType, newTipp.title.gokbId)
             }
 
             if (Holders.config.globalDataSync.replaceLocalImpIds.TitleInstance && title_of_tipp_to_update && newTipp.title.gokbId &&
