@@ -21,11 +21,10 @@ update public.refdata_value set rdv_order = 40 where rdv_value = 'everyone';
 -- erms-1081
 -- 2019-03-08
 -- clean up data
-DELETE FROM public.setting WHERE set_name = 'AutoApproveMemberships';
-
-DELETE FROM public.user_org WHERE status = 4; -- STATUS_CANCELLED
-UPDATE public.user_org SET status = 1 WHERE status = 3; -- change STATUS_AUTO_APPROVED to STATUS_APPROVED
+-- DELETE FROM public.setting WHERE set_name = 'AutoApproveMemberships';
+-- DELETE FROM public.user_org WHERE status = 4; -- STATUS_CANCELLED
+-- UPDATE public.user_org SET status = 1 WHERE status = 3; -- change STATUS_AUTO_APPROVED to STATUS_APPROVED
 
 -- 2019-03-26
 -- renaming joinTable / execute before start
-ALTER TABLE public.org_roletype RENAME TO org_type;
+-- ALTER TABLE public.org_roletype RENAME TO org_type;
