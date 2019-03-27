@@ -69,7 +69,7 @@
                 <td  name="subscription.takeEntitlements.source">
                     <b><i class="book icon"></i>&nbsp${message(code: 'issueEntitlement.countSubscription')} </b>${sourceSubscription? sourceIEs?.size() : ""}<br>
                     <g:each in="${sourceIEs}" var="ie">
-                        <div data-ieOid="${genericOIDService.getOID(ie)}">
+                        <div class="la-title-slot" data-ieOid="${genericOIDService.getOID(ie)}">
                             <div class="ui checkbox">
                                 <g:checkBox name="subscription.takeEntitlementIds" value="${genericOIDService.getOID(ie)}" checked="false"/>
                                 <label>
@@ -84,7 +84,7 @@
                 <td  name="subscription.takeEntitlements.target">
                     <b><i class="book icon"></i>&nbsp${message(code: 'issueEntitlement.countSubscription')} </b>${targetSubscription? targetIEs?.size(): ""} <br />
                     <g:each in="${targetIEs}" var="ie">
-                        <div data-pkgId="${ie?.tipp?.pkg?.id}">
+                        <div class="la-title-slot" data-pkgId="${ie?.tipp?.pkg?.id}">
                             <semui:listIcon hideTooltip="true" type="${ie.tipp.title.type.getI10n('value')}"/>
                             <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
                             <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>

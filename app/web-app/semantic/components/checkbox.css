@@ -689,6 +689,8 @@
   font-family: Icons;
   content: "\f05e";
 }
+
+/* COPY LICENCE WITH PACKAGES, TITELS ETC */
 table tr td div.willStay {
   background-color: #D4E096;
 }
@@ -700,6 +702,9 @@ table tr td div.willBeReplacedStrong {
   background-color: #EDC0BA !important;
   text-decoration: line-through !important;
 }
-.la-test {
-  padding: 3px 0;
+.la-title-slot {
+  padding: 4px 0;
+}
+.la-title-slot .checkbox {
+  padding-left: 0;
 }
