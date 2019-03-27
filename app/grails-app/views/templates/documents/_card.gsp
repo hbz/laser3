@@ -1,5 +1,5 @@
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; com.k_int.kbplus.*;de.laser.helper.RDStore;" %>
-
+<laser:serviceInjection/>
 <%
     List<DocContext> baseItems = []
     List<DocContext> sharedItems = []
