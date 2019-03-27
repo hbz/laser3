@@ -41,7 +41,7 @@
                                 <g:select name="comboOrg"
                                           from="${availableComboOrgs}"
                                           optionKey="id"
-                                          optionValue="name"
+                                          optionValue="${{(it.sortname ?: '')  + ' (' + it.name + ')'}}"
                                           value="${params.org ?: contextService.getOrg().id}"
                                           class="ui fluid search dropdown"/>
                             </div>
@@ -63,7 +63,7 @@
                                 <g:select name="org"
                                           from="${availableOrgs}"
                                           optionKey="id"
-                                          optionValue="name"
+                                          optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
                                           value="${params.org ?: contextService.getOrg().id}"
                                           class="ui fluid search dropdown"/>
                             </div>
