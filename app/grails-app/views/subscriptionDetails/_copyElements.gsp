@@ -34,12 +34,12 @@
 
                 </td>
                 <td class="center aligned" style="vertical-align: top">
-                    <div class="ui radio checkbox la-toggle-radio la-replace">
+                    <div class="ui checkbox la-toggle-radio la-replace">
                         <input type="radio" name="subscription.takeDates" value="${REPLACE}" />
                     </div>
                 </td>
                 <td class="center aligned" style="vertical-align: top">
-                    <div class="ui radio checkbox la-toggle-radio la-noChange">
+                    <div class="ui checkbox la-toggle-radio la-noChange">
                         <input type="radio" name="subscription.takeDates" value="${DO_NOTHING}" checked />
                     </div>
                 </td>
@@ -58,8 +58,8 @@
             </tr>
             <tr>
                 <td class="center aligned" style="vertical-align: top"></td>
-                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeOwner" value="${REPLACE}" /></div></td>
-                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeOwner" value="${DO_NOTHING}" checked /></div></td>
+                <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeOwner" value="${REPLACE}" /></div></td>
+                <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeOwner" value="${DO_NOTHING}" checked /></div></td>
                 <td style="vertical-align: top" name="subscription.takeOwner.source">
                     <div>
                         <g:if test="${sourceSubscription?.owner}">
@@ -82,9 +82,9 @@
                 </td>
             </tr>
             <tr>
-                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeOrgRelations" value="${COPY}" /></div></td>
-                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeOrgRelations" value="${REPLACE}" /></div></td>
-                <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeOrgRelations" value="${DO_NOTHING}" checked /></div></td>
+                <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeOrgRelations" value="${COPY}" /></div></td>
+                <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeOrgRelations" value="${REPLACE}" /></div></td>
+                <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeOrgRelations" value="${DO_NOTHING}" checked /></div></td>
                 <td style="vertical-align: top" name="subscription.takeOrgRelations.source">
                     <div>
                         <g:each in="${source_visibleOrgRelations}" var="source_role">

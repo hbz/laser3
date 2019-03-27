@@ -47,6 +47,7 @@
   font-size: 1.7em;
   width: 40px;
   height: 40px;
+  color: @textColor;
 }
 
 .ui.checkbox.la-toggle-radio label:before {
@@ -58,23 +59,27 @@
   width: 40px;
   height: 40px;
   padding-top: 11px;
-  color: #89898952;
-  background-color: #d3d3d352;
   text-align: center;
+  background-color:@backgroundColor;
+  border-radius: 500rem;
 }
-.ui.radio.checkbox.la-toggle-radio input:checked ~ label:before {
-  background-color: #d3d3d352;
+.ui.checkbox.la-toggle-radio input:checked ~ label:before {
+  background-color:@backgroundColor;
 }
 /* AFTER */
 .ui.checkbox.la-toggle-radio input:checked~label:after,
 .ui.radio.checkbox.la-toggle-radio input:checked~label:after {
-  content: "\f00c" !important;
-  font-family: Icons !important;
-  transform: scale(1.5);
   color: @green !important;
   top: 25px !important;
   left: 25px !important;
-  background-color: transparent !important;
+  background-color: white !important;
+  border-radius: 500rem;
+  box-shadow: 0 2px 3px 0 #d3dae3;
+ /*
+  content: "\f00c" !important;
+  font-family: Icons !important;
+  transform: scale(1.5);
+  */
 }
 /* APPEND */
 .ui.checkbox.la-toggle-radio.la-append label:before {
@@ -99,4 +104,7 @@
 table tr td div.willBeReplaced {
   background-color: #EDC0BA;
   text-decoration: line-through;
+}
+.la-test {
+  padding: 3px 0;
 }

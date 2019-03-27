@@ -90,7 +90,7 @@
   height: 17px;
   text-align: center;
   opacity: 0;
-  color: rgba(0, 0, 0, 0.87);
+  color: rgba(0, 0, 0, 0.6);
   -webkit-transition: border 0.1s ease, opacity 0.1s ease, -webkit-transform 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: border 0.1s ease, opacity 0.1s ease, -webkit-transform 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: border 0.1s ease, opacity 0.1s ease, transform 0.1s ease, box-shadow 0.1s ease;
@@ -105,7 +105,7 @@
 /* Inside */
 .ui.checkbox label,
 .ui.checkbox + label {
-  color: rgba(0, 0, 0, 0.87);
+  color: rgba(0, 0, 0, 0.6);
   -webkit-transition: color 0.1s ease;
   transition: color 0.1s ease;
 }
@@ -310,7 +310,7 @@
   border-radius: 500rem;
   -webkit-transform: scale(0.46666667);
           transform: scale(0.46666667);
-  background-color: rgba(0, 0, 0, 0.87);
+  background-color: rgba(0, 0, 0, 0.6);
 }
 
 /* Focus */
@@ -475,7 +475,7 @@
 .ui.toggle.checkbox label {
   min-height: 1.5rem;
   padding-left: 4.5rem;
-  color: rgba(0, 0, 0, 0.87);
+  color: rgba(0, 0, 0, 0.6);
 }
 .ui.toggle.checkbox label {
   padding-top: 0.15em;
@@ -640,31 +640,36 @@
   font-size: 1.7em;
   width: 40px;
   height: 40px;
+  color: rgba(0, 0, 0, 0.6);
 }
 .ui.checkbox.la-toggle-radio label:before {
   border: none;
   width: 40px;
   height: 40px;
   padding-top: 11px;
-  color: #89898952;
-  background-color: #d3d3d352;
   text-align: center;
+  background-color: #d3dae3;
+  border-radius: 500rem;
 }
-.ui.radio.checkbox.la-toggle-radio input:checked ~ label:before {
-  background-color: #d3d3d352;
+.ui.checkbox.la-toggle-radio input:checked ~ label:before {
+  background-color: #d3dae3;
 }
 
 /* AFTER */
 .ui.checkbox.la-toggle-radio input:checked ~ label:after,
 .ui.radio.checkbox.la-toggle-radio input:checked ~ label:after {
-  content: "\f00c" !important;
-  font-family: Icons !important;
-  -webkit-transform: scale(1.5);
-          transform: scale(1.5);
   color: #98B500 !important;
   top: 25px !important;
   left: 25px !important;
-  background-color: transparent !important;
+  background-color: white !important;
+  border-radius: 500rem;
+  -webkit-box-shadow: 0 2px 3px 0 #d3dae3;
+          box-shadow: 0 2px 3px 0 #d3dae3;
+  /*
+  content: "\f00c" !important;
+  font-family: Icons !important;
+  transform: scale(1.5);
+  */
 }
 
 /* APPEND */
@@ -690,4 +695,7 @@ table tr td div.willStay {
 table tr td div.willBeReplaced {
   background-color: #EDC0BA;
   text-decoration: line-through;
+}
+.la-test {
+  padding: 3px 0;
 }

@@ -27,9 +27,9 @@
 
         <tr><th><i class="file outline icon"></i>&nbsp${message(code: 'subscription.takeDocs')}</th></tr>
         <tr>
-            <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeDocs" value="${COPY}" /></div></td>
-            <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeDocs" value="${REPLACE}" /></div></td>
-            <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeDocs" value="${DO_NOTHING}" checked /></div></td>
+            <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeDocs" value="${COPY}" /></div></td>
+            <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeDocs" value="${REPLACE}" /></div></td>
+            <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeDocs" value="${DO_NOTHING}" checked /></div></td>
             <td>
                 <g:each in="${sourceSubscription.documents.sort { it.owner?.title }}" var="docctx">
                     <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted'))}">
@@ -80,9 +80,9 @@
         <tr><th><i class="sticky note outline icon"></i>&nbsp${message(code: 'subscription.takeAnnouncements')}</th></tr>
 
         <tr>
-            <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeAnnouncements" value="${COPY}" /></div></td>
-            <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeAnnouncements" value="${REPLACE}" /></div></td>
-            <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeAnnouncements" value="${DO_NOTHING}" checked /></div></td>
+            <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeAnnouncements" value="${COPY}" /></div></td>
+            <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-replace"><input type="radio" name="subscription.takeAnnouncements" value="${REPLACE}" /></div></td>
+            <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeAnnouncements" value="${DO_NOTHING}" checked /></div></td>
             <td>
                 <g:each in="${sourceSubscription.documents.sort { it.owner?.title }}" var="docctx">
                     <g:if test="${((docctx.owner?.contentType == com.k_int.kbplus.Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted'))}">
@@ -128,9 +128,9 @@
         <tr><th><i class="checked calendar icon"></i>&nbsp${message(code: 'subscription.takeTasks')}</th></tr>
 
         <tr>
-            <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeTasks" value="${COPY}" /></div></td>
+            <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-append"><input type="radio" name="subscription.takeTasks" value="${COPY}" /></div></td>
             <td class="center aligned" style="vertical-align: top"></td>
-            <td class="center aligned" style="vertical-align: top"><div class="ui radio checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeTasks" value="${DO_NOTHING}" checked /></div></td>
+            <td class="center aligned" style="vertical-align: top"><div class="ui checkbox la-toggle-radio la-noChange"><input type="radio" name="subscription.takeTasks" value="${DO_NOTHING}" checked /></div></td>
             <td>
                 <p>
                     <g:each in="${sourceTasks}" var="tsk">

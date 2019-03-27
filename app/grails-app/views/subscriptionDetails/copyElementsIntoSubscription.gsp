@@ -35,7 +35,7 @@
             <div class="content" >
                 <div class="description">
                     <i class="gift icon"></i>Pakete
-                    <i class="newspaper icon"></i>Titel
+                    <i class="book icon"></i>Titel
                 </div>
             </div>
         </semui:complexSubNavItem>
