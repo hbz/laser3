@@ -10,8 +10,7 @@ import grails.transaction.Transactional
 class DocumentUpdateService {
 
     void updateShareConfigurations() {
-        //dry run
-        DocContext.executeQuery('select dc from DocContext dc where dc.owner.creator != null and dc.owner.owner = null and dc.sharedFrom = null').each { dcObj ->
+        DocContext.executeQuery('select dc from DocContext dc where dc.owner.creator != null and dc.owner.owner = null and dc.shareConf = null').each { dcObj ->
             DocContext dc = (DocContext) dcObj
             Doc owner = dc.owner
             if(owner.creator.authorizedAffiliations.size() > 0) {
