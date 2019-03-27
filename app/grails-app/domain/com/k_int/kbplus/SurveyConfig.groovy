@@ -49,8 +49,8 @@ class SurveyConfig {
 
         orgIDs column: 'surconf_org_ids'
 
-        dateCreated column: 'surconf_dateCreated'
-        lastUpdated column: 'surconf_lastUpdated'
+        dateCreated column: 'surconf_date_created'
+        lastUpdated column: 'surconf_last_updated'
 
         surveyInfo column: 'surconf_surinfo_fk'
         subscription column: 'surconf_sub_fk'

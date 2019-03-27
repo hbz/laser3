@@ -16,8 +16,8 @@ class SurveyConfigProperties {
         id column: 'surconpro_id'
         version column: 'surconpro_version'
 
-        dateCreated column: 'surconpro_dateCreated'
-        lastUpdated column: 'surconpro_lastUpdated'
+        dateCreated column: 'surconpro_date_created'
+        lastUpdated column: 'surconpro_last_updated'
 
         surveyConfig column: 'surconpro_survey_config_fk'
         surveyProperty column: 'surconpro_survey_property_fk'

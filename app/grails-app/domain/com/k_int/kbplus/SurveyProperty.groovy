@@ -54,12 +54,12 @@ class SurveyProperty extends AbstractI10nTranslatable {
         explain column: 'surpro_explain', type: 'text'
         comment column: 'surpro_comment', type: 'text'
         introduction column: 'surpro_introduction', type: 'text'
-        refdataCategory column: 'surpro_refdataCategory'
+        refdataCategory column: 'surpro_refdata_category'
 
         owner column: 'surpro_org_fk'
 
-        dateCreated column: 'surpro_dateCreated'
-        lastUpdated column: 'surpro_lastUpdated'
+        dateCreated column: 'surpro_date_created'
+        lastUpdated column: 'surpro_last_updated'
     }
 
     static getLocalizedValue(key) {

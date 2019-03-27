@@ -38,12 +38,12 @@ class SurveyInfo {
         version column: 'surin_version'
 
         name column: 'surin_name'
-        startDate column: 'surin_startDate'
-        endDate column: 'surin_endDate'
+        startDate column: 'surin_start_date'
+        endDate column: 'surin_end_date'
         comment column: 'surin_comment', type: 'text'
 
-        dateCreated column: 'surin_dateCreated'
-        lastUpdated column: 'surin_lastUpdated'
+        dateCreated column: 'surin_date_created'
+        lastUpdated column: 'surin_last_updated'
 
         owner column: 'surin_owner_org_fk'
         type column: 'surin_type_rv_fk '
