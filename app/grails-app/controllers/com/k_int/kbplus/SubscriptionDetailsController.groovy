@@ -2721,6 +2721,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 //                }
 //            }
 //        }
+        result.targetSubscription.refresh()
         result.workFlowPart = params?.workFlowPart ?: '1'
         result.workFlowPartNext = params?.workFlowPartNext ?: '2'
         result
