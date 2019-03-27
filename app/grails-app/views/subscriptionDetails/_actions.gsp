@@ -41,7 +41,7 @@
 
         <semui:actionsDropdownItem controller="subscriptionDetails" action="copySubscription" params="${[id: params.id]}" message="myinst.copySubscription" />
         %{--Todo Remove ifAnyGranted wenn Task erms-776 fertig ist!--}%
-        <sec:ifAnyGranted roles="ROLE_YODA,ROLE_ADMIN,ROLE_DATAMANAGER">
+        <sec:ifAnyGranted roles="INST_EDITOR">
             <semui:actionsDropdownItem controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${[id: params.id]}" message="myinst.copyElementsIntoSubscription" />
         </sec:ifAnyGranted>
 
