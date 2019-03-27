@@ -102,22 +102,25 @@
     $('input:radio[name="subscription.takePackages"]').change( function(event) {
         if (this.checked && this.value=='COPY') {
             $('.table tr td[name="subscription.takePackages.target"] div').addClass('willStay')
-            $('.table tr td[name="subscription.takePackages.target"] div').removeClass('willBeReplaced')
+            $('.table tr td[name="subscription.takePackages.target"] div').removeClass('willBeReplacedStrong')
+            $('.table tr td[name="subscription.takeEntitlements.target"] div').removeClass('willBeReplacedStrong')
         }
         if (this.checked && this.value=='REPLACE') {
-            $('.table tr td[name="subscription.takePackages.target"] div').addClass('willBeReplaced')
+            $('.table tr td[name="subscription.takePackages.target"] div').removeClass('willStay')
+            $('.table tr td[name="subscription.takePackages.target"] div').addClass('willBeReplacedStrong')
             var pkgIds = $(this).attr('data-pkgIds')
             if (pkgIds != null) {
                 pkgIds = pkgIds.split(",");
                 for (var i = 0; i<pkgIds.length; i++){
-                    $('.table tr div[data-pkgId="' + pkgIds[i] + '"]').addClass('willBeReplaced')
+                    $('.table tr div[data-pkgId="' + pkgIds[i] + '"]').addClass('willBeReplacedStrong')
                 }
             }
         }
         if (this.checked && this.value=='DO_NOTHING') {
             $('.table tr td[name="subscription.takePackages.source"] div').removeClass('willStay');
             $('.table tr td[name="subscription.takePackages.target"] div').removeClass('willStay');
-            $('.table tr td[name="subscription.takePackages.target"] div').removeClass('willBeReplaced');
+            $('.table tr td[name="subscription.takePackages.target"] div').removeClass('willBeReplacedStrong');
+            $('.table tr td[name="subscription.takeEntitlements.target"] div').removeClass('willBeReplacedStrong');
             $('.table tr input[name="subscription.takePackageIds"]').prop("checked", false);
         }
     })
@@ -157,5 +160,11 @@
         }
     })
 </r:script>
+
+<style>
+    .willBeReplacedStrong {
+        background-color: blue !important;
+    }
+</style>
 
 
