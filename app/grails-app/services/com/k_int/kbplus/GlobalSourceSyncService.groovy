@@ -451,7 +451,7 @@ class GlobalSourceSyncService {
                 impId        : tipp.tippUuid ?: tipp.tippId,
                 gokbId       : tipp.tippUuid ?: null,
                 status       : [id: tipp_status.id],
-                startDate    : con.startDate,
+                startDate    : cov.startDate,
                 startVolume  : cov.startVolume,
                 startIssue   : cov.startIssue,
                 endDate      : cov.endDate,
