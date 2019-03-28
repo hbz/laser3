@@ -37,7 +37,7 @@
                 <td  name="subscription.takePackages.source">
                     <b><i class="gift icon"></i>&nbsp${message(code: 'subscription.packages.label')}: ${sourceSubscription?.packages?.size()}</b>
                     <g:each in="${sourceSubscription?.packages?.sort { it.pkg?.name }}" var="sp">
-                        <div data-pckOid="${genericOIDService.getOID(sp.pkg)}">
+                        <div data-pckOid="${genericOIDService.getOID(sp.pkg)}" class="la-element">
                             <div class="ui checkbox">
                                 <g:checkBox name="subscription.takePackageIds" value="${genericOIDService.getOID(sp.pkg)}" data-pkgId="${sp.pkg?.id}" checked="false"/>
                                 <label>
@@ -69,7 +69,7 @@
                 <td  name="subscription.takeEntitlements.source">
                     <b><i class="book icon"></i>&nbsp${message(code: 'issueEntitlement.countSubscription')} </b>${sourceSubscription? sourceIEs?.size() : ""}<br>
                     <g:each in="${sourceIEs}" var="ie">
-                        <div class="la-title-slot" data-ieOid="${genericOIDService.getOID(ie)}">
+                        <div class="la-element" data-ieOid="${genericOIDService.getOID(ie)}">
                             <div class="ui checkbox">
                                 <g:checkBox name="subscription.takeEntitlementIds" value="${genericOIDService.getOID(ie)}" checked="false"/>
                                 <label>
@@ -84,7 +84,7 @@
                 <td  name="subscription.takeEntitlements.target">
                     <b><i class="book icon"></i>&nbsp${message(code: 'issueEntitlement.countSubscription')} </b>${targetSubscription? targetIEs?.size(): ""} <br />
                     <g:each in="${targetIEs}" var="ie">
-                        <div class="la-title-slot" data-pkgId="${ie?.tipp?.pkg?.id}">
+                        <div class="la-element" data-pkgId="${ie?.tipp?.pkg?.id}">
                             <semui:listIcon hideTooltip="true" type="${ie.tipp.title.type.getI10n('value')}"/>
                             <strong><g:link controller="title" action="show" id="${ie?.tipp.title.id}">${ie.tipp.title.title}</g:link></strong>
                             <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
@@ -95,7 +95,7 @@
             </tbody>
         </table>
         <div class="sixteen wide field" style="text-align: right;">
-            <input type="submit" class="ui button js-click-control" value="Ausgewählte Elemente kopieren/überschreiben" onclick="jsConfirmation()"/>
+            <input type="submit" class="ui button js-click-control" value="Ausgewählte Elemente kopieren/überschreiben" onclick="return jsConfirmation()"/>
         </div>
     </g:form>
 </semui:form>
