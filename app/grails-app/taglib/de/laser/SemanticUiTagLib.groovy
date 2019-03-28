@@ -274,37 +274,33 @@ class SemanticUiTagLib {
             case 'Journal':
                 out << '<div class="la-inline-flexbox" '
                 if (hideTooltip) {
-                    out << 'data-tooltip="' + message(code: 'spotlight.journaltitle') + '" data-position="left center" data-variation="tiny">'
+                    out << 'data-tooltip="' + message(code: 'spotlight.journaltitle') + '" data-position="left center" data-variation="tiny"'
                 }
-                out << '>'
-                out << '    <i class="icon newspaper outline la-list-icon"></i>'
+                out << '><i class="icon newspaper outline la-list-icon"></i>'
                 out << '</div>'
                 break
             case 'Database':
                 out << '<div class="la-inline-flexbox" '
                 if (hideTooltip) {
-                    out << 'data-tooltip="' + message(code: 'spotlight.databasetitle') + '" data-position="left center" data-variation="tiny">'
+                    out << 'data-tooltip="' + message(code: 'spotlight.databasetitle') + '" data-position="left center" data-variation="tiny"'
                 }
-                out << '>'
-                out << '    <i class="icon database la-list-icon"></i>'
+                out << '><i class="icon database la-list-icon"></i>'
                 out << '</div>'
                 break
             case 'EBook':
                 out << '<div class="la-inline-flexbox" '
                 if (hideTooltip) {
-                    out << 'data-tooltip="' + message(code: 'spotlight.ebooktitle') + '" data-position="left center" data-variation="tiny">'
+                    out << 'data-tooltip="' + message(code: 'spotlight.ebooktitle') + '" data-position="left center" data-variation="tiny"'
                 }
-                out << '>'
-                out << '    <i class="icon tablet alternate la-list-icon"></i>'
+                out << '><i class="icon tablet alternate la-list-icon"></i>'
                 out << '</div>'
                 break
             default:
                 out << '<div class="la-inline-flexbox" '
                 if (hideTooltip) {
-                    out <<  'data-tooltip="' + message(code: 'spotlight.title') + '" data-position="left center" data-variation="tiny">'
+                    out <<  'data-tooltip="' + message(code: 'spotlight.title') + '" data-position="left center" data-variation="tiny"'
                 }
-                out << '>'
-                out << '    <i class="icon book la-list-icon"></i>'
+                out << '><i class="icon book la-list-icon"></i>'
                 out << '</div>'
                 break
         }
