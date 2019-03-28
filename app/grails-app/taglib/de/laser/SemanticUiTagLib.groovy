@@ -643,7 +643,7 @@ class SemanticUiTagLib {
         out << endDate
 
         out << "<a class='ui ${color} circular tiny label'  data-variation='tiny' data-tooltip='Status: ${tooltip}'>"
-        out << '       ?'
+        out << '       &nbsp;'
         out << '</a>'
 
         if (next) {
