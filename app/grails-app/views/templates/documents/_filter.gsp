@@ -41,7 +41,7 @@
         </div>
 
         <div class="two fields">
-            <div class="field">
+            <%-- taken off for eventual reactivation<div class="field">
                 <div class="ui checkbox targetList" id="noTarget">
                     <g:checkBox name="noTarget" value="${params.noTarget}"/><label for="noTarget">${message(code:'license.document.attachment.noTarget')}</label>
                 </div>
@@ -57,8 +57,9 @@
                 <div class="ui checkbox targetList" id="package">
                     <g:checkBox name="pkg" value="${params.pkg}"/><label for="package">${message(code:'license.document.attachment.package')}</label>
                 </div>
-                <%--<label for="docTarget"></label>
-                <g:select class="ui fluid search dropdown" name="docTarget" id="docTarget" from="" optionKey="id" optionValue="name" value="${params.docTarget}"/>--%>
+
+                <label for="docTarget"></label>
+                <g:select class="ui fluid search dropdown" name="docTarget" id="docTarget" from="" optionKey="id" optionValue="name" value="${params.docTarget}"/>
                 <label>${message(code:'org.docs.table.target')}</label>
                 <div class="ui multiple search selection dropdown" id="docTarget">
                     <input type="hidden" name="docTarget" value="${params.docTarget}">
@@ -66,8 +67,8 @@
                     <input type="text" class="search">
                     <div class="default text"></div>
                 </div>
-            </div>
-            <div class="field la-field-right-aligned">
+            </div>--%>
+            <div class="field">
                 <a href="${request.forwardURI}" class="ui reset primary primary button">${message(code:'default.button.reset.label')}</a>
 
                 <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label', default:'Filter')}" />
