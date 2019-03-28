@@ -128,8 +128,8 @@
             window.jabba = jabba
 
             setTimeout(function(){
-                jQuery('.topbar-wrapper').append('<span class="ui-box">Id <input name="apiKey" type="text" placeholder="Current API Key" value="${apiKey}"></span>')
-                jQuery('.topbar-wrapper').append('<span class="ui-box">Key <input name="apiPassword" type="password" placeholder="Current API Password" value="${apiPassword}"></span>')
+                jQuery('.topbar-wrapper').append('<span class="ui-box">Key <input name="apiKey" type="text" placeholder="Current API Key" value="${apiKey}"></span>')
+                jQuery('.topbar-wrapper').append('<span class="ui-box">Pass <input name="apiPassword" type="password" placeholder="Current API Password" value="${apiPassword}"></span>')
                 jQuery('.topbar-wrapper').append('<span class="ui-box">Context <input name="apiContext" type="text" placeholder="Current Context" value="${apiContext}"></span>')
                 jQuery('.topbar-wrapper').append('<span class="ui-box">Authorization <input name="apiAuth" type="text" placeholder="Will be generated" value=""></span>')
             }, 1000)

@@ -455,7 +455,17 @@ class OrganisationsController extends AbstractDebugController {
         redirect controller: 'organisations', action: 'documents' /*, fragment: 'docstab' */
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_YODA'])
+    def settings() {
+        Map result = [:]
+        result.orgInstance = Org.get(params.id)
+        result.settings = OrgSettings.findAllByOrg(result.orgInstance)
+
+        result
+    }
+
+    @Deprecated
+    @Secured(['ROLE_ADMIN'])
     def properties() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
