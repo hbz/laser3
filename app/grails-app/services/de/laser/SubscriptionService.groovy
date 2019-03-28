@@ -107,12 +107,17 @@ class SubscriptionService {
         switch (aktion) {
             case REPLACE:
             case COPY:
-                sourceSub.orgRelations?.each { or ->
+                getVisibleOrgRelations(sourceSub)?.each { or ->
                     if (targetSub.orgRelations?.find { it.roleTypeId == or.roleTypeId && it.orgId == or.orgId }) {
                         flash.error += or?.roleType?.getI10n("value") + " " + or?.org?.name + " wurde nicht hinzugefügt, weil er in der Ziellizenz schon existiert. <br />"
                     } else {
+                        def newProperties = or.properties
+
+                        //Vererbung ausschalten
+                        newProperties.sharedFrom = null
+                        newProperties.isShared = false
                         OrgRole newOrgRole = new OrgRole()
-                        InvokerHelper.setProperties(newOrgRole, or.properties)
+                        InvokerHelper.setProperties(newOrgRole, newProperties)
                         newOrgRole.sub = targetSub
                         newOrgRole.save(flush: true)
                     }
