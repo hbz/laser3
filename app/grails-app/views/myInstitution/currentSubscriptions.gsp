@@ -215,8 +215,8 @@
                 ${message(code:'sidewide.number')}
             </th>
             <g:sortableColumn params="${params}" property="s.name" title="${message(code: 'license.slash.name')}" rowspan="2" />
-            <th rowspan="2" >
-                <g:annotatedLabel owner="${institution}" property="linkedPackages">${message(code: 'license.details.linked_pkg', default: 'Linked Packages')}</g:annotatedLabel>
+            <th rowspan="2">
+                ${message(code: 'license.details.linked_pkg', default: 'Linked Packages')}
             </th>
             <% /*
             <th>
