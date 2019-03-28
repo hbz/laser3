@@ -311,28 +311,53 @@ class ControlledListService {
     Map getElements(Map params) {
         Map result = [results:[]]
         Org org = contextService.getOrg()
+        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,LocaleContextHolder.getLocale()))
         if(params.org == "true") {
-            List allOrgs = DocContext.executeQuery('select dc.org from DocContext dc where dc.owner.owner = :ctxOrg and dc.org != null and (lower(dc.org.name) like lower(:query) or lower(dc.org.sortname) like lower(:query)) order by dc.org.sortname asc',[ctxOrg:org,query:"%${params.query}%"])
+            List allOrgs = DocContext.executeQuery('select distinct dc.org,dc.org.sortname from DocContext dc where dc.owner.owner = :ctxOrg and dc.org != null and (lower(dc.org.name) like lower(:query) or lower(dc.org.sortname) like lower(:query)) order by dc.org.sortname asc',[ctxOrg:org,query:"%${params.query}%"])
             allOrgs.each { it ->
-                result.results.add([name:"(${messageSource.getMessage('spotlight.organisation',null,LocaleContextHolder.locale)}) ${it.name}",value:"${it.class.name}:${it.id}"])
+                result.results.add([name:"(${messageSource.getMessage('spotlight.organisation',null,LocaleContextHolder.locale)}) ${it[0].name}",value:"${it[0].class.name}:${it[0].id}"])
             }
         }
         if(params.license == "true") {
-            List allLicenses = DocContext.executeQuery('select dc.license from DocContext dc where dc.owner.owner = :ctxOrg and dc.license != null and lower(dc.license.reference) like lower(:query) order by dc.license.reference asc',[ctxOrg:org,query:"%${params.query}%"])
+            List allLicenses = DocContext.executeQuery('select distinct dc.license,dc.license.reference from DocContext dc where dc.owner.owner = :ctxOrg and dc.license != null and dc.license.status != :deleted and lower(dc.license.reference) like lower(:query) order by dc.license.reference asc',[ctxOrg:org,deleted:RDStore.LICENSE_DELETED,query:"%${params.query}%"])
             allLicenses.each { it ->
-                result.results.add([name:"(${messageSource.getMessage('spotlight.license',null,LocaleContextHolder.locale)}) ${it.reference}",value:"${it.class.name}:${it.id}"])
+                License license = (License) it[0]
+                String licenseStartDate = license.startDate ? sdf.format(license.startDate) : '???'
+                String licenseEndDate = license.endDate ? sdf.format(license.endDate) : ''
+                result.results.add([name:"(${messageSource.getMessage('spotlight.license',null,LocaleContextHolder.locale)}) ${it[1]} - ${license.status.getI10n("value")} (${licenseStartDate} - ${licenseEndDate})",value:"${license.class.name}:${license.id}"])
             }
         }
         if(params.subscription == "true") {
-            List allSubscriptions = DocContext.executeQuery('select dc.subscription from DocContext dc where dc.owner.owner = :ctxOrg and dc.subscription != null and lower(dc.subscription.name) like lower(:query) order by dc.subscription.name asc',[ctxOrg:org,query:"%${params.query}%"])
+            List allSubscriptions = DocContext.executeQuery('select distinct dc.subscription,dc.subscription.name from DocContext dc where dc.owner.owner = :ctxOrg and dc.subscription != null and dc.subscription.status != :deleted and lower(dc.subscription.name) like lower(:query) order by dc.subscription.name asc',[ctxOrg:org,deleted:RDStore.SUBSCRIPTION_DELETED,query:"%${params.query}%"])
             allSubscriptions.each { it ->
-                result.results.add([name:"(${messageSource.getMessage('spotlight.subscription',null,LocaleContextHolder.locale)}) ${it.name}",value:"${it.class.name}:${it.id}"])
+                Subscription subscription = (Subscription) it[0]
+                String tenant
+                if(subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION && subscription.getConsortia().id == org.id) {
+                    try {
+                        tenant = " - ${subscription.getAllSubscribers().get(0).sortname}"
+                    }
+                    catch (IndexOutOfBoundsException e) {
+                        log.debug("Please check subscription #${subscription.id}")
+                    }
+                }
+                else {
+                    tenant = ''
+                }
+                String dateString = "("
+                if (subscription.startDate)
+                    dateString += sdf.format(subscription.startDate) + " - "
+                else dateString += "???"
+                if (subscription.endDate)
+                    dateString += sdf.format(subscription.endDate)
+                else dateString += ""
+                dateString += ")"
+                result.results.add([name:"(${messageSource.getMessage('spotlight.subscription',null,LocaleContextHolder.locale)}) ${it[1]} - ${subscription.status.getI10n("value")} ${dateString} ${tenant}",value:"${it[0].class.name}:${it[0].id}"])
             }
         }
         if(params.package == "true") {
-            List allPackages = DocContext.executeQuery('select dc.pkg from DocContext dc where dc.owner.owner = :ctxOrg and dc.pkg != null and lower(dc.pkg.name) like lower(:query) order by dc.pkg.name asc', [ctxOrg: org, query: "%${params.query}%"])
+            List allPackages = DocContext.executeQuery('select distinct dc.pkg,dc.pkg.name from DocContext dc where dc.owner.owner = :ctxOrg and dc.pkg != null and lower(dc.pkg.name) like lower(:query) order by dc.pkg.name asc', [ctxOrg: org, query: "%${params.query}%"])
             allPackages.each { it ->
-                result.results.add([name: "(${messageSource.getMessage('spotlight.package', null, LocaleContextHolder.locale)}) ${it.name}", value: "${it.class.name}:${it.id}"])
+                result.results.add([name: "(${messageSource.getMessage('spotlight.package', null, LocaleContextHolder.locale)}) ${it[1]}", value: "${it[0].class.name}:${it[0].id}"])
             }
         }
         result

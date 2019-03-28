@@ -93,9 +93,11 @@
                             <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
                                 <g:if test="${!(instance instanceof Org)}">
                                     <g:if test="${docctx.sharedFrom}">
-                                        [ Wird geteilt ]
+                                        <span data-tooltip="${message(code:'property.share.tooltip.on')}">
+                                            <i class="green alternate share icon"></i>
+                                        </span>
                                     </g:if>
-                                    <g:if test="${instance.respondsTo('showUIShareButton') && instance.showUIShareButton()}">
+                                    <g:if test="${controllerName != 'myInstitution' && instance.showUIShareButton()}">
                                         <g:if test="${docctx.isShared}">
                                             <span data-position="top right" data-tooltip="${message(code:'property.share.tooltip.on')}">
                                                 <g:link controller="ajax" action="toggleShare" class="ui icon button green"
