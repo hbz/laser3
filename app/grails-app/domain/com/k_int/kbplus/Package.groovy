@@ -424,14 +424,14 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                      url:tip.hostPlatformURL ?: '',
                      identifiers:[],
                      status: tip.status,
-                     accessStart: tip.accessStartDate ?: '',
-                     accessEnd: tip.accessEndDate ?: ''
+                     accessStart: tip.accessStartDate ?: null,
+                     accessEnd: tip.accessEndDate ?: null
                    ];
 
       // Need to format these dates using correct mask
       newtip.coverage.add([
-                        startDate:tip.startDate ?: '',
-                        endDate:tip.endDate ?: '',
+                        startDate:tip.startDate ?: null,
+                        endDate:tip.endDate ?: null,
                         startVolume:tip.startVolume ?: '',
                         endVolume:tip.endVolume ?: '',
                         startIssue:tip.startIssue ?: '',
