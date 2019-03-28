@@ -56,7 +56,7 @@
         color: gray;
       }
     }
-    th:not('.sortable'){
+    th:not(.sortable){
       a {
         text-decoration: underline;
       }

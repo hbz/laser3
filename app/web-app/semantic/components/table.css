@@ -1182,7 +1182,7 @@
   cursor: pointer;
   color: gray;
 }
-.ui.table tr th:not('.sortable') a {
+.ui.table tr th:not(.sortable) a {
   text-decoration: underline;
 }
 
