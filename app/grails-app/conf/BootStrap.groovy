@@ -1945,10 +1945,10 @@ class BootStrap {
 
         RefdataValue.loc('Share Configuration', [en: 'only for creator',de:'nur für Uploader'], BOOTSTRAP)
         RefdataValue.loc('Share Configuration', [key: 'only for author organisation', en: 'only for my organisation',de:'nur für meine Organisation'], BOOTSTRAP)
-        //RefdataValue.loc('Share Configuration', [key: 'only for author and target organisation', en: 'only for my and target organisation',de:'nur für meine Organisation und die Bezugsorganisation'], BOOTSTRAP) //deactivated as March 21st, 2019 - the feature has been postponed into quartal II at least
-        RefdataValue.loc('Share Configuration', [key: 'only for consortia members',en:'only for my consortia members',de:'nur für meine Konsorten'], BOOTSTRAP)
-
-        RefdataValue.loc('Share Configuration', [en: 'everyone',de:'alle'], BOOTSTRAP)
+        //deactivated as March 21st, 2019 - the feature has been postponed into quartal II at least
+        //RefdataValue.loc('Share Configuration', [key: 'only for author and target organisation', en: 'only for my and target organisation',de:'nur für meine Organisation und die Bezugsorganisation'], BOOTSTRAP)
+        //RefdataValue.loc('Share Configuration', [key: 'only for consortia members',en:'only for my consortia members',de:'nur für meine Konsorten'], BOOTSTRAP)
+        //RefdataValue.loc('Share Configuration', [en: 'everyone',de:'alle'], BOOTSTRAP)
 
         RefdataValue.loc('Subscription Form',      [key: 'test', en: 'Test', de: 'Test'], BOOTSTRAP)
         RefdataValue.loc('Subscription Form',      [key: 'offer', en: 'Offer', de: 'Angebot'], BOOTSTRAP)
