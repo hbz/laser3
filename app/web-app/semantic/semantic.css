@@ -14437,7 +14437,7 @@ i.icon.pencil.alternate.slash {
   font-family: 'icomoon';
 }
 
-i.icon.thumbtack.slash {
+i.icon.la-thumbtack.slash {
   font-family: 'icomoon';
 }
 
@@ -14445,23 +14445,23 @@ i.icon.plus.square.slash {
   font-family: 'icomoon';
 }
 
-i.icon.chain.broken {
+i.icon.la-chain.broken {
   font-family: 'icomoon';
 }
 
-i.icon.chain {
+i.icon.la-chain {
   font-family: 'icomoon';
 }
 
-i.icon.share-unslash {
+i.icon.la-share {
   font-family: 'icomoon';
 }
 
-i.icon.share-slash {
+i.icon.la-share.slash {
   font-family: 'icomoon';
 }
 
-i.icon.copy-send {
+i.icon.la-copySend {
   font-family: 'icomoon';
 }
 
@@ -14473,48 +14473,76 @@ i.icon.la-books {
   font-family: 'icomoon';
 }
 
-i.icon.hand.pointer.outline.slash:before {
-  content: "\e900";
+/**/
+
+i.icon.la-append {
+  font-family: 'icomoon';
 }
 
-i.icon.pencil.alternate.slash:before {
+i.icon.la-replace {
+  font-family: 'icomoon';
+}
+
+i.icon.la-noChange {
+  font-family: 'icomoon';
+}
+
+i.icon.hand.pointer.outline.slash:before {
   content: "\e901";
 }
 
-i.icon.thumbtack.slash:before {
+i.icon.pencil.alternate.slash:before {
   content: "\e902";
 }
 
-i.icon.plus.square.slash:before {
+i.icon.la-thumbtack.slash:before {
   content: "\e903";
 }
 
-i.icon.chain.broken:before {
+i.icon.plus.square.slash:before {
   content: "\e904";
 }
 
-i.icon.chain:before {
+i.icon.la-chain.broken:before {
   content: "\e905";
 }
 
-i.icon.share-unslash:before {
+i.icon.la-chain:before {
   content: "\e906";
 }
 
-i.icon.share-slash:before {
+i.icon.la-share:before {
   content: "\e907";
 }
 
-i.icon.copy-send:before {
+i.icon.la-share.slash:before {
   content: "\e908";
 }
 
-i.icon.la-notebook:before {
+i.icon.la-copySend:before {
   content: "\e909";
 }
 
-i.icon.la-books:before {
+i.icon.la-notebook:before {
   content: "\e90a";
+}
+
+i.icon.la-books:before {
+  content: "\e90b";
+}
+
+/**/
+
+i.icon.la-noChange:before {
+  content: "\e900";
+}
+
+i.icon.la-append:before {
+  content: "\e90c";
+}
+
+i.icon.la-replace:before {
+  content: "\e90d";
 }
 
 /*******************************
@@ -30287,9 +30315,8 @@ a.ui.card:hover,
 .la-inline-lists dl dt,
 .la-inline-lists dl dd {
   display: table-cell;
-  vertical-align: top;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
 }
 
 .la-inline-lists dl dd {

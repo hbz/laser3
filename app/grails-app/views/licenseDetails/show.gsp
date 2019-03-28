@@ -71,26 +71,29 @@
                         <div class="ui card ">
                             <div class="content">
                                 <dl>
-                                    <semui:dtAuditCheck message="license.startDate" auditable="[license, 'startDate']" />
+                                    <dt class="control-label">${message(code: 'license.startDate')}</dt>
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="startDate" />
                                     </dd>
+                                    <dd><semui:auditButton  auditable="[license, 'startDate']" /></dd>
                                 </dl>
                                 <dl>
-                                    <semui:dtAuditCheck message="license.endDate" auditable="[license, 'endDate']" />
+                                    <dt class="control-label">${message(code: 'license.endDate')}</dt>
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="endDate" />
                                     </dd>
+                                    <dd><semui:auditButton  auditable="[license, 'endDate']" /></dd>
                                 </dl>
                             </div>
                         </div>
                         <div class="ui card ">
                             <div class="content">
                                 <dl>
-                                    <semui:dtAuditCheck message="license.status" auditable="[license, 'status']" />
+                                    <dt class="control-label">${message(code: 'license.status')}</dt>
                                     <dd>
                                         <semui:xEditableRefData owner="${license}" field="status" config='License Status'/>
                                     </dd>
+                                    <dd><semui:auditButton auditable="[license, 'status']" /></dd>
                                 </dl>
                                 <%--
                                 <dl>

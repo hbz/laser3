@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} Event Log</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : Event Log</title>
 </head>
 
 <body>

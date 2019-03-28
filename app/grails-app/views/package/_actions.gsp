@@ -21,7 +21,7 @@
 </semui:actionsDropdown>
 
 <g:if test="${editable && ! ['list'].contains(actionName)}">
-    <g:render template="/templates/documents/modal" model="${[ownobj: packageInstance, owntp: 'pkg']}"/>
+    <g:render template="/templates/documents/modal" model="${[ownobj: packageInstance, institution: contextService.org, owntp: 'pkg']}"/>
     <g:render template="/templates/notes/modal_create" model="${[ownobj: packageInstance, owntp: 'pkg']}"/>
 </g:if>
 

@@ -122,6 +122,8 @@
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.institutions.myTitles" />
 
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="documents" message="menu.institutions.myDocuments" />
+
                             <g:if test="${RDStore.OT_CONSORTIUM.id in  contextService.org.getallOrgTypeIds()}">
                                 <div class="divider"></div>
 
@@ -196,10 +198,10 @@
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />
 
-                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="documents" message="default.documents.label" />
-
                             <g:set var="newAffiliationRequests1" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatusAndOrg(0, contextService.getOrg(), [sort:'dateRequested']).size()}" />
-                            <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageAffiliationRequests" message="menu.institutions.affiliation_requests" newAffiliationRequests="${newAffiliationRequests1}" />
+
+                            <semui:securedMainNavItem affiliation="INST_ADM" controller="organisations" action="users" params="[id: contextOrg?.id]"
+                                                      message="menu.institutions.affiliation_requests" newAffiliationRequests="${newAffiliationRequests1}" />
 
 
                             %{--<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgTypeIds())}">--}%
@@ -225,6 +227,12 @@
                                 <g:link class="item" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</g:link>
                                 <%--<semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="changeLog" message="menu.institutions.change_log" />--%>
                             </sec:ifAnyGranted>
+
+                            <g:set var="myInstNewAffils" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatusAndOrg(0, contextService.getOrg(), [sort:'dateRequested']).size()}" />
+
+                            <semui:securedMainNavItem affiliation="INST_ADM" controller="organisations" action="users" params="[id: contextOrg?.id]"
+                                                      message="menu.institutions.users" newAffiliationRequests="${myInstNewAffils}" />
+
 
                         </div>
                     </div>
@@ -400,22 +408,28 @@
 
                             <g:link class="item" controller="yoda" action="dashboard">Dashboard</g:link>
 
-                            <div class="divider"></div>
+                            <div class="ui dropdown item">
+                                Dagobah
+                                <i class="dropdown icon"></i>
 
-                            <g:link class="item" controller="yoda" action="settings">System Settings</g:link>
-                            <g:link class="item" controller="yoda" action="manageSystemMessage">${message(code: 'menu.admin.systemMessage', default: 'System Message')}</g:link>
-                            <g:link class="item" controller="yoda" action="appConfig">App Config</g:link>
+                                <div class="menu">
+
+                                    <g:link class="item" controller="yoda" action="settings">System Settings</g:link>
+                                    <g:link class="item" controller="yoda" action="manageSystemMessage">${message(code: 'menu.admin.systemMessage', default: 'System Message')}</g:link>
+                                    <g:link class="item" controller="yoda" action="appConfig">App Config</g:link>
 
 
-                            <g:link class="item" controller="yoda" action="profiler">${message(code:'menu.yoda.profiler')}</g:link>
-                            <g:link class="item" controller="yoda" action="quartzInfo">${message(code:'menu.yoda.quartzInfo')}</g:link>
-                            <g:link class="item" controller="yoda" action="cacheInfo">${message(code:'menu.yoda.cacheInfo')}</g:link>
+                                    <g:link class="item" controller="yoda" action="profiler">${message(code:'menu.yoda.profiler')}</g:link>
+                                    <g:link class="item" controller="yoda" action="quartzInfo">${message(code:'menu.yoda.quartzInfo')}</g:link>
+                                    <g:link class="item" controller="yoda" action="cacheInfo">${message(code:'menu.yoda.cacheInfo')}</g:link>
 
-                            <g:link class="item" controller="yoda" action="appSecurity">Security</g:link>
-                            <g:link class="item" controller="yoda" action="userMatrix">${message(code:'menu.yoda.userMatrix')}</g:link>
-                            <g:link class="item" controller="yoda" action="userRoleDefinitions">${message(code:'menu.yoda.userRoleDefinitions')}</g:link>
+                                    <g:link class="item" controller="yoda" action="appSecurity">Security</g:link>
+                                    <g:link class="item" controller="yoda" action="userMatrix">${message(code:'menu.yoda.userMatrix')}</g:link>
+                                    <g:link class="item" controller="yoda" action="userRoleDefinitions">${message(code:'menu.yoda.userRoleDefinitions')}</g:link>
 
-                            <%--<a class="item" href="${g.createLink(uri:'/monitoring')}">App Monitoring</a>--%>
+                                    <%--<a class="item" href="${g.createLink(uri:'/monitoring')}">App Monitoring</a>--%>
+                                </div>
+                            </div>
 
                             <div class="divider"></div>
 
@@ -434,12 +448,6 @@
 
                             <div class="divider"></div>
 
-                            <g:link class="item" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</g:link>
-                            <g:link class="item" controller="yoda" action="updateLinks">${message(code:'menu.admin.updateLinks')}</g:link>
-                            <g:link class="item" controller="yoda" action="startDateCheck">${message(code:'menu.admin.startDatesCheck')}</g:link>
-
-                            <div class="divider"></div>
-
                             <g:link class="item" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">Start Global Data Sync</g:link>
                             <g:link class="item" controller="yoda" action="manageGlobalSources">Manage Global Sources</g:link>
 
@@ -453,12 +461,19 @@
                             <div class="divider"></div>
 
                             <div class="ui dropdown item">
-                                Datenmigration
+                                ${message(code:'menu.admin.dataMigration')}
                                 <i class="dropdown icon"></i>
                                 <div class="menu">
+                                    <g:link class="item" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</g:link>
+                                    <g:link class="item" controller="yoda" action="updateLinks">${message(code:'menu.admin.updateLinks')}</g:link>
+                                    <g:link class="item" controller="yoda" action="startDateCheck">${message(code:'menu.admin.startDatesCheck')}</g:link>
                                     <g:link class="item" controller="yoda" action="updateTaxRates">${message(code:'menu.admin.taxTypeCheck')}</g:link>
+                                    <g:link class="item" controller="yoda" action="showOldDocumentOwners">${message(code:'menu.admin.documentOwnerCheck')}</g:link>
                                 </div>
                             </div>
+
+                            <div class="divider"></div>
+                            <g:link class="item" controller="yoda" action="frontend" >Frontend für Entwickler</g:link>
 
                         </div>
 
@@ -610,7 +625,7 @@
                                             $('.card.la-js-hideable').not( ":has(.la-js-dont-hide-this-card)" ).addClass('hidden');
                                             $('.la-js-hide-this-card').addClass('hidden');
                                             $('.ui.form').not('.ui.modal .ui.form').addClass('hidden');
-                                            $('#collapseableSubDetails').not('.ui.modal').find('.button').not('.ui.modal .button, .la-url-button').addClass('hidden');
+                                            $('#collapseableSubDetails').not('.ui.modal').find('.button').not('.ui.modal .button, .la-js-dont-hide-button').addClass('hidden');
                                             $(toggleButton).removeAttr();
                                             $(toggleButton).attr("data-tooltip","${message(code:'statusbar.hideButtons.tooltip')}");
                                             $( toggleIcon ).addClass( "slash" );

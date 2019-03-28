@@ -21,7 +21,7 @@ class ProfileController {
     def errorReportService
     def refdataService
     def propertyService
-    def userService
+    def instAdmService
 
     @Secured(['ROLE_USER'])
     def index() {
@@ -87,7 +87,7 @@ class ProfileController {
         Role formalRole = Role.get(params.formalRole)
 
         if (user && org && formalRole) {
-            userService.createAffiliation(user, org, formalRole, UserOrg.STATUS_PENDING, flash)
+            instAdmService.createAffiliation(user, org, formalRole, UserOrg.STATUS_PENDING, flash)
         }
 
         redirect(action: "index")
@@ -100,7 +100,7 @@ class ProfileController {
         def userOrg     = UserOrg.findByUserAndId(user, params.assoc)
 
         if (userOrg) {
-            userOrg.status = UserOrg.STATUS_CANCELLED
+            userOrg.delete(flush:true)
         }
 
         redirect(action: "index")

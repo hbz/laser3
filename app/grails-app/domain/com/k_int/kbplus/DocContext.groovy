@@ -17,6 +17,7 @@ class DocContext implements ShareableTrait {
         subscription:   Subscription,
         pkg:            Package,
         link:           Links,
+        org:            Org,
         sharedFrom:     DocContext
   ]
 
@@ -24,7 +25,6 @@ class DocContext implements ShareableTrait {
     RefdataValue status
     @RefdataAnnotation(cat = 'Document Type')
     RefdataValue doctype
-    Org targetOrg
     @RefdataAnnotation(cat = 'Share Configuration')
     RefdataValue shareConf
 
@@ -38,17 +38,17 @@ class DocContext implements ShareableTrait {
   static mapping = {
                id column:'dc_id'
           version column:'dc_version'
-            owner column:'dc_doc_fk'
+            owner column:'dc_doc_fk', sort:'title', order:'asc'
           doctype column:'dc_rv_doctype_fk'
           license column:'dc_lic_fk'
      subscription column:'dc_sub_fk'
               pkg column:'dc_pkg_fk'
+              org column:'dc_org_fk'
              link column:'dc_link_fk'
      globannounce column:'dc_is_global'
            status column:'dc_status_fk'
        sharedFrom column:'dc_shared_from_fk'
          isShared column:'dc_is_shared'
-        targetOrg column:'dc_target_org_fk'
         shareConf column:'dc_share_conf_fk'
   }
 
@@ -57,13 +57,13 @@ class DocContext implements ShareableTrait {
     license(nullable:true, blank:false)
     subscription(nullable:true, blank:false)
     pkg(nullable:true, blank:false)
+    org(nullable: true,blank: false)
     link(nullable:true, blank:false)
     domain(nullable:true, blank:false)
     status(nullable:true, blank:false)
     globannounce(nullable:true, blank:true)
       sharedFrom(nullable:true, blank:true)
       isShared(nullable:true, blank:false, default:false)
-      targetOrg(nullable: true,blank: false)
       shareConf(nullable: true,blank: false)
   }
 

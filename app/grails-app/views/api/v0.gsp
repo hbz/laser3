@@ -109,7 +109,7 @@
                 query_q: 'q - Identifier for this query',
                 query_v: 'v - Value for this query',
                 authorization: 'x-authorization - hmac-sha256 generated auth header',
-                context: 'context - Concrete globalUID, if user has memberships in multiple organisations'
+                context: 'context - Concrete globalUID of context organisation'
             }
 
             var jabba = SwaggerUIBundle({
@@ -128,8 +128,8 @@
             window.jabba = jabba
 
             setTimeout(function(){
-                jQuery('.topbar-wrapper').append('<span class="ui-box">Id <input name="apiId" type="text" placeholder="Current API Id" value="${apiId}"></span>')
-                jQuery('.topbar-wrapper').append('<span class="ui-box">Key <input name="apiKey" type="password" placeholder="Current API Key" value="${apiKey}"></span>')
+                jQuery('.topbar-wrapper').append('<span class="ui-box">Key <input name="apiKey" type="text" placeholder="Current API Key" value="${apiKey}"></span>')
+                jQuery('.topbar-wrapper').append('<span class="ui-box">Pass <input name="apiPassword" type="password" placeholder="Current API Password" value="${apiPassword}"></span>')
                 jQuery('.topbar-wrapper').append('<span class="ui-box">Context <input name="apiContext" type="text" placeholder="Current Context" value="${apiContext}"></span>')
                 jQuery('.topbar-wrapper').append('<span class="ui-box">Authorization <input name="apiAuth" type="text" placeholder="Will be generated" value=""></span>')
             }, 1000)
@@ -177,8 +177,8 @@
             */
 
             function genDigist(div) {
-                var id      = jQuery('.topbar input[name=apiId]').val().trim()
-                var key     = jQuery('.topbar input[name=apiKey]').val().trim()
+                var id      = jQuery('.topbar input[name=apiKey]').val().trim()
+                var key     = jQuery('.topbar input[name=apiPassword]').val().trim()
                 var method  = jQuery(div).parents('.opblock').find('.opblock-summary-method').text()
                 var path    = "/api/${apiVersion}" + jQuery(div).parents('.opblock').find('.opblock-summary-path span').text()
                 var timestamp = ""

@@ -136,42 +136,33 @@
                 </tr>
               </thead>
               <tbody>
-                <g:each in="${tipps}" var="tipp">
-                  <%
-                      String serial
-                      String electronicSerial
-                      String checked = ""
-                      if(tipp.title.type.equals(RDStore.TITLE_TYPE_EBOOK)) {
-                          serial = tipp.title.getIdentifierValue('ISBN')
-                          electronicSerial = tipp?.title?.getIdentifierValue('eISBN')
-                      }
-                      else if(tipp.title.type.equals(RDStore.TITLE_TYPE_JOURNAL)) {
-                          serial = tipp?.title?.getIdentifierValue('ISSN')
-                          electronicSerial = tipp?.title?.getIdentifierValue('eISSN')
-                      }
-                      if(identifiers) {
-                          if(zdbIds.indexOf(tipp.title.getIdentifierValue('zdb')) > -1) {
-                              checked = "checked"
-                          }
-                          else if(onlineIds.indexOf(electronicSerial) > -1) {
-                              checked = "checked"
-                          }
-                          else if(printIds.indexOf(serial) > -1) {
-                              checked = "checked"
-                          }
-                      }
-                  %>
+                <g:each in="${tipps}" var="tipp" status="t">
                   <tr>
-                    <td><input type="checkbox" name="_bulkflag.${tipp.id}" class="bulkcheck" ${checked}/></td>
+                    <td><input type="checkbox" name="_bulkflag.${tipp.id}" class="bulkcheck" ${checked[t]}/></td>
                     <td>${counter++}</td>
                     <td>
-                        <semui:listIcon type="${tipp.title.type.getI10n("value")}"/>
+                        <semui:listIcon type="${tipp.title?.type?.value}"/>
                       <g:link controller="tipp" id="${tipp.id}" action="show">${tipp.title.title}</g:link>
+
+                        <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && tipp?.title?.volume}">
+                            (${message(code: 'title.volume.label')} ${tipp?.title?.volume})
+                        </g:if>
+
+                        <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && (tipp?.title?.firstAuthor || tipp?.title?.firstEditor)}">
+                            <br><b>${tipp?.title?.firstAuthor}; ${tipp?.title?.firstEditor}${message(code: 'title.firstAuthor.firstEditor.label')}</b>
+                        </g:if>
+
                       <br/>
                       <span class="pull-right">
                         <g:if test="${tipp?.hostPlatformURL}"><a href="${tipp?.hostPlatformURL.contains('http') ?:'http://'+tipp?.hostPlatformURL}" TITLE="${tipp?.hostPlatformURL}">${message(code:'tipp.hostPlatformURL', default:'Host Link')}</a>
                             <a href="${tipp?.hostPlatformURL.contains('http') ?:'http://'+tipp?.hostPlatformURL}" TITLE="${tipp?.hostPlatformURL} (In new window)" target="_blank"><i class="icon-share-alt"></i></a></g:if>
                       </span>
+
+                        <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
+                            <div class="item"><b>${message(code: 'title.editionStatement.label')}:</b> ${tipp?.title?.editionStatement}
+                            </div>
+                        </g:if>
+
                     </td>
                     <td style="white-space: nowrap;">${tipp.title.getIdentifierValue('zdb')}</td>
                     <td style="white-space: nowrap;">${serial}</td>

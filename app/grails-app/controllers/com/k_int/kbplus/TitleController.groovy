@@ -136,21 +136,6 @@ class TitleController extends AbstractDebugController {
     }
   }
 
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    def edit() {
-        redirect controller: 'title', action: 'show', params: params
-        return // ----- deprecated
-
-        def result = [:]
-
-        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-
-        result.ti = TitleInstance.get(params.id)
-        result.duplicates = reusedIdentifiers(result.ti);
-        result
-    }
-
   @Secured(['ROLE_USER'])
   def show() {
     def result = [:]

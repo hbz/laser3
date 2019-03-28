@@ -65,6 +65,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
     def financeService
     def orgTypeService
     def subscriptionsQueryService
+    def orgDocumentService
 
     private static String INVOICES_FOR_SUB_HQL =
             'select co.invoice, sum(co.costInLocalCurrency), sum(co.costInBillingCurrency), co from CostItem as co where co.sub = :sub group by co.invoice order by min(co.invoice.startDate) desc';
@@ -111,7 +112,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
             log.debug("Slaved subscription, auto-accept pending changes")
             def changesDesc = []
             pendingChanges.each { change ->
-                if (!pendingChangeService.performAccept(change, request)) {
+                if (!pendingChangeService.performAccept(change, result.user)) {
                     log.debug("Auto-accepting pending change has failed.")
                 } else {
                     changesDesc.add(PendingChange.get(change).desc)
@@ -620,6 +621,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
 
         log.debug("filter: \"${params.filter}\"");
 
+        List errorList = []
         if (result.subscriptionInstance) {
             // We need all issue entitlements from the parent subscription where no row exists in the current subscription for that item.
             def basequery = null;
@@ -675,7 +677,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
                 int zdbCol = -1, onlineIdentifierCol = -1, printIdentifierCol = -1
                 //read off first line of KBART file
                 rows[0].split('\t').eachWithIndex { headerCol, int c ->
-                    switch(headerCol) {
+                    switch(headerCol.toLowerCase()) {
                         case "zdb_id": zdbCol = c
                             break
                         case "print_identifier": printIdentifierCol = c
@@ -689,19 +691,45 @@ class SubscriptionDetailsController extends AbstractDebugController {
                 //now, assemble the identifiers available to highlight
                 rows.each { row ->
                     ArrayList<String> cols = row.split('\t')
+                    List idCandidates = []
                     if(zdbCol >= 0 && cols[zdbCol]) {
                         identifiers.zdbIds.add(cols[zdbCol])
+                        idCandidates.add([namespace:'zdb',value:cols[zdbCol]])
                     }
                     if(onlineIdentifierCol >= 0 && cols[onlineIdentifierCol]) {
                         identifiers.onlineIds.add(cols[onlineIdentifierCol])
+                        idCandidates.add([namespace:'eissn',value:cols[onlineIdentifierCol]])
+                        idCandidates.add([namespace:'eisbn',value:cols[onlineIdentifierCol]])
                     }
                     if(printIdentifierCol >= 0 && cols[printIdentifierCol]) {
                         identifiers.printIds.add(cols[printIdentifierCol])
+                        idCandidates.add([namespace:'issn',value:cols[printIdentifierCol]])
+                        idCandidates.add([namespace:'isbn',value:cols[printIdentifierCol]])
                     }
                     if(((zdbCol >= 0 && cols[zdbCol].trim().isEmpty()) || zdbCol < 0) &&
                        ((onlineIdentifierCol >= 0 && cols[onlineIdentifierCol].trim().isEmpty()) || onlineIdentifierCol < 0) &&
                        ((printIdentifierCol >= 0 && cols[printIdentifierCol].trim().isEmpty()) || printIdentifierCol < 0)) {
                         identifiers.unidentified.add('"'+cols[0]+'"')
+                    }
+                    else {
+                        //make checks ...
+                        //is title in LAS:eR?
+                        //List tiObj = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp join tipp.title ti join ti.ids identifiers where identifiers.identifier.value in :idCandidates',[idCandidates:idCandidates])
+                        //log.debug(idCandidates)
+                        def tiObj = TitleInstance.findByIdentifier(idCandidates)
+                        if(tiObj) {
+                            //is title already added?
+                            List issueEntitlement = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp in :tipp and ie.subscription = :sub',[tipp:tiObj,sub:result.subscriptionInstance])
+                            if(issueEntitlement) {
+                                errorList.add("${cols[0]}&#9;${cols[zdbCol] ?: " "}&#9;${cols[onlineIdentifierCol] ?: " "}&#9;${cols[printIdentifierCol] ?: " "}&#9;${message(code:'subscription.details.addEntitlements.titleAlreadyAdded')}")
+                            }
+                            /*else if(!issueEntitlement) {
+                                errors += g.message([code:'subscription.details.addEntitlements.titleNotMatched',args:cols[0]])
+                            }*/
+                        }
+                        else if(!tiObj) {
+                            errorList.add("${cols[0]}&#9;${cols[zdbCol] ?: " "}&#9;${cols[onlineIdentifierCol] ?: " "}&#9;${cols[printIdentifierCol] ?: " "}&#9;${message(code:'subscription.details.addEntitlements.titleNotInERMS')}")
+                        }
                     }
                 }
                 result.identifiers = identifiers
@@ -710,15 +738,48 @@ class SubscriptionDetailsController extends AbstractDebugController {
             else if(params.identifiers) {
                 result.identifiers = JSON.parse(params.identifiers)
             }
+            result.checked = []
+            result.tipps.eachWithIndex { tipp, int t ->
+                String serial
+                String electronicSerial
+                String checked = ""
+                if(tipp.title.type.equals(RDStore.TITLE_TYPE_EBOOK)) {
+                    serial = tipp.title.getIdentifierValue('ISBN')
+                    electronicSerial = tipp?.title?.getIdentifierValue('eISBN')
+                }
+                else if(tipp.title.type.equals(RDStore.TITLE_TYPE_JOURNAL)) {
+                    serial = tipp?.title?.getIdentifierValue('ISSN')
+                    electronicSerial = tipp?.title?.getIdentifierValue('eISSN')
+                }
+                if(identifiers.zdbIds.indexOf(tipp.title.getIdentifierValue('zdb')) > -1) {
+                    checked = "checked"
+                }
+                else if(identifiers.onlineIds.indexOf(electronicSerial) > -1) {
+                    checked = "checked"
+                }
+                else if(identifiers.printIds.indexOf(serial) > -1) {
+                    checked = "checked"
+                }
+                result.checked[t] = checked
+            }
             if(result.identifiers && result.identifiers.unidentified.size() > 0) {
                 String unidentifiedTitles = result.identifiers.unidentified.join(", ")
-                flash.error = g.message(code:'subscription.details.addEntitlements.unidentified',args:[StringEscapeCategory.encodeAsHtml(result.identifiers.filename), unidentifiedTitles])
+                String escapedFileName
+                try {
+                    escapedFileName = StringEscapeCategory.encodeAsHtml(result.identifiers.filename)
+                }
+                catch (Exception | Error e) {
+                    log.error(e.printStackTrace())
+                    escapedFileName = result.identifiers.filename
+                }
+                errorList.add(g.message(code:'subscription.details.addEntitlements.unidentified',args:[escapedFileName, unidentifiedTitles]))
             }
         } else {
             result.num_sub_rows = 0;
             result.tipps = []
         }
-
+        if(errorList)
+            flash.error = "<pre style='font-family:Lato,Arial,Helvetica,sans-serif;'>"+errorList.join("\n")+"</pre>"
         result
     }
 
@@ -1962,7 +2023,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 log.debug("Slaved subscription, auto-accept pending changes")
                 def changesDesc = []
                 pendingChanges.each { change ->
-                    if (!pendingChangeService.performAccept(change, request)) {
+                    if (!pendingChangeService.performAccept(change, result.user)) {
                         log.debug("Auto-accepting pending change has failed.")
                     } else {
                         changesDesc.add(PendingChange.get(change).desc)
@@ -2156,7 +2217,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         //waitAll(task_tasks, task_properties, task_usage, task_providerFilter)
 
         def debugTimeB = System.currentTimeMillis()
-        println " ---> " + Math.abs(debugTimeB - debugTimeA)
+        //println " ---> " + Math.abs(debugTimeB - debugTimeA)
 
         result
     }

@@ -27,7 +27,7 @@
     <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
 
     <semui:controlButtons>
-        <g:render template="actions" />
+        <g:render template="actions" model="${[org:orgInstance,user:user]}"/>
     </semui:controlButtons>
 
     <h1 class="ui left aligned icon header"><semui:headerIcon />
@@ -381,6 +381,9 @@
 
                 </div>
             </div>
+                <aside class="four wide column la-sidekick">
+                    <g:render template="/templates/documents/card" model="${[ownobj: orgInstance,owntp:'organisation']}" />
+                </aside>
         </div>
     </div>
     </div>

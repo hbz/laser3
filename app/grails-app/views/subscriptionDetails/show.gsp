@@ -77,12 +77,14 @@
                     <div class="ui card la-time-card">
                         <div class="content">
                             <dl>
-                                <semui:dtAuditCheck message="subscription.startDate.label" auditable="[subscriptionInstance, 'startDate']"/>
+                                <dt class="control-label">${message(code: 'subscription.startDate.label')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="startDate" type="date"/></dd>
+                                <dd><semui:auditButton auditable="[subscriptionInstance, 'startDate']"/></dd>
                             </dl>
                             <dl>
-                                <semui:dtAuditCheck message="subscription.endDate.label" auditable="[subscriptionInstance, 'endDate']"/>
+                                <dt class="control-label">${message(code: 'subscription.endDate.label')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="endDate" type="date"/></dd>
+                                <dd><semui:auditButton  auditable="[subscriptionInstance, 'endDate']"/></dd>
                             </dl>
                             <% /*
                             <dl>
@@ -91,8 +93,9 @@
                             </dl>
                             */ %>
                             <dl>
-                                <semui:dtAuditCheck message="subscription.manualCancellationlDate.label" auditable="[subscriptionInstance, 'manualCancellationDate']" />
+                                <dt class="control-label">${message(code: 'subscription.manualCancellationlDate.label')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="manualCancellationDate" type="date"/></dd>
+                                <dd><semui:auditButton auditable="[subscriptionInstance, 'manualCancellationDate']" /></dd>
                             </dl>
 
                         </div>
@@ -100,11 +103,12 @@
                     <div class="ui card">
                         <div class="content">
                             <dl>
-                                <semui:dtAuditCheck message="subscription.details.status" auditable="[subscriptionInstance, 'status']"/>
+                                <dt class="control-label">${message(code: 'subscription.details.status')}</dt>
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="status" config='Subscription Status' constraint="removeValue_deleted" /></dd>
+                                <dd><semui:auditButton auditable="[subscriptionInstance, 'status']"/></dd>
                             </dl>
                             <dl>
-                                <semui:dtAuditCheck message="subscription.details.type" auditable="[subscriptionInstance, 'type']"/>
+                                <dt class="control-label">${message(code: 'subscription.details.type')}</dt>
                                 <dd>
                                     <%-- TODO: subscribers may not edit type, but admins and yoda --%>
                                     <g:if test="${subscriptionInstance.getAllSubscribers().contains(contextOrg)}">
@@ -114,14 +118,17 @@
                                         <semui:xEditableRefData owner="${subscriptionInstance}" field="type" config='Subscription Type' />
                                     </g:else>
                                 </dd>
+                                <dd><semui:auditButton auditable="[subscriptionInstance, 'type']"/></dd>
                             </dl>
                             <dl>
-                                <semui:dtAuditCheck message="subscription.form.label" auditable="[subscriptionInstance, 'form']"/>
+                                <dt class="control-label">${message(code: 'subscription.form.label')}</dt>
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="form" config='Subscription Form'/></dd>
+                                <dd><semui:auditButton auditable="[subscriptionInstance, 'form']"/></dd>
                             </dl>
                             <dl>
-                                <semui:dtAuditCheck message="subscription.resource.label" auditable="[subscriptionInstance, 'resource']"/>
+                                <dt class="control-label">${message(code: 'subscription.resource.label')}</dt>
                                 <dd><semui:xEditableRefData owner="${subscriptionInstance}" field="resource" config='Subscription Resource'/></dd>
+                                <dd><semui:auditButton auditable="[subscriptionInstance, 'resource']"/></dd>
                             </dl>
                             <g:if test="${subscriptionInstance.instanceOf && (contextOrg?.id == subscriptionInstance.getConsortia()?.id)}">
                                 <dl>

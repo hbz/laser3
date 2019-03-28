@@ -10,7 +10,6 @@ import de.laser.helper.DateUtil
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import org.apache.poi.hslf.model.*
 import org.apache.poi.hssf.usermodel.*
 import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
@@ -46,6 +45,7 @@ class MyInstitutionController extends AbstractDebugController {
     def dashboardDueDatesService
     def subscriptionsQueryService
     def orgTypeService
+    def orgDocumentService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -150,9 +150,12 @@ class MyInstitutionController extends AbstractDebugController {
         result
     }
 
+    @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def manageAffiliationRequests() {
+        redirect controller: 'organisations', action: 'users', id: contextService.getOrg().id
+
         def result = [:]
         result.institution        = contextService.getOrg()
         result.user               = User.get(springSecurityService.principal.id)
@@ -1106,44 +1109,14 @@ from License as l where (
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     Map documents() {
-        User user = User.get(springSecurityService.principal.id)
-        Org org = contextService.org
-        Map filterQuery = filterService.getDocumentQuery(params)
-        Set<DocContext> documents = []
-        documents.addAll(DocContext.executeQuery('select dc from DocContext dc join dc.owner d where (d.owner = :org or dc.targetOrg = :org)'+filterQuery.query,[org:org]+filterQuery.queryParams))
-        //get documents shared for consortia
-        if(!org.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id)) {
-            List consortia = Combo.findAllByFromOrgAndType(org,RefdataValue.getByValueAndCategory('Consortium','Combo Type')).collect {
-                combo -> combo.toOrg
-            }
-            documents.addAll(DocContext.executeQuery('select dc from DocContext dc join dc.owner d where d.owner in :consortia'+filterQuery.query,[consortia:consortia]+filterQuery.queryParams))
-        }
-        org.documents = documents
-        List allUploaders = Doc.executeQuery('select dc.shareConf,d.creator from DocContext dc join dc.owner d where d.owner = :org order by d.creator.display asc',[org:org])
-        Set availableUsers = []
-        allUploaders.each { row ->
-            if(row[0] == RDStore.SHARE_CONF_CREATOR) {
-                if(row[1] == user)
-                    availableUsers.add(row[1])
-            }
-            else availableUsers.add(row[1])
-        }
-        Map result = [user:user,org:org,availableUsers:availableUsers,editable:accessService.checkMinUserOrgRole(user,org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]
-        result
-    }
-
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-    def editDocument() {
         Map result = setResultGenerics()
-        result.ownobj = result.institution
-        result.owntp = 'organisation'
-        if(params.id) {
-            result.docctx = DocContext.get(params.id)
-            result.doc = result.docctx.owner
-        }
-
-        render template: "/templates/documents/modal", model: result
+        Set documents = orgDocumentService.getAllDocuments(result.institution,params)
+        result.max = params.max ? Integer.parseInt(params.max) : (int) result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        result.documents = documents.drop(result.offset).take(result.max)
+        result.totalSize = documents.size()
+        result.availableUsers = orgDocumentService.getAvailableUploaders(result.user)
+        result
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
@@ -3714,6 +3687,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result.user         = User.get(springSecurityService.principal.id)
         //result.institution  = Org.findByShortcode(params.shortcode)
         result.institution  = contextService.getOrg()
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA')
         result
     }
 
@@ -3737,6 +3711,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         render (template: "../templates/filter/orgFilterTable", model: [orgList: result.cons_members, tmplShowCheckbox: true, tmplConfigShow: ['sortname', 'name']])
     }
 
+    @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def actionAffiliationRequestOrg() {

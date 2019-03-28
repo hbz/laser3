@@ -84,57 +84,24 @@
                 <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalgruppen konfigurieren" />
             </g:if>
 
+            <%--
             <g:if test="${showConsortiaFunctions}">
                 <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
                     <div class="divider"></div>
                     <semui:actionsDropdownItem id="audit_config_opener" message="property.audit.menu"/>
                 </g:if>
             </g:if>
+            --%>
         </g:if>
 
     </semui:actionsDropdown>
 
-    <%--<g:render template="/templates/documents/modal" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>--%>
+    <g:render template="/templates/documents/modal" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
     <g:render template="/templates/notes/modal_create" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
 
-    <g:render template="/templates/audit/modal_script" model="${[ownobj: subscriptionInstance]}" />
+    <%--<g:render template="/templates/audit/modal_script" model="${[ownobj: subscriptionInstance]}" />--%>
 </g:if>
 
 <g:if test="${editable || accessService.checkMinUserOrgRole(user, contextOrg, 'INST_EDITOR')}">
     <g:render template="/templates/tasks/modal_create" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
 </g:if>
-
-<r:script>
-    var isClicked = false;
-    $('[href="#modalCreateDocument"]').on('click', function(e) {
-        e.preventDefault();
-
-        if(!isClicked) {
-            isClicked = true;
-            $.ajax({
-                url: "<g:createLink controller="${controllerName}" action="editDocument" params="[instanceId:subscriptionInstance.id]"/>"
-            }).done( function(data) {
-                $('.ui.dimmer.modals > #modalCreateDocument').remove();
-                $('#dynamicModalContainer').empty().html(data);
-
-                $('#dynamicModalContainer .ui.modal').modal({
-                    onVisible: function () {
-                        r2d2.initDynamicSemuiStuff('#modalCreateDocument');
-                        r2d2.initDynamicXEditableStuff('#modalCreateDocument');
-                    },
-                    detachable: true,
-                    closable: false,
-                    transition: 'scale',
-                    onApprove : function() {
-                        $(this).find('.ui.form').submit();
-                        return false;
-                    }
-                }).modal('show');
-            });
-            setTimeout(function(){
-                isClicked = false;
-            },800);
-        }
-
-    });
-</r:script>

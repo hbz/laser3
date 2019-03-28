@@ -2,6 +2,7 @@ package de.laser
 
 import com.k_int.kbplus.BudgetCode
 import com.k_int.kbplus.CostItem
+import com.k_int.kbplus.DocContext
 import com.k_int.kbplus.Invoice
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.License
@@ -34,15 +35,29 @@ class ControlledListService {
      */
     Map getProviders(Map params) {
         LinkedHashMap result = [results:[]]
-        String queryString = 'select o from Org o '
-        LinkedHashMap filter = [:]
-        if(params.query && params.query.length() > 0) {
-            filter.put("query",'%'+params.query+'%')
-            queryString += " where lower(o.name) like lower(:query) "
+        Org org = contextService.getOrg()
+        if(params.forFinanceView) {
+            List subscriptions = Subscription.executeQuery('select s from CostItem ci join ci.sub s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in (:orgRoles)',[org:org,orgRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIA]])
+            Map filter = [provider: RDStore.OR_PROVIDER,subscriptions:subscriptions]
+            String filterString = " "
+            if(params.query && params.query.length() > 0) {
+                filter.put("query",'%'+params.query+'%')
+                filterString += "and lower(oo.name) like lower(:query) "
+            }
+            List providers = Org.executeQuery('select distinct oo.org, oo.org.name from OrgRole oo where oo.sub in (:subscriptions) and oo.roleType = :provider'+filterString+'order by oo.org.name asc',filter)
+            providers.each { p ->
+                result.results.add([name:p[1],value:p[0].class.name + ":" + p[0].id])
+            }
         }
-        List providers = Org.executeQuery(queryString+" order by o.sortname asc",filter)
-        providers.each { p ->
-            if(p.getallOrgRoleTypeIds().contains(RDStore.OR_TYPE_PROVIDER.id)) {
+        else {
+            String queryString = 'select o from Org o where o.type = :provider '
+            LinkedHashMap filter = [provider:RDStore.OT_PROVIDER]
+            if(params.query && params.query.length() > 0) {
+                filter.put("query",'%'+params.query+'%')
+                queryString += " and lower(o.name) like lower(:query) "
+            }
+            List providers = Org.executeQuery(queryString+" order by o.sortname asc",filter)
+            providers.each { p ->
                 result.results.add([name:p.name,value:p.class.name + ":" + p.id])
             }
         }
@@ -79,14 +94,17 @@ class ControlledListService {
             Subscription s = (Subscription) row[0]
             String tenant
             if(s.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION && s.getConsortia().id == org.id) {
-                if(s.getAllSubscribers().size() > 0)
+                try {
                     tenant = s.getAllSubscribers().get(0).name
-                else tenant = ""
+                }
+                catch (IndexOutOfBoundsException e) {
+                    log.debug("Please check subscription #${s.id}")
+                }
             }
             else {
                 tenant = org.name
             }
-            if ((params.checkView && s.isVisibleBy(contextService.getUser())) || !params.checkView) {
+            if (((params.checkView && s.isVisibleBy(contextService.getUser())) || !params.checkView) && tenant != null) {
                 String dateString = ", "
                 if (s.startDate)
                     dateString += sdf.format(s.startDate) + "-"
@@ -122,17 +140,24 @@ class ControlledListService {
                 Subscription s = (Subscription) res.subscription
                 String tenant
                 if(s.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION && s.getConsortia().id == org.id) {
-                    tenant = s.getAllSubscribers().get(0).name
+                    try {
+                        tenant = s.getAllSubscribers().get(0).name
+                    }
+                    catch (IndexOutOfBoundsException e) {
+                        log.debug("Please check subscription #${s.id}")
+                    }
                 }
                 else {
                     tenant = org.name
                 }
-                String dateString = ", "
-                if (s.startDate)
-                    dateString += sdf.format(s.startDate) + "-"
-                if (s.endDate)
-                    dateString += sdf.format(s.endDate)
-                issueEntitlements.results.add([name:"${res.tipp.title.title} (${tenant}${dateString})",value:res.class.name+":"+res.id])
+                if(tenant) {
+                    String dateString = ", "
+                    if (s.startDate)
+                        dateString += sdf.format(s.startDate) + "-"
+                    if (s.endDate)
+                        dateString += sdf.format(s.endDate)
+                    issueEntitlements.results.add([name:"${res.tipp.title.title} (${tenant}${dateString})",value:res.class.name+":"+res.id])
+                }
             }
         }
         issueEntitlements
@@ -194,12 +219,17 @@ class ControlledListService {
             Subscription s = (Subscription) row[0]
             String tenant
             if(s.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION && s.getConsortia().id == org.id) {
-                tenant = s.getAllSubscribers().get(0).name
+                try {
+                    tenant = s.getAllSubscribers().get(0).name
+                }
+                catch (IndexOutOfBoundsException e) {
+                    log.debug("Please check subscription #${s.id}")
+                }
             }
             else {
                 tenant = org.name
             }
-            if ((params.checkView && s.isVisibleBy(contextService.getUser())) || !params.checkView) {
+            if (((params.checkView && s.isVisibleBy(contextService.getUser())) || !params.checkView) && tenant != null) {
                 s.packages.each { sp ->
                     String dateString = ", "
                     if (s.startDate)
@@ -274,6 +304,61 @@ class ControlledListService {
         references.each { r ->
             log.debug(r)
             result.results.add([name:r.reference,value:r.reference])
+        }
+        result
+    }
+
+    Map getElements(Map params) {
+        Map result = [results:[]]
+        Org org = contextService.getOrg()
+        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,LocaleContextHolder.getLocale()))
+        if(params.org == "true") {
+            List allOrgs = DocContext.executeQuery('select distinct dc.org,dc.org.sortname from DocContext dc where dc.owner.owner = :ctxOrg and dc.org != null and (lower(dc.org.name) like lower(:query) or lower(dc.org.sortname) like lower(:query)) order by dc.org.sortname asc',[ctxOrg:org,query:"%${params.query}%"])
+            allOrgs.each { it ->
+                result.results.add([name:"(${messageSource.getMessage('spotlight.organisation',null,LocaleContextHolder.locale)}) ${it[0].name}",value:"${it[0].class.name}:${it[0].id}"])
+            }
+        }
+        if(params.license == "true") {
+            List allLicenses = DocContext.executeQuery('select distinct dc.license,dc.license.reference from DocContext dc where dc.owner.owner = :ctxOrg and dc.license != null and dc.license.status != :deleted and lower(dc.license.reference) like lower(:query) order by dc.license.reference asc',[ctxOrg:org,deleted:RDStore.LICENSE_DELETED,query:"%${params.query}%"])
+            allLicenses.each { it ->
+                License license = (License) it[0]
+                String licenseStartDate = license.startDate ? sdf.format(license.startDate) : '???'
+                String licenseEndDate = license.endDate ? sdf.format(license.endDate) : ''
+                result.results.add([name:"(${messageSource.getMessage('spotlight.license',null,LocaleContextHolder.locale)}) ${it[1]} - ${license.status.getI10n("value")} (${licenseStartDate} - ${licenseEndDate})",value:"${license.class.name}:${license.id}"])
+            }
+        }
+        if(params.subscription == "true") {
+            List allSubscriptions = DocContext.executeQuery('select distinct dc.subscription,dc.subscription.name from DocContext dc where dc.owner.owner = :ctxOrg and dc.subscription != null and dc.subscription.status != :deleted and lower(dc.subscription.name) like lower(:query) order by dc.subscription.name asc',[ctxOrg:org,deleted:RDStore.SUBSCRIPTION_DELETED,query:"%${params.query}%"])
+            allSubscriptions.each { it ->
+                Subscription subscription = (Subscription) it[0]
+                String tenant
+                if(subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION && subscription.getConsortia().id == org.id) {
+                    try {
+                        tenant = " - ${subscription.getAllSubscribers().get(0).sortname}"
+                    }
+                    catch (IndexOutOfBoundsException e) {
+                        log.debug("Please check subscription #${subscription.id}")
+                    }
+                }
+                else {
+                    tenant = ''
+                }
+                String dateString = "("
+                if (subscription.startDate)
+                    dateString += sdf.format(subscription.startDate) + " - "
+                else dateString += "???"
+                if (subscription.endDate)
+                    dateString += sdf.format(subscription.endDate)
+                else dateString += ""
+                dateString += ")"
+                result.results.add([name:"(${messageSource.getMessage('spotlight.subscription',null,LocaleContextHolder.locale)}) ${it[1]} - ${subscription.status.getI10n("value")} ${dateString} ${tenant}",value:"${it[0].class.name}:${it[0].id}"])
+            }
+        }
+        if(params.package == "true") {
+            List allPackages = DocContext.executeQuery('select distinct dc.pkg,dc.pkg.name from DocContext dc where dc.owner.owner = :ctxOrg and dc.pkg != null and lower(dc.pkg.name) like lower(:query) order by dc.pkg.name asc', [ctxOrg: org, query: "%${params.query}%"])
+            allPackages.each { it ->
+                result.results.add([name: "(${messageSource.getMessage('spotlight.package', null, LocaleContextHolder.locale)}) ${it[1]}", value: "${it[0].class.name}:${it[0].id}"])
+            }
         }
         result
     }

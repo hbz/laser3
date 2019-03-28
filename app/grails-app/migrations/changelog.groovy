@@ -16,4 +16,6 @@ databaseChangeLog = {
 	// include file: 'changelog-20-prod.groovy'	// v0.13 @ PROD only
 
 	include file: 'changelog-30.groovy'		// v0.14
+
+	include file: 'changelog-40.groovy'		// v0.15
 }

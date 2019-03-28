@@ -1,5 +1,4 @@
-<%@ page import="com.k_int.kbplus.Package" %>
-<%@ page import="com.k_int.kbplus.Package;com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="com.k_int.kbplus.Package; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.ApiSource;" %>
 
 <!doctype html>
 <html>
@@ -43,11 +42,17 @@
 
             <div class="twelve wide column">
 
-              <h3 class="ui header">
-                ${message(code:'title.type.label')}: ${ti.type.getI10n('value')}
-              </h3>
+                  <div class="item"><b>${message(code:'title.type.label')}:</b> ${ti.type.getI10n('value')}</div>
 
-                ${message(code:'default.status.label')}: <semui:xEditableRefData owner="${ti}" field="status" config='${RefdataCategory.TI_STATUS}'/>
+                <g:if test="${ti instanceof com.k_int.kbplus.BookInstance}">
+                    <div class="item"><b>${message(code:'title.firstAuthor.label')}:</b> ${ti?.firstAuthor}</div>
+                    <div class="item"><b>${message(code:'title.firstEditor.label')}:</b> ${ti?.firstEditor}</div>
+                    <div class="item"><b>${message(code:'title.editionNumber.label')}:</b> ${ti?.editionNumber}</div>
+                    <div class="item"><b>${message(code:'title.editionStatement.label')}:</b> ${ti?.editionStatement}</div>
+                    <div class="item"><b>${message(code:'title.volume.label')}:</b> ${ti?.volume}</div>
+                </g:if>
+
+                <div class="item"><b>${message(code:'default.status.label')}:</b> <semui:xEditableRefData owner="${ti}" field="status" config='${RefdataCategory.TI_STATUS}'/></div>
 
             </div><!-- .twelve -->
 
@@ -141,8 +146,10 @@
               </span>
             </g:if>
 
-            <h3 class="ui header">${message(code:'title.edit.tipp')}</h3>
-<% /*
+  <h3 class="ui left aligned icon header">${message(code:'title.edit.tipp')}
+  <semui:totalNumber total="${ti.tipps.size()}"/>
+  </h3>
+%{--<% /*
               <table class="ui celled la-table table">
                   <thead>
                   <tr>
@@ -170,11 +177,11 @@
               </table>
 */ %>
 
-            %{--<g:form id="${params.id}" controller="title" action="batchUpdate" class="ui form"> BULK_REMOVE --}%
+            --}%%{--<g:form id="${params.id}" controller="title" action="batchUpdate" class="ui form"> BULK_REMOVE --}%%{--
               <table class="ui celled la-rowspan table">
                   <thead>
                     <tr>
-                  %{--<th rowspan="2"></th> BULK_REMOVE --}%
+                  --}%%{--<th rowspan="2"></th> BULK_REMOVE --}%%{--
                       <th>${message(code:'tipp.platform')}</th><th>${message(code:'tipp.package')}</th>
                       <th>${message(code:'tipp.start')}</th>
                       <th>${message(code:'tipp.end')}</th>
@@ -188,7 +195,7 @@
                     </tr>
                   </thead>
 
-                %{-- BULK_REMOVE
+                --}%%{-- BULK_REMOVE
                 <g:if test="${editable}">
                   <tr>
                     <td rowspan="2"><input type="checkbox" name="checkall" onClick="javascript:$('.bulkcheck').attr('checked', true);"/></td>
@@ -254,11 +261,11 @@
                     </td>
                   </tr>
                 </g:if>
-                --}%
+                --}%%{--
   
                 <g:each in="${ti.tipps}" var="t">
                   <tr>
-                    %{--<td rowspan="2"><g:if test="${editable}"><input type="checkbox" name="_bulkflag.${t.id}" class="bulkcheck"/></g:if></td> BULK_REMOVE --}%
+                    --}%%{--<td rowspan="2"><g:if test="${editable}"><input type="checkbox" name="_bulkflag.${t.id}" class="bulkcheck"/></g:if></td> BULK_REMOVE --}%%{--
                     <td><g:link controller="platform" action="show" id="${t.platform.id}">${t.platform.name}</g:link></td>
                     <td>
                         <div class="la-flexbox">
@@ -282,7 +289,129 @@
                   </tr>
                 </g:each>
               </table>
-            %{--</g:form> BULK_REMOVE--}%
+            --}%%{--</g:form> BULK_REMOVE--}%
+
+            %{--NEW VIEW FOR TIPPS--}%
+
+  <table class="ui sortable celled la-table table ignore-floatThead la-bulk-header">
+      <thead>
+      <tr>
+          <th></th>
+          <th>${message(code:'package')}</th>
+          <th class="two wide">${message(code:'tipp.coverage')}</th>
+          <th class="two wide">${message(code:'tipp.access')}</th>
+          <th class="two wide">${message(code:'tipp.coverageDepth', default:'Coverage Depth')}</th>
+      </tr>
+      <tr>
+          <th colspan="2" rowspan="2"></th>
+          <th>${message(code:'default.from')}</th>
+          <th>${message(code:'default.from')}</th>
+          <th rowspan="2"></th>
+      </tr>
+      <tr>
+          <th>${message(code:'default.to')}</th>
+          <th>${message(code:'default.to')}</th>
+      </tr>
+      </thead>
+      <tbody>
+
+      <g:set var="counter" value="${1}" />
+      <g:each in="${ti.tipps.sort{it?.pkg?.name}}" var="t">
+          <g:set var="hasCoverageNote" value="${t.coverageNote?.length() > 0}" />
+          <tr>
+              <td ${hasCoverageNote==true?'rowspan="2"':''}>${counter++}</td>
+              <td>
+                      <div class="la-flexbox">
+                          <i class="icon gift scale la-list-icon"></i>
+                          <g:link controller="package" action="show" id="${t?.pkg?.id}">${t?.pkg?.name}</g:link>
+                      </div>
+                  <br>
+                  <g:link controller="tipp" action="show" id="${t.id}">${message(code:'platform.show.full_tipp', default:'Full TIPP Details')}</g:link>
+              &nbsp;&nbsp;&nbsp;
+                  <g:each in="${com.k_int.kbplus.ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
+                          var="gokbAPI">
+                      <g:if test="${t?.gokbId}">
+                          <a target="_blank" href="${gokbAPI.baseUrl ? gokbAPI.baseUrl + '/gokb/resource/show/' + t?.gokbId : '#'}"><i
+                                  title="${gokbAPI.name} Link" class="external alternate icon"></i></a>
+                      </g:if>
+                  </g:each>
+                  <br>
+
+                  <g:each in="${t.title.ids.sort{it.identifier.ns.ns}}" var="id">
+                      <g:if test="${id.identifier.ns.ns == 'originediturl'}">
+                          <span class="ui small teal image label">
+                              ${id.identifier.ns.ns}: <div class="detail"><a href="${id.identifier.value}">${message(code:'package.show.openLink', default:'Open Link')}</a></div>
+                          </span>
+                          <span class="ui small teal image label">
+                              ${id.identifier.ns.ns}: <div class="detail"><a href="${id.identifier.value.toString().replace("resource/show", "public/packageContent")}">${message(code:'package.show.openLink', default:'Open Link')}</a></div>
+                          </span>
+                      </g:if>
+                      <g:else>
+                          <span class="ui small teal image label">
+                              ${id.identifier.ns.ns}: <div class="detail">${id.identifier.value}</div>
+                          </span>
+                      </g:else>
+                  </g:each>
+
+
+                  <div class="ui list">
+                      <div class="item"  title="${t.availabilityStatusExplanation}"><b>${message(code:'default.access.label', default:'Access')}:</b> ${t.availabilityStatus?.getI10n('value')}</div>
+                      <div class="item"><b>${message(code:'default.status.label', default:'Status')}:</b>  <semui:xEditableRefData owner="${t}" field="status" config="TIPP Status"/></div>
+                      <div class="item"><b>${message(code:'tipp.platform', default:'Platform')}: </b>
+                          <g:if test="${t?.platform.name}">
+                              ${t?.platform.name}
+                          </g:if>
+                          <g:else>${message(code:'default.unknown')}</g:else>
+                          <g:if test="${t?.platform.name}">
+                              <g:link class="ui icon mini  button la-url-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.changePlattform')}" controller="platform" action="show" id="${t?.platform.id}"><i class="pencil alternate icon"></i></g:link>
+                          </g:if>
+                          <g:if test="${t.hostPlatformURL}">
+                              <a class="ui icon mini blue button la-url-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.callUrl')}" href="${t.hostPlatformURL.contains('http') ? t.hostPlatformURL :'http://'+t.hostPlatformURL}" target="_blank"><i class="share square icon"></i></a>
+                          </g:if>
+                      </div>
+                  </div>
+              </td>
+
+              <td>
+                  <!-- von -->
+                  <semui:xEditable owner="${t}" type="date" field="startDate" /><br/>
+                  <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.volume')}"></i>
+                  <semui:xEditable owner="${t}" field="startVolume" /><br>
+                  <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.issue')}"></i>
+                  <semui:xEditable owner="${t}" field="startIssue" />
+                  <semui:dateDevider/>
+                  <!-- bis -->
+                  <semui:xEditable owner="${t}" type="date" field="endDate" /><br/>
+                  <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.volume')}"></i>
+                  <semui:xEditable owner="${t}" field="endVolume" /><br>
+                  <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.issue')}"></i>
+                  <semui:xEditable owner="${t}" field="endIssue" />
+              </td>
+              <td>
+                  <!-- von -->
+                  <semui:xEditable owner="${t}" type="date" field="accessStartDate" />
+                  <semui:dateDevider/>
+                  <!-- bis -->
+                  <semui:xEditable owner="${t}" type="date" field="accessEndDate" />
+              </td>
+              <td>
+                  <semui:xEditable owner="${t}" field="coverageDepth" />
+              </td>
+          </tr>
+
+          <g:if test="${hasCoverageNote==true}">
+              <tr>
+                  <td colspan="6"><b>${message(code:'tipp.coverageNote', default:'Coverage Note')}:</b> ${t.coverageNote}</td>
+              </tr>
+          </g:if>
+
+      </g:each>
+
+      </tbody>
+
+  </table>
+
+
 
             <br><br>
 

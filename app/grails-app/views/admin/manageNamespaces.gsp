@@ -3,7 +3,7 @@
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
-		<title>${message(code: 'menu.admin.manageIdentifierNamespaces')}</title>
+		<title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.admin.manageIdentifierNamespaces')}</title>
 	</head>
 
 		<semui:breadcrumbs>
