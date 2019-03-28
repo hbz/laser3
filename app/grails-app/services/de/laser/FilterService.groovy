@@ -13,6 +13,7 @@ class FilterService {
     private static final Long FAKE_CONSTRAINT_ORGID_WITHOUT_HITS = new Long(-1)
     def springSecurityService
     def genericOIDService
+    def contextService
 
     Map<String, Object> getOrgQuery(Map params) {
         Map<String, Object> result = [:]
@@ -188,11 +189,11 @@ class FilterService {
             queryParams << [type: RefdataValue.get(params.docType)]
         }
         if(params.docTarget) {
-            //sorry, I hate def, but here, I cannot avoid using it ...
             List targetOIDs = params.docTarget.split(",")
             Set targetQuery = []
             List subs = [], orgs = [], licenses = [], pkgs = []
             targetOIDs.each { t ->
+                //sorry, I hate def, but here, I cannot avoid using it ...
                 def target = genericOIDService.resolveOID(t)
                 switch(target.class.name) {
                     case Subscription.class.name: targetQuery << "dc.subscription in (:subs)"
@@ -221,6 +222,10 @@ class FilterService {
                 queryParams.pkgs = pkgs
             if(targetQuery)
                 query << "(${targetQuery.join(" or ")})"
+        }
+        if(params.noTarget) {
+            query << "dc.org = :context"
+            queryParams << [context:contextService.org]
         }
         if(query.size() > 0)
             result.query = " and "+query.join(" and ")

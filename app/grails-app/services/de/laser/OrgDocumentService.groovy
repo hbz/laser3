@@ -18,13 +18,13 @@ class OrgDocumentService {
     Set getAllDocuments(Org org, Map params) {
         Map filterQuery = filterService.getDocumentQuery(params)
         Set<DocContext> allDocuments = []
-        allDocuments.addAll(DocContext.executeQuery('select dc from DocContext dc join dc.owner d where (d.owner = :org or dc.org = :org) and dc.status = null '+filterQuery.query,[org:org]+filterQuery.queryParams))
+        allDocuments.addAll(DocContext.executeQuery('select dc from DocContext dc join dc.owner d where (d.owner = :org or dc.org = :org) and dc.status = null and d.contentType in (1,3)'+filterQuery.query,[org:org]+filterQuery.queryParams))
         //get documents shared for consortia
         if(!org.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id) && org.getallOrgTypeIds().contains(RDStore.OT_INSTITUTION.id)) {
             List consortia = Combo.findAllByFromOrgAndType(org, RefdataValue.getByValueAndCategory('Consortium','Combo Type')).collect {
                 combo -> combo.toOrg
             }
-            allDocuments.addAll(DocContext.executeQuery('select dc from DocContext dc join dc.owner d where d.owner in :consortia and dc.status = null'+filterQuery.query,[consortia:consortia]+filterQuery.queryParams))
+            allDocuments.addAll(DocContext.executeQuery('select dc from DocContext dc join dc.owner d where d.owner in :consortia and dc.status = null and d.contentType in (1,3)'+filterQuery.query,[consortia:consortia]+filterQuery.queryParams))
         }
         allDocuments
     }

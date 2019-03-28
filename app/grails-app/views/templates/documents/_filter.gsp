@@ -43,19 +43,19 @@
         <div class="two fields">
             <div class="field">
                 <div class="ui checkbox targetList" id="noTarget">
-                    <g:checkBox name="noTarget"/><label for="noTarget">${message(code:'license.document.attachment.noTarget')}</label>
+                    <g:checkBox name="noTarget" value="${params.noTarget}"/><label for="noTarget">${message(code:'license.document.attachment.noTarget')}</label>
                 </div>
                 <div class="ui checkbox targetList" id="org">
-                    <g:checkBox name="org"/><label for="org">${message(code:'license.document.attachment.org')}</label>
+                    <g:checkBox name="org" value="${params.org}"/><label for="org">${message(code:'license.document.attachment.org')}</label>
                 </div>
                 <div class="ui checkbox targetList" id="license">
-                    <g:checkBox name="license"/><label for="license">${message(code:'license.document.attachment.license')}</label>
+                    <g:checkBox name="license" value="${params.license}"/><label for="license">${message(code:'license.document.attachment.license')}</label>
                 </div>
                 <div class="ui checkbox targetList" id="subscription">
-                    <g:checkBox name="subscription"/><label for="subscription">${message(code:'license.document.attachment.subscription')}</label>
+                    <g:checkBox name="subscription" value="${params.subscription}"/><label for="subscription">${message(code:'license.document.attachment.subscription')}</label>
                 </div>
                 <div class="ui checkbox targetList" id="package">
-                    <g:checkBox name="pkg"/><label for="package">${message(code:'license.document.attachment.package')}</label>
+                    <g:checkBox name="pkg" value="${params.pkg}"/><label for="package">${message(code:'license.document.attachment.package')}</label>
                 </div>
                 <%--<label for="docTarget"></label>
                 <g:select class="ui fluid search dropdown" name="docTarget" id="docTarget" from="" optionKey="id" optionValue="name" value="${params.docTarget}"/>--%>

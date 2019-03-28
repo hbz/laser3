@@ -79,7 +79,7 @@ class DocWidgetController extends AbstractDebugController {
           Doc doc_content = new Doc(contentType:Doc.CONTENT_TYPE_BLOB,
                                     filename: original_filename,
                                     mimeType: request.getFile("upload_file")?.contentType,
-                                    title: params.upload_title,
+                                    title: params.upload_title ?: original_filename,
                                     type:RefdataCategory.lookupOrCreate('Document Type',params.doctype),
                                     creator: user,
                                     owner: contextService.getOrg())
@@ -139,7 +139,7 @@ class DocWidgetController extends AbstractDebugController {
         log.debug("Got owner instance ${instance}");
         DocContext doc_context = DocContext.get(params.docctx)
         Doc doc_content = doc_context.owner
-        doc_content.title = params.upload_title
+        doc_content.title = params.upload_title ?: doc_content.filename
         doc_content.type = RefdataValue.getByValueAndCategory(params.doctype,'Document Type')
         doc_content.owner = contextService.org
         doc_content.save()
