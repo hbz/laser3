@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.auth.UserOrg" %>
+<%@ page import="com.k_int.kbplus.auth.*" %>
 
 <g:if test="${tmplProfile}"><%-- /profile/index --%>
     <g:form name="affiliationRequestForm" controller="profile" action="processJoinRequest" class="ui form" method="get">
@@ -9,7 +9,7 @@
                 <g:select name="org"
                           from="${availableOrgs}"
                           optionKey="id"
-                          optionValue="name"
+                          optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
                           class="ui fluid search dropdown"/>
             </div>
 
@@ -19,6 +19,7 @@
                           from="${availableOrgRoles}"
                           optionKey="id"
                           optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
+                          value="${Role.findByAuthority('INST_USER').id}"
                           class="ui fluid dropdown"/>
             </div>
         </div>
@@ -35,11 +36,11 @@
 
         <div class="two fields">
             <div class="field">
-                <label>Organisation</label>
+                <label>${orgLabel ?: 'Organisation'}</label>
                 <g:select name="org"
                           from="${availableOrgs}"
                           optionKey="id"
-                          optionValue="name"
+                          optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
                           class="ui fluid search dropdown"/>
             </div>
 
@@ -49,6 +50,7 @@
                           from="${availableOrgRoles}"
                           optionKey="id"
                           optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
+                          value="${Role.findByAuthority('INST_USER').id}"
                           class="ui fluid dropdown"/>
             </div>
         </div>
@@ -59,26 +61,4 @@
             <button type="submit" class="ui button">${message(code: 'profile.membership.add.button')}</button>
         </div>
     </g:form>
-</g:if>
-
-<g:if test="${tmplUserCreate}"><%-- /user/create --%>
-    <div class="two fields">
-        <div class="field">
-            <label>Organisation</label>
-            <g:select name="org"
-                      from="${availableOrgs}"
-                      optionKey="id"
-                      optionValue="name"
-                      class="ui fluid search dropdown"/>
-        </div>
-
-        <div class="field">
-            <label>Role</label>
-            <g:select name="formalRole"
-                      from="${availableOrgRoles}"
-                      optionKey="id"
-                      optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
-                      class="ui fluid dropdown"/>
-        </div>
-    </div>
 </g:if>

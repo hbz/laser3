@@ -32,6 +32,7 @@ class OrganisationsController extends AbstractDebugController {
     def propertyService
     def orgDocumentService
     def docstoreService
+    def instAdmService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -48,6 +49,12 @@ class OrganisationsController extends AbstractDebugController {
         def orgInstance = Org.get(params.id)
 
         result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+
+        // forbidden access
+        if (! result.editable && orgInstance.id != contextService.getOrg().id) {
+            redirect controller: 'organisations', action: 'show', id: orgInstance.id
+
+        }
 
         // TODO: deactived
       /*
@@ -248,8 +255,16 @@ class OrganisationsController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_ADM")') //TODO temporary, to be changed as soon as ERMS-1078 is decided!
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     Map findInstitutionMatches() {
-
-        Map result=[institutionMatches:[]]
+        Map consortiaMap = [:]
+        Combo.findAllByType(RefdataValue.getByValueAndCategory('Consortium','Combo Type')).each { lObj ->
+            Combo link = (Combo) lObj
+            List consortia = consortiaMap.get(link.fromOrg.id)
+            if(!consortia)
+                consortia = [link.toOrg.id]
+            else consortia << link.toOrg.id
+            consortiaMap.put(link.fromOrg.id,consortia)
+        }
+        Map result=[institutionMatches:[],consortia:consortiaMap]
         if ( params.proposedInstitution ) {
             result.institutionMatches.addAll(Org.executeQuery("select o from Org as o where exists (select roletype from o.orgType as roletype where roletype = :institution ) and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName ) ",
                     [institution: RDStore.OT_INSTITUTION, searchName: "%${params.proposedInstitution.toLowerCase()}%"]))
@@ -342,7 +357,10 @@ class OrganisationsController extends AbstractDebugController {
             result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_COM_EDITOR,ROLE_ORG_EDITOR')
         }else {
             du.setBenchMark('editable2')
-            if(RDStore.OT_CONSORTIUM.id in org.getallOrgTypeIds() && accessService.checkMinUserOrgRole(result.user,org,'INST_ADM'))
+            List<Long> consortia = Combo.findAllByTypeAndFromOrg(RefdataValue.getByValueAndCategory('Consortium','Combo Type'),orgInstance).collect { it ->
+                it.toOrg.id
+            }
+            if(RDStore.OT_CONSORTIUM.id in org.getallOrgTypeIds() && consortia.size() == 1 && consortia.contains(org.id) && accessService.checkMinUserOrgRole(result.user,org,'INST_ADM'))
                 result.editable = true
             else
                 result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
@@ -389,9 +407,7 @@ class OrganisationsController extends AbstractDebugController {
        //}
 
         //documents
-        du.setBenchMark('documents')
-        Map docMap = orgDocumentService.getDocuments(result.user,result.orgInstance,params)
-        result.orgInstance = docMap.org
+        //du.setBenchMark('documents')
 
         List bm = du.stopBenchMark()
         result.benchMark = bm
@@ -408,10 +424,8 @@ class OrganisationsController extends AbstractDebugController {
 
     @Secured(['ROLE_USER'])
     def documents() {
-        User user = User.get(springSecurityService.principal.id)
-        Org org = Org.get(params.id)
-        Map ret = orgDocumentService.getDocuments(user,org,params)
-        Map result = [user:user,org:ret.org,availableUsers:ret.availableUsers,editable:accessService.checkMinUserOrgRole(user,ret.org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]
+        Map result = setResultGenerics()
+        result.org = Org.get(params.id)
         result
     }
 
@@ -419,7 +433,6 @@ class OrganisationsController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def editDocument() {
         Map result = setResultGenerics()
-        result.targetOrg = Org.get(params.org)
         result.ownobj = result.institution
         result.owntp = 'organisation'
         if(params.id) {
@@ -442,7 +455,17 @@ class OrganisationsController extends AbstractDebugController {
         redirect controller: 'organisations', action: 'documents' /*, fragment: 'docstab' */
     }
 
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_YODA'])
+    def settings() {
+        Map result = [:]
+        result.orgInstance = Org.get(params.id)
+        result.settings = OrgSettings.findAllByOrg(result.orgInstance)
+
+        result
+    }
+
+    @Deprecated
+    @Secured(['ROLE_ADMIN'])
     def properties() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -491,39 +514,25 @@ class OrganisationsController extends AbstractDebugController {
 
         result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
+        result.editable = result.editable || instAdmService.hasInstAdmPivileges(result.user, orgInstance)
+
         // forbidden access
         if (! result.editable && orgInstance.id != contextService.getOrg().id) {
             redirect controller: 'organisations', action: 'show', id: orgInstance.id
 
         }
 
-      def tracked_roles = ["ROLE_ADMIN":"LAS:eR Administrator"]
-
       if (!orgInstance) {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
         redirect action: 'list'
         return
       }
-      result.users2 = orgInstance.affiliations.collect{ userOrg ->
-        def admin_roles = []
-        userOrg.user.roles.each{ 
-          if (tracked_roles.keySet().contains(it.role.authority)){
-            def role_match = tracked_roles.get(it.role.authority)+" (${it.role.authority})"
-            admin_roles += role_match
-          }
-        }
-        // log.debug("Found roles: ${admin_roles} for user ${userOrg.user.displayName}")
 
-        return [userOrg,admin_roles?:null]
+        result.pendingRequests = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, orgInstance, [sort:'dateRequested', order:'desc'])
+        result.users = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_APPROVED, orgInstance, [sort:'user.username', order: 'asc'])
 
-      }
-
-        result.users = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_APPROVED, orgInstance, [sort:'dateRequested'])
-        result.pendingRequests = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, orgInstance, [sort:'dateRequested'])
-
-        // log.debug(result.users)
-      result.orgInstance = orgInstance
-      result
+        result.orgInstance = orgInstance
+        result
     }
 
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR','ROLE_ORG_COM_EDITOR'])
@@ -554,27 +563,28 @@ class OrganisationsController extends AbstractDebugController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-    def enableRole() {
+    def processAffiliation() {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
       UserOrg uo = UserOrg.get(params.assoc)
-      if ( accessService.checkMinUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
-        uo.status = UserOrg.STATUS_APPROVED
-        uo.save();
+
+      if (instAdmService.hasInstAdmPivileges(result.user, Org.get(params.id))) {
+
+          if (params.cmd == 'approve') {
+              uo.status = UserOrg.STATUS_APPROVED
+              uo.dateActioned = System.currentTimeMillis()
+              uo.save(flush: true)
+          }
+          else if (params.cmd == 'reject') {
+              uo.status = UserOrg.STATUS_REJECTED
+              uo.dateActioned = System.currentTimeMillis()
+              uo.save(flush: true)
+          }
+          else if (params.cmd == 'delete') {
+              uo.delete(flush: true)
+          }
       }
       redirect action: 'users', id: params.id
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-    def deleteRole() {
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        UserOrg uo = UserOrg.get(params.assoc)
-        if ( accessService.checkMinUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
-            uo.delete(flush:true);
-        }
-        redirect action: 'users', id: params.id
     }
 
     @Secured(['ROLE_USER'])

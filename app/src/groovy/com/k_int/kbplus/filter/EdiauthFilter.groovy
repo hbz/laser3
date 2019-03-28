@@ -68,7 +68,6 @@ public class EdiauthFilter extends org.springframework.security.web.authenticati
                                      accountExpired:false,
                                      accountLocked:false,
                                      passwordExpired:false,
-                                     instname:null,
                                      shibbScope:null,
                                      email:request.getAttribute('email'))
 

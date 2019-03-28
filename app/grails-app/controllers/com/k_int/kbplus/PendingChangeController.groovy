@@ -41,7 +41,7 @@ class PendingChangeController extends AbstractDebugController {
         pendingChanges = pendingChanges.collect { it.id }
         executorWrapperService.processClosure({
             pendingChanges.each { pc ->
-                pendingChangeService.performAccept(pc, request.user)
+                pendingChangeService.performAccept(pc, user)
             }
         }, owner)
 

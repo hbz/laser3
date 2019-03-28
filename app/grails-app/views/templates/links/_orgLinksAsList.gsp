@@ -22,7 +22,7 @@
                                             params="${[owner:"${roleObject.class.name}:${roleObject.id}", sharedObject:"${role.class.name}:${role.id}"]}"
                                             data-position="top right" data-tooltip="${message(code:'property.share.tooltip.on')}"
                                     >
-                                        <i class="share-unslash icon"></i>
+                                        <i class="la-share icon"></i>
                                     </g:link>
                                 </div>
                             </g:if>
@@ -32,7 +32,7 @@
                                             controller="ajax" action="toggleShare"
                                             params="${[owner:"${roleObject.class.name}:${roleObject.id}", sharedObject:"${role.class.name}:${role.id}"]}"
                                     >
-                                        <i class="share-slash icon"></i>
+                                        <i class="la-share slash icon"></i>
                                     </g:link>
                                 </div>
                             </g:else>

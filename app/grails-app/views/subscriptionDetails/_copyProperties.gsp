@@ -11,7 +11,7 @@
     <hr>
     <g:form action="copyElementsIntoSubscription" controller="subscriptionDetails" id="${params.id ?: params.sourceSubscriptionId}"
             params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscriptionId]" method="post" class="ui form newLicence">
-        <table class="ui celled table">
+        <table class="ui celled table" style="table-layout: fixed; width: 100%">
             <tbody>
                 <tr>
                     <td>Quelle:
@@ -22,7 +22,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>
+                    <td style="vertical-align: top">
                         <g:if test="${sourceSubscription}">
                             ${message(code: 'subscription.takeCustomProperties')}
                             <g:render template="/templates/properties/selectableProperties" model="${[
@@ -36,7 +36,7 @@
                                     tenant: contextOrg]}"/>
                         </g:if>
                     </td>
-                    <td>
+                    <td style="vertical-align: top">
                         <g:if test="${targetSubscription}">
                             ${message(code: 'subscription.takeCustomProperties')}
                             <g:render template="/templates/properties/selectableProperties" model="${[
@@ -52,7 +52,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>
+                    <td style="vertical-align: top">
                         <g:if test="${sourceSubscription}">
                             ${message(code: 'subscription.takePrivateProperties')}
                             <g:render template="/templates/properties/selectableProperties" model="${[
@@ -66,7 +66,7 @@
                                 tenant: contextOrg]}"/>
                         </g:if>
                     </td>
-                    <td>
+                    <td style="vertical-align: top">
                         <g:if test="${targetSubscription}">
                             ${message(code: 'subscription.takePrivateProperties')}
                             <g:render template="/templates/properties/selectableProperties" model="${[
@@ -83,6 +83,15 @@
                 </tr>
             </tbody>
         </table>
-        <input type="submit" class="ui button js-click-control" value="Ausgewählte Eigenschaften kopieren/überschreiben" />
+        <input type="submit" class="ui button js-click-control" value="Ausgewählte Merkmale in Ziellizenz kopieren" />
     </g:form>
 </semui:form>
+<style>
+/*table  {*/
+    /*table-layout: fixed;*/
+    /*width: 100%;*/
+/*}*/
+/*table td {*/
+    /*vertical-align: top;*/
+/*}*/
+</style>

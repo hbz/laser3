@@ -139,7 +139,7 @@ public class GokbDiffEngine {
 
             def title_of_tipp_to_update = TitleInstance.findByGokbId(newTipp.title.gokbId)
             if (!title_of_tipp_to_update) {
-                title_of_tipp_to_update = TitleInstance.lookupOrCreate(newTipp.title.identifiers, newTipp.title.name, newTipp.title.type, newTipp.title.gokbId)
+                title_of_tipp_to_update = TitleInstance.lookupOrCreate(newTipp.title.identifiers, newTipp.title.name, newTipp.title.titleType, newTipp.title.gokbId)
             }
 
             if (Holders.config.globalDataSync.replaceLocalImpIds.TitleInstance && title_of_tipp_to_update && newTipp.title.gokbId &&
