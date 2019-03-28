@@ -282,6 +282,7 @@
 
                             <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN,ROLE_GLOBAL_DATA">
                                 <g:link class="item" controller="globalDataSync" action="index" >${message(code:'menu.datamanager.global_data_sync')}</g:link>
+                                <g:link class="item" controller="dataManager" action="checkPackageTIPPs">Tipps Check of GOKB and LAS:eR</g:link>
                             </sec:ifAnyGranted>
 
                             <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN">
@@ -345,7 +346,6 @@
                             <% /* g:link class="item" controller="admin" action="forumSync">Run Forum Sync</g:link */ %>
                             <% /* g:link class="item" controller="admin" action="juspSync">Run JUSP Sync</g:link */ %>
                             <g:link class="item" controller="admin" action="forceSendNotifications">Send Pending Notifications</g:link>
-                            <g:link class="item" controller="admin" action="checkPackageTIPPs">Tipps Check of GOKB and LAS:eR</g:link>
 
                             <div class="ui dropdown item">
                                 Data Management
