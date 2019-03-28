@@ -370,7 +370,7 @@
 
                 <%-- FINANCE, to be reactivated as of ERMS-943 --%>
                 <%-- assemble data on server side --%>
-                <div class="ui card la-dl-no-table la-js-hideable">
+                <div class="ui card la-dl-no-table">
                     <div class="content">
                         <g:if test="${costItemSums.ownCosts && contextOrg.id != subscription.getConsortia()?.id}">
                             <h5 class="ui header">${message(code:'financials.label', default:'Financials')} : ${message(code:'financials.tab.ownCosts')}</h5>
@@ -387,7 +387,7 @@
                     </div>
                 </div>
                 <g:if test="${usage}">
-                    <div class="ui card la-dl-no-table la-js-hideable hidden">
+                    <div class="ui card la-dl-no-table hidden">
                         <div class="content">
                             <g:if test="${subscriptionInstance.costItems}">
                                 <dl>
