@@ -62,7 +62,7 @@ class SubscriptionUpdateService {
             log.debug("Writing events")
             intendedSubsIds2.each { id ->
                 new EventLog(
-                        event: 'SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + EXPIRED,
+                        event: 'SubscriptionUpdateService UPDATE subscriptions WHERE ID ' + id + ' Status: ' + RDStore.SUBSCRIPTION_EXPIRED,
                         message: 'SQL Update',
                         tstp: currentDate
                 ).save()

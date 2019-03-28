@@ -30,13 +30,13 @@
         <table class="ui celled la-table table">
             <thead>
             <tr>
-                <th>Account</th>
-                <th>${message(code:'user.label')}</th>
+                <th>${message(code:'user.username.label')}</th>
+                <th>${message(code:'user.displayName.label')}</th>
                 <th>${message(code:'user.email')}</th>
                 <th>${message(code:'profile.membership.role')}</th>
                 <th>${message(code: "profile.membership.date2")}</th>
                 <th>${message(code:'user.status')}</th>
-                <th>${message(code:'user.actions')}</th>
+                <th></th>
             </tr>
             </thead>
 
@@ -81,16 +81,20 @@
 
     </g:if>
 
+    <sec:ifNotGranted roles="ROLE_ADMIN">
+        <div class="ui info message">${message(code:'user.edit.info')}</div>
+    </sec:ifNotGranted>
+
     <table class="ui celled la-table table">
         <thead>
         <tr>
-            <th>Account</th>
-            <th>${message(code:'user.label')}</th>
+            <th>${message(code:'user.username.label')}</th>
+            <th>${message(code:'user.displayName.label')}</th>
             <th>${message(code:'user.email')}</th>
             <th>${message(code:'profile.membership.role')}</th>
             <%--<th>${message(code:'user.sys_role', default:'System Role')}</th>--%>
             <g:if test="${editable}">
-                <th>${message(code:'user.actions')}</th>
+                <th></th>
             </g:if>
         </tr>
         </thead>
@@ -101,7 +105,7 @@
                     ${uo.user.username}
 
                     <g:if test="${! uo.user.enabled}">
-                        <span data-position="top left" data-tooltip="Dieser Zugang ist derzeit deaktiviert.">
+                        <span data-position="top left" data-tooltip="${message(code:'user.disabled.text')}">
                             <i class="icon minus circle red"></i>
                         </span>
                     </g:if>

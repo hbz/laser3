@@ -190,8 +190,18 @@
                                 <td><g:if test="${editable}"><input type="checkbox" name="_bulkflag.${ie.id}" class="bulkcheck"/></g:if></td>
                                 <td>${counter++}</td>
                                 <td>
-                                    <semui:listIcon type="${ie.tipp?.title.type}"/>
-                                    <g:link controller="issueEntitlement" id="${ie.id}" action="show"><strong>${ie.tipp.title.title}</strong></g:link><br>
+                                    <semui:listIcon type="${ie.tipp?.title?.type?.value}"/>
+                                    <g:link controller="issueEntitlement" id="${ie.id}" action="show"><strong>${ie.tipp.title.title}</strong></g:link>
+
+                                    <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && tipp?.title?.volume}">
+                                        (${message(code: 'title.volume.label')} ${tipp?.title?.volume})
+                                    </g:if>
+
+                                    <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && (tipp?.title?.firstAuthor || tipp?.title?.firstEditor)}">
+                                        <br><b>${tipp?.title?.firstAuthor}; ${tipp?.title?.firstEditor}${message(code: 'title.firstAuthor.firstEditor.label')}</b>
+                                    </g:if>
+
+                                    <br>
 
                                     <g:each in="${ie?.tipp?.title?.ids.sort{it.identifier.ns.ns}}" var="title_id">
                                         <g:if test="${title_id.identifier.ns.ns.toLowerCase() != 'originediturl'}">
@@ -205,7 +215,15 @@
                   eISSN:<strong>${ie?.tipp?.title?.getIdentifierValue('eISSN') ?: ' - '}</strong><br/>-->
                                     <div class="ui list">
                                         <div class="item"><b>${message(code:'default.access.label', default:'Access')}:</b> ${ie.availabilityStatus?.getI10n('value')}</div>
+                                        <div class="item"><b>${message(code:'title.type.label')}:</b> ${ie?.tipp?.title?.type?.getI10n('value')}</div>
                                         <div class="item"><b>${message(code:'tipp.coverageNote', default:'Coverage Note')}:</b> ${ie.coverageNote?:(ie.tipp?.coverageNote ?: '')}</div>
+
+                                       <div class="item"><b>${message(code:'tipp.package', default:'Package')}:</b>
+                                            <div class="la-flexbox">
+                                                <i class="icon gift scale la-list-icon"></i>
+                                                <g:link controller="package" action="show" id="${ie?.tipp?.pkg?.id}">${ie?.tipp?.pkg?.name}</g:link>
+                                            </div>
+                                        </div>
                                         <div class="item"><b>${message(code:'tipp.platform', default:'Platform')}:</b>
                                             <g:if test="${ie.tipp?.platform.name}">
                                                 ${ie.tipp?.platform.name}
@@ -226,6 +244,10 @@
                                                 ${message(code:'default.on', default:'on')} <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessEndDate}"/>
                                             </g:if>
                                         </div>
+                                    <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
+                                        <div class="item"><b>${message(code: 'title.editionStatement.label')}:</b> ${tipp?.title?.editionStatement}
+                                        </div>
+                                    </g:if>
                                     </div>
                                 </td>
 

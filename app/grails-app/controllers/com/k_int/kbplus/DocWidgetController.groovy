@@ -2,11 +2,7 @@ package com.k_int.kbplus
 
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
-import grails.converters.*
 import grails.plugin.springsecurity.annotation.Secured
-import grails.converters.*
-import org.elasticsearch.groovy.common.xcontent.*
-import groovy.xml.MarkupBuilder
 import com.k_int.kbplus.auth.*;
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -15,6 +11,7 @@ class DocWidgetController extends AbstractDebugController {
   def springSecurityService
   def genericOIDService
   def docstoreService
+  def contextService
 
   @Secured(['ROLE_USER'])
   def createNote() { 
@@ -82,11 +79,10 @@ class DocWidgetController extends AbstractDebugController {
           Doc doc_content = new Doc(contentType:Doc.CONTENT_TYPE_BLOB,
                                     filename: original_filename,
                                     mimeType: request.getFile("upload_file")?.contentType,
-                                    title: params.upload_title,
+                                    title: params.upload_title ?: original_filename,
                                     type:RefdataCategory.lookupOrCreate('Document Type',params.doctype),
-                                    creator: user)
-          if(instance instanceof Org)
-            doc_content.owner = instance
+                                    creator: user,
+                                    owner: contextService.getOrg())
           // erms-790
           //doc_content.setBlobData(input_stream, input_file.size)
           doc_content.save()
@@ -112,10 +108,7 @@ class DocWidgetController extends AbstractDebugController {
                   owner:               doc_content,
                   doctype:             RefdataCategory.lookupOrCreate('Document Type',params.doctype)
           )
-          if(instance instanceof Org) {
-            doc_context.shareConf = genericOIDService.resolveOID(params.shareConf)
-            doc_context.targetOrg = params.targetOrg ? Org.get(Long.parseLong(params.targetOrg)) : null
-          }
+          doc_context.shareConf = genericOIDService.resolveOID(params.shareConf)
           doc_context.save(flush:true)
 
           log.debug("Doc created and new doc context set on ${params.ownertp} for ${params.ownerid}");
@@ -146,16 +139,12 @@ class DocWidgetController extends AbstractDebugController {
         log.debug("Got owner instance ${instance}");
         DocContext doc_context = DocContext.get(params.docctx)
         Doc doc_content = doc_context.owner
-        doc_content.title = params.upload_title
+        doc_content.title = params.upload_title ?: doc_content.filename
         doc_content.type = RefdataValue.getByValueAndCategory(params.doctype,'Document Type')
-        if(instance instanceof Org)
-          doc_content.owner = instance
+        doc_content.owner = contextService.org
         doc_content.save()
         doc_context.doctype = RefdataValue.getByValueAndCategory(params.doctype,'Document Type')
-        if(instance instanceof Org) {
-          doc_context.shareConf = genericOIDService.resolveOID(params.shareConf)
-          doc_context.targetOrg = params.targetOrg ? Org.get(Long.parseLong(params.targetOrg)) : null
-        }
+        doc_context.shareConf = genericOIDService.resolveOID(params.shareConf)
         doc_context.save(flush:true)
         log.debug("Doc updated and new doc context updated on ${params.ownertp} for ${params.ownerid}");
       }

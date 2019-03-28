@@ -206,7 +206,7 @@ class User implements Permissions {
     }
 
     def hasRole(String roleName) {
-        println SpringSecurityUtils.ifAnyGranted(roleName)
+        //println SpringSecurityUtils.ifAnyGranted(roleName)
         SpringSecurityUtils.ifAnyGranted(roleName)
     }
 

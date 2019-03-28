@@ -1,4 +1,5 @@
 <%@ page import="com.k_int.kbplus.*;com.k_int.kbplus.auth.Role" %>
+<laser:serviceInjection />
 <!doctype html>
 <html>
     <head>
@@ -17,41 +18,20 @@
             <g:form class="ui form" action="create" method="post">
                 <fieldset>
                     <div class="field required">
-                        <label>Username</label>
+                        <label>${message(code:'user.username.label')}</label>
                         <input type="text" name="username" value="${params.username}"/>
                     </div>
                     <div class="field required">
-                        <label>Dispay Name</label>
+                        <label>${message(code:'user.displayName.label')}</label>
                         <input type="text" name="display" value="${params.display}"/>
                     </div>
                     <div class="field required">
-                        <label>Password</label>
+                        <label>${message(code:'user.password.label')}</label>
                         <input type="text" name="password" value="${params.password}"/>
                     </div>
                     <div class="field required">
-                        <label>E-Mail</label>
+                        <label>${message(code:'user.email')}</label>
                         <input type="text" name="email" value="${params.email}"/>
-                    </div>
-
-                    <div class="two fields">
-                        <div class="field">
-                            <label>Organisation</label>
-                            <g:select name="org"
-                                      from="${availableOrgs}"
-                                      optionKey="id"
-                                      optionValue="name"
-                                      value="${params.org}"
-                                      class="ui fluid search dropdown"/>
-                        </div>
-                        <div class="field">
-                            <label>Role</label>
-                            <g:select name="formalRole"
-                                      from="${availableOrgRoles}"
-                                      optionKey="id"
-                                      optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
-                                      value="${Role.findByAuthority('INST_USER').id}"
-                                      class="ui fluid dropdown"/>
-                        </div>
                     </div>
 
                     <g:if test="${availableComboOrgs}">
@@ -61,12 +41,12 @@
                                 <g:select name="comboOrg"
                                           from="${availableComboOrgs}"
                                           optionKey="id"
-                                          optionValue="name"
-                                          value="${params.org}"
+                                          optionValue="${{(it.sortname ?: '')  + ' (' + it.name + ')'}}"
+                                          value="${params.org ?: contextService.getOrg().id}"
                                           class="ui fluid search dropdown"/>
                             </div>
                             <div class="field">
-                                <label>Role</label>
+                                <label>${message(code:'user.role')}</label>
                                 <g:select name="comboFormalRole"
                                           from="${availableOrgRoles}"
                                           optionKey="id"
@@ -76,9 +56,32 @@
                             </div>
                         </div>
                     </g:if>
+                    <g:else>
+                        <div class="two fields">
+                            <div class="field">
+                                <label>${message(code:'user.org')}</label>
+                                <g:select name="org"
+                                          from="${availableOrgs}"
+                                          optionKey="id"
+                                          optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
+                                          value="${params.org ?: contextService.getOrg().id}"
+                                          class="ui fluid search dropdown"/>
+                            </div>
+                            <div class="field">
+                                <label>${message(code:'user.role')}</label>
+                                <g:select name="formalRole"
+                                          from="${availableOrgRoles}"
+                                          optionKey="id"
+                                          optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
+                                          value="${Role.findByAuthority('INST_USER').id}"
+                                          class="ui fluid dropdown"/>
+                            </div>
+                        </div>
+
+                    </g:else>
 
                     <div class="field">
-                        <input type="submit" value="Anlegen" class="ui button"/>
+                        <input type="submit" value="${message(code:'user.create_new.label')}" class="ui button"/>
                     </div>
 
                 </fieldset>

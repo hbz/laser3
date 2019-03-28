@@ -72,10 +72,12 @@ class SubscriptionDetailsController extends AbstractDebugController {
     def subscriptionsQueryService
     def subscriptionService
     def comparisonService
+    def orgDocumentService
 
     public static final String COPY = "COPY"
     public static final String REPLACE = "REPLACE"
     public static final String DO_NOTHING = "DO_NOTHING"
+
 
     private static String INVOICES_FOR_SUB_HQL =
             'select co.invoice, sum(co.costInLocalCurrency), sum(co.costInBillingCurrency), co from CostItem as co where co.sub = :sub group by co.invoice order by min(co.invoice.startDate) desc';
@@ -725,20 +727,20 @@ class SubscriptionDetailsController extends AbstractDebugController {
                         //make checks ...
                         //is title in LAS:eR?
                         //List tiObj = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp join tipp.title ti join ti.ids identifiers where identifiers.identifier.value in :idCandidates',[idCandidates:idCandidates])
-                        log.debug(idCandidates)
+                        //log.debug(idCandidates)
                         def tiObj = TitleInstance.findByIdentifier(idCandidates)
                         if(tiObj) {
                             //is title already added?
                             List issueEntitlement = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp in :tipp and ie.subscription = :sub',[tipp:tiObj,sub:result.subscriptionInstance])
                             if(issueEntitlement) {
-                                errorList.add(g.message([code:'subscription.details.addEntitlements.titleAlreadyAdded',args:[cols[0]]]))
+                                errorList.add("${cols[0]}&#9;${cols[zdbCol] ?: " "}&#9;${cols[onlineIdentifierCol] ?: " "}&#9;${cols[printIdentifierCol] ?: " "}&#9;${message(code:'subscription.details.addEntitlements.titleAlreadyAdded')}")
                             }
                             /*else if(!issueEntitlement) {
                                 errors += g.message([code:'subscription.details.addEntitlements.titleNotMatched',args:cols[0]])
                             }*/
                         }
                         else if(!tiObj) {
-                            errorList.add(g.message([code:'subscription.details.addEntitlements.titleNotInERMS',args:[cols[0]]]))
+                            errorList.add("${cols[0]}&#9;${cols[zdbCol] ?: " "}&#9;${cols[onlineIdentifierCol] ?: " "}&#9;${cols[printIdentifierCol] ?: " "}&#9;${message(code:'subscription.details.addEntitlements.titleNotInERMS')}")
                         }
                     }
                 }
@@ -789,7 +791,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
             result.tipps = []
         }
         if(errorList)
-            flash.error = errorList.join("<br>")
+            flash.error = "<pre style='font-family:Lato,Arial,Helvetica,sans-serif;'>"+errorList.join("\n")+"</pre>"
         result
     }
 

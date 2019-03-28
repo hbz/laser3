@@ -34,6 +34,7 @@ class LicenseDetailsController extends AbstractDebugController {
     def filterService
     def selectListQueryService
     def orgTypeService
+    def orgDocumentService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -769,7 +770,6 @@ from Subscription as s where
         if (!result) {
             response.sendError(401); return
         }
-
         result
     }
 
@@ -1057,6 +1057,7 @@ from Subscription as s where
     private LinkedHashMap setResultGenericsAndCheckAccess(checkOption) {
         def result             = [:]
         result.user            = User.get(springSecurityService.principal.id)
+        result.institution     = contextService.org
         result.license         = License.get(params.id)
         result.licenseInstance = License.get(params.id)
 

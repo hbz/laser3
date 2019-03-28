@@ -26,21 +26,31 @@ class ApiController extends AbstractDebugController {
     def index() {
         log.debug("API")
 
-        def result = [:]
+        Map result = [:]
+        User user
+        Org org
+
         if (springSecurityService.isLoggedIn()) {
-            def user = User.get(springSecurityService.principal.id)
-            result.apiId  = user?.apikey
-            result.apiKey = user?.apisecret
-            result.apiContext = contextService.getOrg()?.globalUID ?: ''
+            user = User.get(springSecurityService.principal.id)
+            org = contextService.getOrg()
         }
+
+        def apiKey = OrgSettings.get(org, OrgSettings.KEYS.API_KEY)
+        def apiPass = OrgSettings.get(org, OrgSettings.KEYS.API_PASSWORD)
 
         switch ( (params.version ?: 'v0').toLowerCase() ) {
             case '1':
             case 'v1':
+                result.apiKey  = user?.apikey
+                result.apiPassword = user?.apisecret
+                result.apiContext = org?.globalUID ?: ''
                 result.apiVersion = 'v1'
                 render view: 'v1', model: result
                 break
             default:
+                result.apiKey  = (apiKey != OrgSettings.SETTING_NOT_FOUND) ? apiKey.getValue() : ''
+                result.apiPassword = (apiPass != OrgSettings.SETTING_NOT_FOUND) ? apiPass.getValue() : ''
+                result.apiContext = org?.globalUID ?: ''
                 result.apiVersion = 'v0'
                 render view: 'v0', model: result
                 break
@@ -330,37 +340,26 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
         def context = params.get('context')
         def format
 
-
         Org contextOrg = null
-        User user = (User) request.getAttribute('authorizedApiUser')
 
-        if (user) {
+        Org apiOrg = (Org) request.getAttribute('authorizedApiOrg')
+
+        if (apiOrg) {
             // checking role permission
-            def dmRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API_DATAMANAGER'))
+            def apiLevel = OrgSettings.get(apiOrg, OrgSettings.KEYS.API_LEVEL)
 
-            if ("GET" == request.method) {
-                def readRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API_READER'))
-                hasAccess = ! (dmRole.isEmpty() && readRole.isEmpty())
-            }
-            else if ("POST" == request.method) {
-                def writeRole = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API_WRITER'))
-                hasAccess = ! (dmRole.isEmpty() && writeRole.isEmpty())
+            if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
+
+                if ("GET" == request.method) {
+                    hasAccess = (apiLevel.getValue() in [ApiManager.API_LEVEL_READ, ApiManager.API_LEVEL_DATAMANAGER])
+                }
+                else if ("POST" == request.method) {
+                    hasAccess = (apiLevel.getValue() in [ApiManager.API_LEVEL_WRITE, ApiManager.API_LEVEL_DATAMANAGER])
+                }
             }
 
             // getting context
-
-            if (context) {
-                user.authorizedAffiliations.each { uo -> //  com.k_int.kbplus.auth.UserOrg
-                    def org = Org.findWhere(id: uo.org.id, globalUID: params.get('context'))
-                    if (org) {
-                        contextOrg = org
-                    }
-                }
-            }
-            else if (user.authorizedAffiliations.size() == 1) {
-                def uo = user.authorizedAffiliations[0]
-                contextOrg = Org.findWhere(id: uo.org.id)
-            }
+            contextOrg = Org.findWhere(globalUID: params.get('context'))
         }
 
         if (!contextOrg || !hasAccess) {
@@ -395,7 +394,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                             break
                     }
 
-                    result = apiManager.read((String) obj, (String) query, (String) value, (User) user, (Org) contextOrg, format)
+                    result = apiManager.read((String) obj, (String) query, (String) value, (Org) contextOrg, format)
 
                     if (result instanceof Doc) {
                         response.contentType = result.mimeType
@@ -413,7 +412,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                 }
             }
             else if ('POST' == request.method) {
-                def postBody = request.getAttribute("authorizedApiUsersPostBody")
+                def postBody = request.getAttribute("authorizedApiPostBody")
                 def data = (postBody ? new JSON().parse(postBody) : null)
 
                 if (! data) {
@@ -550,7 +549,7 @@ where tipp.title = ? and orl.roleType.value=?''', [title, 'Content Provider']);
                 }
             }
             else if ('POST' == request.method) {
-                def postBody = request.getAttribute("authorizedApiUsersPostBody")
+                def postBody = request.getAttribute("authorizedApiPostBody")
                 def data = (postBody ? new JSON().parse(postBody) : null)
 
                 if (! data) {

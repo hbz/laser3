@@ -1,3 +1,6 @@
+0.14.6
+
+- fixed query for usage data
 
 0.14.5
 

@@ -9,7 +9,7 @@
     </g:if>
 
     <g:if test="${orgInstance.sector != com.k_int.kbplus.RefdataValue.getByValueAndCategory('Publisher', 'OrgSector')}">
-        <g:if test="${userService.hasInstAdmPivileges(contextService.getUser(), orgInstance)}">
+        <g:if test="${instAdmService.hasInstAdmPivileges(contextService.getUser(), orgInstance)}">
             <semui:subNavItem controller="organisations" action="users" params="${[id: params.id]}"
                             message="org.nav.users" affiliation="INST_USER" affiliationOrg="${orgInstance}"/>
         </g:if>
@@ -22,7 +22,8 @@
     <semui:securedSubNavItem controller="organisations" action="config" params="${[id: params.id]}"
                              message="org.nav.options" affiliation="INST_ADM" affiliationOrg="${orgInstance}" specRoleCheck="ROLE_ORG_EDITOR"/>
 
-    <semui:subNavItem controller="organisations" action="documents" params="${[id: params.id]}" message="default.documents.label" />
+    <semui:subNavItem controller="organisations" action="documents" params="${[id: params.id]}" message="menu.institutions.myDocuments" />
+
 
     <semui:subNavItem controller="organisations" action="addressbook" params="${[id: params.id]}"
                       message="menu.institutions.myAddressbook"/>

@@ -13,7 +13,7 @@ class UserController extends AbstractDebugController {
 
     def springSecurityService
     def genericOIDService
-    def userService
+    def instAdmService
     def contextService
     def accessService
 
@@ -82,6 +82,8 @@ class UserController extends AbstractDebugController {
     def edit() {
         def result = setResultGenerics()
 
+        result.editable = result.editable || instAdmService.isUserEditableForInstAdm(result.user, result.editor)
+
         if (! result.editable) {
             redirect action: 'list'
             return
@@ -137,6 +139,8 @@ class UserController extends AbstractDebugController {
     def newPassword() {
         def result = setResultGenerics()
 
+        result.editable = result.editable || instAdmService.isUserEditableForInstAdm(result.user, result.editor)
+
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions', default: 'KEINE BERECHTIGUNG')
             redirect controller: 'user', action: 'edit', id: params.id
@@ -148,7 +152,7 @@ class UserController extends AbstractDebugController {
             if (result.user.save(flush: true)) {
                 flash.message = message(code: 'user.newPassword.success', args: [newPassword])
 
-                userService.sendMail(result.user, 'Passwortänderung',
+                instAdmService.sendMail(result.user, 'Passwortänderung',
                         '/mailTemplates/text/newPassword', [user: result.user, newPass: newPassword])
 
                 redirect controller: 'user', action: 'edit', id: params.id
@@ -167,6 +171,9 @@ class UserController extends AbstractDebugController {
     })
     def addAffiliation(){
         def result = setResultGenerics()
+
+        result.editable = result.editable || instAdmService.isUserEditableForInstAdm(result.user, result.editor)
+
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions', default: 'KEINE BERECHTIGUNG')
             redirect controller: 'user', action: 'edit', id: params.id
@@ -177,7 +184,7 @@ class UserController extends AbstractDebugController {
         Role formalRole = Role.get(params.formalRole)
 
         if (result.user && org && formalRole) {
-            userService.createAffiliation(result.user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
+            instAdmService.createAffiliation(result.user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
         }
 
         redirect controller: 'user', action: 'edit', id: params.id
@@ -201,6 +208,7 @@ class UserController extends AbstractDebugController {
             result.availableComboOrgs = Combo.executeQuery(
                     'select c.fromOrg from Combo c where c.toOrg = :ctxOrg order by c.fromOrg.name', [ctxOrg: contextService.getOrg()]
             )
+            result.availableComboOrgs.push(contextService.getOrg())
 
             result.availableOrgRoles = Role.findAllByRoleType('user')
         }
@@ -232,14 +240,14 @@ class UserController extends AbstractDebugController {
                     Org org = Org.get(params.org)
                     Role formalRole = Role.get(params.formalRole)
                     if (org && formalRole) {
-                        userService.createAffiliation(user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
+                        instAdmService.createAffiliation(user, org, formalRole, UserOrg.STATUS_APPROVED, flash)
                     }
                 }
                 if (params.comboOrg && params.comboFormalRole) {
                     Org org2 = Org.get(params.comboOrg)
                     Role formalRole2 = Role.get(params.comboFormalRole)
                     if (org2 && formalRole2) {
-                        userService.createAffiliation(user, org2, formalRole2, UserOrg.STATUS_APPROVED, flash)
+                        instAdmService.createAffiliation(user, org2, formalRole2, UserOrg.STATUS_APPROVED, flash)
                     }
                 }
 

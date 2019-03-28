@@ -307,10 +307,10 @@
           type: array
           items:
             $ref: "#/definitions/Contact"
-        fteStudents:
-          type: integer
-        fteStaff:
-          type: integer
+        #fteStudents:
+        #  type: integer
+        #fteStaff:
+        #  type: integer
         impId:
           type: string
           example: "9ef8a0d4-a87c-4b39-71b9-c29b269f311b"

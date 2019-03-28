@@ -128,6 +128,18 @@ class Platform extends AbstractBaseDomain {
       platform.save(flush:true)
     }
 
+    if(platform && params.primaryUrl && platform.primaryUrl != params.primaryUrl)
+    {
+      platform.primaryUrl = params.primaryUrl
+      platform.save(flush:true)
+    }
+
+    if(platform && params.name && platform.name != params.name)
+    {
+      platform.name = params.name
+      platform.save(flush:true)
+    }
+
     platform;
   }
   

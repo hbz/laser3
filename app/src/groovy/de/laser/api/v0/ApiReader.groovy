@@ -56,7 +56,7 @@ class ApiReader {
 
         result.reference           = costItem.reference
         result.startDate           = costItem.startDate
-        result.taxRate             = costItem.taxRate
+        result.taxRate             = costItem.taxKey?.taxRate ?: costItem.taxRate
 
         // erms-888
         result.calculatedType      = costItem.getCalculatedType()
@@ -67,7 +67,7 @@ class ApiReader {
         result.costItemCategory    = costItem.costItemCategory?.value
         result.billingCurrency     = costItem.billingCurrency?.value
         result.costItemElement     = costItem.costItemElement?.value
-        result.taxCode             = costItem.taxCode?.value
+        result.taxCode             = costItem.taxKey?.taxType?.value ?: costItem.taxCode?.value
         result.costItemElementConfiguration = costItem.costItemElementConfiguration?.value
 
         // References
@@ -210,8 +210,8 @@ class ApiReader {
         result.comment      = org.comment
         result.name         = org.name
         result.scope        = org.scope
-        result.fteStudents  = org.fteStudents
-        result.fteStaff     = org.fteStaff
+        //result.fteStudents  = org.fteStudents // TODO dc/table numbers
+        //result.fteStaff     = org.fteStaff // TODO dc/table numbers
 
         // RefdataValues
 
@@ -425,8 +425,12 @@ class ApiReader {
 
     // ################### HELPER ###################
 
-    static isDataManager(User user) {
-        def role = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API_DATAMANAGER'))
-        return ! role.isEmpty()
+    static isDataManager(Org org) {
+        def apiLevel = OrgSettings.get(org, OrgSettings.KEYS.API_LEVEL)
+
+        if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
+            return ApiManager.API_LEVEL_DATAMANAGER == apiLevel.getValue()
+        }
+        return false
     }
 }

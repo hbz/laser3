@@ -1,5 +1,7 @@
 package com.k_int.kbplus.filter
 
+import com.k_int.kbplus.Org
+import com.k_int.kbplus.OrgSettings
 import de.laser.helper.Constants
 import grails.converters.JSON
 import grails.transaction.Transactional
@@ -61,8 +63,17 @@ class ApiFilter extends GenericFilterBean {
 
                             // checking digest
 
-                            def apiUser = User.findByApikey(key)
-                            def apiSecret = apiUser.apisecret
+                            def apiUser = User.findByApikey(key) // tmp fallback v1
+                            def apiSecret = apiUser?.apisecret   // tmp fallback v1
+
+                            Org apiOrg = OrgSettings.executeQuery(
+                                    'SELECT os.org FROM OrgSettings os WHERE os.key = :key AND os.strValue = :value',
+                                    [key: OrgSettings.KEYS.API_KEY, value: key]
+                            )?.get(0)
+
+                            if (apiOrg) {
+                                apiSecret = OrgSettings.get(apiOrg, OrgSettings.KEYS.API_PASSWORD)?.getValue()
+                            }
 
                             checksum = hmac(
                                         method +    // http-method
@@ -75,8 +86,10 @@ class ApiFilter extends GenericFilterBean {
 
                             isAuthorized = (checksum == digest)
                             if (isAuthorized) {
-                                request.setAttribute('authorizedApiUser', apiUser)
-                                request.setAttribute('authorizedApiUsersPostBody', body)
+                                request.setAttribute('authorizedApiUser', apiUser) // tmp fallback v1
+
+                                request.setAttribute('authorizedApiOrg', apiOrg)
+                                request.setAttribute('authorizedApiPostBody', body)
                             }
                         }
                     }

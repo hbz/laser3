@@ -9,5 +9,3 @@
 -- 2019-03-05
 -- execute before startup / local dev environment only
 -- ALTER TABLE public.property_definition DROP COLUMN pd_soft_data;
-
--- ALTER TABLE public.property_definition DROP COLUMN pd_soft_data;

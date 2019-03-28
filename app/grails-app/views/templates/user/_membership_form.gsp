@@ -9,7 +9,7 @@
                 <g:select name="org"
                           from="${availableOrgs}"
                           optionKey="id"
-                          optionValue="name"
+                          optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
                           class="ui fluid search dropdown"/>
             </div>
 
@@ -40,7 +40,7 @@
                 <g:select name="org"
                           from="${availableOrgs}"
                           optionKey="id"
-                          optionValue="name"
+                          optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
                           class="ui fluid search dropdown"/>
             </div>
 

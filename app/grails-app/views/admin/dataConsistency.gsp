@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} - ${message(code: "menu.admin.dataConsistency")}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code: "menu.admin.dataConsistency")}</title>
 </head>
 
 <body>

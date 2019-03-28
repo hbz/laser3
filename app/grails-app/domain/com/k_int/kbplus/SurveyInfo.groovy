@@ -7,37 +7,47 @@ class SurveyInfo {
     String name
     Date startDate
     Date endDate
+    String comment
 
     Org owner
 
     @RefdataAnnotation(cat = 'Survey Type')
     RefdataValue type
 
+    @RefdataAnnotation(cat = 'Survey Status')
+    RefdataValue status
+
     Date dateCreated
     Date lastUpdated
 
+    List surveyConfigs
+
     static hasMany = [
-            surveyConfig: SurveyConfig
+            surveyConfigs: SurveyConfig
     ]
 
     static constraints = {
         endDate (nullable:true, blank:false)
-        surveyConfig (nullable:true, blank:false)
+        surveyConfigs (nullable:true, blank:false)
+        comment (nullable:true, blank:true)
 
     }
 
     static mapping = {
-        id column: 'surIn_id'
-        version column: 'surIn_version'
+        id column: 'surin_id'
+        version column: 'surin_version'
 
-        name column: 'surIn_name'
-        startDate column: 'surIn_startDate'
-        endDate column: 'surIn_endDate'
-        dateCreated column: 'surIn_dateCreated'
-        lastUpdated column: 'surIn_lastUpdated'
+        name column: 'surin_name'
+        startDate column: 'surin_start_date'
+        endDate column: 'surin_end_date'
+        comment column: 'surin_comment', type: 'text'
 
-        owner column: 'surIn_owner_org_fk'
-        type column: 'surIn_type_rv_fk '
+        dateCreated column: 'surin_date_created'
+        lastUpdated column: 'surin_last_updated'
+
+        owner column: 'surin_owner_org_fk'
+        type column: 'surin_type_rv_fk '
+
 
 
     }

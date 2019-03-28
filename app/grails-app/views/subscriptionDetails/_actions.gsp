@@ -96,7 +96,7 @@
 
     </semui:actionsDropdown>
 
-    <%--<g:render template="/templates/documents/modal" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>--%>
+    <g:render template="/templates/documents/modal" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
     <g:render template="/templates/notes/modal_create" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
 
     <%--<g:render template="/templates/audit/modal_script" model="${[ownobj: subscriptionInstance]}" />--%>
@@ -105,57 +105,3 @@
 <g:if test="${editable || accessService.checkMinUserOrgRole(user, contextOrg, 'INST_EDITOR')}">
     <g:render template="/templates/tasks/modal_create" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
 </g:if>
-
-<r:script>
-    var isClicked = false;
-    $('[href="#modalCreateDocument"]').on('click', function(e) {
-        e.preventDefault();
-
-        if(!isClicked) {
-            isClicked = true;
-            $.ajax({
-                url: "<g:createLink controller="${controllerName}" action="editDocument" params="[instanceId:subscriptionInstance.id]"/>"
-            }).done( function(data) {
-                $('.ui.dimmer.modals > #modalCreateDocument').remove();
-                $('#dynamicModalContainer').empty().html(data);
-
-                $('#dynamicModalContainer .ui.modal').modal({
-                    onVisible: function () {
-                        r2d2.initDynamicSemuiStuff('#modalCreateDocument');
-                        r2d2.initDynamicXEditableStuff('#modalCreateDocument');
-                        toggleTarget();
-                        showHideTargetableRefdata();
-                    },
-                    detachable: true,
-                    closable: false,
-                    transition: 'scale',
-                    onApprove : function() {
-                        $(this).find('.ui.form').submit();
-                        return false;
-                    }
-                }).modal('show');
-            });
-            setTimeout(function(){
-                isClicked = false;
-            },800);
-        }
-
-    });
-
-    function showHideTargetableRefdata() {
-        console.log($("[name='targetOrg']").val());
-        if($("[name='targetOrg']").val().length === 0) {
-            $("[data-value='com.k_int.kbplus.RefdataValue:${RDStore.SHARE_CONF_UPLOADER_AND_TARGET.id}']").hide();
-        }
-        else {
-            $("[data-value='com.k_int.kbplus.RefdataValue:${RDStore.SHARE_CONF_UPLOADER_AND_TARGET.id}']").show();
-        }
-    }
-
-    function toggleTarget() {
-        if($("#hasTarget")[0].checked)
-            $("#target").show();
-        else
-            $("#target").hide();
-    }
-</r:script>

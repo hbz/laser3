@@ -10,7 +10,6 @@ import de.laser.helper.DateUtil
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import org.apache.poi.hssf.model.*
 import org.apache.poi.hssf.usermodel.*
 import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
@@ -1110,25 +1109,14 @@ from License as l where (
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     Map documents() {
-        User user = User.get(springSecurityService.principal.id)
-        Org org = contextService.org
-        Map ret = orgDocumentService.getDocuments(user,org,params)
-        Map result = [user:user,org:ret.org,availableUsers:ret.availableUsers,editable:accessService.checkMinUserOrgRole(user,ret.org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')]
-        result
-    }
-
-    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
-    def editDocument() {
         Map result = setResultGenerics()
-        result.ownobj = result.institution
-        result.owntp = 'organisation'
-        if(params.id) {
-            result.docctx = DocContext.get(params.id)
-            result.doc = result.docctx.owner
-        }
-
-        render template: "/templates/documents/modal", model: result
+        Set documents = orgDocumentService.getAllDocuments(result.institution,params)
+        result.max = params.max ? Integer.parseInt(params.max) : (int) result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        result.documents = documents.drop(result.offset).take(result.max)
+        result.totalSize = documents.size()
+        result.availableUsers = orgDocumentService.getAvailableUploaders(result.user)
+        result
     }
 
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
@@ -3699,6 +3687,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result.user         = User.get(springSecurityService.principal.id)
         //result.institution  = Org.findByShortcode(params.shortcode)
         result.institution  = contextService.getOrg()
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA')
         result
     }
 

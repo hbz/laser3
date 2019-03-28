@@ -157,7 +157,7 @@
               <tr>
                   <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
                 <td>
-                    <semui:listIcon type="${ti.type.('value')}"/>
+                    <semui:listIcon type="${ti?.type?.value}"/>
                     <g:link controller="title" action="show" id="${ti.id}"><strong>${ti.title}</strong></g:link>
                     <%--<br/>
                     <g:link controller="public" action="journalLicenses" params="${['journal':'kb:'+ti.id,'org':institution.id]}">${message(code:'myinst.currentTitles.check_license_terms', default:'Check current license terms')}</g:link>
