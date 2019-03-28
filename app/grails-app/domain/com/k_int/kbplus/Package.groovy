@@ -410,7 +410,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                      title: [
                        name:tip.title.title,
                        impId:tip.title.impId,
-                       identifiers:[]
+                       identifiers:[],
+                       titleType: tip.title.class.name ?: null
                      ],
                      titleId:title_id,
                      titleUuid:tip.title.gokbId,
@@ -420,17 +421,17 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                      platformId:tip.platform.id,
                      platformUuid:tip.platform.gokbId,
                      coverage:[],
-                     url:tip.hostPlatformURL,
+                     url:tip.hostPlatformURL ?: '',
                      identifiers:[],
                      status: tip.status,
-                     accessStart: tip.accessStartDate,
-                     accessEnd: tip.accessEndDate
+                     accessStart: tip.accessStartDate ?: '',
+                     accessEnd: tip.accessEndDate ?: ''
                    ];
 
       // Need to format these dates using correct mask
       newtip.coverage.add([
-                        startDate:tip.startDate ? sdf.format(tip.startDate) : '',
-                        endDate:tip.endDate ? sdf.format(tip.endDate) : '',
+                        startDate:tip.startDate ?: '',
+                        endDate:tip.endDate ?: '',
                         startVolume:tip.startVolume ?: '',
                         endVolume:tip.endVolume ?: '',
                         startIssue:tip.startIssue ?: '',
