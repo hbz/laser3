@@ -443,6 +443,10 @@ class GlobalSourceSyncService {
       else {
         log.debug("Register new tipp event for user to accept or reject");
 
+        def locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+        def sdf2 = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime', null, 'yyyy-MM-dd', locale));
+        def datetoday = sdf2.format(new Date(System.currentTimeMillis()))
+
         def cov = tipp.coverage[0]
         def change_doc = [
                 pkg          : [id: ctx.id],
@@ -462,13 +466,14 @@ class GlobalSourceSyncService {
                 coverageNote : cov.coverageNote,
                 accessStartDate  : tipp.accessStart,
                 accessEndDate    : tipp.accessEnd,
+                hostPlatformURL: tipp.url
         ]
 
         changeNotificationService.registerPendingChange(
                 PendingChange.PROP_PKG,
                 ctx,
                 // pendingChange.message_GS01
-                "Eine neue Verknüpfung (TIPP) für den Titel ${title_instance.title} mit der Plattform ${plat_instance.name}",
+                "Eine neue Verknüpfung (TIPP) für den Titel ${title_instance.title} mit der Plattform ${plat_instance.name} (${datetoday})",
                 null,
                 [
                         newObjectClass: "com.k_int.kbplus.TitleInstancePackagePlatform",
@@ -809,7 +814,7 @@ class GlobalSourceSyncService {
               platformId  : tip.platform.'@id'.text(),
               platformUuid: tip.platform.'@uuid'?.text() ?: null,
               coverage    : [],
-              url         : tip.url.text(),
+              url         : tip.url.text() ?: '',
               identifiers : [],
               tippId      : tip.'@id'.text(),
               tippUuid    : tip.'@uuid'?.text()?: '',
@@ -822,13 +827,13 @@ class GlobalSourceSyncService {
         newtip.coverage.add([
                 startDate    : cov.'@startDate'.text() ? sdf.parse(cov.'@startDate'.text()).format('yyyy-MM-dd HH:mm:ss.S') : '',
                 endDate      : cov.'@endDate'.text() ? sdf.parse(cov.'@endDate'.text()).format('yyyy-MM-dd HH:mm:ss.S') : '',
-                startVolume  : cov.'@startVolume'.text(),
-                endVolume    : cov.'@endVolume'.text(),
-                startIssue   : cov.'@startIssue'.text(),
-                endIssue     : cov.'@endIssue'.text(),
-                coverageDepth: cov.'@coverageDepth'.text(),
-                coverageNote : cov.'@coverageNote'.text(),
-                embargo      : cov.'@embargo'.text()
+                startVolume  : cov.'@startVolume'.text() ?: '',
+                endVolume    : cov.'@endVolume'.text() ?: '',
+                startIssue   : cov.'@startIssue'.text() ?: '',
+                endIssue     : cov.'@endIssue'.text() ?: '',
+                coverageDepth: cov.'@coverageDepth'.text() ?: '',
+                coverageNote : cov.'@coverageNote'.text() ?: '',
+                embargo      : cov.'@embargo'.text() ?: ''
         ]);
       }
 

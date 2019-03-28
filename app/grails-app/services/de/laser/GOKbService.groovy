@@ -81,7 +81,7 @@ class GOKbService {
                     pkg.url = apiSource.baseUrl
 
 
-                    if(r.uuid) {
+                    if(r.uuid && r.uuid != "null") {
                         result.records << pkg
                     }
                 }
@@ -142,7 +142,7 @@ class GOKbService {
                     pkg.url = apiSource.baseUrl
 
 
-                    if(r.uuid) {
+                    if(r.uuid && r.uuid != "null") {
                         result.records << pkg
                     }
                 }
