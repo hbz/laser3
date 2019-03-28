@@ -92,5 +92,12 @@
         %{--<g:render template="copyElements" model="${[source_validSubChilds: source_validSubChilds, target_validSubChilds: target_validSubChilds]}"/>--}%
         <g:render template="copyElements" />
     </g:else>
+    <r:script>
+        function jsConfirmation() {
+            if ($( "input[value ='REPLACE']" ).is( ":checked" )){
+                return confirm('Wollen Sie wirklich diese(s) Element(e) in der Ziellizenz löschen?')
+            }
+        }
+    </r:script>
 </body>
 </html>

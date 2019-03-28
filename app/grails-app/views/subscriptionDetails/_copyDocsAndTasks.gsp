@@ -175,24 +175,24 @@
             </tbody>
         </table>
         <div class="sixteen wide field" style="text-align: right;">
-            <input type="submit" class="ui button js-click-control" value="Ausgewählte Elemente in Ziellizenz kopieren" />
+            <input type="submit" class="ui button js-click-control" value="Ausgewählte Elemente in Ziellizenz kopieren" onclick="jsConfirmation()"/>
         </div>
     </g:form>
 </semui:form>
 <r:script>
     $('input:radio[name="subscription.takeDocs"]').change( function(event) {
         if (this.checked && this.value=='COPY') {
-            $('.table tr td[name="subscription.takeDocs.target"] div').addClass('willStay')
-            $('.table tr td[name="subscription.takeDocs.target"] div').removeClass('willBeReplaced')
+            $('.table tr td[name="subscription.takeDocs.target"] div').addClass('willStay');
+            $('.table tr td[name="subscription.takeDocs.target"] div').removeClass('willBeReplaced');
         }
         if (this.checked && this.value=='REPLACE') {
-            $('.table tr td[name="subscription.takeDocs.target"] div').addClass('willBeReplaced')
-            $('.table tr td[name="subscription.takeDocs.target"] div').removeClass('willStay')
+            $('.table tr td[name="subscription.takeDocs.target"] div').addClass('willBeReplaced');
+            $('.table tr td[name="subscription.takeDocs.target"] div').removeClass('willStay');
         }
         if (this.checked && this.value=='DO_NOTHING') {
-            $('.table tr td[name="subscription.takeDocs.source"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takeDocs.target"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takeDocs.target"] div').removeClass('willBeReplaced')
+            $('.table tr td[name="subscription.takeDocs.source"] div').removeClass('willStay');
+            $('.table tr td[name="subscription.takeDocs.target"] div').removeClass('willStay');
+            $('.table tr td[name="subscription.takeDocs.target"] div').removeClass('willBeReplaced');
             $('.table tr input[name="subscription.takeDocIds"]').prop("checked", false);
         }
     })
@@ -200,25 +200,25 @@
     $('input[name="subscription.takeDocIds"]').change( function(event) {
         var id = this.value
         if (this.checked) {
-            $('.table tr td[name="subscription.takeDocs.source"] div[data-id="' + id + '"]').addClass('willStay')
+            $('.table tr td[name="subscription.takeDocs.source"] div[data-id="' + id + '"]').addClass('willStay');
         } else {
-            $('.table tr td[name="subscription.takeDocs.source"] div[data-id="' + id + '"]').removeClass('willStay')
+            $('.table tr td[name="subscription.takeDocs.source"] div[data-id="' + id + '"]').removeClass('willStay');
         }
     })
 
     $('input:radio[name="subscription.takeAnnouncements"]').change( function(event) {
         if (this.checked && this.value=='COPY') {
-            $('.table tr td[name="subscription.takeAnnouncements.target"] div').addClass('willStay')
-            $('.table tr td[name="subscription.takeAnnouncements.target"] div').removeClass('willBeReplaced')
+            $('.table tr td[name="subscription.takeAnnouncements.target"] div').addClass('willStay');
+            $('.table tr td[name="subscription.takeAnnouncements.target"] div').removeClass('willBeReplaced');
         }
         if (this.checked && this.value=='REPLACE') {
-            $('.table tr td[name="subscription.takeAnnouncements.target"] div').addClass('willBeReplaced')
-            $('.table tr td[name="subscription.takeAnnouncements.target"] div').removeClass('willStay')
+            $('.table tr td[name="subscription.takeAnnouncements.target"] div').addClass('willBeReplaced');
+            $('.table tr td[name="subscription.takeAnnouncements.target"] div').removeClass('willStay');
         }
         if (this.checked && this.value=='DO_NOTHING') {
-            $('.table tr td[name="subscription.takeAnnouncements.source"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takeAnnouncements.target"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takeAnnouncements.target"] div').removeClass('willBeReplaced')
+            $('.table tr td[name="subscription.takeAnnouncements.source"] div').removeClass('willStay');
+            $('.table tr td[name="subscription.takeAnnouncements.target"] div').removeClass('willStay');
+            $('.table tr td[name="subscription.takeAnnouncements.target"] div').removeClass('willBeReplaced');
             $('.table tr input[name="subscription.takeAnnouncementIds"]').prop("checked", false);
         }
     })
@@ -226,25 +226,25 @@
     $('input[name="subscription.takeAnnouncementIds"]').change( function(event) {
         var id = this.value
         if (this.checked) {
-            $('.table tr td[name="subscription.takeAnnouncements.source"] div[data-id="' + id + '"]').addClass('willStay')
+            $('.table tr td[name="subscription.takeAnnouncements.source"] div[data-id="' + id + '"]').addClass('willStay');
         } else {
-            $('.table tr td[name="subscription.takeAnnouncements.source"] div[data-id="' + id + '"]').removeClass('willStay')
+            $('.table tr td[name="subscription.takeAnnouncements.source"] div[data-id="' + id + '"]').removeClass('willStay');
         }
     })
 
     $('input:radio[name="subscription.takeTasks"]').change( function(event) {
         if (this.checked && this.value=='COPY') {
-            $('.table tr td[name="subscription.takeTasks.target"] div').addClass('willStay')
-            $('.table tr td[name="subscription.takeTasks.target"] div').removeClass('willBeReplaced')
+            $('.table tr td[name="subscription.takeTasks.target"] div').addClass('willStay');
+            $('.table tr td[name="subscription.takeTasks.target"] div').removeClass('willBeReplaced');
         }
         if (this.checked && this.value=='REPLACE') {
-            $('.table tr td[name="subscription.takeTasks.target"] div').addClass('willBeReplaced')
-            $('.table tr td[name="subscription.takeTasks.target"] div').removeClass('willStay')
+            $('.table tr td[name="subscription.takeTasks.target"] div').addClass('willBeReplaced');
+            $('.table tr td[name="subscription.takeTasks.target"] div').removeClass('willStay');
         }
         if (this.checked && this.value=='DO_NOTHING') {
-            $('.table tr td[name="subscription.takeTasks.source"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takeTasks.target"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takeTasks.target"] div').removeClass('willBeReplaced')
+            $('.table tr td[name="subscription.takeTasks.source"] div').removeClass('willStay');
+            $('.table tr td[name="subscription.takeTasks.target"] div').removeClass('willStay');
+            $('.table tr td[name="subscription.takeTasks.target"] div').removeClass('willBeReplaced');
             $('.table tr input[name="subscription.takeTaskIds"]').prop("checked", false);
         }
     })
@@ -252,9 +252,9 @@
     $('input[name="subscription.takeTaskIds"]').change( function(event) {
         var id = this.value
         if (this.checked) {
-            $('.table tr td[name="subscription.takeTasks.source"] div[data-id="' + id + '"]').addClass('willStay')
+            $('.table tr td[name="subscription.takeTasks.source"] div[data-id="' + id + '"]').addClass('willStay');
         } else {
-            $('.table tr td[name="subscription.takeTasks.source"] div[data-id="' + id + '"]').removeClass('willStay')
+            $('.table tr td[name="subscription.takeTasks.source"] div[data-id="' + id + '"]').removeClass('willStay');
         }
     })
 

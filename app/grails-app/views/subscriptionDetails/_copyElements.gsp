@@ -122,7 +122,7 @@
             </tbody>
         </table>
         <div class="sixteen wide field" style="text-align: right;">
-            <input type="submit" class="ui button js-click-control" value="Ausgewählte Elemente kopieren/überschreiben" />
+            <input type="submit" class="ui button js-click-control" value="Ausgewählte Elemente kopieren/überschreiben" onclick="jsConfirmation()"/>
         </div>
     </g:form>
 </semui:form>
@@ -130,49 +130,49 @@
 <r:script>
     $('input:radio[name="subscription.takeDates"]').change( function(event) {
         if (this.checked && this.value=='REPLACE') {
-            $('.table tr td[name="subscription.takeDates.source"] div').addClass('willStay')
-            $('.table tr td[name="subscription.takeDates.target"] div').addClass('willBeReplaced')
+            $('.table tr td[name="subscription.takeDates.source"] div').addClass('willStay');
+            $('.table tr td[name="subscription.takeDates.target"] div').addClass('willBeReplaced');
         } else {
-            $('.table tr td[name="subscription.takeDates.source"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takeDates.target"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takeDates.target"] div').removeClass('willBeReplaced')
+            $('.table tr td[name="subscription.takeDates.source"] div').removeClass('willStay');
+            $('.table tr td[name="subscription.takeDates.target"] div').removeClass('willStay');
+            $('.table tr td[name="subscription.takeDates.target"] div').removeClass('willBeReplaced');
         }
     })
     $('input:radio[name="subscription.takeOwner"]').change( function(event) {
         if (this.checked && this.value=='REPLACE') {
-            $('.table tr td[name="subscription.takeOwner.source"] div').addClass('willStay')
-            $('.table tr td[name="subscription.takeOwner.target"] div').addClass('willBeReplaced')
+            $('.table tr td[name="subscription.takeOwner.source"] div').addClass('willStay');
+            $('.table tr td[name="subscription.takeOwner.target"] div').addClass('willBeReplaced');
         } else {
-            $('.table tr td[name="subscription.takeOwner.source"] div').removeClass('willStay')
+            $('.table tr td[name="subscription.takeOwner.source"] div').removeClass('willStay');
             $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willBeReplaced')
+            $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willBeReplaced');
         }
     })
     $('input:radio[name="subscription.takeOwner"]').change( function(event) {
         if (this.checked && this.value=='COPY') {
-            $('.table tr td[name="subscription.takeOwner.source"] div').addClass('willStay')
-            $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willBeReplaced')
+            $('.table tr td[name="subscription.takeOwner.source"] div').addClass('willStay');
+            $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willBeReplaced');
         }
         if (this.checked && this.value=='DO_NOTHING') {
-            $('.table tr td[name="subscription.takeOwner.source"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willBeReplaced')
+            $('.table tr td[name="subscription.takeOwner.source"] div').removeClass('willStay');
+            $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willStay');
+            $('.table tr td[name="subscription.takeOwner.target"] div').removeClass('willBeReplaced');
         }
     })
     $('input:radio[name="subscription.takeOrgRelations"]').change( function(event) {
         if (this.checked && this.value=='COPY') {
-            $('.table tr td[name="subscription.takeOrgRelations.source"] div').addClass('willStay')
-            $('.table tr td[name="subscription.takeOrgRelations.target"] div').addClass('willStay')
-            $('.table tr td[name="subscription.takeOrgRelations.target"] div').removeClass('willBeReplaced')
+            $('.table tr td[name="subscription.takeOrgRelations.source"] div').addClass('willStay');
+            $('.table tr td[name="subscription.takeOrgRelations.target"] div').addClass('willStay');
+            $('.table tr td[name="subscription.takeOrgRelations.target"] div').removeClass('willBeReplaced');
         }
         if (this.checked && this.value=='REPLACE') {
-            $('.table tr td[name="subscription.takeOrgRelations.source"] div').addClass('willStay')
-            $('.table tr td[name="subscription.takeOrgRelations.target"] div').addClass('willBeReplaced')
+            $('.table tr td[name="subscription.takeOrgRelations.source"] div').addClass('willStay');
+            $('.table tr td[name="subscription.takeOrgRelations.target"] div').addClass('willBeReplaced');
         }
         if (this.checked && this.value=='DO_NOTHING') {
-            $('.table tr td[name="subscription.takeOrgRelations.source"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takeOrgRelations.target"] div').removeClass('willStay')
-            $('.table tr td[name="subscription.takeOrgRelations.target"] div').removeClass('willBeReplaced')
+            $('.table tr td[name="subscription.takeOrgRelations.source"] div').removeClass('willStay');
+            $('.table tr td[name="subscription.takeOrgRelations.target"] div').removeClass('willStay');
+            $('.table tr td[name="subscription.takeOrgRelations.target"] div').removeClass('willBeReplaced');
         }
     })
 </r:script>
