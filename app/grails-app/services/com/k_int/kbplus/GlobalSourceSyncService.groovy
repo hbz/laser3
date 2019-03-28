@@ -818,15 +818,15 @@ class GlobalSourceSyncService {
               identifiers : [],
               tippId      : tip.'@id'.text(),
               tippUuid    : tip.'@uuid'?.text()?: '',
-              accessStart : tip.access.'@start'.text() ? sdf.parse(tip.access.'@start'.text()).format('yyyy-MM-dd HH:mm:ss.S') : '',
-              accessEnd   : tip.access.'@end'.text() ? sdf.parse(tip.access.'@end'.text()).format('yyyy-MM-dd HH:mm:ss.S') : '',
+              accessStart : tip.access.'@start'.text() ? sdf.parse(tip.access.'@start'.text()).format('yyyy-MM-dd HH:mm:ss.S') : null,
+              accessEnd   : tip.access.'@end'.text() ? sdf.parse(tip.access.'@end'.text()).format('yyyy-MM-dd HH:mm:ss.S') : null,
               medium      : tip.medium.text()
       ];
 
       tip.coverage.each { cov ->
         newtip.coverage.add([
-                startDate    : cov.'@startDate'.text() ? sdf.parse(cov.'@startDate'.text()).format('yyyy-MM-dd HH:mm:ss.S') : '',
-                endDate      : cov.'@endDate'.text() ? sdf.parse(cov.'@endDate'.text()).format('yyyy-MM-dd HH:mm:ss.S') : '',
+                startDate    : cov.'@startDate'.text() ? sdf.parse(cov.'@startDate'.text()).format('yyyy-MM-dd HH:mm:ss.S') : null,
+                endDate      : cov.'@endDate'.text() ? sdf.parse(cov.'@endDate'.text()).format('yyyy-MM-dd HH:mm:ss.S') : null,
                 startVolume  : cov.'@startVolume'.text() ?: '',
                 endVolume    : cov.'@endVolume'.text() ?: '',
                 startIssue   : cov.'@startIssue'.text() ?: '',
