@@ -67,6 +67,7 @@
             </div>
         </div><!-- .eight -->
 
+        <%--
         <g:if test="${editable}">
             <div class="column wide eight">
                 <div class="ui segment form">
@@ -89,6 +90,7 @@
                 </div>
             </div><!-- .eight -->
         </g:if>
+        --%>
 
     </div><!-- grid -->
 
