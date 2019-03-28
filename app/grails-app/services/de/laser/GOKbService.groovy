@@ -62,18 +62,18 @@ class GOKbService {
                     }
 
                     pkg.titleCount = r.titleCount
-                    pkg.scope = r.scope ?: ''
-                    pkg.name = r.name ?: ''
-                    pkg.sortname = r.sortname ?: ''
+                    pkg.scope = (r.scope != "null") ? r.scope : ''
+                    pkg.name = (r.name != "null") ? r.name: ''
+                    pkg.sortname = (r.sortname != "null") ? r.sortname: ''
                     //pkg.fixed = r.fixed
-                    pkg.platformName = r.platformName ?: ''
+                    pkg.platformName = (r.platformName != "null") ? r.platformName : ''
                     pkg.platformUuid = r.platformUuid ?: ''
                     //pkg.breakable = r.breakable
-                    pkg.providerName = r.cpname ?: ''
+                    pkg.providerName = (r.cpname != "null") ? r.cpname : ''
                     pkg.provider = r.provider
                     pkg.providerUuid = r.providerUuid ?: ''
                     pkg.status = r.status ?: ''
-                    pkg.description = r.description ?: ''
+                    pkg.description = (r.description != "null") ? r.description: ''
                     pkg.descriptionURL = r.descriptionURL ?: ''
 
                     pkg.lastUpdatedDisplay = r.lastUpdatedDisplay
@@ -81,7 +81,7 @@ class GOKbService {
                     pkg.url = apiSource.baseUrl
 
 
-                    if(r.uuid) {
+                    if(r.uuid && r.uuid != "null") {
                         result.records << pkg
                     }
                 }
@@ -121,26 +121,28 @@ class GOKbService {
                     }
 
                     pkg.titleCount = r.titleCount
-                    pkg.scope = r.scope ?: ''
-                    pkg.name = r.name ?: ''
-                    pkg.sortname = r.sortname ?: ''
+                    pkg.scope = (r.scope != "null") ? r.scope : ''
+                    pkg.name = (r.name != "null") ? r.name: ''
+                    pkg.sortname = (r.sortname != "null") ? r.sortname: ''
                     //pkg.fixed = r.fixed
-                    pkg.platformName = r.platformName ?: ''
+                    pkg.platformName = (r.platformName != "null") ? r.platformName : ''
                     pkg.platformUuid = r.platformUuid ?: ''
                     //pkg.breakable = r.breakable
-                    pkg.providerName = r.cpname ?: ''
+                    pkg.providerName = (r.cpname != "null") ? r.cpname : ''
                     pkg.provider = r.provider
                     pkg.providerUuid = r.providerUuid ?: ''
                     pkg.status = r.status ?: ''
-                    pkg.description = r.description ?: ''
+                    pkg.description = (r.description != "null") ? r.description: ''
                     pkg.descriptionURL = r.descriptionURL ?: ''
+
+
 
                     pkg.lastUpdatedDisplay = r.lastUpdatedDisplay
 
                     pkg.url = apiSource.baseUrl
 
 
-                    if(r.uuid) {
+                    if(r.uuid && r.uuid != "null") {
                         result.records << pkg
                     }
                 }
