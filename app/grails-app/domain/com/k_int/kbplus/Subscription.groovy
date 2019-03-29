@@ -716,22 +716,31 @@ class Subscription
       types
   }
 
-   def dropdownNamingConvention(){
+   def dropdownNamingConvention(Org contextOrg){
 
        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
 
-       String period = startDate ? sdf.format(startDate)  : null
+       String period = startDate ? sdf.format(startDate)  : ''
 
-       period = endDate ? period + ' - ' + sdf.format(endDate)  : null
+       period = endDate ? period + ' - ' + sdf.format(endDate)  : ''
 
-       period = period ? '('+period+')' : null
+       period = period ? '('+period+')' : ''
 
 
 
        if(instanceOf)
        {
-           return name + ' - ' + status.getI10n('value') + ' ' +period + ' - ' + (getSubscriber() ? getSubscriber()?.sortname : '')
+           def additionalInfo
+
+           if(contextOrg.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id))
+           {
+               additionalInfo = (getSubscriber() ? getSubscriber()?.sortname : '')
+           }else{
+               additionalInfo = messageSource.getMessage('gasco.filter.consortialLicence',null, LocaleContextHolder.getLocale())
+           }
+
+           return name + ' - ' + status.getI10n('value') + ' ' +period + ' - ' + additionalInfo
 
        }else {
 
