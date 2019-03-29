@@ -370,7 +370,7 @@ class GlobalSourceSyncService {
     }
 
     def onNewTipp = { ctx, tipp, auto_accept ->
-      def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+      def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
       log.debug("new tipp: ${tipp}");
       log.debug("identifiers: ${tipp.title.identifiers}");
 
@@ -409,17 +409,17 @@ class GlobalSourceSyncService {
         new_tipp.status = tipp_status;
         new_tipp.impId = tipp.tippUuid ?: tipp.tippId;
         new_tipp.gokbId = tipp.tippUuid ?: null;
-        new_tipp.accessStartDate = tipp.accessStart
-        new_tipp.accessEndDate = tipp.accessEnd
+        new_tipp.accessStartDate = ((tipp.accessStart != null) && (tipp.accessStart.length() > 0)) ? sdf.parse(tipp.accessStart) : null
+        new_tipp.accessEndDate =  ((tipp.accessEnd != null) && (tipp.accessEnd.length() > 0)) ? sdf.parse(tipp.accessEnd) : null
 
         // We rely upon there only being 1 coverage statement for now, it seems likely this will need
         // to change in the future.
         // tipp.coverage.each { cov ->
         def cov = tipp.coverage[0]
-        new_tipp.startDate = cov.startDate
+        new_tipp.startDate = ((cov.startDate != null) && (cov.startDate.length() > 0)) ? sdf.parse(cov.startDate) : null
         new_tipp.startVolume = cov.startVolume;
         new_tipp.startIssue = cov.startIssue;
-        new_tipp.endDate = cov.endDate
+        new_tipp.endDate = ((cov.endDate != null) && (cov.endDate.length() > 0)) ? sdf.parse(cov.endDate) : null
         new_tipp.endVolume = cov.endVolume;
         new_tipp.endIssue = cov.endIssue;
         new_tipp.embargo = cov.embargo;
