@@ -34,8 +34,8 @@
         <semui:complexSubNavItem controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 5]}" workFlowPart="5" >
             <div class="content" >
                 <div class="description">
-                    <i class="gift icon"></i>Pakete
-                    <i class="book icon"></i>Titel
+                    <i class="gift icon"></i>${message(code: 'package')}
+                    <i class="book icon"></i>${message(code: 'title')}
                 </div>
             </div>
         </semui:complexSubNavItem>
@@ -43,9 +43,9 @@
         <semui:complexSubNavItem controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 2]}"  workFlowPart="2">
             <div class="content">
                 <div class="description">
-                    <i class="file outline icon"></i>Dokumente
-                    <i class="sticky note outline icon"></i>Anmerkungen
-                    <i class="checked calendar icon"></i>Aufgaben
+                    <i class="file outline icon"></i>${message(code: 'default.documents.label')}
+                    <i class="sticky note outline icon"></i>${message(code: 'default.notes.label')}
+                    <i class="checked calendar icon"></i>${message(code: 'menu.institutions.tasks')}
                 </div>
             </div>
         </semui:complexSubNavItem>
