@@ -31,7 +31,7 @@
                                 ${message(code:'template.documents.missing', default: 'Missing title and filename')}
                             </g:else>
 
-                        </g:link>(${docctx.owner.type.getI10n("value")})
+                        </g:link>(${docctx.owner?.type?.getI10n("value")})
                     </div>
                     <div class="center aligned four wide column">
                         <g:if test="${ownobj.showShareButton()}">
@@ -95,7 +95,7 @@
                                 ${message(code:'template.documents.missing', default: 'Missing title and filename')}
                             </g:else>
 
-                        </g:link>(${docctx.owner.type.getI10n("value")})
+                        </g:link>(${docctx.owner?.type?.getI10n("value")})
                     </div>
                 </div>
             </g:if>
