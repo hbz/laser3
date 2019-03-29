@@ -80,21 +80,27 @@
                         <i class="dropdown icon"></i>
 
                         <div class="menu">
-                                <g:link class="item" controller="package" action="index">${message(code:'menu.institutions.all_pkg')}</g:link>
-                                <g:link class="item" controller="title" action="index">${message(code:'menu.institutions.all_titles')}</g:link>
+                                <g:link class="item" controller="package" action="index">${message(code:'menu.public.all_pkg')}</g:link>
+
+                                <g:link class="item" controller="title" action="index">${message(code:'menu.public.all_titles')}</g:link>
+
                                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
-                                    <g:link class="item" controller="organisations" action="index">${message(code:'menu.institutions.all_orgs')}</g:link>
+                                    <g:link class="item" controller="organisations" action="index">${message(code:'menu.public.all_orgs')}</g:link>
                                 </sec:ifAnyGranted>
+
                                 <g:if test="${RDStore.OT_CONSORTIUM.id in  contextService.org.getallOrgTypeIds()}">
-                                    <g:link class="item" controller="organisations" action="listInstitution">${message(code:'menu.institutions.all_insts')}</g:link>
+                                    <g:link class="item" controller="organisations" action="listInstitution">${message(code:'menu.public.all_insts')}</g:link>
                                 </g:if>
-                                <g:link class="item" controller="organisations" action="listProvider">${message(code:'menu.institutions.all_provider')}</g:link>
-                                <g:link class="item" controller="platform" action="list">${message(code:'menu.institutions.all_platforms')}</g:link>
-                                <g:link class="item" controller="gasco">${message(code:'menu.institutions.gasco_monitor')}</g:link>
+
+                                <g:link class="item" controller="organisations" action="listProvider">${message(code:'menu.public.all_provider')}</g:link>
+
+                                <g:link class="item" controller="platform" action="list">${message(code:'menu.public.all_platforms')}</g:link>
+
+                                <g:link class="item" controller="gasco">${message(code:'menu.public.gasco_monitor')}</g:link>
 
                             <%--<div class="divider"></div>
 
-                            <g:link class="item" controller="myInstitution" action="currentTitles">${message(code:'menu.institutions.myTitles')}</g:link>
+                            <g:link class="item" controller="myInstitution" action="currentTitles">${message(code:'menu.my.titles')}</g:link>
                             <g:link class="item" controller="myInstitution" action="tipview">${message(code:'menu.institutions.myCoreTitles')}</g:link>
                             --%>
                             <div class="divider"></div>
@@ -104,7 +110,7 @@
                                 <div class="divider"></div>
                             </g:if>
 
-                            <g:link class="item" controller="package" action="compare">${message(code:'menu.institutions.comp_pkg')}</g:link>
+                            <g:link class="item" controller="package" action="compare">${message(code:'menu.public.comp_pkg')}</g:link>
                         </div>
                     </div>
 
@@ -114,20 +120,20 @@
 
                         <div class="menu">
 
-                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentSubscriptions" message="menu.institutions.mySubs" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentSubscriptions" message="menu.my.subscriptions" />
 
-                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentLicenses" message="menu.institutions.myLics" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentLicenses" message="menu.my.licenses" />
 
-                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentProviders" message="menu.institutions.myProviders" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentProviders" message="menu.my.providers" />
 
-                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.institutions.myTitles" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.my.titles" />
 
-                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="documents" message="menu.institutions.myDocuments" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="documents" message="menu.my.documents" />
 
                             <g:if test="${RDStore.OT_CONSORTIUM.id in  contextService.org.getallOrgTypeIds()}">
                                 <div class="divider"></div>
 
-                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.myConsortia" />
+                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.my.consortia" />
 
                                 <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortiaSubscriptions" message="menu.institutions.myConsortiaLicenses" />
                             </g:if>
@@ -138,7 +144,7 @@
 
                             <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="emptySubscription" message="menu.institutions.emptySubscription" />
 
-                            <semui:securedMainNavItem affiliation="INST_USER" controller="subscriptionDetails" action="compare" message="menu.institutions.comp_sub" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="subscriptionDetails" action="compare" message="menu.my.comp_sub" />
 
                             <%--<g:link class="item" controller="subscriptionImport" action="generateImportWorksheet"
                                     params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.sub_work')}</g:link>
@@ -149,12 +155,12 @@
 
                             <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="emptyLicense" message="license.add.blank" />
 
-                            <semui:securedMainNavItem affiliation="INST_USER" controller="licenseCompare" action="index" message="menu.institutions.comp_lic" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="licenseCompare" action="index" message="menu.my.comp_lic" />
 
 
                             <%--
                             <div class="divider"></div>
-                            <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.institutions.comp_sub')}</g:link>
+                            <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.my.comp_sub')}</g:link>
 
                             <g:link class="item" controller="myInstitution" action="renewalsSearch">${message(code:'menu.institutions.gen_renewals')}</g:link>
                             <g:link class="item" controller="myInstitution" action="renewalsUpload">${message(code:'menu.institutions.imp_renew')}</g:link>
@@ -166,22 +172,6 @@
                         </div>
                     </div>
 
-                    <%--<sec:ifLoggedIn>
-                   <div class="ui simple dropdown item">
-                       ${message(code:'menu.institutions.lic')}
-                       <i class="dropdown icon"></i>
-
-                       <div class="menu">
-                           <g:link class="item" controller="myInstitution" action="currentLicenses">${message(code:'menu.institutions.myLics')}</g:link>
-
-                           <%--
-                           <div class="divider"></div>
-
-                           <g:link class="item" controller="licenseCompare" action="index">${message(code:'menu.institutions.comp_lic')}</g:link>
-
-                            </div>
-                        </div>
-                    </sec:ifLoggedIn>--%>
 
                     <div class="ui simple dropdown item">
                         ${message(code:'menu.institutions.myInst')}
@@ -202,11 +192,6 @@
 
                             <semui:securedMainNavItem affiliation="INST_ADM" controller="organisations" action="users" params="[id: contextOrg?.id]"
                                                       message="menu.institutions.users" newAffiliationRequests="${myInstNewAffils}" />
-
-
-                        %{--<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgTypeIds())}">--}%
-                                %{--<semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.manage_consortia" />--}%
-                            %{--</g:if>--}%
 
                             <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_private_props" />
                             <semui:securedMainNavItem affiliation="INST_EDITOR"  controller="myInstitution" action="managePropertyGroups" message="menu.institutions.manage_prop_groups" />
@@ -282,6 +267,7 @@
 
                             <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN,ROLE_GLOBAL_DATA">
                                 <g:link class="item" controller="globalDataSync" action="index" >${message(code:'menu.datamanager.global_data_sync')}</g:link>
+                                <g:link class="item" controller="dataManager" action="checkPackageTIPPs">Tipps Check of GOKB and LAS:eR</g:link>
                             </sec:ifAnyGranted>
 
                             <sec:ifAnyGranted roles="ROLE_DATAMANAGER,ROLE_ADMIN">
@@ -295,7 +281,7 @@
 
                 <sec:ifAnyGranted roles="ROLE_ADMIN">
                     <div class="ui simple dropdown item">
-                        Admin
+                        ${message(code:'menu.admin')}
                         <i class="dropdown icon"></i>
 
                         <div class="menu">
@@ -316,18 +302,18 @@
                             </g:link>
 
                             <div class="ui dropdown item">
-                                System Admin
+                                ${message(code:'menu.admin.sysAdmin')}
                                 <i class="dropdown icon"></i>
 
                                 <div class="menu">
-                                    <g:link class="item" controller="yoda" action="appInfo">App Info</g:link>
-                                    <g:link class="item" controller="admin" action="systemEvents">System Events (new)</g:link>
+                                    <g:link class="item" controller="yoda" action="appInfo">${message(code:'menu.admin.appInfo')}</g:link>
+                                    <g:link class="item" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</g:link>
                                     <g:link class="item" controller="admin" action="eventLog">Event Log (old)</g:link>
 
                                     <div class="divider"></div>
 
-                                    <g:link class="item" controller="admin" action="triggerHousekeeping" onclick="return confirm('${message(code:'confirm.start.HouseKeeping')}')">Trigger Housekeeping</g:link>
-                                    <g:link class="item" controller="admin" action="initiateCoreMigration" onclick="return confirm('${message(code:'confirm.start.CoreMigration')}')">Initiate Core Migration</g:link>
+                                    <g:link class="item" controller="admin" action="triggerHousekeeping" onclick="return confirm('${message(code:'confirm.start.HouseKeeping')}')">${message(code:'menu.admin.triggerHousekeeping')}</g:link>
+                                    <g:link class="item" controller="admin" action="initiateCoreMigration" onclick="return confirm('${message(code:'confirm.start.CoreMigration')}')">${message(code:'menu.admin.coreMigration')}</g:link>
                                     <g:if test="${grailsApplication.config.feature.issnl}">
                                         <g:link class="item" controller="admin" action="uploadIssnL">Upload ISSN to ISSN-L File</g:link>
                                     </g:if>
@@ -338,27 +324,26 @@
 
                             <div class="divider"></div>
 
-                            <g:link class="item" controller="organisations" action="index">Manage Organisations</g:link>
-                            <g:link class="item" controller="admin" action="showAffiliations">Show Affiliations</g:link>
-                            <g:link class="item" controller="user" action="list">User Details</g:link>
-                            <g:link class="item" controller="usage">Manage Usage Stats</g:link>
+                            <g:link class="item" controller="organisations" action="index">${message(code:'menu.admin.manageOrganisations')}</g:link>
+                            <g:link class="item" controller="user" action="list">${message(code:'menu.institutions.users')}</g:link>
+                            <g:link class="item" controller="admin" action="showAffiliations">${message(code:'menu.admin.showAffiliations')}</g:link>
+                            <g:link class="item" controller="usage">${message(code:'menu.admin.manageUsageStats')}</g:link>
                             <% /* g:link class="item" controller="admin" action="forumSync">Run Forum Sync</g:link */ %>
                             <% /* g:link class="item" controller="admin" action="juspSync">Run JUSP Sync</g:link */ %>
-                            <g:link class="item" controller="admin" action="forceSendNotifications">Send Pending Notifications</g:link>
-                            <g:link class="item" controller="admin" action="checkPackageTIPPs">Tipps Check of GOKB and LAS:eR</g:link>
+                            <g:link class="item" controller="admin" action="forceSendNotifications">${message(code:'menu.admin.sendNotifications')}</g:link>
 
                             <div class="ui dropdown item">
-                                Data Management
+                                ${message(code:'menu.admin.dataManagement')}
                                 <i class="dropdown icon"></i>
 
                                 <div class="menu">
                                     <g:link class="item" controller="dataManager" action="expungeDeletedTitles" onclick="return confirm('${message(code:'confirm.expunge.deleted.titles')}')">Expunge Deleted Titles</g:link>
                                     <g:link class="item" controller="dataManager" onclick="return confirm('${message(code:'confirm.expunge.deleted.tipps')}')" action="expungeDeletedTIPPS">Expunge Deleted TIPPS</g:link>
-                                    <g:link class="item" controller="admin" action="titleMerge">Title Merge</g:link>
-                                    <g:link class="item" controller="admin" action="tippTransfer">TIPP Transfer</g:link>
-                                    <g:link class="item" controller="admin" action="ieTransfer">IE Transfer</g:link>
-                                    <g:link class="item" controller="admin" action="userMerge">User Merge</g:link>
-                                    <g:link class="item" controller="admin" action="hardDeletePkgs">Package Delete</g:link>
+                                    <g:link class="item" controller="admin" action="titleMerge">${message(code:'menu.admin.titleMerge')}</g:link>
+                                    <g:link class="item" controller="admin" action="tippTransfer">${message(code:'menu.admin.tippTransfer')}</g:link>
+                                    <g:link class="item" controller="admin" action="ieTransfer">${message(code:'menu.admin.ieTransfer')}</g:link>
+                                    <g:link class="item" controller="admin" action="userMerge">${message(code:'menu.admin.userMerge')}</g:link>
+                                    <g:link class="item" controller="admin" action="hardDeletePkgs">${message(code:'menu.admin.hardDeletePkgs')}</g:link>
                                     <g:link class="item" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</g:link>
                                 </div>
                             </div>
@@ -366,14 +351,14 @@
                             <div class="divider"></div>
 
                             <div class="ui dropdown item">
-                               Bulk Operations
+                                ${message(code:'menu.admin.bulkOps')}
                                <i class="dropdown icon"></i>
 
                                <div class="menu">
-                                    <g:link class="item" controller="admin" action="orgsExport">Bulk Export Organisations</g:link>
-                                    <g:link class="item" controller="admin" action="orgsImport">Bulk Load Organisations</g:link>
-                                    <g:link class="item" controller="admin" action="titlesImport">Bulk Load/Update Titles</g:link>
-                                    <g:link class="item" controller="admin" action="financeImport">Bulk Load Financial Transaction</g:link>
+                                    <g:link class="item" controller="admin" action="orgsExport">${message(code:'menu.admin.bulkOps.orgsExport')}</g:link>
+                                    <g:link class="item" controller="admin" action="orgsImport">${message(code:'menu.admin.bulkOps.orgsImport')}</g:link>
+                                    <g:link class="item" controller="admin" action="titlesImport">${message(code:'menu.admin.bulkOps.titlesImport')}</g:link>
+                                    <g:link class="item" controller="admin" action="financeImport">${message(code:'menu.admin.bulkOps.financeImport')}</g:link>
                                 </div>
                             </div>
                             <div class="divider"></div>
@@ -386,7 +371,7 @@
 
                             <div class="divider"></div>
 
-                            <g:link class="item" controller="stats" action="statsHome">Statistics</g:link>
+                            <g:link class="item" controller="stats" action="statsHome">${message(code:'menu.admin.statistics')}</g:link>
                            %{-- <g:link class="item" controller="jasperReports" action="uploadReport">Upload Report Definitions</g:link>--}%
 
                         </div>
@@ -395,7 +380,7 @@
 
                 <sec:ifAnyGranted roles="ROLE_YODA">
                     <div class="ui simple dropdown item">
-                        Yoda
+                        ${message(code:'menu.yoda')}
                         <i class="dropdown icon"></i>
 
                         <div class="menu">
@@ -408,16 +393,16 @@
 
                                 <div class="menu">
 
-                                    <g:link class="item" controller="yoda" action="settings">System Settings</g:link>
-                                    <g:link class="item" controller="yoda" action="manageSystemMessage">${message(code: 'menu.admin.systemMessage', default: 'System Message')}</g:link>
-                                    <g:link class="item" controller="yoda" action="appConfig">App Config</g:link>
+                                    <g:link class="item" controller="yoda" action="settings">${message(code:'menu.yoda.systemSettings')}</g:link>
+                                    <g:link class="item" controller="yoda" action="manageSystemMessage">${message(code: 'menu.admin.systemMessage')}</g:link>
+                                    <g:link class="item" controller="yoda" action="appConfig">${message(code:'menu.yoda.appConfig')}</g:link>
 
 
                                     <g:link class="item" controller="yoda" action="profiler">${message(code:'menu.yoda.profiler')}</g:link>
                                     <g:link class="item" controller="yoda" action="quartzInfo">${message(code:'menu.yoda.quartzInfo')}</g:link>
                                     <g:link class="item" controller="yoda" action="cacheInfo">${message(code:'menu.yoda.cacheInfo')}</g:link>
 
-                                    <g:link class="item" controller="yoda" action="appSecurity">Security</g:link>
+                                    <g:link class="item" controller="yoda" action="appSecurity">${message(code:'menu.yoda.security')}</g:link>
                                     <g:link class="item" controller="yoda" action="userMatrix">${message(code:'menu.yoda.userMatrix')}</g:link>
                                     <g:link class="item" controller="yoda" action="userRoleDefinitions">${message(code:'menu.yoda.userRoleDefinitions')}</g:link>
 
@@ -427,7 +412,7 @@
 
                             <div class="divider"></div>
 
-                            <g:link class="item" controller="yoda" action="pendingChanges">Pending Changes</g:link>
+                            <g:link class="item" controller="yoda" action="pendingChanges">${message(code:'menu.yoda.pendingChanges')}</g:link>
 
                             <div class="divider"></div>
 
@@ -442,13 +427,13 @@
 
                             <div class="divider"></div>
 
-                            <g:link class="item" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">Start Global Data Sync</g:link>
-                            <g:link class="item" controller="yoda" action="manageGlobalSources">Manage Global Sources</g:link>
+                            <g:link class="item" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync')}</g:link>
+                            <g:link class="item" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</g:link>
 
                             <div class="divider"></div>
 
-                            <g:link class="item" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">Run Full ES Index Reset</g:link>
-                            <g:link class="item" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">Start ES Index Update</g:link>
+                            <g:link class="item" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">${message(code:'menu.yoda.resetESIndex')}</g:link>
+                            <g:link class="item" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">${message(code:'menu.yoda.updateESIndex')}</g:link>
                             <%--<g:link class="item" controller="yoda" action="logViewer">Log Viewer</g:link>--%>
                             <g:link class="item" controller="yoda" action="manageESSources" >Manage ES Source</g:link>
 

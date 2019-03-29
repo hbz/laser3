@@ -8,7 +8,7 @@
   <body>
 
     <semui:breadcrumbs>
-      <semui:crumb message="menu.institutions.all_titles" class="active" />
+      <semui:crumb message="menu.public.all_titles" class="active" />
     </semui:breadcrumbs>
 
     <semui:filter>

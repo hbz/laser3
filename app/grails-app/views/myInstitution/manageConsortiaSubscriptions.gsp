@@ -6,7 +6,7 @@
 <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'menu.institutions.myConsortiaLicenses')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'menu.my.consortiaLicenses')}</title>
 </head>
 
 <body>
@@ -17,7 +17,7 @@
 
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
-    <semui:crumb message="menu.institutions.myConsortiaLicenses" class="active"/>
+    <semui:crumb message="menu.my.consortiaLicenses" class="active"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
@@ -39,7 +39,7 @@
 </semui:controlButtons>
 
 <h1 class="ui left aligned icon header">
-    <semui:headerIcon />${message(code: 'menu.institutions.myConsortiaLicenses')}
+    <semui:headerIcon />${message(code: 'menu.my.consortiaLicenses')}
     <semui:totalNumber total="${countCostItems}"/>
 </h1>
 

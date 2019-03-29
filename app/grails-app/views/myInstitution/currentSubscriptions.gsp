@@ -215,8 +215,8 @@
                 ${message(code:'sidewide.number')}
             </th>
             <g:sortableColumn params="${params}" property="s.name" title="${message(code: 'license.slash.name')}" rowspan="2" />
-            <th rowspan="2" >
-                <g:annotatedLabel owner="${institution}" property="linkedPackages">${message(code: 'license.details.linked_pkg', default: 'Linked Packages')}</g:annotatedLabel>
+            <th rowspan="2">
+                ${message(code: 'license.details.linked_pkg', default: 'Linked Packages')}
             </th>
             <% /*
             <th>
@@ -282,11 +282,11 @@
                     </td>
                     <td>
                     <!-- packages -->
-                        <g:each in="${s.packages}" var="sp" status="ind">
+                        <g:each in="${s.packages.sort{it?.pkg?.name}}" var="sp" status="ind">
                             <g:if test="${ind < 10}">
                                 <div class="la-flexbox">
                                     <i class="icon gift la-list-icon"></i>
-                                    <g:link controller="package" action="show" id="${sp.pkg?.id}"
+                                    <g:link controller="subscriptionDetails" action="index" id="${s.id}" params="[pkgfilter: sp.pkg?.id]"
                                             title="${sp.pkg?.contentProvider?.name}">
                                         ${sp.pkg.name}
                                     </g:link>
