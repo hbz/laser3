@@ -109,7 +109,7 @@ table tr td div.willBeReplacedStrong {
   background-color: #EDC0BA !important;
   text-decoration: line-through !important;
 }
-.la-title-slot {
+.la-element {
   padding: 4px 0;
   .checkbox {
     padding-left: 0;

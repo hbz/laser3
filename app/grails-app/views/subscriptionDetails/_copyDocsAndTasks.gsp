@@ -36,7 +36,7 @@
                         <b><i class="file outline icon"></i>&nbsp${message(code: 'subscription.takeDocs')}:</b><br />
                         <g:each in="${sourceSubscription.documents.sort { it.owner?.title }}" var="docctx">
                             <g:if test="${(((docctx.owner?.contentType == Doc.CONTENT_TYPE_DOCSTORE) || (docctx.owner?.contentType == Doc.CONTENT_TYPE_BLOB)) && (docctx.status?.value != 'Deleted'))}">
-                                <div data-id="${docctx.id}">
+                                <div data-id="${docctx.id}" class="la-element">
                                     <div class="ui checkbox">
                                         <g:checkBox name="subscription.takeDocIds" value="${docctx.id}" checked="${false}" />
                                         <label>
@@ -96,7 +96,7 @@
                         <b><i class="sticky note outline icon"></i>&nbsp${message(code: 'subscription.takeAnnouncements')}:</b><br />
                         <g:each in="${sourceSubscription.documents.sort { it.owner?.title }}" var="docctx">
                             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted'))}">
-                                <div data-id="${docctx.id}">
+                                <div data-id="${docctx.id} " class="la-element">
                                     <div class="ui checkbox">
 
                                         <g:checkBox name="subscription.takeAnnouncementIds" value="${docctx.id}" checked="${false}" />
@@ -150,7 +150,7 @@
                     <td  name="subscription.takeTasks.source">
                         <b><i class="checked calendar icon"></i>&nbsp${message(code: 'subscription.takeTasks')}:</b><br />
                         <g:each in="${sourceTasks}" var="tsk">
-                            <div data-id="${tsk?.id}">
+                            <div data-id="${tsk?.id}" class="la-element">
                                 <div class="ui checkbox">
                                     <g:checkBox name="subscription.takeTaskIds" value="${tsk?.id}" checked="${false}" />
                                     <label>
@@ -175,7 +175,7 @@
             </tbody>
         </table>
         <div class="sixteen wide field" style="text-align: right;">
-            <input type="submit" class="ui button js-click-control" value="Ausgewählte Elemente in Ziellizenz kopieren" onclick="jsConfirmation()"/>
+            <input type="submit" class="ui button js-click-control" value="Ausgewählte Elemente in Ziellizenz kopieren" onclick="return jsConfirmation() "/>
         </div>
     </g:form>
 </semui:form>

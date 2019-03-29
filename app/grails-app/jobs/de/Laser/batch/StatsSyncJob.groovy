@@ -1,4 +1,4 @@
-package de.Laser.batch
+package de.laser.batch
 
 import de.laser.SystemEvent
 import de.laser.quartz.AbstractJob

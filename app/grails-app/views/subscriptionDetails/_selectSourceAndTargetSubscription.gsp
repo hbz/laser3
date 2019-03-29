@@ -9,7 +9,7 @@
             <g:select class="ui search dropdown"
                   name="sourceSubscriptionId"
                   from="${allSubscriptions_readRights}"
-                  optionValue="name"
+                  optionValue="${{it?.dropdownNamingConvention()}}"
                   optionKey="id"
                   value="${sourceSubscription?.id}"
                   />
@@ -20,7 +20,7 @@
             <g:select class="ui search dropdown"
                   name="targetSubscriptionId"
                   from="${allSubscriptions_writeRights}"
-                  optionValue="name"
+                  optionValue="${{it?.dropdownNamingConvention()}}"
                   optionKey="id"
                   value="${targetSubscription?.id}"
                   noSelection="${[null: message(code: 'default.select.choose.label')]}"/>
