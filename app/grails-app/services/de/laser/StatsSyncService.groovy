@@ -1,7 +1,6 @@
 package de.laser
 
 import com.k_int.kbplus.*
-import com.k_int.properties.*
 import de.laser.domain.StatsTripleCursor
 import de.laser.usage.StatsSyncServiceOptions
 import de.laser.usage.SushiClient
@@ -11,11 +10,9 @@ import groovyx.net.http.*
 
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
-import java.time.Year
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
-import static groovyx.net.http.ContentType.*
 import groovyx.gpars.GParsPool
 
 class StatsSyncService {
@@ -255,7 +252,7 @@ class StatsSyncService {
                 csr = getCursor(options)
                 def mostRecentClosedDate = new SimpleDateFormat("yyyy-MM-dd").parse(options.mostRecentClosedPeriod)
                 if ((csr.availTo == null) || (csr.availTo < mostRecentClosedDate)) {
-                    options.from = getFromPeriodForAPICall(csr)
+                    options.from = getNextFromPeriod(csr)
                     sushiClient.clientOptions = options
                     try {
                         sushiClient.query()
@@ -291,22 +288,27 @@ class StatsSyncService {
         def itemPerformances = xml.depthFirst().findAll {
             it.name() == 'ItemPerformance'
         }
+        if (itemPerformances.size()>0) {
+            itemPerformances.sort() {
+                it.Period.Begin.text()
+            }
+        }
         // 3030 Exception, no usage data for fetched report
         if (itemPerformances.empty) {
             csr.availTo = new SimpleDateFormat('yyyy-MM').parse(options.mostRecentClosedPeriod)
             csr.save(flush: true)
             return
         }
-        def usageRanges = getUsageRanges(itemPerformances, getNotProcessedMonths(xml))
+        def usageRanges = getUsageRanges(itemPerformances, options, getNotProcessedMonths(xml))
         def cal = new GregorianCalendar()
         usageRanges.each {
             def factCount = 0
             def itemPerformancesForRange = getItemPerformancesForRange(itemPerformances, it)
-
+            csr.availFrom = new SimpleDateFormat('yyyy-MM').parse(it['begin'])
             // should only happen on first sync if there is a range without usage before the first ItemPerformance, e.g. if
             // we want to get usage for 2012ff from NatStat, but we cannot get usage this early
             if (itemPerformancesForRange.empty) {
-                csr.availTo = new SimpleDateFormat('yyyy-MM').parse(it['end'])
+                csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(getDateForLastDayOfMonth(it['end']))
                 csr.save(flush: true)
             } else {
                 def usageMap = getPeriodUsageMap(itemPerformancesForRange)
@@ -340,13 +342,13 @@ class StatsSyncService {
                     csr.save(flush: true)
 
                 } else {
-                    def newFromPeriod = getFromPeriodForAPICall(csr).substring(0,7)
+                    def newFromPeriod = getNextFromPeriod(csr).substring(0,7)
                     if (newFromPeriod != it.begin) { // gap for new range
                         log.warn("usage data gap found before ${it.begin}")
                     }
                     csr = new StatsTripleCursor()
                     csr.availFrom = new SimpleDateFormat('yyyy-MM').parse(it.begin) // update
-                    csr.availTo = new SimpleDateFormat('yyyy-MM').parse(it.end) // update to last month for that range
+                    csr.availTo = new SimpleDateFormat('yyyy-MM').parse(getDateForLastDayOfMonth(it['end'])) // update to last month for that range
                     csr.customerId = options.customer
                     csr.numFacts = factCount
                     csr.titleId = options.statsTitleIdentifier
@@ -365,7 +367,7 @@ class StatsSyncService {
         }
     }
 
-    def getRangeBeforeFirstItemPerformanceElement(itemPerformances, notProcessedMonths) {
+    def getRangeBeforeFirstItemPerformanceElement(itemPerformances, options, notProcessedMonths) {
         def rangeMap = [:]
         def firstItemPerformanceBeginPeriod = itemPerformances.first().Period.Begin.text().substring(0,7)
         def lastItemPerformanceBeginPeriod = itemPerformances.last().Period.Begin.text().substring(0,7)
@@ -388,44 +390,74 @@ class StatsSyncService {
         return rangeMap
     }
 
-    def getUsageRanges(ArrayList itemPerformances, notProcessedMonths) {
+    def getUsageRanges(ArrayList itemPerformances, options, notProcessedMonths) {
+        log.debug('Get Usage ranges for API call from/to Period')
         def ranges = []
         // Add begin end period for zero usage before first ItemPerformance and filter out months not available before that.
         // At the moment we begin SYNC_STATS_FROM. We would have to extend the NatStat API to improve that (i.e.
         // get csr.availfrom for the first period via API call
-        def rangeBeforeFirstItemPerformanceElement = getRangeBeforeFirstItemPerformanceElement(itemPerformances, notProcessedMonths)
-        if (! rangeBeforeFirstItemPerformanceElement.empty) {
-            ranges.add(rangeBeforeFirstItemPerformanceElement)
-            notProcessedMonths.removeAll {
-                it < rangeBeforeFirstItemPerformanceElement['begin']
+        def rangeMap = [:]
+        def rangeBeforeFirstItemPerformanceElement = getRangeBeforeFirstItemPerformanceElement(itemPerformances,
+            options, notProcessedMonths)
+
+        if (rangeBeforeFirstItemPerformanceElement.size() != 0) {
+            // There is zero usage for one or more months before the first ItemPerformance (range between last not processed month
+            // and first ItemPerformance Period), add those months to range
+            rangeMap['begin'] = rangeBeforeFirstItemPerformanceElement['begin']
+            log.debug('Found months between not processed months (SUSHI 3031) and first ItemPerformance Period')
+        } else {
+            // use next from period which was used to query the SUSHI service
+            rangeMap['begin'] = options.from
+            // Case when we have only not processed (3031) Months before first ItemPerformance
+            // we have to set rangeMap['begin'] to +1 month after (last not processed month before first ItemPerformance month)
+            def lastNotProcessedMonthBeforeItemPerformances = notProcessedMonths.findAll() {
+                it < itemPerformances.first().Period.Begin.text().substring(0,7)
+            }.sort()
+            if (lastNotProcessedMonthBeforeItemPerformances.size() != 0) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern('yyyy-MM')
+                YearMonth localDate = YearMonth.parse(lastNotProcessedMonthBeforeItemPerformances.last(), formatter)
+                rangeMap['begin'] = localDate.plusMonths(1).toString()
+            }
+
+            if (itemPerformances.first().Period.Begin.text().substring(0,7) != options.from.substring(0,7)){
+                log.debug('First ItemPerformance does not equal from period for SUSHI call')
             }
         }
-        def rangeList = []
+
+        // remove not processed months which we already have used to check for gaps to be able to use the list to find newer gaps
+        // also handle the case where we have only 3031 Months before
+        notProcessedMonths.removeAll {
+            it < rangeMap['begin']
+        }
+        def itemPerformanceRangeList = [] //temp list
         itemPerformances.each { performance ->
             def performanceMonth = performance.Period.Begin.text().substring(0,7)
             // we have a gap if there is a month in our list < the actual processed ItemPerformance month
             def gap = notProcessedMonths.find { month ->
                  performanceMonth > month
             }
+
             // if we have a gap, close range and remove all not processed months belonging together and also within that gap
             if (gap){
-                def rangeMap = [:]
-                rangeMap['begin'] = rangeList.first().Period.Begin.text().substring(0,7)
-                rangeMap['end'] = rangeList.last().Period.Begin.text().substring(0,7)
+                if (itemPerformanceRangeList.size() == 0){
+                    log.error('Gap but no Itemperformance Elements to calculate the end of range')
+                    // throw exception?
+                }
+                rangeMap['end'] = itemPerformanceRangeList.last().Period.Begin.text().substring(0,7)
                 ranges.add(rangeMap)
-                rangeList = []
                 notProcessedMonths.removeAll {
                     it < performanceMonth
                 }
+                rangeMap = [:]
+                rangeMap['begin'] = performanceMonth
+                itemPerformanceRangeList = []
+                itemPerformanceRangeList.add(performance)
 
             } else {
-                rangeList.add(performance)
+                itemPerformanceRangeList.add(performance)
             }
         }
-
-        def rangeMap = [:]
-        rangeMap['begin'] = rangeList.first().Period.Begin.text().substring(0,7)
-        rangeMap['end'] = rangeList.last().Period.Begin.text().substring(0,7)
+        rangeMap['end'] = itemPerformanceRangeList.last().Period.Begin.text().substring(0,7)
         ranges.add(rangeMap)
 
         return ranges
@@ -446,7 +478,7 @@ class StatsSyncService {
             }
             return list
         }
-        return false
+        return []
     }
 
 
@@ -461,7 +493,7 @@ class StatsSyncService {
         }
     }
 
-    def getFromPeriodForAPICall(csr) {
+    def getNextFromPeriod(csr) {
         def acceptedFormat = "yyyy-MM-dd"
         def fromPeriodForAPICall
         // Latest stored month + 1
@@ -473,9 +505,7 @@ class StatsSyncService {
             if (!csr.availFrom){
                 return SYNC_STATS_FROM
             }
-            use(TimeCategory) {
-                fromPeriodForAPICall = csr.availFrom
-            }
+            fromPeriodForAPICall = csr.availFrom
         }
         return fromPeriodForAPICall.format(acceptedFormat)
     }

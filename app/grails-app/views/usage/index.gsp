@@ -121,7 +121,8 @@
   <tr>
     <g:sortableColumn property="customerId" title="Customer" params="${params}"/>
     <g:sortableColumn property="supplierId" title="Supplier" params="${params}"/>
-    <g:sortableColumn property="haveUpTo" title="Until" params="${params}"/>
+    <g:sortableColumn property="availFrom" title="Von" params="${params}"/>
+    <g:sortableColumn property="availTo" title="Bis" params="${params}"/>
     <g:sortableColumn property="numFacts" title="Fact Count" params="${params}"/>
     <g:sortableColumn property="factType" title="Report" params="${params}"/>
     <th>Errors</th>
@@ -135,7 +136,8 @@
     <tr class="stats-error-row-${i}">
       <td>${asr.customerId}</td>
       <td>${asr.supplierId}</td>
-      <td>${asr.haveUpTo}</td>
+      <td>${asr.availFrom}</td>
+      <td>${asr.availTo}</td>
       <td>${asr.numFacts}</td>
       <td>${asr.factType.value}</td>
 
