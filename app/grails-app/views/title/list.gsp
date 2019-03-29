@@ -2,15 +2,15 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.institutions.all_titles')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.public.all_titles')}</title>
   </head>
   <body>
 
     <semui:breadcrumbs>
-      <semui:crumb message="menu.institutions.all_titles" class="active" />
+      <semui:crumb message="menu.public.all_titles" class="active" />
     </semui:breadcrumbs>
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.institutions.all_titles')}
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'menu.public.all_titles')}
       <semui:totalNumber total="${resultsTotal}"/>
     </h1>
 

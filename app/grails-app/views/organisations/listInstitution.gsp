@@ -10,7 +10,7 @@
     <body>
 
     <semui:breadcrumbs>
-        <semui:crumb message="menu.institutions.all_insts" class="active" />
+        <semui:crumb message="menu.public.all_insts" class="active" />
     </semui:breadcrumbs>
 
     <semui:controlButtons>
@@ -22,7 +22,7 @@
         <g:render template="actions" />
     </semui:controlButtons>
     
-    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'menu.institutions.all_insts')}</h1>
+    <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code: 'menu.public.all_insts')}</h1>
 
     <semui:messages data="${flash}" />
 

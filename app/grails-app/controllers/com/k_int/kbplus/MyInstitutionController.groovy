@@ -3278,7 +3278,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
             def orgs = result.availableOrgs
 
-            def message = g.message(code: 'menu.institutions.all_orgs')
+            def message = g.message(code: 'menu.public.all_orgs')
 
             exportOrg(orgs, message, true)
             return
@@ -3333,7 +3333,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
             def orgs = result.consortiaMembers
 
-            def message = g.message(code: 'menu.institutions.myConsortia')
+            def message = g.message(code: 'menu.my.consortia')
 
             exportOrg(orgs, message, true)
             return
