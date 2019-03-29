@@ -1,8 +1,8 @@
 %{--Run once data... can be reused for edit based functionality too. Pointless sending back this static data every request --}%
-
-<g:set var="costItemStatus"   scope="request" value="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','CostItemStatus')}"/>
-<g:set var="costItemCategory" scope="request" value="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','CostItemCategory')}"/>
-<g:set var="costItemElement"  scope="request" value="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','CostItemElement')}"/>
-<g:set var="taxType"          scope="request" value="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','TaxType')}"/>
-<g:set var="yn"               scope="request" value="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.owner.desc=?','YN')}"/>
-<g:set var="currency"         scope="request" value="${com.k_int.kbplus.CostItem.orderedCurrency()}"/>
+<%@page import="com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.CostItem;com.k_int.kbplus.Org"%>
+<g:set var="costItemStatus"   scope="request" value="${RefdataCategory.getAllRefdataValues('CostItemStatus')}"/>
+<g:set var="costItemCategory" scope="request" value="${RefdataCategory.getAllRefdataValues('CostItemCategory')}"/>
+<g:set var="costItemElement"  scope="request" value="${RefdataValue.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:org])}"/>
+<g:set var="taxType"          scope="request" value="${RefdataCategory.getAllRefdataValues('TaxType')}"/>
+<g:set var="yn"               scope="request" value="${RefdataCategory.getAllRefdataValues('YN')}"/>
+<g:set var="currency"         scope="request" value="${CostItem.orderedCurrency()}"/>
