@@ -30,6 +30,5 @@
             </g:each>
         </semui:exportDropdown>
     </g:if>
-    <g:annotatedLabel owner="${license}" property="detailsPageInfo"></g:annotatedLabel>
 </semui:breadcrumbs>
 

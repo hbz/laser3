@@ -103,7 +103,7 @@ public class GokbDiffEngine {
             result.add([field: 'accessEnd', newValue: tippb.accessEnd, oldValue: tippa.accessEnd])
         }
 
-        if ((tippa.titleName ?: '').toString().compareTo((tippb.titleName ?: '').toString()) == 0) {
+        if ((tippa?.title?.name ?: '').toString().compareTo((tippb?.title?.name ?: '').toString()) == 0) {
         } else {
             result.add([field: 'titleName', newValue: tippb?.title?.name, oldValue: tippa?.title?.name])
         }

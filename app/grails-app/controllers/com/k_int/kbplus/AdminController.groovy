@@ -1082,55 +1082,6 @@ class AdminController extends AbstractDebugController {
         ]
   }
 
-  @Secured(['ROLE_ADMIN'])
-  def checkPackageTIPPs() {
-    def result = [:]
-    result.user = springSecurityService.getCurrentUser()
-    params.max =  params.max ?: result.user.getDefaultPageSizeTMP()
 
-
-    def gokbRecords = []
-
-    ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { api ->
-      gokbRecords << GOKbService.getPackagesMap(api, params.q, false).records
-    }
-
-
-    params.sort = params.sort ?: 'name'
-    params.order = params.order ?: 'asc'
-
-    result.records = gokbRecords ? gokbRecords.flatten().sort() : null
-
-    result.records?.sort { x, y ->
-      if (params.order == 'desc') {
-        y."${params.sort}".toString().compareToIgnoreCase x."${params.sort}".toString()
-      } else {
-        x."${params.sort}".toString().compareToIgnoreCase y."${params.sort}".toString()
-      }
-    }
-
-    /*if(params.onlyNotEqual) {
-      result.tippsNotEqual = []
-      result.records.each { hit ->
-        if (com.k_int.kbplus.Package.findByGokbId(hit.uuid)) {
-          if (com.k_int.kbplus.Package.findByGokbId(hit.uuid)?.tipps?.size() != hit.titleCount && hit.titleCount != 0) {
-            result.tippsNotEqual << hit
-          }
-        }
-      }
-      result.records = result.tippsNotEqual
-    }*/
-
-    result.resultsTotal2 = result.records?.size()
-
-    Integer start = params.offset ? params.int('offset') : 0
-    Integer end = params.offset ? params.int('max') + params.int('offset') : params.int('max')
-    end = (end > result.records?.size()) ? result.records?.size() : end
-
-    result.records = result.records?.subList(start, end)
-
-
-    result
-  }
 
 }

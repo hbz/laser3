@@ -107,7 +107,7 @@ class OrganisationsController extends AbstractDebugController {
 
             def orgs = Org.findAll(fsq.query, fsq.queryParams, params)
 
-            def message = g.message(code: 'menu.institutions.all_orgs')
+            def message = g.message(code: 'menu.public.all_orgs')
 
             exportOrg(orgs, message, true)
             return
@@ -167,7 +167,7 @@ class OrganisationsController extends AbstractDebugController {
         if ( params.exportXLS=='yes' ) {
             params.remove('max')
             def orgs = Org.findAll(fsq.query, fsq.queryParams, params)
-            def message = g.message(code: 'menu.institutions.all_provider')
+            def message = g.message(code: 'menu.public.all_provider')
             exportOrg(orgs, message, false)
             return
         }

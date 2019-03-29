@@ -1,6 +1,11 @@
+0.14.7
+
+- bugfix: global data sync
+
 0.14.6
 
 - fixed query for usage data
+- bugfix: global data sync
 
 0.14.5
 
