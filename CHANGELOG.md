@@ -1,3 +1,7 @@
+0.14.8
+
+- fixed document type null pointer
+
 0.14.7
 
 - bugfix: global data sync
