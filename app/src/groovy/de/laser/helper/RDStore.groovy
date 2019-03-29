@@ -46,6 +46,8 @@ class RDStore {
     static final SUBSCRIPTION_EXPIRED       = getRefdataValue('Expired', 'Subscription Status')
 
     static final SUBSCRIPTION_TYPE_LOCAL_LICENSE      = getRefdataValue('Local Licence', 'Subscription Type')
+    static final SUBSCRIPTION_TYPE_CONSORTIAL_LICENSE      = getRefdataValue('Consortial Licence', 'Subscription Type')
+
     static final LICENSE_TYPE_TEMPLATE      = getRefdataValue('Template', 'License Type')
 
     static final LINKTYPE_FOLLOWS           = getRefdataValue('follows','Link Type')

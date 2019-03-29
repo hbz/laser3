@@ -94,7 +94,7 @@
                         }
                         List allConfigs = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.owner.desc = 'Share Configuration' and rdv.hardData = true order by rdv.order asc")
                         List availableConfigs = []
-                        if(!institution.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id)){
+                        if(!institution?.getallOrgTypeIds()?.contains(RDStore.OT_CONSORTIUM.id)){
                             availableConfigs = allConfigs-RDStore.SHARE_CONF_CONSORTIUM
                         }
                         else availableConfigs = allConfigs
