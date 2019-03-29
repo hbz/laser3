@@ -220,6 +220,7 @@ class UserController extends AbstractDebugController {
         switch (request.method) {
             case 'POST':
                 def user = new User(params)
+                user.enabled = true;
 
                 if (! user.save(flush: true)) {
                     flash.error = message(code: 'default.not.created.message', args: [user])

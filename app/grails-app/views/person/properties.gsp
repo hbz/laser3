@@ -12,7 +12,7 @@
 </head>
 <body>
     <semui:breadcrumbs>
-        <semui:crumb message="menu.institutions.all_orgs" controller="organisations" action="index" />
+        <semui:crumb message="menu.public.all_orgs" controller="organisations" action="index" />
         <g:message code="default.show.label" args="[entityName]" class="active"/>
     </semui:breadcrumbs>
 

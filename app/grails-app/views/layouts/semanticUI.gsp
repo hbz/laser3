@@ -80,21 +80,27 @@
                         <i class="dropdown icon"></i>
 
                         <div class="menu">
-                                <g:link class="item" controller="package" action="index">${message(code:'menu.institutions.all_pkg')}</g:link>
-                                <g:link class="item" controller="title" action="index">${message(code:'menu.institutions.all_titles')}</g:link>
+                                <g:link class="item" controller="package" action="index">${message(code:'menu.public.all_pkg')}</g:link>
+
+                                <g:link class="item" controller="title" action="index">${message(code:'menu.public.all_titles')}</g:link>
+
                                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
-                                    <g:link class="item" controller="organisations" action="index">${message(code:'menu.institutions.all_orgs')}</g:link>
+                                    <g:link class="item" controller="organisations" action="index">${message(code:'menu.public.all_orgs')}</g:link>
                                 </sec:ifAnyGranted>
+
                                 <g:if test="${RDStore.OT_CONSORTIUM.id in  contextService.org.getallOrgTypeIds()}">
-                                    <g:link class="item" controller="organisations" action="listInstitution">${message(code:'menu.institutions.all_insts')}</g:link>
+                                    <g:link class="item" controller="organisations" action="listInstitution">${message(code:'menu.public.all_insts')}</g:link>
                                 </g:if>
-                                <g:link class="item" controller="organisations" action="listProvider">${message(code:'menu.institutions.all_provider')}</g:link>
-                                <g:link class="item" controller="platform" action="list">${message(code:'menu.institutions.all_platforms')}</g:link>
-                                <g:link class="item" controller="gasco">${message(code:'menu.institutions.gasco_monitor')}</g:link>
+
+                                <g:link class="item" controller="organisations" action="listProvider">${message(code:'menu.public.all_provider')}</g:link>
+
+                                <g:link class="item" controller="platform" action="list">${message(code:'menu.public.all_platforms')}</g:link>
+
+                                <g:link class="item" controller="gasco">${message(code:'menu.public.gasco_monitor')}</g:link>
 
                             <%--<div class="divider"></div>
 
-                            <g:link class="item" controller="myInstitution" action="currentTitles">${message(code:'menu.institutions.myTitles')}</g:link>
+                            <g:link class="item" controller="myInstitution" action="currentTitles">${message(code:'menu.my.titles')}</g:link>
                             <g:link class="item" controller="myInstitution" action="tipview">${message(code:'menu.institutions.myCoreTitles')}</g:link>
                             --%>
                             <div class="divider"></div>
@@ -104,7 +110,7 @@
                                 <div class="divider"></div>
                             </g:if>
 
-                            <g:link class="item" controller="package" action="compare">${message(code:'menu.institutions.comp_pkg')}</g:link>
+                            <g:link class="item" controller="package" action="compare">${message(code:'menu.public.comp_pkg')}</g:link>
                         </div>
                     </div>
 
@@ -114,22 +120,22 @@
 
                         <div class="menu">
 
-                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentSubscriptions" message="menu.institutions.mySubs" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentSubscriptions" message="menu.my.subscriptions" />
 
-                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentLicenses" message="menu.institutions.myLics" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentLicenses" message="menu.my.licenses" />
 
-                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentProviders" message="menu.institutions.myProviders" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentProviders" message="menu.my.providers" />
 
-                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.institutions.myTitles" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.my.titles" />
 
-                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="documents" message="menu.institutions.myDocuments" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="documents" message="menu.my.documents" />
 
                             <g:if test="${RDStore.OT_CONSORTIUM.id in  contextService.org.getallOrgTypeIds()}">
                                 <div class="divider"></div>
 
-                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.myConsortia" />
+                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.my.consortia" />
 
-                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortiaLicenses" message="menu.institutions.myConsortiaLicenses" />
+                                <semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortiaLicenses" message="menu.my.consortiaLicenses" />
                             </g:if>
 
                             <%--<semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="tipview" message="menu.institutions.myCoreTitles" />--%>
@@ -138,7 +144,7 @@
 
                             <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="emptySubscription" message="menu.institutions.emptySubscription" />
 
-                            <semui:securedMainNavItem affiliation="INST_USER" controller="subscriptionDetails" action="compare" message="menu.institutions.comp_sub" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="subscriptionDetails" action="compare" message="menu.my.comp_sub" />
 
                             <%--<g:link class="item" controller="subscriptionImport" action="generateImportWorksheet"
                                     params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.sub_work')}</g:link>
@@ -149,12 +155,12 @@
 
                             <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="emptyLicense" message="license.add.blank" />
 
-                            <semui:securedMainNavItem affiliation="INST_USER" controller="licenseCompare" action="index" message="menu.institutions.comp_lic" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="licenseCompare" action="index" message="menu.my.comp_lic" />
 
 
                             <%--
                             <div class="divider"></div>
-                            <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.institutions.comp_sub')}</g:link>
+                            <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.my.comp_sub')}</g:link>
 
                             <g:link class="item" controller="myInstitution" action="renewalsSearch">${message(code:'menu.institutions.gen_renewals')}</g:link>
                             <g:link class="item" controller="myInstitution" action="renewalsUpload">${message(code:'menu.institutions.imp_renew')}</g:link>
@@ -166,22 +172,6 @@
                         </div>
                     </div>
 
-                    <%--<sec:ifLoggedIn>
-                   <div class="ui simple dropdown item">
-                       ${message(code:'menu.institutions.lic')}
-                       <i class="dropdown icon"></i>
-
-                       <div class="menu">
-                           <g:link class="item" controller="myInstitution" action="currentLicenses">${message(code:'menu.institutions.myLics')}</g:link>
-
-                           <%--
-                           <div class="divider"></div>
-
-                           <g:link class="item" controller="licenseCompare" action="index">${message(code:'menu.institutions.comp_lic')}</g:link>
-
-                            </div>
-                        </div>
-                    </sec:ifLoggedIn>--%>
 
                     <div class="ui simple dropdown item">
                         ${message(code:'menu.institutions.myInst')}
@@ -202,11 +192,6 @@
 
                             <semui:securedMainNavItem affiliation="INST_ADM" controller="organisations" action="users" params="[id: contextOrg?.id]"
                                                       message="menu.institutions.users" newAffiliationRequests="${myInstNewAffils}" />
-
-
-                        %{--<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgTypeIds())}">--}%
-                                %{--<semui:securedMainNavItem affiliation="INST_ADM" controller="myInstitution" action="manageConsortia" message="menu.institutions.manage_consortia" />--}%
-                            %{--</g:if>--}%
 
                             <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_private_props" />
                             <semui:securedMainNavItem affiliation="INST_EDITOR"  controller="myInstitution" action="managePropertyGroups" message="menu.institutions.manage_prop_groups" />
@@ -340,8 +325,8 @@
                             <div class="divider"></div>
 
                             <g:link class="item" controller="organisations" action="index">Manage Organisations</g:link>
-                            <g:link class="item" controller="admin" action="showAffiliations">Show Affiliations</g:link>
-                            <g:link class="item" controller="user" action="list">User Details</g:link>
+                            <g:link class="item" controller="user" action="list">${message(code:'menu.institutions.users')}</g:link>
+                            <g:link class="item" controller="admin" action="showAffiliations">Zugehörigkeiten anzeigen</g:link>
                             <g:link class="item" controller="usage">Manage Usage Stats</g:link>
                             <% /* g:link class="item" controller="admin" action="forumSync">Run Forum Sync</g:link */ %>
                             <% /* g:link class="item" controller="admin" action="juspSync">Run JUSP Sync</g:link */ %>

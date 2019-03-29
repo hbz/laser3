@@ -4,16 +4,16 @@
 <html>
     <head>
         <meta name="layout" content="semanticUI" />
-        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.institutions.myProviders')}</title>
+        <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'menu.my.providers')}</title>
     </head>
     <body>
 
         <semui:breadcrumbs>
             <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
-            <semui:crumb message="menu.institutions.myProviders" class="active" />
+            <semui:crumb message="menu.my.providers" class="active" />
         </semui:breadcrumbs>
 
-    <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.institutions.myProviders" />
+    <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.my.providers" />
         <semui:totalNumber total="${orgListTotal}"/>
     </h1>
 
