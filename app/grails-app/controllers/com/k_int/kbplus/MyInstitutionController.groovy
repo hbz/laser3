@@ -3998,22 +3998,22 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             Cell cell
             int rownum = 1
 
-            orgs.sort{it.name}
+            //orgs.sort{it.name}
             orgs.each{  org ->
                 int cellnum = 0
                 row = sheet.createRow(rownum)
 
                 //Name
                 cell = row.createCell(cellnum++)
-                cell.setCellValue(org.name)
+                cell.setCellValue(org.name ?: "")
 
                 //Shortname
                 cell = row.createCell(cellnum++)
-                cell.setCellValue(org.shortname)
+                cell.setCellValue(org.shortname ?: "")
 
                 //Sortname
                 cell = row.createCell(cellnum++)
-                cell.setCellValue(org.sortname)
+                cell.setCellValue(org.sortname ?: "")
 
 
                 if(addHigherEducationTitles) {
@@ -4040,7 +4040,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 }
 
                 propList.each { pd ->
-                    def value = ''
+                    String value = ''
                     org.customProperties.each{ prop ->
                         if(prop.type.descr == pd.descr && prop.type == pd)
                         {
