@@ -281,7 +281,7 @@
 
                 <sec:ifAnyGranted roles="ROLE_ADMIN">
                     <div class="ui simple dropdown item">
-                        Admin
+                        ${message(code:'menu.admin')}
                         <i class="dropdown icon"></i>
 
                         <div class="menu">
@@ -302,18 +302,18 @@
                             </g:link>
 
                             <div class="ui dropdown item">
-                                System Admin
+                                ${message(code:'menu.admin.sysAdmin')}
                                 <i class="dropdown icon"></i>
 
                                 <div class="menu">
-                                    <g:link class="item" controller="yoda" action="appInfo">App Info</g:link>
-                                    <g:link class="item" controller="admin" action="systemEvents">System Events (new)</g:link>
+                                    <g:link class="item" controller="yoda" action="appInfo">${message(code:'menu.admin.appInfo')}</g:link>
+                                    <g:link class="item" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</g:link>
                                     <g:link class="item" controller="admin" action="eventLog">Event Log (old)</g:link>
 
                                     <div class="divider"></div>
 
-                                    <g:link class="item" controller="admin" action="triggerHousekeeping" onclick="return confirm('${message(code:'confirm.start.HouseKeeping')}')">Trigger Housekeeping</g:link>
-                                    <g:link class="item" controller="admin" action="initiateCoreMigration" onclick="return confirm('${message(code:'confirm.start.CoreMigration')}')">Initiate Core Migration</g:link>
+                                    <g:link class="item" controller="admin" action="triggerHousekeeping" onclick="return confirm('${message(code:'confirm.start.HouseKeeping')}')">${message(code:'menu.admin.triggerHousekeeping')}</g:link>
+                                    <g:link class="item" controller="admin" action="initiateCoreMigration" onclick="return confirm('${message(code:'confirm.start.CoreMigration')}')">${message(code:'menu.admin.coreMigration')}</g:link>
                                     <g:if test="${grailsApplication.config.feature.issnl}">
                                         <g:link class="item" controller="admin" action="uploadIssnL">Upload ISSN to ISSN-L File</g:link>
                                     </g:if>
@@ -324,26 +324,26 @@
 
                             <div class="divider"></div>
 
-                            <g:link class="item" controller="organisations" action="index">Manage Organisations</g:link>
+                            <g:link class="item" controller="organisations" action="index">${message(code:'menu.admin.manageOrganisations')}</g:link>
                             <g:link class="item" controller="user" action="list">${message(code:'menu.institutions.users')}</g:link>
-                            <g:link class="item" controller="admin" action="showAffiliations">Zugehörigkeiten anzeigen</g:link>
-                            <g:link class="item" controller="usage">Manage Usage Stats</g:link>
+                            <g:link class="item" controller="admin" action="showAffiliations">${message(code:'menu.admin.showAffiliations')}</g:link>
+                            <g:link class="item" controller="usage">${message(code:'menu.admin.manageUsageStats')}</g:link>
                             <% /* g:link class="item" controller="admin" action="forumSync">Run Forum Sync</g:link */ %>
                             <% /* g:link class="item" controller="admin" action="juspSync">Run JUSP Sync</g:link */ %>
-                            <g:link class="item" controller="admin" action="forceSendNotifications">Send Pending Notifications</g:link>
+                            <g:link class="item" controller="admin" action="forceSendNotifications">${message(code:'menu.admin.sendNotifications')}</g:link>
 
                             <div class="ui dropdown item">
-                                Data Management
+                                ${message(code:'menu.admin.dataManagement')}
                                 <i class="dropdown icon"></i>
 
                                 <div class="menu">
                                     <g:link class="item" controller="dataManager" action="expungeDeletedTitles" onclick="return confirm('${message(code:'confirm.expunge.deleted.titles')}')">Expunge Deleted Titles</g:link>
                                     <g:link class="item" controller="dataManager" onclick="return confirm('${message(code:'confirm.expunge.deleted.tipps')}')" action="expungeDeletedTIPPS">Expunge Deleted TIPPS</g:link>
-                                    <g:link class="item" controller="admin" action="titleMerge">Title Merge</g:link>
-                                    <g:link class="item" controller="admin" action="tippTransfer">TIPP Transfer</g:link>
-                                    <g:link class="item" controller="admin" action="ieTransfer">IE Transfer</g:link>
-                                    <g:link class="item" controller="admin" action="userMerge">User Merge</g:link>
-                                    <g:link class="item" controller="admin" action="hardDeletePkgs">Package Delete</g:link>
+                                    <g:link class="item" controller="admin" action="titleMerge">${message(code:'menu.admin.titleMerge')}</g:link>
+                                    <g:link class="item" controller="admin" action="tippTransfer">${message(code:'menu.admin.tippTransfer')}</g:link>
+                                    <g:link class="item" controller="admin" action="ieTransfer">${message(code:'menu.admin.ieTransfer')}</g:link>
+                                    <g:link class="item" controller="admin" action="userMerge">${message(code:'menu.admin.userMerge')}</g:link>
+                                    <g:link class="item" controller="admin" action="hardDeletePkgs">${message(code:'menu.admin.hardDeletePkgs')}</g:link>
                                     <g:link class="item" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</g:link>
                                 </div>
                             </div>
@@ -351,14 +351,14 @@
                             <div class="divider"></div>
 
                             <div class="ui dropdown item">
-                               Bulk Operations
+                                ${message(code:'menu.admin.bulkOps')}
                                <i class="dropdown icon"></i>
 
                                <div class="menu">
-                                    <g:link class="item" controller="admin" action="orgsExport">Bulk Export Organisations</g:link>
-                                    <g:link class="item" controller="admin" action="orgsImport">Bulk Load Organisations</g:link>
-                                    <g:link class="item" controller="admin" action="titlesImport">Bulk Load/Update Titles</g:link>
-                                    <g:link class="item" controller="admin" action="financeImport">Bulk Load Financial Transaction</g:link>
+                                    <g:link class="item" controller="admin" action="orgsExport">${message(code:'menu.admin.bulkOps.orgsExport')}</g:link>
+                                    <g:link class="item" controller="admin" action="orgsImport">${message(code:'menu.admin.bulkOps.orgsImport')}</g:link>
+                                    <g:link class="item" controller="admin" action="titlesImport">${message(code:'menu.admin.bulkOps.titlesImport')}</g:link>
+                                    <g:link class="item" controller="admin" action="financeImport">${message(code:'menu.admin.bulkOps.financeImport')}</g:link>
                                 </div>
                             </div>
                             <div class="divider"></div>
@@ -371,7 +371,7 @@
 
                             <div class="divider"></div>
 
-                            <g:link class="item" controller="stats" action="statsHome">Statistics</g:link>
+                            <g:link class="item" controller="stats" action="statsHome">${message(code:'menu.admin.statistics')}</g:link>
                            %{-- <g:link class="item" controller="jasperReports" action="uploadReport">Upload Report Definitions</g:link>--}%
 
                         </div>
@@ -380,7 +380,7 @@
 
                 <sec:ifAnyGranted roles="ROLE_YODA">
                     <div class="ui simple dropdown item">
-                        Yoda
+                        ${message(code:'menu.yoda')}
                         <i class="dropdown icon"></i>
 
                         <div class="menu">
@@ -393,16 +393,16 @@
 
                                 <div class="menu">
 
-                                    <g:link class="item" controller="yoda" action="settings">System Settings</g:link>
-                                    <g:link class="item" controller="yoda" action="manageSystemMessage">${message(code: 'menu.admin.systemMessage', default: 'System Message')}</g:link>
-                                    <g:link class="item" controller="yoda" action="appConfig">App Config</g:link>
+                                    <g:link class="item" controller="yoda" action="settings">${message(code:'menu.yoda.systemSettings')}</g:link>
+                                    <g:link class="item" controller="yoda" action="manageSystemMessage">${message(code: 'menu.admin.systemMessage')}</g:link>
+                                    <g:link class="item" controller="yoda" action="appConfig">${message(code:'menu.yoda.appConfig')}</g:link>
 
 
                                     <g:link class="item" controller="yoda" action="profiler">${message(code:'menu.yoda.profiler')}</g:link>
                                     <g:link class="item" controller="yoda" action="quartzInfo">${message(code:'menu.yoda.quartzInfo')}</g:link>
                                     <g:link class="item" controller="yoda" action="cacheInfo">${message(code:'menu.yoda.cacheInfo')}</g:link>
 
-                                    <g:link class="item" controller="yoda" action="appSecurity">Security</g:link>
+                                    <g:link class="item" controller="yoda" action="appSecurity">${message(code:'menu.yoda.security')}</g:link>
                                     <g:link class="item" controller="yoda" action="userMatrix">${message(code:'menu.yoda.userMatrix')}</g:link>
                                     <g:link class="item" controller="yoda" action="userRoleDefinitions">${message(code:'menu.yoda.userRoleDefinitions')}</g:link>
 
@@ -412,7 +412,7 @@
 
                             <div class="divider"></div>
 
-                            <g:link class="item" controller="yoda" action="pendingChanges">Pending Changes</g:link>
+                            <g:link class="item" controller="yoda" action="pendingChanges">${message(code:'menu.yoda.pendingChanges')}</g:link>
 
                             <div class="divider"></div>
 
@@ -427,13 +427,13 @@
 
                             <div class="divider"></div>
 
-                            <g:link class="item" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">Start Global Data Sync</g:link>
-                            <g:link class="item" controller="yoda" action="manageGlobalSources">Manage Global Sources</g:link>
+                            <g:link class="item" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync')}</g:link>
+                            <g:link class="item" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</g:link>
 
                             <div class="divider"></div>
 
-                            <g:link class="item" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">Run Full ES Index Reset</g:link>
-                            <g:link class="item" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">Start ES Index Update</g:link>
+                            <g:link class="item" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">${message(code:'menu.yoda.resetESIndex')}</g:link>
+                            <g:link class="item" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">${message(code:'menu.yoda.updateESIndex')}</g:link>
                             <%--<g:link class="item" controller="yoda" action="logViewer">Log Viewer</g:link>--%>
                             <g:link class="item" controller="yoda" action="manageESSources" >Manage ES Source</g:link>
 
