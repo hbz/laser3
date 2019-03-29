@@ -17,7 +17,7 @@ import groovyx.gpars.GParsPool
 
 class StatsSyncService {
 
-    static final THREAD_POOL_SIZE = 1
+    static final THREAD_POOL_SIZE = 4
     static final SYNC_STATS_FROM = '2012-01-01'
 
     def grailsApplication
