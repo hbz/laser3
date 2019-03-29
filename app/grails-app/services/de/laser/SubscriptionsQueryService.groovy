@@ -79,9 +79,14 @@ from Subscription as s where (
                             " AND s.instanceOf is not null "
                 qry_params = ['roleType':role_sub_consortia, 'activeInst':contextOrg]
             } else {
-                base_qry =  " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
-                            " AND s.instanceOf is null "
-                qry_params = ['roleType':role_sub_consortia, 'activeInst':contextOrg]
+                if (params.showParentsAndChildsSubs) {
+                    base_qry =  " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) "
+                    qry_params = ['roleType':role_sub_consortia, 'activeInst':contextOrg]
+                } else {//nur Parents
+                    base_qry =  " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
+                                " AND s.instanceOf is null "
+                    qry_params = ['roleType':role_sub_consortia, 'activeInst':contextOrg]
+                }
             }
         }
 

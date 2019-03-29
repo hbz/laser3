@@ -25,6 +25,10 @@ class SubscriptionService {
     public static final String REPLACE = "REPLACE"
     public static final String DO_NOTHING = "DO_NOTHING"
 
+    /**
+     * Wenn ContextOrg == Konsortium: Konsortiallizenzen, TN-Lizenzen?, lokale Lizenzen
+     * Wenn ContextOrg == Einrichtung: TN-Lizenzen, lokale Lizenzen
+     */
     List getMySubscriptions_readRights(){
         def params = [:]
         List result
@@ -35,22 +39,49 @@ class SubscriptionService {
         params.orgRole = RDStore.OR_SUBSCRIBER.value
         tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
         result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+
+        if(!result.institution.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id)) {
+
+        } else if(!result.institution.getallOrgTypeIds().contains(RDStore.OT_INSTITUTION.id)) {
+
+        }
         result.sort{it.name}
     }
 
+    /**
+     * Wenn ContextOrg == Konsortium: ??? Konsortiallizenzen, TN-Lizenzen?, lokale Lizenzen
+     * Wenn ContextOrg == Einrichtung: lokale Lizenzen
+     */
     List getMySubscriptions_writeRights(){
-        List result
+        List result = []
         Map params = [:]
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-        result = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
-        params = [:]
-        params.status = RDStore.SUBSCRIPTION_CURRENT.id
-        params.orgRole = RDStore.OR_SUBSCRIBER.value
-        params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL_LICENSE.id}"
-        tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
-        result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+        String tmpQ
+
+        if(!result.institution.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id)) {
+            params.status = RDStore.SUBSCRIPTION_CURRENT.id
+            params.showParentsAndChildsSubs = 'true'
+            params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
+            tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+
+            params = [:]
+            params.status = RDStore.SUBSCRIPTION_CURRENT.id
+            params.orgRole = RDStore.OR_SUBSCRIBER.value
+            params.subTypes = RDStore.SUBSCRIPTION_TYPE_LOCAL_LICENSE.id
+            tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+
+        } else if(!result.institution.getallOrgTypeIds().contains(RDStore.OT_INSTITUTION.id)) {
+            //Teilnehmerlizenzen
+
+            //Lokallizenzen
+            params = [:]
+            params.status = RDStore.SUBSCRIPTION_CURRENT.id
+            params.orgRole = RDStore.OR_LICENSEE.value
+            params.subTypes = RDStore.SUBSCRIPTION_TYPE_LOCAL_LICENSE.id
+            tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+            result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+        }
         result.sort{it.name}
     }
 
