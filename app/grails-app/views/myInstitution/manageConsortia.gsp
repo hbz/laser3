@@ -18,7 +18,17 @@
 <semui:controlButtons>
     <semui:exportDropdown>
         <semui:exportDropdownItem>
-            <g:link class="item" action="manageConsortia" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
+            <g:if test="${filterSet}">
+                <g:link class="item js-open-confirm-modal"
+                        data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial', default: 'Achtung!  Dennoch fortfahren?')}"
+                        data-confirm-term-how="ok" controller="myInstitution" action="manageConsortia"
+                        params="${params+[exportXLS:'yes']}">
+                    ${message(code:'default.button.exports.xls')}
+                </g:link>
+            </g:if>
+            <g:else>
+                <g:link class="item" action="manageConsortia" params="${params+[exportXLS:'yes']}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
+            </g:else>
         </semui:exportDropdownItem>
     </semui:exportDropdown>
     <g:render template="actions"/>

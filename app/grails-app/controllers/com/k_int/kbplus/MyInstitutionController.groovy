@@ -18,6 +18,7 @@ import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.ClientAnchor
 import org.apache.poi.ss.usermodel.CreationHelper
 import org.apache.poi.ss.usermodel.Drawing
+import org.apache.poi.ss.usermodel.FillPatternType
 import org.apache.poi.ss.usermodel.RichTextString
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.xssf.streaming.SXSSFSheet
@@ -3318,6 +3319,9 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
         result.consortiaMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params)
         result.consortiaMembersCount = Org.executeQuery(fsq.query, fsq.queryParams).size()
+        result.filterSet = false
+        if(params.name || params.libraryType || params.federalState || params.libraryNetwork || params.property)
+            result.filterSet = true
 
         if ( params.exportXLS=='yes' ) {
 
@@ -3511,7 +3515,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             csNeutral.setFillPattern(FillPatternType.SOLID_FOREGROUND)
             SXSSFWorkbook workbook = new SXSSFWorkbook(wb,50)
             workbook.setCompressTempFiles(true)
-            SXSSFSheet sheet = workbook.createSheet(message(code:'menu.institutions.myConsortiaLicenses'))
+            SXSSFSheet sheet = workbook.createSheet(message(code:'menu.my.consortiaSubscriptions'))
             sheet.flushRows(10)
             sheet.setAutobreaks(true)
             Row headerRow = sheet.createRow(0)
@@ -4045,16 +4049,16 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                         if(prop.type.descr == pd.descr && prop.type == pd)
                         {
                             if(prop.type.type == Integer.toString()){
-                                value = prop.intValue.toString()
+                                value = prop.intValue.toString() ?: ''
                             }
                             else if (prop.type.type == String.toString()){
-                                value = prop.stringValue
+                                value = prop.stringValue ?: ''
                             }
                             else if (prop.type.type == BigDecimal.toString()){
-                                value = prop.decValue.toString()
+                                value = prop.decValue.toString() ?: ''
                             }
                             else if (prop.type.type == Date.toString()){
-                                value = prop.dateValue.toString()
+                                value = prop.dateValue.toString() ?: ''
                             }
                             else if (prop.type.type == RefdataValue.toString()) {
                                 value = prop.refValue?.getI10n('value') ?: ''
@@ -4067,16 +4071,16 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                         if(prop.type.descr == pd.descr && prop.type == pd)
                         {
                             if(prop.type.type == Integer.toString()){
-                                value = prop.intValue.toString()
+                                value = prop.intValue.toString() ?: ''
                             }
                             else if (prop.type.type == String.toString()){
-                                value = prop.stringValue
+                                value = prop.stringValue ?: ''
                             }
                             else if (prop.type.type == BigDecimal.toString()){
-                                value = prop.decValue.toString()
+                                value = prop.decValue.toString() ?: ''
                             }
                             else if (prop.type.type == Date.toString()){
-                                value = prop.dateValue.toString()
+                                value = prop.dateValue.toString() ?: ''
                             }
                             else if (prop.type.type == RefdataValue.toString()) {
                                 value = prop.refValue?.getI10n('value') ?: ''
