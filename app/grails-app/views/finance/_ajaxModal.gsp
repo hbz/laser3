@@ -2,7 +2,7 @@
 <%@ page import="de.laser.helper.RDStore; com.k_int.kbplus.*;org.springframework.context.i18n.LocaleContextHolder" %>
 <laser:serviceInjection />
 
-<g:render template="vars" /><%-- setting vars --%>
+<g:render template="vars" model="[org:contextService.getOrg()]"/><%-- setting vars --%>
 
 <g:set var="modalText" value="${message(code:'financials.addNewCost')}" />
 <g:set var="submitButtonLabel" value="${message(code:'default.button.create_new.label')}" />
@@ -582,9 +582,9 @@
                 }
                 else if(typeof(input) === 'string') {
                     output = 0.0;
-                    if(input.match(/(\d{1-3}\.?)*\d+,\d{2}/g))
+                    if(input.match(/(\d{1-3}\.?)*\d+(,\d{2})?/g))
                         output = parseFloat(input.replace(/\./g,"").replace(/,/g,"."));
-                    else if(input.match(/(\d{1-3},?)*\d+\.\d{2}/g)) {
+                    else if(input.match(/(\d{1-3},?)*\d+(\.\d{2})?/g)) {
                         output = parseFloat(input.replace(/,/g, ""));
                     }
                     else console.log("Please check over regex!");
