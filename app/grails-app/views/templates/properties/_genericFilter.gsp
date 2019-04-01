@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory" %>
+<%@ page import="com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;de.laser.helper.RDStore" %>
 <!-- genericFilter.gsp -->
 
 <div class="field">
@@ -52,10 +52,16 @@
                     $.ajax({
                         url: '<g:createLink controller="ajax" action="refdataSearchByOID"/>' + '?oid=' + selOpt.attr('data-rdc') + '&format=json',
                         success: function (data) {
+                            var genericNullValue = "${RefdataValue.class.name}:${RDStore.GENERIC_NULL_VALUE.id}";
                             var select = '<option value></option>';
                             for (var index = 0; index < data.length; index++) {
                                 var option = data[index];
-                                select += '<option value="' + option.value + '">' + option.text + '</option>';
+                                var optionText = option.text;
+                                console.log(option.value+" "+genericNullValue);
+                                if(option.value === genericNullValue) {
+                                    optionText = "<i>${RDStore.GENERIC_NULL_VALUE.getI10n('value')}</i>";
+                                }
+                                select += '<option value="' + option.value + '">' + optionText + '</option>';
                             }
                             select = '<select id="filterProp" name="filterProp" class="ui search selection dropdown">' + select + '</select>';
 
