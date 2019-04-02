@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;de.laser.helper.RDStore" %>
 <!-- genericFilter.gsp -->
-params.filterProp: ${params.filterProp}
+<%--params.filterProp: ${params.filterProp}--%>
 <div class="field">
     <label>${message(code: 'subscription.property.search')}
         <i class="question circle icon la-popup"></i>
