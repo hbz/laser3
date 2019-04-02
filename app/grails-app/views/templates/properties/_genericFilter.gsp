@@ -45,8 +45,6 @@
         var propertyFilterController = {
 
             updateProp: function (selOpt) {
-                console.log ("selOpt: ");
-                console.log (selOpt);
 
                 //If we are working with RefdataValue, grab the values and create select box
                 if (selOpt.attr('data-rdc')) {
@@ -58,7 +56,7 @@
                             for (var index = 0; index < data.length; index++) {
                                 var option = data[index];
                                 var optionText = option.text;
-                                console.log(option.value+" "+genericNullValue);
+
                                 if(option.value === genericNullValue) {
                                     optionText = "<em>${RDStore.GENERIC_NULL_VALUE.getI10n('value')}</em>";
                                 }
