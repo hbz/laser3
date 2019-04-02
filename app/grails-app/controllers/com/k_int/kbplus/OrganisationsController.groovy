@@ -4,21 +4,11 @@ import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
-import org.apache.poi.hssf.usermodel.HSSFRichTextString
-import org.apache.poi.hssf.usermodel.HSSFSheet
-import org.apache.poi.hssf.usermodel.HSSFWorkbook
-import org.apache.poi.ss.usermodel.Cell
-import org.apache.poi.ss.usermodel.Row
 import org.springframework.dao.DataIntegrityViolationException
 import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.*;
 import grails.plugin.springsecurity.SpringSecurityUtils
 import com.k_int.properties.*
-
-import java.sql.Ref
-
-import static grails.async.Promises.task
-import static grails.async.Promises.waitAll
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class OrganisationsController extends AbstractDebugController {
@@ -30,9 +20,9 @@ class OrganisationsController extends AbstractDebugController {
     def filterService
     def genericOIDService
     def propertyService
-    def orgDocumentService
     def docstoreService
     def instAdmService
+    def organisationService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -109,7 +99,7 @@ class OrganisationsController extends AbstractDebugController {
 
             def message = g.message(code: 'menu.public.all_orgs')
 
-            exportOrg(orgs, message, true)
+            organisationService.exportOrg(orgs, message, true)
             return
         }
 
@@ -167,8 +157,8 @@ class OrganisationsController extends AbstractDebugController {
         if ( params.exportXLS=='yes' ) {
             params.remove('max')
             def orgs = Org.findAll(fsq.query, fsq.queryParams, params)
-            def message = g.message(code: 'menu.public.all_provider')
-            exportOrg(orgs, message, false)
+            def message = g.message(code: 'menu.public.all_provider_escaped')
+            organisationService.exportOrg(orgs, message, false)
             return
         }
 
@@ -751,169 +741,5 @@ class OrganisationsController extends AbstractDebugController {
                 break
         }
         redirect action: 'listInstitution'
-    }
-
-    private def exportOrg(orgs, message, addHigherEducationTitles) {
-        try {
-            def titles = [
-                    'Name', g.message(code: 'org.shortname.label'), g.message(code: 'org.sortname.label')]
-
-            def orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
-            def orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
-
-
-            if(addHigherEducationTitles)
-            {
-                titles.add(g.message(code: 'org.libraryType.label'))
-                titles.add(g.message(code: 'org.libraryNetwork.label'))
-                titles.add(g.message(code: 'org.funderType.label'))
-                titles.add(g.message(code: 'org.federalState.label'))
-                titles.add(g.message(code: 'org.country.label'))
-            }
-
-            def propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-
-            propList.sort { a, b -> a.name.compareToIgnoreCase b.name}
-
-            propList.each {
-                titles.add(it.name)
-            }
-
-            def sdf = new java.text.SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
-            def datetoday = sdf.format(new Date(System.currentTimeMillis()))
-
-            HSSFWorkbook wb = new HSSFWorkbook();
-
-            HSSFSheet sheet = wb.createSheet(message);
-
-            //the following three statements are required only for HSSF
-            sheet.setAutobreaks(true);
-
-            //the header row: centered text in 48pt font
-            Row headerRow = sheet.createRow(0);
-            headerRow.setHeightInPoints(16.75f);
-            titles.eachWithIndex { titlesName, index ->
-                Cell cell = headerRow.createCell(index);
-                cell.setCellValue(titlesName);
-            }
-
-            //freeze the first row
-            sheet.createFreezePane(0, 1);
-
-            Row row;
-            Cell cell;
-            int rownum = 1;
-
-            orgs.sort{it.name}
-            orgs.each{  org ->
-                int cellnum = 0;
-                row = sheet.createRow(rownum);
-
-                //Name
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(org.name));
-
-                //Shortname
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(org.shortname));
-
-                //Sortname
-                cell = row.createCell(cellnum++);
-                cell.setCellValue(new HSSFRichTextString(org.sortname));
-
-
-                if(addHigherEducationTitles) {
-
-                    //libraryType
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.libraryType?.getI10n('value') ?: ' '));
-
-                    //libraryNetwork
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.libraryNetwork?.getI10n('value') ?: ' '));
-
-                    //funderType
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.funderType?.getI10n('value') ?: ' '));
-
-                    //federalState
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.federalState?.getI10n('value') ?: ' '));
-
-                    //country
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(org.country?.getI10n('value') ?: ' '));
-                }
-
-                propList.each { pd ->
-                    def value = ''
-                    org.customProperties.each{ prop ->
-                        if(prop.type.descr == pd.descr && prop.type == pd)
-                        {
-                            if(prop.type.type == Integer.toString()){
-                                value = prop.intValue.toString()
-                            }
-                            else if (prop.type.type == String.toString()){
-                                value = prop.stringValue
-                            }
-                            else if (prop.type.type == BigDecimal.toString()){
-                                value = prop.decValue.toString()
-                            }
-                            else if (prop.type.type == Date.toString()){
-                                value = prop.dateValue.toString()
-                            }
-                            else if (prop.type.type == RefdataValue.toString()) {
-                                value = prop.refValue?.getI10n('value') ?: ''
-                            }
-
-                        }
-                    }
-
-                    org.privateProperties.each{ prop ->
-                           if(prop.type.descr == pd.descr && prop.type == pd)
-                           {
-                               if(prop.type.type == Integer.toString()){
-                                   value = prop.intValue.toString()
-                               }
-                               else if (prop.type.type == String.toString()){
-                                   value = prop.stringValue
-                               }
-                               else if (prop.type.type == BigDecimal.toString()){
-                                   value = prop.decValue.toString()
-                               }
-                               else if (prop.type.type == Date.toString()){
-                                       value = prop.dateValue.toString()
-                                   }
-                               else if (prop.type.type == RefdataValue.toString()) {
-                                   value = prop.refValue?.getI10n('value') ?: ''
-                               }
-
-                           }
-                   }
-                    cell = row.createCell(cellnum++);
-                    cell.setCellValue(new HSSFRichTextString(value));
-                }
-
-                rownum++
-            }
-
-            for (int i = 0; i < 22; i++) {
-                sheet.autoSizeColumn(i);
-            }
-            // Write the output to a file
-            String file = message+"_${datetoday}.xls";
-            //if(wb instanceof XSSFWorkbook) file += "x";
-
-            response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
-            // response.contentType = 'application/xls'
-            response.contentType = 'application/vnd.ms-excel'
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-
-        }
-        catch ( Exception e ) {
-            log.error("Problem",e);
-            response.sendError(500)
-        }
     }
 }

@@ -485,8 +485,18 @@ from License as l where (
         if (params.filterPropDef) {
             fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
         }
-        result.orgList      = Org.findAll(fsq.query, fsq.queryParams, params)
-        result.orgListTotal = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams).size()
+        if ( params.exportXLS=='yes' ) {
+            params.remove('max')
+            def orgs = Org.findAll(fsq.query, fsq.queryParams, params)
+            def message = g.message(code: 'menu.public.all_provider_escaped')
+            organisationService.exportOrg(orgs, message, false)
+            return
+        }
+        else {
+            result.orgList      = Org.findAll(fsq.query, fsq.queryParams, params)
+            result.orgListTotal = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams).size()
+        }
+
         result
     }
 
