@@ -1,6 +1,6 @@
 <%@ page import="com.k_int.kbplus.RefdataValue;com.k_int.kbplus.RefdataCategory;de.laser.helper.RDStore" %>
 <!-- genericFilter.gsp -->
-
+params.filterProp: ${params.filterProp}
 <div class="field">
     <label>${message(code: 'subscription.property.search')}
         <i class="question circle icon la-popup"></i>
@@ -45,7 +45,8 @@
         var propertyFilterController = {
 
             updateProp: function (selOpt) {
-
+                console.log ("selOpt: ");
+                console.log (selOpt);
 
                 //If we are working with RefdataValue, grab the values and create select box
                 if (selOpt.attr('data-rdc')) {
@@ -53,26 +54,39 @@
                         url: '<g:createLink controller="ajax" action="refdataSearchByOID"/>' + '?oid=' + selOpt.attr('data-rdc') + '&format=json',
                         success: function (data) {
                             var genericNullValue = "${RefdataValue.class.name}:${RDStore.GENERIC_NULL_VALUE.id}";
-                            var select = '<option value></option>';
+                            var select = '';
                             for (var index = 0; index < data.length; index++) {
                                 var option = data[index];
                                 var optionText = option.text;
                                 console.log(option.value+" "+genericNullValue);
                                 if(option.value === genericNullValue) {
-                                    optionText = "<i>${RDStore.GENERIC_NULL_VALUE.getI10n('value')}</i>";
+                                    optionText = "<em>${RDStore.GENERIC_NULL_VALUE.getI10n('value')}</em>";
                                 }
-                                select += '<option value="' + option.value + '">' + optionText + '</option>';
+                                select += '<div class="item"  data-value="' + option.value + '">' + optionText + '</div>';
                             }
-                            select = '<select id="filterProp" name="filterProp" class="ui search selection dropdown">' + select + '</select>';
+
+                            select = ' <div   class="ui fluid search selection dropdown la-filterProp">' +
+                                '   <input type="hidden" id="filterProp" name="filterProp">' +
+                                '   <i class="dropdown icon"></i>' +
+                                '   <div class="default text">${message(code: 'default.select.choose.label', default: 'Please Choose...')}</div>' +
+                                '   <div class="menu">'
+                                + select +
+                                '   </div>' +
+                                '</div>';
+
+
 
                             $('label[for=filterProp]').next().replaceWith(select);
 
-                            $('#filterProp').dropdown({
-                                duration: 150,
-                                transition: 'fade'
-                            });
 
+                            $('.la-filterProp').dropdown({
+                                duration: 150,
+                                transition: 'fade',
+                                clearable: true
+                            });
+                            
                         }, async: false
+
                     });
                 } else {
                     $('label[for=filterProp]').next().replaceWith(
@@ -118,18 +132,16 @@
                     var hiddenInput = $('#filterPropDef').val("${params.filterPropDef}");
 
 
+
                     propertyFilterController.updateProp(selOpt);
+
 
                     // set filterProp by params
                     var paramFilterProp = "${params.filterProp}";
-                    if ($('#filterProp').is('input')) {
-                        $('#filterProp').val(paramFilterProp);
-                    }
-                    else {
-                        $('#filterProp option').filter(function () {
-                            return $(this).val() == paramFilterProp;
-                        }).prop('selected', true);
-                    }
+
+                    $('#filterProp').val(paramFilterProp);
+
+
 
             }
         }
