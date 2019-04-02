@@ -607,8 +607,8 @@ class GlobalSourceSyncService {
                           changeType  : PendingChangeService.EVENT_OBJECT_UPDATE,
                           changeDoc   : change_doc
                   ])
-        } else {
-          throw new RuntimeException("changeDoc is empty. ctx:${ctx}, tipp:${tipp}");
+        } else if(!change_doc && !changeTitle) {
+          throw new RuntimeException("changes could not be recorded but there are some??? ctx:${ctx}, tipp:${tipp}");
         }
       }
       else {
