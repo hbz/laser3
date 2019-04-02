@@ -73,16 +73,17 @@
                                 '</div>';
 
 
-
                             $('label[for=filterProp]').next().replaceWith(select);
 
 
                             $('.la-filterProp').dropdown({
                                 duration: 150,
                                 transition: 'fade',
-                                clearable: true
+                                clearable: true,
+                                onChange: function (value, text, $selectedItem) {
+                                    value.length === 0 ? $(this).removeClass("la-filter-selected") : $(this).addClass("la-filter-selected");
+                                }
                             });
-                            
                         }, async: false
 
                     });
