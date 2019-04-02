@@ -78,11 +78,15 @@
                             <semui:xEditable owner="${prop}" type="date" field="dateValue" overwriteEditable="${overwriteEditable}" />
                         </g:elseif>
                         <g:elseif test="${prop.type.type == URL.toString()}">
-                            <semui:xEditable owner="${prop}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" />
+                            <semui:xEditable owner="${prop}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" class="la-overflow la-ellipsis"/>
+                            <g:if test="${prop.value}">
+                                <semui:linkIcon />
+                            </g:if>
                         </g:elseif>
                         <g:elseif test="${prop.type.type == RefdataValue.toString()}">
                             <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}" />
                         </g:elseif>
+
                     </td>
                     <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
                         <td>
@@ -93,15 +97,6 @@
                         <semui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}" />
                     </td>
                     <td class="x">
-                        <g:if test="${prop.type.type == URL.toString()}">
-                            <g:if test="${prop.value}">
-                                <span data-position="top right" data-tooltip="Diese URL aufrufen ..">
-                                    <a href="${prop.value}" target="_blank" class="ui icon blue button la-js-dont-hide-button">
-                                        <i class="share square icon"></i>
-                                    </a>
-                                </span>
-                            </g:if>
-                        </g:if>
                         <g:if test="${overwriteEditable == true}">
                             <button class="ui icon negative button js-open-confirm-modal-copycat">
                                 <i class="trash alternate icon"></i>
