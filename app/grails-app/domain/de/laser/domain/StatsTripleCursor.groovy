@@ -8,11 +8,12 @@ class StatsTripleCursor {
     String titleId
     String supplierId
     String customerId
-    String haveUpTo
     String jerror
+    Date availFrom
+    Date availTo
     Integer numFacts
 
-    @RefdataAnnotation(cat = '?')
+    @RefdataAnnotation(cat = 'FactType')
     RefdataValue factType
 
     static mapping = {
@@ -25,7 +26,8 @@ class StatsTripleCursor {
         titleId(nullable:false, blank:false,maxSize:32)
         supplierId(nullable:false, blank:false,maxSize:32)
         customerId(nullable:false, blank:false,maxSize:32)
-        haveUpTo(nullable:false, blank:false,maxSize:32)
+        availFrom(nullable:false, blank:false)
+        availTo(nullable:true, blank: false)
         numFacts(nullable:false, blank:false,maxSize:11)
         jerror(nullable:true, blank:true)
     }
