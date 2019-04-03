@@ -46,9 +46,11 @@
                         Set<PersonRole> pRoles = person?.roleLinks?.findAll{ restrictToOrg ? (it.org == restrictToOrg) : it }?.sort{it.org.sortname}
 
                         List<PersonRole> pRolesSorted = []
+                        int countFunctions = 0
+
                         pRoles.each{ item ->
                             if (item.functionType) {
-                                pRolesSorted.add(0, item)
+                                pRolesSorted.add(countFunctions++, item)
                             }
                             else {
                                 pRolesSorted.push(item)
