@@ -84,7 +84,7 @@
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.endDate.label')}</dt>
                                 <dd><semui:xEditable owner="${subscriptionInstance}" field="endDate" type="date"/></dd>
-                                <dd><semui:auditButton  auditable="[subscriptionInstance, 'endDate']"/></dd>
+                                <dd><semui:auditButton auditable="[subscriptionInstance, 'endDate']"/></dd>
                             </dl>
                             <% /*
                             <dl>
