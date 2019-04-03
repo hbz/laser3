@@ -16,6 +16,9 @@ import org.apache.poi.ss.usermodel.*
 import com.k_int.properties.*
 import de.laser.DashboardDueDate
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.springframework.web.servlet.LocaleResolver
+import org.springframework.web.servlet.support.RequestContextUtils
+
 import java.sql.Timestamp
 import java.text.DateFormat
 
@@ -2802,6 +2805,19 @@ AND EXISTS (
     def dashboard() {
 
         def result = setResultGenerics()
+
+        // set language by user settings, create if not existing
+        def uss = UserSettings.get(result.user, UserSettings.KEYS.LANGUAGE)
+        if (uss == UserSettings.SETTING_NOT_FOUND) {
+            uss = UserSettings.add(result.user, UserSettings.KEYS.LANGUAGE, RefdataValue.getByValueAndCategory('de', 'Language'))
+        }
+
+        RefdataValue rdvLocale = uss.getValue()
+        if (rdvLocale) {
+            LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request)
+            localeResolver.setLocale(request, response, new Locale(rdvLocale.value, rdvLocale.value.toUpperCase()))
+        }
+        // --
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
