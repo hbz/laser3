@@ -49,9 +49,11 @@
                             ${prop.type.getI10n('name')}
                         </g:else>
                         <%
+                            /*
                             if (AuditConfig.getConfig(prop)) {
                                 println '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
                             }
+                            */
 
                             if (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) {
                                 if (ownobj.isSlaved?.value?.equalsIgnoreCase('yes')) {
@@ -104,21 +106,41 @@
                             <g:if test="${ownobj.hasProperty('instanceOf') && showConsortiaFunctions}">
                                 <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />
 
-                                <span data-position="top right" data-tooltip="${message(code:'property.audit.tooltip')}">
-                                    <button class="ui icon button js-open-confirm-modal-copycat">
-                                        <i class="thumbtack icon"></i>
-                                    </button>
-                                    <g:remoteLink class="js-gost"
-                                                  controller="ajax" action="togglePropertyAuditConfig"
-                                                  params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]' id="${prop.id}"
-                                                  data-confirm-term-what="property"
-                                                  data-confirm-term-what-detail="${prop.type.getI10n('name')}"
-                                                  data-confirm-term-how="inherit"
-                                                  onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                                  onComplete="c3po.loadJsAfterAjax()"
-                                                  update="${custom_props_div}">
-                                    </g:remoteLink>
-                                </span>
+
+                                <g:if test="${! AuditConfig.getConfig(prop)}">
+                                    <span data-position="top right" data-tooltip="${message(code:'property.audit.tooltip')}">
+                                        <button class="ui icon button js-open-confirm-modal-copycat">
+                                            <i class="thumbtack icon"></i>
+                                        </button>
+                                        <g:remoteLink class="js-gost"
+                                                      controller="ajax" action="togglePropertyAuditConfig"
+                                                      params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]' id="${prop.id}"
+                                                      data-confirm-term-what="property"
+                                                      data-confirm-term-what-detail="${prop.type.getI10n('name')}"
+                                                      data-confirm-term-how="inherit"
+                                                      onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                                      onComplete="c3po.loadJsAfterAjax()"
+                                                      update="${custom_props_div}">
+                                        </g:remoteLink>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <span data-position="top right" data-tooltip="${message(code:'property.audit.tooltip')}">
+                                        <button class="ui icon button green js-open-confirm-modal-copycat">
+                                            <i class="thumbtack icon"></i>
+                                        </button>
+                                        <g:remoteLink class="js-gost"
+                                                      controller="ajax" action="togglePropertyAuditConfig"
+                                                      params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]' id="${prop.id}"
+                                                      data-confirm-term-what="property"
+                                                      data-confirm-term-what-detail="${prop.type.getI10n('name')}"
+                                                      data-confirm-term-how="inherit"
+                                                      onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                                      onComplete="c3po.loadJsAfterAjax()"
+                                                      update="${custom_props_div}">
+                                        </g:remoteLink>
+                                    </span>
+                                </g:else>
                             </g:if>
 
                             <g:if test="${! AuditConfig.getConfig(prop)}">

@@ -41,7 +41,7 @@
                             <g:if test="${com.k_int.kbplus.Package.findByGokbId(hit.uuid)}">
                                 <g:set var="style" value="${(com.k_int.kbplus.Package.findByGokbId(hit.uuid)?.name != hit.name) ? "style=background-color:red;":''}"/>
                                 <td ${style}>
-                                    <g:link controller="packageDetails" target="_blank" action="current" id="${com.k_int.kbplus.Package.findByGokbId(hit.uuid).id}">${com.k_int.kbplus.Package.findByGokbId(hit.uuid).name}</g:link>
+                                    <g:link controller="package" target="_blank" action="current" id="${com.k_int.kbplus.Package.findByGokbId(hit.uuid).id}">${com.k_int.kbplus.Package.findByGokbId(hit.uuid).name}</g:link>
                                 </td>
                             </g:if>
                             <g:else>

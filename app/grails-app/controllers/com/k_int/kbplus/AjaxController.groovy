@@ -12,6 +12,9 @@ import grails.converters.*
 import com.k_int.properties.PropertyDefinition
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.web.servlet.LocaleResolver
+import org.springframework.web.servlet.support.RequestContextUtils
 
 import java.text.SimpleDateFormat
 
@@ -264,6 +267,16 @@ class AjaxController {
           if (target instanceof User) {
             session.userPereferences = null
           }
+
+            if (target instanceof UserSettings) {
+                if (target.key.toString() == 'LANGUAGE') {
+                    Locale newLocale = new Locale(value.value, value.value.toUpperCase())
+                    log.debug("UserSettings: LANGUAGE changed to: " + newLocale)
+
+                    LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request)
+                    localeResolver.setLocale(request, response, newLocale)
+                }
+            }
 
           if ( params.resultProp ) {
             result = value[params.resultProp]
