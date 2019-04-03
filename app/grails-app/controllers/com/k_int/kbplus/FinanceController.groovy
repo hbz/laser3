@@ -69,6 +69,8 @@ class FinanceController extends AbstractDebugController {
         }
         else if(OrgRole.findByRoleTypeAndOrg(RDStore.OR_SUBSCRIBER_CONS,result.institution))
             result.showView = "subscr"
+        else result.showView = "own"
+        result.view = params.view
         result.filterPresets = result.financialData.filterPresets
         result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:result.institution])
         result
@@ -106,6 +108,7 @@ class FinanceController extends AbstractDebugController {
         else if(OrgRole.findBySubAndOrgAndRoleType(result.subscription,result.institution,RDStore.OR_SUBSCRIBER_CONS))
             result.showView = "subscr"
         else result.showView = "own"
+        result.view = params.view
         result.filterPresets = result.financialData.filterPresets
         result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:result.institution])
         Map navigation = navigationGenerationService.generateNavigation(Subscription.class.name,result.subscription.id)

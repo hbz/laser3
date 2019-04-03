@@ -47,6 +47,7 @@
 								<th>${message(code:'identifier.plural', default:'Identifiers')}</th>
 								<th>${message(code:'org.shortname.label', default:'Shortname')}</th>
 								<th>${message(code:'org.country.label', default:'Country')}</th>
+								<th>${message(code: 'org.consortiaToggle.label')}</th>
 							</tr>
 							</thead>
 							<tbody>
@@ -54,7 +55,7 @@
 								<tr>
 									<td>
 										${institutionInstance.name}
-										<g:if test="${(contextService.org.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id) && consortia.get(institutionInstance.id).contains(contextService.org.id) && consortia.get(institutionInstance.id)?.size() == 1) || SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN,ROLE_YODA")}">
+										<g:if test="${(contextService.org.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id) && consortia.get(institutionInstance.id)?.contains(contextService.org.id) && consortia.get(institutionInstance.id)?.size() == 1) || SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN,ROLE_YODA")}">
 											<g:link controller="organisations" action="show" id="${institutionInstance.id}" params="${[institutionalView: true]}">(${message(code:'default.button.edit.label', default:'Edit')})</g:link>
 										</g:if>
 									</td>
@@ -67,6 +68,19 @@
 									</ul></td>
 									<td>${institutionInstance.shortname}</td>
 									<td>${institutionInstance.country}</td>
+									<td>
+									<%-- here: switch if in consortia or not --%>
+										<g:if test="${!consortia.keySet().contains(institutionInstance.id)}">
+											<g:link class="ui icon positive button" data-tooltip="${message(code:'org.consortiaToggle.add.label')}" controller="organisations" action="toggleCombo" params="${params+[direction:'add',fromOrg:institutionInstance.id]}">
+												<i class="plus icon"></i>
+											</g:link>
+										</g:if>
+										<g:elseif test="${consortia.keySet().contains(institutionInstance.id)}">
+											<g:link class="ui icon negative button" data-tooltip="${message(code:'org.consortiaToggle.remove.label')}" controller="organisations" action="toggleCombo" params="${params+[direction:'remove',fromOrg:institutionInstance.id]}">
+												<i class="minus icon"></i>
+											</g:link>
+										</g:elseif>
+									</td>
 								</tr>
 							</g:each>
 							</tbody>
@@ -87,7 +101,7 @@
 						<bootstrap:alert class="alert-info">${message(code:'org.findInstitutionMatches.no_match', args:[params.proposedInstitution])}</bootstrap:alert>
 						<g:link controller="organisations" action="createInstitution" class="ui positive button" params="${[institution:params.proposedInstitution]}">${message(code:'org.findInstitutionMatches.no_matches.create', default:'Create New Institution with the Name', args: [params.proposedInstitution])}</g:link>
 					</g:elseif>
-					<g:elseif test="${params.proposedInstitutionID}">
+					<g:elseif test="${params.proposedInstitutionID && !params.proposedInstitutionID.isEmpty()}">
 						<bootstrap:alert class="alert-info">${message(code:'org.findInstitutionMatches.no_id_match', args:[params.proposedInstitutionID])}</bootstrap:alert>
 					</g:elseif>
 				</g:if>

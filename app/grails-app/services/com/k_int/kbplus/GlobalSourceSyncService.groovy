@@ -145,6 +145,9 @@ class GlobalSourceSyncService {
   }
 
   def titleConv = { md, synctask ->
+
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+
     log.debug("titleConv.... ${md}");
     def result = [:]
     result.parsed_rec = [:]
@@ -160,8 +163,8 @@ class GlobalSourceSyncService {
     result.parsed_rec.editionDifferentiator = md.gokb.title.editionDifferentiator?.text() ?: null
     result.parsed_rec.editionStatement = md.gokb.title.editionStatement?.text() ?: null
     result.parsed_rec.volumeNumber = md.gokb.title.volumeNumber?.text() ?: null
-    result.parsed_rec.dateFirstInPrint = md.gokb.title.dateFirstInPrint?.text() ?: null
-    result.parsed_rec.dateFirstOnline = md.gokb.title.dateFirstOnline?.text() ?: null
+    result.parsed_rec.dateFirstInPrint = md.gokb.title.dateFirstInPrint?.text() ? sdf.parse(md.gokb.title.dateFirstInPrint?.text()).format('yyyy-MM-dd HH:mm:ss.S') : null
+    result.parsed_rec.dateFirstOnline = md.gokb.title.dateFirstOnline?.text() ? sdf.parse(md.gokb.title.dateFirstOnline?.text()).format('yyyy-MM-dd HH:mm:ss.S') : null
 
     //Ebooks Fields
     result.parsed_rec.firstAuthor = md.gokb.title.firstAuthor?.text() ?: null
@@ -395,7 +398,7 @@ class GlobalSourceSyncService {
           origin_uri = i.value
         }
       }
-      updatedTitleafterPackageReconcile(grt, origin_uri, title_instance.id)
+      updatedTitleafterPackageReconcile(grt, origin_uri, title_instance.id, tipp?.title?.gokbId)
 
       def plat_instance = Platform.lookupOrCreatePlatform([name:tipp.platform, gokbId: tipp.platformUuid]);
       def tipp_status_str = tipp.status ? tipp.status.capitalize():'Current'
@@ -511,7 +514,7 @@ class GlobalSourceSyncService {
           origin_uri = i.value
         }
       }
-      updatedTitleafterPackageReconcile(grt, origin_uri, title_of_tipp_to_update.id)
+      updatedTitleafterPackageReconcile(grt, origin_uri, title_of_tipp_to_update.id, tipp?.title?.gokbId)
 
       def db_tipp = null
 
@@ -1266,7 +1269,7 @@ class GlobalSourceSyncService {
     return result
   }
 
-  def updatedTitleafterPackageReconcile = { grt, title_id, local_id ->
+  def updatedTitleafterPackageReconcile = { grt, title_id, local_id, title_uuid ->
     //rectype = 2 = Title
     def cfg = rectypes[2]
 
@@ -1275,7 +1278,7 @@ class GlobalSourceSyncService {
 
     uri = uri.replaceAll("packages", "")
 
-    if(title_id == null)
+    if(title_uuid == null)
     {
       return
     }
@@ -1283,11 +1286,15 @@ class GlobalSourceSyncService {
     def oai = new OaiClientLaser()
     def titlerecord = null
 
-    if(record_uuid) {
+    /*if(record_uuid) {
       titlerecord = oai.getRecord(uri, 'titles', record_uuid)
+    }*/
+
+    if(!titlerecord && title_uuid) {
+      titlerecord = oai.getRecord(uri, 'titles', title_uuid)
     }
 
-    if(!titlerecord) {
+    if(!titlerecord && title_id) {
       titlerecord = oai.getRecord(uri, 'titles', 'org.gokb.cred.TitleInstance:'+title_id)
     }
 
@@ -1295,16 +1302,19 @@ class GlobalSourceSyncService {
     {
       return
     }
+
     def titleinfo = titleConv(titlerecord.metadata, null)
 
     log.debug("TitleRecord:" + titleinfo)
 
     def kbplus_compliant = testTitleCompliance(titleinfo.parsed_rec)
 
+
+
     if (kbplus_compliant?.value == 'No') {
       log.debug("Skip record - not KBPlus compliant");
     } else {
-
+              titleinfo = titleinfo?.parsed_rec ?: titleinfo
               def title_instance = TitleInstance.get(local_id)
 
               if (title_instance == null) {
@@ -1314,12 +1324,15 @@ class GlobalSourceSyncService {
 
               if (title_instance instanceof BookInstance)
               {
-                  title_instance.editionNumber = titleinfo.editionNumber
+
+                def sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+                  //Solange von GOKB kein Integer Feld kommt, weg lassen
+                  //title_instance.editionNumber = titleinfo.editionNumber
                   title_instance.editionDifferentiator = titleinfo.editionDifferentiator
                   title_instance.editionStatement = titleinfo.editionStatement
                   title_instance.volume = titleinfo.volumeNumber
-                  title_instance.dateFirstInPrint = titleinfo.dateFirstInPrint
-                  title_instance.dateFirstOnline = titleinfo.dateFirstOnline
+                  title_instance.dateFirstInPrint =  ((titleinfo.dateFirstInPrint != null) && (titleinfo.dateFirstInPrint.length() > 0)) ? sdf.parse(titleinfo.dateFirstInPrint) : null
+                  title_instance.dateFirstOnline = ((titleinfo.dateFirstOnline != null) && (titleinfo.dateFirstOnline.length() > 0)) ? sdf.parse(titleinfo.dateFirstOnline) : null
 
                   title_instance.firstAuthor = titleinfo.firstAuthor
                   title_instance.firstEditor = titleinfo.firstEditor

@@ -106,7 +106,7 @@
                                     <%--<td>${hit.getSource().consortiaName}</td>--%>
                                     <td>
                                         <g:if test="${editable && (!pkgs || !pkgs.contains(hit.getSource().dbId.toLong()))}">
-                                            <g:link action="linkPackage" class="ui mini button packageLink"
+                                            <g:link action="linkPackage" class="ui mini button packageLinkWithoutIE"
                                                     id="${params.id}"
                                                     params="${[addId: hit.getSource().dbId, addType: 'Without']}"
                                                     style="white-space:nowrap;">${message(code: 'subscription.details.link.no_ents', default: 'Link (no Entitlements)')}</g:link>
@@ -149,7 +149,7 @@
 
                                     <td class="right aligned">
                                         <g:if test="${editable && (!pkgs || !(hit.uuid in pkgs))}">
-                                            <g:link action="linkPackage" class="ui mini button packageLink"
+                                            <g:link action="linkPackage" class="ui mini button packageLinkWithoutIE"
                                                     id="${params.id}"
                                                     params="${[impId: hit.uuid, addType: 'Without']}"
                                                     style="white-space:nowrap;">${message(code: 'subscription.details.link.no_ents', default: 'Link (no Entitlements)')}</g:link>
@@ -261,6 +261,18 @@
             evt.preventDefault();
 
             var check = confirm('${message(code: 'subscription.details.link.with_ents.confirm', default: 'Are you sure you want to add with entitlements?')}');
+            console.log(check)
+            if (check == true) {
+                toggleAlert();
+                window.open($(this).attr('href'), "_self");
+            }
+        });
+
+        $(".packageLinkWithoutIE").click(function(evt) {
+
+            evt.preventDefault();
+
+            var check = confirm('${message(code: 'subscription.details.link.no_ents.confirm', default: 'Are you sure you want to add with entitlements?')}');
             console.log(check)
             if (check == true) {
                 toggleAlert();
