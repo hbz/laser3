@@ -19,12 +19,33 @@ import org.w3c.dom.Element;
  * CSV methods will stream out the content of the file to a given output.
  * XML methods are provided to build the XML document
  * JSON methods build a Map object which can then be converted into Json.
- * 
+ *
+ * To be modified: the now specialised methods should be generalised into one method generating all exports.
+ *
  * @author wpetit
+ * @author agalffy
  */
 class ExportService {
 	def formatter = new java.text.SimpleDateFormat("yyyy-MM-dd")
-	
+
+	/*
+		new CSV export interface - should subsequently replace StreamOutLicenseCSV, StreamOutSubsCSV and StreamOutTitlesCSV
+		continue:
+		create structure for each point using this export point:
+			- title [colHeader1, colHeader2, ..., colHeaderN]
+			- columnData [
+				[field1, field2, ..., fieldN]
+			]
+	 */
+	String exportCSV(List titleRow, List columnData) {
+		List output = []
+		output.add(titleRow.join(","))
+		columnData.each { row ->
+			output.add(row.join(","))
+		}
+		output.join("\n")
+	}
+
 	/* *************
 	 *  CSV Exports 
 	 */

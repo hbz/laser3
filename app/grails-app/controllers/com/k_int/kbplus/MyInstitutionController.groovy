@@ -593,7 +593,7 @@ from License as l where (
 
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
 
-        if ( params.forExport ) {
+        if ( params.exportXLS ) {
             exportcurrentSubscription(subscriptions)
             return
         }
@@ -1352,6 +1352,7 @@ from License as l where (
             result.entitlements = sql.rows(exportQuery,qry_params).collect { IssueEntitlement.get(it.ie_id) }
         } 
 
+        result.filterSet = params.filterSet ? true : false
         String filename = "titles_listing_${result.institution.shortcode}"
         withFormat {
             html {
@@ -3277,7 +3278,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 }
             }
         }
-
+        result.filterSet = params.filterSet ? true : false
         def fsq = filterService.getOrgQuery(params)
         result.availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
 
@@ -3293,7 +3294,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
             def orgs = result.availableOrgs
 
-            def message = g.message(code: 'menu.public.all_orgs')
+            def message = g.message(code: 'export.all.orgs')
 
             exportOrg(orgs, message, true)
             return
@@ -3481,7 +3482,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 query + " " + orderQuery, qarams
         )
         result.countCostItems = costs.size()
-        if(params.forExport)
+        if(params.exportXLS || params.exportCSV)
             result.costItems = costs
         else result.costItems = costs.drop((int) result.offset).take((int) result.max)
 
@@ -3509,7 +3510,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result.benchMark = bm
         log.debug (bm)
 
-        if(params.forExport) {
+        if(params.exportXLS || params.exportCSV) {
             SimpleDateFormat sdf = new SimpleDateFormat(message(code:'default.date.format.notime'))
             XSSFWorkbook wb = new XSSFWorkbook()
             BidiMap subLinks = new DualHashBidiMap()

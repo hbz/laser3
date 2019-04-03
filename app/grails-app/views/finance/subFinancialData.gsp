@@ -26,15 +26,15 @@
                 <semui:exportDropdownItem>
                     <g:if test="${params.submit || params.filterSubStatus}">
                         <g:link  class="item js-open-confirm-modal"
-                                 data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial', default: 'Achtung!  Dennoch fortfahren?')}"
+                                 data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
                                  data-confirm-term-how="ok"
                                  controller="finance"
                                  action="financialsExport"
-                                 params="${params+[forExport:true,sub:subscription.id]}">${message(code:'default.button.exports.xls', default:'XLS Export')}
+                                 params="${params+[exportXLS:true,sub:subscription.id]}">${message(code:'default.button.exports.xls')}
                         </g:link>
                     </g:if>
                     <g:else>
-                        <g:link class="item" controller="finance" action="financialsExport" params="${params+[forExport:true,sub:subscription.id]}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
+                        <g:link class="item" controller="finance" action="financialsExport" params="${params+[exportXLS:true,sub:subscription.id]}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
                     </g:else>
                 </semui:exportDropdownItem>
             <%--

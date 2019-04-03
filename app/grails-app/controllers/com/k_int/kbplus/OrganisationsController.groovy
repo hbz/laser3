@@ -101,8 +101,8 @@ class OrganisationsController extends AbstractDebugController {
 
             def orgs = Org.findAll(fsq.query, fsq.queryParams, params)
 
-            def message = g.message(code: 'menu.public.all_orgs')
-            SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+            def message = g.message(code: 'export.all.orgs')
+            SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime'))
             String datetoday = sdf.format(new Date(System.currentTimeMillis()))
             try {
                 SXSSFWorkbook wb = organisationService.exportOrg(orgs, message, true)

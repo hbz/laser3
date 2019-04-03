@@ -844,13 +844,16 @@ class SubscriptionDetailsController extends AbstractDebugController {
         result.navPrevSubscription = links.prevLink
         result.navNextSubscription = links.nextLink
 
+        result.filterSet = params.filterSet ? true : false
+
         if (params.exportXLS == 'yes') {
             def orgs = []
             Map allContacts = Person.getPublicAndPrivateEmailByFunc('General contact person')
             Map publicContacts = allContacts.publicContacts
             Map privateContacts = allContacts.privateContacts
-            validSubChilds.each { subChild ->
-                subChild.getAllSubscribers().each { subscr ->
+            result.filteredSubChilds.each { row ->
+                Subscription subChild = (Subscription) row.sub
+                row.orgs.each { subscr ->
                     def org = [:]
                     org.name = subscr.name
                     org.sortname = subscr.sortname

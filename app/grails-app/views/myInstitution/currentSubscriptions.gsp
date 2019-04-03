@@ -21,14 +21,14 @@
                 <semui:exportDropdownItem>
                     <g:if test="${filterSet || defaultSet}">
                         <g:link class="item js-open-confirm-modal"
-                                data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial', default: 'Achtung!  Dennoch fortfahren?')}"
+                                data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
                                 data-confirm-term-how="ok" controller="myInstitution" action="currentSubscriptions"
-                                params="${params+[forExport:true]}">
+                                params="${params+[exportXLS:true]}">
                             ${message(code:'default.button.exports.xls')}
                         </g:link>
                     </g:if>
                     <g:else>
-                        <g:link class="item" controller="myInstitution" action="currentSubscriptions" params="${params+[forExport:true]}">${message(code:'default.button.exports.xls')}</g:link>
+                        <g:link class="item" controller="myInstitution" action="currentSubscriptions" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
                     </g:else>
                 </semui:exportDropdownItem>
             </semui:exportDropdown>
