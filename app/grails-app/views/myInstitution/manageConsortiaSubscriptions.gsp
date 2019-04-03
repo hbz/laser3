@@ -6,7 +6,7 @@
 <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}"/>
-    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'menu.my.consortiaLicenses')}</title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : ${message(code: 'menu.my.consortiaSubscriptions')}</title>
 </head>
 
 <body>
@@ -17,18 +17,18 @@
 
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
-    <semui:crumb message="menu.my.consortiaLicenses" class="active"/>
+    <semui:crumb message="menu.my.consortiaSubscriptions" class="active"/>
 </semui:breadcrumbs>
 
 <h1 class="ui left aligned icon header">
-    <semui:headerIcon />${message(code: 'menu.my.consortiaLicenses')}
+    <semui:headerIcon />${message(code: 'menu.my.consortiaSubscriptions')}
     <semui:totalNumber total="${countCostItems}"/>
 </h1>
 
 <semui:messages data="${flash}"/>
 
 <semui:filter>
-    <g:form action="manageConsortiaLicenses" controller="myInstitution" method="get" class="form-inline ui small form">
+    <g:form action="manageConsortiaSubscriptions" controller="myInstitution" method="get" class="form-inline ui small form">
 
         <div class="three fields">
             <div class="field">
@@ -102,7 +102,7 @@
                         <g:each in="${filterSubTypes}" var="subType">
                             <div class="inline field">
                                 <div class="ui checkbox">
-                                    <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
+                                    <label for="checkSubType-${subType.id}">${subType?.getI10n('value')}</label>
                                     <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
                                         <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
                                            tabindex="0">
@@ -139,7 +139,7 @@
                 <td>
                     <p><strong>${choosenOrg?.name} (${choosenOrg?.shortname})</strong></p>
 
-                    ${choosenOrg?.libraryType.getI10n('value')}
+                    ${choosenOrg?.libraryType?.getI10n('value')}
                 </td>
                 <td>
                     <g:if test="${choosenOrgCPAs}">
@@ -302,7 +302,7 @@
     </tfoot>
 </table>
 
-<semui:paginate action="manageConsortiaLicenses" controller="myInstitution" params="${params}"
+<semui:paginate action="manageConsortiaSubscriptions" controller="myInstitution" params="${params}"
                 next="${message(code:'default.paginate.next', default:'Next')}"
                 prev="${message(code:'default.paginate.prev', default:'Prev')}"
                 max="${max}" total="${countCostItems}" />
