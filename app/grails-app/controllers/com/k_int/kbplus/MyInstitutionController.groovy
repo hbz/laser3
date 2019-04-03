@@ -61,6 +61,7 @@ class MyInstitutionController extends AbstractDebugController {
     def subscriptionsQueryService
     def orgTypeService
     def orgDocumentService
+    def organisationService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -482,15 +483,34 @@ from License as l where (
         params.max  = params.max ?: result.user?.getDefaultPageSizeTMP()
 
         def fsq  = filterService.getOrgQuery([constraint_orgIds: orgIds] << params)
+        result.filterSet = params.filterSet ? true : false
         if (params.filterPropDef) {
             fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
         }
+
         if ( params.exportXLS=='yes' ) {
             params.remove('max')
-            def orgs = Org.findAll(fsq.query, fsq.queryParams, params)
-            def message = g.message(code: 'menu.public.all_provider_escaped')
-            organisationService.exportOrg(orgs, message, false)
-            return
+            def message = g.message(code: 'export.my.currentProviders')
+            SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            try {
+                SXSSFWorkbook wb = organisationService.exportOrg(Org.findAll(fsq.query, fsq.queryParams, params), message, true)
+                // Write the output to a file
+                String file = message+"_${datetoday}.xlsx"
+
+                response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb.write(response.outputStream)
+                response.outputStream.flush()
+                response.outputStream.close()
+                wb.dispose()
+
+                return
+            }
+            catch (Exception e) {
+                log.error("Problem",e);
+                response.sendError(500)
+            }
         }
         else {
             result.orgList      = Org.findAll(fsq.query, fsq.queryParams, params)
@@ -506,8 +526,8 @@ from License as l where (
     def currentSubscriptions() {
         def result = setResultGenerics()
 
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0;
+        result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = ?", [result.institution])
 
@@ -536,6 +556,7 @@ from License as l where (
         if (! params.status) {
             if (params.isSiteReloaded != "yes") {
                 params.status = RDStore.SUBSCRIPTION_CURRENT.id
+                result.defaultSet = true
             }
             else {
                 params.status = 'FETCH_ALL'
@@ -543,7 +564,9 @@ from License as l where (
         }
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+        result.filterSet = tmpQ[2]
         List subscriptions = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]) //,[max: result.max, offset: result.offset]
+        if(!params.exportXLS)
         result.num_sub_rows = subscriptions.size()
 
         result.date_restriction = date_restriction;
@@ -568,19 +591,10 @@ from License as l where (
             }
         }
 
-        result.subscriptions = []
+        result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
 
-        int breakPoint = result.offset+result.max
-        if(subscriptions.size() < breakPoint)
-            breakPoint = subscriptions.size()
-
-        for(int i = result.offset;i < breakPoint;i++) {
-            result.subscriptions.add(subscriptions.get(i))
-        }
-
-        if ( params.exportXLS=='yes' ) {
-            def subscriptionsExport = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]);
-            exportcurrentSubscription(subscriptionsExport)
+        if ( params.forExport ) {
+            exportcurrentSubscription(subscriptions)
             return
         }
 
@@ -665,7 +679,7 @@ from License as l where (
             sheet.autoSizeColumn(i)
         }
         // Write the output to a file
-        String file = "${datetoday}_" + g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions").replaceAll(' ', '_') + ".xlsx"
+        String file = "${datetoday}_" + g.message(code: "export.my.currentSubscriptions", default: "Current Subscriptions").replaceAll(' ', '_') + ".xlsx"
         //if(wb instanceof XSSFWorkbook) file += "x";
         response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
         response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -3300,6 +3314,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
         result.offset       = params.offset ? Integer.parseInt(params.offset) : 0;
         result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
+        result.filterSet    = params.filterSet ? true : false
 
         if (params.selectedOrgs) {
             log.debug('remove orgs from consortia')
@@ -3329,15 +3344,12 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         }
         result.consortiaMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params)
         result.consortiaMembersCount = Org.executeQuery(fsq.query, fsq.queryParams).size()
-        result.filterSet = false
-        if(params.name || params.libraryType || params.federalState || params.libraryNetwork || params.property)
-            result.filterSet = true
 
         if ( params.exportXLS=='yes' ) {
 
             def orgs = result.consortiaMembers
 
-            def message = g.message(code: 'menu.my.consortia')
+            def message = g.message(code: 'export.my.consortia')
 
             exportOrg(orgs, message, true)
             return
@@ -3656,7 +3668,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                     log.error("Null value in column ${i}")
                 }
             }
-            String filename = "${result.institution.name}_consortiaSubscriptions.xlsx"
+            String filename = "${g.message(code:'export.my.consortiaSubscriptions')}_${sdf.format(new Date(System.currentTimeMillis()))}.xlsx"
             response.setHeader("Content-disposition","attachment; filename=\"${filename}\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             workbook.write(response.outputStream)

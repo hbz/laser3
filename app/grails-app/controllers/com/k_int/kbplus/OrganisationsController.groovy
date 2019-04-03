@@ -4,11 +4,14 @@ import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
+import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.dao.DataIntegrityViolationException
 import grails.plugin.springsecurity.annotation.Secured
 import com.k_int.kbplus.auth.*;
 import grails.plugin.springsecurity.SpringSecurityUtils
 import com.k_int.properties.*
+
+import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class OrganisationsController extends AbstractDebugController {
@@ -87,6 +90,7 @@ class OrganisationsController extends AbstractDebugController {
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
         def fsq = filterService.getOrgQuery(params)
+        result.filterSet = params.filterSet ? true : false
 
         result.orgList  = Org.findAll(fsq.query, fsq.queryParams, params)
         result.orgListTotal = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams).size()
@@ -98,9 +102,26 @@ class OrganisationsController extends AbstractDebugController {
             def orgs = Org.findAll(fsq.query, fsq.queryParams, params)
 
             def message = g.message(code: 'menu.public.all_orgs')
+            SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            try {
+                SXSSFWorkbook wb = organisationService.exportOrg(orgs, message, true)
+                // Write the output to a file
+                String file = message+"_${datetoday}.xlsx"
 
-            organisationService.exportOrg(orgs, message, true)
-            return
+                response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb.write(response.outputStream)
+                response.outputStream.flush()
+                response.outputStream.close()
+                wb.dispose()
+
+                return
+            }
+            catch (Exception e) {
+                log.error("Problem",e);
+                response.sendError(500)
+            }
         }
 
 
@@ -144,6 +165,7 @@ class OrganisationsController extends AbstractDebugController {
         params.sort        = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
         def fsq            = filterService.getOrgQuery(params)
+        result.filterSet = params.filterSet ? true : false
 
         if (params.filterPropDef) {
             def orgIdList = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams)
@@ -157,9 +179,27 @@ class OrganisationsController extends AbstractDebugController {
         if ( params.exportXLS=='yes' ) {
             params.remove('max')
             def orgs = Org.findAll(fsq.query, fsq.queryParams, params)
-            def message = g.message(code: 'menu.public.all_provider_escaped')
-            organisationService.exportOrg(orgs, message, false)
-            return
+            def message = g.message(code: 'export.all.providers')
+            SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            try {
+                SXSSFWorkbook wb = organisationService.exportOrg(orgs, message, false)
+                // Write the output to a file
+                String file = message+"_${datetoday}.xlsx"
+
+                response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb.write(response.outputStream)
+                response.outputStream.flush()
+                response.outputStream.close()
+                wb.dispose()
+
+                return
+            }
+            catch (Exception e) {
+                log.error("Problem",e);
+                response.sendError(500)
+            }
         }
 
         result
