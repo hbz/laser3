@@ -1201,6 +1201,18 @@ aside.ui.accordion .title:not(.ui) {
   clear: both;
   visibility: hidden;
 }
+
+.la-overflow {
+  width: 14em;
+  margin: 0 0 -10px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.la-ellipsis {
+  text-overflow: ellipsis;
+}
 /*!
  * # Semantic UI 2.3.1 - Button
  * http://github.com/semantic-org/semantic-ui/
@@ -14487,6 +14499,16 @@ i.icon.la-noChange {
   font-family: 'icomoon';
 }
 
+/**/
+
+i.icon.la-gokb {
+  font-family: 'icomoon';
+}
+
+i.icon.la-gokb.square {
+  font-family: 'icomoon';
+}
+
 i.icon.hand.pointer.outline.slash:before {
   content: "\e901";
 }
@@ -14543,6 +14565,16 @@ i.icon.la-append:before {
 
 i.icon.la-replace:before {
   content: "\e90d";
+}
+
+/**/
+
+i.icon.la-gokb:before {
+  content: "\e90e";
+}
+
+i.icon.la-gokb.square:before {
+  content: "\e90f";
 }
 
 /*******************************
