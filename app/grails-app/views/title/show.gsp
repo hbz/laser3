@@ -50,6 +50,8 @@
                     <div class="item"><b>${message(code:'title.editionNumber.label')}:</b> ${ti?.editionNumber}</div>
                     <div class="item"><b>${message(code:'title.editionStatement.label')}:</b> ${ti?.editionStatement}</div>
                     <div class="item"><b>${message(code:'title.volume.label')}:</b> ${ti?.volume}</div>
+                    <div class="item"><b>${message(code:'title.dateFirstInPrint.label')}:</b> <g:formatDate formatName="default.date.format.notime" date="${ti?.dateFirstInPrint}"/></div>
+                    <div class="item"><b>${message(code:'title.dateFirstOnline.label')}:</b> <g:formatDate formatName="default.date.format.notime" date="${ti?.dateFirstOnline}"/></div>
                 </g:if>
 
                 <div class="item"><b>${message(code:'default.status.label')}:</b> <semui:xEditableRefData owner="${ti}" field="status" config='${RefdataCategory.TI_STATUS}'/></div>
