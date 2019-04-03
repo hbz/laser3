@@ -16,6 +16,9 @@ import org.apache.poi.ss.usermodel.*
 import com.k_int.properties.*
 import de.laser.DashboardDueDate
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.springframework.web.servlet.LocaleResolver
+import org.springframework.web.servlet.support.RequestContextUtils
+
 import java.sql.Timestamp
 import java.text.DateFormat
 
@@ -1110,11 +1113,6 @@ from License as l where (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     Map documents() {
         Map result = setResultGenerics()
-        Set documents = orgDocumentService.getAllDocuments(result.institution,params)
-        result.max = params.max ? Integer.parseInt(params.max) : (int) result.user.getDefaultPageSizeTMP()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
-        result.documents = documents.drop(result.offset).take(result.max)
-        result.totalSize = documents.size()
         result.availableUsers = orgDocumentService.getAvailableUploaders(result.user)
         result
     }
@@ -2803,6 +2801,19 @@ AND EXISTS (
 
         def result = setResultGenerics()
 
+        // set language by user settings, create if not existing
+        def uss = UserSettings.get(result.user, UserSettings.KEYS.LANGUAGE)
+        if (uss == UserSettings.SETTING_NOT_FOUND) {
+            uss = UserSettings.add(result.user, UserSettings.KEYS.LANGUAGE, RefdataValue.getByValueAndCategory('de', 'Language'))
+        }
+
+        RefdataValue rdvLocale = uss.getValue()
+        if (rdvLocale) {
+            LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request)
+            localeResolver.setLocale(request, response, new Locale(rdvLocale.value, rdvLocale.value.toUpperCase()))
+        }
+        // --
+
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
             response.sendError(401)
@@ -3261,30 +3272,35 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                     cmb.save()
                 }
             }
+
+            redirect action: 'manageConsortia'
         }
 
-        def fsq = filterService.getOrgQuery(params)
-        result.availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
+        else {
+            def fsq = filterService.getOrgQuery(params)
+            result.availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
 
-        result.consortiaMemberIds = []
-        Combo.findAllWhere(
-                toOrg: result.institution,
-                type:    RefdataValue.findByValue('Consortium')
-        ).each { cmb ->
-            result.consortiaMemberIds << cmb.fromOrg.id
+            result.consortiaMemberIds = []
+            Combo.findAllWhere(
+                    toOrg: result.institution,
+                    type:    RefdataValue.getByValueAndCategory('Consortium','Combo Type')
+            ).each { cmb ->
+                result.consortiaMemberIds << cmb.fromOrg.id
+            }
+
+            if ( params.exportXLS=='yes' ) {
+
+                def orgs = result.availableOrgs
+
+                def message = g.message(code: 'menu.public.all_orgs')
+
+                exportOrg(orgs, message, true)
+                return
+            }
+
+            result
         }
 
-        if ( params.exportXLS=='yes' ) {
-
-            def orgs = result.availableOrgs
-
-            def message = g.message(code: 'menu.public.all_orgs')
-
-            exportOrg(orgs, message, true)
-            return
-        }
-
-        result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
