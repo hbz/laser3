@@ -21,19 +21,19 @@
             <g:each in="${instance.documents}" var="docctx">
                 <%
                     boolean visible = false
+                    def ownerObj
+                    if(instance instanceof LinkedHashMap) {
+                        if(docctx.org)
+                            ownerObj = docctx.org
+                        else if(docctx.license)
+                            ownerObj = docctx.license
+                        else if(docctx.subscription)
+                            ownerObj = docctx.subscription
+                        else if(docctx.pkg)
+                            ownerObj = docctx.pkg
+                    }
+                    else ownerObj = instance
                     if(docctx.org) {
-                        def ownerObj
-                        if(instance instanceof LinkedHashMap) {
-                            if(docctx.org)
-                                ownerObj = docctx.org
-                            else if(docctx.license)
-                                ownerObj = docctx.license
-                            else if(docctx.subscription)
-                                ownerObj = docctx.subscription
-                            else if(docctx.pkg)
-                                ownerObj = docctx.pkg
-                        }
-                        else ownerObj = instance
                         boolean inOwnerOrg = false
                         boolean isCreator = false
 
@@ -99,7 +99,7 @@
                         </g:if>
                         <td class="x">
                             <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
-                                <g:if test="${!(instance instanceof Org)}">
+                                <g:if test="${!(instance instanceof Org) && !(ownerObj instanceof Org)}">
                                     <g:if test="${docctx.sharedFrom}">
                                         <span data-tooltip="${message(code:'property.share.tooltip.on')}">
                                             <i class="green alternate share icon"></i>
@@ -126,10 +126,10 @@
                                 </g:if>
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon button"><i class="download icon"></i></g:link>
                                 <g:if test="${editable && !docctx.sharedFrom}">
-                                    <button type="button" class="ui icon button" data-semui="modal" href="#modalEditDocument_${docctx.id}" data-tooltip="${message(code:"template.documents.edit")}" params="[id:docctx.id]"><i class="pencil icon"></i></button>
+                                    <button type="button" class="ui icon button" data-semui="modal" href="#modalEditDocument_${docctx.id}" data-tooltip="${message(code:"template.documents.edit")}"><i class="pencil icon"></i></button>
                                     <g:link conter="${controllerName}" action="deleteDocuments" class="ui icon negative button js-open-confirm-modal"
                                             data-confirm-term-what="document" data-confirm-term-what-detail="${docctx.owner.title}" data-confirm-term-how="delete"
-                                            params='[instanceId:"${instance.id ? instance.id : ownerObj.id}", deleteId:"${docctx.id}", redirectAction:"${redirect}"]'>
+                                            params='[instanceId:"${instance?.id ?: ownerObj.id}", deleteId:"${docctx.id}", redirectAction:"${redirect}"]'>
                                         <i class="trash alternate icon"></i>
                                     </g:link>
                                 </g:if>

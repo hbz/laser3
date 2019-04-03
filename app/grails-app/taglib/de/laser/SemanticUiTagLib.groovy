@@ -225,7 +225,7 @@ class SemanticUiTagLib {
                         }
                     }
                     // inherit (from)
-                    else {
+                    else if (obj?.showUIShareButton()) {
                         String oid = "${obj.getClass().getName()}:${obj.getId()}"
 
                         if (auditService.getAuditConfig(obj, objAttr)) {

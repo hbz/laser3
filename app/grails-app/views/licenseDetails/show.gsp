@@ -75,14 +75,14 @@
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="startDate" />
                                     </dd>
-                                    <dd><semui:auditButton  auditable="[license, 'startDate']" /></dd>
+                                    <dd><semui:auditButton auditable="[license, 'startDate']" /></dd>
                                 </dl>
                                 <dl>
                                     <dt class="control-label">${message(code: 'license.endDate')}</dt>
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="endDate" />
                                     </dd>
-                                    <dd><semui:auditButton  auditable="[license, 'endDate']" /></dd>
+                                    <dd><semui:auditButton auditable="[license, 'endDate']" /></dd>
                                 </dl>
                             </div>
                         </div>
