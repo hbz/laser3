@@ -2,26 +2,26 @@
     <semui:card message="showSurveyInfo.step.first.title" class=" ">
         <div class="content">
             <dl>
-                ${message(code: 'surveyInfo.status.label', default: 'Survey Status')}
+                <dt>${message(code: 'surveyInfo.status.label', default: 'Survey Status')}</dt>
                 <dd>${surveyInfo.status?.getI10n('value')}</dd>
             </dl>
             <dl>
-                ${message(code: 'surveyInfo.name.label', default: 'New Survey Name')}
+                <dt>${message(code: 'surveyInfo.name.label', default: 'New Survey Name')}</dt>
                 <dd>${surveyInfo.name}</dd>
             </dl>
             <dl>
-                ${message(code: 'surveyInfo.startDate.label')}
+                <dt>${message(code: 'surveyInfo.startDate.label')}</dt>
                 <dd><g:formatDate formatName="default.date.format.notime"
                                   date="${surveyInfo.startDate ?: null}"/></dd>
             </dl>
             <dl>
-                ${message(code: 'surveyInfo.endDate.label')}
+                <dt>${message(code: 'surveyInfo.endDate.label')}</dt>
                 <dd><g:formatDate formatName="default.date.format.notime"
                                   date="${surveyInfo.endDate ?: null}"/></dd>
             </dl>
 
             <dl>
-                ${message(code: 'surveyInfo.type.label')}
+                <dt>${message(code: 'surveyInfo.type.label')}</dt>
                 <dd>${com.k_int.kbplus.RefdataValue.get(surveyInfo?.type?.id)?.getI10n('value')}</dd>
             </dl>
 
@@ -36,7 +36,6 @@
             <g:each in="${surveyConfigs}" var="config" status="i">
 
                 <div class="ui small feed content la-js-dont-hide-this-card">
-                    <!--<div class="event">-->
 
                     <div class="ui grid summary">
                         <div class="twelve wide column">

@@ -80,6 +80,14 @@
             <input class="ui button" value="${message(code: 'surveyProperty.create_new')}"
                    data-semui="modal" href="#addSurveyPropertyModal" type="submit">
             <br>
+
+            <g:if test="${surveyConfigs.size() > 0}">
+                <br>
+                
+                <g:link controller="survey" action="showSurveyParticipants" id="${surveyInfo.id}" class="ui icon button">${message(code: 'showSurveyInfo.nextStep', default: 'Next Step')}</i></g:link>
+
+            </g:if>
+
         </semui:form>
 
 
