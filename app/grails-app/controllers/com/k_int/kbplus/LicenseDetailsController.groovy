@@ -12,6 +12,8 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.runtime.InvokerHelper
 
+import javax.servlet.ServletOutputStream
+
 import static grails.async.Promises.task
 import static grails.async.Promises.waitAll
 
@@ -34,7 +36,6 @@ class LicenseDetailsController extends AbstractDebugController {
     def filterService
     def selectListQueryService
     def orgTypeService
-    def orgDocumentService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
@@ -248,13 +249,16 @@ class LicenseDetailsController extends AbstractDebugController {
         }
         
       }
+      /*
       csv {
-        response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-        response.contentType = "text/csv"
-        def out = response.outputStream
-        exportService.StreamOutLicenseCSV(out,null,[result.license])
-        out.close()
+          response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+          response.contentType = "text/csv"
+          ServletOutputStream out = response.outputStream
+          //exportService.StreamOutLicenseCSV(out,null,[result.license])
+          out.close()
+
       }
+      */
     }
   }
 

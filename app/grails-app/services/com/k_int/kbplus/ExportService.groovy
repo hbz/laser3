@@ -37,7 +37,7 @@ class ExportService {
 				[field1, field2, ..., fieldN]
 			]
 	 */
-	String exportCSV(List titleRow, List columnData) {
+	String generateCSVString(List titleRow, List columnData) {
 		List output = []
 		output.add(titleRow.join(","))
 		columnData.each { row ->
@@ -52,6 +52,8 @@ class ExportService {
 
     def HQLCoreDates = "SELECT ca.startDate, ca.endDate FROM TitleInstitutionProvider as tip join tip.coreDates as ca WHERE tip.title.id= :ie_title AND tip.institution.id= :ie_institution AND tip.provider.id= :ie_provider"
 
+    /*
+    legacy
 	def StreamOutLicenseCSV(out,result,licenses){
 		log.debug("StreamOutLicenseCSV - ${result} - ${licenses}")
 		Set propertiesSet = new TreeSet();
@@ -95,6 +97,7 @@ class ExportService {
 			writer.close()
 		}
 	}
+	*/
 
 	def addLicenseSubPkgXML(Document doc, Element into_elem, List licenses){
 		log.debug("addLicenseSubPkgXML - ${licenses}")

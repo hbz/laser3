@@ -29,6 +29,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+import javax.servlet.ServletOutputStream
 import javax.validation.constraints.Null
 import java.awt.Color
 import java.sql.Timestamp
@@ -299,8 +300,9 @@ from License as l where (
         //log.debug("params = ${qry_params}");
 
         result.licenseCount = License.executeQuery("select l.id ${base_qry}", qry_params).size()
-        result.licenses = License.executeQuery("select l ${base_qry}", qry_params, [max: result.max, offset: result.offset]);
-        def filename = "${result.institution.name}_licenses"
+        result.licenses = License.executeQuery("select l ${base_qry}", qry_params, [max: result.max, offset: result.offset])
+
+        def filename = "${g.message(code: 'export.my.currentLicenses')}_${sdf.format(new Date(System.currentTimeMillis()))}"
         withFormat {
             html result
 
@@ -312,10 +314,51 @@ from License as l where (
             csv {
                 response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
                 response.contentType = "text/csv"
-
-                def out = response.outputStream
-                result.searchHeader = true
-                exportService.StreamOutLicenseCSV(out, result,result.licenses)
+                /*
+                    to get (in pseudocode):
+                    license.reference
+                    license.subscriptions
+                    license.consortium
+                    license.licensor
+                    license.startDate
+                    license.endDate
+                    license.customProperties
+                    license.privateProperties
+                */
+                ServletOutputStream out = response.outputStream
+                List titles = [
+                        g.message(code:'license.details.reference'),
+                        g.message(code:'license.details.linked_subs'),
+                        g.message(code:'consortium'),
+                        g.message(code:'license.licensor.label'),
+                        g.message(code:'license.startDate'),
+                        g.message(code:'license.endDate'),
+                        g.message(code:'license.properties'),
+                        g.message(code:'license.properties.private')+" "+result.institution.name
+                ]
+                List rows = []
+                result.licenses.each { licObj ->
+                    License license = (License) licObj
+                    List row = [license.reference]
+                    List linkedSubs = license.subscriptions.collect { sub ->
+                        sub.name
+                    }
+                    row.add(linkedSubs.join("; "))
+                    row.add(license.licensingConsortium)
+                    row.add(license.licensor)
+                    row.add(license.startDate ? sdf.format(license.startDate) : '')
+                    row.add(license.endDate ? sdf.format(license.endDate) : '')
+                    List customProps = license.customProperties.collect { customProp ->
+                        "${customProp.type.getI10n('value')}: ${customProp.getValue()}"
+                    }
+                    row.add(customProps.join("; "))
+                    List privateProps = license.privateProperties.collect { privateProp ->
+                        "${privateProp.type.getI10n('value')}: ${privateProp.getValue()}"
+                    }
+                    row.add(privateProps.join("; "))
+                    rows.add(row)
+                }
+                out.write(exportService.generateCSVString(titles,rows))
                 out.close()
             }
             xml {
