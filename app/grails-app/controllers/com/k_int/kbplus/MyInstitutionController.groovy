@@ -3344,7 +3344,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-    def manageConsortiaLicenses() {
+    def manageConsortiaSubscriptions() {
         def result = setResultGenerics()
 
         DebugUtil du = new DebugUtil()
