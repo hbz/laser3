@@ -145,7 +145,7 @@
                                 <g:if test="${change instanceof com.k_int.kbplus.License}">
                                     <strong>${message(code:'license')}</strong>
                                     <br />
-                                    <g:link controller="licenseDetails" action="changes" id="${change.id}">${change.toString()}</g:link>
+                                    <g:link controller="license" action="changes" id="${change.id}">${change.toString()}</g:link>
                                 </g:if>
                            </div><!-- .column -->
                            </div><!-- .row -->
@@ -164,7 +164,7 @@
                                     <g:link controller="subscriptionDetails" action="changes" id="${change.item_with_changes.id}">${change.item_with_changes.toString()}</g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link controller="licenseDetails" action="changes" id="${change.item_with_changes.id}">${change.item_with_changes.toString()}</g:link>
+                                    <g:link controller="license" action="changes" id="${change.item_with_changes.id}">${change.item_with_changes.toString()}</g:link>
                                 </g:else>
                             </p>
                             <p>

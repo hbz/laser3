@@ -26,7 +26,7 @@
 <h3 class="ui header"> Institutions for ${consortia.name} consortia </h3>
 <br><p> The following list displays all members of ${consortia.name} consortia. To create child licenses
     select the desired checkboxes and click 'Create child licenses'</p><br>
-<g:form action="generateSlaveLicenses" controller="licenseDetails" method="POST">
+<g:form action="generateSlaveLicenses" controller="license" method="POST">
 <input type="hidden" name="baselicense" value="${license.id}"/>
 <input type="hidden" name="id" value="${id}"/>
 <table class="ui celled la-table table">

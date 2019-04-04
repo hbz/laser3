@@ -12,12 +12,9 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.runtime.InvokerHelper
 
-import static grails.async.Promises.task
-import static grails.async.Promises.waitAll
-
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class LicenseDetailsController extends AbstractDebugController {
+class LicenseController extends AbstractDebugController {
 
     def springSecurityService
     def taskService
@@ -45,7 +42,7 @@ class LicenseDetailsController extends AbstractDebugController {
         DebugUtil du = new DebugUtil()
         du.setBenchMark('this-n-that')
 
-        log.debug("licenseDetails: ${params}");
+        log.debug("license: ${params}");
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
@@ -60,7 +57,7 @@ class LicenseDetailsController extends AbstractDebugController {
 
         def license_reference_str = result.license.reference ?: 'NO_LIC_REF_FOR_ID_' + params.id
 
-        def filename = "licenseDetails_${license_reference_str.replace(" ", "_")}"
+        def filename = "license_${license_reference_str.replace(" ", "_")}"
         result.onixplLicense = result.license.onixplLicense;
 
         // ---- pendingChanges : start
@@ -374,13 +371,13 @@ class LicenseDetailsController extends AbstractDebugController {
                         }
                     }
                 }
-                redirect controller: 'licenseDetails', action: 'members', params: [id: result.license?.id]
+                redirect controller: 'license', action: 'members', params: [id: result.license?.id]
             }
             else {
-                redirect controller: 'licenseDetails', action: 'show', params: [id: result.license?.id]
+                redirect controller: 'license', action: 'show', params: [id: result.license?.id]
             }
         } else {
-            redirect controller: 'licenseDetails', action: 'show', params: [id: result.license?.id]
+            redirect controller: 'license', action: 'show', params: [id: result.license?.id]
         }
     }
 
@@ -421,7 +418,7 @@ from Subscription as s where
         sub.save()
 
     }
-    redirect controller:'licenseDetails', action:'show', params: [id:params.license]
+    redirect controller:'license', action:'show', params: [id:params.license]
 
   }
 
@@ -436,13 +433,13 @@ from Subscription as s where
                 sub.save(flush:true)
             }
         }
-        redirect controller:'licenseDetails', action:'show', params: [id:params.license]
+        redirect controller:'license', action:'show', params: [id:params.license]
     }
 
     @Deprecated
     @Secured(['ROLE_YODA'])
     def consortia() {
-        redirect controller: 'licenseDetails', action: 'show', params: params
+        redirect controller: 'license', action: 'show', params: params
         return
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -496,7 +493,7 @@ from Subscription as s where
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
   def generateSlaveLicenses(){
-        redirect controller: 'licenseDetails', action: 'show', params: params
+        redirect controller: 'license', action: 'show', params: params
         return
 
     def slaved = RefdataValue.getByValueAndCategory('Yes', 'YN')
@@ -510,13 +507,13 @@ from Subscription as s where
           institutionsService.copyLicense(attrMap);
         }
     }
-    redirect controller:'licenseDetails', action:'consortia', params: [id:params.baselicense]
+    redirect controller:'license', action:'consortia', params: [id:params.baselicense]
   }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def members() {
-        log.debug("licenseDetails id:${params.id}");
+        log.debug("license id:${params.id}");
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -572,7 +569,7 @@ from Subscription as s where
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def pendingChanges() {
-        log.debug("licenseDetails id:${params.id}");
+        log.debug("license id:${params.id}");
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -606,7 +603,7 @@ from Subscription as s where
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def history() {
-        log.debug("licenseDetails::history : ${params}");
+        log.debug("license::history : ${params}");
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -658,7 +655,7 @@ from Subscription as s where
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def changes() {
-        log.debug("licenseDetails::changes : ${params}")
+        log.debug("license::changes : ${params}")
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -688,7 +685,7 @@ from Subscription as s where
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def notes() {
-        log.debug("licenseDetails id:${params.id}");
+        log.debug("license id:${params.id}");
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -701,7 +698,7 @@ from Subscription as s where
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def tasks() {
-        log.debug("licenseDetails id:${params.id}")
+        log.debug("license id:${params.id}")
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -730,7 +727,7 @@ from Subscription as s where
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def properties() {
-        log.debug("licenseDetails id: ${params.id}");
+        log.debug("license id: ${params.id}");
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
@@ -764,7 +761,7 @@ from Subscription as s where
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def documents() {
-        log.debug("licenseDetails id:${params.id}");
+        log.debug("license id:${params.id}");
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -790,21 +787,21 @@ from Subscription as s where
 
         docstoreService.unifiedDeleteDocuments(params)
 
-        redirect controller: 'licenseDetails', action:params.redirectAction, id:params.instanceId /*, fragment:'docstab' */
+        redirect controller: 'license', action:params.redirectAction, id:params.instanceId /*, fragment:'docstab' */
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
   def acceptChange() {
     processAcceptChange(params, License.get(params.id), genericOIDService)
-    redirect controller: 'licenseDetails', action:'show',id:params.id
+    redirect controller: 'license', action:'show',id:params.id
   }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
   def rejectChange() {
     processRejectChange(params, License.get(params.id))
-    redirect controller: 'licenseDetails', action:'show',id:params.id
+    redirect controller: 'license', action:'show',id:params.id
   }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -886,7 +883,7 @@ from Subscription as s where
 
     def copyLicense()
     {
-        log.debug("licenseDetails: ${params}");
+        log.debug("license: ${params}");
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
@@ -1048,7 +1045,7 @@ from Subscription as s where
                             }
                         }
                     }
-                redirect controller: 'licenseDetails', action: 'show', params: [id: licenseInstance.id]
+                redirect controller: 'license', action: 'show', params: [id: licenseInstance.id]
                 }
 
             }

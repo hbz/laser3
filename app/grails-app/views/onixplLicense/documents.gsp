@@ -30,7 +30,7 @@
     <g:render template="nav" contextPath="."/>
 
 <div>
-    <g:form id="delete_doc_form" url="[controller: 'licenseDetails', action: 'deleteDocuments']" method="post">
+    <g:form id="delete_doc_form" url="[controller: 'license', action: 'deleteDocuments']" method="post">
         <div class="well hide license-documents-options">
             <button class="ui negative button" id="delete-doc">Delete Selected Documents</button>&nbsp;
             <input type="submit" class="ui button" value="Add new document" data-semui="modal"
@@ -98,7 +98,7 @@
 
         <h3 class="ui header">Create New Document</h3>
     </div>
-    <g:form id="upload_new_doc_form" url="[controller: 'licenseDetails', action: 'uploadDocument']" method="post"
+    <g:form id="upload_new_doc_form" url="[controller: 'license', action: 'uploadDocument']" method="post"
             enctype="multipart/form-data">
         <input type="hidden" name="licid" value="${onixplLicense.license.id}"/>
 

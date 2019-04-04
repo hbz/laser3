@@ -44,7 +44,7 @@
         </g:if>
       </table>
 
-        <semui:paginate  action="editHistory" controller="licenseDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${historyLinesTotal}" />
+        <semui:paginate  action="editHistory" controller="license" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${historyLinesTotal}" />
 
 </body>
 </html>

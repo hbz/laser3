@@ -63,7 +63,7 @@
                     <td>
                       ${p.nominalPlatform?.name}<br/>
                     </td>
-                    <td><g:if test="${p.license!=null}"><g:link controller="licenseDetails" action="show" id="${p.license.id}">${p.license.reference}</g:link></g:if></td>
+                    <td><g:if test="${p.license!=null}"><g:link controller="license" action="show" id="${p.license.id}">${p.license.reference}</g:link></g:if></td>
                   </tr>
 
                 </g:each>

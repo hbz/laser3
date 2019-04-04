@@ -270,7 +270,7 @@ ${personInstance}
                                                    <g:link controller="subscriptionDetails" action="show" id="${link.sub.id}">${link.sub.name}</g:link>
                                                </g:if>
                                                <g:if test="${link.lic}">
-                                                   <g:link controller="licenseDetails" action="show" id="${link.lic.id}">${link.lic}</g:link>
+                                                   <g:link controller="license" action="show" id="${link.lic.id}">${link.lic}</g:link>
                                                </g:if>
                                                <g:if test="${link.title}">
                                                    <g:link controller="title" action="show" id="${link.title.id}">${link.title.title}</g:link>

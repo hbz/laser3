@@ -990,7 +990,7 @@ from License as l where (
                         subInstance.save(flush: true)
                     }
 
-                    redirect controller: 'licenseDetails', action: 'show', params: params, id: copyLicense.id
+                    redirect controller: 'license', action: 'show', params: params, id: copyLicense.id
                     return
                 }
             }
@@ -1030,7 +1030,7 @@ from License as l where (
             }
 
             flash.message = message(code: 'license.created.message')
-            redirect controller: 'licenseDetails', action: 'show', params: params, id: licenseInstance.id
+            redirect controller: 'license', action: 'show', params: params, id: licenseInstance.id
         }
     }
 
@@ -1064,7 +1064,7 @@ from License as l where (
                 render view: 'editLicense', model: [licenseInstance: copyLicense]
            /* }else{
                 flash.message = message(code: 'license.created.message')
-                redirect controller: 'licenseDetails', action: 'show', params: params, id: copyLicense.id
+                redirect controller: 'license', action: 'show', params: params, id: copyLicense.id
             }*/
         }
     }
@@ -3773,14 +3773,14 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
 
             if(isEditable){
-                redirect controller: 'licenseDetails', action: 'processcopyLicense', params: ['baseLicense'                  : license.id,
-                                                                                              'license.copyAnnouncements'    : 'on',
-                                                                                              'license.copyCustomProperties' : 'on',
-                                                                                              'license.copyDates'            : 'on',
-                                                                                              'license.copyDocs'             : 'on',
-                                                                                              'license.copyLinks'            : 'on',
-                                                                                              'license.copyPrivateProperties': 'on',
-                                                                                              'license.copyTasks'            : 'on']
+                redirect controller: 'license', action: 'processcopyLicense', params: ['baseLicense'                 : license.id,
+                                                                                       'license.copyAnnouncements'   : 'on',
+                                                                                       'license.copyCustomProperties': 'on',
+                                                                                       'license.copyDates'           : 'on',
+                                                                                       'license.copyDocs'             : 'on',
+                                                                                       'license.copyLinks'            : 'on',
+                                                                                       'license.copyPrivateProperties': 'on',
+                                                                                       'license.copyTasks'            : 'on']
             }else {
                 flash.error = message(code:'license.permissionInfo.noPerms', default: 'No User Permissions');
                 response.sendError(401)

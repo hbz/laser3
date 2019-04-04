@@ -39,7 +39,7 @@
             <tr>
                 <td>${i + 1}</td>
                 <td>
-                    <g:link controller="licenseDetails" action="show" id="${lic.id}">${lic.genericLabel}</g:link>
+                    <g:link controller="license" action="show" id="${lic.id}">${lic.genericLabel}</g:link>
 
                     <g:if test="${lic.isSlaved?.value?.equalsIgnoreCase('yes')}">
                         <span data-position="top right" data-tooltip="${message(code:'license.details.isSlaved.tooltip')}">
@@ -73,7 +73,7 @@
                                 data-confirm-term-what="license"
                                 data-confirm-term-what-detail="${lic.reference}"
                                 data-confirm-term-how="delete"
-                                controller="licenseDetails"
+                                controller="license"
                                 params="${[id:license.id, target: lic.class.name + ':' + lic.id]}"
                                 action="deleteMember">
                             <i class="trash alternate icon"></i>

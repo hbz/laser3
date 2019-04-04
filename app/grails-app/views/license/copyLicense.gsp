@@ -10,7 +10,7 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
     <semui:crumb controller="myInstitution" action="currentLicenses" message="license.current"/>
-    <semui:crumb action="show" controller="licenseDetails" id="${license.id}" text="${license.reference}" />
+    <semui:crumb action="show" controller="license" id="${license.id}" text="${license.reference}" />
     <semui:crumb message="myinst.copyLicense" class="active"/>
 </semui:breadcrumbs>
 
@@ -25,7 +25,7 @@ ${message(code: 'myinst.copyLicense')}: ${license.reference}
 <semui:messages data="${flash}"/>
 
 <semui:form>
-    <g:form action="processcopyLicense" controller="licenseDetails" method="post" class="ui form newLicence">
+    <g:form action="processcopyLicense" controller="license" method="post" class="ui form newLicence">
 
 
         <div class="field required">
@@ -52,7 +52,7 @@ ${message(code: 'myinst.copyLicense')}: ${license.reference}
         <td>
             <b>${message(code:'license.linktoLicense', default:'License Template')}:</b>
             <g:if test="${license.instanceOf}">
-                <g:link controller="licenseDetails" action="show" target="_blank" id="${license.instanceOf.id}">${license.instanceOf}</g:link>
+                <g:link controller="license" action="show" target="_blank" id="${license.instanceOf.id}">${license.instanceOf}</g:link>
             </g:if>
             <g:else>
                 ${message(code:'license.linktoLicenseEmpty', default:'No License Template')}

@@ -128,7 +128,7 @@
                 <tr>
                     <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
                   <td>
-                    <g:link action="show" controller="licenseDetails" id="${l.id}">
+                    <g:link action="show" controller="license" id="${l.id}">
                       ${l.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}
                     </g:link>
                     <g:if test="${l.subscriptions && ( l.subscriptions.size() > 0 )}">
@@ -157,7 +157,7 @@
                         <td>
                             <g:each in="${com.k_int.kbplus.License.findAllWhere(instanceOf: l)}" var="lChild">
                                 <g:if test="${lChild.status?.value != 'Deleted'}">
-                                    <g:link controller="licenseDetails" action="show" id="${lChild.id}">
+                                    <g:link controller="license" action="show" id="${lChild.id}">
                                         ${lChild}
                                     </g:link>
                                     <br/>

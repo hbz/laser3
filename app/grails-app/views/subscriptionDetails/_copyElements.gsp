@@ -66,7 +66,7 @@
                     <div>
                         <b><i class="balance scale icon"></i>${message(code: 'license')}:</b>
                         <g:if test="${sourceSubscription?.owner}">
-                            <g:link controller="licenseDetails" action="show" target="_blank" id="${sourceSubscription.owner.id}">
+                            <g:link controller="license" action="show" target="_blank" id="${sourceSubscription.owner.id}">
                                 ${sourceSubscription.owner}
                             </g:link>
                         </g:if>
@@ -76,7 +76,7 @@
                     <div>
                         <b><i class="balance scale icon"></i>${message(code: 'license')}:</b>
                         <g:if test="${targetSubscription?.owner}">
-                            <g:link controller="licenseDetails" action="show" target="_blank" id="${targetSubscription?.owner?.id}">
+                            <g:link controller="license" action="show" target="_blank" id="${targetSubscription?.owner?.id}">
                                 ${targetSubscription?.owner}
                             </g:link>
                         </g:if>

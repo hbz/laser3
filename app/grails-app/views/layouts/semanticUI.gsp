@@ -68,7 +68,7 @@
                             <g:link class="item" controller="title">Title Instance</g:link>
                             <g:link class="item" controller="tipp">Title Instance Package Platform</g:link>
                             <g:link class="item" controller="subscriptionDetails">Subscriptions</g:link>
-                            <g:link class="item" controller="licenseDetails">Licenses</g:link>
+                            <g:link class="item" controller="license">Licenses</g:link>
                             <g:link class="item" controller="onixplLicense" action="list">ONIX-PL Licenses</g:link>
                         </div>
                     </div>
@@ -255,7 +255,7 @@
                                 <div class="divider"></div>
 
                                 <g:link class="item" controller="title" action="findTitleMatches">${message(code:'menu.datamanager.newTitle')}</g:link>
-                                <g:link class="item" controller="licenseDetails" action="create">${message(code:'license.template.new')}</g:link>
+                                <g:link class="item" controller="license" action="create">${message(code:'license.template.new')}</g:link>
                                 <g:link class="item" controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link>
 
                                 <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</g:link>

@@ -10,13 +10,13 @@
             <g:if test="${!( license.instanceOf && ! license.hasTemplate())}">
                 <div class="divider"></div>
 
-                <semui:actionsDropdownItem controller="licenseDetails" action="addMembers" params="${[id:license?.id]}" message="myinst.emptyLicense.child" />
+                <semui:actionsDropdownItem controller="license" action="addMembers" params="${[id:license?.id]}" message="myinst.emptyLicense.child" />
             </g:if>
         </g:if>
 
         <div class="divider"></div>
 
-        <semui:actionsDropdownItem controller="licenseDetails" action="copyLicense" params="${[id:license?.id]}" message="myinst.copyLicense" />
+        <semui:actionsDropdownItem controller="license" action="copyLicense" params="${[id:license?.id]}" message="myinst.copyLicense" />
 
         <g:if test="${actionName == 'show'}">
             <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR")}">

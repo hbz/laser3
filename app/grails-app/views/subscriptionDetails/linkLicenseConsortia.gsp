@@ -34,7 +34,7 @@ ${message(code: 'subscription.linkLicenseConsortium.header')}
         id="${parentSub.id}">${parentSub.name}</g:link><br><br>
 
     <g:if test="${parentLicense}">
-        ${message(code: 'subscription.linkLicenseConsortium.consortialLicense')}: <g:link controller="licenseDetails"
+        ${message(code: 'subscription.linkLicenseConsortium.consortialLicense')}: <g:link controller="license"
                                                                                           action="show"
                                                                                           id="${parentLicense.id}">${parentLicense?.reference}</g:link>
     </g:if>

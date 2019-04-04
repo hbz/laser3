@@ -11,7 +11,7 @@
 <body>
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentLicenses" text="${message(code: 'license.current')}"/>
-    <semui:crumb controller="licenseDetails" action="show" id="${license.id}" text="${license.reference}"/>
+    <semui:crumb controller="license" action="show" id="${license.id}" text="${license.reference}"/>
     <semui:crumb class="active" text="${message(code: 'license.details.addMembers.label')}"/>
 </semui:breadcrumbs>
 
@@ -33,7 +33,7 @@
             <g:message code="myinst.licenseDetails.message.ChildView" />
             <span class="ui label">${license.getAllLicensee()?.collect{itOrg -> itOrg.name}?.join(',')}</span>.
         <g:message code="myinst.licenseDetails.message.ConsortialView" />
-        <g:link controller="licenseDetails" action="show" id="${license.instanceOf.id}"><g:message code="myinst.subscriptionDetails.message.here" /></g:link>.
+        <g:link controller="license" action="show" id="${license.instanceOf.id}"><g:message code="myinst.subscriptionDetails.message.here" /></g:link>.
         </p>
     </div>
 </g:if>
@@ -62,7 +62,7 @@
         </g:form>
     </semui:filter>
 
-    <g:form action="processAddMembers" params="${[id: params.id]}" controller="licenseDetails" method="post" class="ui form">
+    <g:form action="processAddMembers" params="${[id: params.id]}" controller="license" method="post" class="ui form">
 
         <g:render template="/templates/filter/orgFilterTable"
                   model="[orgList: cons_members,

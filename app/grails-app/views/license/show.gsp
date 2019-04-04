@@ -43,7 +43,7 @@
                     </g:each>
 
                     <g:message code="myinst.licenseDetails.message.ConsortialView" />
-                    <g:link controller="licenseDetails" action="show" id="${license.instanceOf?.id}">
+                    <g:link controller="license" action="show" id="${license.instanceOf?.id}">
                         <g:message code="myinst.subscriptionDetails.message.here" />
                     </g:link>.
 
@@ -116,7 +116,7 @@
                                     <dt class="control-label">${message(code:'license.linktoLicense', default:'License Template')}</dt>
 
                                     <g:if test="${license.instanceOf}">
-                                        <g:link controller="licenseDetails" action="show" id="${license.instanceOf.id}">${license.instanceOf}</g:link>
+                                        <g:link controller="license" action="show" id="${license.instanceOf.id}">${license.instanceOf}</g:link>
                                     </g:if>
                                 </dl>
 
@@ -151,7 +151,7 @@
                                                     <g:if test="${editable}">
                                                         <div class="ui icon negative buttons">
                                                             <g:link class="ui button la-selectable-button" name="unlinkSubscription"
-                                                                    controller="licenseDetails" action="unlinkSubscription"
+                                                                    controller="license" action="unlinkSubscription"
                                                                     params="['license':license.id, 'subscription':sub.id]"
                                                                     onclick="return confirm(${message(code:'template.orgLinks.delete.warn')})" >
                                                                 <i class="unlink icon"></i>
@@ -222,7 +222,7 @@
                                             <g:if test="${editable}">
 
                                                 <div class="ui mini icon buttons">
-                                                    <g:link class="ui button" controller="licenseDetails" action="unlinkLicense" params="[license_id: license.id, opl_id: onixplLicense.id]">
+                                                    <g:link class="ui button" controller="license" action="unlinkLicense" params="[license_id: license.id, opl_id: onixplLicense.id]">
                                                         <i class="unlink icon"> </i>${message(code:'default.button.unlink.label')}
                                                     </g:link>
                                                 </div>

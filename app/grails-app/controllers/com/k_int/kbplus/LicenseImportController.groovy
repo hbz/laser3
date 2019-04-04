@@ -143,7 +143,7 @@ class LicenseImportController extends AbstractDebugController {
 
     // Redirect to some ONIX-PL display page
     //log.debug("Redirecting...");
-    //redirect controller: 'licenseDetails', action:'onixpl', id:params.licid, fragment:params.fragment
+    //redirect controller: 'license', action:'onixpl', id:params.licid, fragment:params.fragment
     log.debug("Returning result ${result}")
     result
   }

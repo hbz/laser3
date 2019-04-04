@@ -304,7 +304,7 @@ class GeneralSpec extends BaseSpec {
 		withConfirm { deleteDocument() }
 		notes()
 		withConfirm { deleteNote() }
-		licenseDetails()
+		license()
 		editRef(Data.License_template_copy_D)
 		then:
 		at LicensePage

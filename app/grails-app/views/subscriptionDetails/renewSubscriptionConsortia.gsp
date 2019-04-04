@@ -124,7 +124,7 @@ ${message(code: 'subscription.details.renewalsConsortium.label')}: ${subscriptio
                         <br>
                         <g:if test="${subscriptionInstance.owner}">
                             <b>${message(code: 'license')}:</b>
-                            <g:link controller="licenseDetails" action="show" target="_blank"
+                            <g:link controller="license" action="show" target="_blank"
                                     id="${subscriptionInstance.owner.id}">
                                 ${subscriptionInstance.owner}
                             </g:link><br><br>

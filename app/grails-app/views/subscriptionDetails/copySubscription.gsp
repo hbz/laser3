@@ -73,7 +73,7 @@ ${message(code: 'myinst.copySubscription')}: ${subscriptionInstance.name}
                 <td>
                     <b>${message(code:'subscription.linktoLicense', default:'License for the Subscription')}:</b>
                     <g:if test="${subscription.owner}">
-                        <g:link controller="licenseDetails" action="show" target="_blank" id="${subscription.owner?.id}">${subscription.owner?.reference}</g:link>
+                        <g:link controller="license" action="show" target="_blank" id="${subscription.owner?.id}">${subscription.owner?.reference}</g:link>
                     </g:if>
                     <g:else>
                         ${message(code:'subscription.linktoLicenseEmpty', default:'No License available')}

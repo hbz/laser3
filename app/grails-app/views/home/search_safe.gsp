@@ -93,7 +93,7 @@
                           <td>${hit.getSource().identifier}</td>
                         </g:if>
                         <g:if test="${hit.type=='com.k_int.kbplus.License'}">
-                          <td><g:link controller="licenseDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
+                          <td><g:link controller="license" action="show" id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
                         </g:if>
                       </tr>
                     </g:each>

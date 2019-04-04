@@ -63,7 +63,7 @@ class Task {
         def result = []
 
         if (license)
-            result << [controller: 'licenseDetails', object: license]
+            result << [controller: 'license', object: license]
         if (org)
             result << [controller: 'organisations', object: org]
         if (pkg)

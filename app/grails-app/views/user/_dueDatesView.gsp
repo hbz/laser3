@@ -67,7 +67,7 @@
                                 </g:if>
                                 <g:elseif test="${obj instanceof License}">
                                     <i class="icon balance scale la-list-icon"></i>
-                                    <g:link controller="licenseDetails" action="show" id="${obj.id}">${obj.name}</g:link>
+                                    <g:link controller="license" action="show" id="${obj.id}">${obj.name}</g:link>
                                 </g:elseif>
                                 <g:elseif test="${obj instanceof Task}">
                                     <span data-position="top right" data-tooltip="Aufgabe">
@@ -87,7 +87,7 @@
                                     </g:elseif>
                                     <g:elseif test="${obj.owner instanceof License}">
                                         <i class="icon balance scale la-list-icon"></i>
-                                        <g:link controller="licenseDetails" action="show" id="${obj.owner?.id}">${obj.owner?.reference}</g:link>
+                                        <g:link controller="license" action="show" id="${obj.owner?.id}">${obj.owner?.reference}</g:link>
                                     </g:elseif>
                                     <g:elseif test="${obj.owner instanceof Org}">
                                         <i class="icon university la-list-icon"></i>

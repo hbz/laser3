@@ -44,7 +44,7 @@
 
 
     <div>
-        <g:form id="delete_doc_form" url="[controller:'licenseDetails',action:'deleteDocuments']" method="post">
+        <g:form id="delete_doc_form" url="[controller:'license', action:'deleteDocuments']" method="post">
 
             <div class="well hide license-notes-options">
                 <input type="hidden" name="licid" value="${params.id}"/>

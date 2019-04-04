@@ -70,7 +70,7 @@
                                     <g:link controller="organisations" action="show" params="[id:docctx.org.id]"><i class="university icon small"></i> ${docctx.org.name}</g:link>
                                 </g:if>
                                 <g:elseif test="${docctx.license}">
-                                    <g:link controller="licenseDetails" action="show" params="[id:docctx.license.id]"><i class="balance scale icon small"></i> ${docctx.license.reference}</g:link>
+                                    <g:link controller="license" action="show" params="[id:docctx.license.id]"><i class="balance scale icon small"></i> ${docctx.license.reference}</g:link>
                                 </g:elseif>
                                 <g:elseif test="${docctx.subscription}">
                                     <g:link controller="subscriptionDetails" action="show" params="[id:docctx.subscription.id]"><i class="folder open icon small"></i> ${docctx.subscription.name}</g:link>
