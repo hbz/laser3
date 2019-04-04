@@ -31,6 +31,7 @@
     <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextOrg.getallOrgTypeIds())}">
         <semui:actionsDropdown>
             <semui:actionsDropdownItem controller="myInstitution" action="addConsortiaMembers" message="menu.institutions.add_consortia_members" />
+            <semui:actionsDropdownItem controller="organisations" action="findInstitutionMatches" message="org.create_new_Institution.label"/>
             <g:if test="${actionName in ['manageConsortia']}">
                 <semui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses"/>
             </g:if>

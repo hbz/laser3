@@ -1113,11 +1113,6 @@ from License as l where (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     Map documents() {
         Map result = setResultGenerics()
-        Set documents = orgDocumentService.getAllDocuments(result.institution,params)
-        result.max = params.max ? Integer.parseInt(params.max) : (int) result.user.getDefaultPageSizeTMP()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
-        result.documents = documents.drop(result.offset).take(result.max)
-        result.totalSize = documents.size()
         result.availableUsers = orgDocumentService.getAvailableUploaders(result.user)
         result
     }
@@ -3277,30 +3272,35 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                     cmb.save()
                 }
             }
+
+            redirect action: 'manageConsortia'
         }
 
-        def fsq = filterService.getOrgQuery(params)
-        result.availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
+        else {
+            def fsq = filterService.getOrgQuery(params)
+            result.availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
 
-        result.consortiaMemberIds = []
-        Combo.findAllWhere(
-                toOrg: result.institution,
-                type:    RefdataValue.findByValue('Consortium')
-        ).each { cmb ->
-            result.consortiaMemberIds << cmb.fromOrg.id
+            result.consortiaMemberIds = []
+            Combo.findAllWhere(
+                    toOrg: result.institution,
+                    type:    RefdataValue.getByValueAndCategory('Consortium','Combo Type')
+            ).each { cmb ->
+                result.consortiaMemberIds << cmb.fromOrg.id
+            }
+
+            if ( params.exportXLS=='yes' ) {
+
+                def orgs = result.availableOrgs
+
+                def message = g.message(code: 'menu.public.all_orgs')
+
+                exportOrg(orgs, message, true)
+                return
+            }
+
+            result
         }
 
-        if ( params.exportXLS=='yes' ) {
-
-            def orgs = result.availableOrgs
-
-            def message = g.message(code: 'menu.public.all_orgs')
-
-            exportOrg(orgs, message, true)
-            return
-        }
-
-        result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')

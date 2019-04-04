@@ -126,7 +126,7 @@
 
         <r:script>
             $(document).ready(function() {
-                var tab = "${showView}";
+                var tab = "${view}";
                 $("[data-tab='"+tab+"']").addClass("active");
                 if(tab === "consAtSubscr")
                     $("[data-tab='cons']").addClass("active");

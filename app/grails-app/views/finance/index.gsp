@@ -69,6 +69,6 @@
         </g:else>
 
         <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'subscription.details.financials.label')} ${message(code:'default.for')} ${institution.name} <semui:totalNumber total="${totalString}"/></h1>
-        <g:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets]" />
+        <g:render template="result" model="[own:own,cons:cons,subscr:subscr,view:view,showView:showView,filterPresets:filterPresets]" />
     </body>
 </html>

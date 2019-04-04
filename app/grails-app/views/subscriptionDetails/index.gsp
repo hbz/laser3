@@ -189,12 +189,12 @@
                                     <semui:listIcon type="${ie.tipp?.title?.type?.value}"/>
                                     <g:link controller="issueEntitlement" id="${ie.id}" action="show"><strong>${ie.tipp.title.title}</strong></g:link>
 
-                                    <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && tipp?.title?.volume}">
-                                        (${message(code: 'title.volume.label')} ${tipp?.title?.volume})
+                                    <g:if test="${ie?.tipp?.title instanceof com.k_int.kbplus.BookInstance && ie?.tipp?.title?.volume}">
+                                        (${message(code: 'title.volume.label')} ${ie?.tipp?.title?.volume})
                                     </g:if>
 
-                                    <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance && (tipp?.title?.firstAuthor || tipp?.title?.firstEditor)}">
-                                        <br><b>${tipp?.title?.firstAuthor}; ${tipp?.title?.firstEditor}${message(code: 'title.firstAuthor.firstEditor.label')}</b>
+                                    <g:if test="${ie?.tipp?.title instanceof com.k_int.kbplus.BookInstance && (ie?.tipp?.title?.firstAuthor || ie?.tipp?.title?.firstEditor)}">
+                                        <br><b>${ie?.tipp?.title?.getEbookFirstAutorOrFirstEditor()} ${message(code: 'title.firstAuthor.firstEditor.label')}</b>
                                     </g:if>
 
                                     <br>
@@ -240,8 +240,8 @@
                                                 ${message(code:'default.on', default:'on')} <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessEndDate}"/>
                                             </g:if>
                                         </div>
-                                    <g:if test="${tipp?.title instanceof com.k_int.kbplus.BookInstance}">
-                                        <div class="item"><b>${message(code: 'title.editionStatement.label')}:</b> ${tipp?.title?.editionStatement}
+                                    <g:if test="${ie?.tipp?.title instanceof com.k_int.kbplus.BookInstance}">
+                                        <div class="item"><b>${message(code: 'title.editionStatement.label')}:</b> ${ie?.tipp?.title?.editionStatement}
                                         </div>
                                     </g:if>
                                     </div>
