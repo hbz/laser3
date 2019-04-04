@@ -56,7 +56,7 @@ ${message(code: 'subscription.linkLicenseConsortium.header')}
                     <g:select class="ui search dropdown"
                               optionKey="id" optionValue="reference"
                               from="${validLicenses}" name="license_All" value=""
-                              required="required"
+                              required=""
                               noSelection='["": "${message(code: 'subscription.linkLicenseConsortium.noSelection')}"]'/>
                 </g:if><g:else>
                     ${message(code: 'subscription.linkLicenseConsortium.noValidLicenses')}"]

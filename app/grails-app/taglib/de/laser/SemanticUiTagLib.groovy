@@ -519,7 +519,7 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
-    //<semui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="true" />
+    //<semui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="" />
 
     def datepicker = { attrs, body ->
         def inputCssClass = attrs.inputCssClass ?: '';
@@ -537,7 +537,7 @@ class SemanticUiTagLib {
         }
 
         def classes = attrs.required ? 'field fieldcontain required' : 'field fieldcontain'
-        def required = attrs.required ? 'required="true"' : ''
+        def required = attrs.required ? 'required=""' : ''
         def hideLabel = attrs.hideLabel ? false : true
 
         if (attrs.class) {

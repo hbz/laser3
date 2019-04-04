@@ -58,7 +58,7 @@
                                   optionKey="id"
                                   optionValue="value"
                                   value="${surveyInfo?.type?.id}"
-                                  noSelection="${['': message(code: 'default.select.choose.label')]}" required="true"/>
+                                  noSelection="${['': message(code: 'default.select.choose.label')]}" required=""/>
                     </g:else>
                 </div>
                 <br/>

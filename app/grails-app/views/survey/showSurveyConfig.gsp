@@ -48,7 +48,7 @@
                                   optionValue="name"
                                   value=""
                                   noSelection="${['': message(code: 'default.search_for.label', args: [message(code: 'surveyConfig.subscription.label')])]}"
-                                  required="true"/>
+                                  required=""/>
                     </div>
                     <input type="submit" class="ui button"
                            value="${message(code: 'showSurveyConfig.add.button', default: 'Add')}"/>
@@ -68,7 +68,7 @@
                                   optionValue="name"
                                   value=""
                                   noSelection="${['': message(code: 'default.search_for.label', args: [message(code: 'surveyProperty.label')])]}"
-                                  required="true"/>
+                                  required=""/>
                 </div>
                 <input type="submit" class="ui button"
                        value="${message(code: 'showSurveyConfig.add.button', default: 'Add')}"/>
@@ -195,7 +195,7 @@
                                                   optionValue="name"
                                                   value=""
                                                   noSelection="${['': message(code: 'default.search_for.label', args: [message(code: 'surveyProperty.label')])]}"
-                                                  required="true"/>
+                                                  required=""/>
 
                                     <input type="submit" class="ui button"
                                            value="${message(code: 'showSurveyConfig.add.surveyPropToSub.button', default: 'Add Survey Property to this Subscription')}"/>
@@ -231,7 +231,7 @@
 
             <div class="field required">
                 <label class="property-label"><g:message code="surveyProperty.name.label"/></label>
-                <input type="text" name="name" required="true"/>
+                <input type="text" name="name" required=""/>
             </div>
 
             <div class="two fields required">
@@ -243,7 +243,7 @@
                               optionKey="key" optionValue="${{ SurveyProperty.getLocalizedValue(it.key) }}"
                               name="type"
                               id="cust_prop_modal_select"
-                              noSelection="${['': message(code: 'default.select.choose.label')]}" required="true"/>
+                              noSelection="${['': message(code: 'default.select.choose.label')]}" required=""/>
                 </div>
 
                 <div class="field six wide hide" id="cust_prop_ref_data_name">
