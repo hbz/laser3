@@ -47,7 +47,7 @@
         </div>
     </g:if>
 
-    <div class="ui fixed inverted menu">
+    <nav class="ui fixed inverted menu">
         <div class="ui container">
             <g:link controller="home" action="index" class="header item la-logo-item">
                 <img class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
@@ -520,11 +520,11 @@
 
         </div><!-- container -->
 
-    </div><!-- main menu -->
+    </nav><!-- main menu -->
 
     <sec:ifAnyGranted roles="ROLE_USER">
 
-        <div class="ui fixed menu la-contextBar"  >
+        <nav class="ui fixed menu la-contextBar"  >
             <div class="ui container">
                 <div class="ui sub header item la-context-org">${contextOrg?.name}</div>
                 <div class="right menu la-advanced-view">
@@ -685,9 +685,9 @@
                     <%--semui:editableLabel editable="${editable}" /--%>
             </div>
         </div>
-        </div><!-- Context Bar -->
+        </nav><!-- Context Bar -->
 
-        <div class="ui right aligned sub header">${contextOrg?.name}</div>
+
 
     </sec:ifAnyGranted><%-- ROLE_USER --%>
 
@@ -698,12 +698,12 @@
             <g:layoutBody/>
         </div><!-- .main -->
 
-        <div id="Footer">
+        <footer id="Footer">
             <div class="clearfix"></div>
             <div class="footer-links container">
                 <div class="row"></div>
             </div>
-        </div>
+        </footer>
 
         <%-- global container for modals and ajax --%>
         <div id="dynamicModalContainer"></div>
