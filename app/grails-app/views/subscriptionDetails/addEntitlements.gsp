@@ -72,7 +72,16 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
 
     </g:form>
 </semui:filter>
-
+<%
+    List zdbIds = []
+    List onlineIds = []
+    List printIds = []
+    if (identifiers) {
+        zdbIds = identifiers.zdbIds
+        onlineIds = identifiers.onlineIds
+        printIds = identifiers.printIds
+    }
+%>
 <g:if test="${flash.error}">
     <semui:messages data="${flash}"/>
 </g:if>
