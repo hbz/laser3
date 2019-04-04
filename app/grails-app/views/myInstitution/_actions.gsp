@@ -40,7 +40,7 @@
 
 <g:if test="${actionName in ['addressbook']}">
     <g:if test="${editable}">
-        <div class="item"  href="#personFormModal" data-semui="modal" data-value="1">${message(code: 'person.create_new.contactPerson.label')}</div>
+        <div class="item" data-href="#personFormModal" data-semui="modal" data-value="1">${message(code: 'person.create_new.contactPerson.label')}</div>
     </g:if>
 </g:if>
 

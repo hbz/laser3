@@ -100,7 +100,7 @@ ${personInstance}
                                 </g:each>
                             </div>
                             <g:if test="${editable}">
-                                <input class="ui button" type="button" data-semui="modal" href="#contactFormModal"
+                                <input class="ui button" type="button" data-semui="modal" data-href="#contactFormModal"
                                        value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label', default: 'Contacts')])}">
                                 <g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
                             </g:if>
@@ -123,7 +123,7 @@ ${personInstance}
                                 </g:each>
                             </div>
                             <g:if test="${editable}">
-                                <input class="ui button" type="button" data-semui="modal" href="#addressFormModal"
+                                <input class="ui button" type="button" data-semui="modal" data-href="#addressFormModal"
                                        value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}">
                                 <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/>
                             </g:if>

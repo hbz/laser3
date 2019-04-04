@@ -116,7 +116,7 @@
     </g:form>
 
 
-    <script type="text/javascript">
+    <script>
         var ajaxPostFunc = function () {
 
             $("#radioresponsibleOrgEdit").change(function () {

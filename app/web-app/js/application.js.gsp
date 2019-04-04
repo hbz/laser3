@@ -292,7 +292,11 @@ r2d2 = {
 
         // modals
         $(ctxSel + " *[data-semui='modal']").click(function() {
-            $($(this).attr('href') + '.ui.modal').modal({
+            var href = $(this).attr('data-href')
+            if (! href) {
+                href = $(this).attr('href')
+            }
+            $(href + '.ui.modal').modal({
                 onVisible: function() {
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
                 },

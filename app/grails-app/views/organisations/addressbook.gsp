@@ -25,7 +25,7 @@
             <input class="ui button"
                value="${message(code: 'person.create_new.contactPerson.label')}"
                data-semui="modal"
-               href="#personFormModal" />
+               data-href="#personFormModal" />
         </g:if>
 
         <g:render template="/person/formModal" model="['tenant': contextOrg,

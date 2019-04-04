@@ -199,7 +199,7 @@
                                         <input class="ui button"
                                                value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Adresse')])}"
                                                data-semui="modal"
-                                               href="#addressFormModal" />
+                                               data-href="#addressFormModal" />
                                         <g:render template="/address/formModal" model="['orgId': orgInstance?.id, 'redirect': '.']"/>
                                     </g:if>
                                 </dd>
@@ -225,7 +225,7 @@
                                         <input class="ui button"
                                                value="${message(code: 'default.add.label', args: [message(code: 'contact.label', default: 'Contact')])}"
                                                data-semui="modal"
-                                               href="#contactFormModal" />
+                                               data-href="#contactFormModal" />
                                         <g:render template="/contact/formModal" model="['orgId': orgInstance?.id]"/>
                                     </g:if>
                                 </dd>
@@ -253,7 +253,7 @@
                                             <input class="ui button"
                                                    value="${message(code: 'person.create_new.contactPerson.label')}"
                                                    data-semui="modal"
-                                                   href="#personFormModal" />
+                                                   data-href="#personFormModal" />
 
                                             <g:render template="/person/formModal"
                                                       model="['tenant': contextOrg,

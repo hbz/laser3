@@ -203,7 +203,7 @@
           <semui:paginate action="currentLicenses" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${licenseCount}" />
 
   <%--
-    <r:script type="text/javascript">
+    <r:script>
 
         $('.license-results input[type="radio"]').click(function () {
             $('.license-options').slideDown('fast');

@@ -15,7 +15,7 @@
 
     <r:require modules="semanticUI" />
 
-    <script type="text/javascript">
+    <script>
         var gspLocale = "${message(code:'default.locale.label', default:'en')}";
         var gspDateFormat = "${message(code:'default.date.format.notime', default:'yyyy-mm-dd').toLowerCase()}";
     </script>

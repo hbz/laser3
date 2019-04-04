@@ -410,7 +410,7 @@
                         total="${num_sub_rows}"/>
     </g:if>
 
-    <r:script type="text/javascript">
+    <r:script>
         $(document).ready(function(){
               // initialize the form and fields
               $('.ui.form')
@@ -435,7 +435,7 @@
     </r:script>
 
     <%--
-    <r:script type="text/javascript">
+    <r:script>
 
         function availableTypesSelectUpdated(optionSelected) {
 

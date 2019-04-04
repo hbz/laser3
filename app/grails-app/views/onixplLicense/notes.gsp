@@ -85,7 +85,7 @@
     </div>
 
     <!-- JS for license documents -->
-    <r:script type="text/javascript">
+    <r:script>
         $('.license-notes input[type="checkbox"]').click(function () {
             if ($('.license-notes input:checked').length > 0) {
                 $('.license-notes-options').slideDown('fast');

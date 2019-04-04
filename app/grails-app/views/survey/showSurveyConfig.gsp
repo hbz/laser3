@@ -78,7 +78,7 @@
             <br>
 
             <input class="ui button" value="${message(code: 'surveyProperty.create_new')}"
-                   data-semui="modal" href="#addSurveyPropertyModal" type="submit">
+                   data-semui="modal" data-href="#addSurveyPropertyModal" type="submit">
             <br>
 
             <g:if test="${surveyConfigs.size() > 0}">

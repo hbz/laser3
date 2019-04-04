@@ -34,7 +34,7 @@
         <div class="well hide license-documents-options">
             <button class="ui negative button" id="delete-doc">Delete Selected Documents</button>&nbsp;
             <input type="submit" class="ui button" value="Add new document" data-semui="modal"
-                   href="#modalCreateDocument"/>
+                   data-href="#modalCreateDocument"/>
 
             <input type="hidden" name="licid" value="${params.id}"/>
         </div>
@@ -199,7 +199,7 @@
 </r:script>
 
 <!-- JS for license documents -->
-<r:script type="text/javascript">
+<r:script>
     $('.license-documents input[type="checkbox"]').click(function () {
         if ($('.license-documents input:checked').length > 0) {
             $('.license-documents-options').slideDown('fast');

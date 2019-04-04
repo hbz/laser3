@@ -89,7 +89,7 @@
                   </div>
               </div>
           </g:form>
-            <r:script type="text/javascript">
+            <r:script>
                 $('.action .icon.button').click( function() {
                     $(this).parent('.action').find('input:file').click();
                 });

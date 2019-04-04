@@ -158,7 +158,7 @@
 </g:else>
 
 
-<r:script type="text/javascript">
+<r:script>
     $('.license-results input[type="radio"]').click(function () {
         $('.license-options').slideDown('fast');
     });

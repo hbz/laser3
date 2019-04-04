@@ -77,7 +77,7 @@
           </g:if>
 
     </div>
-    <r:script type="text/javascript">
+    <r:script>
         $(document).ready(function() {
             var activateButton = function() {
                 $('.subscription-create input').removeClass('disabled');
