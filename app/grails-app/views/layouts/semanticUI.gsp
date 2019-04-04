@@ -47,7 +47,7 @@
         </div>
     </g:if>
 
-    <div class="ui fixed inverted menu">
+    <nav class="ui fixed inverted menu">
         <div class="ui container">
             <g:link controller="home" action="index" class="header item la-logo-item">
                 <img class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
@@ -520,7 +520,7 @@
 
         </div><!-- container -->
 
-    </div><!-- main menu -->
+    </nav><!-- main menu -->
 
     <sec:ifAnyGranted roles="ROLE_USER">
 
