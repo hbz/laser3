@@ -50,7 +50,7 @@
                 }
             %>
             <semui:xEditable owner="${subscriptionInstance}" field="name" />
-            <semui:anualRings object="${subscriptionInstance}" controller="subscriptionDetails" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+            <semui:anualRings object="${subscriptionInstance}" controller="subscription" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
         </h1>
 
     <g:render template="nav" />
@@ -134,7 +134,7 @@
                                 <dl>
                                     <dt class="control-label">${message(code:'subscription.isInstanceOfSub.label')}</dt>
                                     <dd>
-                                        <g:link controller="subscriptionDetails" action="show" id="${subscriptionInstance.instanceOf.id}">${subscriptionInstance.instanceOf}</g:link>
+                                        <g:link controller="subscription" action="show" id="${subscriptionInstance.instanceOf.id}">${subscriptionInstance.instanceOf}</g:link>
                                     </dd>
                                 </dl>
 
@@ -167,7 +167,7 @@
                                                 <td>
                                                     <g:set var="pair" value="${link.getOther(subscriptionInstance)}"/>
                                                     <g:set var="sdf" value="${new SimpleDateFormat('dd.MM.yyyy')}"/>
-                                                    <g:link controller="subscriptionDetails" action="show" id="${pair.id}">
+                                                    <g:link controller="subscription" action="show" id="${pair.id}">
                                                         ${pair.name}
                                                     </g:link><br>
                                                     ${pair.startDate ? sdf.format(pair.startDate) : ""}–${pair.endDate ? sdf.format(pair.endDate) : ""}
@@ -251,7 +251,7 @@
                                     <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code:'license')}</th>
                                     <td>
                                         <g:if test="${subscriptionInstance.owner == null}">
-                                            <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" dataController="subscriptionDetails" dataAction="possibleLicensesForSubscription" />
+                                            <semui:xEditableRefData owner="${subscriptionInstance}" field="owner" datacontroller="subscription" dataAction="possibleLicensesForSubscription" />
                                         </g:if>
                                         <g:else>
                                             <g:link controller="license" action="show" id="${subscriptionInstance.owner.id}">
@@ -500,7 +500,7 @@
     <r:script language="JavaScript">
 
       function unlinkPackage(pkg_id){
-        var req_url = "${createLink(controller:'subscriptionDetails', action:'unlinkPackage', params:[subscription:subscriptionInstance.id])}&package="+pkg_id
+        var req_url = "${createLink(controller:'subscription', action:'unlinkPackage', params:[subscription:subscriptionInstance.id])}&package="+pkg_id
 
         $.ajax({url: req_url,
           success: function(result){

@@ -69,7 +69,7 @@ class Task {
         if (pkg)
             result << [controller: 'package', object: pkg]
         if (subscription)
-            result << [controller: 'subscriptionDetails', object: subscription]
+            result << [controller: 'subscription', object: subscription]
 
         result
     }

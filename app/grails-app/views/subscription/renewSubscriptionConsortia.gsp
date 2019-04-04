@@ -52,7 +52,7 @@ ${message(code: 'subscription.details.renewalsConsortium.label')}: ${subscriptio
 </div>
 
 <semui:form>
-    <g:form action="renewSubscriptionConsortia" controller="subscriptionDetails" id="${params.id}"
+    <g:form action="renewSubscriptionConsortia" controller="subscription" id="${params.id}"
             params="[workFlowPart: workFlowPart]" method="post" class="ui form newLicence">
         <g:hiddenField name="baseSubscription" value="${params.id}"/>
         <g:hiddenField name="workFlowPartNext" value="${workFlowPartNext}"/>
@@ -71,7 +71,7 @@ ${message(code: 'subscription.details.renewalsConsortium.label')}: ${subscriptio
                 <br><b>${message(code: 'subscription.renewSubscriptionConsortia.addMembers', default: 'You can now select the subscriber from the old license to be included in the extended license.')}</b><br>
             </g:if>
             <g:if test="${workFlowPart >= 2}">
-                <br><g:link controller="subscriptionDetails" action="show" target="_blank"
+                <br><g:link controller="subscription" action="show" target="_blank"
                             id="${newSub?.id}">${message(code: 'myinst.emptySubscription.label')}: ${newSub?.name}</g:link>
             </g:if>
         </div>

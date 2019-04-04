@@ -8,11 +8,11 @@
     </div>
     <p>
         <g:message code="myinst.subscriptionDetails.message.hereLink" />
-        <g:link controller="subscriptionDetails" action="members" id="${subscriptionInstance.instanceOf.id}">
+        <g:link controller="subscription" action="members" id="${subscriptionInstance.instanceOf.id}">
             <g:message code="myinst.subscriptionDetails.message.backToMembers" />
         </g:link>
         <g:message code="myinst.subscriptionDetails.message.and" />
-        <g:link controller="subscriptionDetails" action="show" id="${subscriptionInstance.instanceOf.id}">
+        <g:link controller="subscription" action="show" id="${subscriptionInstance.instanceOf.id}">
             <g:message code="myinst.subscriptionDetails.message.consortialLicence" />
         </g:link>.
     </p>

@@ -7,8 +7,8 @@
 			allSubscriptions_readRights: allSubscriptions_readRights,
 			allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
 	<hr>
-	<g:form action="copyElementsIntoSubscription" controller="subscriptionDetails" id="${params.id}"
-			params="[workFlowPart: workFlowPart]" method="post" class="ui form newLicence">
+	<g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id}"
+            params="[workFlowPart: workFlowPart]" method="post" class="ui form newLicence">
 		<g:hiddenField name="baseSubscription" value="${params.id}"/>
 		<g:hiddenField name="workFlowPartNext" value="${workFlowPartNext}"/>
 		<g:hiddenField name="newSubscription" value="${newSub?.id}"/>

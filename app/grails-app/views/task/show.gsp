@@ -31,7 +31,7 @@
 				
 					<g:if test="${taskInstance?.subscription}">
 						<dt><g:message code="task.subscription.label" default="Subscription" /></dt>
-						<dd><g:link controller="subscriptionDetails" action="show" id="${taskInstance?.subscription?.id}">${taskInstance?.subscription}</g:link></dd>
+						<dd><g:link controller="subscription" action="show" id="${taskInstance?.subscription?.id}">${taskInstance?.subscription}</g:link></dd>
 					</g:if>
 				
 					<g:if test="${taskInstance?.title}">

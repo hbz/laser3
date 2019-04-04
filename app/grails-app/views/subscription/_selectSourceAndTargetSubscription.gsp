@@ -1,5 +1,5 @@
 <%@ page import="com.k_int.kbplus.Subscription" %>
-<g:form action="copyElementsIntoSubscription" controller="subscriptionDetails" id="${params.id}" params="[
+<g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id}" params="[
             workFlowPart: workFlowPart,
             workFlowPartNext: workFlowPartNext
         ]" method="post" class="ui form newLicence">

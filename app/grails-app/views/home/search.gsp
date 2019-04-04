@@ -167,7 +167,7 @@
                                                 id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
                                 </g:if>
                                 <g:if test="${hit.getSource().rectype == 'Subscription'}">
-                                    <td><g:link controller="subscriptionDetails" action="show"
+                                    <td><g:link controller="subscription" action="show"
                                                 id="${hit.getSource().dbId}">${hit.getSource().name} (${hit.getSource().type})</g:link></td>
                                     <td>${hit.getSource().identifier}</td>
                                 </g:if>

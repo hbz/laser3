@@ -9,7 +9,7 @@
             <div class="divider"></div>
         </g:if>
 
-        <semui:actionsDropdownItem controller="subscriptionDetails" action="compare" message="menu.my.comp_sub" />
+        <semui:actionsDropdownItem controller="subscription" action="compare" message="menu.my.comp_sub" />
         <semui:actionsDropdownItem controller="subscriptionImport" action="generateImportWorksheet" params="${[id:contextOrg?.id]}" message="menu.institutions.sub_work" />
         <semui:actionsDropdownItem controller="subscriptionImport" action="importSubscriptionWorksheet" params="${[id:contextOrg?.id]}" message="menu.institutions.imp_sub_work" />
     </semui:actionsDropdown>

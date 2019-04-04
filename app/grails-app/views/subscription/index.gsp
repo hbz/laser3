@@ -14,7 +14,7 @@
     <g:render template="actions" />
 </semui:controlButtons>
 
-<semui:modeSwitch controller="subscriptionDetails" action="index" params="${params}" />
+<semui:modeSwitch controller="subscription" action="index" params="${params}" />
 
 <semui:messages data="${flash}" />
 
@@ -22,7 +22,7 @@
 
 <h1 class="ui left aligned icon header"><semui:headerIcon />
 <semui:xEditable owner="${subscriptionInstance}" field="name" />
-<semui:anualRings object="${subscriptionInstance}" controller="subscriptionDetails" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+<semui:anualRings object="${subscriptionInstance}" controller="subscription" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 </h1>
 <g:render template="nav" />
 
@@ -41,12 +41,12 @@
                     ${message(code:'subscription.entitlement.plural')} ${message(code:'default.paginate.offset', args:[(offset+1),(offset+(entitlements?.size())),num_sub_rows])}. (
                     <g:if test="${params.mode=='advanced'}">
                         ${message(code:'subscription.details.advanced.note', default:'Includes Expected or Expired entitlements, switch to')}
-                        <g:link controller="subscriptionDetails" action="index" params="${params+['mode':'basic']}">${message(code:'default.basic', default:'Basic')}</g:link>
+                        <g:link controller="subscription" action="index" params="${params+['mode':'basic']}">${message(code:'default.basic', default:'Basic')}</g:link>
                         ${message(code:'subscription.details.advanced.note.end', default:'view to hide them')}
                     </g:if>
                     <g:else>
                         ${message(code:'subscription.details.basic.note', default:'Expected or Expired entitlements are filtered, use')}
-                        <g:link controller="subscriptionDetails" action="index" params="${params+['mode':'advanced']}" button type="button" >${message(code:'default.advanced', default:'Advanced')}</g:link>
+                        <g:link controller="subscription" action="index" params="${params+['mode':'advanced']}" button type="button" >${message(code:'default.advanced', default:'Advanced')}</g:link>
                         ${message(code:'subscription.details.basic.note.end', default:'view to see them')}
                     </g:else>
                     )
@@ -316,7 +316,7 @@
 </div>
 
 <g:if test="${entitlements}" >
-    <semui:paginate  action="index" controller="subscriptionDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_sub_rows}" />
+    <semui:paginate  action="index" controller="subscription" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${num_sub_rows}" />
 </g:if>
 
 

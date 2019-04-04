@@ -13,7 +13,7 @@
     <semui:breadcrumbs>
         <semui:crumb controller="myInstitution" action="currentSubscriptions"
                      text="${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}"/>
-        <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}"
+        <semui:crumb controller="subscription" action="index" id="${subscriptionInstance.id}"
                      text="${subscriptionInstance.name}"/>
         <semui:crumb class="active"
                      text="${message(code: 'subscription.details.addMembers.label', default: 'Add Members')}"/>
@@ -44,7 +44,7 @@
         </g:form>
     </semui:filter>
 
-    <g:form action="processAddMembers" params="${[id: params.id]}" controller="subscriptionDetails" method="post" class="ui form">
+    <g:form action="processAddMembers" params="${[id: params.id]}" controller="subscription" method="post" class="ui form">
 
         <g:render template="/templates/filter/orgFilterTable"
                   model="[orgList: cons_members,

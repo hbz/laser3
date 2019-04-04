@@ -12,7 +12,7 @@
 
         <h1 class="ui left aligned icon header"><semui:headerIcon />
             <semui:xEditable owner="${subscriptionInstance}" field="name" />
-            <semui:anualRings object="${subscriptionInstance}" controller="subscriptionDetails" action="notes" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+            <semui:anualRings object="${subscriptionInstance}" controller="subscription" action="notes" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
         </h1>
 
         <g:render template="nav" />

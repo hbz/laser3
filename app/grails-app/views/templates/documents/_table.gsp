@@ -73,7 +73,7 @@
                                     <g:link controller="license" action="show" params="[id:docctx.license.id]"><i class="balance scale icon small"></i> ${docctx.license.reference}</g:link>
                                 </g:elseif>
                                 <g:elseif test="${docctx.subscription}">
-                                    <g:link controller="subscriptionDetails" action="show" params="[id:docctx.subscription.id]"><i class="folder open icon small"></i> ${docctx.subscription.name}</g:link>
+                                    <g:link controller="subscription" action="show" params="[id:docctx.subscription.id]"><i class="folder open icon small"></i> ${docctx.subscription.name}</g:link>
                                 </g:elseif>
                                 <g:elseif test="${docctx.pkg}">
                                     <g:link controller="package" action="show" params="[id:docctx.pkg.id]"><i class="gift icon small"></i> ${docctx.pkg.name}</g:link>

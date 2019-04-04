@@ -137,7 +137,7 @@
                                   <g:if test="${institution?.id in sub.orgRelations?.org?.id || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgTypeIds())}">
                                   <div class="la-flexbox">
                                       <i class="icon folder open outline la-list-icon"></i>
-                                      <g:link controller="subscriptionDetails" action="show" id="${sub.id}">${sub.name}</g:link><br/>
+                                      <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link><br/>
                                   </div>
                                   </g:if>
                           </g:if>

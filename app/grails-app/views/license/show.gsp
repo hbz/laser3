@@ -145,7 +145,7 @@
                                             <tr>
                                                 <th scope="row">${message(code:'license.linkedSubscription', default:'Linked Subscription')}</th>
                                                 <td>
-                                                    <g:link controller="subscriptionDetails" action="show" id="${sub.id}">${sub.name }</g:link>
+                                                    <g:link controller="subscription" action="show" id="${sub.id}">${sub.name }</g:link>
                                                 </td>
                                                 <td class="right aligned">
                                                     <g:if test="${editable}">

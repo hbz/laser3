@@ -67,7 +67,7 @@
                             <g:link class="item" controller="platform">Platform</g:link>
                             <g:link class="item" controller="title">Title Instance</g:link>
                             <g:link class="item" controller="tipp">Title Instance Package Platform</g:link>
-                            <g:link class="item" controller="subscriptionDetails">Subscriptions</g:link>
+                            <g:link class="item" controller="subscription">Subscriptions</g:link>
                             <g:link class="item" controller="license">Licenses</g:link>
                             <g:link class="item" controller="onixplLicense" action="list">ONIX-PL Licenses</g:link>
                         </div>
@@ -144,7 +144,7 @@
 
                             <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="emptySubscription" message="menu.institutions.emptySubscription" />
 
-                            <semui:securedMainNavItem affiliation="INST_USER" controller="subscriptionDetails" action="compare" message="menu.my.comp_sub" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="subscription" action="compare" message="menu.my.comp_sub" />
 
                             <%--<g:link class="item" controller="subscriptionImport" action="generateImportWorksheet"
                                     params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.sub_work')}</g:link>
@@ -160,7 +160,7 @@
 
                             <%--
                             <div class="divider"></div>
-                            <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.my.comp_sub')}</g:link>
+                            <g:link class="item" controller="subscription" action="compare">${message(code:'menu.my.comp_sub')}</g:link>
 
                             <g:link class="item" controller="myInstitution" action="renewalsSearch">${message(code:'menu.institutions.gen_renewals')}</g:link>
                             <g:link class="item" controller="myInstitution" action="renewalsUpload">${message(code:'menu.institutions.imp_renew')}</g:link>
@@ -258,7 +258,7 @@
                                 <g:link class="item" controller="license" action="create">${message(code:'license.template.new')}</g:link>
                                 <g:link class="item" controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link>
 
-                                <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</g:link>
+                                <g:link class="item" controller="subscription" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</g:link>
                                 <g:link class="item" controller="subscriptionImport" action="generateImportWorksheet">${message(code:'menu.datamanager.sub_work')}</g:link>
                                 <g:link class="item" controller="subscriptionImport" action="importSubscriptionWorksheet" params="${[dm:'true']}">${message(code:'menu.datamanager.imp_sub_work')}</g:link>
                                 <g:link class="item" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</g:link>
@@ -536,7 +536,7 @@
                         </g:if>
                     </div>
 
-                        <g:if test="${controllerName=='subscriptionDetails' && actionName=='show'}">
+                        <g:if test="${controllerName=='subscription' && actionName=='show'}">
                             <div class="item">
                                 <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
                                     <button class="ui icon toggle button la-toggle-controls" data-tooltip="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right" data-variation="tiny">

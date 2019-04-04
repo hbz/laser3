@@ -13,7 +13,7 @@
     <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label')}" />
 
     <g:if test="${subscriptionInstance}">
-        <semui:crumb action="show" controller="subscriptionDetails" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}" />
+        <semui:crumb action="show" controller="subscription" id="${subscriptionInstance.id}" text="${subscriptionInstance.name}" />
         <semui:crumb class="active" text="${message(code: 'myinst.copySubscription')}" />
     </g:if>
 
@@ -30,7 +30,7 @@ ${message(code: 'myinst.copySubscription')}: ${subscriptionInstance.name}
 <semui:messages data="${flash}"/>
 
 <semui:form>
-    <g:form action="processcopySubscription" controller="subscriptionDetails" method="post" class="ui form newSubscription">
+    <g:form action="processcopySubscription" controller="subscription" method="post" class="ui form newSubscription">
 
 
         <div class="field required">
@@ -60,7 +60,7 @@ ${message(code: 'myinst.copySubscription')}: ${subscriptionInstance.name}
                 <td>
                     <b>${message(code:'subscription.linktoSubscription', default:'Dependent Subscription')}:</b>
                     <g:if test="${subscription.instanceOf}">
-                        <g:link controller="subscriptionDetails" action="show" target="_blank" id="${subscription.instanceOf.id}">${subscription.instanceOf}</g:link>
+                        <g:link controller="subscription" action="show" target="_blank" id="${subscription.instanceOf.id}">${subscription.instanceOf}</g:link>
                     </g:if>
                     <g:else>
                         ${message(code:'subscription.linktoSubscriptionEmpty', default:'No Dependent Subscription available')}

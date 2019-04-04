@@ -21,7 +21,7 @@
         if (targetSubscriptionId) params << [targetSubscriptionId: targetSubscriptionId];
     %>
     <semui:subNav>
-        <semui:complexSubNavItem controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 1]}" workFlowPart="1" >
+        <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 1]}" workFlowPart="1" >
             <div class="content" >
                 <div class="description">
                     <i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}
@@ -31,7 +31,7 @@
             </div>
         </semui:complexSubNavItem>
 
-        <semui:complexSubNavItem controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 5]}" workFlowPart="5" >
+        <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 5]}" workFlowPart="5" >
             <div class="content" >
                 <div class="description">
                     <i class="gift icon"></i>${message(code: 'package')}
@@ -40,7 +40,7 @@
             </div>
         </semui:complexSubNavItem>
 
-        <semui:complexSubNavItem controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 2]}"  workFlowPart="2">
+        <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 2]}"  workFlowPart="2">
             <div class="content">
                 <div class="description">
                     <i class="file outline icon"></i>${message(code: 'default.documents.label')}
@@ -51,7 +51,7 @@
         </semui:complexSubNavItem>
 
         %{--TODO: Teilnehmer ist noch nicht fertig implementiert, wird später als wieder eingeblendet--}%
-        %{--<semui:complexSubNavItem controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 3]}"  workFlowPart="3">--}%
+        %{--<semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 3]}"  workFlowPart="3">--}%
             %{--<i class="university icon"></i>--}%
             %{--<div class="content">--}%
                 %{--<div class="title">--}%
@@ -61,7 +61,7 @@
         %{--</semui:complexSubNavItem>--}%
 
         <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_YODA">
-            <semui:complexSubNavItem controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 4]}"  workFlowPart="4">
+            <semui:complexSubNavItem controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: 4]}"  workFlowPart="4">
                 <i class="tags icon"></i>
                 <div class="content">
                     <div class="title">

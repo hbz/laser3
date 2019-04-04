@@ -1,13 +1,9 @@
 package com.k_int.kbplus
 
 import com.k_int.kbplus.abstract_domain.AbstractProperty
-import com.k_int.kbplus.abstract_domain.CustomProperty
-import com.k_int.kbplus.abstract_domain.PrivateProperty
 import com.k_int.properties.PropertyDefinition
-import com.k_int.kbplus.TitleInstancePackagePlatform
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
-import com.lowagie.text.pdf.PdfName
 import de.laser.AccessService
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
@@ -28,21 +24,16 @@ import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row;
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.hibernate.cfg.NotYetImplementedException
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 
-
-import static grails.async.Promises.*
-
-
 //For Transform
 
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class SubscriptionDetailsController extends AbstractDebugController {
+class SubscriptionController extends AbstractDebugController {
 
     def springSecurityService
     def contextService
@@ -106,9 +97,9 @@ class SubscriptionDetailsController extends AbstractDebugController {
             response.sendError(401); return
         }
         result.contextOrg = contextService.getOrg()
-        def verystarttime = exportService.printStart("SubscriptionDetails")
+        def verystarttime = exportService.printStart("subscription")
 
-        log.debug("subscriptionDetails id:${params.id} format=${response.format}");
+        log.debug("subscription id:${params.id} format=${response.format}");
 
         result.transforms = grailsApplication.config.subscriptionTransforms
 
@@ -228,7 +219,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
         exportService.printDuration(verystarttime, "Querying")
 
         log.debug("subscriptionInstance returning... ${result.num_sub_rows} rows ");
-        def filename = "subscriptionDetails_${result.subscriptionInstance.identifier}"
+        def filename = "subscription_${result.subscriptionInstance.identifier}"
 
 
         if (executorWrapperService.hasRunningProcess(result.subscriptionInstance)) {
@@ -1171,12 +1162,12 @@ class SubscriptionDetailsController extends AbstractDebugController {
 
                 result.subscriptionInstance.syncAllShares(synShareTargetList)
 
-                redirect controller: 'subscriptionDetails', action: 'members', params: [id: result.subscriptionInstance?.id]
+                redirect controller: 'subscription', action: 'members', params: [id: result.subscriptionInstance?.id]
             } else {
-                redirect controller: 'subscriptionDetails', action: 'show', params: [id: result.subscriptionInstance?.id]
+                redirect controller: 'subscription', action: 'show', params: [id: result.subscriptionInstance?.id]
             }
         } else {
-            redirect controller: 'subscriptionDetails', action: 'show', params: [id: result.subscriptionInstance?.id]
+            redirect controller: 'subscription', action: 'show', params: [id: result.subscriptionInstance?.id]
         }
     }
 
@@ -1227,7 +1218,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def pendingChanges() {
-        log.debug("subscriptionDetails id:${params.id}");
+        log.debug("subscription id:${params.id}");
 
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
         if (!result) {
@@ -1497,7 +1488,7 @@ class SubscriptionDetailsController extends AbstractDebugController {
 
         docstoreService.unifiedDeleteDocuments(params)
 
-        redirect controller: 'subscriptionDetails', action: params.redirectAction, id: params.instanceId
+        redirect controller: 'subscription', action: params.redirectAction, id: params.instanceId
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
@@ -1552,14 +1543,14 @@ class SubscriptionDetailsController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def acceptChange() {
         processAcceptChange(params, Subscription.get(params.id), genericOIDService)
-        redirect controller: 'subscriptionDetails', action: 'index', id: params.id
+        redirect controller: 'subscription', action: 'index', id: params.id
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def rejectChange() {
         processRejectChange(params, Subscription.get(params.id))
-        redirect controller: 'subscriptionDetails', action: 'index', id: params.id
+        redirect controller: 'subscription', action: 'index', id: params.id
     }
 
 
@@ -2377,7 +2368,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 }
 
 
-                redirect controller: 'subscriptionDetails', action: 'show', params: [id: newSubConsortia?.id]
+                redirect controller: 'subscription', action: 'show', params: [id: newSubConsortia?.id]
 
             }
 
@@ -2944,7 +2935,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 //                }
 //            }
 //        }
-//        redirect controller: 'subscriptionDetails', action: 'show', params: [id: newSubConsortia?.id]#
+//        redirect controller: 'subscription', action: 'show', params: [id: newSubConsortia?.id]#
         result
     }
 
@@ -3336,7 +3327,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 }
 
 
-                redirect controller: 'subscriptionDetails', action: 'show', params: [id: newSubscriptionInstance.id]
+                redirect controller: 'subscription', action: 'show', params: [id: newSubscriptionInstance.id]
             }
         }
 

@@ -892,7 +892,7 @@ from License as l where (
                   }
                 }
 
-                redirect controller: 'subscriptionDetails', action: 'show', id: new_sub.id
+                redirect controller: 'subscription', action: 'show', id: new_sub.id
             } else {
                 new_sub.errors.each { e ->
                     log.debug("Problem creating new sub: ${e}");
@@ -1169,7 +1169,7 @@ from License as l where (
             // def new_sub_package = new SubscriptionPackage(subscription: new_sub, pkg: basePackage).save();
 
             flash.message = message(code: 'subscription.created.message', args: [message(code: 'subscription.label', default: 'Package'), basePackage.id])
-            redirect controller: 'subscriptionDetails', action: 'index', params: params, id: new_sub.id
+            redirect controller: 'subscription', action: 'index', params: params, id: new_sub.id
         } else {
             flash.message = message(code: 'subscription.unknown.message',default: "Subscription not found")
             redirect action: 'addSubscription', params: params
@@ -2757,7 +2757,7 @@ AND EXISTS (
         new_subscription.save()
 
         if (new_subscription)
-            redirect controller: 'subscriptionDetails', action: 'index', id: new_subscription.id
+            redirect controller: 'subscription', action: 'index', id: new_subscription.id
         else
             redirect action: 'renewalsUpload', params: params
     }

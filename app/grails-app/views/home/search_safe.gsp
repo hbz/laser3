@@ -89,7 +89,7 @@
                           <td><g:link controller="platform" action="show" id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
                         </g:if>
                         <g:if test="${hit.type=='com.k_int.kbplus.Subscription'}">
-                          <td><g:link controller="subscriptionDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().name} (${hit.getSource().type})</g:link></td>
+                          <td><g:link controller="subscription" action="show" id="${hit.getSource().dbId}">${hit.getSource().name} (${hit.getSource().type})</g:link></td>
                           <td>${hit.getSource().identifier}</td>
                         </g:if>
                         <g:if test="${hit.type=='com.k_int.kbplus.License'}">

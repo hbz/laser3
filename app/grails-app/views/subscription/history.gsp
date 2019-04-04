@@ -14,7 +14,7 @@
 
     <h1 class="ui left aligned icon header"><semui:headerIcon />
         <semui:xEditable owner="${subscription}" field="name" />
-        <semui:anualRings object="${subscription}" controller="subscriptionDetails" action="history" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+        <semui:anualRings object="${subscription}" controller="subscription" action="history" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
     </h1>
 
     <g:render template="nav" contextPath="." />
@@ -50,7 +50,7 @@
         </g:if>
       </table>
 
-    <semui:paginate  action="history" controller="subscriptionDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${historyLinesTotal}" />
+    <semui:paginate  action="history" controller="subscription" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" max="${max}" total="${historyLinesTotal}" />
 
 
 </body>

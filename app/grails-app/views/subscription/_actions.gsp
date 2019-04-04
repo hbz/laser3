@@ -7,10 +7,10 @@
 <g:if test="${actionName == 'index'}">
     <semui:exportDropdown>
         <semui:exportDropdownItem>
-            <g:link class="item" controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" params="${params + [format:'json']}">JSON</g:link>
+            <g:link class="item" controller="subscription" action="index" id="${subscriptionInstance.id}" params="${params + [format:'json']}">JSON</g:link>
         </semui:exportDropdownItem>
         <semui:exportDropdownItem>
-            <g:link class="item" controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}" params="${params + [format:'xml']}">XML</g:link>
+            <g:link class="item" controller="subscription" action="index" id="${subscriptionInstance.id}" params="${params + [format:'xml']}">XML</g:link>
         </semui:exportDropdownItem>
         <g:each in="${transforms}" var="transkey,transval">
             <semui:exportDropdownItem>
@@ -39,34 +39,34 @@
 
         <div class="divider"></div>
 
-        <semui:actionsDropdownItem controller="subscriptionDetails" action="copySubscription" params="${[id: params.id]}" message="myinst.copySubscription" />
+        <semui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[id: params.id]}" message="myinst.copySubscription" />
         %{--Todo Remove ifAnyGranted wenn Task erms-776 fertig ist!--}%
         <sec:ifAnyGranted roles="INST_EDITOR, INST_ADM, ROLE_DATAMANAGER, ROLE_ADMIN, ROLE_YODA">
-            <semui:actionsDropdownItem controller="subscriptionDetails" action="copyElementsIntoSubscription" params="${[id: params.id]}" message="myinst.copyElementsIntoSubscription" />
+            <semui:actionsDropdownItem controller="subscription" action="copyElementsIntoSubscription" params="${[id: params.id]}" message="myinst.copyElementsIntoSubscription" />
         </sec:ifAnyGranted>
 
-        <semui:actionsDropdownItem controller="subscriptionDetails" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
-        <semui:actionsDropdownItem controller="subscriptionDetails" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
+        <semui:actionsDropdownItem controller="subscription" action="linkPackage" params="${[id:params.id]}" message="subscription.details.linkPackage.label" />
+        <semui:actionsDropdownItem controller="subscription" action="addEntitlements" params="${[id:params.id]}" message="subscription.details.addEntitlements.label" />
 
         <g:if test="${(subscriptionInstance?.getConsortia()?.id == contextService.getOrg()?.id) && !subscriptionInstance.instanceOf}">
-            <semui:actionsDropdownItem controller="subscriptionDetails" action="addMembers" params="${[id:params.id]}" message="subscription.details.addMembers.label" />
+            <semui:actionsDropdownItem controller="subscription" action="addMembers" params="${[id:params.id]}" message="subscription.details.addMembers.label" />
         </g:if>
 
         <g:set var="previousSubscriptions" value="${Links.findByLinkTypeAndObjectTypeAndDestination(RDStore.LINKTYPE_FOLLOWS,Subscription.class.name,subscriptionInstance.id)}"/>
         <g:if test="${subscriptionInstance?.type == RefdataValue.getByValueAndCategory("Local Licence", "Subscription Type") && !previousSubscriptions}">
-            <semui:actionsDropdownItem controller="subscriptionDetails" action="launchRenewalsProcess"
+            <semui:actionsDropdownItem controller="subscription" action="launchRenewalsProcess"
                                    params="${[id: params.id]}" message="subscription.details.renewals.label"/>
             <semui:actionsDropdownItem controller="myInstitution" action="renewalsUpload"
                                    message="menu.institutions.imp_renew"/>
         </g:if>
 
         <g:if test="${subscriptionInstance?.type == RefdataValue.getByValueAndCategory("Consortial Licence", "Subscription Type") && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgTypeIds()) && !previousSubscriptions}">
-            <semui:actionsDropdownItem controller="subscriptionDetails" action="renewSubscriptionConsortia"
+            <semui:actionsDropdownItem controller="subscription" action="renewSubscriptionConsortia"
                                        params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>      
         </g:if>
         
           <g:if test="${subscriptionInstance?.type == RefdataValue.getByValueAndCategory("Consortial Licence", "Subscription Type") && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in contextService.getOrg()?.getallOrgTypeIds())}">
-            <semui:actionsDropdownItem controller="subscriptionDetails" action="linkLicenseConsortia"
+            <semui:actionsDropdownItem controller="subscription" action="linkLicenseConsortia"
                                        params="${[id: params.id]}"
                                        message="subscription.details.linkLicenseConsortium.label"/>
         </g:if>

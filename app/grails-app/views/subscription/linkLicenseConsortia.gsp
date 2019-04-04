@@ -14,7 +14,7 @@
     <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg()?.getDesignation()}"/>
     <semui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <semui:crumb controller="subscriptionDetails" action="show" id="${subscriptionInstance.id}"
+    <semui:crumb controller="subscription" action="show" id="${subscriptionInstance.id}"
                  text="${subscriptionInstance.name}"/>
 
     <semui:crumb class="active" text="${message(code: 'subscription.details.linkLicenseConsortium.label')}"/>
@@ -30,7 +30,7 @@ ${message(code: 'subscription.linkLicenseConsortium.header')}
 
 <h3>
     ${message(code: 'subscription.linkLicenseConsortium.consortialSubscription')}: <g:link
-        controller="subscriptionDetails" action="show"
+        controller="subscription" action="show"
         id="${parentSub.id}">${parentSub.name}</g:link><br><br>
 
     <g:if test="${parentLicense}">
@@ -123,7 +123,7 @@ ${message(code: 'subscription.linkLicenseConsortium.header')}
                     </td>
 
                     <td class="x">
-                        <g:link controller="subscriptionDetails" action="show" id="${sub.id}" class="ui icon button"><i
+                        <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"><i
                                 class="write icon"></i></g:link>
                     </td>
                 </tr>

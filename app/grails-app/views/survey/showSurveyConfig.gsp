@@ -119,7 +119,7 @@
                         </td>
                         <td>
                             <g:if test="${config?.type == 'Subscription'}">
-                                <g:link controller="subscriptionDetails" action="show"
+                                <g:link controller="subscription" action="show"
                                         id="${config?.subscription?.id}">${config?.subscription?.name}</g:link>
                                 <br>${config?.subscription?.startDate ? '(' : ''}
                                 <g:formatDate format="${message(code: 'default.date.format.notime')}"

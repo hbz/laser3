@@ -1,8 +1,8 @@
-<%@ page import="com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.SubscriptionDetailsController; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService "%>
-<%@ page import="com.k_int.kbplus.SubscriptionDetailsController" %>
-<%@ page import="static com.k_int.kbplus.SubscriptionDetailsController.COPY" %>
-<%@ page import="static com.k_int.kbplus.SubscriptionDetailsController.REPLACE" %>
-<%@ page import="static com.k_int.kbplus.SubscriptionDetailsController.DO_NOTHING" %>
+<%@ page import="com.k_int.kbplus.IssueEntitlement; com.k_int.kbplus.SubscriptionController; de.laser.helper.RDStore; com.k_int.kbplus.Person; com.k_int.kbplus.Subscription; com.k_int.kbplus.GenericOIDService "%>
+<%@ page import="com.k_int.kbplus.SubscriptionController" %>
+<%@ page import="static com.k_int.kbplus.SubscriptionController.COPY" %>
+<%@ page import="static com.k_int.kbplus.SubscriptionController.REPLACE" %>
+<%@ page import="static com.k_int.kbplus.SubscriptionController.DO_NOTHING" %>
 <laser:serviceInjection />
 
 <semui:form>
@@ -12,7 +12,7 @@
             allSubscriptions_readRights: allSubscriptions_readRights,
             allSubscriptions_writeRights: allSubscriptions_writeRights]"/>
 
-    <g:form action="copyElementsIntoSubscription" controller="subscriptionDetails" id="${params.id}"
+    <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id}"
             params="[workFlowPart: workFlowPart, sourceSubscriptionId: sourceSubscriptionId, targetSubscriptionId: targetSubscription?.id]" method="post" class="ui form newLicence">
         <table class="ui celled table table-tworow la-table">
             <thead>
@@ -21,10 +21,10 @@
                     <th class="center aligned">${message(code: 'default.replace.label')}</th>
                     <th class="center aligned">${message(code: 'default.doNothing.label')}</th>
                     <th class="six wide">
-                        <g:if test="${sourceSubscription}"><g:link controller="subscriptionDetails" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
+                        <g:if test="${sourceSubscription}"><g:link controller="subscription" action="show" id="${sourceSubscription?.id}">${sourceSubscription?.name}</g:link></g:if>
                     </th>
                     <th class="six wide">
-                        <g:if test="${targetSubscription}"><g:link controller="subscriptionDetails" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
+                        <g:if test="${targetSubscription}"><g:link controller="subscription" action="show" id="${targetSubscription?.id}">${targetSubscription?.name}</g:link></g:if>
                     </th>
                 </tr>
             </thead>

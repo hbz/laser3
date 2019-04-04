@@ -20,7 +20,7 @@
                             </g:link>
                         </g:if>
                         <g:if test="${i.sub}">
-                            <g:link controller="subscriptionDetails" action="show" id="${i.sub.id}">
+                            <g:link controller="subscription" action="show" id="${i.sub.id}">
                                 ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name}
                             </g:link>
                         </g:if>

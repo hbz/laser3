@@ -267,7 +267,7 @@ ${personInstance}
                                                    <g:link controller="cluster" action="show" id="${link.cluster.id}">${link.cluster.name}</g:link>
                                                </g:if>
                                                <g:if test="${link.sub}">
-                                                   <g:link controller="subscriptionDetails" action="show" id="${link.sub.id}">${link.sub.name}</g:link>
+                                                   <g:link controller="subscription" action="show" id="${link.sub.id}">${link.sub.name}</g:link>
                                                </g:if>
                                                <g:if test="${link.lic}">
                                                    <g:link controller="license" action="show" id="${link.lic.id}">${link.lic}</g:link>

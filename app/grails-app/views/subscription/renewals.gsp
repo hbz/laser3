@@ -17,7 +17,7 @@
 
     <g:render template="nav" contextPath="." />
 
-      <g:link controller="subscriptionDetails"
+      <g:link controller="subscription"
                     action="launchRenewalsProcess" 
                     params="${[id:params.id]}">${message(code:'subscription.details.renewals.click_here', default:'Click Here')}</g:link> ${message(code:'subscription.details.renewals.note')}
     

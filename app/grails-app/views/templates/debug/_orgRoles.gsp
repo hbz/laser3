@@ -27,7 +27,7 @@
                             <g:link controller="package" action="show" id="${role.pkg.id}">${role.pkg.name} (${role.pkg.id})</g:link>
                         </g:if>
                         <g:if test="${role.sub}">
-                            <g:link controller="subscriptionDetails" action="show" id="${role.sub.id}">${role.sub.name} (${role.sub.id})</g:link>
+                            <g:link controller="subscription" action="show" id="${role.sub.id}">${role.sub.name} (${role.sub.id})</g:link>
                         </g:if>
                         <g:if test="${role.lic}">
                             <g:link controller="license" action="show" id="${role.lic.id}">${role.lic.reference} (${role.lic.id})</g:link>

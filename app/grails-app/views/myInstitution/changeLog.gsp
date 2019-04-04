@@ -46,7 +46,7 @@
              
             </td>
             <td>
-              <g:if test="${chg.subscription != null}">${message(code:'subscription.change.to')} <g:link controller="subscriptionDetails" action="index" id="${chg.subscription.id}">${chg.subscription.id} </g:link></g:if>
+              <g:if test="${chg.subscription != null}">${message(code:'subscription.change.to')} <g:link controller="subscription" action="index" id="${chg.subscription.id}">${chg.subscription.id} </g:link></g:if>
               <g:if test="${chg.license != null}">${message(code:'license.change.to')} <g:link controller="license" action="show" id="${chg.license.id}">${chg.license.id}</g:link></g:if>
               <g:if test="${chg.pkg != null}">${message(code:'package.change.to')} <g:link controller="package" action="show" id="${chg.package.id}">${chg.package.id}</g:link></g:if>
             </td>

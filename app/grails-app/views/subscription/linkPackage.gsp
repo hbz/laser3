@@ -11,7 +11,7 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}"/>
-    <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}"
+    <semui:crumb controller="subscription" action="index" id="${subscriptionInstance.id}"
                  text="${subscriptionInstance.name}"/>
     <semui:crumb class="active"
                  text="${message(code: 'subscription.details.linkPackage.heading', default: 'Link Subscription to Packages')}"/>
@@ -195,7 +195,7 @@
             </div>
 
             <g:if test="${hits}">
-                <semui:paginate action="linkPackage" controller="subscriptionDetails" params="${params}"
+                <semui:paginate action="linkPackage" controller="subscription" params="${params}"
                                 next="${message(code: 'default.paginate.next', default: 'Next')}"
                                 prev="${message(code: 'default.paginate.prev', default: 'Prev')}" max="${max}"
                                 total="${resultsTotal}"/>
@@ -244,7 +244,7 @@
 <r:script language="JavaScript">
 
       function unlinkPackage(pkg_id){
-        var req_url = "${createLink(controller: 'subscriptionDetails', action: 'unlinkPackage', params: [subscription: subscriptionInstance.id])}&package="+pkg_id
+        var req_url = "${createLink(controller: 'subscription', action: 'unlinkPackage', params: [subscription: subscriptionInstance.id])}&package="+pkg_id
 
         $.ajax({url: req_url,
           success: function(result){

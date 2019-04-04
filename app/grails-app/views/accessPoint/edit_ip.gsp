@@ -166,7 +166,7 @@
                   <tbody>
                   <g:each in="${linkedSubscriptionsMap}" var="linkedSubscription">
                     <tr>
-                      <td><g:link controller="subscriptionDetails" action="show" id="${linkedSubscription.subscription.id}">${linkedSubscription.subscription.name}</g:link></td>
+                      <td><g:link controller="subscription" action="show" id="${linkedSubscription.subscription.id}">${linkedSubscription.subscription.name}</g:link></td>
                       <td class="center aligned">
                         <g:link class="ui negative icon button" controller="accessPoint" action="removeAPLink" id="${linkedSubscription.aplink.id}" onclick="return confirm('${message(code: "accessPoint.link.delete.confirm", default: "Remove Access Config?")}')">
                           <i class="delete icon"></i>

@@ -119,7 +119,7 @@
                         </g:link>
                       </g:if>
                       <g:if test="${i.sub}">
-                        <g:link controller="subscriptionDetails" action="index" id="${i.sub.id}">
+                        <g:link controller="subscription" action="index" id="${i.sub.id}">
                           ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name} (${i.sub.status?.getI10n('value')})
                         </g:link>
                       </g:if>

@@ -22,7 +22,7 @@
 
     <h1 class="ui left aligned icon header"><semui:headerIcon />
         <semui:xEditable owner="${subscriptionInstance}" field="name" />
-        <semui:anualRings object="${subscriptionInstance}" controller="subscriptionDetails" action="members" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+        <semui:anualRings object="${subscriptionInstance}" controller="subscription" action="members" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
     </h1>
 
     <g:render template="nav" />
@@ -45,7 +45,7 @@
     </semui:filter>
     --%>
     <semui:filter>
-        <g:form action="members"  controller="subscriptionDetails" params="${[id:params.id]}" method="get" class="ui form">
+        <g:form action="members" controller="subscription" params="${[id:params.id]}" method="get" class="ui form">
             <g:render template="/templates/filter/orgFilter"
                   model="[
                       tmplConfigShow: [['name', 'libraryType'], ['federalState', 'libraryNetwork','property']],
@@ -128,14 +128,14 @@
                             <g:link controller="license" action="show" id="${sub?.owner?.id}"><i class=" inverted circular balance scale green link icon"></i></g:link>
                         </g:if>
                         <g:else>
-                            <g:link controller="subscriptionDetails" action="linkLicenseConsortia" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                            <g:link controller="subscription" action="linkLicenseConsortia" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
                         </g:else>
 
                     </td>
                     <td>${sub.status.getI10n('value')}</td>
 
                     <td class="x">
-                        <g:link controller="subscriptionDetails" action="show" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
+                        <g:link controller="subscription" action="show" id="${sub.id}" class="ui icon button"><i class="write icon"></i></g:link>
                         <g:if test="${editable}">
 
                             <g:if test="${CostItem.findBySub(sub)}">
@@ -153,7 +153,7 @@
                                             data-confirm-term-where="an der Lizenz"
                                             data-confirm-term-where-detail="${(sub.name)}"
                                             data-confirm-term-how="unlink"
-                                            controller="subscriptionDetails" action="deleteMember"
+                                            controller="subscription" action="deleteMember"
                                             params="${[id:subscriptionInstance.id, target: sub.class.name + ':' + sub.id]}">
                                         <i class="unlink icon"></i>
                                     </g:link>

@@ -63,7 +63,7 @@
                             <div class="la-flexbox">
                                 <g:if test="${obj instanceof Subscription}">
                                     <i class="icon folder open la-list-icon"></i>
-                                    <g:link controller="subscriptionDetails" action="show" id="${obj.id}">${obj.name}</g:link>
+                                    <g:link controller="subscription" action="show" id="${obj.id}">${obj.name}</g:link>
                                 </g:if>
                                 <g:elseif test="${obj instanceof License}">
                                     <i class="icon balance scale la-list-icon"></i>
@@ -83,7 +83,7 @@
                                     </g:if>
                                     <g:elseif test="${obj.owner instanceof Subscription}">
                                         <i class="icon folder open la-list-icon"></i>
-                                        <g:link controller="subscriptionDetails" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
+                                        <g:link controller="subscription" action="show" id="${obj.owner?.id}">${obj.owner?.name}</g:link>
                                     </g:elseif>
                                     <g:elseif test="${obj.owner instanceof License}">
                                         <i class="icon balance scale la-list-icon"></i>

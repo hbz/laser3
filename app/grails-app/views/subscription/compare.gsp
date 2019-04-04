@@ -25,7 +25,7 @@
 			<bootstrap:alert class="alert alert-error">${request.message}</bootstrap:alert>
 		</g:if>
 
-				<g:form action="compare" controller="subscriptionDetails" method="GET" class="ui form">
+				<g:form action="compare" controller="subscription" method="GET" class="ui form">
 					<g:set var="subs_message" value="${message(code:'subscription.plural', default:'Subscriptions')}" />
 					<g:set var="sub_message" value="${message(code:'subscription.label', default:'Subscription')}" />
 
@@ -205,7 +205,7 @@
 					</tbody>
 				</table>
 
-		        <semui:paginate  action="compare" controller="subscriptionDetails" params="${params}" next="Next" prev="Prev" maxsteps="${max}" total="${unionListSize}" />
+		        <semui:paginate  action="compare" controller="subscription" params="${params}" next="Next" prev="Prev" maxsteps="${max}" total="${unionListSize}" />
 
 				</div>
 			</g:if>

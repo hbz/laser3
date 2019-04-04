@@ -189,7 +189,7 @@
                 <td>
                     <div class="la-flexbox">
                         <i class="icon folder open outline la-list-icon"></i>
-                        <g:link controller="subscriptionDetails" action="show" id="${subCons.id}">${subCons.name}</g:link>
+                        <g:link controller="subscription" action="show" id="${subCons.id}">${subCons.name}</g:link>
                         <g:if test="${subCons.getCalculatedPrevious()}">
                             <span data-position="top left" data-tooltip="${message(code:'subscription.hasPreviousSubscription')}">
                                 <i class="arrow left grey icon"></i>

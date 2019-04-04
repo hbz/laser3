@@ -11,7 +11,7 @@
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label', default: 'Current Subscriptions')}"/>
-    <semui:crumb controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}"
+    <semui:crumb controller="subscription" action="index" id="${subscriptionInstance.id}"
                  text="${subscriptionInstance.name}"/>
     <semui:crumb class="active"
                  text="${message(code: 'subscription.details.addEntitlements.label', default: 'Add Entitlements')}"/>
@@ -85,7 +85,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
 <g:if test="${flash.error}">
     <semui:messages data="${flash}"/>
 </g:if>
-<g:form class="ui form" controller="subscriptionDetails" action="addEntitlements"
+<g:form class="ui form" controller="subscription" action="addEntitlements"
         params="${[identifiers: identifiers, sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscriptionInstance.id]}"
         method="post" enctype="multipart/form-data">
     <div class="two fields">
@@ -323,7 +323,7 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
         <%
             params.remove("kbartPreselect")
         %>
-        <semui:paginate controller="subscriptionDetails"
+        <semui:paginate controller="subscription"
                         action="addEntitlements"
                         params="${params + [identifiers: identifiers, pagination: true]}"
                         next="${message(code: 'default.paginate.next', default: 'Next')}"

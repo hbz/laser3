@@ -13,7 +13,7 @@
     <ul class="breadcrumb">
         <li> <g:link controller="home" action="index">${message(code:'default.home.label', default:'Home')}</g:link> <span class="divider">/</span> </li>
         <li> <g:link controller="myInstitution" action="currentSubscriptions">${message(code:'myinst.currentSubscriptions.label', default:'Current Subscriptions')}</g:link> <span class="divider">/</span> </li>
-        <li> <g:link controller="subscriptionDetails" action="index" id="${subscriptionInstance.id}">${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'subscription.details.details.label', default:'Details')}</g:link> </li>
+        <li> <g:link controller="subscription" action="index" id="${subscriptionInstance.id}">${message(code:'subscription.label', default:'Subscription')} ${subscriptionInstance.id} - ${message(code:'subscription.details.details.label', default:'Details')}</g:link> </li>
     </ul>
 </div>
 
@@ -113,7 +113,7 @@
 
 
         <g:if test="${titlesList}" >
-            <semui:paginate  action="${screen}" controller="subscriptionDetails" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_ie_rows}" />
+            <semui:paginate  action="${screen}" controller="subscription" params="${params}" next="${message(code:'default.paginate.next', default:'Next')}" prev="${message(code:'default.paginate.prev', default:'Prev')}" maxsteps="${max}" total="${num_ie_rows}" />
         </g:if>
 
 </div>
