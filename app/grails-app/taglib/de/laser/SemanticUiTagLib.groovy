@@ -268,26 +268,39 @@ class SemanticUiTagLib {
     }
 
     def listIcon = { attrs, body ->
+        def hideTooltip = attrs.hideTooltip ? false : true
 
         switch (attrs.type) {
             case 'Journal':
-                out << '<div class="la-inline-flexbox" data-tooltip="' + message(code: 'spotlight.journaltitle') + '" data-position="left center" data-variation="tiny">'
-                out << '    <i class="icon newspaper outline la-list-icon"></i>'
+                out << '<div class="la-inline-flexbox" '
+                if (hideTooltip) {
+                    out << 'data-tooltip="' + message(code: 'spotlight.journaltitle') + '" data-position="left center" data-variation="tiny"'
+                }
+                out << '><i class="icon newspaper outline la-list-icon"></i>'
                 out << '</div>'
                 break
             case 'Database':
-                out << '<div class="la-inline-flexbox" data-tooltip="' + message(code: 'spotlight.databasetitle') + '" data-position="left center" data-variation="tiny">'
-                out << '    <i class="icon database la-list-icon"></i>'
+                out << '<div class="la-inline-flexbox" '
+                if (hideTooltip) {
+                    out << 'data-tooltip="' + message(code: 'spotlight.databasetitle') + '" data-position="left center" data-variation="tiny"'
+                }
+                out << '><i class="icon database la-list-icon"></i>'
                 out << '</div>'
                 break
             case 'EBook':
-                out << '<div class="la-inline-flexbox" data-tooltip="' + message(code: 'spotlight.ebooktitle') + '" data-position="left center" data-variation="tiny">'
-                out << '    <i class="icon tablet alternate outline la-list-icon"></i>'
+                out << '<div class="la-inline-flexbox" '
+                if (hideTooltip) {
+                    out << 'data-tooltip="' + message(code: 'spotlight.ebooktitle') + '" data-position="left center" data-variation="tiny"'
+                }
+                out << '><i class="icon tablet alternate la-list-icon"></i>'
                 out << '</div>'
                 break
             default:
-                out << '<div class="la-inline-flexbox" data-tooltip="' + message(code: 'spotlight.title') + '" data-position="left center" data-variation="tiny">'
-                out << '    <i class="icon book la-list-icon"></i>'
+                out << '<div class="la-inline-flexbox" '
+                if (hideTooltip) {
+                    out <<  'data-tooltip="' + message(code: 'spotlight.title') + '" data-position="left center" data-variation="tiny"'
+                }
+                out << '><i class="icon book la-list-icon"></i>'
                 out << '</div>'
                 break
         }
@@ -630,7 +643,7 @@ class SemanticUiTagLib {
         out << endDate
 
         out << "<a class='ui ${color} circular tiny label'  data-variation='tiny' data-tooltip='Status: ${tooltip}'>"
-        out << '       ?'
+        out << '       &nbsp;'
         out << '</a>'
 
         if (next) {

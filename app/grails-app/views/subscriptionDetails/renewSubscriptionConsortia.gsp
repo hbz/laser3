@@ -27,7 +27,7 @@ ${message(code: 'subscription.details.renewalsConsortium.label')}: ${subscriptio
                 <i class="calendar alternate outline icon"></i>Datum
                 <i class="tags icon"></i>Merkmale
                 <i class="university icon"></i>Organisationen
-                <i class="newspaper icon"></i>Titel
+                <i class="book icon"></i>Titel
             </div>
         </div>
     </div>

@@ -66,3 +66,7 @@
     border-color: @green;
   }
 }
+.subscriptionDetails_copyElementsIntoSubscription .ui.secondary.pointing.menu .item {
+  padding-left: 2.5em !important;
+  padding-right: 2.5em !important;
+}

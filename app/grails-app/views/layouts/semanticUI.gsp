@@ -545,7 +545,7 @@
                                 </g:if>
                                 <g:else>
                                     <button class="ui icon toggle button active la-toggle-controls"  data-tooltip="${message(code:'statusbar.hideButtons.tooltip')}"  data-position="bottom right" data-variation="tiny">
-                                        <i class="pencil alternate icon slash"></i>
+                                        <i class="pencil alternate slash icon"></i>
                                     </button>
                                 </g:else>
 

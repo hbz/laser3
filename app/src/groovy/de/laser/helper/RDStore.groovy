@@ -38,6 +38,7 @@ class RDStore {
     static final ORG_DELETED                = getRefdataValue('Deleted', 'OrgStatus')
     static final PACKAGE_DELETED            = getRefdataValue('Deleted', 'Package Status')
     static final IE_DELETED                 = getRefdataValue('Deleted', 'Entitlement Issue Status')
+    static final DOC_DELETED                = getRefdataValue('Deleted', 'Document Context Status')
 
     static final SUBSCRIPTION_DELETED       = getRefdataValue('Deleted', 'Subscription Status')
     static final SUBSCRIPTION_CURRENT       = getRefdataValue('Current', 'Subscription Status')
@@ -45,6 +46,8 @@ class RDStore {
     static final SUBSCRIPTION_EXPIRED       = getRefdataValue('Expired', 'Subscription Status')
 
     static final SUBSCRIPTION_TYPE_LOCAL_LICENSE      = getRefdataValue('Local Licence', 'Subscription Type')
+    static final SUBSCRIPTION_TYPE_CONSORTIAL_LICENSE      = getRefdataValue('Consortial Licence', 'Subscription Type')
+
     static final LICENSE_TYPE_TEMPLATE      = getRefdataValue('Template', 'License Type')
 
     static final LINKTYPE_FOLLOWS           = getRefdataValue('follows','Link Type')

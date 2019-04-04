@@ -82,6 +82,7 @@
                               value="${doc?.type?.value}"/>
                 </dd>
             </dl>
+
             <g:if test="${ownobj instanceof Org}">
                 <dl>
                     <dt>
@@ -105,6 +106,7 @@
                     </dd>
                 </dl>
             </g:if>
+
         </div>
 
     </g:form>
