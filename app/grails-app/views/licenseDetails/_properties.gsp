@@ -67,7 +67,6 @@
 <%-- orphaned properties --%>
 
 <g:if test="${! allPropDefGroups.fallback}">
-    <g:if test="${allPropDefGroups.orphanedProperties}">
 
     <div class="ui card la-dl-no-table la-js-hideable">
         <div class="content">
@@ -85,12 +84,17 @@
         </div>
     </div>
 
-    </g:if>
+    <r:script language="JavaScript">
+        $(document).ready(function(){
+            c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#custom_props_div_props");
+        });
+    </r:script>
+
 </g:if>
 
-<%-- custom properties --%>
-
 <g:else>
+
+<%-- custom properties --%>
 
     <div class="ui card la-dl-no-table la-js-hideable">
         <div class="content">
