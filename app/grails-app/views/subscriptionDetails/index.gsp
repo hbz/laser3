@@ -37,7 +37,6 @@
     <div class="row">
         <div class="column">
 
-            <g:annotatedLabel owner="${subscriptionInstance}" property="entitlements">
                 <g:if test="${entitlements?.size() > 0}">
                     ${message(code:'subscription.entitlement.plural')} ${message(code:'default.paginate.offset', args:[(offset+1),(offset+(entitlements?.size())),num_sub_rows])}. (
                     <g:if test="${params.mode=='advanced'}">
@@ -55,7 +54,6 @@
                 <g:else>
                     ${message(code:'subscription.details.no_ents', default:'No entitlements yet')}
                 </g:else>
-            </g:annotatedLabel>
 
         </div>
     </div><!--.row-->
@@ -70,9 +68,7 @@
 
                     <div class="three fields">
                         <div class="field">
-                            <label>
-                                <g:annotatedLabel owner="${subscriptionInstance}" property="qryFilter"> ${message(code:'default.filter.label', default:'Filter')} </g:annotatedLabel>
-                            </label>
+                            <label>${message(code:'default.filter.label', default:'Filter')}</label>
                             <input  name="filter" value="${params.filter}"/>
                         </div>
                         <div class="field">

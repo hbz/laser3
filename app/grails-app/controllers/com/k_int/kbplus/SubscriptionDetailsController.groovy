@@ -2625,6 +2625,7 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
         result
 
     }
+
 //    private getMySubscriptions_readRights(){
 //        def params = [:]
 //        List result
@@ -2652,6 +2653,35 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
 //        result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
 //        result.sort{it.name}
 //    }
+
+    private getMySubscriptions_readRights(){
+        def params = [:]
+        List result
+        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+        params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+        result = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
+        params.orgRole = RDStore.OR_SUBSCRIBER.value
+        tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+        result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+        result
+    }
+    private getMySubscriptions_writeRights(){
+        List result
+        Map params = [:]
+        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+        params.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+        result = Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1])
+        params = [:]
+        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+        params.orgRole = RDStore.OR_SUBSCRIBER.value
+        params.subTypes = "${RDStore.SUBSCRIPTION_TYPE_LOCAL_LICENSE.id}"
+        tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.org)
+        result.addAll(Subscription.executeQuery("select s ${tmpQ[0]}", tmpQ[1]))
+        result
+    }
+
 
     @DebugAnnotation(test = 'hasAffiliation("ROLE_YODA, ROLE_ADMIN")')
     @Secured(['ROLE_ADMIN', 'ROLE_YODA'])

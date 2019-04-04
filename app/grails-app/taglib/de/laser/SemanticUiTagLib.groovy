@@ -225,7 +225,7 @@ class SemanticUiTagLib {
                         }
                     }
                     // inherit (from)
-                    else {
+                    else if (obj?.showUIShareButton()) {
                         String oid = "${obj.getClass().getName()}:${obj.getId()}"
 
                         if (auditService.getAuditConfig(obj, objAttr)) {
@@ -745,6 +745,13 @@ class SemanticUiTagLib {
         out << "<span class='ui grey horizontal divider la-date-devider'>"
         out << "        ${message(code:'default.to')}"
         out << "</span>"
+    }
+    def linkIcon = { attrs, body ->
+        out << ' <span style="bottom: -3px" data-position="top right" data-tooltip="Diese URL aufrufen ..">'
+        out << '&nbsp;<a href="${prop.value}" target="_blank" class="ui icon blue la-js-dont-hide-button">'
+        out << '<i class="share square icon"></i>'
+        out << '                           </a>'
+        out << '</span>'
     }
     public SemanticUiTagLib() {}
 

@@ -4,12 +4,12 @@
     <head>
         <meta name="layout" content="semanticUI">
         <g:set var="entityName" value="${message(code: 'default.provider.label', default: 'Provider')}" />
-        <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="menu.institutions.all_provider" /></title>
+        <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="menu.public.all_provider" /></title>
     </head>
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb message="menu.institutions.all_provider" class="active" />
+            <semui:crumb message="menu.public.all_provider" class="active" />
         </semui:breadcrumbs>
 
  <semui:controlButtons>
@@ -23,7 +23,7 @@
         </sec:ifAnyGranted>
  </semui:controlButtons>
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.institutions.all_provider" />
+        <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.public.all_provider" />
             <semui:totalNumber total="${orgListTotal}"/>
         </h1>
 

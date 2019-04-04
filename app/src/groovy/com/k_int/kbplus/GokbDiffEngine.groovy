@@ -61,8 +61,14 @@ public class GokbDiffEngine {
                     tippb = bi.hasNext() ? bi.next() : null
                 } else {
                     // See if any of the actual properties are null
-                    println("Got tipp diffs: ${tipp_diff}");
-                    updatedTippClosure(ctx, tippb, tippa, tipp_diff, auto_accept)
+                    println("Got tipp diffs: ${tipp_diff}")
+                    try {
+                        updatedTippClosure(ctx, tippb, tippa, tipp_diff, auto_accept)
+                    }
+                    catch (Exception e) {
+                        System.err.println("Error on executing updated TIPP closure! Please verify logs:")
+                        e.printStackTrace()
+                    }
 
                     tippa = ai.hasNext() ? ai.next() : null
                     tippb = bi.hasNext() ? bi.next() : null
@@ -103,7 +109,7 @@ public class GokbDiffEngine {
             result.add([field: 'accessEnd', newValue: tippb.accessEnd, oldValue: tippa.accessEnd])
         }
 
-        if ((tippa.titleName ?: '').toString().compareTo((tippb.titleName ?: '').toString()) == 0) {
+        if ((tippa?.title?.name ?: '').toString().compareTo((tippb?.title?.name ?: '').toString()) == 0) {
         } else {
             result.add([field: 'titleName', newValue: tippb?.title?.name, oldValue: tippa?.title?.name])
         }

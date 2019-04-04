@@ -386,3 +386,14 @@ aside.ui.accordion .title:not(.ui) {
         visibility: hidden;
     }
 }
+.la-overflow {
+    width: 14em;
+    margin: 0 0 -10px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.la-ellipsis {
+    text-overflow: ellipsis;
+}

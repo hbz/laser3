@@ -22,7 +22,7 @@
         <g:render template="message" />
     </g:if>
 
-    <table  class="ui celled la-table table">
+    <table class="ui celled la-table table">
           <thead>
             <tr>
               <th>${message(code:'subscription.details.todo_history.descr', default:'ToDo Description')}</th>

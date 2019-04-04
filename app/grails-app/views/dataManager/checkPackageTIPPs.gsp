@@ -1,43 +1,8 @@
 <!doctype html>
-<%
-    def addFacet = { params, facet, val ->
-        def newparams = [:]
-        newparams.putAll(params)
-        def current = newparams[facet]
-        if ( current == null ) {
-            newparams[facet] = val
-        }
-        else if ( current instanceof String[] ) {
-            newparams.remove(current)
-            newparams[facet] = current as List
-            newparams[facet].add(val);
-        }
-        else {
-            newparams[facet] = [ current, val ]
-        }
-        newparams
-    }
-    def removeFacet = { params, facet, val ->
-        def newparams = [:]
-        newparams.putAll(params)
-        def current = newparams[facet]
-        if ( current == null ) {
-        }
-        else if ( current instanceof String[] ) {
-            newparams.remove(current)
-            newparams[facet] = current as List
-            newparams[facet].remove(val);
-        }
-        else if ( current?.equals(val.toString()) ) {
-            newparams.remove(facet)
-        }
-        newparams
-    }
-%>
 <html>
 <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : ${message(code:'subscription.label', default:'Subscription')}</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : Package Tipps LAS:eR and GOKB</title>
 </head>
 
 <body>
@@ -70,13 +35,13 @@
                     <g:each in="${records}" var="hit" >
                         <tr>
                             <td>
-                                ${hit.name} <a target="_blank" href="${es_host_url ? es_host_url+'/gokb/resource/show/'+hit.uuid : '#'}" ><i title="GOKB Link" class="external alternate icon"></i></a>
+                                ${hit.name} <a target="_blank" href="${hit.url ? hit.url+'/gokb/public/packageContent/'+hit.id : '#'}" ><i title="GOKB Link" class="external alternate icon"></i></a>
                             </td>
 
                             <g:if test="${com.k_int.kbplus.Package.findByGokbId(hit.uuid)}">
                                 <g:set var="style" value="${(com.k_int.kbplus.Package.findByGokbId(hit.uuid)?.name != hit.name) ? "style=background-color:red;":''}"/>
                                 <td ${style}>
-                                    <g:link controller="packageDetails" target="_blank" action="current" id="${com.k_int.kbplus.Package.findByGokbId(hit.uuid).id}">${com.k_int.kbplus.Package.findByGokbId(hit.uuid).name}</g:link>
+                                    <g:link controller="package" target="_blank" action="current" id="${com.k_int.kbplus.Package.findByGokbId(hit.uuid).id}">${com.k_int.kbplus.Package.findByGokbId(hit.uuid).name}</g:link>
                                 </td>
                             </g:if>
                             <g:else>

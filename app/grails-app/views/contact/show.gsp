@@ -9,7 +9,7 @@
 	</head>
 	<body>
         <semui:breadcrumbs>
-            <semui:crumb message="menu.institutions.all_orgs" controller="organisations" action="index"/>
+            <semui:crumb message="menu.public.all_orgs" controller="organisations" action="index"/>
             <semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
         </semui:breadcrumbs>
 

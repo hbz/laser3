@@ -15,7 +15,7 @@
 
     String documentMessage
     switch(ownobj.class.name) {
-        case Org.class.name: documentMessage = "menu.institutions.myDocuments"
+        case Org.class.name: documentMessage = "menu.my.documents"
             editable = accessService.checkMinUserOrgRole(user, contextService.org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
             break
         default: documentMessage = "license.documents"
@@ -25,30 +25,33 @@
 <semui:card message="${documentMessage}" class="documents la-js-hideable ${css_class}" href="#modalCreateDocument" editable="${editable}">
     <g:each in="${baseItems}" var="docctx">
         <%
-            boolean inOwnerOrg = false
-            boolean isCreator = false
-
-            if(docctx.owner.owner?.id == contextService.org.id)
-                inOwnerOrg = true
-            if(docctx.owner.creator?.id == user.id)
-                isCreator = true
             boolean visible = false
+            if(docctx.org) {
+                boolean inOwnerOrg = false
+                boolean isCreator = false
 
-            switch(docctx.shareConf) {
-                case RDStore.SHARE_CONF_CREATOR: if(isCreator) visible = true
-                    break
-                case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true
-                    break
+                if(docctx.owner.owner?.id == contextService.org.id)
+                    inOwnerOrg = true
+                if(docctx.owner.creator?.id == user.id)
+                    isCreator = true
+
+                switch(docctx.shareConf) {
+                    case RDStore.SHARE_CONF_CREATOR: if(isCreator) visible = true
+                        break
+                    case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true
+                        break
                 /*case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || contextService.org.id == docctx.org?.id) visible = true
                     break*/
-                case RDStore.SHARE_CONF_CONSORTIUM:
-                case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
-                    break
-                default:
-                    if(docctx.shareConf) log.debug(docctx.shareConf)
-                    else visible = true
-                    break
+                    case RDStore.SHARE_CONF_CONSORTIUM:
+                    case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
+                        break
+                    default:
+                        if(docctx.shareConf) log.debug(docctx.shareConf)
+                        else visible = true
+                        break
+                }
             }
+            else visible = true
         %>
         <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted') && visible)}">
             <div class="ui small feed content la-js-dont-hide-this-card">
@@ -65,7 +68,7 @@
                                 ${message(code:'template.documents.missing', default: 'Missing title and filename')}
                             </g:else>
 
-                        </g:link>(${docctx.owner.type.getI10n("value")})
+                        </g:link>(${docctx.owner?.type?.getI10n("value")})
                     </div>
                     <div class="center aligned four wide column">
                         <g:if test="${!(ownobj instanceof Org) && ownobj.showUIShareButton()}">
@@ -113,33 +116,7 @@
 <g:if test="${sharedItems}">
     <semui:card message="license.documents.shared" class="documents la-js-hideable ${css_class}" editable="${editable}">
         <g:each in="${sharedItems}" var="docctx">
-            <%
-                boolean inOwnerOrg = false
-                boolean isCreator = false
-
-                if(docctx.owner.owner?.id == contextService.org.id)
-                    inOwnerOrg = true
-                if(docctx.owner.creator?.id == user.id)
-                    isCreator = true
-                boolean visible = false
-
-                switch(docctx.shareConf) {
-                    case RDStore.SHARE_CONF_CREATOR: if(isCreator) visible = true
-                        break
-                    case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true
-                        break
-                    /*case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || contextService.org.id == docctx.org?.id) visible = true
-                        break*/
-                    case RDStore.SHARE_CONF_CONSORTIUM:
-                    case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
-                        break
-                    default:
-                        if(docctx.shareConf) log.debug(docctx.shareConf)
-                        else visible = true
-                        break
-                }
-            %>
-            <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted') && visible)}">
+            <g:if test="${(( (docctx.owner?.contentType==1) || ( docctx.owner?.contentType==3) ) && ( docctx.status?.value!='Deleted'))}">
                 <div class="ui small feed content la-js-dont-hide-this-card">
 
                     <div class="summary">
@@ -154,7 +131,7 @@
                                 ${message(code:'template.documents.missing', default: 'Missing title and filename')}
                             </g:else>
 
-                        </g:link>(${docctx.owner.type.getI10n("value")})
+                        </g:link>(${docctx.owner?.type?.getI10n("value")})
                     </div>
                 </div>
             </g:if>

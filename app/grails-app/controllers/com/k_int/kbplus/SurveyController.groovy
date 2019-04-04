@@ -14,6 +14,7 @@ class SurveyController {
     def accessService
     def contextService
     def subscriptionsQueryService
+    def filterService
 
     @Secured(['ROLE_YODA'])
     def currentSurveys() {
@@ -106,12 +107,12 @@ class SurveyController {
     }
 
     @Secured(['ROLE_YODA'])
-    def showSurveyConfig() {
-        def result = [:]
-        result.institution = contextService.getOrg()
-        result.user = User.get(springSecurityService.principal.id)
+        def showSurveyConfig() {
+            def result = [:]
+            result.institution = contextService.getOrg()
+            result.user = User.get(springSecurityService.principal.id)
 
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+            result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -120,7 +121,6 @@ class SurveyController {
 
 
         result.surveyProperties = SurveyProperty.findAllByOwner(result.institution)
-        result.subscriptions = SurveyProperty.findAllByOwner(result.institution)
 
         params.status = RDStore.SUBSCRIPTION_CURRENT.id
 
@@ -330,6 +330,53 @@ class SurveyController {
         }
 
         redirect(url: request.getHeader('referer'))
+
+    }
+
+    @Secured(['ROLE_YODA'])
+    def showSurveyParticipants() {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+
+        params.tab = params.tab ?: 'selectedParticipants'
+
+        if (params.selectedOrgs && params.tab == 'consortiaMembers') {
+
+        }
+
+        // new: filter preset
+        params.orgType  = RDStore.OT_INSTITUTION?.id?.toString()
+        params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
+
+        result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.org)
+
+        def fsq = filterService.getOrgComboQuery(params, result.institution)
+        def tmpQuery = "select o.id " + fsq.query.minus("select o ")
+        def consortiaMemberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
+
+        if (params.filterPropDef && consortiaMemberIds) {
+            fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids)", 'o', [oids: consortiaMemberIds])
+        }
+        result.consortiaMembers      = Org.executeQuery(fsq.query, fsq.queryParams, params)
+        result.consortiaMembersCount = Org.executeQuery(fsq.query, fsq.queryParams).size()
+
+        result.surveyInfo = SurveyInfo.get(params.id) ?: null
+        result.surveyConfigs = result.surveyInfo.surveyConfigs.sort { it?.configOrder }
+
+        params.surveyConfigID = params.surveyConfigID ?: result.surveyConfigs[0].id.toString()
+
+        result.surveyConfigOrgs = SurveyConfig.get(params.surveyConfigID).orgIDs
+
+        result
 
     }
 
