@@ -524,7 +524,7 @@
 
     <sec:ifAnyGranted roles="ROLE_USER">
 
-        <div class="ui fixed menu la-contextBar"  >
+        <nav class="ui fixed menu la-contextBar"  >
             <div class="ui container">
                 <div class="ui sub header item la-context-org">${contextOrg?.name}</div>
                 <div class="right menu la-advanced-view">
@@ -685,7 +685,7 @@
                     <%--semui:editableLabel editable="${editable}" /--%>
             </div>
         </div>
-        </div><!-- Context Bar -->
+        </nav><!-- Context Bar -->
 
         <div class="ui right aligned sub header">${contextOrg?.name}</div>
 
