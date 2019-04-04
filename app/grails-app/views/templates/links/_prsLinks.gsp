@@ -47,6 +47,6 @@
     <input class="ui button"
            value="${message(code: 'default.add.label', args: [message(code: 'person.label', default: 'Person')])}"
            data-semui="modal"
-           href="#prsLinksModal" />
+           data-href="#prsLinksModal" />
 </g:if>
 

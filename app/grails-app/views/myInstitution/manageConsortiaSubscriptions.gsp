@@ -126,7 +126,7 @@
                         <g:each in="${filterSubTypes}" var="subType">
                             <div class="inline field">
                                 <div class="ui checkbox">
-                                    <label for="checkSubType-${subType.id}">${subType.getI10n('value')}</label>
+                                    <label for="checkSubType-${subType.id}">${subType?.getI10n('value')}</label>
                                     <input id="checkSubType-${subType.id}" name="subTypes" type="checkbox" value="${subType.id}"
                                         <g:if test="${params.list('subTypes').contains(subType.id.toString())}"> checked="" </g:if>
                                            tabindex="0">
@@ -164,7 +164,7 @@
                 <td>
                     <p><strong>${choosenOrg?.name} (${choosenOrg?.shortname})</strong></p>
 
-                    ${choosenOrg?.libraryType.getI10n('value')}
+                    ${choosenOrg?.libraryType?.getI10n('value')}
                 </td>
                 <td>
                     <g:if test="${choosenOrgCPAs}">
@@ -221,7 +221,7 @@
                 <td>
                     <div class="la-flexbox">
                         <i class="icon folder open outline la-list-icon"></i>
-                        <g:link controller="subscriptionDetails" action="show" id="${subCons.id}">${subCons.name}</g:link>
+                        <g:link controller="subscription" action="show" id="${subCons.id}">${subCons.name}</g:link>
                         <g:if test="${subCons.getCalculatedPrevious()}">
                             <span data-position="top left" data-tooltip="${message(code:'subscription.hasPreviousSubscription')}">
                                 <i class="arrow left grey icon"></i>
@@ -231,7 +231,7 @@
                     <g:if test="${subCons.owner}">
                         <div class="la-flexbox">
                             <i class="icon balance scale la-list-icon"></i>
-                            <g:link controller="licenseDetails" action="show" id="${subCons.owner.id}">${subCons.owner.reference}</g:link>
+                            <g:link controller="license" action="show" id="${subCons.owner.id}">${subCons.owner.reference}</g:link>
                         </div>
                     </g:if>
                 </td>

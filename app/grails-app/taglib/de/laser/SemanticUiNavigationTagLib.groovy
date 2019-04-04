@@ -18,10 +18,10 @@ class SemanticUiNavigationTagLib {
 
     def breadcrumbs = { attrs, body ->
 
-        out <<   '<div class="ui breadcrumb">'
+        out <<   '<nav class="ui breadcrumb">'
         out <<     crumb([controller: 'home', text:'<i class="home icon"></i>'])
         out <<     body()
-        out <<   '</div>'
+        out <<   '</nav>'
     }
 
     // text             = raw text

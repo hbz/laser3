@@ -1,6 +1,5 @@
 package com.k_int.kbplus
 
-import de.laser.GOKbService
 import de.laser.controller.AbstractDebugController
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
@@ -176,7 +175,7 @@ class DataManagerController extends AbstractDebugController {
             if (license_object) {
                 def license_name = license_object.licenseType ? license_object.licenseType+': ' : ''
                 license_name += license_object.reference ?: '**No reference**'
-                line_to_add.link = createLink(controller:'licenseDetails', action: 'show', id:hl.persistedObjectId)
+                line_to_add.link = createLink(controller:'license', action: 'show', id:hl.persistedObjectId)
                 line_to_add.name = license_name
             }
             linetype = 'License'

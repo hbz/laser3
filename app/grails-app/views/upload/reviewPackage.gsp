@@ -28,7 +28,7 @@
                     <i class="attach icon"></i>
                   </div>
                 </div>
-                <r:script type="text/javascript">
+                <r:script>
                   $('#uploadPackage .action .icon.button').click( function() {
                     $(this).parent('.action').find('input:file').click();
                   });

@@ -60,7 +60,7 @@ class LicenseSpec extends GebReportingSpec {
     def "Test CustomProperties"(){
         def license = License.findByReference("Test License")
         setup:
-          go '/laser/licenseDetails/index/'+license.id
+          go '/laser/license/index/'+license.id
           at LicensePage
         when:
           addCustomPropType("Alumni Access")

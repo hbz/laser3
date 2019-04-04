@@ -1,10 +1,4 @@
-<%@ page
-import="com.k_int.kbplus.Org"  
-import="com.k_int.kbplus.Person" 
-import="com.k_int.kbplus.PersonRole"
-import="com.k_int.kbplus.RefdataValue" 
-import="com.k_int.kbplus.RefdataCategory" 
-%>
+<%@ page import="com.k_int.kbplus.Org; com.k_int.kbplus.Person; com.k_int.kbplus.PersonRole; com.k_int.kbplus.RefdataValue; com.k_int.kbplus.RefdataCategory" %>
 
 <!doctype html>
 <html>
@@ -31,7 +25,7 @@ import="com.k_int.kbplus.RefdataCategory"
             <input class="ui button"
                value="${message(code: 'person.create_new.contactPerson.label')}"
                data-semui="modal"
-               href="#personFormModal" />
+               data-href="#personFormModal" />
         </g:if>
 
         <g:render template="/person/formModal" model="['tenant': contextOrg,

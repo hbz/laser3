@@ -29,7 +29,7 @@ class LicensePage extends AbstractDetails {
             }
         }
 
-        licenseDetails {
+        license {
             $("a", text: "License Details").click()
         }
         viewTemplateLicenses {

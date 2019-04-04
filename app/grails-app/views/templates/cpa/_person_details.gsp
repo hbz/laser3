@@ -47,7 +47,7 @@
 
         <div class="ui item person-details">
             <span></span>
-            <div class="content" class="la-space-right">
+            <div class="content la-space-right">
                 <h5 class="ui header">
                 <g:link controller="person" action="show" id="${personRole?.prs?.id}">
                     ${personRole?.prs?.title}

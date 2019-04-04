@@ -12,7 +12,7 @@
         else if (hit.getSource().rectype == 'License') {
             result << [
                 "title": "${hit.getSource().name}",
-                "url":   g.createLink(controller:"licenseDetails", action:"show", id:"${hit.getSource().dbId}"),
+                "url":   g.createLink(controller:"license", action:"show", id:"${hit.getSource().dbId}"),
                 "category": "${message(code: 'spotlight.license')}"
             ]
         }
@@ -40,7 +40,7 @@
         else if (hit.getSource().rectype == 'Subscription') {
             result << [
                 "title": "${hit.getSource().name}",
-                "url":   g.createLink(controller:"subscriptionDetails", action:"show", id:"${hit.getSource().dbId}"),
+                "url":   g.createLink(controller:"subscription", action:"show", id:"${hit.getSource().dbId}"),
                 "category": "${message(code: 'spotlight.subscription')}"
             ]
         }

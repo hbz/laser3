@@ -46,7 +46,7 @@
                         </g:if>
 
                         <div class="ui icon buttons">
-                            <button class="ui button la-selectable-button" data-semui="modal" href="#${cssId}">
+                            <button class="ui button la-selectable-button" data-semui="modal" data-href="#${cssId}">
                                         <i class="address plus icon"></i>
                             </button>
                         </div>

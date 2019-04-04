@@ -37,7 +37,7 @@
                     <g:if test="${rparam.getName().contains("search")}">
 
                        <input type="hidden" id="${rparam.getName()}" name="${rparam.getName()}"/>
-                        <script type="text/javascript">
+                        <script>
                             createSelect2Search('#${rparam.getName()}', '${rparam.getValueClass().toString().replace("class ","")}');
                         </script>
                     </g:if>

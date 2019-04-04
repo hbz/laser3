@@ -187,7 +187,7 @@
                 <td>
                   <g:each in="${title_coverage_info.ies}" var="ie">
                         <i class="icon folder open outline la-list-icon"></i>
-                        <g:link controller="subscriptionDetails" action="index" id="${ie.subscription.id}">${ie.subscription.name}</g:link>
+                        <g:link controller="subscription" action="index" id="${ie.subscription.id}">${ie.subscription.name}</g:link>
                         &nbsp;
                         <g:if test="${ie.startVolume}">${message(code:'tipp.volume.short', default:'Vol.')} ${ie.startVolume}</g:if>
                         <g:if test="${ie.startIssue}">${message(code:'tipp.issue.short', default:'Iss.')} ${ie.startIssue}</g:if>

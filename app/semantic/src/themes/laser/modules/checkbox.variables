@@ -31,6 +31,9 @@
             Checkbox
 *******************************/
 
+@textColor: rgba(0, 0, 0, 0.6);
+@backgroundColor:  #d3dae3;
+
 @checkboxSize: 17px;
 @checkboxColor: @textColor;
 @checkboxLineHeight: @checkboxSize;

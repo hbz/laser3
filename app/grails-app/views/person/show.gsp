@@ -100,7 +100,7 @@ ${personInstance}
                                 </g:each>
                             </div>
                             <g:if test="${editable}">
-                                <input class="ui button" type="button" data-semui="modal" href="#contactFormModal"
+                                <input class="ui button" type="button" data-semui="modal" data-href="#contactFormModal"
                                        value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label', default: 'Contacts')])}">
                                 <g:render template="/contact/formModal" model="['prsId': personInstance?.id]"/>
                             </g:if>
@@ -123,7 +123,7 @@ ${personInstance}
                                 </g:each>
                             </div>
                             <g:if test="${editable}">
-                                <input class="ui button" type="button" data-semui="modal" href="#addressFormModal"
+                                <input class="ui button" type="button" data-semui="modal" data-href="#addressFormModal"
                                        value="${message(code: 'default.add.label', args: [message(code: 'address.label', default: 'Address')])}">
                                 <g:render template="/address/formModal" model="['prsId': personInstance?.id]"/>
                             </g:if>
@@ -267,10 +267,10 @@ ${personInstance}
                                                    <g:link controller="cluster" action="show" id="${link.cluster.id}">${link.cluster.name}</g:link>
                                                </g:if>
                                                <g:if test="${link.sub}">
-                                                   <g:link controller="subscriptionDetails" action="show" id="${link.sub.id}">${link.sub.name}</g:link>
+                                                   <g:link controller="subscription" action="show" id="${link.sub.id}">${link.sub.name}</g:link>
                                                </g:if>
                                                <g:if test="${link.lic}">
-                                                   <g:link controller="licenseDetails" action="show" id="${link.lic.id}">${link.lic}</g:link>
+                                                   <g:link controller="license" action="show" id="${link.lic.id}">${link.lic}</g:link>
                                                </g:if>
                                                <g:if test="${link.title}">
                                                    <g:link controller="title" action="show" id="${link.title.id}">${link.title.title}</g:link>

@@ -23,12 +23,30 @@ class SemanticUiSubNavTagLib {
         out << '</div>'
     }
 
-    def subNavItem = { attrs, body ->
+    def complexSubNavItem = { attrs, body ->
 
+        def text      = attrs.text ? attrs.text : ''
+        def message   = attrs.message ? "${message(code: attrs.message)}" : ''
+        def aClass    = ((this.pageScope.variables?.workFlowPart == attrs.workFlowPart) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
+
+        if (attrs.controller) {
+            out << g.link(body(),
+                    class: aClass,
+                    controller: attrs.controller,
+                    action: attrs.action,
+                    params: attrs.params
+            )
+        }
+        else {
+            out << body()
+        }
+    }
+    def subNavItem = { attrs, body ->
         def text      = attrs.text ? attrs.text : ''
         def message   = attrs.message ? "${message(code: attrs.message)}" : ''
         def linkBody  = (text && message) ? text + " - " + message : text + message
         def aClass    = ((this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
+
 
         if (attrs.controller) {
             out << g.link(linkBody,
@@ -41,7 +59,9 @@ class SemanticUiSubNavTagLib {
         else {
             out << linkBody
         }
+
     }
+
 
     // affiliation="INST_EDITOR" affiliationOrg="${orgToShow}"
 

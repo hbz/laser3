@@ -28,7 +28,7 @@ ${orgInstance.name}
     <input class="ui button"
            value="${message(code: 'numbers.create.label')}"
            data-semui="modal"
-           href="#numbersFormModal"/>
+           data-href="#numbersFormModal"/>
 </g:if>
 
 <g:render template="/numbers/formModal"/>

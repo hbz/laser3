@@ -74,7 +74,7 @@
             <semui:anualRings mapping="subfinance" object="${subscription}" controller="finance" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
         </h1>
 
-        <g:render template="../subscriptionDetails/nav" model="${[subscriptionInstance:subscription, params:(params << [id:subscription.id,showConsortiaFunctions:showConsortiaFunctions])]}"/>
+        <g:render template="../subscription/nav" model="${[subscriptionInstance:subscription, params:(params << [id:subscription.id,showConsortiaFunctions:showConsortiaFunctions])]}"/>
 
         <g:if test="${showView.equals("consAtSubscr")}">
             <div class="ui negative message">
@@ -85,11 +85,11 @@
                 </div>
                 <p>
                     <g:message code="myinst.subscriptionDetails.message.hereLink" />
-                    <g:link controller="subscriptionDetails" action="members" id="${subscription.instanceOf.id}">
+                    <g:link controller="subscription" action="members" id="${subscription.instanceOf.id}">
                         <g:message code="myinst.subscriptionDetails.message.backToMembers" />
                     </g:link>
                     <g:message code="myinst.subscriptionDetails.message.and" />
-                    <g:link controller="subscriptionDetails" action="show" id="${subscription.instanceOf.id}">
+                    <g:link controller="subscription" action="show" id="${subscription.instanceOf.id}">
                         <g:message code="myinst.subscriptionDetails.message.consortialLicence" />
                     </g:link>.
                 </p>

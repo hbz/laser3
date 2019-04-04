@@ -119,12 +119,12 @@
                         </g:link>
                       </g:if>
                       <g:if test="${i.sub}">
-                        <g:link controller="subscriptionDetails" action="index" id="${i.sub.id}">
+                        <g:link controller="subscription" action="index" id="${i.sub.id}">
                           ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name} (${i.sub.status?.getI10n('value')})
                         </g:link>
                       </g:if>
                       <g:if test="${i.lic}">
-                        <g:link controller="licenseDetails" action="show" id="${i.lic.id}">
+                        <g:link controller="license" action="show" id="${i.lic.id}">
                           ${message(code:'license.label', default:'License')}: ${i.lic.reference ?: i.lic.id} (${i.lic.status?.getI10n('value')})
                         </g:link>
                       </g:if>

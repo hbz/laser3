@@ -17,7 +17,7 @@
 				<dl>
 					<g:if test="${taskInstance?.license}">
 						<dt><g:message code="task.license.label" default="License" /></dt>
-						<dd><g:link controller="licenseDetails" action="show" id="${taskInstance?.license?.id}">${taskInstance?.license}</g:link></dd>
+						<dd><g:link controller="license" action="show" id="${taskInstance?.license?.id}">${taskInstance?.license}</g:link></dd>
 					</g:if>
 					<g:if test="${taskInstance?.org}">
 						<dt><g:message code="task.org.label" default="Org" /></dt>
@@ -31,7 +31,7 @@
 				
 					<g:if test="${taskInstance?.subscription}">
 						<dt><g:message code="task.subscription.label" default="Subscription" /></dt>
-						<dd><g:link controller="subscriptionDetails" action="show" id="${taskInstance?.subscription?.id}">${taskInstance?.subscription}</g:link></dd>
+						<dd><g:link controller="subscription" action="show" id="${taskInstance?.subscription?.id}">${taskInstance?.subscription}</g:link></dd>
 					</g:if>
 				
 					<g:if test="${taskInstance?.title}">

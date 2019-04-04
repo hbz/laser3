@@ -32,6 +32,9 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import javax.servlet.ServletOutputStream
 import javax.validation.constraints.Null
 import java.awt.Color
+import org.springframework.web.servlet.LocaleResolver
+import org.springframework.web.servlet.support.RequestContextUtils
+
 import java.sql.Timestamp
 import java.text.DateFormat
 
@@ -945,7 +948,7 @@ from License as l where (
                   }
                 }
 
-                redirect controller: 'subscriptionDetails', action: 'show', id: new_sub.id
+                redirect controller: 'subscription', action: 'show', id: new_sub.id
             } else {
                 new_sub.errors.each { e ->
                     log.debug("Problem creating new sub: ${e}");
@@ -1043,7 +1046,7 @@ from License as l where (
                         subInstance.save(flush: true)
                     }
 
-                    redirect controller: 'licenseDetails', action: 'show', params: params, id: copyLicense.id
+                    redirect controller: 'license', action: 'show', params: params, id: copyLicense.id
                     return
                 }
             }
@@ -1083,7 +1086,7 @@ from License as l where (
             }
 
             flash.message = message(code: 'license.created.message')
-            redirect controller: 'licenseDetails', action: 'show', params: params, id: licenseInstance.id
+            redirect controller: 'license', action: 'show', params: params, id: licenseInstance.id
         }
     }
 
@@ -1117,7 +1120,7 @@ from License as l where (
                 render view: 'editLicense', model: [licenseInstance: copyLicense]
            /* }else{
                 flash.message = message(code: 'license.created.message')
-                redirect controller: 'licenseDetails', action: 'show', params: params, id: copyLicense.id
+                redirect controller: 'license', action: 'show', params: params, id: copyLicense.id
             }*/
         }
     }
@@ -1166,11 +1169,6 @@ from License as l where (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     Map documents() {
         Map result = setResultGenerics()
-        Set documents = orgDocumentService.getAllDocuments(result.institution,params)
-        result.max = params.max ? Integer.parseInt(params.max) : (int) result.user.getDefaultPageSizeTMP()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
-        result.documents = documents.drop(result.offset).take(result.max)
-        result.totalSize = documents.size()
         result.availableUsers = orgDocumentService.getAvailableUploaders(result.user)
         result
     }
@@ -1227,7 +1225,7 @@ from License as l where (
             // def new_sub_package = new SubscriptionPackage(subscription: new_sub, pkg: basePackage).save();
 
             flash.message = message(code: 'subscription.created.message', args: [message(code: 'subscription.label', default: 'Package'), basePackage.id])
-            redirect controller: 'subscriptionDetails', action: 'index', params: params, id: new_sub.id
+            redirect controller: 'subscription', action: 'index', params: params, id: new_sub.id
         } else {
             flash.message = message(code: 'subscription.unknown.message')
             redirect action: 'addSubscription', params: params
@@ -2818,7 +2816,7 @@ AND EXISTS (
         new_subscription.save()
 
         if (new_subscription)
-            redirect controller: 'subscriptionDetails', action: 'index', id: new_subscription.id
+            redirect controller: 'subscription', action: 'index', id: new_subscription.id
         else
             redirect action: 'renewalsUpload', params: params
     }
@@ -2861,6 +2859,19 @@ AND EXISTS (
     def dashboard() {
 
         def result = setResultGenerics()
+
+        // set language by user settings, create if not existing
+        def uss = UserSettings.get(result.user, UserSettings.KEYS.LANGUAGE)
+        if (uss == UserSettings.SETTING_NOT_FOUND) {
+            uss = UserSettings.add(result.user, UserSettings.KEYS.LANGUAGE, RefdataValue.getByValueAndCategory('de', 'Language'))
+        }
+
+        RefdataValue rdvLocale = uss.getValue()
+        if (rdvLocale) {
+            LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request)
+            localeResolver.setLocale(request, response, new Locale(rdvLocale.value, rdvLocale.value.toUpperCase()))
+        }
+        // --
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
@@ -3320,30 +3331,34 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                     cmb.save()
                 }
             }
+
+            redirect action: 'manageConsortia'
         }
         result.filterSet = params.filterSet ? true : false
         def fsq = filterService.getOrgQuery(params)
         result.availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
 
-        result.consortiaMemberIds = []
-        Combo.findAllWhere(
-                toOrg: result.institution,
-                type:    RefdataValue.findByValue('Consortium')
-        ).each { cmb ->
-            result.consortiaMemberIds << cmb.fromOrg.id
-        }
+            result.consortiaMemberIds = []
+            Combo.findAllWhere(
+                    toOrg: result.institution,
+                    type:    RefdataValue.getByValueAndCategory('Consortium','Combo Type')
+            ).each { cmb ->
+                result.consortiaMemberIds << cmb.fromOrg.id
+            }
 
-        if ( params.exportXLS=='yes' ) {
+            if ( params.exportXLS=='yes' ) {
 
-            def orgs = result.availableOrgs
+                def orgs = result.availableOrgs
 
             def message = g.message(code: 'export.all.orgs')
 
-            exportOrg(orgs, message, true)
-            return
+                exportOrg(orgs, message, true)
+                return
+            }
+
+            result
         }
 
-        result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
@@ -3999,14 +4014,14 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             }
 
             if(isEditable){
-                redirect controller: 'licenseDetails', action: 'processcopyLicense', params: ['baseLicense'                  : license.id,
-                                                                                              'license.copyAnnouncements'    : 'on',
-                                                                                              'license.copyCustomProperties' : 'on',
-                                                                                              'license.copyDates'            : 'on',
-                                                                                              'license.copyDocs'             : 'on',
-                                                                                              'license.copyLinks'            : 'on',
-                                                                                              'license.copyPrivateProperties': 'on',
-                                                                                              'license.copyTasks'            : 'on']
+                redirect controller: 'license', action: 'processcopyLicense', params: ['baseLicense'                 : license.id,
+                                                                                       'license.copyAnnouncements'   : 'on',
+                                                                                       'license.copyCustomProperties': 'on',
+                                                                                       'license.copyDates'           : 'on',
+                                                                                       'license.copyDocs'             : 'on',
+                                                                                       'license.copyLinks'            : 'on',
+                                                                                       'license.copyPrivateProperties': 'on',
+                                                                                       'license.copyTasks'            : 'on']
             }else {
                 flash.error = message(code:'license.permissionInfo.noPerms', default: 'No User Permissions');
                 response.sendError(401)

@@ -21,7 +21,7 @@
             <div class="content ui form">
                 <div class="fields">
                     <div class="field">
-                        <button class="ui button" value="" href="#addBudgetCodeModal" data-semui="modal">${message(code:'budgetCode.create_new.label')}</button>
+                        <button class="ui button" value="" data-href="#addBudgetCodeModal" data-semui="modal">${message(code:'budgetCode.create_new.label')}</button>
                     </div>
                 </div>
             </div>

@@ -44,7 +44,7 @@
 
 
     <div>
-        <g:form id="delete_doc_form" url="[controller:'licenseDetails',action:'deleteDocuments']" method="post">
+        <g:form id="delete_doc_form" url="[controller:'license', action:'deleteDocuments']" method="post">
 
             <div class="well hide license-notes-options">
                 <input type="hidden" name="licid" value="${params.id}"/>
@@ -85,7 +85,7 @@
     </div>
 
     <!-- JS for license documents -->
-    <r:script type="text/javascript">
+    <r:script>
         $('.license-notes input[type="checkbox"]').click(function () {
             if ($('.license-notes input:checked').length > 0) {
                 $('.license-notes-options').slideDown('fast');

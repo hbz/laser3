@@ -54,7 +54,11 @@
         padding: 0.5rem 0;
         cursor: pointer;
         color: gray;
-
+      }
+    }
+    th:not(.sortable){
+      a {
+        text-decoration: underline;
       }
     }
   }
