@@ -687,7 +687,7 @@
         </div>
         </nav><!-- Context Bar -->
 
-        <div class="ui right aligned sub header">${contextOrg?.name}</div>
+
 
     </sec:ifAnyGranted><%-- ROLE_USER --%>
 
@@ -698,12 +698,12 @@
             <g:layoutBody/>
         </div><!-- .main -->
 
-        <div id="Footer">
+        <footer id="Footer">
             <div class="clearfix"></div>
             <div class="footer-links container">
                 <div class="row"></div>
             </div>
-        </div>
+        </footer>
 
         <%-- global container for modals and ajax --%>
         <div id="dynamicModalContainer"></div>
