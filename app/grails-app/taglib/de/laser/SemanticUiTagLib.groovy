@@ -264,7 +264,6 @@ class SemanticUiTagLib {
             } catch (Exception e) {
             }
         }
-        out << '</dt>'
     }
 
     def listIcon = { attrs, body ->
