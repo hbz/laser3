@@ -114,7 +114,7 @@
                                         </button>
                                         <g:remoteLink class="js-gost"
                                                       controller="ajax" action="togglePropertyAuditConfig"
-                                                      params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]' id="${prop.id}"
+                                                      params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true, onlyOrphaned:true]' id="${prop.id}"
                                                       data-confirm-term-what="property"
                                                       data-confirm-term-what-detail="${prop.type.getI10n('name')}"
                                                       data-confirm-term-how="inherit"
@@ -131,7 +131,7 @@
                                         </button>
                                         <g:remoteLink class="js-gost"
                                                       controller="ajax" action="togglePropertyAuditConfig"
-                                                      params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]' id="${prop.id}"
+                                                      params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true, onlyOrphaned:true]' id="${prop.id}"
                                                       data-confirm-term-what="property"
                                                       data-confirm-term-what-detail="${prop.type.getI10n('name')}"
                                                       data-confirm-term-how="inherit"
@@ -150,7 +150,7 @@
                                 </button>
                                 <g:remoteLink class="js-gost"
                                               controller="ajax" action="deleteCustomProperty"
-                                              params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:"${showConsortiaFunctions}"]' id="${prop.id}"
+                                              params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:"${showConsortiaFunctions}", onlyOrphaned:true]' id="${prop.id}"
                                               data-confirm-term-what="property"
                                               data-confirm-term-what-detail="${prop.type.getI10n('name')}"
                                               data-confirm-term-how="delete"
@@ -165,4 +165,38 @@
             </g:if>
         </g:each>
     </tbody>
+
+    <g:if test="${editable}">
+        <tfoot>
+        <tr>
+            <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                <td colspan="5">
+            </g:if>
+            <g:else>
+                <td colspan="4">
+            </g:else>
+            <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']" method="post"
+                          name="cust_prop_add_value"
+                          class="ui form"
+                          update="${custom_props_div}"
+                          onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                          onComplete="c3po.loadJsAfterAjax()"
+            >
+
+                <input type="hidden" name="propIdent" data-desc="${prop_desc}" class="customPropSelect"/>
+                <input type="hidden" name="ownerId" value="${ownobj.id}"/>
+                <input type="hidden" name="editable" value="${editable}"/>
+                <input type="hidden" name="showConsortiaFunctions" value="${showConsortiaFunctions}"/>
+                <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
+                <input type="hidden" name="onlyOrphaned" value="onlyOrphaned"/><%-- switch for ajax controller --%>
+
+                <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
+
+                <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
+            </g:formRemote>
+        </td>
+        </tr>
+        </tfoot>
+    </g:if>
+
 </table>

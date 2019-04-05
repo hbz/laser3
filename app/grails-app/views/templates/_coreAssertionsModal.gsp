@@ -75,7 +75,7 @@
 </div>
 
 <g:if test="${editable=='true' || editable == true}">
-  <script type="text/javascript">
+  <script>
     $('.xEditableValue').editable();
     $(".simpleHiddenRefdata").editable({
       url: function(params) {

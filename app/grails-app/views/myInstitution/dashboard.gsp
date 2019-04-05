@@ -140,12 +140,12 @@
                                 <g:if test="${change instanceof com.k_int.kbplus.Subscription}">
                                     <strong>${message(code:'subscription')}</strong>
                                     <br />
-                                    <g:link controller="subscriptionDetails" action="changes" id="${change.id}">${change.toString()}</g:link>
+                                    <g:link controller="subscription" action="changes" id="${change.id}">${change.toString()}</g:link>
                                 </g:if>
                                 <g:if test="${change instanceof com.k_int.kbplus.License}">
                                     <strong>${message(code:'license')}</strong>
                                     <br />
-                                    <g:link controller="licenseDetails" action="changes" id="${change.id}">${change.toString()}</g:link>
+                                    <g:link controller="license" action="changes" id="${change.id}">${change.toString()}</g:link>
                                 </g:if>
                            </div><!-- .column -->
                            </div><!-- .row -->
@@ -161,10 +161,10 @@
                         <div class="message">
                             <p>
                                 <g:if test="${change.item_with_changes instanceof com.k_int.kbplus.Subscription}">
-                                    <g:link controller="subscriptionDetails" action="changes" id="${change.item_with_changes.id}">${change.item_with_changes.toString()}</g:link>
+                                    <g:link controller="subscription" action="changes" id="${change.item_with_changes.id}">${change.item_with_changes.toString()}</g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link controller="licenseDetails" action="changes" id="${change.item_with_changes.id}">${change.item_with_changes.toString()}</g:link>
+                                    <g:link controller="license" action="changes" id="${change.item_with_changes.id}">${change.item_with_changes.toString()}</g:link>
                                 </g:else>
                             </p>
                             <p>
@@ -234,7 +234,7 @@
             <g:if test="${editable}">
                 <div class="ui right aligned grid">
                     <div class="right floated right aligned sixteen wide column">
-                        <input type="submit" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" href="#modalCreateTask" />
+                        <input type="submit" class="ui button" value="${message(code:'task.create.new')}" data-semui="modal" data-href="#modalCreateTask" />
                     </div>
                 </div>
             </g:if>
@@ -269,7 +269,7 @@
                                 <g:each in="${tsk.getObjects()}" var="tskObj">
                                     <div class="item">
                                         <span data-tooltip="${message(code: 'task.' + tskObj.controller)}" data-position="left center" data-variation="tiny">
-                                            <g:if test="${tskObj.controller == 'organisations'}">
+                                            <g:if test="${tskObj.controller == 'organisation'}">
                                                 <i class="university icon"></i>
                                             </g:if>
                                             <g:if test="${tskObj.controller.contains('subscription')}">

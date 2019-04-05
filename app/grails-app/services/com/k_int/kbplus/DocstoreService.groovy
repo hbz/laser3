@@ -428,7 +428,7 @@ class DocstoreService {
     def unifiedDeleteDocuments(params) {
 
         // copied from / used in ..
-        // LicenseDetailsController
+        // licenseController
         // MyInstitutionsController
         // PackageController
         // SubscriptionDetailsController

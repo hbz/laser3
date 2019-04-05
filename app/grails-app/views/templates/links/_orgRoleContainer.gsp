@@ -20,12 +20,12 @@
                             </g:link>
                         </g:if>
                         <g:if test="${i.sub}">
-                            <g:link controller="subscriptionDetails" action="show" id="${i.sub.id}">
+                            <g:link controller="subscription" action="show" id="${i.sub.id}">
                                 ${message(code:'subscription.label', default:'Subscription')}: ${i.sub.name}
                             </g:link>
                         </g:if>
                         <g:if test="${i.lic}">
-                            <g:link controller="licenseDetails" action="show" id="${i.lic.id}">
+                            <g:link controller="license" action="show" id="${i.lic.id}">
                                 ${message(code:'license.label', default:'License')}: ${i.lic.reference ?: i.lic.id}
                             </g:link>
                         </g:if>
@@ -70,7 +70,7 @@
 
     <script>
         $("#orgRoleContainer .button").on('click', function() {
-            var ajaxUrl = "<g:createLink controller="organisations" action="show" id="${orgInstance.id}" />"
+            var ajaxUrl = "<g:createLink controller="organisation" action="show" id="${orgInstance.id}" />"
                         + "?ajax=true&" + $(this).attr('data-params')
 
             $.ajax({

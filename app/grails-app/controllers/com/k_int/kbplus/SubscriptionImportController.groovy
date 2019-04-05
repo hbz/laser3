@@ -772,7 +772,7 @@ class SubscriptionImportController extends AbstractDebugController {
       new_subscription.save()
   
       if ( new_subscription )
-        redirect controller:'subscriptionDetails', action:'index', id:new_subscription.id
+        redirect controller:'subscription', action:'index', id:new_subscription.id
       else
         redirect controller:'home', action:'index'
     }

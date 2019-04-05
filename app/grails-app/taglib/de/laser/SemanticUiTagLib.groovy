@@ -128,7 +128,7 @@ class SemanticUiTagLib {
             out << '            </div>'
             if (attrs.editable && attrs.href) {
                 out << '        <div class="center aligned four wide column">'
-                out << '            <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" href="' + attrs.href + '" ><i class="plus icon"></i></button>'
+                out << '            <button type="button" class="ui icon mini button editable-cancel" data-semui="modal" data-href="' + attrs.href + '" ><i class="plus icon"></i></button>'
                 out << '        </div>'
             }
             out << '        </div>'
@@ -264,7 +264,6 @@ class SemanticUiTagLib {
             } catch (Exception e) {
             }
         }
-        out << '</dt>'
     }
 
     def listIcon = { attrs, body ->
@@ -520,7 +519,7 @@ class SemanticUiTagLib {
         out << '</div>'
     }
 
-    //<semui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="true" />
+    //<semui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="" />
 
     def datepicker = { attrs, body ->
         def inputCssClass = attrs.inputCssClass ?: '';
@@ -538,7 +537,7 @@ class SemanticUiTagLib {
         }
 
         def classes = attrs.required ? 'field fieldcontain required' : 'field fieldcontain'
-        def required = attrs.required ? 'required="true"' : ''
+        def required = attrs.required ? 'required=""' : ''
         def hideLabel = attrs.hideLabel ? false : true
 
         if (attrs.class) {

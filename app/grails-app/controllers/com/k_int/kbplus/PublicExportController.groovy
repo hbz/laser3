@@ -49,7 +49,7 @@ class PublicExportController {
   @Deprecated
   @Secured(['ROLE_USER'])
   def so() {
-    log.debug("subscriptionDetails id:${params.id} format=${response.format}");
+    log.debug("subscription id:${params.id} format=${response.format}");
     def result = [:]
 
     def paginate_after = params.paginate_after ?: 19;

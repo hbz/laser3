@@ -181,7 +181,7 @@
                     ${ jj + 1 }
                 </td>
                 <td>
-                    <g:link controller="organisations" action="show" id="${subscr.id}">
+                    <g:link controller="organisation" action="show" id="${subscr.id}">
                         <g:if test="${subscr.sortname}">${subscr.sortname}</g:if>
                         (${subscr.name})
                     </g:link>
@@ -189,7 +189,7 @@
                 <td>
                     <div class="la-flexbox">
                         <i class="icon folder open outline la-list-icon"></i>
-                        <g:link controller="subscriptionDetails" action="show" id="${subCons.id}">${subCons.name}</g:link>
+                        <g:link controller="subscription" action="show" id="${subCons.id}">${subCons.name}</g:link>
                         <g:if test="${subCons.getCalculatedPrevious()}">
                             <span data-position="top left" data-tooltip="${message(code:'subscription.hasPreviousSubscription')}">
                                 <i class="arrow left grey icon"></i>
@@ -199,7 +199,7 @@
                     <g:if test="${subCons.owner}">
                         <div class="la-flexbox">
                             <i class="icon balance scale la-list-icon"></i>
-                            <g:link controller="licenseDetails" action="show" id="${subCons.owner.id}">${subCons.owner.reference}</g:link>
+                            <g:link controller="license" action="show" id="${subCons.owner.id}">${subCons.owner.reference}</g:link>
                         </div>
                     </g:if>
                 </td>
@@ -213,7 +213,7 @@
                 </td>
                 <td>
                     <g:each in="${subCons.providers}" var="p">
-                        <g:link controller="organisations" action="show" id="${p.id}">${p.getDesignation()}</g:link> <br/>
+                        <g:link controller="organisation" action="show" id="${p.id}">${p.getDesignation()}</g:link> <br/>
                     </g:each>
                 </td>
                 <td>

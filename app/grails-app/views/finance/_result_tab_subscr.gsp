@@ -74,7 +74,7 @@
                         ${ci.costItemElement?.getI10n('value')}
                     </td>
                     <td>
-                        <g:link controller="subscriptionDetails" action="show" id="${ci.sub?.id}">${ci.sub}</g:link>
+                        <g:link controller="subscription" action="show" id="${ci.sub?.id}">${ci.sub}</g:link>
                     </td>
                     <td>
                         <g:link controller="package" action="show" id="${ci.subPkg?.pkg?.id}">${ci.subPkg?.pkg}</g:link>

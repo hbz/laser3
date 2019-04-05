@@ -3,21 +3,14 @@ package com.k_int.kbplus
 import com.k_int.kbplus.auth.*
 import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupItem
-import de.laser.GOKbService
 import de.laser.SystemEvent
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
-import de.laser.helper.RefdataAnnotation
 import grails.plugin.springsecurity.SpringSecurityUtils;
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import au.com.bytecode.opencsv.CSVReader
 import com.k_int.properties.PropertyDefinition
-import grails.web.Action
-
-import java.lang.reflect.Field
-import java.lang.reflect.Method
-import java.lang.reflect.Modifier
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController extends AbstractDebugController {
@@ -161,9 +154,9 @@ class AdminController extends AbstractDebugController {
         pkg.subscriptions.each{
 
           if(it.subscription.status.value != "Deleted"){
-            subscription_map.details += ['link':createLink(controller:'subscriptionDetails', action: 'show', id:it.subscription.id), 'text': it.subscription.name]
+            subscription_map.details += ['link':createLink(controller:'subscription', action: 'show', id:it.subscription.id), 'text': it.subscription.name]
           }else{
-            subscription_map.details += ['link':createLink(controller:'subscriptionDetails', action: 'show', id:it.subscription.id), 'text': "(Deleted)" + it.subscription.name]
+            subscription_map.details += ['link':createLink(controller:'subscription', action: 'show', id:it.subscription.id), 'text': "(Deleted)" + it.subscription.name]
           }
         }
         subscription_map.action = ['actionRequired':true,'text':"Unlink subscriptions. (IEs will be removed as well)"]

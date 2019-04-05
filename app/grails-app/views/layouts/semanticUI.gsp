@@ -1,11 +1,25 @@
-<%@ page import="de.laser.helper.RDStore; org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.UserSettings; com.k_int.kbplus.RefdataValue" %>
-
+<%@ page import="de.laser.helper.RDStore;org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.auth.User;com.k_int.kbplus.UserSettings;com.k_int.kbplus.RefdataValue" %>
 <!doctype html>
 
-<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
-<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
-<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<laser:serviceInjection />
+<%
+    User currentUser = contextService.getUser()
+    String currentLang = 'de'
+    if (currentUser) {
+        RefdataValue rdvLocale = currentUser?.getSetting(UserSettings.KEYS.LANGUAGE, RefdataValue.getByValueAndCategory('de', 'Language'))?.getValue()
+
+        if (rdvLocale) {
+            currentLang = rdvLocale.value
+            org.springframework.web.servlet.LocaleResolver localeResolver = org.springframework.web.servlet.support.RequestContextUtils.getLocaleResolver(request)
+            localeResolver.setLocale(request, response, new Locale(currentLang, currentLang.toUpperCase()))
+        }
+    }
+%>
+
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="${currentLang}"> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang="${currentLang}"> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang="${currentLang}"> <![endif]-->
+<!--[if gt IE 8]><!--><html class="no-js" lang="${currentLang}"> <!--<![endif]-->
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -15,9 +29,9 @@
 
     <r:require modules="semanticUI" />
 
-    <script type="text/javascript">
-        var gspLocale = "${message(code:'default.locale.label', default:'en')}";
-        var gspDateFormat = "${message(code:'default.date.format.notime', default:'yyyy-mm-dd').toLowerCase()}";
+    <script>
+        var gspLocale = "${message(code:'default.locale.label')}";
+        var gspDateFormat = "${message(code:'default.date.format.notime').toLowerCase()}";
     </script>
 
     <g:layoutHead/>
@@ -29,8 +43,6 @@
 </head>
 
 <body class="${controllerName}_${actionName}" id="globalJumpMark">
-
-    <laser:serviceInjection />
 
     <g:set var="contextOrg" value="${contextService.getOrg()}" />
     <g:set var="contextUser" value="${contextService.getUser()}" />
@@ -63,12 +75,12 @@
                         <div class="menu">
                             <a class="item" href="${createLink(uri: '/home/search')}">Search</a>
                             <g:link class="item" controller="package">Package</g:link>
-                            <g:link class="item" controller="organisations">Organisations</g:link>
+                            <g:link class="item" controller="organisation">Organisations</g:link>
                             <g:link class="item" controller="platform">Platform</g:link>
                             <g:link class="item" controller="title">Title Instance</g:link>
                             <g:link class="item" controller="tipp">Title Instance Package Platform</g:link>
-                            <g:link class="item" controller="subscriptionDetails">Subscriptions</g:link>
-                            <g:link class="item" controller="licenseDetails">Licenses</g:link>
+                            <g:link class="item" controller="subscription">Subscriptions</g:link>
+                            <g:link class="item" controller="license">Licenses</g:link>
                             <g:link class="item" controller="onixplLicense" action="list">ONIX-PL Licenses</g:link>
                         </div>
                     </div>
@@ -85,14 +97,14 @@
                                 <g:link class="item" controller="title" action="index">${message(code:'menu.public.all_titles')}</g:link>
 
                                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
-                                    <g:link class="item" controller="organisations" action="index">${message(code:'menu.public.all_orgs')}</g:link>
+                                    <g:link class="item" controller="organisation" action="index">${message(code:'menu.public.all_orgs')}</g:link>
                                 </sec:ifAnyGranted>
 
                                 <g:if test="${RDStore.OT_CONSORTIUM.id in  contextService.org.getallOrgTypeIds()}">
-                                    <g:link class="item" controller="organisations" action="listInstitution">${message(code:'menu.public.all_insts')}</g:link>
+                                    <g:link class="item" controller="organisation" action="listInstitution">${message(code:'menu.public.all_insts')}</g:link>
                                 </g:if>
 
-                                <g:link class="item" controller="organisations" action="listProvider">${message(code:'menu.public.all_provider')}</g:link>
+                                <g:link class="item" controller="organisation" action="listProvider">${message(code:'menu.public.all_provider')}</g:link>
 
                                 <g:link class="item" controller="platform" action="list">${message(code:'menu.public.all_platforms')}</g:link>
 
@@ -144,7 +156,7 @@
 
                             <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="emptySubscription" message="menu.institutions.emptySubscription" />
 
-                            <semui:securedMainNavItem affiliation="INST_USER" controller="subscriptionDetails" action="compare" message="menu.my.comp_sub" />
+                            <semui:securedMainNavItem affiliation="INST_USER" controller="subscription" action="compare" message="menu.my.comp_sub" />
 
                             <%--<g:link class="item" controller="subscriptionImport" action="generateImportWorksheet"
                                     params="${[id:contextOrg?.id]}">${message(code:'menu.institutions.sub_work')}</g:link>
@@ -160,7 +172,7 @@
 
                             <%--
                             <div class="divider"></div>
-                            <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.my.comp_sub')}</g:link>
+                            <g:link class="item" controller="subscription" action="compare">${message(code:'menu.my.comp_sub')}</g:link>
 
                             <g:link class="item" controller="myInstitution" action="renewalsSearch">${message(code:'menu.institutions.gen_renewals')}</g:link>
                             <g:link class="item" controller="myInstitution" action="renewalsUpload">${message(code:'menu.institutions.imp_renew')}</g:link>
@@ -180,7 +192,7 @@
                         <div class="menu">
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="dashboard" message="menu.institutions.dash" />
 
-                            <g:link class="item" controller="organisations" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</g:link>
+                            <g:link class="item" controller="organisation" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</g:link>
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="tasks" message="menu.institutions.tasks" />
 
@@ -190,7 +202,7 @@
 
                             <g:set var="myInstNewAffils" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatusAndOrg(0, contextService.getOrg(), [sort:'dateRequested']).size()}" />
 
-                            <semui:securedMainNavItem affiliation="INST_ADM" controller="organisations" action="users" params="[id: contextOrg?.id]"
+                            <semui:securedMainNavItem affiliation="INST_ADM" controller="organisation" action="users" params="[id: contextOrg?.id]"
                                                       message="menu.institutions.users" newAffiliationRequests="${myInstNewAffils}" />
 
                             <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_private_props" />
@@ -255,10 +267,10 @@
                                 <div class="divider"></div>
 
                                 <g:link class="item" controller="title" action="findTitleMatches">${message(code:'menu.datamanager.newTitle')}</g:link>
-                                <g:link class="item" controller="licenseDetails" action="create">${message(code:'license.template.new')}</g:link>
+                                <g:link class="item" controller="license" action="create">${message(code:'license.template.new')}</g:link>
                                 <g:link class="item" controller="platform" action="create">${message(code:'menu.datamanager.newPlatform')}</g:link>
 
-                                <g:link class="item" controller="subscriptionDetails" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</g:link>
+                                <g:link class="item" controller="subscription" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</g:link>
                                 <g:link class="item" controller="subscriptionImport" action="generateImportWorksheet">${message(code:'menu.datamanager.sub_work')}</g:link>
                                 <g:link class="item" controller="subscriptionImport" action="importSubscriptionWorksheet" params="${[dm:'true']}">${message(code:'menu.datamanager.imp_sub_work')}</g:link>
                                 <g:link class="item" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</g:link>
@@ -324,7 +336,7 @@
 
                             <div class="divider"></div>
 
-                            <g:link class="item" controller="organisations" action="index">${message(code:'menu.admin.manageOrganisations')}</g:link>
+                            <g:link class="item" controller="organisation" action="index">${message(code:'menu.admin.manageOrganisations')}</g:link>
                             <g:link class="item" controller="user" action="list">${message(code:'menu.institutions.users')}</g:link>
                             <g:link class="item" controller="admin" action="showAffiliations">${message(code:'menu.admin.showAffiliations')}</g:link>
                             <g:link class="item" controller="usage">${message(code:'menu.admin.manageUsageStats')}</g:link>
@@ -536,7 +548,7 @@
                         </g:if>
                     </div>
 
-                        <g:if test="${controllerName=='subscriptionDetails' && actionName=='show'}">
+                        <g:if test="${controllerName=='subscription' && actionName=='show'}">
                             <div class="item">
                                 <g:if test="${user?.getSettingsValue(UserSettings.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes','YN'))?.value=='Yes'}">
                                     <button class="ui icon toggle button la-toggle-controls" data-tooltip="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right" data-variation="tiny">

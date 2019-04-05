@@ -1039,7 +1039,7 @@ class AjaxController {
 
       request.setAttribute("editable", params.editable == "true")
       boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
-      if(params.propDefGroup) {
+      if (params.propDefGroup) {
         render(template: "/templates/properties/group", model: [
                 ownobj          : owner,
                 newProp         : newProp,
@@ -1050,17 +1050,29 @@ class AjaxController {
                 prop_desc       : type.descr // form data
         ])
       }
-      else {
-        render(template: "/templates/properties/custom", model: [
+      else if (params.onlyOrphaned) {
+          def allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
+
+          render(template: "/templates/properties/orphaned", model: [
                 ownobj          : owner,
                 newProp         : newProp,
-                showConortiaFunctions: showConsortiaFunctions,
+                showConsortiaFunctions: showConsortiaFunctions,
                 error           : error,
                 custom_props_div: "${params.custom_props_div}", // JS markup id
-                prop_desc       : type.descr // form data
+                prop_desc       : type.descr, // form data
+                orphanedProperties: allPropDefGroups.orphanedProperties
         ])
       }
-
+        else {
+          render(template: "/templates/properties/custom", model: [
+                  ownobj          : owner,
+                  newProp         : newProp,
+                  showConsortiaFunctions: showConsortiaFunctions,
+                  error           : error,
+                  custom_props_div: "${params.custom_props_div}", // JS markup id
+                  prop_desc       : type.descr // form data
+          ])
+      }
     }
     else {
       log.error("Form submitted with missing values")
@@ -1402,6 +1414,18 @@ class AjaxController {
                   prop_desc       : prop_desc // form data
           ])
         }
+        else if (params.onlyOrphaned) {
+            def allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
+
+            render(template: "/templates/properties/orphaned", model: [
+                    ownobj            : owner,
+                    newProp           : property,
+                    showConsortiaFunctions: params.showConsortiaFunctions,
+                    custom_props_div: "${params.custom_props_div}", // JS markup id
+                    prop_desc         : prop_desc, // form data
+                    orphanedProperties: allPropDefGroups.orphanedProperties
+            ])
+        }
         else {
           render(template: "/templates/properties/custom", model: [
                   ownobj                : owner,
@@ -1449,6 +1473,18 @@ class AjaxController {
                   custom_props_div: "${params.custom_props_div}", // JS markup id
                   prop_desc       : prop_desc // form data
           ])
+        }
+        else if (params.onlyOrphaned) {
+            def allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
+
+            render(template: "/templates/properties/orphaned", model: [
+                    ownobj            : owner,
+                    newProp           : property,
+                    showConsortiaFunctions: params.showConsortiaFunctions,
+                    custom_props_div: "${params.custom_props_div}", // JS markup id
+                    prop_desc         : prop_desc, // form data
+                    orphanedProperties: allPropDefGroups.orphanedProperties
+            ])
         }
         else {
           render(template: "/templates/properties/custom", model:[

@@ -9,7 +9,7 @@
             <div class="divider"></div>
         </g:if>
 
-        <semui:actionsDropdownItem controller="subscriptionDetails" action="compare" message="menu.my.comp_sub" />
+        <semui:actionsDropdownItem controller="subscription" action="compare" message="menu.my.comp_sub" />
         <semui:actionsDropdownItem controller="subscriptionImport" action="generateImportWorksheet" params="${[id:contextOrg?.id]}" message="menu.institutions.sub_work" />
         <semui:actionsDropdownItem controller="subscriptionImport" action="importSubscriptionWorksheet" params="${[id:contextOrg?.id]}" message="menu.institutions.imp_sub_work" />
     </semui:actionsDropdown>
@@ -31,6 +31,7 @@
     <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM") && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextOrg.getallOrgTypeIds())}">
         <semui:actionsDropdown>
             <semui:actionsDropdownItem controller="myInstitution" action="addConsortiaMembers" message="menu.institutions.add_consortia_members" />
+            <semui:actionsDropdownItem controller="organisation" action="findInstitutionMatches" message="org.create_new_Institution.label"/>
             <g:if test="${actionName in ['manageConsortia']}">
                 <semui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses"/>
             </g:if>
@@ -40,7 +41,7 @@
 
 <g:if test="${actionName in ['addressbook']}">
     <g:if test="${editable}">
-        <div class="item"  href="#personFormModal" data-semui="modal" data-value="1">${message(code: 'person.create_new.contactPerson.label')}</div>
+        <div class="item" data-href="#personFormModal" data-semui="modal" data-value="1">${message(code: 'person.create_new.contactPerson.label')}</div>
     </g:if>
 </g:if>
 

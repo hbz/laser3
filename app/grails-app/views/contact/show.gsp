@@ -9,7 +9,7 @@
 	</head>
 	<body>
         <semui:breadcrumbs>
-            <semui:crumb message="menu.public.all_orgs" controller="organisations" action="index"/>
+            <semui:crumb message="menu.public.all_orgs" controller="organisation" action="index"/>
             <semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
         </semui:breadcrumbs>
 
@@ -44,12 +44,12 @@
 
                         <g:if test="${contactInstance?.org}">
                             <dt><g:message code="contact.org.label" default="Org" /></dt>
-                            <dd><g:link controller="organisations" action="show" id="${contactInstance?.org?.id}">${contactInstance?.org}</g:link></dd>
+                            <dd><g:link controller="organisation" action="show" id="${contactInstance?.org?.id}">${contactInstance?.org}</g:link></dd>
                         </g:if>
 
 						<g:if test="${contactInstance?.prs?.tenant}">
 							<dt><g:message code="person.tenant.label" default="Tenant (derived from Prs)" /></dt>
-							<dd><g:link controller="organisations" action="show" id="${contactInstance?.prs?.tenant?.id}">${contactInstance?.prs?.tenant}</g:link></dd>
+							<dd><g:link controller="organisation" action="show" id="${contactInstance?.prs?.tenant?.id}">${contactInstance?.prs?.tenant}</g:link></dd>
 						</g:if>
 
 						<g:if test="${contactInstance?.prs?.isPublic}">

@@ -4,12 +4,12 @@
     <g:if test="${orgInstance.incomingCombos && orgInstance.incomingCombos.size() > 0}">
       <ul>
         <g:each in="${orgInstance.incomingCombos}" var="ic">
-          <li><g:link controller="organisations" action="show" id="${ic.fromOrg.id}">${ic.fromOrg.name}</g:link></li>
+          <li><g:link controller="organisation" action="show" id="${ic.fromOrg.id}">${ic.fromOrg.name}</g:link></li>
         </g:each>
       </ul>
     </g:if>
     <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgTypeIds())}">
-        <g:form name="addIncomingCombo" controller="organisations" action="addOrgCombo" class="form-search" method="get">
+        <g:form name="addIncomingCombo" controller="organisation" action="addOrgCombo" class="form-search" method="get">
           <g:hiddenField name="toOrg" value="${orgInstance.id}" />
           <g:select name="fromOrg"
                     from="${com.k_int.kbplus.Org.executeQuery('from Org o where o.sector.value = ? and o <> ? order by o.name', ['Higher Education', orgInstance])}"

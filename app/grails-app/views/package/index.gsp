@@ -117,7 +117,7 @@
                                   ${message(code:'package.index.result.titles.unknown', default:'Unknown number of TIPPs')}
                               </g:else>
                           </td>
-                            <td><g:if test="${com.k_int.kbplus.Org.findByName(hit.getSource().providerName)}"><g:link controller="organisations" action="show" id="${com.k_int.kbplus.Org.findByName(hit.getSource().providerName).id}">${hit.getSource().providerName}</g:link></g:if>
+                            <td><g:if test="${com.k_int.kbplus.Org.findByName(hit.getSource().providerName)}"><g:link controller="organisation" action="show" id="${com.k_int.kbplus.Org.findByName(hit.getSource().providerName).id}">${hit.getSource().providerName}</g:link></g:if>
                                 <g:else>${hit.getSource().providerName}</g:else>
                             </td>
                             <td><g:if test="${com.k_int.kbplus.Platform.findByName(hit.getSource().platformName)}"><g:link controller="platform" action="show" id="${com.k_int.kbplus.Platform.findByName(hit.getSource().platformName).id}">${hit.getSource().platformName}</g:link></g:if>
@@ -224,7 +224,7 @@
                                 </g:else>
                             </td>
                             <td><g:if test="${com.k_int.kbplus.Org.findByGokbId(record.providerUuid)}"><g:link
-                                    controller="organisations" action="show"
+                                    controller="organisation" action="show"
                                     id="${com.k_int.kbplus.Org.findByGokbId(record.providerUuid).id}">${record.providerName}</g:link></g:if>
                             <g:else>${record.providerName}</g:else>
                             </td>

@@ -526,7 +526,7 @@ class ExportService {
 	 * 
 	 * @param doc - the {@link #org.w3c.dom.Document Document} to update
 	 * @param into_elem - the {@link #org.w3c.dom.Element Element} we want to put the list of license(s) in.
-	 * @param orgs - list of {@link com.k_int.kbplus.Organisations}
+	 * @param orgs - list of {@link com.k_int.kbplus.Org}
 	 */
 	private addRelatedOrgsIntoXML(Document doc, Element into_elem, orgs){
 		orgs.each { or ->

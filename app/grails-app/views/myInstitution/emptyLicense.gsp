@@ -111,7 +111,7 @@
                 <tr>
                     <td>
                         <g:link action="show"
-                                controller="licenseDetails"
+                                controller="license"
                                 id="${l.id}">
                             <g:if test="${l.reference}">${l.reference}</g:if>
                             <g:else>${message(code: 'myinst.addLicense.no_ref', args: [l.id])}</g:else>
@@ -156,7 +156,7 @@
 </g:else>
 
 
-<r:script type="text/javascript">
+<r:script>
     $('.license-results input[type="radio"]').click(function () {
         $('.license-options').slideDown('fast');
     });

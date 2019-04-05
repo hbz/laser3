@@ -260,7 +260,7 @@
                         ${ (params.int('offset') ?: 0)  + i + 1 }
                     </td>
                     <td>
-                        <g:link controller="subscriptionDetails" action="show" id="${s.id}">
+                        <g:link controller="subscription" action="show" id="${s.id}">
                             <g:if test="${s.name}">
                                 ${s.name}
                             </g:if>
@@ -276,7 +276,7 @@
                         <g:if test="${s.owner}">
                                 <div class="la-flexbox">
                                     <i class="icon balance scale la-list-icon"></i>
-                                    <g:link  controller="licenseDetails" action="show" id="${s.owner.id}">${s.owner?.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}</g:link>
+                                    <g:link controller="license" action="show" id="${s.owner.id}">${s.owner?.reference?:message(code:'missingLicenseReference', default:'** No License Reference Set **')}</g:link>
                                 </div>
                         </g:if>
                     </td>
@@ -286,7 +286,7 @@
                             <g:if test="${ind < 10}">
                                 <div class="la-flexbox">
                                     <i class="icon gift la-list-icon"></i>
-                                    <g:link controller="subscriptionDetails" action="index" id="${s.id}" params="[pkgfilter: sp.pkg?.id]"
+                                    <g:link controller="subscription" action="index" id="${s.id}" params="[pkgfilter: sp.pkg?.id]"
                                             title="${sp.pkg?.contentProvider?.name}">
                                         ${sp.pkg.name}
                                     </g:link>
@@ -299,8 +299,8 @@
                         <g:if test="${editable && (s.packages == null || s.packages.size() == 0)}">
                             <i>
                                 ${message(code: 'myinst.currentSubscriptions.no_links', default: 'None currently, Add packages via')}
-                                <g:link controller="subscriptionDetails" action="linkPackage"
-                                    id="${s.id}">${message(code: 'subscription.details.linkPackage.label', default: 'Link Package')}</g:link>
+                                <g:link controller="subscription" action="linkPackage"
+                                        id="${s.id}">${message(code: 'subscription.details.linkPackage.label', default: 'Link Package')}</g:link>
                             </i>
                         </g:if>
                     <!-- packages -->
@@ -319,17 +319,17 @@
                     <td>
                         <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
                         <g:each in="${s.providers}" var="org">
-                            <g:link controller="Organisations" action="show" id="${org.id}">${org.name}</g:link><br />
+                            <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link><br />
                         </g:each>
                         <g:each in="${s.agencies}" var="org">
-                            <g:link controller="Organisations" action="show" id="${org.id}">${org.name} (${message(code: 'default.agency.label', default: 'Agency')})</g:link><br />
+                            <g:link controller="organisation" action="show" id="${org.id}">${org.name} (${message(code: 'default.agency.label', default: 'Agency')})</g:link><br />
                         </g:each>
                     </td>
                     <%--
                     <td>
                         <g:if test="${params.orgRole == 'Subscription Consortia'}">
                             <g:each in="${s.getDerivedSubscribers()}" var="subscriber">
-                                <g:link controller="organisations" action="show" id="${subscriber.id}">${subscriber.name}</g:link> <br />
+                                <g:link controller="organisation" action="show" id="${subscriber.id}">${subscriber.name}</g:link> <br />
                             </g:each>
                         </g:if>
                     </td>
@@ -340,7 +340,7 @@
                     </td>
                     <g:if test="${params.orgRole == 'Subscription Consortia'}">
                         <td>
-                            <g:link controller="subscriptionDetails" action="members" params="${[id:s.id]}">
+                            <g:link controller="subscription" action="members" params="${[id:s.id]}">
                             ${Subscription.findAllByInstanceOfAndStatusNotEqual(
                                     s,
                                     RDStore.SUBSCRIPTION_DELETED
@@ -410,7 +410,7 @@
                         total="${num_sub_rows}"/>
     </g:if>
 
-    <r:script type="text/javascript">
+    <r:script>
         $(document).ready(function(){
               // initialize the form and fields
               $('.ui.form')
@@ -435,7 +435,7 @@
     </r:script>
 
     <%--
-    <r:script type="text/javascript">
+    <r:script>
 
         function availableTypesSelectUpdated(optionSelected) {
 

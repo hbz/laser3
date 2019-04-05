@@ -113,7 +113,7 @@
                 </div>
 
                 <semui:datepicker class="wide eight" label="task.endDate.label" name="endDate"
-                                  placeholder="default.date.label" value="${taskInstance?.endDate}" required="true"
+                                  placeholder="default.date.label" value="${taskInstance?.endDate}" required=""
                                   bean="${taskInstance}"/>
 
             </div>

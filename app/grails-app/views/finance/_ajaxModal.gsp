@@ -445,7 +445,7 @@
 
     </g:form>
 
-    <script type="text/javascript">
+    <script>
         /*var costSelectors = {
             lc:   "#newCostInLocalCurrency",
             rate: "#newCostCurrencyRate",

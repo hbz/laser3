@@ -70,7 +70,7 @@ class SemanticUiIdentifierTagLib {
 
         out <<   '</div>'
 
-        out <<   '<script type="text/javascript">'
+        out <<   '<script>'
         out <<     getJS1(namespaceSelector, identSelector, attrs)
         out <<     getJS2(formSelector, identSelector, attrs)
         out <<   '</script>'

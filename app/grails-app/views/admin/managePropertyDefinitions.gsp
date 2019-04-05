@@ -21,7 +21,7 @@
             <div class="content ui form">
                 <div class="fields">
                     <div class="field">
-                        <button class="ui button" value="" href="#addPropertyDefinitionModal" data-semui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
+                        <button class="ui button" value="" data-href="#addPropertyDefinitionModal" data-semui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
                     </div>
                 </div>
             </div>
@@ -130,7 +130,7 @@
                                         <sec:ifAnyGranted roles="ROLE_YODA">
                                             <g:if test="${usedPdList?.contains(pd.id)}">
                                                 <span data-position="top right" data-tooltip="${message(code:'propertyDefinition.exchange.label')}">
-                                                    <button class="ui icon button" href="#replacePropertyDefinitionModal" data-semui="modal"
+                                                    <button class="ui icon button" data-href="#replacePropertyDefinitionModal" data-semui="modal"
                                                             data-xcg-pd="${pd.class.name}:${pd.id}"
                                                             data-xcg-type="${pd.type}"
                                                             data-xcg-rdc="${pd.refdataCategory}"

@@ -19,7 +19,7 @@
     <semui:messages data="${flash}" />
 
             <input class="ui button" value="${message(code:'menu.institutions.manage_props.create_new')}"
-                   data-semui="modal" href="#addPropertyDefinitionModal" type="submit">
+                   data-semui="modal" data-href="#addPropertyDefinitionModal" type="submit">
 
 
             <g:if test="${privatePropertyDefinitions}">
