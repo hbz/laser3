@@ -820,7 +820,7 @@ class ApiReaderHelper {
     static resolvePrivateProperties(def list, Org context) {
         def result = []
 
-        list?.findAll{ it.owner.id == context.id }?.each { it ->       // com.k_int.kbplus.<x>PrivateProperty
+        list?.findAll{ it.owner.id == context.id || it.type.tenant?.id == context.id}?.each { it ->       // com.k_int.kbplus.<x>PrivateProperty
             def tmp             = [:]
             tmp.name            = it.type?.name     // com.k_int.kbplus.PropertyDefinition.String
             tmp.description     = it.type?.descr    // com.k_int.kbplus.PropertyDefinition.String
