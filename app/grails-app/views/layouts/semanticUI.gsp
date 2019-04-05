@@ -46,7 +46,7 @@
             <span>QA</span>
         </div>
     </g:if>
-
+    <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu"></g:set>
     <nav class="ui fixed inverted menu">
         <div class="ui container">
             <g:link controller="home" action="index" class="header item la-logo-item">
@@ -523,7 +523,7 @@
     </nav><!-- main menu -->
 
     <sec:ifAnyGranted roles="ROLE_USER">
-
+        <g:set var="visibilityContextOrgMenu" value="la-show-context-orgMenu"></g:set>
         <nav class="ui fixed menu la-contextBar"  >
             <div class="ui container">
                 <div class="ui sub header item la-context-org">${contextOrg?.name}</div>
@@ -687,14 +687,9 @@
         </div>
         </nav><!-- Context Bar -->
 
-
-
     </sec:ifAnyGranted><%-- ROLE_USER --%>
-
-        <div class="navbar-push"></div>
-
         <%-- global content container --%>
-        <div class="ui main container">
+        <div class="ui main container ${visibilityContextOrgMenu} ">
             <g:layoutBody/>
         </div><!-- .main -->
 

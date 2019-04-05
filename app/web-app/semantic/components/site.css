@@ -602,3 +602,9 @@ aside.ui.accordion .title:not(.ui) {
 .la-ellipsis {
   text-overflow: ellipsis;
 }
+.la-hide-context-orgMenu {
+  padding-top: 80px;
+}
+.la-show-context-orgMenu {
+  padding-top: 110px;
+}
