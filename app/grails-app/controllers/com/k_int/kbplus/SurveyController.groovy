@@ -374,11 +374,44 @@ class SurveyController {
 
         params.surveyConfigID = params.surveyConfigID ?: result.surveyConfigs[0].id.toString()
 
-        result.surveyConfigOrgs = SurveyConfig.get(params.surveyConfigID).orgIDs
+        result.surveyConfigOrgs = Org.findAllByIdInList(SurveyConfig.get(params.surveyConfigID).orgIDs)
 
         result
 
     }
+
+    def addSurveyParticipants()
+    {
+        def result = [:]
+        result.institution = contextService.getOrg()
+        result.user = User.get(springSecurityService.principal.id)
+
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        if (params.selectedOrgs) {
+
+
+            def surveyConfig = SurveyConfig.get(params.surveyConfigID)
+            surveyConfig.orgIDs = surveyConfig.orgIDs ?: new ArrayList()
+
+            params.list('selectedOrgs').each { soId ->
+                if(!(soId in surveyConfig.orgIDs)) {
+                    surveyConfig.orgIDs?.add(soId)
+                }
+            }
+            surveyConfig.save(flush: true)
+
+        }
+
+        redirect action: 'showSurveyParticipants', id: params.id, surveyConfigID: params.surveyConfigID
+
+    }
+
 
     private getSurveyProperties(Org contextOrg) {
         def properties = []

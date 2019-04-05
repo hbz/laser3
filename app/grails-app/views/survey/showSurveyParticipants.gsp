@@ -1,4 +1,4 @@
-<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.SurveyProperty;" %>
+<%@ page import="com.k_int.kbplus.RefdataCategory;com.k_int.kbplus.SurveyProperty;com.k_int.kbplus.SurveyConfig" %>
 <laser:serviceInjection/>
 
 <!doctype html>
@@ -102,11 +102,10 @@
 
                     ${com.k_int.kbplus.SurveyConfig.getLocalizedValue(config?.type)}
 
-                    <semui:totalNumber class="ui icon "
-                            total="${0}"/>
-
-
                 </g:link>
+
+                <semui:totalNumber class="ui icon "
+                                   total="${config?.orgIDs?.size()?: 0}"/>
             </g:each>
         </div>
     </div>
@@ -133,7 +132,8 @@
         <div class="ui bottom attached tab segment ${params.tab == 'consortiaMembers' ? 'active' : ''}"
              data-tab="consortiaMembers">
             <div>
-                <g:render template="consortiaMembers"/>
+                <g:render template="consortiaMembers" model="${[ showAddSubMembers: (SurveyConfig.get(params.surveyConfigID)?.type == 'Subscription') ? true : false]}"/>
+
             </div>
         </div>
     </div>

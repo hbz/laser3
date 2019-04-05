@@ -45,7 +45,7 @@
                         <g:select class="ui dropdown search" name="subscription"
                                   from="${subscriptions}"
                                   optionKey="id"
-                                  optionValue="name"
+                                  optionValue="${{it?.dropdownNamingConvention(contextService.getOrg())}}"
                                   value=""
                                   noSelection="${['': message(code: 'default.search_for.label', args: [message(code: 'surveyConfig.subscription.label')])]}"
                                   required=""/>
