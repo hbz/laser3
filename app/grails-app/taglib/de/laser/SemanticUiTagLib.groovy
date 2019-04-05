@@ -239,7 +239,7 @@ class SemanticUiTagLib {
                                     params: ['owner': oid, 'property': [objAttr]],
                                     class: 'item'
                             )
-                            out << g.link( 'Verarbeitung deaktivieren. Wert für Teilnehmer <b>erhalten</b>',
+                            out << g.link( 'Vererbung deaktivieren. Wert für Teilnehmer <b>erhalten</b>',
                                     controller: 'ajax',
                                     action: 'toggleAudit',
                                     params: ['owner': oid, 'property': [objAttr], keep: true],
