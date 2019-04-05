@@ -603,8 +603,8 @@ aside.ui.accordion .title:not(.ui) {
   text-overflow: ellipsis;
 }
 .la-hide-context-orgMenu {
-  padding-top: 80px;
+  padding-top: 60px;
 }
 .la-show-context-orgMenu {
-  padding-top: 110px;
+  padding-top: 105px;
 }
