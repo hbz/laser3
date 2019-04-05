@@ -7,6 +7,8 @@ import de.laser.api.v0.ApiReaderHelper
 import de.laser.helper.Constants
 import grails.converters.JSON
 
+import java.sql.Timestamp
+
 class ApiCostItem {
 
     /**
@@ -64,6 +66,29 @@ class ApiCostItem {
         if (hasAccess) {
             // TODO
             result = CostItem.findAllByOwner(owner).globalUID
+            result = ApiReaderHelper.cleanUp(result, true, true)
+        }
+
+        return (hasAccess ? (result ? new JSON(result) : null) : Constants.HTTP_FORBIDDEN)
+    }
+
+    /**
+     * @return [] | FORBIDDEN
+     */
+    static getCostItemListWithTimeStamp(Org owner, Org context, boolean hasAccess, String timestamp){
+        def result = []
+
+        if (! hasAccess) {
+            if (owner.id == context.id) {
+                hasAccess = true
+            }
+        }
+        if (hasAccess) {
+            // TODO
+            Timestamp ts= new Timestamp(Long.parseLong(timestamp))
+            Date apiDate= new Date(ts.getTime());
+            def today = new Date()
+            result = CostItem.findAllByOwnerAndLastUpdatedBetween(owner, apiDate, today).globalUID
             result = ApiReaderHelper.cleanUp(result, true, true)
         }
 

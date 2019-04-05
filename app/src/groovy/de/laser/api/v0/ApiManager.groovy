@@ -50,9 +50,34 @@ class ApiManager {
         }
         else if ('costItemList'.equalsIgnoreCase(obj)) {
             if (format in ApiReader.SUPPORTED_FORMATS.costItem) {
-                result = ApiOrg.findOrganisationBy(query, value) // use of http status code
+
+                def queries = query.split(",")
+                def values  = value.split(",")
+                def identifiers = [:]
+                def timestamp = [:]
+                if (queries.size() == 2 && values.size() == 2) {
+                    identifiers.key = queries[0].trim()
+                    identifiers.value = values[0].trim()
+
+                    timestamp.key = queries[1].trim()
+                    timestamp.value = values[1].trim()
+
+                }else if (queries.size() == 1 && values.size() == 1) {
+                    identifiers.key = queries[0].trim()
+                    identifiers.value = values[0].trim()
+
+                }else {
+                    return Constants.HTTP_BAD_REQUEST
+                }
+
+                result = ApiOrg.findOrganisationBy(identifiers.key, identifiers.value) // use of http status code
                 if (result && !(result in failureCodes)) {
-                    result = ApiCostItem.getCostItemList(result, contextOrg, accessDueDatamanager)
+
+                    if(timestamp && timestamp.key == 'timestamp'){
+                        result = ApiCostItem.getCostItemListWithTimeStamp(result, contextOrg, accessDueDatamanager, timestamp.value)
+                    }else {
+                        result = ApiCostItem.getCostItemList(result, contextOrg, accessDueDatamanager)
+                    }
                 }
             }
             else {
