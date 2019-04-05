@@ -1,11 +1,25 @@
-<%@ page import="de.laser.helper.RDStore; org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.UserSettings; com.k_int.kbplus.RefdataValue" %>
-
+<%@ page import="de.laser.helper.RDStore;org.codehaus.groovy.grails.web.servlet.GrailsApplicationAttributes;com.k_int.kbplus.Org;com.k_int.kbplus.auth.User;com.k_int.kbplus.UserSettings;com.k_int.kbplus.RefdataValue" %>
 <!doctype html>
 
-<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
-<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
-<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<laser:serviceInjection />
+<%
+    User currentUser = contextService.getUser()
+    String currentLang = 'de'
+    if (currentUser) {
+        RefdataValue rdvLocale = currentUser?.getSetting(UserSettings.KEYS.LANGUAGE, RefdataValue.getByValueAndCategory('de', 'Language'))?.getValue()
+
+        if (rdvLocale) {
+            currentLang = rdvLocale.value
+            org.springframework.web.servlet.LocaleResolver localeResolver = org.springframework.web.servlet.support.RequestContextUtils.getLocaleResolver(request)
+            localeResolver.setLocale(request, response, new Locale(currentLang, currentLang.toUpperCase()))
+        }
+    }
+%>
+
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="${currentLang}"> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang="${currentLang}"> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang="${currentLang}"> <![endif]-->
+<!--[if gt IE 8]><!--><html class="no-js" lang="${currentLang}"> <!--<![endif]-->
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -16,8 +30,8 @@
     <r:require modules="semanticUI" />
 
     <script>
-        var gspLocale = "${message(code:'default.locale.label', default:'en')}";
-        var gspDateFormat = "${message(code:'default.date.format.notime', default:'yyyy-mm-dd').toLowerCase()}";
+        var gspLocale = "${message(code:'default.locale.label')}";
+        var gspDateFormat = "${message(code:'default.date.format.notime').toLowerCase()}";
     </script>
 
     <g:layoutHead/>
@@ -29,8 +43,6 @@
 </head>
 
 <body class="${controllerName}_${actionName}" id="globalJumpMark">
-
-    <laser:serviceInjection />
 
     <g:set var="contextOrg" value="${contextService.getOrg()}" />
     <g:set var="contextUser" value="${contextService.getUser()}" />
