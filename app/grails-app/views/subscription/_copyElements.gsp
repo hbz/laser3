@@ -95,7 +95,7 @@
                         <g:each in="${source_visibleOrgRelations}" var="source_role">
                             <g:if test="${source_role.org}">
                                 <b><i class="university icon"></i>&nbsp${source_role?.roleType?.getI10n("value")}:</b>
-                                <g:link controller="Organisations" action="show" target="_blank" id="${source_role.org.id}">
+                                <g:link controller="organisation" action="show" target="_blank" id="${source_role.org.id}">
                                     ${source_role?.org?.name}
                                 </g:link><br>
                             </g:if>
@@ -110,7 +110,7 @@
                         <g:each in="${target_visibleOrgRelations}" var="target_role">
                             <g:if test="${target_role.org}">
                                 <b><i class="university icon"></i>&nbsp${target_role?.roleType?.getI10n("value")}:</b>
-                                <g:link controller="Organisations" action="show" target="_blank" id="${target_role.org.id}">
+                                <g:link controller="organisation" action="show" target="_blank" id="${target_role.org.id}">
                                     ${target_role?.org?.name}
                                 </g:link>
                                 <br>

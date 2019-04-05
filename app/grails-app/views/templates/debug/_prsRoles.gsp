@@ -22,7 +22,7 @@
                     </td>
                     <td>
                         <g:if test="${role.org}">
-                            <g:link controller="organisations" action="show" id="${role.org.id}">${role.org.name} (${role.org.id})</g:link>
+                            <g:link controller="organisation" action="show" id="${role.org.id}">${role.org.name} (${role.org.id})</g:link>
                         </g:if>
                     </td>
                     <td>

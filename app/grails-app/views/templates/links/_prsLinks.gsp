@@ -28,7 +28,7 @@
                     </td>
                 </g:if>
                 <td>
-                    <g:link controller="Organisations" action="show" id="${pr.org.id}">${pr.org.name}</g:link>
+                    <g:link controller="organisation" action="show" id="${pr.org.id}">${pr.org.name}</g:link>
                 </td>
                 <td>
                     <g:if test="${editable}">

@@ -130,7 +130,7 @@ class DataConsistencyService {
 
         if (key1 == 'Org') {
             result = Org.findAllWhere( "${key2}": value ).collect{ it ->
-                [id: it.id, name: it.name, link: g.createLink(controller:'organisations', action:'show', id: it.id)]
+                [id: it.id, name: it.name, link: g.createLink(controller:'organisation', action:'show', id: it.id)]
             }
         }
         if (key1 == 'Package') {

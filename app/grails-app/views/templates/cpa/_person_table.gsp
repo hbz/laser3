@@ -62,7 +62,7 @@
                         <g:if test="${controllerName == 'myInstitution'}">
                             <div class="la-flexbox">
                                 <i class="icon university la-list-icon"></i>
-                                <g:link controller="organisations" action="addressbook" id="${role.org?.id}">${role.org}</g:link>
+                                <g:link controller="organisation" action="addressbook" id="${role.org?.id}">${role.org}</g:link>
                             </div>
                         </g:if>
                         <div>

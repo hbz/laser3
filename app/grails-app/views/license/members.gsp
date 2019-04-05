@@ -50,14 +50,14 @@
                 <td>
                     <g:each in="${lic.orgLinks}" var="orgRole">
                         <g:if test="${orgRole?.roleType.value in ['Licensee_Consortial', 'Licensee']}">
-                            <g:link controller="organisations" action="show" id="${orgRole?.org.id}">
+                            <g:link controller="organisation" action="show" id="${orgRole?.org.id}">
                                 ${orgRole?.org.getDesignation()}
                             </g:link>
                             , ${orgRole?.roleType.getI10n('value')} <br />
                         </g:if>
 
                         <g:if test="${license.isTemplate() && orgRole?.roleType.value in ['Licensing Consortium']}">
-                            <g:link controller="organisations" action="show" id="${orgRole?.org.id}">
+                            <g:link controller="organisation" action="show" id="${orgRole?.org.id}">
                                 ${orgRole?.org.getDesignation()}
                             </g:link>
                             , ${orgRole?.roleType.getI10n('value')} <br />

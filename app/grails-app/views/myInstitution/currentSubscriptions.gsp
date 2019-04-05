@@ -319,17 +319,17 @@
                     <td>
                         <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
                         <g:each in="${s.providers}" var="org">
-                            <g:link controller="Organisations" action="show" id="${org.id}">${org.name}</g:link><br />
+                            <g:link controller="organisation" action="show" id="${org.id}">${org.name}</g:link><br />
                         </g:each>
                         <g:each in="${s.agencies}" var="org">
-                            <g:link controller="Organisations" action="show" id="${org.id}">${org.name} (${message(code: 'default.agency.label', default: 'Agency')})</g:link><br />
+                            <g:link controller="organisation" action="show" id="${org.id}">${org.name} (${message(code: 'default.agency.label', default: 'Agency')})</g:link><br />
                         </g:each>
                     </td>
                     <%--
                     <td>
                         <g:if test="${params.orgRole == 'Subscription Consortia'}">
                             <g:each in="${s.getDerivedSubscribers()}" var="subscriber">
-                                <g:link controller="organisations" action="show" id="${subscriber.id}">${subscriber.name}</g:link> <br />
+                                <g:link controller="organisation" action="show" id="${subscriber.id}">${subscriber.name}</g:link> <br />
                             </g:each>
                         </g:if>
                     </td>

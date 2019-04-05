@@ -92,7 +92,7 @@ ${message(code: 'subscription.linkLicenseConsortium.header')}
                     <g:each in="${filteredSubscribers}" var="subscr">
                         <td>${subscr.sortname}</td>
                         <td>
-                            <g:link controller="organisations" action="show" id="${subscr.id}">${subscr}</g:link>
+                            <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
 
                             <g:if test="${sub.isSlaved?.value?.equalsIgnoreCase('yes')}">
                                 <span data-position="top right"

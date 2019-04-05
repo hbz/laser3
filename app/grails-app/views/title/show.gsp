@@ -90,7 +90,7 @@
                 <g:each in="${ti.orgs}" var="org">
                   <tr>
                     %{--<td>${org.org.id}</td>--}%
-                    <td><g:link controller="organisations" action="show" id="${org.org.id}">${org.org.name}</g:link></td>
+                    <td><g:link controller="organisation" action="show" id="${org.org.id}">${org.org.name}</g:link></td>
                     <td>${org?.roleType?.getI10n("value")}</td>
                     <td>
                       <semui:xEditable owner="${org}" type="date" field="startDate"/>

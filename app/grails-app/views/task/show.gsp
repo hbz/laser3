@@ -21,7 +21,7 @@
 					</g:if>
 					<g:if test="${taskInstance?.org}">
 						<dt><g:message code="task.org.label" default="Org" /></dt>
-						<dd><g:link controller="organisations" action="show" id="${taskInstance?.org?.id}">${taskInstance?.org}</g:link></dd>
+						<dd><g:link controller="organisation" action="show" id="${taskInstance?.org?.id}">${taskInstance?.org}</g:link></dd>
 					</g:if>
 				
 					<g:if test="${taskInstance?.pkg}">
@@ -71,7 +71,7 @@
 				
 					<g:if test="${taskInstance?.responsibleOrg}">
 						<dt><g:message code="task.responsibleOrg.label" default="Responsible Org" /></dt>
-						<dd><g:link controller="organisations" action="show" id="${taskInstance?.responsibleOrg?.id}">${taskInstance?.responsibleOrg}</g:link></dd>
+						<dd><g:link controller="organisation" action="show" id="${taskInstance?.responsibleOrg?.id}">${taskInstance?.responsibleOrg}</g:link></dd>
 					</g:if>
 				</dl>
 

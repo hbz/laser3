@@ -101,7 +101,7 @@ ${message(code: 'myinst.copySubscription')}: ${subscriptionInstance.name}
                 <td>
                     <g:each in="${visibleOrgRelations.sort { it.roleType?.getI10n("value") }}" var="role">
                         <g:if test="${role.org}">
-                            <b>${role?.roleType?.getI10n("value")}:</b> <g:link controller="Organisations"
+                            <b>${role?.roleType?.getI10n("value")}:</b> <g:link controller="organisation"
                                                                                 action="show" target="_blank"
                                                                                 id="${role.org.id}">${role?.org?.name}</g:link><br>
                         </g:if>

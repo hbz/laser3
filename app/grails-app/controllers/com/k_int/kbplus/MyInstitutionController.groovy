@@ -157,7 +157,7 @@ class MyInstitutionController extends AbstractDebugController {
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def manageAffiliationRequests() {
-        redirect controller: 'organisations', action: 'users', id: contextService.getOrg().id
+        redirect controller: 'organisation', action: 'users', id: contextService.getOrg().id
 
         def result = [:]
         result.institution        = contextService.getOrg()

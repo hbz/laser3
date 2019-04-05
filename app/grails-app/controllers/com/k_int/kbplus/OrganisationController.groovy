@@ -15,13 +15,8 @@ import com.k_int.kbplus.auth.*;
 import grails.plugin.springsecurity.SpringSecurityUtils
 import com.k_int.properties.*
 
-import java.sql.Ref
-
-import static grails.async.Promises.task
-import static grails.async.Promises.waitAll
-
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class OrganisationsController extends AbstractDebugController {
+class OrganisationController extends AbstractDebugController {
 
     def springSecurityService
     def accessService
@@ -52,7 +47,7 @@ class OrganisationsController extends AbstractDebugController {
 
         // forbidden access
         if (! result.editable && orgInstance.id != contextService.getOrg().id) {
-            redirect controller: 'organisations', action: 'show', id: orgInstance.id
+            redirect controller: 'organisation', action: 'show', id: orgInstance.id
 
         }
 
@@ -452,7 +447,7 @@ class OrganisationsController extends AbstractDebugController {
 
         docstoreService.unifiedDeleteDocuments(params)
 
-        redirect controller: 'organisations', action: 'documents' /*, fragment: 'docstab' */
+        redirect controller: 'organisation', action: 'documents' /*, fragment: 'docstab' */
     }
 
     @Secured(['ROLE_YODA'])
@@ -518,7 +513,7 @@ class OrganisationsController extends AbstractDebugController {
 
         // forbidden access
         if (! result.editable && orgInstance.id != contextService.getOrg().id) {
-            redirect controller: 'organisations', action: 'show', id: orgInstance.id
+            redirect controller: 'organisation', action: 'show', id: orgInstance.id
 
         }
 
@@ -537,7 +532,7 @@ class OrganisationsController extends AbstractDebugController {
 
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR','ROLE_ORG_COM_EDITOR'])
     def edit() {
-        redirect controller: 'organisations', action: 'show', params: params
+        redirect controller: 'organisation', action: 'show', params: params
         return
     }
 

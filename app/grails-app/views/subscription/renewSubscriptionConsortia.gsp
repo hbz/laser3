@@ -132,7 +132,7 @@ ${message(code: 'subscription.details.renewalsConsortium.label')}: ${subscriptio
 
                         <g:each in="${visibleOrgRelations.sort { it.roleType?.getI10n("value") }}" var="role">
                             <g:if test="${role.org}">
-                                <b>${role?.roleType?.getI10n("value")}:</b> <g:link controller="Organisations"
+                                <b>${role?.roleType?.getI10n("value")}:</b> <g:link controller="organisation"
                                                                                     action="show" target="_blank"
                                                                                     id="${role.org.id}">${role?.org?.name}</g:link><br>
                             </g:if>
@@ -266,7 +266,7 @@ ${message(code: 'subscription.details.renewalsConsortium.label')}: ${subscriptio
 
                                         <td>${subscr.sortname}</td>
                                         <td>
-                                            <g:link controller="organisations" action="show"
+                                            <g:link controller="organisation" action="show"
                                                     id="${subscr.id}">${subscr}</g:link>
 
                                             <g:set var="rdvGcp"

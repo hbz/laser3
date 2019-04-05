@@ -83,7 +83,7 @@
           <g:if test="${orgInstance?.outgoingCombos}">
             <dt><g:message code="org.outgoingCombos.label" default="Outgoing Combos" /></dt>
             <g:each in="${orgInstance.outgoingCombos}" var="i">
-              <dd>${i.type?.value} - <g:link controller="organisations" action="show" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
+              <dd>${i.type?.value} - <g:link controller="organisation" action="show" id="${i.toOrg.id}">${i.toOrg?.name}</g:link>
                 (<g:each in="${i?.toOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id">
                   ${id.identifier.ns.ns}: ${id.identifier.value}
                 </g:each>)
@@ -94,7 +94,7 @@
           <g:if test="${orgInstance?.incomingCombos}">
             <dt><g:message code="org.incomingCombos.label" default="Incoming Combos" /></dt>
             <g:each in="${orgInstance.incomingCombos}" var="i">
-              <dd>${i.type?.value} - <g:link controller="organisations" action="show" id="${i.toOrg.id}">${i.fromOrg?.name}</g:link>
+              <dd>${i.type?.value} - <g:link controller="organisation" action="show" id="${i.toOrg.id}">${i.fromOrg?.name}</g:link>
                 (<g:each in="${i?.fromOrg?.ids?.sort{it?.identifier?.ns?.ns}}" var="id">
                   ${id.identifier.ns.ns}: ${id.identifier.value}
                 </g:each>)
@@ -145,11 +145,11 @@
                 <div>
                   <g:if test="${link_cat.total > 10 && local_offset}">
                     <g:set var="os_prev" value="${local_offset > 9 ? (local_offset - 10) : 0}" />
-                    <g:link controller="organisations" action="info" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_prev]}">${message(code:'default.paginate.prev', default:'Prev')}</g:link>
+                    <g:link controller="organisation" action="info" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_prev]}">${message(code:'default.paginate.prev', default:'Prev')}</g:link>
                   </g:if>
                   <g:if test="${link_cat.total > 10 && ( !local_offset || ( local_offset < (link_cat.total - 10) ) )}">
                     <g:set var="os_next" value="${local_offset ? (local_offset + 10) : 10}" />
-                    <g:link controller="organisations" action="info" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_next]}">${message(code:'default.paginate.next', default:'Next')}</g:link>
+                    <g:link controller="organisation" action="info" id="${orgInstance.id}" params="${params + ["rdvl_${rdv_id}": os_next]}">${message(code:'default.paginate.next', default:'Next')}</g:link>
                   </g:if>
                 </div>
               </g:each>

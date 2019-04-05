@@ -10,12 +10,12 @@
 	<body>
 	<semui:breadcrumbs>
 		<g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType')?.id in addressInstance?.org?.getallOrgTypeIds())}">
-			<semui:crumb message="menu.public.all_provider" controller="organisations" action="listProvider"/>
-			<semui:crumb message="${addressInstance?.org?.getDesignation()}" controller="organisations" action="show" id="${addressInstance?.org?.id}"/>
+			<semui:crumb message="menu.public.all_provider" controller="organisation" action="listProvider"/>
+			<semui:crumb message="${addressInstance?.org?.getDesignation()}" controller="organisation" action="show" id="${addressInstance?.org?.id}"/>
 			<semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
 		</g:if>
 		<g:else>
-			<semui:crumb message="menu.public.all_orgs" controller="organisations" action="index"/>
+			<semui:crumb message="menu.public.all_orgs" controller="organisation" action="index"/>
 			<semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
 		</g:else>
 	</semui:breadcrumbs>
@@ -45,13 +45,13 @@
 
                             <g:if test="${addressInstance?.org}">
                                 <dt><g:message code="address.org.label" default="Org" /></dt>
-                                <dd><g:link controller="organisations" action="show" id="${addressInstance?.org?.id}">${addressInstance?.org}</g:link></dd>
+                                <dd><g:link controller="organisation" action="show" id="${addressInstance?.org?.id}">${addressInstance?.org}</g:link></dd>
                             </g:if>
 
 
                             <g:if test="${addressInstance?.prs?.tenant}">
                                 <dt><g:message code="person.tenant.label" default="Tenant (derived from Prs)" /></dt>
-                                <dd><g:link controller="organisations" action="show" id="${addressInstance?.prs?.tenant?.id}">${addressInstance?.prs?.tenant}</g:link></dd>
+                                <dd><g:link controller="organisation" action="show" id="${addressInstance?.prs?.tenant?.id}">${addressInstance?.prs?.tenant}</g:link></dd>
                             </g:if>
 
                             <g:if test="${addressInstance?.prs?.isPublic}">

@@ -191,7 +191,7 @@
                 </table>
               </g:form>
                 <div class="ui segment form-actions">
-                    <g:link class="ui button" action="accessPoints" controller="organisations" id="${orgId}" >${message(code:'accessPoint.button.back', default:'Back')}</g:link>
+                    <g:link class="ui button" action="accessPoints" controller="organisation" id="${orgId}" >${message(code:'accessPoint.button.back', default:'Back')}</g:link>
                     <g:link class="ui negative button" action="delete" controller="accessPoint"
                             id="${accessPoint.id}" onclick="return confirm('${message(code: 'accessPoint.details.delete.confirm', args: [(accessPoint.name ?: 'this access point')])}')"
                     >${message(code:'default.button.delete.label', default:'Delete')}</g:link>

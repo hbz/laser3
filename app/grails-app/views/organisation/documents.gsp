@@ -14,7 +14,7 @@
       List documentTypes = RefdataCategory.getAllRefdataValues("Document Type")-notAvailable
     %>
     <semui:breadcrumbs>
-      <semui:crumb controller="organisations" action="show" id="${org.id}" text="${org.getDesignation()}" />
+      <semui:crumb controller="organisation" action="show" id="${org.id}" text="${org.getDesignation()}" />
       <semui:crumb message="menu.my.documents" class="active"/>
     </semui:breadcrumbs>
 

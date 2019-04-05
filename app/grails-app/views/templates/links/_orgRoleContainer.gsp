@@ -70,7 +70,7 @@
 
     <script>
         $("#orgRoleContainer .button").on('click', function() {
-            var ajaxUrl = "<g:createLink controller="organisations" action="show" id="${orgInstance.id}" />"
+            var ajaxUrl = "<g:createLink controller="organisation" action="show" id="${orgInstance.id}" />"
                         + "?ajax=true&" + $(this).attr('data-params')
 
             $.ajax({

@@ -61,13 +61,13 @@
                         <g:message code="cv.membership.status.${uo.status}" />
                     </td>
                     <td class="x">
-                        <g:link controller="organisations" action="processAffiliation"
+                        <g:link controller="organisation" action="processAffiliation"
                                 params="${[assoc:uo.id, id:params.id, cmd:'approve']}" class="ui icon positive button"
                                 data-tooltip="${message(code:'profile.membership.accept.button')}" data-position="top left" >
                             <i class="checkmark icon"></i>
                         </g:link>
 
-                        <g:link controller="organisations" action="processAffiliation"
+                        <g:link controller="organisation" action="processAffiliation"
                                 params="${[assoc:uo.id, id:params.id, cmd:'reject']}" class="ui icon negative button"
                                 data-tooltip="${message(code:'profile.membership.cancel.button')}" data-position="top left" >
                             <i class="times icon"></i>
@@ -140,7 +140,7 @@
                                 data-confirm-term-where="organisation"
                                 data-confirm-term-where-detail="${uo.user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.name}"
                                 data-confirm-term-how="delete"
-                                controller="organisations"
+                                controller="organisation"
                                 action="processAffiliation"
                                 params="${[assoc:uo.id, id:params.id, cmd:'delete']}"
                                 data-tooltip="${message(code:'profile.membership.delete.button')}" data-position="top left" >

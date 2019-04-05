@@ -3,13 +3,13 @@
 <semui:actionsDropdown>
     <g:if test="${editable}">
         <g:if test="${actionName == 'list'}">
-            <semui:actionsDropdownItem controller="organisations" action="create" message="org.create_new.label"/>
+            <semui:actionsDropdownItem controller="organisation" action="create" message="org.create_new.label"/>
         </g:if>
         <g:if test="${actionName == 'listInstitution'}">
-            <semui:actionsDropdownItem controller="organisations" action="findInstitutionMatches" message="org.create_new_Institution.label"/>
+            <semui:actionsDropdownItem controller="organisation" action="findInstitutionMatches" message="org.create_new_Institution.label"/>
         </g:if>
         <g:if test="${actionName == 'listProvider'}">
-            <semui:actionsDropdownItem controller="organisations" action="findProviderMatches" message="org.create_new_Provider.label"/>
+            <semui:actionsDropdownItem controller="organisation" action="findProviderMatches" message="org.create_new_Provider.label"/>
         </g:if>
         <g:if test="${actionName == 'show'}">
             <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_EDITOR")}">

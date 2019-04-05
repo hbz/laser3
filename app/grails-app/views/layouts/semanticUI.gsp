@@ -63,7 +63,7 @@
                         <div class="menu">
                             <a class="item" href="${createLink(uri: '/home/search')}">Search</a>
                             <g:link class="item" controller="package">Package</g:link>
-                            <g:link class="item" controller="organisations">Organisations</g:link>
+                            <g:link class="item" controller="organisation">Organisations</g:link>
                             <g:link class="item" controller="platform">Platform</g:link>
                             <g:link class="item" controller="title">Title Instance</g:link>
                             <g:link class="item" controller="tipp">Title Instance Package Platform</g:link>
@@ -85,14 +85,14 @@
                                 <g:link class="item" controller="title" action="index">${message(code:'menu.public.all_titles')}</g:link>
 
                                 <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
-                                    <g:link class="item" controller="organisations" action="index">${message(code:'menu.public.all_orgs')}</g:link>
+                                    <g:link class="item" controller="organisation" action="index">${message(code:'menu.public.all_orgs')}</g:link>
                                 </sec:ifAnyGranted>
 
                                 <g:if test="${RDStore.OT_CONSORTIUM.id in  contextService.org.getallOrgTypeIds()}">
-                                    <g:link class="item" controller="organisations" action="listInstitution">${message(code:'menu.public.all_insts')}</g:link>
+                                    <g:link class="item" controller="organisation" action="listInstitution">${message(code:'menu.public.all_insts')}</g:link>
                                 </g:if>
 
-                                <g:link class="item" controller="organisations" action="listProvider">${message(code:'menu.public.all_provider')}</g:link>
+                                <g:link class="item" controller="organisation" action="listProvider">${message(code:'menu.public.all_provider')}</g:link>
 
                                 <g:link class="item" controller="platform" action="list">${message(code:'menu.public.all_platforms')}</g:link>
 
@@ -180,7 +180,7 @@
                         <div class="menu">
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="dashboard" message="menu.institutions.dash" />
 
-                            <g:link class="item" controller="organisations" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</g:link>
+                            <g:link class="item" controller="organisation" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</g:link>
 
                             <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="tasks" message="menu.institutions.tasks" />
 
@@ -190,7 +190,7 @@
 
                             <g:set var="myInstNewAffils" value="${com.k_int.kbplus.auth.UserOrg.findAllByStatusAndOrg(0, contextService.getOrg(), [sort:'dateRequested']).size()}" />
 
-                            <semui:securedMainNavItem affiliation="INST_ADM" controller="organisations" action="users" params="[id: contextOrg?.id]"
+                            <semui:securedMainNavItem affiliation="INST_ADM" controller="organisation" action="users" params="[id: contextOrg?.id]"
                                                       message="menu.institutions.users" newAffiliationRequests="${myInstNewAffils}" />
 
                             <semui:securedMainNavItem affiliation="INST_EDITOR" controller="myInstitution" action="managePrivateProperties" message="menu.institutions.manage_private_props" />
@@ -324,7 +324,7 @@
 
                             <div class="divider"></div>
 
-                            <g:link class="item" controller="organisations" action="index">${message(code:'menu.admin.manageOrganisations')}</g:link>
+                            <g:link class="item" controller="organisation" action="index">${message(code:'menu.admin.manageOrganisations')}</g:link>
                             <g:link class="item" controller="user" action="list">${message(code:'menu.institutions.users')}</g:link>
                             <g:link class="item" controller="admin" action="showAffiliations">${message(code:'menu.admin.showAffiliations')}</g:link>
                             <g:link class="item" controller="usage">${message(code:'menu.admin.manageUsageStats')}</g:link>

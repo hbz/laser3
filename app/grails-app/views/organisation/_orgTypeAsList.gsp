@@ -14,7 +14,7 @@
                                     data-confirm-term-what-detail="${type?.getI10n('value')}"
                                     data-confirm-term-where="organisation"
                                     data-confirm-term-how="delete"
-                                    controller="organisations" action="deleteOrgType" params="[org: org.id, removeOrgType: type.id]">
+                                    controller="organisation" action="deleteOrgType" params="[org: org.id, removeOrgType: type.id]">
                                 <i class="trash alternate icon"></i>
                             </g:link>
                         </div>

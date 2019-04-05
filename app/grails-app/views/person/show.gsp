@@ -11,7 +11,7 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb message="menu.public.all_orgs" controller="organisations" action="index" />
+    <semui:crumb message="menu.public.all_orgs" controller="organisation" action="index" />
     <g:message code="default.show.label" args="[entityName]" class="active"/>
 </semui:breadcrumbs>
 
@@ -150,7 +150,7 @@ ${personInstance}
                                                 <div class="header">
                                                     ${link.functionType?.getI10n('value')}
                                                 </div>
-                                                <g:link controller="organisations" action="show" id="${link.org?.id}">${link.org?.name}</g:link>
+                                                <g:link controller="organisation" action="show" id="${link.org?.id}">${link.org?.name}</g:link>
                                             </div>
 
                                             <div class="content">
@@ -192,7 +192,7 @@ ${personInstance}
                                                 <div class="header">
                                                     ${link.positionType?.getI10n('value')}
                                                 </div>
-                                                <g:link controller="organisations" action="show" id="${link.org?.id}">${link.org?.name}</g:link>
+                                                <g:link controller="organisation" action="show" id="${link.org?.id}">${link.org?.name}</g:link>
                                             </div>
 
                                             <div class="content">
@@ -257,7 +257,7 @@ ${personInstance}
                                                <div class="header">
                                                    ${link.responsibilityType?.getI10n('value')}
                                                </div>
-                                               <g:link controller="organisations" action="show" id="${link.org?.id}">${link.org?.name}</g:link>
+                                               <g:link controller="organisation" action="show" id="${link.org?.id}">${link.org?.name}</g:link>
                                                <br />
 
                                                <g:if test="${link.pkg}">
@@ -310,7 +310,7 @@ ${personInstance}
                             <div class="content">
                                 <dl><dt><g:message code="person.tenant.label" default="Tenant"/></dt>
                                 <dd>
-                                    <g:link controller="organisations" action="show"
+                                    <g:link controller="organisation" action="show"
                                             id="${personInstance.tenant?.id}">${personInstance.tenant}</g:link>
                                     <g:if test="${personInstance?.isPublic?.value == 'No'}">
                                         <span data-tooltip="${message(code:'address.private')}" data-position="top right">

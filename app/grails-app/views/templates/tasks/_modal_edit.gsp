@@ -40,7 +40,7 @@
             </div>
         </g:if>
 
-        <g:if test="${params.owntp == 'organisations'}">
+        <g:if test="${params.owntp == 'organisation'}">
             <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'org', 'error')} ">
                 <label for="org">
                     <g:message code="task.org.label" default="Org" />
