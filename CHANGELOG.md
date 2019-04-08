@@ -1,7 +1,5 @@
 0.15
 
-- TODO TODO TODO 
-- ...
 - added improved document management for institutions
 - reworked and improved user management for institutions
 - reworked views for managing consortia members
@@ -16,6 +14,10 @@
 - reworked various templates and views
 - lots of ui improvements
 - various minor enhancements and bugfixes
+
+0.14.8
+
+- fixed document type null pointer
 
 0.14.7
 
