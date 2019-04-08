@@ -2712,8 +2712,8 @@ AND l.status.value != 'Deleted' AND (l.instanceOf is null) order by LOWER(l.refe
                 result << workFlowPart3();
                 break;
             case '4':
-                result << workFlowPart4();
-//                result << workFlowPart4_neu();
+//                result << workFlowPart4();
+                result << workFlowPart4_neu();
                 break;
             case '5':
                 result << workFlowPart5();
