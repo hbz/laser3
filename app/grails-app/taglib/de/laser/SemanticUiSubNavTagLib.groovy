@@ -18,7 +18,7 @@ class SemanticUiSubNavTagLib {
 
     def subNav = { attrs, body ->
 
-        out << '<nav class="ui secondary pointing menu">'
+        out << '<nav class="ui secondary pointing  stackable  menu">'
         out <<   body()
         out << '</nav>'
     }

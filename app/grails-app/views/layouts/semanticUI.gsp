@@ -59,7 +59,7 @@
         </div>
     </g:if>
     <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu"></g:set>
-    <nav class="ui fixed inverted menu">
+    <nav class="ui fixed inverted stackable menu">
         <div class="ui container">
             <g:link controller="home" action="index" class="header item la-logo-item">
                 <img class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
@@ -536,7 +536,7 @@
 
     <sec:ifAnyGranted roles="ROLE_USER">
         <g:set var="visibilityContextOrgMenu" value="la-show-context-orgMenu"></g:set>
-        <nav class="ui fixed menu la-contextBar"  >
+        <nav class="ui fixed  stackable  menu la-contextBar"  >
             <div class="ui container">
                 <div class="ui sub header item la-context-org">${contextOrg?.name}</div>
                 <div class="right menu la-advanced-view">

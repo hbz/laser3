@@ -842,13 +842,8 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 .landingpage .ui.inverted.menu.la-top-menu {
-  height: 50px;
   border-radius: 0 !important;
   border: none !important;
-}
-
-.landingpage .la-fixed-menu {
-  height: 50px;
 }
 
 .landingpage .logo {
@@ -26822,6 +26817,12 @@ Floated Menu / Item
 .subscriptionDetails_copyElementsIntoSubscription .ui.secondary.pointing.menu .item {
   padding-left: 2.5em !important;
   padding-right: 2.5em !important;
+}
+
+@media only screen and (max-width: 767px) {
+  .ui.fixed.stackable.menu {
+    position: relative;
+  }
 }
 /*!
  * # Semantic UI 2.3.1 - Message

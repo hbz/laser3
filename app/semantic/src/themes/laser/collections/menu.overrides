@@ -70,3 +70,10 @@
   padding-left: 2.5em !important;
   padding-right: 2.5em !important;
 }
+
+// change behavour for stackable fixed menu
+@media only screen and (max-width: @largestMobileScreen) {
+  .ui.fixed.stackable.menu {
+      position: relative;
+  }
+}
