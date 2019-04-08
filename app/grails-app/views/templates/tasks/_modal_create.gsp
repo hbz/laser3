@@ -13,7 +13,7 @@
             <label for="title">
                 <g:message code="task.title.label" default="Title"/>
             </label>
-            <g:textField name="title" required="" value="${taskInstance?.title}"/>
+            <g:textField id="title" name="title" required="" value="${taskInstance?.title}"/>
         </div>
 
         <div class="field fieldcontain ${hasErrors(bean: taskInstance, field: 'description', 'error')}">
