@@ -233,13 +233,13 @@
         <semui:paginate mapping="subfinance" params="${params+[view:'own']}"
                         next="${message(code: 'default.paginate.next', default: 'Next')}"
                         prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
-                        max="${max}" offset="${ownOffset ? ownOffset : 1}" total="${data.count}"/>
+                        max="${max}" offset="${ownOffset ? ownOffset : 0}" total="${data.count}"/>
     </g:if>
     <g:else>
         <semui:paginate action="finance" controller="myInstitution" params="${params+[view:'own']}"
                         next="${message(code: 'default.paginate.next', default: 'Next')}"
                         prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
-                        max="${max}" offset="${ownOffset ? ownOffset : 1}" total="${data.count}"/>
+                        max="${max}" offset="${ownOffset ? ownOffset : 0}" total="${data.count}"/>
     </g:else>
 </g:if>
 <!-- _result_tab_owner.gsp -->
