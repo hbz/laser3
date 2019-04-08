@@ -175,6 +175,28 @@
                     </div>
                 </div><!-- .card -->
 
+                <div class="ui card">
+                    <div class="content">
+                        <dl>
+                            <dt><g:message code="org.platforms.label" default="Platforms " /></dt>
+                            <dd>
+
+                                <div class="ui divided middle aligned selection list la-flex-list">
+                                    <g:each in="${orgInstance.platforms.sort { it?.name }}" var="platform">
+                                        <div class="ui item">
+                                            <div class="content la-space-right">
+                                                <strong><g:link controller="platform" action="show"
+                                                                id="${platform.id}">${platform.name}</g:link>
+                                                </strong>
+                                            </div>
+                                        </div>
+                                    </g:each>
+                                </div>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+
                 <g:if test="${!institutionalView}">
                     <div class="ui card">
                         <div class="content">

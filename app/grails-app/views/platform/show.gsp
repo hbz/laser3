@@ -5,7 +5,8 @@
 <head>
     <meta name="layout" content="semanticUI">
     <g:set var="entityName" value="${message(code: 'platform.label', default: 'Platform')}"/>
-    <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="default.show.label" args="[entityName]"/></title>
+    <title>${message(code: 'laser', default: 'LAS:eR')} : <g:message code="default.show.label"
+                                                                     args="[entityName]"/></title>
 </head>
 
 <body>
@@ -54,6 +55,14 @@
             </g:each>
         </dd>
 
+        <dt>${message(code: 'platform.org', default: 'Platform Provider')}</dt>
+        <dd>
+            <g:if test="${platformInstance.org}">
+            <g:link controller="organisation" action="show"
+                    id="${platformInstance.org.id}">${platformInstance.org.name}</g:link>
+            </g:if>
+        </dd>
+
         <dt>${message(code: 'platform.primaryUrl', default: 'Primary URL')}</dt>
         <dd><semui:xEditable owner="${platformInstance}" field="primaryUrl"/></dd>
 
@@ -82,8 +91,8 @@
 <semui:totalNumber total="${tipps.size()}"/>
 </h3>
 
-<g:render template="/templates/tipps/table" model="[tipps: tipps, showPackage: true, showPlattform: false, showBulkFlag: false]"/>
-
+<g:render template="/templates/tipps/table"
+          model="[tipps: tipps, showPackage: true, showPlattform: false, showBulkFlag: false]"/>
 
 </body>
 </html>

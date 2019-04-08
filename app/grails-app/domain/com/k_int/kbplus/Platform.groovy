@@ -36,6 +36,8 @@ class Platform extends AbstractBaseDomain {
   Date dateCreated
   Date lastUpdated
 
+  Org org
+
 
   static mappedBy = [tipps: 'platform']
   static hasMany = [
@@ -57,6 +59,7 @@ class Platform extends AbstractBaseDomain {
             status column:'plat_status_rv_fk'
    serviceProvider column:'plat_servprov_rv_fk'
   softwareProvider column:'plat_softprov_rv_fk'
+              org  column: 'plat_org_fk'
              tipps sort: 'title.title', order: 'asc'
   }
 
@@ -70,6 +73,7 @@ class Platform extends AbstractBaseDomain {
     serviceProvider(nullable:true, blank:false)
     softwareProvider(nullable:true, blank:false)
     gokbId (nullable:true, blank:false)
+    org (nullable:true, blank:false)
   }
 
   def static lookupOrCreatePlatform(Map params=[:]) {
