@@ -1,7 +1,5 @@
 0.15
 
-- TODO TODO TODO 
-- ...
 - added improved document management for institutions
 - reworked and improved user management for institutions
 - reworked views for managing consortia members
