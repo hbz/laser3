@@ -10,7 +10,7 @@ class DataConsistencyService {
     def springSecurityService
     def g = Holders.grailsApplication.mainContext.getBean(ApplicationTagLib)
 
-    def checkImportIds() {
+    Map<String, Object> checkImportIds() {
         Map result = [
                 Org: [],
                 Package: [],
@@ -42,7 +42,7 @@ class DataConsistencyService {
         result
     }
 
-    def checkTitles() {
+    Map<String, Object> checkTitles() {
         Map result = [
                 Org: [:],
                 Package: [:],

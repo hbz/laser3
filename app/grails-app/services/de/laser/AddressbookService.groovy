@@ -15,7 +15,7 @@ class AddressbookService {
     def contextService
     def accessService
 
-    def getAllVisiblePersonsByOrgRoles(User user, orgRoles) {
+    List<Person> getAllVisiblePersonsByOrgRoles(User user, orgRoles) {
         def orgList = []
         orgRoles.each { or ->
             orgList << or.org
@@ -23,12 +23,12 @@ class AddressbookService {
         getAllVisiblePersons(user, orgList)
     }
 
-    def getAllVisiblePersons(User user, Org org) {
+    List<Person> getAllVisiblePersons(User user, Org org) {
         def orgList = [org]
         getAllVisiblePersons(user, orgList)
     }
 
-    def getAllVisiblePersons(User user, List orgs) {
+    List<Person> getAllVisiblePersons(User user, List orgs) {
         def membershipOrgIds = []
         user.authorizedOrgs?.each{ ao ->
             membershipOrgIds << ao.id
@@ -49,7 +49,7 @@ class AddressbookService {
         visiblePersons
     }
 
-    def getPrivatePersonsByTenant(Org tenant) {
+    List<Person> getPrivatePersonsByTenant(Org tenant) {
         def result = []
 
         Person.findAllByTenant(tenant)?.each{ prs ->
@@ -62,20 +62,20 @@ class AddressbookService {
         result
     }
 
-    def isAddressEditable(Address address, User user) {
+    boolean isAddressEditable(Address address, User user) {
         def org = address.getPrs()?.tenant ?: address.org
         accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
     }
-    def isContactEditable(Contact contact, User user) {
+    boolean isContactEditable(Contact contact, User user) {
         def org = contact.getPrs()?.tenant ?: contact.org
         accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
     }
-    def isPersonEditable(Person person, User user) {
+    boolean isPersonEditable(Person person, User user) {
         accessService.checkMinUserOrgRole(user, person.tenant , 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         //true // TODO: Rechte nochmal überprüfen
     }
 
-    def isNumbersEditable(Numbers numbers, User user) {
+    boolean isNumbersEditable(Numbers numbers, User user) {
         accessService.checkMinUserOrgRole(user, person.tenant , 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         //true // TODO: Rechte nochmal überprüfen
     }
