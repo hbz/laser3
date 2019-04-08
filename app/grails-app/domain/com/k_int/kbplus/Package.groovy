@@ -140,11 +140,11 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         false // NO SHARES
     }
 
-    def updateShare(ShareableTrait sharedObject) {
+    void updateShare(ShareableTrait sharedObject) {
         false // NO SHARES
     }
 
-    def syncAllShares(List<ShareSupport> targets) {
+    void syncAllShares(List<ShareSupport> targets) {
         false // NO SHARES
     }
 

@@ -10,7 +10,7 @@ class RefdataService {
     def grailsApplication
     def genericOIDService
 
-    def getUsageDetails() {
+    Map<String, Object> getUsageDetails() {
         def detailsMap = [:]
         def usedRdvList = []
 
@@ -55,7 +55,7 @@ class RefdataService {
         [usedRdvList.unique().sort(), detailsMap.sort()]
     }
 
-    def replaceRefdataValues(RefdataValue rdvFrom, RefdataValue rdvTo) {
+    int replaceRefdataValues(RefdataValue rdvFrom, RefdataValue rdvTo) {
 
         log.debug("replacing: ${rdvFrom} with: ${rdvTo}")
         def count = 0
@@ -96,7 +96,7 @@ class RefdataService {
         count
     }
 
-    Map integrityCheck() {
+    Map<String, Object> integrityCheck() {
         Map checkResult = [:]
 
         grailsApplication.getArtefacts("Domain").toList().each { dc ->

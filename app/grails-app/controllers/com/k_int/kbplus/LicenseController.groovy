@@ -37,8 +37,6 @@ class LicenseController extends AbstractDebugController {
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def show() {
 
-        def debugTimeA = System.currentTimeMillis()
-
         DebugUtil du = new DebugUtil()
         du.setBenchMark('this-n-that')
 
@@ -203,13 +201,9 @@ class LicenseController extends AbstractDebugController {
 
         List bm = du.stopBenchMark()
         result.benchMark = bm
-        log.debug (bm)
 
         // TODO: experimental asynchronous task
         //waitAll(task_tasks, task_properties)
-
-        def debugTimeB = System.currentTimeMillis()
-        //println " ---> " + Math.abs(debugTimeB - debugTimeA)
 
         withFormat {
       html result

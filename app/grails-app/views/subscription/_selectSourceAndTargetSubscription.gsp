@@ -1,4 +1,5 @@
 <%@ page import="com.k_int.kbplus.Subscription" %>
+<% def contextService = grailsApplication.mainContext.getBean("contextService") %>
 <g:form action="copyElementsIntoSubscription" controller="subscription" id="${params.id}" params="[
             workFlowPart: workFlowPart,
             workFlowPartNext: workFlowPartNext

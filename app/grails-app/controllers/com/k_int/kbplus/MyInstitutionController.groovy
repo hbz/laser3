@@ -1285,26 +1285,21 @@ from License as l where (
         }
 
         if (filterSub) {
-            sub_qry += " AND sub.sub_id in ( :subs ) "
-            qry_params.subs = filterSub.join(", ")
+            sub_qry += " AND sub.sub_id in (" + filterSub.join(", ") + ")"
         }
 
         if (filterOtherPlat) {
-            sub_qry += " AND ap.id in ( :addplats )"
-           qry_params.addplats = filterOtherPlat.join(", ")
+            sub_qry += " AND ap.id in (" + filterOtherPlat.join(", ") + ")"
         }
 
         if (filterHostPlat) {
-            sub_qry += " AND tipp.tipp_plat_fk in ( :plats )"
-            qry_params.plats = filterHostPlat.join(", ")
-
+            sub_qry += " AND tipp.tipp_plat_fk in (" + filterHostPlat.join(", ") + ")"
         }
 
         if (filterPvd) {
             def cp = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')?.id
-            sub_qry += " AND orgrole.or_roletype_fk = :cprole  AND orgrole.or_org_fk IN (:provider) "
+            sub_qry += " AND orgrole.or_roletype_fk = :cprole  AND orgrole.or_org_fk IN (" + filterPvd.join(", ") + ")"
             qry_params.cprole = cp
-            qry_params.provider = filterPvd.join(", ")
         }
 
         String having_clause = params.filterMultiIE ? 'having count(ie.ie_id) > 1' : ''
@@ -3480,7 +3475,6 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
         List bm = du.stopBenchMark()
         result.benchMark = bm
-        log.debug (bm)
 
         result
     }
