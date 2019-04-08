@@ -1,6 +1,8 @@
 package com.k_int.kbplus.auth
 
 import org.apache.commons.lang.builder.HashCodeBuilder
+import com.k_int.kbplus.auth.User
+import com.k_int.kbplus.auth.Role
 import javax.persistence.Transient
 
 class UserRole implements Serializable, Comparable {

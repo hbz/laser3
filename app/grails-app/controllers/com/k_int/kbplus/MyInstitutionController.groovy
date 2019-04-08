@@ -3475,7 +3475,6 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
         List bm = du.stopBenchMark()
         result.benchMark = bm
-        log.debug (bm)
 
         result
     }

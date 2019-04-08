@@ -274,8 +274,6 @@ class OrganisationController extends AbstractDebugController {
     @Secured(['ROLE_USER'])
     def show() {
 
-        def debugTimeA = System.currentTimeMillis()
-
         def result = [:]
 
         //this is a flag to check whether the page has been called by a context org without full reading/writing permissions, to be extended as soon as the new orgTypes are defined
@@ -406,13 +404,9 @@ class OrganisationController extends AbstractDebugController {
 
         List bm = du.stopBenchMark()
         result.benchMark = bm
-        log.debug (bm)
 
         // TODO: experimental asynchronous task
         //waitAll(task_orgRoles, task_properties)
-
-        def debugTimeB = System.currentTimeMillis()
-        //println " ---> " + Math.abs(debugTimeB - debugTimeA)
 
         result
     }
