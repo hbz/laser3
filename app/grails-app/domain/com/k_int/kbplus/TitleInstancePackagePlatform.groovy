@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.*
+import de.laser.helper.RefdataAnnotation
 import de.laser.traits.AuditableTrait
 
 import javax.persistence.Transient
@@ -52,13 +53,26 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
   String coverageNote
   String impId
   String gokbId
-  RefdataValue status       // RefdataCategory 'TIPP Status'
-  RefdataValue option
-  RefdataValue delayedOA
-  RefdataValue hybridOA
-  RefdataValue statusReason   // RefdataCategory unkown !
-  RefdataValue payment
-  String hostPlatformURL
+
+    @RefdataAnnotation(cat = 'TIPP Status')
+    RefdataValue status
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue option
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue delayedOA
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue hybridOA
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue statusReason
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue payment
+
+    String hostPlatformURL
   Date coreStatusStart
   Date coreStatusEnd
 
@@ -326,8 +340,8 @@ class TitleInstancePackagePlatform extends AbstractBaseDomain implements Auditab
         dep_ies.each { dep_ie ->
         def sub = ClassUtils.deproxy(dep_ie.subscription)
         if(dep_ie.subscription && sub && sub?.status?.value != "Deleted" ) {
-        def titleLink = grailsLinkGenerator.link(controller: 'titleDetails', action: 'show', id: this.title.id, absolute: true)
-        def pkgLink =  grailsLinkGenerator.link(controller: 'packageDetails', action: 'show', id: this.pkg.id, absolute: true)
+        def titleLink = grailsLinkGenerator.link(controller: 'title', action: 'show', id: this.title.id, absolute: true)
+        def pkgLink =  grailsLinkGenerator.link(controller: 'package', action: 'show', id: this.pkg.id, absolute: true)
         changeNotificationService.registerPendingChange(
                 PendingChange.PROP_SUBSCRIPTION,
                                                         dep_ie.subscription,

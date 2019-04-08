@@ -65,6 +65,9 @@
         <g:if test="${tmplConfigShow?.contains('country')}">
             <th>${message(code: 'org.country.label')}</th>
         </g:if>
+        <g:if test="${tmplConfigShow?.contains('consortiaToggle')}">
+            <th class="la-th-wrap la-hyphenation">${message(code: 'org.consortiaToggle.label')}</th>
+        </g:if>
         <g:if test="${tmplConfigShow?.contains('addSubMembers')}">
             <th>
                 ${message(code: 'subscription.details.addMembers.option.package.label')}
@@ -209,7 +212,7 @@
                             def numberOfSubscriptions = Subscription.executeQuery("select s.id " + base_qry, qry_params).size()
                         %>
                         <g:if test="${actionName == 'manageConsortia'}">
-                            <g:link controller="myInstitution" action="manageConsortiaLicenses" params="${[member: org.id, status: RDStore.SUBSCRIPTION_CURRENT.id]}">
+                            <g:link controller="myInstitution" action="manageConsortiaSubscriptions" params="${[member: org.id, status: RDStore.SUBSCRIPTION_CURRENT.id]}">
                                 <div class="ui circular label">
                                     ${numberOfSubscriptions}
                                 </div>
@@ -240,7 +243,7 @@
             </g:if>
             <g:if test="${tmplConfigShow?.contains('type')}">
                 <td>
-                    <g:each in="${org.orgRoleType?.sort{it?.getI10n("value")}}" var="type">
+                    <g:each in="${org.orgType?.sort{it?.getI10n("value")}}" var="type">
                         ${type.getI10n("value")}
                     </g:each>
                 </td>
@@ -259,6 +262,21 @@
             </g:if>
             <g:if test="${tmplConfigShow?.contains('country')}">
                 <td>${org.country?.getI10n('value')}</td>
+            </g:if>
+            <g:if test="${tmplConfigShow?.contains('consortiaToggle')}">
+                <td>
+                    <%-- here: switch if in consortia or not --%>
+                    <g:if test="${!consortiaMemberIds.contains(org.id)}">
+                        <g:link class="ui icon positive button" data-tooltip="${message(code:'org.consortiaToggle.add.label')}" controller="organisations" action="toggleCombo" params="${params+[direction:'add',fromOrg:org.id]}">
+                            <i class="plus icon"></i>
+                        </g:link>
+                    </g:if>
+                    <g:elseif test="${consortiaMemberIds.contains(org.id)}">
+                        <g:link class="ui icon negative button" data-tooltip="${message(code:'org.consortiaToggle.remove.label')}" controller="organisations" action="toggleCombo" params="${params+[direction:'remove',fromOrg:org.id]}">
+                            <i class="minus icon"></i>
+                        </g:link>
+                    </g:elseif>
+                </td>
             </g:if>
 
             <g:if test="${tmplConfigShow?.contains('addSubMembers')}">

@@ -1,24 +1,35 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RefdataAnnotation
+import de.laser.traits.ShareableTrait
+import org.hibernate.event.PostUpdateEvent
+
 import javax.persistence.Column
 import javax.persistence.Transient
 
-class OrgRole {
+class OrgRole implements ShareableTrait {
 
-  static belongsTo = [
-    org:Org
-  ]
+    @Transient
+    def shareService
 
-  RefdataValue roleType
+    static belongsTo = [
+        org: Org,
+        sharedFrom: OrgRole
+    ]
 
-  // For polymorphic joins based on "Target Context"
-  Package       pkg
-  Subscription  sub
-  License       lic
-  Cluster       cluster
-  TitleInstance title
-  Date          startDate
-  Date          endDate
+    @RefdataAnnotation(cat = 'Organisational Role')
+    RefdataValue roleType
+
+    Package       pkg
+    Subscription  sub
+    License       lic
+    Cluster       cluster
+    TitleInstance title
+    Date          startDate
+    Date          endDate
+
+    OrgRole sharedFrom
+    Boolean isShared
 
     // dynamic binding for hql queries
     @Transient
@@ -36,6 +47,8 @@ class OrgRole {
        title column:'or_title_fk'
    startDate column:'or_start_date'
      endDate column:'or_end_date'
+    isShared column:'or_is_shared'
+  sharedFrom column:'or_shared_from_fk'
          org sort: 'name', order: 'asc'
   }
 
@@ -48,6 +61,8 @@ class OrgRole {
     title       (nullable:true, blank:false)
     startDate   (nullable:true, blank:false)
     endDate     (nullable:true, blank:false)
+    isShared    (nullable:true, blank:false, default:false)
+    sharedFrom  (nullable:true, blank:true)
   }
 
     /**
@@ -60,6 +75,21 @@ class OrgRole {
         sub     = owner instanceof Subscription ? owner : sub
         cluster = owner instanceof Cluster ? owner : cluster
         title   = owner instanceof TitleInstance ? owner : title
+    }
+
+    def getOwner() {
+        if (pkg) {
+            return pkg
+        }
+        if (sub) {
+            return sub
+        }
+        if (lic) {
+            return lic
+        }
+        if (title) {
+            return title
+        }
     }
 
     // dynamic binding for hql queries
@@ -132,5 +162,12 @@ class OrgRole {
       }
     }
   }
-  
+
+    void afterUpdate(PostUpdateEvent event) {
+        log.debug('afterUpdate')
+    }
+
+    void beforeDelete(PostUpdateEvent event) {
+        log.debug('beforeDelete')
+    }
 }

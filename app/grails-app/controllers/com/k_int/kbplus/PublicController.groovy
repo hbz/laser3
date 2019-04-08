@@ -20,7 +20,7 @@ class PublicController {
     def gasco() {
         def result = [:]
 
-        result.allConsortia = Org.executeQuery("from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype = :consortium )",
+        result.allConsortia = Org.executeQuery("from Org as o where exists (select roletype from o.orgType as roletype where roletype = :consortium )",
                 [consortium: RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')]
         ).sort { it.name?.toLowerCase() }
 

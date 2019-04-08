@@ -54,7 +54,7 @@ class DebugUtil {
     }
 
     List stopBenchMark() {
-        setBenchMark('finished')
+        setBenchMark('abs(STEP_N - STEP_0)')
 
         List marks = (List) benchCache.get('')
         benchCache.remove('')

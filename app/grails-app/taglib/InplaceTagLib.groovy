@@ -34,14 +34,6 @@ class InplaceTagLib {
     
   }
 
-  def singleValueFieldNote= { attrs, body ->
-    out << "<p class=\"${attrs.class}\" id=\"__fieldNote_${attrs.domain}\">"
-    if ( attrs.value ) {
-      out << attrs.value?.owner?.content
-    }
-    out << "</p>"
-  }
-
   def inPlaceEdit = { attrs, body ->
     def data_link = createLink(controller:'ajax', action: 'editableSetValue')
     out << "<span id=\"${attrs.domain}:${attrs.pk}:${attrs.field}:${attrs.id}\" class=\"xEditableValue ${attrs.class?:''}\" data-type=\"textarea\" data-pk=\"${attrs.domain}:${attrs.pk}\" data-name=\"${attrs.field}\" data-url=\"${data_link}\">"
@@ -213,46 +205,6 @@ class InplaceTagLib {
     }
     out << "</span>"
   }
-
-  def relationAutocomplete = { attrs, body ->
-  }
-  
-  def xEditableFieldNote = { attrs, body ->
-   
-    boolean editable = request.getAttribute('editable')
-     
-    def org = ""
-    if (attrs.owner.getNote("${attrs.field}")){
-      org =attrs.owner.getNote("${attrs.field}").owner.content
-    }
-    else{
-      org = attrs.owner.getNote("${attrs.field}")
-    }
-    
-    if ( editable == true ) {
-      def data_link = createLink(controller:'ajax', action: 'setFieldTableNote')
-      data_link = data_link +"/"+attrs.owner.id +"?type=License"
-      def oid = "${attrs.owner.class.name}:${attrs.owner.id}S"
-      def id = attrs.id ?: "${oid}:${attrs.field}"
-      out << "<span id=\"${id}\" class=\"xEditableValue ${attrs.class?:''}\" data-type=\"textarea\" data-pk=\"${oid}\" data-name=\"${attrs.field}\" data-url=\"${data_link}\"  data-original-title=\"${org}\">"
-      if ( body ) {
-        out << body()
-      }
-      else {
-        out << org
-      }
-      out << "</span>"
-    }
-    else {
-      if ( body ) {
-        out << body()
-      }
-      else {
-        out << org
-      }
-    }
-  }
-
 
   /**
    * simpleReferenceTypedown - create a hidden input control that has the value fully.qualified.class:primary_key and which is editable with the

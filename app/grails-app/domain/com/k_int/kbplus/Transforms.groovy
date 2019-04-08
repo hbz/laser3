@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RefdataAnnotation
+
 class Transforms {
 	
 	static belongsTo = [
@@ -12,6 +14,7 @@ class Transforms {
 	String return_mime
 	
 //	RefdataValue[] accepts_type // subscription, license
+	@RefdataAnnotation(cat = '?')
 	RefdataValue accepts_format // json, xml, url
 	
 	static hasMany = [ accepts_types: RefdataValue ]

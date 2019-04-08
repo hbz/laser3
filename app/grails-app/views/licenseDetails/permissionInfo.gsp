@@ -56,7 +56,7 @@
           </tr>
         </thead>
         <g:each in="${user.affiliations}" var="ol">
-          <g:if test="${((ol.status==1) || (ol.status==3))}">
+          <g:if test="${ol.status==1}">
             <tr>
               <td>${message(code:'subscription.details.permissionInfo.aff_to', args:[ol.org?.name])} <g:message code="cv.roles.${ol.formalRole?.authority}"/></td>
               <td>

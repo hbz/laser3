@@ -1,9 +1,14 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RefdataAnnotation
+
 class Combo {
 
-  RefdataValue status       // RefdataCategory unkown !
-  RefdataValue type
+    @RefdataAnnotation(cat = '?')
+    RefdataValue status
+
+    @RefdataAnnotation(cat = 'Combo Type')
+    RefdataValue type
 
   // Participant 1 - One of these
   Org fromOrg

@@ -4,6 +4,7 @@ import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.SystemAdmin
 import com.k_int.kbplus.abstract_domain.AbstractProperty
 import com.k_int.properties.PropertyDefinition
+import de.laser.helper.RDStore
 
 class PropertyService {
 
@@ -26,42 +27,62 @@ class PropertyService {
 
         if (params.filterPropDef) {
             def pd = genericOIDService.resolveOID(params.filterPropDef)
-            
-            if (pd.tenant) {
-                base_qry += " and exists ( select gProp from ${hqlVar}.privateProperties as gProp where gProp.type = :propDef "
-            } else {
-                base_qry += " and exists ( select gProp from ${hqlVar}.customProperties as gProp where gProp.type = :propDef "
-            }
-            base_qry_params.put('propDef', pd)
-            
-            if (params.filterProp) {
+            if(pd.type == RefdataValue.toString() && params.filterProp) {
+                String propGroup
+                if (pd.tenant) {
+                    propGroup = "privateProperties"
+                } else {
+                    propGroup = "customProperties"
+                }
+                base_qry += " and ( exists ( select gProp from ${hqlVar}.${propGroup} as gProp where gProp.type = :propDef "
+                base_qry_params.put('propDef', pd)
 
                 switch (pd.type) {
                     case RefdataValue.toString():
-                        base_qry += " and gProp.refValue= :prop "
                         def pdValue = genericOIDService.resolveOID(params.filterProp)
-                        base_qry_params.put('prop', pdValue)
-
+                        if (pdValue == RDStore.GENERIC_NULL_VALUE) {
+                            base_qry += " and gProp.refValue = null ) or not exists ( select gProp from ${hqlVar}.${propGroup} as gProp where gProp.type = :propDef ) "
+                        }
+                        else {
+                            base_qry += " and gProp.refValue = :prop ) "
+                            base_qry_params.put('prop', pdValue)
+                        }
                         break
                     case Integer.toString():
-                        base_qry += " and gProp.intValue = :prop "
-                        base_qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                        if (!params.filterProp || params.filterProp.length() < 1) {
+                            base_qry += " and gProp.intValue = null ) or not exists ( select gProp from ${hqlVar}.${propGroup} as gProp where gProp.type = :propDef ) "
+                        } else {
+                            base_qry += " and gProp.intValue = :prop ) "
+                            base_qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                        }
                         break
                     case String.toString():
-                        base_qry += " and gProp.stringValue = :prop "
-                        base_qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                        if (!params.filterProp || params.filterProp.length() < 1) {
+                            base_qry += " and gProp.stringValue = null ) or not exists ( select gProp from ${hqlVar}.${propGroup} as gProp where gProp.type = :propDef ) "
+                        } else {
+                            base_qry += " and gProp.stringValue = :prop ) "
+                            base_qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                        }
                         break
                     case BigDecimal.toString():
-                        base_qry += " and gProp.decValue = :prop "
-                        base_qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                        if (!params.filterProp || params.filterProp.length() < 1) {
+                            base_qry += " and gProp.decValue = null ) or not exists ( select gProp from ${hqlVar}.${propGroup} as gProp where gProp.type = :propDef ) "
+                        } else {
+                            base_qry += " and gProp.decValue = :prop ) "
+                            base_qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                        }
                         break
                     case Date.toString():
-                        base_qry += " and gProp.dateValue = :prop "
-                        base_qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                        if (!params.filterProp || params.filterProp.length() < 1) {
+                            base_qry += " and gProp.dateValue = null ) or not exists ( select gProp from ${hqlVar}.${propGroup} as gProp where gProp.type = :propDef ) "
+                        } else {
+                            base_qry += " and gProp.dateValue = :prop ) "
+                            base_qry_params.put('prop', AbstractProperty.parseValue(params.filterProp, pd.type))
+                        }
                         break
                 }
+                base_qry += " ) "
             }
-            base_qry += " ) "
         }
         if (order_by) {
             base_qry += order_by

@@ -4,14 +4,17 @@ import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
 import com.k_int.kbplus.Subscription
+import de.laser.helper.RefdataAnnotation
 import groovy.util.logging.Log4j
 
 @Log4j
 class PropertyDefinitionGroupBinding {
 
-    RefdataValue visible // RefdataCategory 'YN' ; default value: will overwrite existing groups
+    @RefdataAnnotation(cat = 'YN')
+    RefdataValue visible // default value: will overwrite existing groups
 
-    RefdataValue visibleForConsortiaMembers  // RefdataCategory 'YN' ; Subscriber_Consortial, Licensee_Consortial
+    @RefdataAnnotation(cat = 'YN')
+    RefdataValue visibleForConsortiaMembers  // Subscriber_Consortial, Licensee_Consortial
 
     static belongsTo = [
             lic:    License,

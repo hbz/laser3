@@ -186,8 +186,7 @@ class BootStrap {
             }
         }
 
-        def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'true', value: 'true').save()
-
+        // def auto_approve_memberships = Setting.findByName('AutoApproveMemberships') ?: new Setting(name: 'AutoApproveMemberships', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'true', value: 'true').save()
 
         def mailSent = Setting.findByName('MailSentDisabled') ?: new Setting(name: 'MailSentDisabled', tp: Setting.CONTENT_TYPE_BOOLEAN, defvalue: 'false', value: (grailsApplication.config.grails.mail.disabled ?: "false")).save()
 
@@ -235,6 +234,9 @@ class BootStrap {
         log.debug("createSubscriptionProperties ..")
         createSubscriptionProperties()
 
+        log.debug("createSurveyProperties ..")
+        createSurveyProperties()
+
         //log.debug("createPrivateProperties ..")
         //createPrivateProperties()
 
@@ -244,8 +246,8 @@ class BootStrap {
         log.debug("setIdentifierNamespace ..")
         setIdentifierNamespace()
 
-        log.debug("setESGOKB ..")
-        setESGOKB()
+//        log.debug("setESGOKB ..")
+//        setESGOKB()
 
         log.debug("setJSONFormatDate ..")
         JSON.registerObjectMarshaller(Date) {
@@ -294,7 +296,11 @@ class BootStrap {
         def cl_owner_role       = RefdataValue.loc('Cluster Role',   [en: 'Cluster Owner'], BOOTSTRAP)
         def cl_member_role      = RefdataValue.loc('Cluster Role',   [en: 'Cluster Member'], BOOTSTRAP)
 
-        def cons_combo          = RefdataValue.loc('Combo Type',     [en: 'Consortium', de: 'Konsortium'], BOOTSTRAP)
+        // TODO: refactoring: partOf
+
+        def combo1 = RefdataValue.loc('Combo Type',     [en: 'Consortium', de: 'Konsortium'], BOOTSTRAP)
+        def combo2 = RefdataValue.loc('Combo Type',     [en: 'Institution', de: 'Einrichtung'], BOOTSTRAP)
+        def combo3 = RefdataValue.loc('Combo Type',     [en: 'Department', de: 'Abteilung'], BOOTSTRAP)
 
         OrgPermShare.assertPermShare(view_permission, cl_owner_role)
         OrgPermShare.assertPermShare(edit_permission, cl_owner_role)
@@ -302,7 +308,7 @@ class BootStrap {
         OrgPermShare.assertPermShare(view_permission, cl_member_role)
         OrgPermShare.assertPermShare(edit_permission, cl_member_role)
 
-        OrgPermShare.assertPermShare(view_permission, cons_combo)
+        OrgPermShare.assertPermShare(view_permission, combo1)
 
         // Global System Roles
 
@@ -1155,6 +1161,15 @@ class BootStrap {
         createPropertyDefinitionsWithI10nTranslations(requiredProps)
     }
 
+    def createSurveyProperties() {
+
+        def requiredProps = [
+                [name: [en: "Continue to license", de: "Weiter lizenzieren?"], type: OT.Rdv, cat:'YN'],
+                [name: [en: "Interested", de: "Interessiert?"], type: OT.Rdv, cat:'YN']
+        ]
+        createSurveyPropertiesWithI10nTranslations(requiredProps)
+    }
+
     def createPrivateProperties() {
 
         def allOrgDescr = [en: PropertyDefinition.ORG_PROP, de: PropertyDefinition.ORG_PROP]
@@ -1231,6 +1246,56 @@ class BootStrap {
 
             if (default_prop.expl) {
                 I10nTranslation.createOrUpdateI10n(prop, 'expl', default_prop.expl)
+            }
+        }
+    }
+
+    def createSurveyPropertiesWithI10nTranslations(requiredProps) {
+
+        requiredProps.each { default_prop ->
+            def surveyProperty   = null
+            def owner = null
+
+            if (default_prop.owner) {
+                owner = Org.findByShortname(default_prop.owner)
+
+                if (owner) {
+                    surveyProperty = SurveyProperty.findByNameAndOwner(default_prop.name['en'], owner)
+                } else {
+                    log.debug("Unable to locate owner: ${default_prop.owner} .. ignored")
+                    return
+                }
+            } else {
+                surveyProperty = SurveyProperty.findWhere(name: default_prop.name['en'], owner: null)
+            }
+
+            if (! surveyProperty) {
+                if (owner) {
+                    log.debug("Unable to locate private survey property definition for ${default_prop.name['en']} for owner: ${owner} .. creating")
+                    surveyProperty = new SurveyProperty(name: default_prop.name['en'], owner: owner)
+                } else {
+                    log.debug("Unable to locate survey property definition for ${default_prop.name['en']} .. creating")
+                    surveyProperty = new SurveyProperty(name: default_prop.name['en'])
+                }
+            }
+
+            if (default_prop.cat != null) {
+                surveyProperty.setRefdataCategory(default_prop.cat)
+            }
+
+            surveyProperty.type  = default_prop.type
+            //prop.softData = false
+            surveyProperty.hardData = BOOTSTRAP
+            surveyProperty.save(failOnError: true)
+
+            I10nTranslation.createOrUpdateI10n(surveyProperty, 'name', default_prop.name)
+
+            if (default_prop.explain) {
+                I10nTranslation.createOrUpdateI10n(surveyProperty, 'explain', default_prop.expl)
+            }
+
+            if (default_prop.introduction) {
+                I10nTranslation.createOrUpdateI10n(surveyProperty, 'introduction', default_prop.expl)
             }
         }
     }
@@ -1331,6 +1396,7 @@ class BootStrap {
 
         RefdataCategory.loc('filter.fake.values', [en: 'filter.fake.values', de: 'filter.fake.values'], BOOTSTRAP)
         RefdataValue.loc('filter.fake.values',   [key: 'subscription.status.no.status.set.but.null', en: 'No Status', de: 'Kein Status'], BOOTSTRAP)
+        RefdataValue.loc('filter.fake.values',   [key: 'generic.null.value', en: 'Not set', de: 'Nicht gesetzt'], BOOTSTRAP)
         // refdata categories
 
         RefdataCategory.loc('YN',                   	                    [en: 'Yes/No', de: 'Ja/Nein'], BOOTSTRAP)
@@ -1360,7 +1426,6 @@ class BootStrap {
         RefdataCategory.loc('Library Type',         	                    [en: 'Library Type', de: 'Bibliothekstyp'], BOOTSTRAP)
         RefdataCategory.loc('OrgSector',            	                    [en: 'OrgSector', de: 'Bereich'], BOOTSTRAP)
         RefdataCategory.loc('OrgStatus',                	                [en: 'Status', de: 'Status'], BOOTSTRAP)
-        RefdataCategory.loc('OrgType',              	                    [en: 'Organisation Type', de: 'Organisationstyp'], BOOTSTRAP)
         RefdataCategory.loc('OrgRoleType',              	                    [en: 'Organisation Type', de: 'Organisationstyp'], BOOTSTRAP)
         RefdataCategory.loc('Person Function',      	                    [en: 'Person Function', de: 'Funktion'], BOOTSTRAP)
         RefdataCategory.loc('Person Contact Type',  	                    [en: 'Person: Contact Type', de: 'Kontaktart'], BOOTSTRAP)
@@ -1396,6 +1461,9 @@ class BootStrap {
         RefdataCategory.loc('Package Status',                               [en: 'Package Status', de: 'Paketstatus'], BOOTSTRAP)
         RefdataCategory.loc('Number Type',                                  [en: 'Number Type', de: 'Zahlen-Typ'], BOOTSTRAP)
         RefdataCategory.loc('User.Settings.Dashboard.Tab',                  [en: 'Dashboard Tab', de: 'Dashbord Tab'], BOOTSTRAP)
+        RefdataCategory.loc('Survey Type',                  [en: 'Survey Type', de: 'Umfrage-Typ'], BOOTSTRAP)
+        RefdataCategory.loc('Survey Status',                  [en: 'Survey Status', de: 'Umfrage-Status'], BOOTSTRAP)
+
         // refdata values
 
         RefdataValue.loc('YN',   [en: 'Yes', de: 'Ja'], BOOTSTRAP)
@@ -1428,8 +1496,7 @@ class BootStrap {
         RefdataValue.loc('Indemnification',  [en: 'Other', de: 'Andere'], BOOTSTRAP)
         RefdataValue.loc('Indemnification',  [en: 'Unknown', de: 'Unklar'], BOOTSTRAP)
 
-
-
+        RefdataValue.loc('Confidentiality',  [en: 'All', de: 'Alles'], BOOTSTRAP)
         RefdataValue.loc('Confidentiality',  [en: 'All but user terms', de: 'Alles außer Nutzungsbedingungen'], BOOTSTRAP)
         RefdataValue.loc('Confidentiality',  [en: 'Financial only', de: 'Nur Finanzangelegenheiten'], BOOTSTRAP)
         RefdataValue.loc('Confidentiality',  [en: 'No', de: 'Nein'], BOOTSTRAP)
@@ -1811,12 +1878,6 @@ class BootStrap {
         RefdataValue.loc('OrgSector',    [en: 'Higher Education', de: 'Akademisch'], BOOTSTRAP)
         RefdataValue.loc('OrgSector',    [key: 'Publisher', en: 'Commercial', de: 'Kommerziell'], BOOTSTRAP)
 
-        RefdataValue.loc('OrgType',      [en: 'Consortium', de: 'Konsortium'], BOOTSTRAP)
-        RefdataValue.loc('OrgType',      [en: 'Institution', de: 'Einrichtung'], BOOTSTRAP)
-        RefdataValue.loc('OrgType',      [en: 'Publisher', de: 'Verlag'], BOOTSTRAP)
-        RefdataValue.loc('OrgType',      [en: 'Provider', de: 'Anbieter'], BOOTSTRAP)
-        RefdataValue.loc('OrgType',      [en: 'Other', de: 'Andere'], BOOTSTRAP)
-
         RefdataValue.loc('OrgRoleType',      [en: 'Consortium', de: 'Konsortium'], BOOTSTRAP)
         RefdataValue.loc('OrgRoleType',      [en: 'Institution', de: 'Einrichtung'], BOOTSTRAP)
         RefdataValue.loc('OrgRoleType',      [en: 'Publisher', de: 'Verlag'], BOOTSTRAP)
@@ -1880,6 +1941,13 @@ class BootStrap {
         RefdataValue.loc('Person Responsibility',    [en: 'Specific package editor', de: 'Paketbearbeiter'], BOOTSTRAP)
         RefdataValue.loc('Person Responsibility',    [en: 'Specific cluster editor', de: 'Gruppenkontakt'], BOOTSTRAP)
         RefdataValue.loc('Person Responsibility',    [en: 'Specific title editor', de: 'Titelbearbeiter'], BOOTSTRAP)
+
+        RefdataValue.loc('Share Configuration', [en: 'only for creator',de:'nur für Uploader'], BOOTSTRAP)
+        RefdataValue.loc('Share Configuration', [key: 'only for author organisation', en: 'only for my organisation',de:'nur für meine Organisation'], BOOTSTRAP)
+        //deactivated as March 21st, 2019 - the feature has been postponed into quartal II at least
+        //RefdataValue.loc('Share Configuration', [key: 'only for author and target organisation', en: 'only for my and target organisation',de:'nur für meine Organisation und die Bezugsorganisation'], BOOTSTRAP)
+        //RefdataValue.loc('Share Configuration', [key: 'only for consortia members',en:'only for my consortia members',de:'nur für meine Konsorten'], BOOTSTRAP)
+        //RefdataValue.loc('Share Configuration', [en: 'everyone',de:'alle'], BOOTSTRAP)
 
         RefdataValue.loc('Subscription Form',      [key: 'test', en: 'Test', de: 'Test'], BOOTSTRAP)
         RefdataValue.loc('Subscription Form',      [key: 'offer', en: 'Offer', de: 'Angebot'], BOOTSTRAP)
@@ -2080,6 +2148,16 @@ class BootStrap {
         RefdataValue.loc('IPv6 Address Format',      [key: 'ranges', en: 'IPv6 (Ranges)', de: 'IPv6 (Bereiche)'], BOOTSTRAP)
         RefdataValue.loc('IPv6 Address Format',      [key: 'input', en: 'IPv6 (Input)', de: 'IPv6 (Eingabe)'], BOOTSTRAP)
 
+        RefdataValue.loc('Survey Type',      [key: 'renewal', en: 'Renewal Survey', de: 'Verlängerungsumfrage'], BOOTSTRAP)
+        RefdataValue.loc('Survey Type',      [key: 'interest', en: 'Interest Survey', de: 'Interessenumfrage'], BOOTSTRAP)
+
+        RefdataValue.loc('Survey Status',      [en: 'Ready', de: 'Bereit'], BOOTSTRAP)
+        RefdataValue.loc('Survey Status',      [en: 'In Processing', de: 'In Bearbeitung'], BOOTSTRAP)
+        RefdataValue.loc('Survey Status',      [en: 'In Evaluation', de: 'In Auswertung'], BOOTSTRAP)
+        RefdataValue.loc('Survey Status',      [en: 'Abgeschlossen', de: 'Completed'], BOOTSTRAP)
+        RefdataValue.loc('Survey Status',      [en: 'Survey started', de: 'Umfrage gestartet'], BOOTSTRAP)
+        RefdataValue.loc('Survey Status',      [en: 'Survey started', de: 'Umfrage beendet'], BOOTSTRAP)
+
     }
 
     def setupOnixPlRefdata = {
@@ -2177,6 +2255,8 @@ class BootStrap {
         RefdataValue.loc('CostItemElement', [key: 'fee: setup', en: 'fee: setup', de: 'Gebühr: SetUp-Gebühr'], BOOTSTRAP)
         RefdataValue.loc('CostItemElement', [key: 'fee: other', en: 'fee: other', de: 'Gebühr: Sonstige'], BOOTSTRAP)
 
+        RefdataValue.loc('CostItemElement', [key: 'special funds: central funding', en: 'special funds: central funding', de: 'Sondermittel: Zentralmittel'], BOOTSTRAP)
+
         RefdataValue.loc('CostItemElement', [key: 'tax: purchase tax 19', en: 'tax: purchase tax 19%', de: 'Steuer: Umsatzsteuer 19%'], BOOTSTRAP)
         RefdataValue.loc('CostItemElement', [key: 'tax: purchase tax 7', en: 'tax: purchase tax 7%', de: 'Steuer: Umsatzsteuer 7%'], BOOTSTRAP)
         RefdataValue.loc('CostItemElement', [key: 'tax: source tax', en: 'tax:  source tax', de: 'Steuer: Quellensteuer'], BOOTSTRAP)
@@ -2208,6 +2288,13 @@ class BootStrap {
         RefdataValue.loc('Document Type', [key: 'Renewal', en: 'Renewal', de: 'Renewal'], BOOTSTRAP)
         RefdataValue.loc('Document Type', [key: 'Order', en: 'Order', de: 'Bestellung'], BOOTSTRAP)
         RefdataValue.loc('Document Type', [key: 'Invoice', en: 'Invoice', de: 'Rechnung'], BOOTSTRAP)
+        RefdataValue.loc('Document Type', [key: 'Announcement', en: 'Announcement', de: 'Ankündigung'], BOOTSTRAP)
+        RefdataValue.loc('Document Type', [key: 'Note', en: 'Note', de: 'Anmerkung'], BOOTSTRAP)
+        RefdataValue.loc('Document Type', [key: 'Costs', en: 'Costs', de: 'Preise'], BOOTSTRAP)
+        RefdataValue.loc('Document Type', [key: 'Metadata', en: 'Metadata', de: 'Metadaten'], BOOTSTRAP)
+        RefdataValue.loc('Document Type', [key: 'KBART', en: 'KBART', de: 'KBART'], BOOTSTRAP)
+        RefdataValue.loc('Document Type', [key: 'Title List', en: 'Title List', de: 'Titelliste'], BOOTSTRAP)
+
 
         RefdataCategory.loc('Entitlement Issue Status',
                 [en: 'Entitlement Issue Status', de: 'Entitlement Issue Status'], BOOTSTRAP)
@@ -2271,7 +2358,7 @@ class BootStrap {
         RefdataCategory.loc(RefdataCategory.LIC_STATUS,
                 [en: 'License Status', de: 'Lizenzstatus'], BOOTSTRAP)
 
-        RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Current', de: 'Aktuell'], BOOTSTRAP)
+        RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Current', de: 'Aktiv'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Deleted', de: 'Gelöscht'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'In Progress', de:'In Bearbeitung'], BOOTSTRAP)
         RefdataValue.loc(RefdataCategory.LIC_STATUS, [en: 'Retired', de: 'Abgelaufen'], BOOTSTRAP)
@@ -2653,7 +2740,7 @@ No Host Platform URL Content
 
     }
 
-    def setESGOKB() {
+    /*def setESGOKB() {
          ElasticsearchSource.findByIdentifier("gokb") ?: new ElasticsearchSource(name: 'GOKB ES', identifier: 'gokb', cluster: 'elasticsearch', index: 'gokb', host: '127.0.0.1', gokb_es: true)
-    }
+    }*/
 }

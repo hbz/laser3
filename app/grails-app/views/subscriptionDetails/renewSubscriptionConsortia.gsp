@@ -114,7 +114,7 @@ ${message(code: 'subscription.details.renewalsConsortium.label')}: ${subscriptio
 
                         <g:each in="${subscription.packages.sort { it.pkg.name }}" var="sp">
                             <b>${message(code: 'subscription.packages.label')}:</b>
-                            <g:link controller="packageDetails" action="show" target="_blank"
+                            <g:link controller="package" action="show" target="_blank"
                                     id="${sp.pkg.id}">${sp?.pkg?.name}</g:link>
 
                             <g:if test="${sp.pkg?.contentProvider}">

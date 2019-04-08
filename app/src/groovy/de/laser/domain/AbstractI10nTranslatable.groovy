@@ -33,7 +33,7 @@ abstract class AbstractI10nTranslatable {
             if (parts.size() == 2) {
                 def fallback = this."${parts[0]}"
                 def i10n = I10nTranslation.get(this, parts[0], parts[1])
-                this."${name}" = (i10n ? i10n : "${fallback} °") // TODO: remove ° ; indicated fallback
+                this."${name}" = (i10n ? i10n : "${fallback}")
             }
         }
 

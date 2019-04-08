@@ -46,10 +46,11 @@
                             ${prop.type.getI10n('name')}
                         </g:else>
                         <%
+                            /*
                             if (AuditConfig.getConfig(prop)) {
                                 println '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
                             }
-
+                            */
                             if (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) {
                                 if (ownobj.isSlaved?.value?.equalsIgnoreCase('yes')) {
                                     println '&nbsp; <span data-tooltip="Wert wird automatisch geerbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
@@ -97,7 +98,7 @@
                         <g:if test="${prop.type.type == URL.toString()}">
                             <g:if test="${prop.value}">
                                 <span data-position="top right" data-tooltip="Diese URL aufrufen ..">
-                                    <a href="${prop.value}" target="_blank" class="ui icon blue button la-url-button">
+                                    <a href="${prop.value}" target="_blank" class="ui icon blue button la-js-dont-hide-button">
                                         <i class="share square icon"></i>
                                     </a>
                                 </span>
@@ -107,7 +108,8 @@
                             <g:if test="${ownobj.hasProperty('instanceOf') && showConsortiaFunctions}">
                                 <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />
 
-                                <span data-position="top right" data-tooltip="${message(code:'property.audit.tooltip')}">
+
+                                <g:if test="${! AuditConfig.getConfig(prop)}">
                                     <button class="ui icon button js-open-confirm-modal-copycat">
                                         <i class="thumbtack icon"></i>
                                     </button>
@@ -122,7 +124,23 @@
                                                   onComplete="c3po.loadJsAfterAjax()"
                                                   update="${custom_props_div}">
                                     </g:remoteLink>
-                                </span>
+                                </g:if>
+                                <g:else>
+                                    <button class="ui icon button green js-open-confirm-modal-copycat" data-position="top right" data-tooltip="${message(code:'property.audit.on.tooltip')}">
+                                        <i class="thumbtack icon"></i>
+                                    </button>
+                                    <g:remoteLink class="js-gost"
+                                                   controller="ajax" action="togglePropertyAuditConfig"
+                                                   params='[propClass: prop.getClass(), propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}", ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]'
+                                                   id="${prop.id}"
+                                                   data-confirm-term-what="property"
+                                                   data-confirm-term-what-detail="${prop.type.getI10n('name')}"
+                                                   data-confirm-term-how="inherit"
+                                                   onSuccess="c3po.initGroupedProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                                   onComplete="c3po.loadJsAfterAjax()"
+                                                   update="${custom_props_div}">
+                                    </g:remoteLink>
+                                </g:else>
                             </g:if>
 
                             <g:if test="${! AuditConfig.getConfig(prop)}">

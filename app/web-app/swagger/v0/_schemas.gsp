@@ -293,6 +293,82 @@
           $ref: "#/components/schemas/OrganisationStub"
 
 
+    Organisation:
+      allOf:
+        - $ref: "#/definitions/OrganisationStub"
+      properties:
+        addresses:
+          type: array
+          items:
+            $ref: "#/definitions/Address"
+        comment:
+          type: string
+        contacts:
+          type: array
+          items:
+            $ref: "#/definitions/Contact"
+        country:
+          type: string
+          description: Mapping RefdataCategory "Country"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('Country').collect{ it.value }.join(', ') }]
+        federalState:
+          type: string
+          description: Mapping RefdataCategory "FederalState"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('FederalState').collect{ it.value }.join(', ') }]
+        #fteStudents:
+        #  type: integer
+        #fteStaff:
+        #  type: integer
+        impId:
+          type: string
+          example: "9ef8a0d4-a87c-4b39-71b9-c29b269f311b"
+        libraryType:
+          type: string
+          description: Mapping RefdataCategory "LibraryType"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('LibraryType').collect{ it.value }.join(', ') }]
+        persons: # mapping attr prsLinks
+          type: array
+          items:
+            $ref: "#/definitions/Person" # resolved PersonRole
+        properties: # mapping attr customProperties and privateProperties
+          type: array
+          items:
+            $ref: "#/definitions/Property"
+        roleType:
+          type: array
+          items:
+            $ref: "#/definitions/OrgRoleType"
+          description: Mapping RefdataCategory "OrgRoleType"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgRoleType').collect{ it.value }.join(', ') }]
+        scope:
+          type: string
+        sector:
+          #deprecated: true
+          type: string
+          description: Mapping RefdataCategory "OrgSector"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgSector').collect{ it.value }.join(', ') }]
+        shortname:
+          type: string
+        sortname:
+          type: string
+        status:
+          type: string
+          description: Mapping RefdataCategory
+          enum:
+            [""]
+        type:
+          #deprecated: true
+          type: string
+          description: Mapping RefdataCategory "OrgType"
+          enum:
+            [${ com.k_int.kbplus.RefdataCategory.getAllRefdataValues('OrgType').collect{ it.value }.join(', ') }]
+
+
     Property:
       type: object
       properties:
@@ -487,6 +563,8 @@
         globalUID:
           type: string
           example: "package:f08250fc-257e-43d6-9528-c56d841a6b00"
+        gokbId:
+          type: string
         issueEntitlements:
           type: array
           items:
@@ -572,6 +650,8 @@
         globalUID:
           type: string
           example: "org:d64b3dc9-1c1f-4470-9e2b-ae3c341ebc3c"
+        gokbId:
+          type: string
         name:
           type: string
         identifiers: # mapping attr ids
@@ -610,6 +690,8 @@
         globalUID:
           type: string
           example: "package:f08250fc-257e-43d6-9528-c56d841a6b00"
+        gokbId:
+          type: string
         identifiers: # mapping attr ids
           type: array
           items:
@@ -627,6 +709,8 @@
         globalUID:
           type: string
           example: "platform:9d5c918a-55d0-4197-f22d-a418c14105ab"
+        gokbId:
+          type: string
         impId:
           type: string
           example: "9d5c918a-851f-4639-a6a1-e2dd124c2e02"
@@ -666,6 +750,8 @@
         globalUID:
           type: string
           example: "titleinstancepackageplatform:9d5c918a-80b5-a121-a7f8-b05ac53004a"
+        gokbId:
+          type: string
         identifiers: # mapping attr ids
           type: array
           items:
@@ -681,6 +767,8 @@
         globalUID:
           type: string
           example: "title:eeb41a3b-a2c5-0e32-b7f8-3581d2ccf17f"
+        gokbId:
+          type: string
         identifiers: # mapping attr ids
           type: array
           items:

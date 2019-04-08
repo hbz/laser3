@@ -15,7 +15,8 @@
         <semui:crumb class="active" id="${issueEntitlementInstance?.id}" text="${issueEntitlementInstance?.tipp.title.title}" />
     </semui:breadcrumbs>
 
-    <h1 class="ui header"><semui:headerTitleIcon type="${issueEntitlementInstance?.tipp?.title.type.getI10n('value')}"/>
+
+    <h1 class="ui left aligned icon header"><semui:headerTitleIcon type="${issueEntitlementInstance?.tipp?.title?.type?.value}"/>
 
         ${message(code:'issueEntitlement.for_title.label', default:'Issue Entitlements for')} "${issueEntitlementInstance?.tipp.title.title}"
     </h1>
@@ -40,12 +41,12 @@
             <g:if test="${issueEntitlementInstance?.subscription?.owner?.onixplLicense}">
                 <dt><g:message code="onixplLicence.licence.label" default="ONIX-PL Licence" /></dt>
 
-                <dd><g:link controller="onixplLicenseDetails" action="index" id="${issueEntitlementInstance.subscription.owner.onixplLicense.id}">${issueEntitlementInstance.subscription.owner.onixplLicense.title}</g:link></dd>
+                <dd><g:link controller="onixplLicense" action="index" id="${issueEntitlementInstance.subscription.owner.onixplLicense.id}">${issueEntitlementInstance.subscription.owner.onixplLicense.title}</g:link></dd>
             </g:if>
 
             <g:if test="${issueEntitlementInstance?.tipp}">
                     <dt><g:message code="title.label" default="Title" /></dt>
-                    <dd><g:link controller="titleDetails" action="show" id="${issueEntitlementInstance?.tipp?.title.id}">${issueEntitlementInstance?.tipp?.title.title}</g:link> (${message(code:'title.type.label')}: ${issueEntitlementInstance?.tipp?.title.type.getI10n('value')})</dd>
+                    <dd><g:link controller="title" action="show" id="${issueEntitlementInstance?.tipp?.title.id}">${issueEntitlementInstance?.tipp?.title.title}</g:link> (${message(code:'title.type.label')}: ${issueEntitlementInstance?.tipp?.title.type.getI10n('value')})</dd>
                     <dt><g:message code="tipp.delayedOA" default="TIPP Delayed OA" /></dt>
                     <dd>${issueEntitlementInstance?.tipp.delayedOA?.value}</dd>
                     <dt><g:message code="tipp.hybridOA" default="TIPP Hybrid OA" /></dt>
@@ -302,7 +303,7 @@
               <td>${t.endIssue}</td>
               <td>${t.coverageDepth}</td>
               <td><g:link controller="platform" action="show" id="${t.platform.id}">${t.platform.name}</g:link></td>
-              <td><g:link controller="packageDetails" action="show" id="${t.pkg.id}">${t.pkg.name}</g:link></td>
+              <td><g:link controller="package" action="show" id="${t.pkg.id}">${t.pkg.name}</g:link></td>
               <td><g:link controller="tipp" action="show" id="${t.id}">${message(code:'tipp.details', default:'View Details')}</g:link></td>
               </tr>
           </g:each>

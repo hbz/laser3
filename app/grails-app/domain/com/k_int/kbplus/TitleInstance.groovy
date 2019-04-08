@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RefdataAnnotation
 import de.laser.traits.AuditableTrait
 import grails.util.Holders
 
@@ -31,8 +32,13 @@ class TitleInstance extends AbstractBaseDomain implements AuditableTrait {
   String sortTitle
   String impId
   String gokbId
-  RefdataValue status       // RefdataCategory 'TitleInstanceStatus'
+
+  @RefdataAnnotation(cat = 'TitleInstanceStatus')
+  RefdataValue status
+
+  @RefdataAnnotation(cat = '?')
   RefdataValue type
+
   Date dateCreated
   Date lastUpdated
 

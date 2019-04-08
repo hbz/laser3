@@ -6,12 +6,17 @@
             <g:set var="sdf" value="${new SimpleDateFormat(message(code:'default.date.format.notime'))}"/>
             <div class="field">
                 <label for="availableLicenses">${message(code:'onixplLicense.compare.add_id.label', default:'Search licenses for comparison:')}</label>
-                <input name="availableLicenses" id="availableLicenses"/>
+                <div class="ui multiple search selection dropdown" id="availableLicenses">
+                    <input type="hidden" name="availableLicenses">
+                    <i class="dropdown icon"></i>
+                    <input type="text" class="search">
+                    <div class="default text">${message(code:'onixplLicense.compare.search.ph')}</div>
+                </div>
             </div>
         </div>
         <div class="fields">
             <div class="field">
-                <a href="${request.forwardURI}" class="ui button">${message(code:'default.button.comparereset.label')}</a>
+                <g:link controller="licenseCompare" action="index" class="ui button">${message(code:'default.button.comparereset.label')}</g:link>
                 &nbsp;
                 <input id="submitButton" disabled='true' type="submit" value="${message(code:'default.button.compare.label', default:'Compare')}"  name="Compare" class="ui button" />
             </div>
@@ -20,39 +25,16 @@
 </semui:form>
 <r:script>
 	$(document).ready(function(){
-	    $("#availableLicenses").select2({
-	      	width: "100%" ,
-	        placeholder: "${message(code:'onixplLicense.compare.search.ph', default:'Search for a license...')}",
-	        minimumInputLength: 0,
-	        multiple: true,
-	        ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-                url: "<g:createLink controller='ajax' action='lookupLicenses'/>",
-                dataType: 'json',
-                data: function (term, page) {
-                    return {
-                        q: term,
-                        page_limit: 30
-                    }
-                },
-                results: function (data, page) {
-                    return {results: data.values};
-                }
-	        }
-	    });
-	    <g:if test="${selectedLicenses}">
-            var data = [
-                <g:each in="${selectedLicenses}" var="${license}">
-                    {id: "${license.class.name}:${license.id}",
-                     text: "${license.reference} (${license.startDate ? sdf.format(license.startDate) : '???'} - ${license.endDate ? sdf.format(license.endDate) : ''})"},
-                </g:each>
-            ]
-            $('#submitButton').removeAttr('disabled')
-        </g:if>
-        //duplicate call needed to preselect value
-        if(typeof(data) !== "undefined")
-            $("#availableLicenses").select2('data', data)
-	    $("#availableLicenses").on('change',function(e) {
-	      	var selectedLicenses = e.val.length;
+        $("#availableLicenses").dropdown({
+            apiSettings: {
+                url: "<g:createLink controller="ajax" action="lookupLicenses"/>",
+                cache: false
+            },
+            clearable: true,
+            minCharacters: 0
+        });
+	    $("#availableLicenses").on('change',function() {
+	      	var selectedLicenses = $(this).dropdown("get values").length;
 	       	if(selectedLicenses > 1){
 	       		$('#submitButton').removeAttr('disabled')
 	       	}

@@ -37,7 +37,6 @@
     <div class="row">
         <div class="column">
 
-            <g:annotatedLabel owner="${subscriptionInstance}" property="entitlements">
                 <g:if test="${entitlements?.size() > 0}">
                     ${message(code:'subscription.entitlement.plural')} ${message(code:'default.paginate.offset', args:[(offset+1),(offset+(entitlements?.size())),num_sub_rows])}. (
                     <g:if test="${params.mode=='advanced'}">
@@ -55,7 +54,6 @@
                 <g:else>
                     ${message(code:'subscription.details.no_ents', default:'No entitlements yet')}
                 </g:else>
-            </g:annotatedLabel>
 
         </div>
     </div><!--.row-->
@@ -70,9 +68,7 @@
 
                     <div class="three fields">
                         <div class="field">
-                            <label>
-                                <g:annotatedLabel owner="${subscriptionInstance}" property="qryFilter"> ${message(code:'default.filter.label', default:'Filter')} </g:annotatedLabel>
-                            </label>
+                            <label>${message(code:'default.filter.label', default:'Filter')}</label>
                             <input  name="filter" value="${params.filter}"/>
                         </div>
                         <div class="field">
@@ -190,13 +186,19 @@
                                 <td><g:if test="${editable}"><input type="checkbox" name="_bulkflag.${ie.id}" class="bulkcheck"/></g:if></td>
                                 <td>${counter++}</td>
                                 <td>
-                                    <semui:listIcon type="${ie.tipp?.title.type}"/>
-                                    <g:link controller="issueEntitlement" id="${ie.id}" action="show"><strong>${ie.tipp.title.title}</strong></g:link><br>
-                                    <g:if test="${ie.tipp?.hostPlatformURL}">
+                                    <semui:listIcon type="${ie.tipp?.title?.type?.value}"/>
+                                    <g:link controller="issueEntitlement" id="${ie.id}" action="show"><strong>${ie.tipp.title.title}</strong></g:link>
 
-                                        <a href="${ie.tipp?.hostPlatformURL}" TITLE="${ie.tipp?.hostPlatformURL}" target="_blank">${message(code:'tipp.hostPlatformURL', default:'Host Link')}  <i class="ui icon share square"></i></a>
-
+                                    <g:if test="${ie?.tipp?.title instanceof com.k_int.kbplus.BookInstance && ie?.tipp?.title?.volume}">
+                                        (${message(code: 'title.volume.label')} ${ie?.tipp?.title?.volume})
                                     </g:if>
+
+                                    <g:if test="${ie?.tipp?.title instanceof com.k_int.kbplus.BookInstance && (ie?.tipp?.title?.firstAuthor || ie?.tipp?.title?.firstEditor)}">
+                                        <br><b>${ie?.tipp?.title?.getEbookFirstAutorOrFirstEditor()} ${message(code: 'title.firstAuthor.firstEditor.label')}</b>
+                                    </g:if>
+
+                                    <br>
+
                                     <g:each in="${ie?.tipp?.title?.ids.sort{it.identifier.ns.ns}}" var="title_id">
                                         <g:if test="${title_id.identifier.ns.ns.toLowerCase() != 'originediturl'}">
                                             <span class="ui small teal image label">
@@ -209,12 +211,28 @@
                   eISSN:<strong>${ie?.tipp?.title?.getIdentifierValue('eISSN') ?: ' - '}</strong><br/>-->
                                     <div class="ui list">
                                         <div class="item"><b>${message(code:'default.access.label', default:'Access')}:</b> ${ie.availabilityStatus?.getI10n('value')}</div>
+                                        <div class="item"><b>${message(code:'title.type.label')}:</b> ${ie?.tipp?.title?.type?.getI10n('value')}</div>
                                         <div class="item"><b>${message(code:'tipp.coverageNote', default:'Coverage Note')}:</b> ${ie.coverageNote?:(ie.tipp?.coverageNote ?: '')}</div>
+
+                                       <div class="item"><b>${message(code:'tipp.package', default:'Package')}:</b>
+                                            <div class="la-flexbox">
+                                                <i class="icon gift scale la-list-icon"></i>
+                                                <g:link controller="package" action="show" id="${ie?.tipp?.pkg?.id}">${ie?.tipp?.pkg?.name}</g:link>
+                                            </div>
+                                        </div>
                                         <div class="item"><b>${message(code:'tipp.platform', default:'Platform')}:</b>
                                             <g:if test="${ie.tipp?.platform.name}">
-                                                <g:link controller="platform" action="show" id="${ie.tipp?.platform.id}">${ie.tipp?.platform.name}</g:link>
+                                                ${ie.tipp?.platform.name}
                                             </g:if>
                                             <g:else>${message(code:'default.unknown')}</g:else>
+
+                                            <g:if test="${ie.tipp?.platform.name}">
+                                                <g:link  class="ui icon mini  button la-js-dont-hide-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.changePlattform')}" controller="platform" action="show" id="${ie.tipp?.platform.id}"><i class="pencil alternate icon"></i></g:link>
+                                            </g:if>
+                                            <g:if test="${ie.tipp?.hostPlatformURL}">
+                                                <a class="ui icon mini blue button la-js-dont-hide-button la-popup-tooltip la-delay" data-content="${message(code:'tipp.tooltip.callUrl')}" href="${ie.tipp?.hostPlatformURL.contains('http') ? ie.tipp?.hostPlatformURL :'http://'+ie.tipp?.hostPlatformURL}" target="_blank"><i class="share square icon"></i></a>
+                                            </g:if>
+
                                             <g:if test="${ie.availabilityStatus?.value=='Expected'}">
                                                 ${message(code:'default.on', default:'on')} <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessStartDate}"/>
                                             </g:if>
@@ -222,6 +240,10 @@
                                                 ${message(code:'default.on', default:'on')} <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessEndDate}"/>
                                             </g:if>
                                         </div>
+                                    <g:if test="${ie?.tipp?.title instanceof com.k_int.kbplus.BookInstance}">
+                                        <div class="item"><b>${message(code: 'title.editionStatement.label')}:</b> ${ie?.tipp?.title?.editionStatement}
+                                        </div>
+                                    </g:if>
                                     </div>
                                 </td>
 
@@ -236,9 +258,7 @@
 
                                     <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.issue')}"></i>
                                     <semui:xEditable owner="${ie}" field="startIssue"/>
-                                    <span class="ui grey horizontal divider" style="color: #00000066; font-size: 8px;margin: 0.2rem 0;">
-                                        BIS
-                                    </span>
+                                    <semui:dateDevider/>
                                    <!-- bis -->
                                     <semui:xEditable owner="${ie}" type="date" field="endDate" /><br>
                                     <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.volume')}"></i>
@@ -256,9 +276,7 @@
                                     <g:else>
                                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${ie.accessStartDate}"/>
                                     </g:else>
-                                    <span class="ui grey horizontal divider" style="color: #00000066; font-size: 8px;margin: 0.2rem 0;">
-                                        BIS
-                                    </span>
+                                    <semui:dateDevider/>
                                     <!-- bis -->
                                     <g:if test="${editable}">
                                         <semui:xEditable owner="${ie}" type="date" field="accessEndDate" />

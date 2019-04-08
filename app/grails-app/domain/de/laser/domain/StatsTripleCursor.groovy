@@ -1,6 +1,7 @@
 package de.laser.domain
 
 import com.k_int.kbplus.RefdataValue
+import de.laser.helper.RefdataAnnotation
 
 class StatsTripleCursor {
 
@@ -9,9 +10,10 @@ class StatsTripleCursor {
     String customerId
     String haveUpTo
     String jerror
-    RefdataValue factType
     Integer numFacts
 
+    @RefdataAnnotation(cat = '?')
+    RefdataValue factType
 
     static mapping = {
         titleId column:'stats_title_id', index:'stats_cursor_idx'

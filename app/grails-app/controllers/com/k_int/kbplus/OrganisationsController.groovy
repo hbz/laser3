@@ -1,11 +1,9 @@
 package com.k_int.kbplus
 
-import com.k_int.kbplus.abstract_domain.PrivateProperty
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
 import de.laser.helper.DebugUtil
 import de.laser.helper.RDStore
-import grails.converters.JSON
 import org.apache.poi.hssf.usermodel.HSSFRichTextString
 import org.apache.poi.hssf.usermodel.HSSFSheet
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
@@ -17,6 +15,11 @@ import com.k_int.kbplus.auth.*;
 import grails.plugin.springsecurity.SpringSecurityUtils
 import com.k_int.properties.*
 
+import java.sql.Ref
+
+import static grails.async.Promises.task
+import static grails.async.Promises.waitAll
+
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class OrganisationsController extends AbstractDebugController {
 
@@ -27,6 +30,9 @@ class OrganisationsController extends AbstractDebugController {
     def filterService
     def genericOIDService
     def propertyService
+    def orgDocumentService
+    def docstoreService
+    def instAdmService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
@@ -43,6 +49,12 @@ class OrganisationsController extends AbstractDebugController {
         def orgInstance = Org.get(params.id)
 
         result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+
+        // forbidden access
+        if (! result.editable && orgInstance.id != contextService.getOrg().id) {
+            redirect controller: 'organisations', action: 'show', id: orgInstance.id
+
+        }
 
         // TODO: deactived
       /*
@@ -95,13 +107,38 @@ class OrganisationsController extends AbstractDebugController {
 
             def orgs = Org.findAll(fsq.query, fsq.queryParams, params)
 
-            def message = g.message(code: 'menu.institutions.all_orgs')
+            def message = g.message(code: 'menu.public.all_orgs')
 
             exportOrg(orgs, message, true)
             return
         }
 
 
+        result
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") }) //preliminarily, until the new roleTypes are there
+    Map listInstitution() {
+        Map result = setResultGenerics()
+        if(!result.institution.getallOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id)) {
+            flash.error = message(code:'org.error.noConsortium')
+            response.sendError(401)
+            return
+        }
+        params.orgType   = RDStore.OT_INSTITUTION.id.toString()
+        params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
+        if(!params.sort)
+            params.sort = " LOWER(o.sortname)"
+        def fsq = filterService.getOrgQuery(params)
+        result.availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
+        result.consortiaMemberIds = []
+        Combo.findAllWhere(
+                toOrg: result.institution,
+                type:    RefdataValue.getByValueAndCategory('Consortium','Combo Type')
+        ).each { cmb ->
+            result.consortiaMemberIds << cmb.fromOrg.id
+        }
         result
     }
 
@@ -113,7 +150,7 @@ class OrganisationsController extends AbstractDebugController {
         result.editable    = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR,ROLE_ORG_COM_EDITOR')
 
         params.orgSector   = RDStore.O_SECTOR_PUBLISHER?.id?.toString()
-        params.orgRoleType = RDStore.OR_TYPE_PROVIDER?.id?.toString()
+        params.orgType = RDStore.OT_PROVIDER?.id?.toString()
         params.sort        = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
 
         def fsq            = filterService.getOrgQuery(params)
@@ -130,7 +167,7 @@ class OrganisationsController extends AbstractDebugController {
         if ( params.exportXLS=='yes' ) {
             params.remove('max')
             def orgs = Org.findAll(fsq.query, fsq.queryParams, params)
-            def message = g.message(code: 'menu.institutions.all_provider')
+            def message = g.message(code: 'menu.public.all_provider')
             exportOrg(orgs, message, false)
             return
         }
@@ -160,23 +197,22 @@ class OrganisationsController extends AbstractDebugController {
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR','ROLE_ORG_COM_EDITOR'])
     def createProvider() {
 
-                def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
-                def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
-                def orgRoleType2 = RefdataValue.getByValueAndCategory('Agency','OrgRoleType')
-                def orgInstance = new Org(name: params.provider, sector: orgSector.id)
-                orgInstance.addToOrgRoleType(orgRoleType)
-                orgInstance.addToOrgRoleType(orgRoleType2)
+        def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
+        def orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
+        def orgType2 = RefdataValue.getByValueAndCategory('Agency','OrgRoleType')
+        def orgInstance = new Org(name: params.provider, sector: orgSector.id)
+        orgInstance.addToOrgType(orgType)
+        orgInstance.addToOrgType(orgType2)
 
-                if ( orgInstance.save(flush:true) ) {
-                    flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
-                    redirect action: 'show', id: orgInstance.id
-                    return
-                }
-                else {
-                    log.error("Problem creating title: ${orgInstance.errors}");
-                    flash.message = "Problem creating Provider: ${orgInstance.errors}"
-                    redirect ( action:'findProviderMatchesMatches' )
-                }
+        if ( orgInstance.save(flush:true) ) {
+            flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
+            redirect action: 'show', id: orgInstance.id
+        }
+        else {
+            log.error("Problem creating title: ${orgInstance.errors}");
+            flash.message = message(code:'org.error.createProviderError',args:[orgInstance.errors])
+            redirect ( action:'findProviderMatches' )
+        }
     }
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR','ROLE_ORG_COM_EDITOR'])
     def findProviderMatches() {
@@ -184,21 +220,79 @@ class OrganisationsController extends AbstractDebugController {
         def result=[:]
         if ( params.proposedProvider ) {
 
-            result.providerMatches= Org.executeQuery("from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype = :provider ) and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName ) ",
-                    [provider: RefdataValue.getByValueAndCategory('Provider', 'OrgRoleType'), searchName: "%${params.proposedProvider.toLowerCase()}%"])
+            result.providerMatches= Org.executeQuery("from Org as o where exists (select roletype from o.orgType as roletype where roletype = :provider ) and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName ) ",
+                    [provider: RDStore.OT_PROVIDER, searchName: "%${params.proposedProvider.toLowerCase()}%"])
+        }
+        result
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")') //TODO temporary, to be changed as soon as ERMS-1078 is decided!
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def createInstitution() {
+        Org contextOrg = contextService.org
+        RefdataValue orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
+        //RefdataValue orgType = RDStore.OT_INSTITUTION
+        Org orgInstance = new Org(name: params.institution, sector: orgSector)
+        orgInstance.addToOrgType(RefdataValue.getByValueAndCategory('Institution','OrgRoleType'))
+
+        try {
+            orgInstance.save(flush:true)
+            if(RDStore.OT_CONSORTIUM.id in contextOrg.getallOrgTypeIds()) {
+                Combo newMember = new Combo(fromOrg:orgInstance,toOrg:contextOrg,type:RefdataValue.getByValueAndCategory('Consortium','Combo Type'))
+                newMember.save(flush:true)
+            }
+            flash.message = message(code: 'default.created.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.id])
+            redirect action: 'show', id: orgInstance.id, params: [institutionalView: true]
+        }
+        catch (Exception e) {
+            log.error("Problem creating title: ${orgInstance.errors}")
+            log.error(e.printStackTrace())
+            flash.message = message(code: "org.error.createInstitutionError",args:[orgInstance.errors])
+            redirect ( action:'findInstitutionMatches' )
+        }
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_ADM")') //TODO temporary, to be changed as soon as ERMS-1078 is decided!
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    Map findInstitutionMatches() {
+        Map consortiaMap = [:]
+        Combo.findAllByType(RefdataValue.getByValueAndCategory('Consortium','Combo Type')).each { lObj ->
+            Combo link = (Combo) lObj
+            List consortia = consortiaMap.get(link.fromOrg.id)
+            if(!consortia)
+                consortia = [link.toOrg.id]
+            else consortia << link.toOrg.id
+            consortiaMap.put(link.fromOrg.id,consortia)
+        }
+        Map result=[institutionMatches:[],consortia:consortiaMap]
+        if ( params.proposedInstitution ) {
+            result.institutionMatches.addAll(Org.executeQuery("select o from Org as o where exists (select roletype from o.orgType as roletype where roletype = :institution ) and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName ) ",
+                    [institution: RDStore.OT_INSTITUTION, searchName: "%${params.proposedInstitution.toLowerCase()}%"]))
+        }
+        if (params.proposedInstitutionID) {
+            result.institutionMatches.addAll(Org.executeQuery("select id.org from IdentifierOccurrence id where lower(id.identifier.value) like :identifier and lower(id.identifier.ns.ns) in (:namespaces) ",
+                    [identifier: "%${params.proposedInstitutionID.toLowerCase()}%",namespaces:["isil","wibid"]]))
         }
         result
     }
 
     @Secured(['ROLE_USER'])
     def show() {
+
+        def debugTimeA = System.currentTimeMillis()
+
         def result = [:]
 
+        //this is a flag to check whether the page has been called by a context org without full reading/writing permissions, to be extended as soon as the new orgTypes are defined
+        if(params.institutionalView)
+            result.institutionalView = params.institutionalView
+
         DebugUtil du = new DebugUtil()
-        du.setBenchMark('1')
+        du.setBenchMark('this-n-that')
 
         def orgInstance = Org.get(params.id)
         def user = contextService.getUser()
+        def org = contextService.getOrg()
 
         def link_vals = RefdataCategory.getAllRefdataValues("Organisational Role")
         def sorted_links = [:]
@@ -206,36 +300,40 @@ class OrganisationsController extends AbstractDebugController {
 
         du.setBenchMark('orgRoles')
 
-        if ( SpringSecurityUtils.ifAnyGranted("ROLE_YODA") ||
-             (orgInstance.id == contextService.getOrg().id && user.hasAffiliation('INST_ADM'))
-        ) {
+        // TODO: experimental asynchronous task
+        //def task_orgRoles = task {
 
-            link_vals.each { lv ->
-                def param_offset = 0
+            if (SpringSecurityUtils.ifAnyGranted("ROLE_YODA") ||
+                    (orgInstance.id == org.id && user.hasAffiliation('INST_ADM'))
+            ) {
 
-                if (lv.id) {
-                    def cur_param = "rdvl_${String.valueOf(lv.id)}"
+                link_vals.each { lv ->
+                    def param_offset = 0
 
-                    if (params[cur_param]) {
-                        param_offset = params[cur_param]
-                        result[cur_param] = param_offset
+                    if (lv.id) {
+                        def cur_param = "rdvl_${String.valueOf(lv.id)}"
+
+                        if (params[cur_param]) {
+                            param_offset = params[cur_param]
+                            result[cur_param] = param_offset
+                        }
+
+                        def links = OrgRole.findAll {
+                            org == orgInstance && roleType == lv
+                        }
+                        links = links.findAll { it2 -> it2.ownerStatus?.value != 'Deleted' }
+
+                        def link_type_results = links.drop(param_offset.toInteger()).take(10) // drop from head, take 10
+
+                        if (link_type_results) {
+                            sorted_links["${String.valueOf(lv.id)}"] = [rdv: lv, rdvl: cur_param, links: link_type_results, total: links.size()]
+                        }
+                    } else {
+                        log.debug("Could not read Refdata: ${lv}")
                     }
-
-                    def links = OrgRole.findAll {
-                        org == orgInstance && roleType == lv
-                    }
-                    links = links.findAll { it -> it.ownerStatus?.value != 'Deleted' }
-
-                    def link_type_results = links.drop(param_offset.toInteger()).take(10) // drop from head, take 10
-
-                    if (link_type_results) {
-                        sorted_links["${String.valueOf(lv.id)}"] = [rdv: lv, rdvl: cur_param, links: link_type_results, total: links.size()]
-                    }
-                } else {
-                    log.debug("Could not read Refdata: ${lv}")
                 }
             }
-        }
+        //}
 
         if (params.ajax) {
             render template: '/templates/links/orgRoleContainer', model: [listOfLinks: sorted_links, orgInstance: orgInstance]
@@ -246,20 +344,26 @@ class OrganisationsController extends AbstractDebugController {
 
         result.sorted_links = sorted_links
 
-        result.user = User.get(springSecurityService.principal.id)
+        result.user = user
         result.orgInstance = orgInstance
 
         def orgSector = RefdataValue.getByValueAndCategory('Publisher','OrgSector')
-        def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
+        def orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
 
         //IF ORG is a Provider
-        if(orgInstance.sector == orgSector || orgRoleType?.id in orgInstance?.getallOrgRoleTypeIds())
+        if(orgInstance.sector == orgSector || orgType?.id in orgInstance?.getallOrgTypeIds())
         {
             du.setBenchMark('editable2')
             result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_COM_EDITOR,ROLE_ORG_EDITOR')
         }else {
             du.setBenchMark('editable2')
-            result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+            List<Long> consortia = Combo.findAllByTypeAndFromOrg(RefdataValue.getByValueAndCategory('Consortium','Combo Type'),orgInstance).collect { it ->
+                it.toOrg.id
+            }
+            if(RDStore.OT_CONSORTIUM.id in org.getallOrgTypeIds() && consortia.size() == 1 && consortia.contains(org.id) && accessService.checkMinUserOrgRole(result.user,org,'INST_ADM'))
+                result.editable = true
+            else
+                result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
         }
         
       if (! orgInstance) {
@@ -270,42 +374,98 @@ class OrganisationsController extends AbstractDebugController {
 
         du.setBenchMark('properties')
 
-        // -- private properties
+        // TODO: experimental asynchronous task
+        //def task_properties = task {
 
-        result.authorizedOrgs = result.user?.authorizedOrgs
-        result.contextOrg     = contextService.getOrg()
+            // -- private properties
 
-        // create mandatory OrgPrivateProperties if not existing
+            result.authorizedOrgs = result.user?.authorizedOrgs
+            result.contextOrg = contextService.getOrg()
 
-        def mandatories = []
-        result.user?.authorizedOrgs?.each{ org ->
-            def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Organisation Property", true, org)
-            if(ppd){
-                mandatories << ppd
-            }
-        }
-        mandatories.flatten().each{ pd ->
-            if (! OrgPrivateProperty.findWhere(owner: orgInstance, type: pd)) {
-                def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, orgInstance, pd)
+            // create mandatory OrgPrivateProperties if not existing
 
-                if (newProp.hasErrors()) {
-                    log.error(newProp.errors)
-                } else {
-                    log.debug("New org private property created via mandatory: " + newProp.type.name)
+            def mandatories = []
+            result.user?.authorizedOrgs?.each { authOrg ->
+                def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("Organisation Property", true, authOrg)
+                if (ppd) {
+                    mandatories << ppd
                 }
             }
-        }
+            mandatories.flatten().each { pd ->
+                if (!OrgPrivateProperty.findWhere(owner: orgInstance, type: pd)) {
+                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, orgInstance, pd)
 
-        // -- private properties
+                    if (newProp.hasErrors()) {
+                        log.error(newProp.errors)
+                    } else {
+                        log.debug("New org private property created via mandatory: " + newProp.type.name)
+                    }
+                }
+            }
+
+            // -- private properties
+       //}
+
+        //documents
+        //du.setBenchMark('documents')
 
         List bm = du.stopBenchMark()
         result.benchMark = bm
         log.debug (bm)
 
-      result
+        // TODO: experimental asynchronous task
+        //waitAll(task_orgRoles, task_properties)
+
+        def debugTimeB = System.currentTimeMillis()
+        //println " ---> " + Math.abs(debugTimeB - debugTimeA)
+
+        result
     }
 
     @Secured(['ROLE_USER'])
+    def documents() {
+        Map result = setResultGenerics()
+        result.org = Org.get(params.id)
+        result
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def editDocument() {
+        Map result = setResultGenerics()
+        result.ownobj = result.institution
+        result.owntp = 'organisation'
+        if(params.id) {
+            result.docctx = DocContext.get(params.id)
+            result.doc = result.docctx.owner
+        }
+
+        render template: "/templates/documents/modal", model: result
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+    def deleteDocuments() {
+        def ctxlist = []
+
+        log.debug("deleteDocuments ${params}");
+
+        docstoreService.unifiedDeleteDocuments(params)
+
+        redirect controller: 'organisations', action: 'documents' /*, fragment: 'docstab' */
+    }
+
+    @Secured(['ROLE_YODA'])
+    def settings() {
+        Map result = [:]
+        result.orgInstance = Org.get(params.id)
+        result.settings = OrgSettings.findAllByOrg(result.orgInstance)
+
+        result
+    }
+
+    @Deprecated
+    @Secured(['ROLE_ADMIN'])
     def properties() {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -354,29 +514,25 @@ class OrganisationsController extends AbstractDebugController {
 
         result.editable = accessService.checkMinUserOrgRole(result.user, orgInstance, 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
-      def tracked_roles = ["ROLE_ADMIN":"LAS:eR Administrator"]
+        result.editable = result.editable || instAdmService.hasInstAdmPivileges(result.user, orgInstance)
+
+        // forbidden access
+        if (! result.editable && orgInstance.id != contextService.getOrg().id) {
+            redirect controller: 'organisations', action: 'show', id: orgInstance.id
+
+        }
 
       if (!orgInstance) {
         flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label', default: 'Org'), params.id])
         redirect action: 'list'
         return
       }
-      result.users = orgInstance.affiliations.collect{ userOrg ->
-        def admin_roles = []
-        userOrg.user.roles.each{ 
-          if (tracked_roles.keySet().contains(it.role.authority)){
-            def role_match = tracked_roles.get(it.role.authority)+" (${it.role.authority})"
-            admin_roles += role_match
-          }
-        }
-        // log.debug("Found roles: ${admin_roles} for user ${userOrg.user.displayName}")
 
-        return [userOrg,admin_roles?:null]
+        result.pendingRequests = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_PENDING, orgInstance, [sort:'dateRequested', order:'desc'])
+        result.users = UserOrg.findAllByStatusAndOrg(UserOrg.STATUS_APPROVED, orgInstance, [sort:'user.username', order: 'asc'])
 
-      }
-      // log.debug(result.users)
-      result.orgInstance = orgInstance
-      result
+        result.orgInstance = orgInstance
+        result
     }
 
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR','ROLE_ORG_COM_EDITOR'])
@@ -407,40 +563,28 @@ class OrganisationsController extends AbstractDebugController {
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-    def revokeRole() {
+    def processAffiliation() {
       def result = [:]
       result.user = User.get(springSecurityService.principal.id)
-      UserOrg uo = UserOrg.get(params.grant)
-      if (accessService.checkMinUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
-        uo.status = UserOrg.STATUS_REJECTED
-        uo.save()
+      UserOrg uo = UserOrg.get(params.assoc)
+
+      if (instAdmService.hasInstAdmPivileges(result.user, Org.get(params.id))) {
+
+          if (params.cmd == 'approve') {
+              uo.status = UserOrg.STATUS_APPROVED
+              uo.dateActioned = System.currentTimeMillis()
+              uo.save(flush: true)
+          }
+          else if (params.cmd == 'reject') {
+              uo.status = UserOrg.STATUS_REJECTED
+              uo.dateActioned = System.currentTimeMillis()
+              uo.save(flush: true)
+          }
+          else if (params.cmd == 'delete') {
+              uo.delete(flush: true)
+          }
       }
       redirect action: 'users', id: params.id
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-    def enableRole() {
-      def result = [:]
-      result.user = User.get(springSecurityService.principal.id)
-      UserOrg uo = UserOrg.get(params.grant)
-      if ( accessService.checkMinUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
-        uo.status = UserOrg.STATUS_APPROVED
-        uo.save();
-      }
-      redirect action: 'users', id: params.id
-    }
-
-    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-    def deleteRole() {
-        def result = [:]
-        result.user = User.get(springSecurityService.principal.id)
-        UserOrg uo = UserOrg.get(params.grant)
-        if ( accessService.checkMinUserOrgRole(result.user, uo.org, 'INST_ADM') ) {
-            uo.delete();
-        }
-        redirect action: 'users', id: params.id
     }
 
     @Secured(['ROLE_USER'])
@@ -519,7 +663,7 @@ class OrganisationsController extends AbstractDebugController {
 
         result
     }
-    def addOrgRoleType()
+    def addOrgType()
     {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -540,13 +684,13 @@ class OrganisationsController extends AbstractDebugController {
 
         if(result.editable)
         {
-            orgInstance.addToOrgRoleType(RefdataValue.get(params.orgRoleType))
+            orgInstance.addToOrgType(RefdataValue.get(params.orgType))
             orgInstance.save(flush: true)
             flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.name])
             redirect action: 'show', id: orgInstance.id
         }
     }
-    def deleteOrgRoleType()
+    def deleteOrgType()
     {
         def result = [:]
         result.user = User.get(springSecurityService.principal.id)
@@ -567,11 +711,46 @@ class OrganisationsController extends AbstractDebugController {
 
         if(result.editable)
         {
-            orgInstance.removeFromOrgRoleType(RefdataValue.get(params.removeOrgRoleType))
+            orgInstance.removeFromOrgType(RefdataValue.get(params.removeOrgType))
             orgInstance.save(flush: true)
             flash.message = message(code: 'default.updated.message', args: [message(code: 'org.label', default: 'Org'), orgInstance.name])
             redirect action: 'show', id: orgInstance.id
         }
+    }
+
+    private Map setResultGenerics() {
+        User user = User.get(springSecurityService.principal.id)
+        Org org = contextService.org
+        return [user:user,institution:org,editable:accessService.checkMinUserOrgRole(user,org,'INST_EDITOR')]
+    }
+
+    @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
+    def toggleCombo() {
+        Map result = setResultGenerics()
+        if(!params.direction) {
+            flash.error(message(code:'org.error.noToggleDirection'))
+            response.sendError(404)
+            return
+        }
+        switch(params.direction) {
+            case 'add':
+                Map map = [toOrg: result.institution,
+                        fromOrg: Org.get(params.fromOrg),
+                        type: RefdataValue.getByValueAndCategory('Consortium','Combo Type')]
+                if (! Combo.findWhere(map)) {
+                    def cmb = new Combo(map)
+                    cmb.save()
+                }
+                break
+            case 'remove':
+                Combo cmb = Combo.findWhere(toOrg: result.institution,
+                    fromOrg: Org.get(params.fromOrg),
+                    type: RefdataValue.getByValueAndCategory('Consortium','Combo Type'))
+                cmb.delete()
+                break
+        }
+        redirect action: 'listInstitution'
     }
 
     private def exportOrg(orgs, message, addHigherEducationTitles) {
@@ -580,7 +759,7 @@ class OrganisationsController extends AbstractDebugController {
                     'Name', g.message(code: 'org.shortname.label'), g.message(code: 'org.sortname.label')]
 
             def orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
-            def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
+            def orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
 
 
             if(addHigherEducationTitles)

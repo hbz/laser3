@@ -73,7 +73,12 @@
                         Lizenz
                     </div>
                     <div class="twelve wide column">
-                        <input name="${selectPair}" id="${selectPair}" />
+                        <div class="ui search selection dropdown la-full-width" id="${selectPair}">
+                            <input type="hidden" name="${selectPair}" value="${pair?.class?.name}:${pair?.id}"/>
+                            <i class="dropdown icon"></i>
+                            <input type="text" class="search"/>
+                            <div class="default text"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
@@ -89,52 +94,15 @@
     </g:form>
 </semui:modal>
 <%-- for that one day, we may move away from that ... --%>
-<g:javascript>
-    <g:if test="${pair}">
-        <%
-            LinkedHashMap ownerParams = [sub:pair]
-            switch(pair.getCalculatedType()) {
-                case TemplateSupport.CALCULATED_TYPE_CONSORTIAL: ownerParams.roleType = RDStore.OR_SUBSCRIPTION_CONSORTIA
-                    break
-                case TemplateSupport.CALCULATED_TYPE_LOCAL: ownerParams.roleType = RDStore.OR_SUBSCRIBER
-                    break
-                case TemplateSupport.CALCULATED_TYPE_PARTICIPATION: ownerParams.roleType = RDStore.OR_SUBSCRIBER_CONS
-                    break
-            }
-            OrgRole owner = OrgRole.findWhere(ownerParams)
-            String dateString = ", "
-            if(pair.startDate)
-                dateString += sdf.format(pair.startDate)+"-"
-            if(pair.endDate)
-                dateString += sdf.format(pair.endDate)
-            String ownerName = owner.org.name
-        %>
-        var data = {
-                      id: "${pair.class.name}:${pair.id}",
-                      text: "${pair.name} (${ownerName}${dateString})"
-                    };
-    </g:if>
-    $("#${selectPair}").select2({
-        ajax: {
-            url: "<g:createLink controller="ajax" action="lookupSubscriptions" />",
-            data: function(term, page) {
-                return {
-                    q: term,
-                    ctx: "${context}",
-                    page_limit: 20,
-                    baseClass: 'com.k_int.kbplus.Subscription'
-                };
+<r:script>
+    $(document).ready(function(){
+        $("#${selectPair}").dropdown({
+            apiSettings: {
+                url: "<g:createLink controller="ajax" action="lookupSubscriptions"/>?query={query}&ctx=${context}",
+                cache: false
             },
-            results: function (data, page) {
-                return {results: data.values};
-            },
-            allowClear: true,
-            formatSelection: function(data) {
-                return data.text;
-            }
-        }
+            clearable: true,
+            minCharacters: 0
+        });
     });
-    //duplicate call needed to preselect value
-    if(typeof(data) !== "undefined")
-        $("#${selectPair}").select2('data',data);
-</g:javascript>
+</r:script>

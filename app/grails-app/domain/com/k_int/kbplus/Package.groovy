@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.ShareSupport
 import de.laser.traits.ShareableTrait
 
@@ -25,14 +26,31 @@ class Package
   String gokbId
   String vendorURL
   String cancellationAllowances
-  RefdataValue packageType
-  RefdataValue packageStatus        // RefdataCategory 'Package Status'
-  RefdataValue packageListStatus    // RefdataCategory 'Package.ListStatus'
-  RefdataValue breakable
-  RefdataValue consistent
-  RefdataValue fixed
-  RefdataValue isPublic
-  RefdataValue packageScope
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue packageType
+
+    @RefdataAnnotation(cat = 'Package Status')
+    RefdataValue packageStatus
+
+    @RefdataAnnotation(cat = 'Package.ListStatus')
+    RefdataValue packageListStatus
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue breakable
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue consistent
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue fixed
+
+    @RefdataAnnotation(cat = 'YN')
+    RefdataValue isPublic
+
+    @RefdataAnnotation(cat = '?')
+    RefdataValue packageScope
+
   Platform nominalPlatform
   Date startDate
   Date endDate
@@ -113,7 +131,12 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
                   sortName(nullable:true, blank:false)
   }
 
-    boolean showShareButton() {
+    @Override
+    boolean checkSharePreconditions(ShareableTrait sharedObject) {
+        false // NO SHARES
+    }
+
+    boolean showUIShareButton() {
         false // NO SHARES
     }
 
@@ -297,7 +320,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
   @Transient
   public String getURL() {
-    "${grailsApplication.config.grails.serverURL}/packageDetails/show/${id}".toString();
+    "${grailsApplication.config.grails.serverURL}/package/show/${id}".toString();
   }
 
     def onChange = { oldMap, newMap ->

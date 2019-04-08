@@ -12,6 +12,9 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.runtime.InvokerHelper
 
+import static grails.async.Promises.task
+import static grails.async.Promises.waitAll
+
 @Mixin(com.k_int.kbplus.mixins.PendingChangeMixin)
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class LicenseDetailsController extends AbstractDebugController {
@@ -31,12 +34,16 @@ class LicenseDetailsController extends AbstractDebugController {
     def filterService
     def selectListQueryService
     def orgTypeService
+    def orgDocumentService
 
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def show() {
+
+        def debugTimeA = System.currentTimeMillis()
+
         DebugUtil du = new DebugUtil()
-        du.setBenchMark('1')
+        du.setBenchMark('this-n-that')
 
         log.debug("licenseDetails: ${params}");
         def result = setResultGenericsAndCheckAccess(AccessService.CHECK_VIEW)
@@ -44,41 +51,42 @@ class LicenseDetailsController extends AbstractDebugController {
             response.sendError(401); return
         }
 
-      result.transforms = grailsApplication.config.licenseTransforms
+        result.contextOrg = contextService.getOrg()
+        result.transforms = grailsApplication.config.licenseTransforms
 
-      //used for showing/hiding the License Actions menus
-      def admin_role = Role.findAllByAuthority("INST_ADM")
-      result.canCopyOrgs = UserOrg.executeQuery("select uo.org from UserOrg uo where uo.user=(:user) and uo.formalRole=(:role) and uo.status in (:status)", [user: result.user, role: admin_role, status: [1, 3]])
+        //used for showing/hiding the License Actions menus
+        def admin_role = Role.findAllByAuthority("INST_ADM")
+        result.canCopyOrgs = UserOrg.executeQuery("select uo.org from UserOrg uo where uo.user=(:user) and uo.formalRole=(:role) and uo.status in (:status)", [user: result.user, role: admin_role, status: [1, 3]])
 
-      def license_reference_str = result.license.reference ?: 'NO_LIC_REF_FOR_ID_' + params.id
+        def license_reference_str = result.license.reference ?: 'NO_LIC_REF_FOR_ID_' + params.id
 
-      def filename = "licenseDetails_${license_reference_str.replace(" ", "_")}"
-      result.onixplLicense = result.license.onixplLicense;
+        def filename = "licenseDetails_${license_reference_str.replace(" ", "_")}"
+        result.onixplLicense = result.license.onixplLicense;
 
         // ---- pendingChanges : start
 
         du.setBenchMark('pending changes')
 
-      if (executorWrapperService.hasRunningProcess(result.license)) {
-          log.debug("PendingChange processing in progress")
-          result.processingpc = true
-      } else {
+        if (executorWrapperService.hasRunningProcess(result.license)) {
+            log.debug("PendingChange processing in progress")
+            result.processingpc = true
+        } else {
 
-          def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending','PendingChangeStatus')
-          def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, pending_change_pending_status]);
+            def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', 'PendingChangeStatus')
+            def pendingChanges = PendingChange.executeQuery("select pc.id from PendingChange as pc where license=? and ( pc.status is null or pc.status = ? ) order by pc.ts desc", [result.license, pending_change_pending_status]);
 
-          //Filter any deleted subscriptions out of displayed links
-          Iterator<Subscription> it = result.license.subscriptions.iterator()
-          while (it.hasNext()) {
-              def sub = it.next();
-              if (sub.status == RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')) {
-                  it.remove();
-              }
-          }
+            //Filter any deleted subscriptions out of displayed links
+            Iterator<Subscription> it = result.license.subscriptions.iterator()
+            while (it.hasNext()) {
+                def sub = it.next();
+                if (sub.status == RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')) {
+                    it.remove();
+                }
+            }
 
-          log.debug("pc result is ${result.pendingChanges}");
-          // refactoring: replace link table with instanceOf
-          // if (result.license.incomingLinks.find { it?.isSlaved?.value == "Yes" } && pendingChanges) {
+            log.debug("pc result is ${result.pendingChanges}");
+            // refactoring: replace link table with instanceOf
+            // if (result.license.incomingLinks.find { it?.isSlaved?.value == "Yes" } && pendingChanges) {
 
             if (result.license.isSlaved?.value == "Yes" && pendingChanges) {
                 log.debug("Slaved lincence, auto-accept pending changes")
@@ -96,98 +104,115 @@ class LicenseDetailsController extends AbstractDebugController {
             }
         }
 
-         // ---- pendingChanges : end
+        // ---- pendingChanges : end
 
-      //result.availableSubs = getAvailableSubscriptions(result.license, result.user)
+        //result.availableSubs = getAvailableSubscriptions(result.license, result.user)
 
         du.setBenchMark('tasks')
 
-      // tasks
-      def contextOrg = contextService.getOrg()
-      result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg, result.license)
-      def preCon = taskService.getPreconditions(contextOrg)
-      result << preCon
+        // TODO: experimental asynchronous task
+        //def task_tasks = task {
 
-        // restrict visible for templates/links/orgLinksAsList
-        result.visibleOrgLinks = []
-        result.license.orgLinks?.each { or ->
-            if (!(or.org?.id == contextService.getOrg()?.id) && !(or.roleType.value in ["Licensee", "Licensee_Consortial"])) {
-                result.visibleOrgLinks << or
+            // tasks
+            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.license)
+            def preCon = taskService.getPreconditions(result.contextOrg)
+            result << preCon
+
+            // restrict visible for templates/links/orgLinksAsList
+            result.visibleOrgLinks = []
+            result.license.orgLinks?.each { or ->
+                if (!(or.org?.id == result.contextOrg?.id) && !(or.roleType.value in ["Licensee", "Licensee_Consortial"])) {
+                    result.visibleOrgLinks << or
+                }
             }
-        }
-        result.visibleOrgLinks.sort{ it.org.sortname }
+            result.visibleOrgLinks.sort { it.org.sortname }
+        //}
 
         du.setBenchMark('properties')
 
-      // -- private properties
+        // TODO: experimental asynchronous task
+        //def task_properties = task {
 
-      result.authorizedOrgs = result.user?.authorizedOrgs
-      result.contextOrg = contextService.getOrg()
+            // -- private properties
 
-      // create mandatory LicensePrivateProperties if not existing
+            result.authorizedOrgs = result.user?.authorizedOrgs
+            //result.contextOrg = contextService.getOrg()
 
-      def mandatories = []
-      result.user?.authorizedOrgs?.each { org ->
-          def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("License Property", true, org)
-          if (ppd) {
-              mandatories << ppd
-          }
-      }
-      mandatories.flatten().each { pd ->
-          if (!LicensePrivateProperty.findWhere(owner: result.license, type: pd)) {
-              def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.license, pd)
+            // create mandatory LicensePrivateProperties if not existing
 
-              if (newProp.hasErrors()) {
-                  log.error(newProp.errors)
-              } else {
-                  log.debug("New license private property created via mandatory: " + newProp.type.name)
-              }
-          }
-      }
+            def mandatories = []
+            result.user?.authorizedOrgs?.each { org ->
+                def ppd = PropertyDefinition.findAllByDescrAndMandatoryAndTenant("License Property", true, org)
+                if (ppd) {
+                    mandatories << ppd
+                }
+            }
+            mandatories.flatten().each { pd ->
+                if (!LicensePrivateProperty.findWhere(owner: result.license, type: pd)) {
+                    def newProp = PropertyDefinition.createGenericProperty(PropertyDefinition.PRIVATE_PROPERTY, result.license, pd)
 
-      // -- private properties
+                    if (newProp.hasErrors()) {
+                        log.error(newProp.errors)
+                    } else {
+                        log.debug("New license private property created via mandatory: " + newProp.type.name)
+                    }
+                }
+            }
 
-      result.modalPrsLinkRole    = RefdataValue.findByValue('Specific license editor')
-      result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(contextService.getOrg())
+            // -- private properties
 
-      result.visiblePrsLinks = []
+            result.modalPrsLinkRole = RefdataValue.findByValue('Specific license editor')
+            result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.contextOrg)
 
-      result.license.prsLinks.each { pl ->
-          if (! result.visiblePrsLinks.contains(pl.prs)) {
-              if (pl.prs.isPublic?.value != 'No') {
-                  result.visiblePrsLinks << pl
-              }
-              else {
-                  // nasty lazy loading fix
-                  result.user.authorizedOrgs.each{ ao ->
-                      if (ao.getId() == pl.prs.tenant.getId()) {
-                          result.visiblePrsLinks << pl
-                      }
-                  }
-              }
-          }
-      }
+            result.visiblePrsLinks = []
+
+            result.license.prsLinks.each { pl ->
+                if (!result.visiblePrsLinks.contains(pl.prs)) {
+                    if (pl.prs.isPublic?.value != 'No') {
+                        result.visiblePrsLinks << pl
+                    } else {
+                        // nasty lazy loading fix
+                        result.user.authorizedOrgs.each { ao ->
+                            if (ao.getId() == pl.prs.tenant.getId()) {
+                                result.visiblePrsLinks << pl
+                            }
+                        }
+                    }
+                }
+            }
+        //}
 
         du.setBenchMark('licensor filter')
 
-        def licensee = result.license.getLicensee();
-        def consortia = result.license.getLicensingConsortium();
-      //a new query builder service for selection lists has been introduced
-      String subscrQuery = selectListQueryService.buildSubscriptionList(consortia,result.license.subscriptions)
+        // TODO: experimental asynchronous task
+        //def task_licensorFilter = task {
 
-      //inject here: all picked entries
-        result.availableSubs = Subscription.executeQuery("${subscrQuery} order by LOWER(s.name) asc", [co: contextService.getOrg()])
+            def licensee = result.license.getLicensee();
+            def consortia = result.license.getLicensingConsortium();
+            //a new query builder service for selection lists has been introduced
+            String subscrQuery = selectListQueryService.buildSubscriptionList(consortia, result.license.subscriptions)
 
-        result.availableLicensorList = orgTypeService.getOrgsForTypeLicensor().minus(
-                OrgRole.executeQuery(
-                        "select o from OrgRole oo join oo.org o where oo.lic.id = :lic and oo.roleType.value = 'Licensor'",
-                        [lic: result.license.id]
-                ))
-        result.existingLicensorIdList = [] // performance problems: orgTypeService.getCurrentLicensors(contextService.getOrg()).collect { it -> it.id }
+            //inject here: all picked entries
+            result.availableSubs = Subscription.executeQuery("${subscrQuery} order by LOWER(s.name) asc", [co: result.contextOrg])
+
+            result.availableLicensorList = orgTypeService.getOrgsForTypeLicensor().minus(
+                    OrgRole.executeQuery(
+                            "select o from OrgRole oo join oo.org o where oo.lic.id = :lic and oo.roleType.value = 'Licensor'",
+                            [lic: result.license.id]
+                    ))
+            result.existingLicensorIdList = []
+            // performance problems: orgTypeService.getCurrentLicensors(contextService.getOrg()).collect { it -> it.id }
+       // }
 
         List bm = du.stopBenchMark()
         result.benchMark = bm
         log.debug (bm)
+
+        // TODO: experimental asynchronous task
+        //waitAll(task_tasks, task_properties)
+
+        def debugTimeB = System.currentTimeMillis()
+        //println " ---> " + Math.abs(debugTimeB - debugTimeA)
 
         withFormat {
       html result
@@ -249,7 +274,7 @@ class LicenseDetailsController extends AbstractDebugController {
             log.debug( 'ignored setting.cons_members because: LCurrent.instanceOf (LParent.noTemplate)')
         }
         else {
-            if ((RDStore.OR_TYPE_CONSORTIUM?.id in result.institution?.getallOrgRoleTypeIds())) {
+            if ((RDStore.OT_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
 
                 def consMembers = Org.executeQuery(
                         'select o from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :inst and c.type.value = :cons',
@@ -303,16 +328,16 @@ class LicenseDetailsController extends AbstractDebugController {
         }
         result.institution = contextService.getOrg()
 
-        def orgRoleType       = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType').id.toString()]
-        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) {
-            orgRoleType = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString()]
+        def orgType       = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType').id.toString()]
+        if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) {
+            orgType = [com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString()]
         }
         def role_lic      = RDStore.OR_LICENSEE_CONS
         def role_lic_cons = RDStore.OR_LICENSING_CONSORTIUM
 
         if (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) {
 
-            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgRoleTypeIds())) {
+            if ((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.institution?.getallOrgTypeIds())) {
                 def cons_members = []
                 def licenseCopy
 
@@ -329,7 +354,7 @@ class LicenseDetailsController extends AbstractDebugController {
                         def licenseParams = [
                                 lic_name: "${result.license.reference} (${postfix})",
                                 isSlaved: params.isSlaved,
-                                asOrgRoleType: orgRoleType,
+                                asOrgType: orgType,
                                 copyStartEnd: true
                         ]
 
@@ -745,7 +770,6 @@ from Subscription as s where
         if (!result) {
             response.sendError(401); return
         }
-
         result
     }
 
@@ -1033,6 +1057,7 @@ from Subscription as s where
     private LinkedHashMap setResultGenericsAndCheckAccess(checkOption) {
         def result             = [:]
         result.user            = User.get(springSecurityService.principal.id)
+        result.institution     = contextService.org
         result.license         = License.get(params.id)
         result.licenseInstance = License.get(params.id)
 

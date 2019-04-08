@@ -11,7 +11,7 @@
 <body>
 
 <semui:breadcrumbs>
-    <semui:crumb message="menu.institutions.all_orgs" controller="organisations" action="index" />
+    <semui:crumb message="menu.public.all_orgs" controller="organisations" action="index" />
     <g:message code="default.show.label" args="[entityName]" class="active"/>
 </semui:breadcrumbs>
 
@@ -261,7 +261,7 @@ ${personInstance}
                                                <br />
 
                                                <g:if test="${link.pkg}">
-                                                   <g:link controller="packageDetails" action="show" id="${link.pkg.id}">${link.pkg.name}</g:link>
+                                                   <g:link controller="package" action="show" id="${link.pkg.id}">${link.pkg.name}</g:link>
                                                </g:if>
                                                <g:if test="${link.cluster}">
                                                    <g:link controller="cluster" action="show" id="${link.cluster.id}">${link.cluster.name}</g:link>
@@ -273,7 +273,7 @@ ${personInstance}
                                                    <g:link controller="licenseDetails" action="show" id="${link.lic.id}">${link.lic}</g:link>
                                                </g:if>
                                                <g:if test="${link.title}">
-                                                   <g:link controller="titleDetails" action="show" id="${link.title.id}">${link.title.title}</g:link>
+                                                   <g:link controller="title" action="show" id="${link.title.id}">${link.title.title}</g:link>
                                                </g:if>
                                            </div>
 

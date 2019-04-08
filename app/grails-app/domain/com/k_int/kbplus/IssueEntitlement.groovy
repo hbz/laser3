@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RefdataAnnotation
 
 import javax.persistence.Transient
 
@@ -9,7 +10,6 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
   Date accessStartDate
   Date accessEndDate
 
-  RefdataValue status   // RefdataCategory 'Entitlement Issue Status'
   Date startDate
   String startVolume
   String startIssue
@@ -22,7 +22,14 @@ class IssueEntitlement extends AbstractBaseDomain implements Comparable {
   String ieReason
   Date coreStatusStart
   Date coreStatusEnd
-  RefdataValue coreStatus // core Status is really core Medium.. dont ask. // RefdataCategory 'CoreStatus'
+
+  @RefdataAnnotation(cat = 'Entitlement Issue Status')
+  RefdataValue status
+
+  @RefdataAnnotation(cat = 'CoreStatus')
+  RefdataValue coreStatus // core Status is really core Medium.. dont ask
+
+  @RefdataAnnotation(cat = '?')
   RefdataValue medium
 
   static belongsTo = [subscription: Subscription, tipp: TitleInstancePackagePlatform]

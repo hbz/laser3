@@ -29,11 +29,11 @@
                                  data-confirm-term-how="ok"
                                  controller="finance"
                                  action="financialsExport"
-                                 params="${params+[forExport:true]}">${message(code:'default.button.exports.xls', default:'XLS Export')}
+                                 params="${params/*+[forExport:true]*/}">${message(code:'default.button.exports.xls', default:'XLS Export')}
                         </g:link>
                     </g:if>
                     <g:else>
-                        <g:link class="item" controller="finance" action="financialsExport" params="${params+[forExport:true]}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
+                        <g:link class="item" controller="finance" action="financialsExport" params="${params/*+[forExport:true]*/}">${message(code:'default.button.exports.xls', default:'XLS Export')}</g:link>
                     </g:else>
                 </semui:exportDropdownItem>
             <%--
@@ -69,6 +69,6 @@
         </g:else>
 
         <h1 class="ui left aligned icon header"><semui:headerIcon />${message(code:'subscription.details.financials.label')} ${message(code:'default.for')} ${institution.name} <semui:totalNumber total="${totalString}"/></h1>
-        <g:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets]" />
+        <g:render template="result" model="[own:own,cons:cons,subscr:subscr,view:view,showView:showView,filterPresets:filterPresets]" />
     </body>
 </html>

@@ -75,7 +75,7 @@
                             <td><g:link controller="organisations" action="show" id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
                         </g:if> 
                         <g:if test="${hit.type=='com.k_int.kbplus.TitleInstance'}">
-                          <td><g:link controller="titleDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().title}</g:link></td>
+                          <td><g:link controller="title" action="show" id="${hit.getSource().dbId}">${hit.getSource().title}</g:link></td>
                           <td>
                             <g:each in="${hit.getSource().identifiers}" var="id">
                               ${id.type}: ${id.value} &nbsp;
@@ -83,7 +83,7 @@
                           </td>
                         </g:if>
                         <g:if test="${hit.type=='com.k_int.kbplus.Package'}">
-                          <td><g:link controller="packageDetails" action="show" id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
+                          <td><g:link controller="package" action="show" id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
                         </g:if>
                         <g:if test="${hit.type=='com.k_int.kbplus.Platform'}">
                           <td><g:link controller="platform" action="show" id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>

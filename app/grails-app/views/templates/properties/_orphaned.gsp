@@ -49,9 +49,11 @@
                             ${prop.type.getI10n('name')}
                         </g:else>
                         <%
+                            /*
                             if (AuditConfig.getConfig(prop)) {
                                 println '&nbsp; <span data-tooltip="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue inverted"></i></span>'
                             }
+                            */
 
                             if (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) {
                                 if (ownobj.isSlaved?.value?.equalsIgnoreCase('yes')) {
@@ -100,7 +102,7 @@
                         <g:if test="${prop.type.type == URL.toString()}">
                             <g:if test="${prop.value}">
                                 <span data-position="top right" data-tooltip="Diese URL aufrufen ..">
-                                    <a href="${prop.value}" target="_blank" class="ui icon blue button la-url-button">
+                                    <a href="${prop.value}" target="_blank" class="ui icon blue button la-js-dont-hide-button">
                                         <i class="share square icon"></i>
                                     </a>
                                 </span>
@@ -110,21 +112,40 @@
                             <g:if test="${ownobj.hasProperty('instanceOf') && showConsortiaFunctions}">
                                 <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />
 
-                                <span data-position="top right" data-tooltip="${message(code:'property.audit.tooltip')}">
-                                    <button class="ui icon button js-open-confirm-modal-copycat">
-                                        <i class="thumbtack icon"></i>
-                                    </button>
-                                    <g:remoteLink class="js-gost"
-                                                  controller="ajax" action="togglePropertyAuditConfig"
-                                                  params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true]' id="${prop.id}"
-                                                  data-confirm-term-what="property"
-                                                  data-confirm-term-what-detail="${prop.type.getI10n('name')}"
-                                                  data-confirm-term-how="inherit"
-                                                  onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
-                                                  onComplete="c3po.loadJsAfterAjax()"
-                                                  update="${custom_props_div}">
-                                    </g:remoteLink>
-                                </span>
+                                <g:if test="${! AuditConfig.getConfig(prop)}">
+                                    <span data-position="top right" data-tooltip="${message(code:'property.audit.tooltip')}">
+                                        <button class="ui icon button js-open-confirm-modal-copycat">
+                                            <i class="thumbtack icon"></i>
+                                        </button>
+                                        <g:remoteLink class="js-gost"
+                                                      controller="ajax" action="togglePropertyAuditConfig"
+                                                      params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true, onlyOrphaned:true]' id="${prop.id}"
+                                                      data-confirm-term-what="property"
+                                                      data-confirm-term-what-detail="${prop.type.getI10n('name')}"
+                                                      data-confirm-term-how="inherit"
+                                                      onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                                      onComplete="c3po.loadJsAfterAjax()"
+                                                      update="${custom_props_div}">
+                                        </g:remoteLink>
+                                    </span>
+                                </g:if>
+                                <g:else>
+                                    <span data-position="top right" data-tooltip="${message(code:'property.audit.tooltip')}">
+                                        <button class="ui icon button green js-open-confirm-modal-copycat">
+                                            <i class="thumbtack icon"></i>
+                                        </button>
+                                        <g:remoteLink class="js-gost"
+                                                      controller="ajax" action="togglePropertyAuditConfig"
+                                                      params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:true, onlyOrphaned:true]' id="${prop.id}"
+                                                      data-confirm-term-what="property"
+                                                      data-confirm-term-what-detail="${prop.type.getI10n('name')}"
+                                                      data-confirm-term-how="inherit"
+                                                      onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                                                      onComplete="c3po.loadJsAfterAjax()"
+                                                      update="${custom_props_div}">
+                                        </g:remoteLink>
+                                    </span>
+                                </g:else>
                             </g:if>
 
                             <g:if test="${! AuditConfig.getConfig(prop)}">
@@ -134,7 +155,7 @@
                                 </button>
                                 <g:remoteLink class="js-gost"
                                               controller="ajax" action="deleteCustomProperty"
-                                              params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:"${showConsortiaFunctions}"]' id="${prop.id}"
+                                              params='[propClass: prop.getClass(), ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", custom_props_div:"${custom_props_div}", editable:"${editable}", showConsortiaFunctions:"${showConsortiaFunctions}", onlyOrphaned:true]' id="${prop.id}"
                                               data-confirm-term-what="property"
                                               data-confirm-term-what-detail="${prop.type.getI10n('name')}"
                                               data-confirm-term-how="delete"
@@ -149,4 +170,38 @@
             </g:if>
         </g:each>
     </tbody>
+
+    <g:if test="${editable}">
+        <tfoot>
+        <tr>
+            <g:if test="${ownobj instanceof com.k_int.kbplus.License}">
+                <td colspan="5">
+            </g:if>
+            <g:else>
+                <td colspan="4">
+            </g:else>
+            <g:formRemote url="[controller: 'ajax', action: 'addCustomPropertyValue']" method="post"
+                          name="cust_prop_add_value"
+                          class="ui form"
+                          update="${custom_props_div}"
+                          onSuccess="c3po.initProperties('${createLink(controller:'ajax', action:'lookup')}', '#${custom_props_div}')"
+                          onComplete="c3po.loadJsAfterAjax()"
+            >
+
+                <input type="hidden" name="propIdent" data-desc="${prop_desc}" class="customPropSelect"/>
+                <input type="hidden" name="ownerId" value="${ownobj.id}"/>
+                <input type="hidden" name="editable" value="${editable}"/>
+                <input type="hidden" name="showConsortiaFunctions" value="${showConsortiaFunctions}"/>
+                <input type="hidden" name="ownerClass" value="${ownobj.class}"/>
+                <input type="hidden" name="onlyOrphaned" value="onlyOrphaned"/><%-- switch for ajax controller --%>
+
+                <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
+
+                <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
+            </g:formRemote>
+        </td>
+        </tr>
+        </tfoot>
+    </g:if>
+
 </table>

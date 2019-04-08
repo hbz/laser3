@@ -150,7 +150,7 @@
                                                 id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
                                 </g:if>
                                 <g:if test="${hit.getSource().rectype == 'Title'}">
-                                    <td><g:link controller="titleDetails" action="show"
+                                    <td><g:link controller="title" action="show"
                                                 id="${hit.getSource().dbId}">${hit.getSource().title}</g:link></td>
                                     <td>
                                         <g:each in="${hit.getSource().identifiers}" var="id">
@@ -159,7 +159,7 @@
                                     </td>
                                 </g:if>
                                 <g:if test="${hit.getSource().rectype == 'Package'}">
-                                    <td><g:link controller="packageDetails" action="show"
+                                    <td><g:link controller="package" action="show"
                                                 id="${hit.getSource().dbId}">${hit.getSource().name}</g:link></td>
                                 </g:if>
                                 <g:if test="${hit.getSource().rectype == 'Platform'}">

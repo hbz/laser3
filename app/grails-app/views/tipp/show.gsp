@@ -8,7 +8,7 @@
   <body>
 
     <semui:breadcrumbs>
-      <semui:crumb controller="packageDetails" action="show" id="${tipp.pkg.id}" text="${tipp.pkg.name} [${message(code:'package.label', default:'package')}]" />
+      <semui:crumb controller="package" action="show" id="${tipp.pkg.id}" text="${tipp.pkg.name} [${message(code:'package.label', default:'package')}]" />
       <semui:crumb text="${tipp.title.title} [${message(code:'title.label', default:'title')}]" class="active" />
     </semui:breadcrumbs>
 
@@ -167,7 +167,7 @@
                   </td>
                   <td>${t.coverageDepth}</td>
                   <td><g:link controller="platform" action="show" id="${t.platform.id}">${t.platform.name}</g:link></td>
-                  <td><g:link controller="packageDetails" action="show" id="${t.pkg.id}">${t.pkg.name} (${t.pkg.contentProvider?.name})</g:link></td>
+                  <td><g:link controller="package" action="show" id="${t.pkg.id}">${t.pkg.name} (${t.pkg.contentProvider?.name})</g:link></td>
                   <td></td>
                 </tr>
               </g:each>

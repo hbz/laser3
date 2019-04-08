@@ -60,12 +60,12 @@
                                    message="menu.institutions.imp_renew"/>
         </g:if>
 
-        <g:if test="${subscriptionInstance?.type == RefdataValue.getByValueAndCategory("Consortial Licence", "Subscription Type") && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgRoleTypeIds()) && !previousSubscriptions}">
+        <g:if test="${subscriptionInstance?.type == RefdataValue.getByValueAndCategory("Consortial Licence", "Subscription Type") && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextService.getOrg()?.getallOrgTypeIds()) && !previousSubscriptions}">
             <semui:actionsDropdownItem controller="subscriptionDetails" action="renewSubscriptionConsortia"
                                        params="${[id: params.id]}" message="subscription.details.renewalsConsortium.label"/>      
         </g:if>
         
-          <g:if test="${subscriptionInstance?.type == RefdataValue.getByValueAndCategory("Consortial Licence", "Subscription Type") && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in contextService.getOrg()?.getallOrgRoleTypeIds())}">
+          <g:if test="${subscriptionInstance?.type == RefdataValue.getByValueAndCategory("Consortial Licence", "Subscription Type") && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in contextService.getOrg()?.getallOrgTypeIds())}">
             <semui:actionsDropdownItem controller="subscriptionDetails" action="linkLicenseConsortia"
                                        params="${[id: params.id]}"
                                        message="subscription.details.linkLicenseConsortium.label"/>
@@ -84,12 +84,14 @@
                 <semui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" text="Merkmalgruppen konfigurieren" />
             </g:if>
 
+            <%--
             <g:if test="${showConsortiaFunctions}">
                 <g:if test="${springSecurityService.getCurrentUser().hasAffiliation("INST_ADM")}">
                     <div class="divider"></div>
                     <semui:actionsDropdownItem id="audit_config_opener" message="property.audit.menu"/>
                 </g:if>
             </g:if>
+            --%>
         </g:if>
 
     </semui:actionsDropdown>
@@ -97,7 +99,7 @@
     <g:render template="/templates/documents/modal" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
     <g:render template="/templates/notes/modal_create" model="${[ownobj: subscriptionInstance, owntp: 'subscription']}"/>
 
-    <g:render template="/templates/audit/modal_script" model="${[ownobj: subscriptionInstance]}" />
+    <%--<g:render template="/templates/audit/modal_script" model="${[ownobj: subscriptionInstance]}" />--%>
 </g:if>
 
 <g:if test="${editable || accessService.checkMinUserOrgRole(user, contextOrg, 'INST_EDITOR')}">

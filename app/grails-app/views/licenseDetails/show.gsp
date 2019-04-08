@@ -71,26 +71,29 @@
                         <div class="ui card ">
                             <div class="content">
                                 <dl>
-                                    <semui:dtAuditCheck message="license.startDate" auditable="[license, 'startDate']" />
+                                    <dt class="control-label">${message(code: 'license.startDate')}</dt>
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="startDate" />
                                     </dd>
+                                    <dd><semui:auditButton auditable="[license, 'startDate']" /></dd>
                                 </dl>
                                 <dl>
-                                    <semui:dtAuditCheck message="license.endDate" auditable="[license, 'endDate']" />
+                                    <dt class="control-label">${message(code: 'license.endDate')}</dt>
                                     <dd>
                                         <semui:xEditable owner="${license}" type="date" field="endDate" />
                                     </dd>
+                                    <dd><semui:auditButton auditable="[license, 'endDate']" /></dd>
                                 </dl>
                             </div>
                         </div>
                         <div class="ui card ">
                             <div class="content">
                                 <dl>
-                                    <semui:dtAuditCheck message="license.status" auditable="[license, 'status']" />
+                                    <dt class="control-label">${message(code: 'license.status')}</dt>
                                     <dd>
                                         <semui:xEditableRefData owner="${license}" field="status" config='License Status'/>
                                     </dd>
+                                    <dd><semui:auditButton auditable="[license, 'status']" /></dd>
                                 </dl>
                                 <%--
                                 <dl>
@@ -137,7 +140,7 @@
 
                             <g:if test="${license.subscriptions && ( license.subscriptions.size() > 0 )}">
                                 <g:each in="${license.subscriptions.sort{it.name}}" var="sub">
-                                    <g:if test="${contextOrg?.id in sub.orgRelations?.org?.id || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextOrg?.getallOrgRoleTypeIds())}">
+                                    <g:if test="${contextOrg?.id in sub.orgRelations?.org?.id || (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  contextOrg?.getallOrgTypeIds())}">
                                         <table class="ui three column la-selectable table">
                                             <tr>
                                                 <th scope="row">${message(code:'license.linkedSubscription', default:'Linked Subscription')}</th>
@@ -200,7 +203,7 @@
                                 <dd>
                                     <g:if test="${license.pkgs && ( license.pkgs.size() > 0 )}">
                                         <g:each in="${license.pkgs.sort{it.name}}" var="pkg">
-                                            <g:link controller="packageDetails" action="show" id="${pkg.id}">${pkg.name}</g:link><br/>
+                                            <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link><br/>
                                         </g:each>
                                     </g:if>
                                     <g:else>
@@ -215,7 +218,7 @@
                                     <dt class="control-label">${message(code:'license.ONIX-PL-License', default:'ONIX-PL License')}</dt>
                                     <dd>
                                         <g:if test="${license.onixplLicense}">
-                                            <g:link controller="onixplLicenseDetails" action="index" id="${license.onixplLicense?.id}">${license.onixplLicense.title}</g:link>
+                                            <g:link controller="onixplLicense" action="index" id="${license.onixplLicense?.id}">${license.onixplLicense.title}</g:link>
                                             <g:if test="${editable}">
 
                                                 <div class="ui mini icon buttons">

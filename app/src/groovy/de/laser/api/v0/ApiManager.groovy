@@ -15,8 +15,12 @@ import javax.servlet.http.HttpServletRequest
 @Log4j
 class ApiManager {
 
-    static final VERSION = '0.35'
+    static final VERSION = '0.41'
     static final NOT_SUPPORTED = false
+
+    static final API_LEVEL_READ         = 'API_LEVEL_READ'
+    static final API_LEVEL_WRITE        = 'API_LEVEL_WRITE'
+    static final API_LEVEL_DATAMANAGER  = 'API_LEVEL_DATAMANAGER'
 
     /**
      * @return Object
@@ -25,11 +29,11 @@ class ApiManager {
      * @return NOT_ACCEPTABLE: if requested format(response) is not supported
      * @return NOT_IMPLEMENTED: if requested method(object type) is not supported
      */
-    static read(String obj, String query, String value, User user, Org contextOrg, String format) {
+    static read(String obj, String query, String value, Org contextOrg, String format) {
         def result
 
         def failureCodes  = [Constants.HTTP_BAD_REQUEST, Constants.HTTP_PRECONDITION_FAILED]
-        def accessDueDatamanager = ApiReader.isDataManager(user)
+        def accessDueDatamanager = ApiReader.isDataManager(contextOrg)
 
         log.debug("API-READ (" + VERSION + "): ${obj} (${format}) -> ${query}:${value}")
 
@@ -46,9 +50,34 @@ class ApiManager {
         }
         else if ('costItemList'.equalsIgnoreCase(obj)) {
             if (format in ApiReader.SUPPORTED_FORMATS.costItem) {
-                result = ApiOrg.findOrganisationBy(query, value) // use of http status code
+
+                def queries = query.split(",")
+                def values  = value.split(",")
+                def identifiers = [:]
+                def timestamp = [:]
+                if (queries.size() == 2 && values.size() == 2) {
+                    identifiers.key = queries[0].trim()
+                    identifiers.value = values[0].trim()
+
+                    timestamp.key = queries[1].trim()
+                    timestamp.value = values[1].trim()
+
+                }else if (queries.size() == 1 && values.size() == 1) {
+                    identifiers.key = queries[0].trim()
+                    identifiers.value = values[0].trim()
+
+                }else {
+                    return Constants.HTTP_BAD_REQUEST
+                }
+
+                result = ApiOrg.findOrganisationBy(identifiers.key, identifiers.value) // use of http status code
                 if (result && !(result in failureCodes)) {
-                    result = ApiCostItem.getCostItemList(result, contextOrg, accessDueDatamanager)
+
+                    if(timestamp && timestamp.key == 'timestamp'){
+                        result = ApiCostItem.getCostItemListWithTimeStamp(result, contextOrg, accessDueDatamanager, timestamp.value)
+                    }else {
+                        result = ApiCostItem.getCostItemList(result, contextOrg, accessDueDatamanager)
+                    }
                 }
             }
             else {
@@ -114,7 +143,7 @@ class ApiManager {
                 return Constants.HTTP_NOT_ACCEPTABLE
             }
         }
-        else if (NOT_SUPPORTED && 'organisation'.equalsIgnoreCase(obj)) {
+        else if ('organisation'.equalsIgnoreCase(obj)) {
             if (format in ApiReader.SUPPORTED_FORMATS.organisation) {
                 result = ApiOrg.findOrganisationBy(query, value)
 
@@ -177,8 +206,10 @@ class ApiManager {
     }
 
     @Deprecated
-    static write(String obj, JSONObject data, User user, Org contextOrg) {
+    static write(String obj, JSONObject data, Org contextOrg) {
         def result
+
+        // TODO check isDataManager, etc for contextOrg
 
         // check existing resources
         def conflict = false

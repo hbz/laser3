@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="semanticUI"/>
-    <title>${message(code:'laser', default:'LAS:eR')} Admin::Title Merge</title>
+    <title>${message(code:'laser', default:'LAS:eR')} : Admin::Title Merge</title>
   </head>
 
   <body>
@@ -41,7 +41,7 @@
                            <g:each in="${title_to_deprecate.tipps}" var="tipp">
                              <tr>
                                <td>${tipp.id}</td>
-                               <td><g:link controller="packageDetails" action="show" id="${tipp.pkg.id}">${tipp.pkg.name}</g:link></td>
+                               <td><g:link controller="package" action="show" id="${tipp.pkg.id}">${tipp.pkg.name}</g:link></td>
                                <td>${tipp.platform.name}</td>
 
                                <td style="white-space: nowrap">

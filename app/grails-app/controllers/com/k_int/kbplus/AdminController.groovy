@@ -7,11 +7,17 @@ import de.laser.GOKbService
 import de.laser.SystemEvent
 import de.laser.controller.AbstractDebugController
 import de.laser.helper.DebugAnnotation
+import de.laser.helper.RefdataAnnotation
 import grails.plugin.springsecurity.SpringSecurityUtils;
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import au.com.bytecode.opencsv.CSVReader
 import com.k_int.properties.PropertyDefinition
+import grails.web.Action
+
+import java.lang.reflect.Field
+import java.lang.reflect.Method
+import java.lang.reflect.Modifier
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AdminController extends AbstractDebugController {
@@ -41,15 +47,33 @@ class AdminController extends AbstractDebugController {
   @Secured(['ROLE_ADMIN'])
   def index() { }
 
-  @Secured(['ROLE_ADMIN'])
-  def manageAffiliationRequests() {
-    def result = [:]
-    result.user = User.get(springSecurityService.principal.id)
+    @DebugAnnotation(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
+    @Secured(closure = {
+        ctx.springSecurityService.getCurrentUser()?.hasRole('ROLE_ADMIN') ||
+            ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM")
+    })
+    def manageAffiliationRequests() {
+        def result = [:]
+        result.user = User.get(springSecurityService.principal.id)
 
-    // List all pending requests...
-    result.pendingRequests = UserOrg.findAllByStatus(0, [sort:'dateRequested'])
-    result
-  }
+        if (! result.user.hasRole('ROLE_ADMIN')) {
+            Org ctx = contextService.getOrg()
+
+            List <Org> orgList = Org.executeQuery('SELECT c.fromOrg from Combo c WHERE c.toOrg = :ctx', [ctx: ctx])
+            orgList.add(ctx)
+
+            result.pendingRequests = UserOrg.executeQuery(
+                    'SELECT uo FROM UserOrg uo WHERE uo.status = :status AND uo.org in (:orgList)',
+                    [status: UserOrg.STATUS_PENDING, orgList: orgList],
+                    [sort: 'dateRequested']
+            )
+        }
+        else {
+            result.pendingRequests = UserOrg.findAllByStatus(UserOrg.STATUS_PENDING, [sort: 'dateRequested'])
+        }
+
+        result
+    }
 
   @Secured(['ROLE_ADMIN'])
   def updatePendingChanges() {
@@ -297,7 +321,7 @@ class AdminController extends AbstractDebugController {
 
         if ( existing_affil_check == null ) {
           log.debug("No existing affiliation");
-          def newAffil = new UserOrg(org:affil.org,user:usrKeep,formalRole:affil.formalRole,status:UserOrg.STATUS_AUTO_APPROVED)
+          def newAffil = new UserOrg(org:affil.org,user:usrKeep,formalRole:affil.formalRole,status:affil.status)
           if(!newAffil.save(flush:true,failOnError:true)){
             log.error("Probem saving user roles");
             newAffil.errors.each { e ->
@@ -335,8 +359,6 @@ class AdminController extends AbstractDebugController {
           def row = [:]
           row.username = u.username
           row.display = u.display
-          row.instname = u.instname
-          row.instcode = u.instcode
           row.email = u.email
           row.shibbScope = u.shibbScope
           row.enabled = u.enabled
@@ -1049,63 +1071,17 @@ class AdminController extends AbstractDebugController {
 
         def (usedRdvList, attrMap) = refdataService.getUsageDetails()
 
+        def integrityCheckResult = refdataService.integrityCheck()
+
         render view: 'manageRefdatas', model: [
                 editable    : true,
                 rdCategories: RefdataCategory.where{}.sort('desc'),
                 attrMap     : attrMap,
-                usedRdvList : usedRdvList
+                usedRdvList : usedRdvList,
+                integrityCheckResult : integrityCheckResult
         ]
   }
 
-  @Secured(['ROLE_ADMIN'])
-  def checkPackageTIPPs() {
-    def result = [:]
-    result.user = springSecurityService.getCurrentUser()
-    params.max =  params.max ?: result.user.getDefaultPageSizeTMP()
 
-
-    def gokbRecords = []
-
-    ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { api ->
-      gokbRecords << GOKbService.getPackagesMap(api, params.q, false).records
-    }
-
-
-    params.sort = params.sort ?: 'name'
-    params.order = params.order ?: 'asc'
-
-    result.records = gokbRecords ? gokbRecords.flatten().sort() : null
-
-    result.records?.sort { x, y ->
-      if (params.order == 'desc') {
-        y."${params.sort}".toString().compareToIgnoreCase x."${params.sort}".toString()
-      } else {
-        x."${params.sort}".toString().compareToIgnoreCase y."${params.sort}".toString()
-      }
-    }
-
-    /*if(params.onlyNotEqual) {
-      result.tippsNotEqual = []
-      result.records.each { hit ->
-        if (com.k_int.kbplus.Package.findByGokbId(hit.uuid)) {
-          if (com.k_int.kbplus.Package.findByGokbId(hit.uuid)?.tipps?.size() != hit.titleCount && hit.titleCount != 0) {
-            result.tippsNotEqual << hit
-          }
-        }
-      }
-      result.records = result.tippsNotEqual
-    }*/
-
-    result.resultsTotal2 = result.records?.size()
-
-    Integer start = params.offset ? params.int('offset') : 0
-    Integer end = params.offset ? params.int('max') + params.int('offset') : params.int('max')
-    end = (end > result.records?.size()) ? result.records?.size() : end
-
-    result.records = result.records?.subList(start, end)
-
-
-    result
-  }
 
 }

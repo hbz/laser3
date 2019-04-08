@@ -1,18 +1,17 @@
 package com.k_int.kbplus
 
 import de.laser.controller.AbstractDebugController
-import grails.converters.*
+import de.laser.helper.DebugAnnotation
 import grails.plugin.springsecurity.annotation.Secured
-import grails.converters.*
-import org.elasticsearch.groovy.common.xcontent.*
-import groovy.xml.MarkupBuilder
 import com.k_int.kbplus.auth.*;
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class DocWidgetController extends AbstractDebugController {
 
   def springSecurityService
+  def genericOIDService
   def docstoreService
+  def contextService
 
   @Secured(['ROLE_USER'])
   def createNote() { 
@@ -66,7 +65,6 @@ class DocWidgetController extends AbstractDebugController {
     def original_filename = request.getFile("upload_file")?.originalFilename
 
     def user = User.get(springSecurityService.principal.id)
-
     def domain_class=grailsApplication.getArtefact('Domain',params.ownerclass)
 
     if ( domain_class ) {
@@ -78,12 +76,13 @@ class DocWidgetController extends AbstractDebugController {
           // def docstore_uuid = docstoreService.uploadStream(input_stream, original_filename, params.upload_title)
           // log.debug("Docstore uuid is ${docstore_uuid}");
     
-          def doc_content = new Doc(contentType:Doc.CONTENT_TYPE_BLOB,
+          Doc doc_content = new Doc(contentType:Doc.CONTENT_TYPE_BLOB,
                                     filename: original_filename,
                                     mimeType: request.getFile("upload_file")?.contentType,
-                                    title: params.upload_title,
+                                    title: params.upload_title ?: original_filename,
                                     type:RefdataCategory.lookupOrCreate('Document Type',params.doctype),
-                                    creator: user)
+                                    creator: user,
+                                    owner: contextService.getOrg())
           // erms-790
           //doc_content.setBlobData(input_stream, input_file.size)
           doc_content.save()
@@ -104,15 +103,50 @@ class DocWidgetController extends AbstractDebugController {
               doc_content.save()
           }
 
-          def doc_context = new DocContext(
+          DocContext doc_context = new DocContext(
                   "${params.ownertp}": instance,
                   owner:               doc_content,
                   doctype:             RefdataCategory.lookupOrCreate('Document Type',params.doctype)
-          ).save(flush:true)
+          )
+          doc_context.shareConf = genericOIDService.resolveOID(params.shareConf)
+          doc_context.save(flush:true)
 
           log.debug("Doc created and new doc context set on ${params.ownertp} for ${params.ownerid}");
         }
         
+      }
+      else {
+        log.error("Unable to locate document owner instance for class ${params.ownerclass}:${params.ownerid}");
+      }
+    }
+    else {
+      log.warn("Unable to locate domain class when processing generic doc upload. ownerclass was ${params.ownerclass}");
+    }
+
+    redirect(url: request.getHeader('referer'))
+  }
+
+  @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+  @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
+  def editDocument() {
+    log.debug("edit document....");
+
+    def domain_class=grailsApplication.getArtefact('Domain',params.ownerclass)
+
+    if ( domain_class ) {
+      def instance = domain_class.getClazz().get(params.ownerid)
+      if ( instance ) {
+        log.debug("Got owner instance ${instance}");
+        DocContext doc_context = DocContext.get(params.docctx)
+        Doc doc_content = doc_context.owner
+        doc_content.title = params.upload_title ?: doc_content.filename
+        doc_content.type = RefdataValue.getByValueAndCategory(params.doctype,'Document Type')
+        doc_content.owner = contextService.org
+        doc_content.save()
+        doc_context.doctype = RefdataValue.getByValueAndCategory(params.doctype,'Document Type')
+        doc_context.shareConf = genericOIDService.resolveOID(params.shareConf)
+        doc_context.save(flush:true)
+        log.debug("Doc updated and new doc context updated on ${params.ownertp} for ${params.ownerid}");
       }
       else {
         log.error("Unable to locate document owner instance for class ${params.ownerclass}:${params.ownerid}");

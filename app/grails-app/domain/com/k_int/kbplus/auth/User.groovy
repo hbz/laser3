@@ -8,6 +8,8 @@ import javax.persistence.Transient
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
 
+import java.nio.charset.Charset
+
 class User implements Permissions {
 
   transient springSecurityService
@@ -18,8 +20,6 @@ class User implements Permissions {
   String username
   String display
   String password
-  String instname
-  String instcode
   String email
   String shibbScope
   String apikey
@@ -29,20 +29,8 @@ class User implements Permissions {
   boolean accountLocked
   boolean passwordExpired
 
-    @Deprecated
-    Long defaultPageSize = new Long(10); // will be removed
-
   SortedSet affiliations
   SortedSet roles
-
-    @Deprecated
-    Org defaultDash   // will be removed
-  
-  // TODO: move to new table
-    @Deprecated
-    RefdataValue showInfoIcon     // will be removed
-    @Deprecated
-    RefdataValue showSimpleViews  // will be removed
 
   static hasMany = [ affiliations: com.k_int.kbplus.auth.UserOrg, roles: com.k_int.kbplus.auth.UserRole, reminders: com.k_int.kbplus.Reminder ]
   static mappedBy = [ affiliations: 'user', roles: 'user' ]
@@ -50,17 +38,11 @@ class User implements Permissions {
   static constraints = {
     username blank: false, unique: true
     password blank: false
-    instname blank: true, nullable: true
     display blank: true, nullable: true
-    instcode blank: true, nullable: true
     email blank: true, nullable: true
     shibbScope blank: true, nullable: true
-    defaultDash blank: true, nullable: true         // will be removed
-    defaultPageSize blank: true, nullable: true     // will be removed
     apikey blank: true, nullable: true
     apisecret blank: true, nullable: true
-    showInfoIcon blank:false, nullable:true         // will be removed
-    showSimpleViews blank:false, nullable:true      // will be removed
   }
 
   static mapping = {
@@ -135,7 +117,7 @@ class User implements Permissions {
   }
 
   @Transient def getAuthorizedAffiliations() {
-    affiliations.findAll { (it.status == UserOrg.STATUS_APPROVED) || (it.status==UserOrg.STATUS_AUTO_APPROVED) }
+    affiliations.findAll { it.status == UserOrg.STATUS_APPROVED }
   }
 
   @Transient List<Org> getAuthorizedOrgs() {
@@ -173,7 +155,6 @@ class User implements Permissions {
               }
               or {
                 eq("status",UserOrg.STATUS_APPROVED)
-                eq("status",UserOrg.STATUS_AUTO_APPROVED)
               }
              
       }
@@ -222,6 +203,11 @@ class User implements Permissions {
 
     def hasPerm(perm, user) {
         false
+    }
+
+    def hasRole(String roleName) {
+        //println SpringSecurityUtils.ifAnyGranted(roleName)
+        SpringSecurityUtils.ifAnyGranted(roleName)
     }
 
     def isAdmin() {
@@ -291,6 +277,10 @@ class User implements Permissions {
             }
         }
         result
+    }
+
+    static String generateRandomPassword() {
+        org.apache.commons.lang.RandomStringUtils.randomAlphanumeric(24)
     }
 
     @Override

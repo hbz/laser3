@@ -201,7 +201,7 @@ class DashboardDueDatesService {
                     from    from
                     replyTo replyTo
                     subject mailSubject
-                    body    (view: "/user/_emailDueDatesView", model: [user: user, org: org, dueDates: dashboardEntries])
+                    body    (view: "/mailTemplates/html/dashboardDueDates", model: [user: user, org: org, dueDates: dashboardEntries])
                 }
                 log.debug("DashboardDueDatesService - finished sendEmail() to "+ user.displayName + " (" + user.email + ") " + org.name);
             }

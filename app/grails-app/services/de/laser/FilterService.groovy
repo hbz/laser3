@@ -1,7 +1,10 @@
 package de.laser
 
+import com.k_int.kbplus.License
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.RefdataValue
+import com.k_int.kbplus.Subscription
+import com.k_int.kbplus.auth.User
 import de.laser.helper.RDStore
 import java.text.DateFormat
 
@@ -9,6 +12,8 @@ class FilterService {
 
     private static final Long FAKE_CONSTRAINT_ORGID_WITHOUT_HITS = new Long(-1)
     def springSecurityService
+    def genericOIDService
+    def contextService
 
     Map<String, Object> getOrgQuery(Map params) {
         Map<String, Object> result = [:]
@@ -21,9 +26,9 @@ class FilterService {
              queryParams << [orgNameContains2  : "%${params.orgNameContains.toLowerCase()}%"]
              queryParams << [orgNameContains3 : "%${params.orgNameContains.toLowerCase()}%"]
         }
-        if (params.orgRoleType?.length() > 0) {
-            query << " exists (select roletype from o.orgRoleType as roletype where roletype.id = :orgRoleType )"
-             queryParams << [orgRoleType : Long.parseLong(params.orgRoleType)]
+        if (params.orgType?.length() > 0) {
+            query << " exists (select roletype from o.orgType as roletype where roletype.id = :orgType )"
+             queryParams << [orgType : Long.parseLong(params.orgType)]
         }
         if (params.orgRole?.length() > 0) {
             query << " exists (select ogr from o.links as ogr where ogr.roleType.id = :orgRole )"
@@ -87,9 +92,9 @@ class FilterService {
             query << "o.orgType.id = ?"
              queryParams << [Long.parseLong(params.orgType)
         }*/
-        if (params.orgRoleType?.length() > 0) {
-            query << " exists (select roletype from o.orgRoleType as roletype where roletype.id = :orgRoleType )"
-             queryParams << [orgRoleType : Long.parseLong(params.orgRoleType)]
+        if (params.orgType?.length() > 0) {
+            query << " exists (select roletype from o.orgType as roletype where roletype.id = :orgType )"
+             queryParams << [orgType : Long.parseLong(params.orgType)]
         }
         if (params.orgSector?.length() > 0) {
             query << "o.sector.id = :orgSector"
@@ -160,6 +165,72 @@ class FilterService {
         result.query = query
         result.queryParams = queryParams
 
+        result
+    }
+
+    Map<String,Object> getDocumentQuery(Map params) {
+        Map result = [:]
+        List query = []
+        Map<String,Object> queryParams = [:]
+        if(params.docTitle) {
+            query << "lower(d.title) like lower(:title)"
+            queryParams << [title:"%${params.docTitle}%"]
+        }
+        if(params.docFilename) {
+            query << "lower(d.filename) like lower(:filename)"
+            queryParams << [filename:"%${params.docFilename}%"]
+        }
+        if(params.docCreator) {
+            query << "d.creator = :creator"
+            queryParams << [creator: User.get(params.docCreator)]
+        }
+        if(params.docType) {
+            query << "d.type = :type"
+            queryParams << [type: RefdataValue.get(params.docType)]
+        }
+        if(params.docTarget) {
+            List targetOIDs = params.docTarget.split(",")
+            Set targetQuery = []
+            List subs = [], orgs = [], licenses = [], pkgs = []
+            targetOIDs.each { t ->
+                //sorry, I hate def, but here, I cannot avoid using it ...
+                def target = genericOIDService.resolveOID(t)
+                switch(target.class.name) {
+                    case Subscription.class.name: targetQuery << "dc.subscription in (:subs)"
+                        subs << target
+                        break
+                    case Org.class.name: targetQuery << "dc.org in (:orgs)"
+                        orgs << target
+                        break
+                    case License.class.name: targetQuery << "dc.license in (:licenses)"
+                        licenses << target
+                        break
+                    case com.k_int.kbplus.Package.class.name: targetQuery << "dc.pkg in (:pkgs)"
+                        pkgs << target
+                        break
+                    default: log.debug(target.class.name)
+                        break
+                }
+            }
+            if(subs)
+                queryParams.subs = subs
+            if(orgs)
+                queryParams.orgs = orgs
+            if(licenses)
+                queryParams.licenses = licenses
+            if(pkgs)
+                queryParams.pkgs = pkgs
+            if(targetQuery)
+                query << "(${targetQuery.join(" or ")})"
+        }
+        if(params.noTarget) {
+            query << "dc.org = :context"
+            queryParams << [context:contextService.org]
+        }
+        if(query.size() > 0)
+            result.query = " and "+query.join(" and ")
+        else result.query = ""
+        result.queryParams = queryParams
         result
     }
 }

@@ -85,7 +85,7 @@ class PlatformController extends AbstractDebugController {
 
       editable = SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
 
-     // Build up a crosstab array of title-platforms under this package
+     /*// Build up a crosstab array of title-platforms under this package
       def packages = [:]
       def package_list = []
       def titles = [:]
@@ -132,7 +132,12 @@ class PlatformController extends AbstractDebugController {
         }
       }
 
-        [platformInstance: platformInstance, packages:package_list, crosstab:crosstab, titles:title_list, editable: editable]
+      [platformInstance: platformInstance, packages:package_list, crosstab:crosstab, titles:title_list, editable: editable, tipps: plattformTipps]
+      */
+
+        def plattformTipps = platformInstance.tipps.sort{it.title.title}
+
+        [platformInstance: platformInstance, editable: editable, tipps: plattformTipps]
 
     }
 

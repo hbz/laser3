@@ -5,12 +5,16 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.AuditConfig
 import de.laser.domain.AbstractI10nTranslatable
+import de.laser.helper.RDStore
 import de.laser.interfaces.ShareSupport
 import grails.plugin.springsecurity.annotation.Secured
 import grails.converters.*
 import com.k_int.properties.PropertyDefinition
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.springframework.context.i18n.LocaleContextHolder
+import org.springframework.web.servlet.LocaleResolver
+import org.springframework.web.servlet.support.RequestContextUtils
 
 import java.text.SimpleDateFormat
 
@@ -26,8 +30,8 @@ class AjaxController {
     def refdata_config = [
     "ContentProvider" : [
       domain:'Org',
-      countQry:"select count(o) from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?)",
-      rowQry:"select o from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?) order by o.name asc",
+      countQry:"select count(o) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?)",
+      rowQry:"select o from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?) order by o.name asc",
       qryParams:[
               [
                 param:'sSearch',
@@ -263,6 +267,16 @@ class AjaxController {
           if (target instanceof User) {
             session.userPereferences = null
           }
+
+            if (target instanceof UserSettings) {
+                if (target.key.toString() == 'LANGUAGE') {
+                    Locale newLocale = new Locale(value.value, value.value.toUpperCase())
+                    log.debug("UserSettings: LANGUAGE changed to: " + newLocale)
+
+                    LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request)
+                    localeResolver.setLocale(request, response, newLocale)
+                }
+            }
 
           if ( params.resultProp ) {
             result = value[params.resultProp]
@@ -514,8 +528,9 @@ class AjaxController {
             }
         }
 
-        if(result)
-        {
+        if(result) {
+            RefdataValue notSet = RDStore.GENERIC_NULL_VALUE
+            result.add([value:"${notSet.class.name}:${notSet.id}",text:notSet.getI10n("value")])
             result.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
         }
 
@@ -623,8 +638,43 @@ class AjaxController {
   }
 
   @Secured(['ROLE_USER'])
+  def lookupSubscriptionPackages() {
+      render controlledListService.getSubscriptionPackages(params) as JSON
+  }
+
+  @Secured(['ROLE_USER'])
   def lookupLicenses() {
     render controlledListService.getLicenses(params) as JSON
+  }
+
+  @Secured(['ROLE_USER'])
+  def lookupProviders() {
+      render controlledListService.getProviders(params) as JSON
+  }
+
+  @Secured(['ROLE_USER'])
+  def lookupBudgetCodes() {
+      render controlledListService.getBudgetCodes(params) as JSON
+  }
+
+  @Secured(['ROLE_USER'])
+  def lookupInvoiceNumbers() {
+      render controlledListService.getInvoiceNumbers(params) as JSON
+  }
+
+  @Secured(['ROLE_USER'])
+  def lookupOrderNumbers() {
+      render controlledListService.getOrderNumbers(params) as JSON
+  }
+
+  @Secured(['ROLE_USER'])
+  def lookupReferences() {
+      render controlledListService.getReferences(params) as JSON
+  }
+
+  @Secured(['ROLE_USER'])
+  def lookupCombined() {
+      render controlledListService.getElements(params) as JSON
   }
 
   /**
@@ -737,6 +787,12 @@ class AjaxController {
 
                 if (new_link.save(flush: true)) {
                     // log.debug("Org link added")
+                    if (owner instanceof ShareSupport && owner.checkSharePreconditions(new_link)) {
+                        new_link.isShared = true
+                        new_link.save(flush:true)
+
+                        owner.updateShare(new_link)
+                    }
                 } else {
                     log.error("Problem saving new org link ..")
                     new_link.errors.each { e ->
@@ -746,6 +802,20 @@ class AjaxController {
                 }
             }
         }
+        redirect(url: request.getHeader('referer'))
+    }
+
+    @Secured(['ROLE_USER'])
+    def delOrgRole() {
+        def or = OrgRole.get(params.id)
+
+        def owner = or.getOwner()
+        if (owner instanceof ShareSupport && or.isShared) {
+            or.isShared = false
+            owner.updateShare(or)
+        }
+        or.delete(flush:true)
+
         redirect(url: request.getHeader('referer'))
     }
 
@@ -969,7 +1039,7 @@ class AjaxController {
 
       request.setAttribute("editable", params.editable == "true")
       boolean showConsortiaFunctions = Boolean.parseBoolean(params.showConsortiaFunctions)
-      if(params.propDefGroup) {
+      if (params.propDefGroup) {
         render(template: "/templates/properties/group", model: [
                 ownobj          : owner,
                 newProp         : newProp,
@@ -980,17 +1050,29 @@ class AjaxController {
                 prop_desc       : type.descr // form data
         ])
       }
-      else {
-        render(template: "/templates/properties/custom", model: [
+      else if (params.onlyOrphaned) {
+          def allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
+
+          render(template: "/templates/properties/orphaned", model: [
                 ownobj          : owner,
                 newProp         : newProp,
-                showConortiaFunctions: showConsortiaFunctions,
+                showConsortiaFunctions: showConsortiaFunctions,
                 error           : error,
                 custom_props_div: "${params.custom_props_div}", // JS markup id
-                prop_desc       : type.descr // form data
+                prop_desc       : type.descr, // form data
+                orphanedProperties: allPropDefGroups.orphanedProperties
         ])
       }
-
+        else {
+          render(template: "/templates/properties/custom", model: [
+                  ownobj          : owner,
+                  newProp         : newProp,
+                  showConsortiaFunctions: showConsortiaFunctions,
+                  error           : error,
+                  custom_props_div: "${params.custom_props_div}", // JS markup id
+                  prop_desc       : type.descr // form data
+          ])
+      }
     }
     else {
       log.error("Form submitted with missing values")
@@ -1105,15 +1187,7 @@ class AjaxController {
       }
     }
 
-    @Secured(['ROLE_USER'])
-    def delOrgRole() {
-        // log.debug("delOrgRole ${params}");
-        def or = OrgRole.get(params.id)
-        or.delete(flush:true);
-        // log.debug("Delete link: ${or}");
-        redirect(url: request.getHeader('referer'))
-    }
-
+    @Deprecated
     @Secured(['ROLE_USER'])
     def showAuditConfigManager() {
 
@@ -1126,6 +1200,8 @@ class AjaxController {
             ])
         }
     }
+
+    @Deprecated
     @Secured(['ROLE_USER'])
     def processAuditConfigManager() {
 
@@ -1198,10 +1274,7 @@ class AjaxController {
 
         ((ShareSupport) owner).updateShare(sharedObject)
 
-        if (params.reload) {
-            redirect(url: request.getHeader('referer'))
-        }
-        else if (params.tmpl) {
+        if (params.tmpl) {
             if (params.tmpl == 'documents') {
                 render(template: '/templates/documents/card', model: [ownobj: owner, editable: true]) // TODO editable from owner
             }
@@ -1209,6 +1282,60 @@ class AjaxController {
                 render(template: '/templates/notes/card', model: [ownobj: owner, editable: true]) // TODO editable from owner
             }
         }
+        else {
+            redirect(url: request.getHeader('referer'))
+        }
+    }
+
+
+    @Secured(['ROLE_USER'])
+    def toggleAudit() {
+        String referer = request.getHeader('referer')
+
+        def owner = genericOIDService.resolveOID(params.owner)
+        if (owner) {
+            def members = owner.getClass().findAllByInstanceOf(owner)
+            def objProps = owner.getClass().controlledProperties
+            def prop = params.property
+
+            if (prop in objProps) {
+                if (! AuditConfig.getConfig(owner, prop)) {
+                    AuditConfig.addConfig(owner, prop)
+
+                    members.each { m ->
+                        m.setProperty(prop, owner.getProperty(prop))
+                        m.save(flush:true)
+                    }
+                }
+                else {
+                    AuditConfig.removeConfig(owner, prop)
+
+                    if (! params.keep) {
+                        members.each { m ->
+                            m.setProperty(prop, null)
+                            m.save(flush: true)
+                        }
+                    }
+
+                    // delete pending changes
+                    // e.g. PendingChange.changeDoc = {changeTarget, changeType, changeDoc:{OID,  event}}
+                    def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
+                    openPD.each { pc ->
+                        def event = JSON.parse(pc.changeDoc)
+                        if (event && event.changeDoc) {
+                            def eventObj = genericOIDService.resolveOID(event.changeDoc.OID)
+                            def eventProp = event.changeDoc.prop
+
+                            if (eventObj?.id == owner.id && eventProp.equalsIgnoreCase(prop)) {
+                                pc.delete(flush: true)
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+        redirect(url: request.getHeader('referer'))
     }
 
     @Secured(['ROLE_USER'])
@@ -1231,9 +1358,11 @@ class AjaxController {
             def openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null" )
             openPD.each { pc ->
                 def event = JSON.parse(pc.changeDoc)
-                def scp = genericOIDService.resolveOID(event.changeDoc.OID)
-                if (scp?.id == property.id) {
-                    pc.delete(flush: true)
+                if (event && event.changeDoc) {
+                    def scp = genericOIDService.resolveOID(event.changeDoc.OID)
+                    if (scp?.id == property.id) {
+                        pc.delete(flush: true)
+                    }
                 }
             }
         }
@@ -1285,6 +1414,18 @@ class AjaxController {
                   prop_desc       : prop_desc // form data
           ])
         }
+        else if (params.onlyOrphaned) {
+            def allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
+
+            render(template: "/templates/properties/orphaned", model: [
+                    ownobj            : owner,
+                    newProp           : property,
+                    showConsortiaFunctions: params.showConsortiaFunctions,
+                    custom_props_div: "${params.custom_props_div}", // JS markup id
+                    prop_desc         : prop_desc, // form data
+                    orphanedProperties: allPropDefGroups.orphanedProperties
+            ])
+        }
         else {
           render(template: "/templates/properties/custom", model: [
                   ownobj                : owner,
@@ -1332,6 +1473,18 @@ class AjaxController {
                   custom_props_div: "${params.custom_props_div}", // JS markup id
                   prop_desc       : prop_desc // form data
           ])
+        }
+        else if (params.onlyOrphaned) {
+            def allPropDefGroups = owner.getCalculatedPropDefGroups(contextService.getOrg())
+
+            render(template: "/templates/properties/orphaned", model: [
+                    ownobj            : owner,
+                    newProp           : property,
+                    showConsortiaFunctions: params.showConsortiaFunctions,
+                    custom_props_div: "${params.custom_props_div}", // JS markup id
+                    prop_desc         : prop_desc, // form data
+                    orphanedProperties: allPropDefGroups.orphanedProperties
+            ])
         }
         else {
           render(template: "/templates/properties/custom", model:[
@@ -1459,8 +1612,8 @@ class AjaxController {
     }
     query_params.add(fuzzyString)
     query_params.add(RefdataValue.getByValueAndCategory('Deleted', 'OrgStatus'))
-    String countQry = "select count(o) from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?)"
-    String rowQry = "select o from Org as o where exists (select roletype from o.orgRoleType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?) order by o.name asc"
+    String countQry = "select count(o) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?)"
+    String rowQry = "select o from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like ? and (o.status is null or o.status != ?) order by o.name asc"
     def cq = Org.executeQuery(countQry,query_params);
 
     def rq = Org.executeQuery(rowQry,

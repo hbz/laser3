@@ -94,7 +94,7 @@
                     </div><!-- .field -->
 
                     <div class="field">
-                        <label>${message(code:'financials.newCosts.controllable')}</label>
+                        <label>${message(code:'financials.newCosts.taxTypeAndRate')}</label>
                         <laser:select name="newCostTaxType" title="${g.message(code: 'financials.addNew.taxCategory')}" class="ui dropdown"
                                       from="${taxType}"
                                       optionKey="id"

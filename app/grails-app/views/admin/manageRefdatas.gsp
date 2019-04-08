@@ -1,10 +1,16 @@
 <%@ page import="de.laser.domain.I10nTranslation; com.k_int.kbplus.RefdataCategory; com.k_int.kbplus.RefdataValue" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 <!doctype html>
 <html>
 	<head>
 		<meta name="layout" content="semanticUI">
-		<title>${message(code: 'menu.admin.manageRefdatas')}</title>
+		<title>${message(code:'laser', default:'LAS:eR')} : ${message(code: 'menu.admin.manageRefdatas')}</title>
 	</head>
+
+        <semui:debugInfo>
+            <g:render template="/templates/refdata/integrityCheck" model="[result: integrityCheckResult]" />
+        </semui:debugInfo>
+
 
 		<semui:breadcrumbs>
 			<semui:crumb message="menu.admin.dash" controller="admin" action="index" />
@@ -64,10 +70,20 @@ ${usedRdvList.join(", ")}
                                 </td>
                                 <td></td>
                                 <td>
-                                    <strong><semui:xEditable owner="${rdcI10n}" field="valueDe" /></strong>
+                                    <g:if test="${!rdc.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                        <strong><semui:xEditable owner="${rdcI10n}" field="valueDe" /></strong>
+                                    </g:if>
+                                    <g:else>
+                                        <strong>${rdcI10n.valueDe}</strong>
+                                    </g:else>
                                 </td>
                                 <td>
-                                    <strong><semui:xEditable owner="${rdcI10n}" field="valueEn" /></strong>
+                                    <g:if test="${!rdc.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                        <strong><semui:xEditable owner="${rdcI10n}" field="valueEn" /></strong>
+                                    </g:if>
+                                    <g:else>
+                                        <strong>${rdcI10n.valueEn}</strong>
+                                    </g:else>
                                 </td>
                                 <td>
                                 </td>
@@ -92,10 +108,20 @@ ${usedRdvList.join(", ")}
                                         ${rdv.value}
                                     </td>
                                     <td>
-                                        <semui:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueDe" />
+                                        <g:if test="${!rdv.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                            <semui:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueDe" />
+                                        </g:if>
+                                        <g:else>
+                                            ${rdv.getI10n('value', 'de')}
+                                        </g:else>
                                     </td>
                                     <td>
-                                        <semui:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueEn" />
+                                        <g:if test="${!rdv.hardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
+                                            <semui:xEditable owner="${I10nTranslation.createI10nOnTheFly(rdv, 'value')}" field="valueEn" />
+                                        </g:if>
+                                        <g:else>
+                                            ${rdv.getI10n('value', 'en')}
+                                        </g:else>
                                     </td>
                                     <td class="x">
                                         <sec:ifAnyGranted roles="ROLE_YODA">

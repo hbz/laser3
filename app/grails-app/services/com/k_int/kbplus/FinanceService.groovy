@@ -7,6 +7,7 @@ import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
+import java.time.Year
 
 /**
  * This service will subsequently replace the very complicatedly written methods in the FinanceController class.
@@ -17,7 +18,6 @@ import java.text.SimpleDateFormat
 class FinanceService {
 
     def contextService
-    def controlledListService
     def genericOIDService
     def messageSource
 
@@ -90,11 +90,11 @@ class FinanceService {
             b) owner = consortium and sub = contextSub and visibleForSubscriber
          */
             case TemplateSupport.CALCULATED_TYPE_PARTICIPATION:
-                Org subscrCons = Org.executeQuery("select o.org from OrgRole as o where o.sub = :sub and o.roleType = :cons",[sub:sub,cons: RDStore.OR_SUBSCRIPTION_CONSORTIA]).get(0)
                 String visibility = ""
-                if(!subscrCons.equals(org))
+                if(sub.getConsortia().id != org.id) {
                     visibility = " and ci.isVisibleForSubscriber = true"
-                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner = :owner and ci.sub = :sub'+visibility+filterSubscrQuery[0],[owner:subscrCons,sub:sub]+filterSubscrQuery[1])
+                }
+                List subscrCostItems = CostItem.executeQuery('select ci from CostItem as ci where ci.owner = :owner and ci.sub = :sub'+visibility+filterSubscrQuery[0],[owner:sub.getConsortia(),sub:sub]+filterSubscrQuery[1])
                 List costItems = []
                 limit = subscrOffset+max
                 if(limit > subscrCostItems.size())
@@ -118,13 +118,6 @@ class FinanceService {
                     result.cons.sums = sums
                 }
                 break
-        }
-        if(!params.forExport) {
-            List<CostItem> allCostItems = CostItem.findAllByOwnerAndSub(org,sub)
-            if(allCostItems.size() > 0) {
-                result.filterLists = assembleFilterLists()
-                result.filterLists.providers = OrgRole.executeQuery('select distinct o.org, o.org.name from OrgRole o where o.roleType = :provider and o.sub = :sub order by o.org.name asc',[sub:sub,provider:RDStore.OR_PROVIDER]).collect{ it -> it[0] }
-            }
         }
         result
     }
@@ -161,7 +154,7 @@ class FinanceService {
         ownSubscriptionCostItems.addAll(CostItem.executeQuery('select ci from CostItem ci join ci.sub sub join sub.orgRelations orgRoles where ' +
                 'ci.owner = :org and orgRoles.org = :org and orgRoles.roleType in :nonConsTypes and sub.status != :deleted'+filterQueryOwn[0]+' order by sub.name asc',
                 [org:org,nonConsTypes:[RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS],deleted:RDStore.SUBSCRIPTION_DELETED]+filterQueryOwn[1]))
-        ownSubscriptionCostItems.addAll(CostItem.executeQuery('select ci from CostItem ci where ci.owner = :org and ci.sub is null',[org:org]))
+        ownSubscriptionCostItems.addAll(CostItem.executeQuery('select ci from CostItem ci where ci.owner = :org and ci.sub is null'+filterQueryOwn[0],[org:org]+filterQueryOwn[1]))
         result.own.costItems = []
         long limit = ownOffset+max
         if(limit > ownSubscriptionCostItems.size())
@@ -216,14 +209,7 @@ class FinanceService {
         if(result.subscr.count > 0) {
             result.subscr.sums = calculateResults(consortialMemberSubscriptionCostItems)
         }
-        if(!params.forExport) {
-            List<CostItem> allCostItems = CostItem.findAllByOwner(org)
-            if(allCostItems.size() > 0) {
-                result.filterLists = assembleFilterLists()
-                result.filterLists.providers = OrgRole.executeQuery('select distinct o.org, o.org.name from OrgRole o where o.roleType = :provider order by o.org.name asc',[provider:RDStore.OR_PROVIDER]).collect{ it -> it[0] }
-            }
-            result.filterPresets = filterQueryCons[1]
-        }
+        result.filterPresets = filterQueryCons[1]
         result
     }
 
@@ -255,7 +241,7 @@ class FinanceService {
             List<Org> filterSubProviders = []
             String[] subProviders = params.list("filterSubProviders")
             subProviders.each { subProvider ->
-                filterSubProviders.add(Org.get(Long.parseLong(subProvider)))
+                filterSubProviders.add(genericOIDService.resolveOID(subProvider))
             }
             queryParams.filterSubProviders = filterSubProviders
             log.info(queryParams.filterSubProviders)
@@ -292,7 +278,7 @@ class FinanceService {
         if(params.filterCISub) {
             filterQuery += " and sub in (:filterCISub) "
             List<Subscription> filterSubs = []
-            String[] subscriptions = params.list("filterCISub")
+            String[] subscriptions = params.filterCISub.split(',')
             subscriptions.each { sub ->
                 filterSubs.add((Subscription) genericOIDService.resolveOID(sub))
             }
@@ -303,7 +289,7 @@ class FinanceService {
         if(params.filterCISPkg) {
             filterQuery += " and sub in (select subscription from SubscriptionPackage where pkg in (:filterCISPkg)) "
             List<SubscriptionPackage> filterSubPackages = []
-            String[] subscriptionPackages = params.list("filterCISPkg")
+            String[] subscriptionPackages = params."filterCISPkg".split(',')
             subscriptionPackages.each { subPkg ->
                 filterSubPackages.add((SubscriptionPackage) genericOIDService.resolveOID(subPkg))
             }
@@ -314,7 +300,7 @@ class FinanceService {
         if(params.filterCIBudgetCode) {
             filterQuery += " and ci in (select cig.costItem from CostItemGroup cig where cig.budgetCode in (:filterCIBudgetCode)) "
             List<BudgetCode> filterBudgetCodes = []
-            String[] budgetCodes = params.list("filterCIBudgetCode")
+            String[] budgetCodes = params."filterCIBudgetCode".split(',')
             budgetCodes.each { bc ->
                 filterBudgetCodes.add(BudgetCode.get(Long.parseLong(bc)))
             }
@@ -324,7 +310,7 @@ class FinanceService {
         //reference/code
         if(params.filterCIReference) {
             filterQuery += " and ci.reference in (:filterCIReference) "
-            List<String> filterReferences = params.list("filterCIReference")
+            List<String> filterReferences = params."filterCIReference".split(',')
             queryParams.filterCIReference = filterReferences
             log.info(queryParams.filterCIReference)
         }
@@ -332,7 +318,7 @@ class FinanceService {
         if(params.filterCIInvoiceNumber) {
             filterQuery += " and ci.invoice.invoiceNumber in (:filterCIInvoiceNumber) "
             List<String> filterInvoiceNumbers = []
-            String[] invoiceNumbers = params.list("filterCIInvoiceNumber")
+            String[] invoiceNumbers = params."filterCIInvoiceNumber".split(',')
             invoiceNumbers.each { invNum ->
                 filterInvoiceNumbers.add(invNum)
             }
@@ -343,7 +329,7 @@ class FinanceService {
         if(params.filterCIOrderNumber) {
             filterQuery += " and ci.order.orderNumber in (:filterCIOrderNumber) "
             List<String> filterOrderNumbers = []
-            String[] orderNumbers = params.list("filterCIOrderNumber")
+            String[] orderNumbers = params."filterCIOrderNumber".split(',')
             orderNumbers.each { orderNum ->
                 filterOrderNumbers.add(orderNum)
             }
@@ -354,7 +340,7 @@ class FinanceService {
         if(params.filterCIElement) {
             filterQuery += " and ci.costItemElement in (:filterCIElement) "
             List<RefdataValue> filterElements = []
-            String[] costItemElements = params.list("filterCIElement")
+            String[] costItemElements = params."filterCIElement".split(',')
             costItemElements.each { cie ->
                 filterElements.add(genericOIDService.resolveOID(cie))
             }
@@ -365,7 +351,7 @@ class FinanceService {
         if(params.filterCIStatus) {
             filterQuery += " and ci.costItemStatus in (:filterCIStatus) "
             List<RefdataValue> filterStatus = []
-            String[] costItemStatus = params.list("filterCIStatus")
+            String[] costItemStatus = params."filterCIStatus".split(',')
             costItemStatus.each { cis ->
                 filterStatus.add(genericOIDService.resolveOID(cis))
             }
@@ -374,21 +360,16 @@ class FinanceService {
         }
         //tax type
         if(params.filterCITaxType) {
-            filterQuery += " and ci.taxCode in (:filterCITaxType) "
-            List<RefdataValue> filterTaxType = []
-            String[] taxTypes = params.list("filterCITaxType")
-            taxTypes.each { taxType ->
-                filterTaxType.add(genericOIDService.resolveOID(taxType))
-            }
-            queryParams.filterCITaxType = filterTaxType
+            filterQuery += " and ci.taxKey = :filterCITaxType "
+            queryParams.filterCITaxType = CostItem.TAX_TYPES.valueOf(params.filterCITaxType)
             log.info(params.filterCITaxType)
         }
-        //valid on
-        if(params.filterCIValidOn) {
-            filterQuery += " and (ci.startDate <= :filterCIValidOn OR ci.startDate is null) and (ci.endDate >= :filterCIValidOn OR ci.endDate is null) "
-            Date validOn = sdf.parse(params.filterCIValidOn)
-            queryParams.filterCIValidOn = validOn
-            log.info(queryParams.filterCIValidOn)
+        //financial year
+        if(params.filterCIFinancialYear) {
+            filterQuery += " and ci.financialYear = :filterCIFinancialYear "
+            Year financialYear = Year.parse(params.filterCIFinancialYear)
+            queryParams.filterCIFinancialYear = financialYear
+            log.info(queryParams.filterCIFinancialYear)
         }
         //invoice from
         if(params.filterCIInvoiceFrom) {
@@ -403,6 +384,13 @@ class FinanceService {
             Date invoiceTo = sdf.parse(params.filterCIInvoiceTo)
             queryParams.filterCIInvoiceTo = invoiceTo
             log.info(queryParams.filterCIInvoiceTo)
+        }
+        //valid on
+        if(params.filterCIValidOn) {
+            filterQuery += " and (ci.startDate <= :filterCIValidOn OR ci.startDate is null) and (ci.endDate >= :filterCIValidOn OR ci.endDate is null) "
+            Date validOn = sdf.parse(params.filterCIValidOn)
+            queryParams.filterCIValidOn = validOn
+            log.info(queryParams.filterCIValidOn)
         }
         //paid from
         if(params.filterCIPaidFrom) {
@@ -440,10 +428,11 @@ class FinanceService {
      *
      */
     Map calculateResults(List<CostItem> costItems) {
-        List<Map> billingSumsPositive = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * ((ci.taxRate/100.0) + 1)) as billingSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive' group by ci.billingCurrency.value",[costItems:costItems])
-        List<Map> billingSumsNegative = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * ((ci.taxRate/100.0) + 1)) as billingSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'negative' group by ci.billingCurrency.value",[costItems:costItems])
-        Map localSumsPositive = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * ((ci.taxRate / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive'",[costItems:costItems]).get(0)
-        Map localSumsNegative = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * ((ci.taxRate / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'negative'",[costItems:costItems]).get(0)
+        //List<Map> billingSumsPositive = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * ((ci.taxKey.taxRate/100.0) + 1)) as billingSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive' group by ci.billingCurrency.value",[costItems:costItems])
+        List<Map> billingSumsPositive = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive' group by ci.billingCurrency.value",[costItems:costItems,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax19:CostItem.TAX_TYPES.TAXABLE_19])
+        List<Map> billingSumsNegative = CostItem.executeQuery("select NEW map(ci.billingCurrency.value as currency,sum(ci.costInBillingCurrency) as billingSum,sum(ci.costInBillingCurrency * (((case when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax19 then 19 else 0 end)/100.0) + 1)) as billingSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'negative' group by ci.billingCurrency.value",[costItems:costItems,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax19:CostItem.TAX_TYPES.TAXABLE_19])
+        Map localSumsPositive = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax19 then 19 else 0 end) / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'positive'",[costItems:costItems,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax19:CostItem.TAX_TYPES.TAXABLE_19]).get(0)
+        Map localSumsNegative = CostItem.executeQuery("select NEW map(sum(ci.costInLocalCurrency) as localSum,sum(ci.costInLocalCurrency * (((case when ci.taxKey = :tax7 then 7 when ci.taxKey = :tax19 then 19 else 0 end) / 100.0) + 1)) as localSumAfterTax) from CostItem ci where ci in :costItems and ci.costItemElementConfiguration.value = 'negative'",[costItems:costItems,tax7:CostItem.TAX_TYPES.TAXABLE_7,tax19:CostItem.TAX_TYPES.TAXABLE_19]).get(0)
         List<Map> billingSums = []
         Map localSums = [:]
         double billingSum = 0.0
@@ -503,18 +492,6 @@ class FinanceService {
             }
         }
         return ret
-    }
-
-    Map assembleFilterLists() {
-        log.info("assembling filter lists")
-        Org org = contextService.getOrg()
-        List budgetCodes = BudgetCode.executeQuery("select bc from BudgetCode bc where owner = :org",[org:org])
-        List invoiceNumbers = Invoice.executeQuery("select i.invoiceNumber from Invoice i where i.owner = :org",[org:org])
-        List orderNumbers = Order.executeQuery("select ord.orderNumber from Order ord where ord.owner = :org",[org:org])
-        List references = CostItem.executeQuery("select distinct ci.reference from CostItem ci where ci.owner = :org and ci.reference is not null order by ci.reference asc",[org:org])
-        return [subscriptions: controlledListService.getSubscriptions([status:RDStore.SUBSCRIPTION_CURRENT]).values,
-                subPackages: controlledListService.getSubscriptionPackages([status:RDStore.SUBSCRIPTION_CURRENT]).values,
-                references: references, budgetCodes: budgetCodes,invoiceNumbers: invoiceNumbers,orderNumbers: orderNumbers]
     }
 
 }

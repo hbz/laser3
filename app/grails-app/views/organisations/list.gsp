@@ -4,12 +4,12 @@
     <head>
         <meta name="layout" content="semanticUI">
         <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
-        <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="menu.institutions.all_orgs" /></title>
+        <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="menu.public.all_orgs" /></title>
     </head>
     <body>
 
         <semui:breadcrumbs>
-            <semui:crumb message="menu.institutions.all_orgs" class="active" />
+            <semui:crumb message="menu.public.all_orgs" class="active" />
         </semui:breadcrumbs>
 
 
@@ -23,7 +23,7 @@
             </semui:controlButtons>
 
 
-        <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.institutions.all_orgs" />
+        <h1 class="ui left aligned icon header"><semui:headerIcon /><g:message code="menu.public.all_orgs" />
             <semui:totalNumber total="${orgListTotal}"/>
         </h1>
 

@@ -1,97 +1,156 @@
-<%@ page import="com.k_int.kbplus.Org;com.k_int.kbplus.UserSettings" %>
+<%@ page import="com.k_int.kbplus.Org;com.k_int.kbplus.UserSettings;com.k_int.kbplus.auth.UserOrg" %>
 <!doctype html>
 <html>
-  <head>
-    <meta name="layout" content="semanticUI">
-    <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
-    <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="default.show.label" args="[entityName]" /></title>
-  </head>
-  <body>
+    <head>
+        <meta name="layout" content="semanticUI">
+        <g:set var="entityName" value="${message(code: 'org.label', default: 'Org')}" />
+        <title>${message(code:'laser', default:'LAS:eR')} : <g:message code="default.show.label" args="[entityName]" /></title>
+    </head>
+    <body>
 
     <g:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
 
-      <h1 class="ui left aligned icon header"><semui:headerIcon />
+    <semui:controlButtons>
+        <g:render template="actions" />
+    </semui:controlButtons>
 
+    <h1 class="ui left aligned icon header">
+        <semui:headerIcon />
         ${orgInstance.name}
-      </h1>
+    </h1>
 
-      <g:render template="nav" />
+    <g:render template="nav" />
 
-      <semui:messages data="${flash}" />
+    <semui:messages data="${flash}" />
 
-      <table  class="ui celled la-table table">
+    <g:if test="${pendingRequests && editable}">
+
+        <h3 class="ui header">Offene Anfragen</h3>
+
+        <table class="ui celled la-table table">
+            <thead>
+            <tr>
+                <th>${message(code:'user.username.label')}</th>
+                <th>${message(code:'user.displayName.label')}</th>
+                <th>${message(code:'user.email')}</th>
+                <th>${message(code:'profile.membership.role')}</th>
+                <th>${message(code: "profile.membership.date2")}</th>
+                <th>${message(code:'user.status')}</th>
+                <th></th>
+            </tr>
+            </thead>
+
+            <g:each in="${pendingRequests}" var="uo">
+                <tr>
+                    <td>
+                        ${uo.user.username}
+                    </td>
+                    <td>
+                        ${uo.user.displayName}
+                    </td>
+                    <td>
+                        ${uo.user.email}
+                    </td>
+                    <td>
+                        <g:message code="cv.roles.${uo.formalRole?.authority}"/>
+                    </td>
+                    <td>
+                        <g:formatDate format="dd. MMMM yyyy" date="${uo.dateRequested}"/>
+                    </td>
+                    <td>
+                        <g:message code="cv.membership.status.${uo.status}" />
+                    </td>
+                    <td class="x">
+                        <g:link controller="organisations" action="processAffiliation"
+                                params="${[assoc:uo.id, id:params.id, cmd:'approve']}" class="ui icon positive button"
+                                data-tooltip="${message(code:'profile.membership.accept.button')}" data-position="top left" >
+                            <i class="checkmark icon"></i>
+                        </g:link>
+
+                        <g:link controller="organisations" action="processAffiliation"
+                                params="${[assoc:uo.id, id:params.id, cmd:'reject']}" class="ui icon negative button"
+                                data-tooltip="${message(code:'profile.membership.cancel.button')}" data-position="top left" >
+                            <i class="times icon"></i>
+                        </g:link>
+                    </td>
+                </tr>
+            </g:each>
+        </table>
+
+        <h3 class="ui header">${message(code: 'profile.membership.existing')}</h3>
+
+    </g:if>
+
+    <sec:ifNotGranted roles="ROLE_ADMIN">
+        <div class="ui info message">${message(code:'user.edit.info')}</div>
+    </sec:ifNotGranted>
+
+    <table class="ui celled la-table table">
         <thead>
-          <tr>
-            <th>${message(code:'user.label', default:'User')}</th>
-            <th>${message(code:'user.email', default:'Email')}</th>
-            <th>${message(code:'user.sys_role', default:'System Role')}</th>
-            <th>${message(code:'user.inst_role', default:'Institutional Role')}</th>
-            <th>${message(code:'user.status', default:'Status')}</th>
-            <th>${message(code:'user.actions', default:'Actions')}</th>
-          </tr>
+        <tr>
+            <th>${message(code:'user.username.label')}</th>
+            <th>${message(code:'user.displayName.label')}</th>
+            <th>${message(code:'user.email')}</th>
+            <th>${message(code:'profile.membership.role')}</th>
+            <%--<th>${message(code:'user.sys_role', default:'System Role')}</th>--%>
+            <g:if test="${editable}">
+                <th></th>
+            </g:if>
+        </tr>
         </thead>
 
-        <g:each in="${users}" var="userOrg">
-          <tr>
-            <td>
-                <g:link controller="userDetails" action="edit" id="${userOrg[0].user.id}">
-                    ${userOrg[0].user.displayName}
-                  <g:if test="${userOrg[0].user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.name}">
-                    <br>
-                    ${userOrg[0].user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.name}
-                  </g:if>
-                </g:link>
-            </td>
-            <td>
-                ${userOrg[0].user.email}
-            </td>
-            <td>
-              <g:if test="${userOrg[1]}">
-                <ul>
-                  <g:each in="${userOrg[1]}" var="admRole">
-                    <li>${admRole}</li>
-                  </g:each>
-                </ul>
-                </g:if>
-            </td>
-            <td><g:message code="cv.roles.${userOrg[0].formalRole?.authority}"/></td>
-            <td>
-              <g:message code="cv.membership.status.${userOrg[0].status}" />
-            </td>
-            <td class="x">
-              <g:if test="${editable}">
-                <g:if test="${((userOrg[0].status==1 ) || (userOrg[0].status==3)) }">
-                  <span data-tooltip="${message(code:'profile.membership.cancel.button')}" data-position="right center">
-                    <g:link controller="organisations" action="revokeRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui icon negative button">
-                      <i class="times icon"></i>
-                    </g:link>
-                  </span>
-                </g:if>
-                <g:else>
-                  <span data-tooltip="${message(code:'profile.membership.accept.button')}" data-position="right center">
-                    <g:link controller="organisations" action="enableRole" params="${[grant:userOrg[0].id, id:params.id]}" class="ui icon positive button">
-                      <i class="checkmark icon"></i>
-                    </g:link>
-                  </span>
-                </g:else>
-                <span data-tooltip="${message(code:'profile.membership.delete.button')}" data-position="right center">
-                  <g:link class="ui icon negative button js-open-confirm-modal"
-                          data-confirm-term-what="user"
-                          data-confirm-term-what-detail="${userOrg[0].user.displayName}"
-                          data-confirm-term-where="organisation"
-                          data-confirm-term-where-detail="${userOrg[0].user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.name}"
-                          data-confirm-term-how="delete"
-                          controller="organisations"
-                          action="deleteRole"
-                          params="${[grant:userOrg[0].id, id:params.id]}">
-                    <i class="trash alternate icon"></i>
-                  </g:link>
-                </span>
-              </g:if>
-            </td>
-          </tr>
-        </g:each>
-      </table>
+        <g:each in="${users}" var="uo">
+            <tr>
+                <td>
+                    ${uo.user.username}
 
-  </body>
+                    <g:if test="${! uo.user.enabled}">
+                        <span data-position="top left" data-tooltip="${message(code:'user.disabled.text')}">
+                            <i class="icon minus circle red"></i>
+                        </span>
+                    </g:if>
+                </td>
+                <td>
+                    ${uo.user.displayName}
+                </td>
+                <td>
+                    ${uo.user.email}
+                </td>
+                <td>
+                    <g:message code="cv.roles.${uo.formalRole?.authority}"/>
+                </td>
+
+                <g:if test="${editable}">
+                    <td class="x">
+                        <%
+                            boolean checkEditable = Org.executeQuery(
+                                    'SELECT DISTINCT uo.org from UserOrg uo where uo.user = :user',
+                                    [user: uo.user]
+                            ).size() == 1
+                        %>
+                        <g:if test="${checkEditable}">
+                            <g:link controller="user" action="edit" id="${uo.user.id}" class="ui icon button">
+                                <i class="icon write"></i>
+                            </g:link>
+                        </g:if>
+
+                        <g:link class="ui icon negative button js-open-confirm-modal"
+                                data-confirm-term-what="user"
+                                data-confirm-term-what-detail="${uo.user.displayName}"
+                                data-confirm-term-where="organisation"
+                                data-confirm-term-where-detail="${uo.user.getSettingsValue(UserSettings.KEYS.DASHBOARD)?.name}"
+                                data-confirm-term-how="delete"
+                                controller="organisations"
+                                action="processAffiliation"
+                                params="${[assoc:uo.id, id:params.id, cmd:'delete']}"
+                                data-tooltip="${message(code:'profile.membership.delete.button')}" data-position="top left" >
+                            <i class="trash alternate icon"></i>
+                        </g:link>
+                    </td>
+                </g:if>
+            </tr>
+        </g:each>
+    </table>
+
+</body>
 </html>

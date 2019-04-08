@@ -56,7 +56,7 @@ class ApiReader {
 
         result.reference           = costItem.reference
         result.startDate           = costItem.startDate
-        result.taxRate             = costItem.taxRate
+        result.taxRate             = costItem.taxKey?.taxRate ?: costItem.taxRate
 
         // erms-888
         result.calculatedType      = costItem.getCalculatedType()
@@ -67,7 +67,7 @@ class ApiReader {
         result.costItemCategory    = costItem.costItemCategory?.value
         result.billingCurrency     = costItem.billingCurrency?.value
         result.costItemElement     = costItem.costItemElement?.value
-        result.taxCode             = costItem.taxCode?.value
+        result.taxCode             = costItem.taxKey?.taxType?.value ?: costItem.taxCode?.value
         result.costItemElementConfiguration = costItem.costItemElementConfiguration?.value
 
         // References
@@ -200,23 +200,29 @@ class ApiReader {
      * @param com.k_int.kbplus.Org context
      * @return
      */
-    @Deprecated
     static exportOrganisation(Org org, Org context) {
         def result = [:]
 
         org = GrailsHibernateUtil.unwrapIfProxy(org)
 
         result.globalUID    = org.globalUID
+        result.gokbId       = org.gokbId
         result.comment      = org.comment
         result.name         = org.name
         result.scope        = org.scope
-        result.fteStudents  = org.fteStudents
-        result.fteStaff     = org.fteStaff
+        result.shortname    = org.shortname
+        result.sortname     = org.sortname
+        result.federalState = org.federalState?.value
+        result.country      = org.country?.value
+        result.libraryType  = org.libraryType?.value
+
+        //result.fteStudents  = org.fteStudents // TODO dc/table numbers
+        //result.fteStaff     = org.fteStaff // TODO dc/table numbers
 
         // RefdataValues
 
         result.sector       = org.sector?.value
-        result.type         = org.orgType?.value
+        result.type         = org.orgType?.collect{ it -> it.value }
         result.status       = org.status?.value
 
         // References
@@ -260,7 +266,7 @@ class ApiReader {
         result.forumId          = pkg.forumId
         //result.identifier       = pkg.identifier - TODO refactoring legacy
         result.impId            = pkg.impId
-        result.gokbId            = pkg.gokbId
+        result.gokbId           = pkg.gokbId
         result.lastUpdated      = pkg.lastUpdated
         result.name             = pkg.name
         result.vendorURL        = pkg.vendorURL
@@ -425,8 +431,12 @@ class ApiReader {
 
     // ################### HELPER ###################
 
-    static isDataManager(User user) {
-        def role = UserRole.findAllWhere(user: user, role: Role.findByAuthority('ROLE_API_DATAMANAGER'))
-        return ! role.isEmpty()
+    static isDataManager(Org org) {
+        def apiLevel = OrgSettings.get(org, OrgSettings.KEYS.API_LEVEL)
+
+        if (apiLevel != OrgSettings.SETTING_NOT_FOUND) {
+            return ApiManager.API_LEVEL_DATAMANAGER == apiLevel.getValue()
+        }
+        return false
     }
 }

@@ -101,12 +101,12 @@
                         <g:each in="${hits}" var="hit">
                             <g:if test="${!params.gokbApi}">
                                 <tr>
-                                    <td><g:link controller="packageDetails" action="show"
+                                    <td><g:link controller="package" action="show"
                                                 id="${hit.getSource().dbId}">${hit.getSource().name}</g:link>(${hit.getSource()?.titleCount ?: '0'} ${message(code: 'title.plural', default: 'Titles')})</td>
                                     <%--<td>${hit.getSource().consortiaName}</td>--%>
                                     <td>
                                         <g:if test="${editable && (!pkgs || !pkgs.contains(hit.getSource().dbId.toLong()))}">
-                                            <g:link action="linkPackage" class="ui mini button packageLink"
+                                            <g:link action="linkPackage" class="ui mini button packageLinkWithoutIE"
                                                     id="${params.id}"
                                                     params="${[addId: hit.getSource().dbId, addType: 'Without']}"
                                                     style="white-space:nowrap;">${message(code: 'subscription.details.link.no_ents', default: 'Link (no Entitlements)')}</g:link>
@@ -126,7 +126,7 @@
                                 <tr>
                                     <td>
                                         <g:if test="${com.k_int.kbplus.Package.findByGokbId(hit.uuid)}">
-                                            <g:link controller="packageDetails" target="_blank" action="show"
+                                            <g:link controller="package" target="_blank" action="show"
                                                     id="${com.k_int.kbplus.Package.findByGokbId(hit.uuid).id}">${hit.name}</g:link>
                                         </g:if>
                                         <g:else>
@@ -149,7 +149,7 @@
 
                                     <td class="right aligned">
                                         <g:if test="${editable && (!pkgs || !(hit.uuid in pkgs))}">
-                                            <g:link action="linkPackage" class="ui mini button packageLink"
+                                            <g:link action="linkPackage" class="ui mini button packageLinkWithoutIE"
                                                     id="${params.id}"
                                                     params="${[impId: hit.uuid, addType: 'Without']}"
                                                     style="white-space:nowrap;">${message(code: 'subscription.details.link.no_ents', default: 'Link (no Entitlements)')}</g:link>
@@ -211,7 +211,7 @@
 
             <div class="content">
                 <g:each in="${subscriptionInstance.packages.sort { it.pkg.name }}" var="sp">
-                    <div class="item"><g:link controller="packageDetails" action="show"
+                    <div class="item"><g:link controller="package" action="show"
                                               id="${sp.pkg.id}">${sp.pkg.name}</g:link>
                         <g:if test="${editable}">
                             <br>
@@ -261,6 +261,18 @@
             evt.preventDefault();
 
             var check = confirm('${message(code: 'subscription.details.link.with_ents.confirm', default: 'Are you sure you want to add with entitlements?')}');
+            console.log(check)
+            if (check == true) {
+                toggleAlert();
+                window.open($(this).attr('href'), "_self");
+            }
+        });
+
+        $(".packageLinkWithoutIE").click(function(evt) {
+
+            evt.preventDefault();
+
+            var check = confirm('${message(code: 'subscription.details.link.no_ents.confirm', default: 'Are you sure you want to add with entitlements?')}');
             console.log(check)
             if (check == true) {
                 toggleAlert();

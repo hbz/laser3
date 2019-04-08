@@ -1,5 +1,7 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RefdataAnnotation
+
 
 class PersonRole implements Comparable<PersonRole>{
     private static final String REFDATA_GENERAL_CONTACT_PRS = "General contact person"
@@ -7,9 +9,14 @@ class PersonRole implements Comparable<PersonRole>{
     static TYPE_FUNCTION = 'functionType'
     static TYPE_POSITION = 'positionType'
 
-    RefdataValue    positionType        // 'Person Position'; exclusive with other types
-    RefdataValue    functionType        // 'Person Function'; exclusive with other types
-    RefdataValue    responsibilityType  // 'Person Responsibility'; exclusive other types
+    @RefdataAnnotation(cat = 'Person Position')
+    RefdataValue    positionType  //  exclusive with other types
+
+    @RefdataAnnotation(cat = 'Person Function')
+    RefdataValue    functionType   // exclusive with other types
+
+    @RefdataAnnotation(cat = 'Person Responsibility')
+    RefdataValue    responsibilityType  // exclusive other types
 
     License         lic
     Cluster         cluster

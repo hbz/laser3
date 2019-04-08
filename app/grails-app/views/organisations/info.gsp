@@ -114,7 +114,7 @@
                   <g:each in="${link_cat.links}" var="i">
                     <li>
                       <g:if test="${i.pkg}">
-                        <g:link controller="packageDetails" action="show" id="${i.pkg.id}">
+                        <g:link controller="package" action="show" id="${i.pkg.id}">
                           ${message(code:'package.label', default:'Package')}: ${i.pkg.name} (${i.pkg?.packageStatus?.getI10n('value')})
                         </g:link>
                       </g:if>
@@ -129,7 +129,7 @@
                         </g:link>
                       </g:if>
                       <g:if test="${i.title}">
-                        <g:link controller="titleDetails" action="show" id="${i.title.id}">
+                        <g:link controller="title" action="show" id="${i.title.id}">
                           ${message(code:'title.label', default:'Title')}: ${i.title.title} (${i.title.status?.getI10n('value')})
                         </g:link>
                       </g:if> 

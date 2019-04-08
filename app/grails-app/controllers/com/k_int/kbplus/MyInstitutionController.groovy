@@ -10,13 +10,15 @@ import de.laser.helper.DateUtil
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import org.apache.poi.hslf.model.*
 import org.apache.poi.hssf.usermodel.*
 import org.apache.poi.hssf.util.HSSFColor
 import org.apache.poi.ss.usermodel.*
 import com.k_int.properties.*
 import de.laser.DashboardDueDate
 import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.springframework.web.servlet.LocaleResolver
+import org.springframework.web.servlet.support.RequestContextUtils
+
 import java.sql.Timestamp
 import java.text.DateFormat
 
@@ -46,6 +48,7 @@ class MyInstitutionController extends AbstractDebugController {
     def dashboardDueDatesService
     def subscriptionsQueryService
     def orgTypeService
+    def orgDocumentService
 
     // copied from
     static String INSTITUTIONAL_LICENSES_QUERY      =
@@ -150,9 +153,12 @@ class MyInstitutionController extends AbstractDebugController {
         result
     }
 
+    @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def manageAffiliationRequests() {
+        redirect controller: 'organisations', action: 'users', id: contextService.getOrg().id
+
         def result = [:]
         result.institution        = contextService.getOrg()
         result.user               = User.get(springSecurityService.principal.id)
@@ -211,7 +217,7 @@ class MyInstitutionController extends AbstractDebugController {
         def qry = INSTITUTIONAL_LICENSES_QUERY
 
         if (! params.orgRole) {
-            if ((RDStore.OR_TYPE_CONSORTIUM?.id in result.institution?.getallOrgRoleTypeIds())) {
+            if ((RDStore.OT_CONSORTIUM?.id in result.institution?.getallOrgTypeIds())) {
                 params.orgRole = 'Licensing Consortium'
             }
             else {
@@ -381,7 +387,7 @@ from License as l where (
             return;
         }
 
-        result.orgRoleType = result.institution?.getallOrgRoleTypeIds()
+        result.orgType = result.institution?.getallOrgTypeIds()
 
         def cal = new java.util.GregorianCalendar()
         def sdf = new DateUtil().getSimpleDateFormat_NoTime()
@@ -523,7 +529,7 @@ from License as l where (
 
         if (OrgCustomProperty.findByTypeAndOwner(PropertyDefinition.findByName("RequestorID"), result.institution)) {
             result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
-            result.usageMode = ((RDStore.OR_TYPE_CONSORTIUM.id in result.institution?.getallOrgRoleTypeIds())) ? 'package' : 'institution'
+            result.usageMode = ((RDStore.OT_CONSORTIUM.id in result.institution?.getallOrgTypeIds())) ? 'package' : 'institution'
         }
 
         if(params.sort && params.sort.indexOf("§") >= 0) {
@@ -567,9 +573,10 @@ from License as l where (
     private def exportcurrentSubscription(subscriptions) {
         try {
             String[] titles = [
-                    'Name', 'Vertrag', 'Verknuepfte Pakete', 'Konsortium', 'Anbieter', 'Agentur', 'Anfangsdatum', 'Enddatum', 'Status', 'Typ' ]
+                    'Name', g.message(code:'subscription.owner.label'), g.message(code:'subscription.packages.label'), g.message(code:'consortium.label'), g.message(code:'default.provider.label'), g.message(code:'default.agency.label'),
+                    g.message(code:'subscription.startDate.label'), g.message(code:'subscription.endDate.label'), 'Status', 'Typ' ]
 
-            def sdf = new DateUtil().getSimpleDateFormat_NoTime()
+            def sdf = new SimpleDateFormat(g.message(code:'default.date.format.notimenopoint', default:'ddMMyyyy'));
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
             HSSFWorkbook wb = new HSSFWorkbook();
@@ -656,7 +663,7 @@ from License as l where (
                 sheet.autoSizeColumn(i);
             }
             // Write the output to a file
-            String file = g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions")+"_${datetoday}.xls";
+            String file = "${datetoday}_"+g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions").replaceAll(' ', '_')+".xls";
             //if(wb instanceof XSSFWorkbook) file += "x";
 
             response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
@@ -745,7 +752,7 @@ from License as l where (
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
     def emptySubscription() {
         def result = setResultGenerics()
-        result.orgRoleType = result.institution?.getallOrgRoleTypeIds()
+        result.orgType = result.institution?.getallOrgTypeIds()
         
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
 
@@ -762,7 +769,7 @@ from License as l where (
             result.defaultEndYear = sdf.format(cal.getTime())
             result.defaultSubIdentifier = java.util.UUID.randomUUID().toString()
 
-            if((RDStore.OR_TYPE_CONSORTIUM?.id in result.orgRoleType)) {
+            if((RDStore.OT_CONSORTIUM?.id in result.orgType)) {
                 def fsq = filterService.getOrgComboQuery(params, result.institution)
                 result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             }
@@ -778,7 +785,7 @@ from License as l where (
     def processEmptySubscription() {
         log.debug(params)
         def result = setResultGenerics()
-        result.orgRoleType = result.institution?.getallOrgRoleTypeIds()
+        result.orgType = result.institution?.getallOrgTypeIds()
 
         def role_sub = RDStore.OR_SUBSCRIBER
         def role_sub_cons = RDStore.OR_SUBSCRIBER_CONS
@@ -787,11 +794,11 @@ from License as l where (
         def orgRole = null
         def subType = null
 
-        if (params.asOrgRoleType) {
-            log.debug("asOrgRoleType ${params.asOrgRoleType} in ${result.orgRoleType} ?")
+        if (params.asOrgType) {
+            log.debug("asOrgType ${params.asOrgType} in ${result.orgType} ?")
 
-            if ((Long.valueOf(params.asOrgRoleType) in result.orgRoleType)
-                    && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgRoleType)) {
+            if ((Long.valueOf(params.asOrgType) in result.orgType)
+                    && (RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgType)) {
                 orgRole = role_cons
                 subType = RefdataValue.getByValueAndCategory('Consortial Licence', 'Subscription Type')
             }
@@ -822,9 +829,9 @@ from License as l where (
                         sub: new_sub,
                         roleType: orgRole).save();
                         
-                // if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgRoleType) && params.linkToAll == "Y"){ // old code
+                // if((com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgType) && params.linkToAll == "Y"){ // old code
 
-                if((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgRoleType)) {
+                if((RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in result.orgType)) {
                     
                     def cons_members = []
 
@@ -945,7 +952,7 @@ from License as l where (
         def user = User.get(springSecurityService.principal.id)
         def org = contextService.getOrg()
 
-        params.asOrgRoleType = params.asOrgRoleType ? [params.asOrgRoleType] : [RDStore.OR_TYPE_INSTITUTION.id.toString()]
+        params.asOrgType = params.asOrgType ? [params.asOrgType] : [RDStore.OT_INSTITUTION.id.toString()]
 
 
         if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
@@ -1006,7 +1013,7 @@ from License as l where (
 
             log.debug("adding org link to new license");
 
-            if (params.asOrgRoleType && (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString() in params.asOrgRoleType)) {
+            if (params.asOrgType && (com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id.toString() in params.asOrgType)) {
                 org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role))
             } else {
                 org.links.add(new OrgRole(lic: licenseInstance, org: org, roleType: licensee_role))
@@ -1102,8 +1109,16 @@ from License as l where (
         redirect action: 'currentLicenses'
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_USER")')
+    @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_USER") })
+    Map documents() {
+        Map result = setResultGenerics()
+        result.availableUsers = orgDocumentService.getAvailableUploaders(result.user)
+        result
+    }
+
+    @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_EDITOR") })
     def deleteDocuments() {
         def ctxlist = []
 
@@ -1111,7 +1126,7 @@ from License as l where (
 
         docstoreService.unifiedDeleteDocuments(params)
 
-        redirect controller: 'licenseDetails', action: 'show', id: params.licid /*, fragment: 'docstab' */
+        redirect controller: 'myInstitution', action: 'documents' /*, fragment: 'docstab' */
     }
 
     @Deprecated
@@ -1270,26 +1285,21 @@ from License as l where (
         }
 
         if (filterSub) {
-            sub_qry += " AND sub.sub_id in ( :subs ) "
-            qry_params.subs = filterSub.join(", ")
+            sub_qry += " AND sub.sub_id in (" + filterSub.join(", ") + ")"
         }
 
         if (filterOtherPlat) {
-            sub_qry += " AND ap.id in ( :addplats )"
-           qry_params.addplats = filterOtherPlat.join(", ")
+            sub_qry += " AND ap.id in (" + filterOtherPlat.join(", ") + ")"
         }
 
         if (filterHostPlat) {
-            sub_qry += " AND tipp.tipp_plat_fk in ( :plats )"
-            qry_params.plats = filterHostPlat.join(", ")
-
+            sub_qry += " AND tipp.tipp_plat_fk in (" + filterHostPlat.join(", ") + ")"
         }
 
         if (filterPvd) {
             def cp = RefdataValue.getByValueAndCategory('Content Provider', 'Organisational Role')?.id
-            sub_qry += " AND orgrole.or_roletype_fk = :cprole  AND orgrole.or_org_fk IN (:provider) "
+            sub_qry += " AND orgrole.or_roletype_fk = :cprole  AND orgrole.or_org_fk IN (" + filterPvd.join(", ") + ")"
             qry_params.cprole = cp
-            qry_params.provider = filterPvd.join(", ")
         }
 
         String having_clause = params.filterMultiIE ? 'having count(ie.ie_id) > 1' : ''
@@ -1590,7 +1600,11 @@ AND EXISTS (
         if (subscription.hasPerm("edit", result.user)) {
             def derived_subs = Subscription.findByInstanceOfAndStatusNotEqual(subscription, deletedStatus)
 
-            if (!derived_subs) {
+            if (CostItem.findBySub(subscription)) {
+                flash.error = message(code: 'subscription.delete.existingCostItems')
+
+            }
+            else if (! derived_subs) {
               log.debug("Current Institution is ${inst}, sub has consortium ${subscription.consortia}")
               if( subscription.consortia && subscription.consortia != inst ) {
                 OrgRole.executeUpdate("delete from OrgRole where sub = ? and org = ?",[subscription, inst])
@@ -1611,7 +1625,7 @@ AND EXISTS (
                 }
               }
             } else {
-                flash.error = message(code:'myinst.actionCurrentSubscriptions.error', default:'Unable to delete - The selected license has attached subscriptions')
+                flash.error = message(code:'myinst.actionCurrentSubscriptions.error', default:'Unable to delete - The selected subscriptions has attached subscriptions')
             }
         } else {
             log.warn("${result.user} attempted to delete subscription ${result.subscription} without perms")
@@ -2782,6 +2796,19 @@ AND EXISTS (
 
         def result = setResultGenerics()
 
+        // set language by user settings, create if not existing
+        def uss = UserSettings.get(result.user, UserSettings.KEYS.LANGUAGE)
+        if (uss == UserSettings.SETTING_NOT_FOUND) {
+            uss = UserSettings.add(result.user, UserSettings.KEYS.LANGUAGE, RefdataValue.getByValueAndCategory('de', 'Language'))
+        }
+
+        RefdataValue rdvLocale = uss.getValue()
+        if (rdvLocale) {
+            LocaleResolver localeResolver = RequestContextUtils.getLocaleResolver(request)
+            localeResolver.setLocale(request, response, new Locale(rdvLocale.value, rdvLocale.value.toUpperCase()))
+        }
+        // --
+
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
             response.sendError(401)
@@ -3223,7 +3250,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         def result = setResultGenerics()
 
         // new: filter preset
-        params.orgRoleType   = RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')?.id?.toString()
+        params.orgType   = RefdataValue.getByValueAndCategory('Institution', 'OrgRoleType')?.id?.toString()
         params.orgSector = RefdataValue.getByValueAndCategory('Higher Education', 'OrgSector')?.id?.toString()
 
         if (params.selectedOrgs) {
@@ -3233,37 +3260,42 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 Map map = [
                         toOrg: result.institution,
                         fromOrg: Org.findById( Long.parseLong(soId)),
-                        type: RefdataValue.findByValue('Consortium')
+                        type: RefdataValue.getByValueAndCategory('Consortium','Combo Type')
                 ]
                 if (! Combo.findWhere(map)) {
                     def cmb = new Combo(map)
                     cmb.save()
                 }
             }
+
+            redirect action: 'manageConsortia'
         }
 
-        def fsq = filterService.getOrgQuery(params)
-        result.availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
+        else {
+            def fsq = filterService.getOrgQuery(params)
+            result.availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, params)
 
-        result.consortiaMemberIds = []
-        Combo.findAllWhere(
-                toOrg: result.institution,
-                type:    RefdataValue.findByValue('Consortium')
-        ).each { cmb ->
-            result.consortiaMemberIds << cmb.fromOrg.id
+            result.consortiaMemberIds = []
+            Combo.findAllWhere(
+                    toOrg: result.institution,
+                    type:    RefdataValue.getByValueAndCategory('Consortium','Combo Type')
+            ).each { cmb ->
+                result.consortiaMemberIds << cmb.fromOrg.id
+            }
+
+            if ( params.exportXLS=='yes' ) {
+
+                def orgs = result.availableOrgs
+
+                def message = g.message(code: 'menu.public.all_orgs')
+
+                exportOrg(orgs, message, true)
+                return
+            }
+
+            result
         }
 
-        if ( params.exportXLS=='yes' ) {
-
-            def orgs = result.availableOrgs
-
-            def message = g.message(code: 'menu.institutions.all_orgs')
-
-            exportOrg(orgs, message, true)
-            return
-        }
-
-        result
     }
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
@@ -3272,7 +3304,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         def result = setResultGenerics()
 
         // new: filter preset
-        params.orgRoleType  = RDStore.OR_TYPE_INSTITUTION?.id?.toString()
+        params.orgType  = RDStore.OT_INSTITUTION?.id?.toString()
         params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
 
         result.max          = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeTMP();
@@ -3312,7 +3344,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
             def orgs = result.consortiaMembers
 
-            def message = g.message(code: 'menu.institutions.myConsortia')
+            def message = g.message(code: 'menu.my.consortia')
 
             exportOrg(orgs, message, true)
             return
@@ -3323,7 +3355,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
 
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
-    def manageConsortiaLicenses() {
+    def manageConsortiaSubscriptions() {
         def result = setResultGenerics()
 
         DebugUtil du = new DebugUtil()
@@ -3666,6 +3698,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         result.user         = User.get(springSecurityService.principal.id)
         //result.institution  = Org.findByShortcode(params.shortcode)
         result.institution  = contextService.getOrg()
+        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA')
         result
     }
 
@@ -3674,12 +3707,12 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
     def ajaxEmptySubscription() {
 
         def result = setResultGenerics()
-        result.orgRoleType = result.institution?.getallOrgRoleTypeIds()
+        result.orgType = result.institution?.getallOrgTypeIds()
 
         result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
         if (result.editable) {
 
-            if((RDStore.OR_TYPE_CONSORTIUM?.id in result.orgRoleType)) {
+            if((RDStore.OT_CONSORTIUM?.id in result.orgType)) {
                 def fsq = filterService.getOrgComboQuery(params, result.institution)
                 result.cons_members = Org.executeQuery(fsq.query, fsq.queryParams, params)
             }
@@ -3689,6 +3722,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
         render (template: "../templates/filter/orgFilterTable", model: [orgList: result.cons_members, tmplShowCheckbox: true, tmplConfigShow: ['sortname', 'name']])
     }
 
+    @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.springSecurityService.getCurrentUser()?.hasAffiliation("INST_ADM") })
     def actionAffiliationRequestOrg() {
@@ -3757,7 +3791,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                     'Name', g.message(code: 'org.shortname.label'), g.message(code: 'org.sortname.label')]
 
             def orgSector = RefdataValue.getByValueAndCategory('Higher Education','OrgSector')
-            def orgRoleType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
+            def orgType = RefdataValue.getByValueAndCategory('Provider','OrgRoleType')
 
 
             if(addHigherEducationTitles)
@@ -3777,7 +3811,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 titles.add(it.name)
             }
 
-            def sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'));
+            def sdf = new SimpleDateFormat(g.message(code:'default.date.format.notimenopoint', default:'ddMMyyyy'));
             def datetoday = sdf.format(new Date(System.currentTimeMillis()))
 
             HSSFWorkbook wb = new HSSFWorkbook();
@@ -3899,7 +3933,7 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
                 sheet.autoSizeColumn(i);
             }
             // Write the output to a file
-            String file = message+"_${datetoday}.xls";
+            String file = "${datetoday}_"+message.replaceAll(' ', '_')+".xls";
             //if(wb instanceof XSSFWorkbook) file += "x";
 
             response.setHeader "Content-disposition", "attachment; filename=\"${file}\""

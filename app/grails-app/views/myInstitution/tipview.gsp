@@ -79,9 +79,9 @@
             <tr>
 
               <td>
-                  <semui:listIcon type="${tip?.title?.type}"/>
+                  <semui:listIcon type="${tip?.title?.type?.value}"/>
                   <strong><g:link controller="myInstitution" action="tip" id="${tip.id}">${tip?.title?.title} ${message(code:'default.via', default:'via')} ${tip?.provider?.name}</g:link></strong><br>
-                  <g:link controller="titleDetails" action="show" id="${tip?.title?.id}">${message(code:'myinst.tipview.link_to_title', default:'Link to Title Details')}</g:link>
+                  <g:link controller="title" action="show" id="${tip?.title?.id}">${message(code:'myinst.tipview.link_to_title', default:'Link to Title Details')}</g:link>
               </td>
               <td>
               <g:link controller="organisations" action="show" id="${tip?.provider?.id}">${tip?.provider?.name}</g:link>
@@ -96,7 +96,7 @@
           </tbody>
         </table>
 
-          <semui:paginate action="tipview" max="${user?.defaultPageSize?:10}" params="${[:]+params}" next="Next" prev="Prev" total="${tips.totalCount}" />
+          <semui:paginate action="tipview" max="${user?.getDefaultPageSizeTMP()?:10}" params="${[:]+params}" next="Next" prev="Prev" total="${tips.totalCount}" />
 
         <div id="magicArea">
         </div>

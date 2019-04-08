@@ -1439,3 +1439,7 @@ a.ui.basic.label:hover {
 .ui.image.label {
   margin-top: 5px;
 }
+.ui.image.label .detail a {
+  color: white;
+  text-decoration: underline;
+}

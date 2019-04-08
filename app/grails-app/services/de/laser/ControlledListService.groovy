@@ -1,7 +1,12 @@
 package de.laser
 
+import com.k_int.kbplus.BudgetCode
+import com.k_int.kbplus.CostItem
+import com.k_int.kbplus.DocContext
+import com.k_int.kbplus.Invoice
 import com.k_int.kbplus.IssueEntitlement
 import com.k_int.kbplus.License
+import com.k_int.kbplus.Order
 import com.k_int.kbplus.Org
 import com.k_int.kbplus.OrgRole
 import com.k_int.kbplus.RefdataValue
@@ -24,26 +29,61 @@ class ControlledListService {
     def messageSource
 
     /**
+     * Retrieves a list of providers
+     * @param params - eventual request params
+     * @return a map containing a sorted list of providers, an empty one if no providers match the filter
+     */
+    Map getProviders(Map params) {
+        LinkedHashMap result = [results:[]]
+        Org org = contextService.getOrg()
+        if(params.forFinanceView) {
+            List subscriptions = Subscription.executeQuery('select s from CostItem ci join ci.sub s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in (:orgRoles)',[org:org,orgRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIPTION_CONSORTIA]])
+            Map filter = [provider: RDStore.OR_PROVIDER,subscriptions:subscriptions]
+            String filterString = " "
+            if(params.query && params.query.length() > 0) {
+                filter.put("query",'%'+params.query+'%')
+                filterString += "and lower(oo.name) like lower(:query) "
+            }
+            List providers = Org.executeQuery('select distinct oo.org, oo.org.name from OrgRole oo where oo.sub in (:subscriptions) and oo.roleType = :provider'+filterString+'order by oo.org.name asc',filter)
+            providers.each { p ->
+                result.results.add([name:p[1],value:p[0].class.name + ":" + p[0].id])
+            }
+        }
+        else {
+            String queryString = 'select o from Org o where o.type = :provider '
+            LinkedHashMap filter = [provider:RDStore.OT_PROVIDER]
+            if(params.query && params.query.length() > 0) {
+                filter.put("query",'%'+params.query+'%')
+                queryString += " and lower(o.name) like lower(:query) "
+            }
+            List providers = Org.executeQuery(queryString+" order by o.sortname asc",filter)
+            providers.each { p ->
+                result.results.add([name:p.name,value:p.class.name + ":" + p.id])
+            }
+        }
+        result
+    }
+
+    /**
      * Retrieves a list of subscriptions owned by the context organisation matching given parameters
      * @param params - eventual request params
      * @return a map containing a sorted list of subscriptions, an empty one if no subscriptions match the filter
-     * The map is necessary for the Select2 processing afterwards
      */
     Map getSubscriptions(Map params) {
         SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,LocaleContextHolder.getLocale()))
         Org org = contextService.getOrg()
-        LinkedHashMap result = [values:[]]
+        LinkedHashMap result = [results:[]]
         String queryString = 'select distinct s, orgRoles.org.sortname from Subscription s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in ( :orgRoles ) and s.status != :deleted'
         LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER],deleted:RDStore.SUBSCRIPTION_DELETED]
         //may be generalised later - here it is where to expand the query filter
-        if(params.q && params.q.length() > 0) {
-            filter.put("query","%"+params.q+"%")
-            queryString += " and s.name like :query"
+        if(params.query && params.query.length() > 0) {
+            filter.put("query",'%'+params.query+'%')
+            queryString += " and (lower(s.name) like lower(:query) or lower(orgRoles.org.sortname) like lower(:query)) "
         }
         if(params.ctx) {
             Subscription ctx = genericOIDService.resolveOID(params.ctx)
             filter.ctx = ctx
-            queryString += " and s != :ctx"
+            queryString += " and s != :ctx "
         }
         if(params.status) {
             filter.status = params.status
@@ -70,10 +110,9 @@ class ControlledListService {
                     dateString += sdf.format(s.startDate) + "-"
                 if (s.endDate)
                     dateString += sdf.format(s.endDate)
-                result.values.add([id:s.class.name + ":" + s.id,text:"${s.name} (${tenant}${dateString})"])
+                result.results.add([name:"${s.name} (${tenant}${dateString})",value:s.class.name + ":" + s.id])
             }
         }
-        /*result.values.sort { x,y -> x.text.compareToIgnoreCase y.text }*/
         result
     }
 
@@ -81,27 +120,45 @@ class ControlledListService {
      * Retrieves a list of issue entitlements owned by the context organisation matching given parameters
      * @param params - eventual request params
      * @return a map containing a list of issue entitlements, an empty one if no issue entitlements match the filter
-     * The map is necessary for the Select2 processing afterwards
      */
     Map getIssueEntitlements(Map params) {
         Org org = contextService.getOrg()
-        LinkedHashMap issueEntitlements = [values:[]]
-        List<IssueEntitlement> result = []
+        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
+        LinkedHashMap issueEntitlements = [results:[]]
         //build up set of subscriptions which are owned by the current organisation or instances of such - or filter for a given subscription
-        String subFilter = 'in ( select s from Subscription as s where s in (select o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) ) and s.status = :current )'
+        String subFilter = 'in (select distinct o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) and o.sub.status = :current ) '
         LinkedHashMap filterParams = [org:org, orgRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS], current:RDStore.SUBSCRIPTION_CURRENT]
         if(params.sub) {
             subFilter = '= :sub'
             filterParams = ['sub':genericOIDService.resolveOID(params.sub)]
         }
-        filterParams.put('query',params.q)
-        result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+subFilter+' and ie.tipp.title.title like :query',filterParams)
+        filterParams.put('query','%'+params.query+'%')
+        List result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+subFilter+' and lower(ie.tipp.title.title) like lower(:query) order by ie.tipp.title.title asc, ie.subscription asc, ie.subscription.startDate asc, ie.subscription.endDate asc',filterParams)
         if(result.size() > 0) {
             log.debug("issue entitlements found")
             result.each { res ->
-                issueEntitlements.values.add([id:res.class.name+":"+res.id,text:res.tipp.title.title])
+                Subscription s = (Subscription) res.subscription
+                String tenant
+                if(s.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION && s.getConsortia().id == org.id) {
+                    try {
+                        tenant = s.getAllSubscribers().get(0).name
+                    }
+                    catch (IndexOutOfBoundsException e) {
+                        log.debug("Please check subscription #${s.id}")
+                    }
+                }
+                else {
+                    tenant = org.name
+                }
+                if(tenant) {
+                    String dateString = ", "
+                    if (s.startDate)
+                        dateString += sdf.format(s.startDate) + "-"
+                    if (s.endDate)
+                        dateString += sdf.format(s.endDate)
+                    issueEntitlements.results.add([name:"${res.tipp.title.title} (${tenant}${dateString})",value:res.class.name+":"+res.id])
+                }
             }
-            issueEntitlements.values.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
         }
         issueEntitlements
     }
@@ -110,26 +167,24 @@ class ControlledListService {
      * Retrieves a list of licenses owned by the context organisation matching given parameters
      * @param params - eventual request params (currently not in use, handed for an eventual extension)
      * @return a map containing licenses, an empty one if no licenses match the filter
-     * The map is necessary for the Select2 processing afterwards
      */
     Map getLicenses(Map params) {
         Org org = contextService.getOrg()
-        LinkedHashMap licenses = [values:[]]
+        LinkedHashMap licenses = [results:[]]
         List<License> result = []
         String licFilter = ''
         LinkedHashMap filterParams = [org:org,orgRoles:[RDStore.OR_LICENSING_CONSORTIUM,RDStore.OR_LICENSEE,RDStore.OR_LICENSEE_CONS]]
-        if(params.q) {
+        if(params.query && params.query.length() > 0) {
             licFilter = ' and l.reference like :query'
-            filterParams.put('query',"%"+params.q+"%")
+            filterParams.put('query',"%"+params.query+"%")
         }
-        result = License.executeQuery('select l from License as l where l in (select o.lic from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ))'+licFilter,filterParams)
+        result = License.executeQuery('select l from License as l join l.orgLinks ol where ol.org = :org and ol.roleType in (:orgRoles)'+licFilter+" order by l.reference asc",filterParams)
         if(result.size() > 0) {
             SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null, LocaleContextHolder.getLocale()))
             log.debug("licenses found")
             result.each { res ->
-                licenses.values.add([id:res.class.name+":"+res.id,text:"${res.reference} (${res.startDate ? sdf.format(res.startDate) : '???'} - ${res.endDate ? sdf.format(res.endDate) : ''})"])
+                licenses.results.add([name:"${res.reference} (${res.startDate ? sdf.format(res.startDate) : '???'} - ${res.endDate ? sdf.format(res.endDate) : ''})",value:res.class.name+":"+res.id])
             }
-            licenses.values.sort{x,y -> x.text.compareToIgnoreCase y.text }
         }
         licenses
     }
@@ -138,23 +193,22 @@ class ControlledListService {
      * Retrieves a list of issue entitlements owned by the context organisation matching given parameters
      * @param params - eventual request params
      * @return a map containing a sorted list of issue entitlements, an empty one if no issue entitlements match the filter
-     * The map is necessary for the Select2 processing afterwards
      */
     Map getSubscriptionPackages(Map params) {
         SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,LocaleContextHolder.getLocale()))
         Org org = contextService.getOrg()
-        LinkedHashMap result = [values:[]]
+        LinkedHashMap result = [results:[]]
         String queryString = 'select distinct s, orgRoles.org.sortname from Subscription s join s.orgRelations orgRoles where orgRoles.org = :org and orgRoles.roleType in ( :orgRoles ) and s.status != :deleted'
         LinkedHashMap filter = [org:org,orgRoles:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER],deleted:RDStore.SUBSCRIPTION_DELETED]
         //may be generalised later - here it is where to expand the query filter
-        if(params.q && params.q.length() > 0) {
-            filter.put("query","%"+params.q+"%")
-            queryString += " and s.name like :query"
+        if(params.query && params.query.length() > 0) {
+            filter.put("query","%"+params.query+"%")
+            queryString += " and (lower(s.name) like lower(:query) or lower(orgRoles.org.sortname) like lower(:query)) "
         }
         if(params.ctx) {
             Subscription ctx = genericOIDService.resolveOID(params.ctx)
             filter.ctx = ctx
-            queryString += " and s != :ctx"
+            queryString += " and s = :ctx"
         }
         if(params.status) {
             filter.status = params.status
@@ -169,7 +223,7 @@ class ControlledListService {
                     tenant = s.getAllSubscribers().get(0).name
                 }
                 catch (IndexOutOfBoundsException e) {
-                    log.debug("see above")
+                    log.debug("Please check subscription #${s.id}")
                 }
             }
             else {
@@ -182,8 +236,128 @@ class ControlledListService {
                         dateString += sdf.format(s.startDate) + "-"
                     if (s.endDate)
                         dateString += sdf.format(s.endDate)
-                    result.values.add([id:sp.class.name + ":" + sp.id,text:"${sp.pkg.name}/${s.name} (${tenant}${dateString})"])
+                    result.results.add([name:"${sp.pkg.name}/${s.name} (${tenant}${dateString})",value:sp.class.name + ":" + sp.id])
                 }
+            }
+        }
+        result
+    }
+
+    Map getBudgetCodes(Map params) {
+        Map result = [results:[]]
+        Org org = contextService.getOrg()
+        String queryString = 'select bc from BudgetCode bc where bc.owner = :owner'
+        LinkedHashMap filter = [owner:org]
+        if(params.query && params.query.length() > 0) {
+            filter.put("query",'%'+params.query+'%')
+            queryString += " and lower(bc.value) like lower(:query) "
+        }
+        List budgetCodes = BudgetCode.executeQuery(queryString,filter)
+        budgetCodes.each { bc ->
+            result.results.add([name:bc.value,value:bc.id])
+        }
+        result
+    }
+
+    Map getInvoiceNumbers(Map params) {
+        Map result = [results:[]]
+        Org org = contextService.getOrg()
+        String queryString = 'select i from Invoice i where i.owner = :owner'
+        LinkedHashMap filter = [owner:org]
+        if(params.query && params.query.length() > 0) {
+            filter.put("query",'%'+params.query+'%')
+            queryString += " and i.invoiceNumber like :query "
+        }
+        List invoiceNumbers = Invoice.executeQuery(queryString,filter)
+        invoiceNumbers.each { inv ->
+            result.results.add([name:inv.invoiceNumber,value:inv.invoiceNumber])
+        }
+        result
+    }
+
+    Map getOrderNumbers(Map params) {
+        Map result = [results:[]]
+        Org org = contextService.getOrg()
+        String queryString = 'select ord from Order ord where ord.owner = :owner'
+        LinkedHashMap filter = [owner:org]
+        if(params.query && params.query.length() > 0) {
+            filter.put("query",'%'+params.query+'%')
+            queryString += " and ord.orderNumber like :query "
+        }
+        List orderNumbers = Order.executeQuery(queryString,filter)
+        orderNumbers.each { ord ->
+            result.results.add([name:ord.orderNumber,value:ord.orderNumber])
+        }
+        result
+    }
+
+    Map getReferences(Map params) {
+        Map result = [results:[]]
+        Org org = contextService.getOrg()
+        String queryString = 'select ci from CostItem ci where ci.owner = :owner and ci.reference != null'
+        LinkedHashMap filter = [owner:org]
+        if(params.query && params.query.length() > 0) {
+            filter.put("query",'%'+params.query+'%')
+            queryString += " and lower(ci.reference) like lower(:query) "
+        }
+        List references = CostItem.executeQuery(queryString,filter)
+        references.each { r ->
+            log.debug(r)
+            result.results.add([name:r.reference,value:r.reference])
+        }
+        result
+    }
+
+    Map getElements(Map params) {
+        Map result = [results:[]]
+        Org org = contextService.getOrg()
+        SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,LocaleContextHolder.getLocale()))
+        if(params.org == "true") {
+            List allOrgs = DocContext.executeQuery('select distinct dc.org,dc.org.sortname from DocContext dc where dc.owner.owner = :ctxOrg and dc.org != null and (lower(dc.org.name) like lower(:query) or lower(dc.org.sortname) like lower(:query)) order by dc.org.sortname asc',[ctxOrg:org,query:"%${params.query}%"])
+            allOrgs.each { it ->
+                result.results.add([name:"(${messageSource.getMessage('spotlight.organisation',null,LocaleContextHolder.locale)}) ${it[0].name}",value:"${it[0].class.name}:${it[0].id}"])
+            }
+        }
+        if(params.license == "true") {
+            List allLicenses = DocContext.executeQuery('select distinct dc.license,dc.license.reference from DocContext dc where dc.owner.owner = :ctxOrg and dc.license != null and dc.license.status != :deleted and lower(dc.license.reference) like lower(:query) order by dc.license.reference asc',[ctxOrg:org,deleted:RDStore.LICENSE_DELETED,query:"%${params.query}%"])
+            allLicenses.each { it ->
+                License license = (License) it[0]
+                String licenseStartDate = license.startDate ? sdf.format(license.startDate) : '???'
+                String licenseEndDate = license.endDate ? sdf.format(license.endDate) : ''
+                result.results.add([name:"(${messageSource.getMessage('spotlight.license',null,LocaleContextHolder.locale)}) ${it[1]} - ${license.status.getI10n("value")} (${licenseStartDate} - ${licenseEndDate})",value:"${license.class.name}:${license.id}"])
+            }
+        }
+        if(params.subscription == "true") {
+            List allSubscriptions = DocContext.executeQuery('select distinct dc.subscription,dc.subscription.name from DocContext dc where dc.owner.owner = :ctxOrg and dc.subscription != null and dc.subscription.status != :deleted and lower(dc.subscription.name) like lower(:query) order by dc.subscription.name asc',[ctxOrg:org,deleted:RDStore.SUBSCRIPTION_DELETED,query:"%${params.query}%"])
+            allSubscriptions.each { it ->
+                Subscription subscription = (Subscription) it[0]
+                String tenant
+                if(subscription.getCalculatedType() == TemplateSupport.CALCULATED_TYPE_PARTICIPATION && subscription.getConsortia().id == org.id) {
+                    try {
+                        tenant = " - ${subscription.getAllSubscribers().get(0).sortname}"
+                    }
+                    catch (IndexOutOfBoundsException e) {
+                        log.debug("Please check subscription #${subscription.id}")
+                    }
+                }
+                else {
+                    tenant = ''
+                }
+                String dateString = "("
+                if (subscription.startDate)
+                    dateString += sdf.format(subscription.startDate) + " - "
+                else dateString += "???"
+                if (subscription.endDate)
+                    dateString += sdf.format(subscription.endDate)
+                else dateString += ""
+                dateString += ")"
+                result.results.add([name:"(${messageSource.getMessage('spotlight.subscription',null,LocaleContextHolder.locale)}) ${it[1]} - ${subscription.status.getI10n("value")} ${dateString} ${tenant}",value:"${it[0].class.name}:${it[0].id}"])
+            }
+        }
+        if(params.package == "true") {
+            List allPackages = DocContext.executeQuery('select distinct dc.pkg,dc.pkg.name from DocContext dc where dc.owner.owner = :ctxOrg and dc.pkg != null and lower(dc.pkg.name) like lower(:query) order by dc.pkg.name asc', [ctxOrg: org, query: "%${params.query}%"])
+            allPackages.each { it ->
+                result.results.add([name: "(${messageSource.getMessage('spotlight.package', null, LocaleContextHolder.locale)}) ${it[1]}", value: "${it[0].class.name}:${it[0].id}"])
             }
         }
         result

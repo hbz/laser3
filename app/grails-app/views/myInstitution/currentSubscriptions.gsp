@@ -162,7 +162,7 @@
 
 
                         <div class="field">
-                            <g:if test="${(RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgRoleTypeIds())}">
+                            <g:if test="${(RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  institution?.getallOrgTypeIds())}">
                             <%--
                             <g:if test="${params.orgRole == 'Subscriber'}">
                                 <input id="radioSubscriber" type="hidden" value="Subscriber" name="orgRole" tabindex="0" class="hidden">
@@ -215,8 +215,8 @@
                 ${message(code:'sidewide.number')}
             </th>
             <g:sortableColumn params="${params}" property="s.name" title="${message(code: 'license.slash.name')}" rowspan="2" />
-            <th rowspan="2" >
-                <g:annotatedLabel owner="${institution}" property="linkedPackages">${message(code: 'license.details.linked_pkg', default: 'Linked Packages')}</g:annotatedLabel>
+            <th rowspan="2">
+                ${message(code: 'license.details.linked_pkg', default: 'Linked Packages')}
             </th>
             <% /*
             <th>
@@ -282,11 +282,11 @@
                     </td>
                     <td>
                     <!-- packages -->
-                        <g:each in="${s.packages}" var="sp" status="ind">
+                        <g:each in="${s.packages.sort{it?.pkg?.name}}" var="sp" status="ind">
                             <g:if test="${ind < 10}">
                                 <div class="la-flexbox">
                                     <i class="icon gift la-list-icon"></i>
-                                    <g:link controller="packageDetails" action="show" id="${sp.pkg?.id}"
+                                    <g:link controller="subscriptionDetails" action="index" id="${s.id}" params="[pkgfilter: sp.pkg?.id]"
                                             title="${sp.pkg?.contentProvider?.name}">
                                         ${sp.pkg.name}
                                     </g:link>
@@ -372,18 +372,29 @@
                           </laser:statsLink>
                         </g:if>
 
-                    <g:if test="${ contextService.getUser().isAdmin() || contextService.getUser().isYoda() ||
-                        (editable && (OrgRole.findAllByOrgAndSubAndRoleType(institution, s, RDStore.OR_SUBSCRIBER) || s.consortia?.id == institution?.id))
-                    }">
+                        <g:if test="${ contextService.getUser().isAdmin() || contextService.getUser().isYoda() ||
+                            (editable && (OrgRole.findAllByOrgAndSubAndRoleType(institution, s, RDStore.OR_SUBSCRIBER) || s.consortia?.id == institution?.id))
+                        }">
                     <%--<g:if test="${editable && ((institution?.id in s.allSubscribers.collect{ it.id }) || s.consortia?.id == institution?.id)}">--%>
-                            <g:link class="ui icon negative button js-open-confirm-modal"
-                                    data-confirm-term-what="subscription"
-                                    data-confirm-term-what-detail="${s.name}"
-                                    data-confirm-term-how="delete"
-                                    controller="myInstitution" action="actionCurrentSubscriptions"
-                                    params="${[curInst: institution.id, basesubscription: s.id]}">
-                                <i class="trash alternate icon"></i>
-                            </g:link>
+
+
+                            <g:if test="${CostItem.findBySub(s) || CostItem.findAllBySubInListAndOwner(Subscription.findAllByInstanceOfAndStatusNotEqual(s, RefdataValue.getByValueAndCategory('Deleted', 'Subscription Status')), institution)}">
+                                <span data-position="top right" data-tooltip="${message(code:'subscription.delete.existingCostItems')}">
+                                    <button class="ui icon button negative" disabled="disabled">
+                                        <i class="trash alternate icon"></i>
+                                    </button>
+                                </span>
+                            </g:if>
+                            <g:else>
+                                <g:link class="ui icon negative button js-open-confirm-modal"
+                                        data-confirm-term-what="subscription"
+                                        data-confirm-term-what-detail="${s.name}"
+                                        data-confirm-term-how="delete"
+                                        controller="myInstitution" action="actionCurrentSubscriptions"
+                                        params="${[curInst: institution.id, basesubscription: s.id]}">
+                                    <i class="trash alternate icon"></i>
+                                </g:link>
+                            </g:else>
                         </g:if>
                     </td>
                 </tr>

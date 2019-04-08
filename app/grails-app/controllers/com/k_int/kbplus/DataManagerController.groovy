@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.GOKbService
 import de.laser.controller.AbstractDebugController
 import grails.plugin.springsecurity.annotation.Secured
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
@@ -9,7 +10,8 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class DataManagerController extends AbstractDebugController {
 
-  def springSecurityService 
+  def springSecurityService
+  def GOKbService
 
   @Secured(['ROLE_DATAMANAGER'])
   def index() { 
@@ -184,7 +186,7 @@ class DataManagerController extends AbstractDebugController {
           case 'com.k_int.kbplus.Package':
             def package_object = Package.get(hl.persistedObjectId);
             if (package_object) {
-                line_to_add.link = createLink(controller:'packageDetails', action: 'show', id:hl.persistedObjectId)
+                line_to_add.link = createLink(controller:'package', action: 'show', id:hl.persistedObjectId)
                 line_to_add.name = package_object.name
             }
             linetype = 'Package'
@@ -200,7 +202,7 @@ class DataManagerController extends AbstractDebugController {
           case 'com.k_int.kbplus.TitleInstance':
             def title_object = TitleInstance.get(hl.persistedObjectId);
             if (title_object) {
-                line_to_add.link = createLink(controller:'titleDetails', action: 'show', id:hl.persistedObjectId)
+                line_to_add.link = createLink(controller:'title', action: 'show', id:hl.persistedObjectId)
                 line_to_add.name = title_object.title
             }
             linetype = 'Title'
@@ -476,4 +478,56 @@ class DataManagerController extends AbstractDebugController {
 
     redirect(controller:'home')
   }
+
+  @Secured(['ROLE_DATAMANAGER'])
+  def checkPackageTIPPs() {
+    def result = [:]
+    result.user = springSecurityService.getCurrentUser()
+    params.max =  params.max ?: result.user.getDefaultPageSizeTMP()
+
+
+    def gokbRecords = []
+
+    ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { api ->
+      gokbRecords << GOKbService.getPackagesMap(api, params.q, false).records
+    }
+
+
+    params.sort = params.sort ?: 'name'
+    params.order = params.order ?: 'asc'
+
+    result.records = gokbRecords ? gokbRecords.flatten().sort() : null
+
+    result.records?.sort { x, y ->
+      if (params.order == 'desc') {
+        y."${params.sort}".toString().compareToIgnoreCase x."${params.sort}".toString()
+      } else {
+        x."${params.sort}".toString().compareToIgnoreCase y."${params.sort}".toString()
+      }
+    }
+
+    /*if(params.onlyNotEqual) {
+      result.tippsNotEqual = []
+      result.records.each { hit ->
+        if (com.k_int.kbplus.Package.findByGokbId(hit.uuid)) {
+          if (com.k_int.kbplus.Package.findByGokbId(hit.uuid)?.tipps?.size() != hit.titleCount && hit.titleCount != 0) {
+            result.tippsNotEqual << hit
+          }
+        }
+      }
+      result.records = result.tippsNotEqual
+    }*/
+
+    result.resultsTotal2 = result.records?.size()
+
+    Integer start = params.offset ? params.int('offset') : 0
+    Integer end = params.offset ? params.int('max') + params.int('offset') : params.int('max')
+    end = (end > result.records?.size()) ? result.records?.size() : end
+
+    result.records = result.records?.subList(start, end)
+
+
+    result
+  }
+
 }

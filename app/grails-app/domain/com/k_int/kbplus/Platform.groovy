@@ -1,6 +1,7 @@
 package com.k_int.kbplus
 
 import de.laser.domain.AbstractBaseDomain
+import de.laser.helper.RefdataAnnotation
 
 import javax.persistence.Transient
 import com.k_int.ClassUtils
@@ -19,10 +20,19 @@ class Platform extends AbstractBaseDomain {
   String normname
   String primaryUrl
   String provenance
+
+  @RefdataAnnotation(cat = '?')
   RefdataValue type
-  RefdataValue status             // RefdataValue 'Platform Status'; TODO: not in Bootstrap
+
+  @RefdataAnnotation(cat = 'Platform Status')
+  RefdataValue status // TODO: not in Bootstrap
+
+  @RefdataAnnotation(cat = '?')
   RefdataValue serviceProvider
+
+  @RefdataAnnotation(cat = '?')
   RefdataValue softwareProvider
+
   Date dateCreated
   Date lastUpdated
 
@@ -115,6 +125,18 @@ class Platform extends AbstractBaseDomain {
     if (platform && Holders.config.globalDataSync.replaceLocalImpIds.Platform && params.gokbId  && platform.gokbId != params.gokbId) {
       platform.gokbId = params.gokbId
       platform.impId = (platform.impId == params.gokbId) ? platform.impId : params.gokbId
+      platform.save(flush:true)
+    }
+
+    if(platform && params.primaryUrl && platform.primaryUrl != params.primaryUrl)
+    {
+      platform.primaryUrl = params.primaryUrl
+      platform.save(flush:true)
+    }
+
+    if(platform && params.name && platform.name != params.name)
+    {
+      platform.name = params.name
       platform.save(flush:true)
     }
 

@@ -1,5 +1,6 @@
 package com.k_int.kbplus
 
+import de.laser.helper.RefdataAnnotation
 import de.laser.traits.ShareableTrait
 import org.hibernate.event.PostUpdateEvent
 
@@ -16,14 +17,18 @@ class DocContext implements ShareableTrait {
         subscription:   Subscription,
         pkg:            Package,
         link:           Links,
+        org:            Org,
         sharedFrom:     DocContext
   ]
 
-  RefdataValue status   // RefdataCategory 'Document Context Status'
-  RefdataValue doctype
+    @RefdataAnnotation(cat = 'Document Context Status')
+    RefdataValue status
+    @RefdataAnnotation(cat = 'Document Type')
+    RefdataValue doctype
+    @RefdataAnnotation(cat = 'Share Configuration')
+    RefdataValue shareConf
 
-  Boolean globannounce=false
-
+    Boolean globannounce = false
     DocContext sharedFrom
     Boolean isShared
 
@@ -33,16 +38,18 @@ class DocContext implements ShareableTrait {
   static mapping = {
                id column:'dc_id'
           version column:'dc_version'
-            owner column:'dc_doc_fk'
+            owner column:'dc_doc_fk', sort:'title', order:'asc'
           doctype column:'dc_rv_doctype_fk'
           license column:'dc_lic_fk'
      subscription column:'dc_sub_fk'
               pkg column:'dc_pkg_fk'
+              org column:'dc_org_fk'
              link column:'dc_link_fk'
      globannounce column:'dc_is_global'
            status column:'dc_status_fk'
        sharedFrom column:'dc_shared_from_fk'
          isShared column:'dc_is_shared'
+        shareConf column:'dc_share_conf_fk'
   }
 
   static constraints = {
@@ -50,12 +57,14 @@ class DocContext implements ShareableTrait {
     license(nullable:true, blank:false)
     subscription(nullable:true, blank:false)
     pkg(nullable:true, blank:false)
+    org(nullable: true,blank: false)
     link(nullable:true, blank:false)
     domain(nullable:true, blank:false)
     status(nullable:true, blank:false)
     globannounce(nullable:true, blank:true)
       sharedFrom(nullable:true, blank:true)
       isShared(nullable:true, blank:false, default:false)
+      shareConf(nullable: true,blank: false)
   }
 
     void afterUpdate(PostUpdateEvent event) {

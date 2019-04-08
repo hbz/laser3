@@ -5,6 +5,7 @@ import com.k_int.properties.PropertyDefinitionGroup
 import com.k_int.properties.PropertyDefinitionGroupBinding
 import de.laser.domain.AbstractBaseDomain
 import de.laser.helper.RDStore
+import de.laser.helper.RefdataAnnotation
 import de.laser.interfaces.DeleteFlag
 import groovy.sql.Sql
 import org.apache.commons.lang3.StringUtils
@@ -45,20 +46,32 @@ class Org
     Date lastUpdated
     String categoryId
 
-
-    int fteStudents
-    int fteStaff
-
-    RefdataValue orgType                 // RefdataCategory 'OrgType' OLD -> NEW: orgRoleType
+    @RefdataAnnotation(cat = '?')
     RefdataValue sector
-    RefdataValue status                  // RefdataCategory 'OrgStatus'
+
+    @RefdataAnnotation(cat = 'OrgStatus')
+    RefdataValue status
+
+    @RefdataAnnotation(cat = '?')
     RefdataValue membership
-    RefdataValue country                 // RefdataCategory 'Country'
-    RefdataValue federalState            // RefdataCategory 'Federal State'
-    RefdataValue libraryNetwork          // RefdataCategory 'Library Network'
-    RefdataValue funderType              // RefdataCategory 'Funder Type'
-    RefdataValue libraryType             // RefdataCategory 'Library Type'
-    RefdataValue costConfigurationPreset // RefdataCategory 'Cost configuration'
+
+    @RefdataAnnotation(cat = 'Country')
+    RefdataValue country
+
+    @RefdataAnnotation(cat = 'Federal State')
+    RefdataValue federalState
+
+    @RefdataAnnotation(cat = 'Library Network')
+    RefdataValue libraryNetwork
+
+    @RefdataAnnotation(cat = 'Funder Type')
+    RefdataValue funderType
+
+    @RefdataAnnotation(cat = 'Library Type')
+    RefdataValue libraryType
+
+    @RefdataAnnotation(cat = 'Cost configuration')
+    RefdataValue costConfigurationPreset
 
     Set ids = []
 
@@ -72,7 +85,8 @@ class Org
         addresses:        'org',
         affiliations:     'org',
         customProperties: 'owner',
-        privateProperties:'owner'
+        privateProperties:'owner',
+        documents:        'org'
     ]
 
     static hasMany = [
@@ -86,7 +100,8 @@ class Org
         affiliations:       UserOrg,
         customProperties:   OrgCustomProperty,
         privateProperties:  OrgPrivateProperty,
-        orgRoleType: RefdataValue,
+        orgType:            RefdataValue,
+        documents:          DocContext
     ]
 
     static mapping = {
@@ -100,15 +115,12 @@ class Org
           sortname          column:'org_sortname', index:'org_sortname_idx'
                url          column:'org_url'
             urlGov          column:'org_url_gov'
-       fteStudents          column:'org_fte_students'
-          fteStaff          column:'org_fte_staff'
            comment          column:'org_comment'
            ipRange          column:'org_ip_range'
          shortcode          column:'org_shortcode', index:'org_shortcode_idx'
              scope          column:'org_scope'
         categoryId          column:'org_cat'
         gokbId              column:'org_gokb_id', type:'text'
-           orgType          column:'org_type_rv_fk'
             sector          column:'org_sector_rv_fk'
             status          column:'org_status_rv_fk'
         membership          column:'org_membership'
@@ -121,11 +133,11 @@ class Org
     lastImportDate          column:'org_last_import_date'
     costConfigurationPreset column:'org_config_preset_rv_fk'
 
-        orgRoleType joinTable: [name: 'org_roletype',
-                                key: 'org_id',
-                                column: 'refdata_value_id',
-                                type: "BIGINT"], lazy: false
-
+        orgType             joinTable: [
+                name:   'org_type',
+                key:    'org_id',
+                column: 'refdata_value_id', type:   'BIGINT'
+        ], lazy: false
         addresses   lazy: false
         contacts    lazy: false
     }
@@ -137,8 +149,6 @@ class Org
             sortname(nullable:true, blank:true, maxSize:255)
                  url(nullable:true, blank:true, maxSize:512)
               urlGov(nullable:true, blank:true, maxSize:512)
-         fteStudents(nullable:true, blank:true)
-            fteStaff(nullable:true, blank:true)
                impId(nullable:true, blank:true, maxSize:255)
              comment(nullable:true, blank:true, maxSize:2048)
              ipRange(nullable:true, blank:true, maxSize:1024)
@@ -146,7 +156,6 @@ class Org
            shortcode(nullable:true, blank:true, maxSize:128)
                scope(nullable:true, blank:true, maxSize:128)
           categoryId(nullable:true, blank:true, maxSize:128)
-             orgType(nullable:true, blank:true, maxSize:128)
               status(nullable:true, blank:true)
           membership(nullable:true, blank:true, maxSize:128)
              country(nullable:true, blank:true)
@@ -157,8 +166,8 @@ class Org
         importSource(nullable:true, blank:true)
       lastImportDate(nullable:true, blank:true)
       costConfigurationPreset(nullable:true, blank:false)
-        orgRoleType(nullable:true, blank:true)
-        gokbId (nullable:true, blank:true)
+             orgType(nullable:true, blank:true)
+             gokbId (nullable:true, blank:true)
     }
 
     @Override
@@ -396,7 +405,7 @@ class Org
                            gokbId: imp_uuid?.length() > 0 ? imp_uuid : null
           ).save()
           if(orgRoleTyp) {
-              result.addToOrgRoleType(orgRoleTyp).save()
+              result.addToOrgType(orgRoleTyp).save()
           }
 
             // SUPPORT MULTIPLE IDENTIFIERS
@@ -512,19 +521,19 @@ class Org
         )
     }
 
-    def getallOrgRoleType()
+    def getallOrgType()
     {
         def result = []
-        getallOrgRoleTypeIds()?.each { it ->
+        getallOrgTypeIds()?.each { it ->
                 result << RefdataValue.get(it)
         }
         result
     }
 
-    def getallOrgRoleTypeIds()
+    def getallOrgTypeIds()
     {
         List result = []
-        orgRoleType.collect{ it -> result.add(it.id) }
+        orgType.collect{ it -> result.add(it.id) }
         result
 
         /*

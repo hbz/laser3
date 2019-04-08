@@ -45,11 +45,11 @@
                 <semui:datepicker label="license.endDate" name="licenseEndDate" value="${params.licenseEndDate?:defaultEndYear}"/>
             </div>
 
-            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgRoleType)}">
+            <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgType)}">
                 <div class="field">
                     <label>${message(code:'myinst.emptySubscription.create_as', default:'Create with the role of')}</label>
 
-                    <select id="asOrgRoleType" name="asOrgRoleType" class="ui dropdown">
+                    <select id="asOrgType" name="asOrgType" class="ui dropdown">
                         <g:each in="${com.k_int.kbplus.RefdataValue.executeQuery('select rdv from RefdataValue as rdv where rdv.value in (:wl) and rdv.owner.desc = :ot', [wl:['Consortium', 'Institution'], ot:'OrgRoleType'])}" var="opt">
                             <option value="${opt.id}" data-value="${opt.value}">${opt.getI10n('value')}</option>
                         </g:each>
@@ -119,7 +119,7 @@
                         <g:if test="${l.pkgs && (l.pkgs.size() > 0)}">
                             <ul>
                                 <g:each in="${l.pkgs.sort { it.name }}" var="pkg">
-                                    <li><g:link controller="packageDetails" action="show"
+                                    <li><g:link controller="package" action="show"
                                                 id="${pkg.id}">${pkg.id} (${pkg.name})</g:link><br/></li>
                                 </g:each>
                             </ul>

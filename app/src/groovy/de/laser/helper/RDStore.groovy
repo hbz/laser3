@@ -8,6 +8,8 @@ import org.codehaus.groovy.grails.orm.hibernate.cfg.GrailsHibernateUtil
 @CompileStatic
 class RDStore {
 
+    static final GENERIC_NULL_VALUE         = getRefdataValue('generic.null.value','filter.fake.values')
+
     static final OR_LICENSING_CONSORTIUM    = getRefdataValue('Licensing Consortium', 'Organisational Role')
     static final OR_LICENSEE                = getRefdataValue('Licensee','Organisational Role')
     static final OR_LICENSEE_CONS           = getRefdataValue('Licensee_Consortial','Organisational Role')
@@ -20,20 +22,17 @@ class RDStore {
     static final OR_LICENSOR                = getRefdataValue('Licensor','Organisational Role')
     static final OR_PROVIDER                = getRefdataValue('Provider', 'Organisational Role')
 
-    static final OR_TYPE_CONSORTIUM         = getRefdataValue('Consortium', 'OrgRoleType')
-    static final OR_TYPE_INSTITUTION        = getRefdataValue('Institution', 'OrgRoleType')
-    static final OR_TYPE_AGENCY             = getRefdataValue('Agency', 'OrgRoleType')
-    static final OR_TYPE_LICENSOR           = getRefdataValue('Licensor', 'OrgRoleType')
-    static final OR_TYPE_PROVIDER           = getRefdataValue('Provider', 'OrgRoleType')
+    static final OT_CONSORTIUM              = getRefdataValue('Consortium', 'OrgRoleType')
+    static final OT_INSTITUTION             = getRefdataValue('Institution', 'OrgRoleType')
+    static final OT_AGENCY                  = getRefdataValue('Agency', 'OrgRoleType')
+    static final OT_LICENSOR                = getRefdataValue('Licensor', 'OrgRoleType')
+    static final OT_PROVIDER                = getRefdataValue('Provider', 'OrgRoleType')
 
     static final O_SECTOR_HIGHER_EDU        = getRefdataValue('Higher Education', 'OrgSector')
     static final O_SECTOR_PUBLISHER         = getRefdataValue('Publisher', 'OrgSector')
 
-    static final O_TYPE_CONSORTIUM          = getRefdataValue('Consortium','OrgType')
-    static final O_TYPE_INSTITUTION         = getRefdataValue('Institution','OrgType')
-    static final O_TYPE_PUBLISHER           = getRefdataValue('Publisher','OrgType')
-    static final O_TYPE_PROVIDER            = getRefdataValue('Provider', 'OrgType')
-    static final O_TYPE_OTHER               = getRefdataValue('Other', 'OrgType')
+    static final O_STATUS_CURRENT           = getRefdataValue('Current','OrgStatus')
+    static final O_STATUS_DELETED           = getRefdataValue('Deleted','OrgStatus')
 
     static final LICENSE_DELETED            = getRefdataValue('Deleted', 'License Status')
     static final ORG_DELETED                = getRefdataValue('Deleted', 'OrgStatus')
@@ -78,8 +77,13 @@ class RDStore {
 
     static final PENDING_CHANGE_STATUS      = getRefdataValue('Pending', 'PendingChangeStatus')
 
-    static final TASK_STATUS_DONE           =  getRefdataValue('Done', 'Task Status')
+    static final TASK_STATUS_DONE           = getRefdataValue('Done', 'Task Status')
 
+    static final SHARE_CONF_ALL                 = getRefdataValue('everyone','Share Configuration')
+    static final SHARE_CONF_CREATOR             = getRefdataValue('only for creator','Share Configuration')
+    static final SHARE_CONF_UPLOADER_ORG        = getRefdataValue('only for author organisation','Share Configuration') //maps to key, value is correct!
+    static final SHARE_CONF_UPLOADER_AND_TARGET = getRefdataValue('only for author and target organisation','Share Configuration') //maps to key, value is correct!
+    static final SHARE_CONF_CONSORTIUM          = getRefdataValue('only for consortia members','Share Configuration')
 
     static RefdataValue getRefdataValue(String value, String category) {
         (RefdataValue) GrailsHibernateUtil.unwrapIfProxy( RefdataValue.getByValueAndCategory(value, category))
