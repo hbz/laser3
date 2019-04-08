@@ -42,7 +42,7 @@
 
     <semui:messages data="${flash}" />
 
-    <div class="ui grid">
+    <div class="ui stackable grid">
         <div class="twelve wide column">
 
             <div class="la-inline-lists">

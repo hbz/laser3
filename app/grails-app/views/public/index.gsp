@@ -11,7 +11,7 @@
 <div class="landingpage">
     <!-- NAVIGATION FIX -->
     <div class="ui container ">
-        <div class="ui top fixed hidden inverted  menu la-fixed-menu">
+        <div class="ui top fixed hidden inverted stackable menu la-fixed-menu">
             <div class="ui container">
                 <img class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
                 <a href="https://wiki1.hbz-nrw.de/display/LAS/Projekthintergrund" class="item" target="_blank">${message(code: 'landingpage.menu.about', default: 'About')}</a>
@@ -28,7 +28,7 @@
 
     <!--Page Contents-->
     <div class="pusher">
-        <div class="ui inverted menu la-top-menu">
+        <div class="ui inverted stackable menu la-top-menu">
             <div class="ui container">
                 <img class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
                 <a href="https://wiki1.hbz-nrw.de/display/LAS/Projekthintergrund" class="item" target="_blank">${message(code: 'landingpage.menu.about', default: 'About')}</a>

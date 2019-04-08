@@ -2099,3 +2099,8 @@ Floated Menu / Item
   padding-left: 2.5em !important;
   padding-right: 2.5em !important;
 }
+@media only screen and (max-width: 767px) {
+  .ui.fixed.stackable.menu {
+    position: relative;
+  }
+}

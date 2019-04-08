@@ -69,11 +69,11 @@
         <g:render template="/templates/pendingChanges" model="${['pendingChanges': pendingChanges,'flash':flash,'model':subscriptionInstance]}"/>
 
 
-    <div id="collapseableSubDetails" class="ui grid">
+    <div id="collapseableSubDetails" class="ui stackable grid">
         <div class="twelve wide column">
 
             <div class="la-inline-lists">
-                <div class="ui two cards">
+                <div class="ui two stackable cards">
                     <div class="ui card la-time-card">
                         <div class="content">
                             <dl>

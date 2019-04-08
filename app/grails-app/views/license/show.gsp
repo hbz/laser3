@@ -59,7 +59,7 @@
             <g:render template="/templates/pendingChanges" model="${['pendingChanges':pendingChanges, 'flash':flash, 'model':license]}"/>
         </g:if>
 
-        <div class="ui grid">
+        <div class="ui stackable grid">
 
             <div class="twelve wide column">
                 <semui:errors bean="${titleInstanceInstance}" />
@@ -67,7 +67,7 @@
                 <!--<h4 class="ui header">${message(code:'license.details.information', default:'Information')}</h4>-->
 
                 <div class="la-inline-lists">
-                    <div class="ui two cards">
+                    <div class="ui two stackable cards">
                         <div class="ui card ">
                             <div class="content">
                                 <dl>
