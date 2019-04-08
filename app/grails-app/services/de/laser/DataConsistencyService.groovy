@@ -2,8 +2,11 @@ package de.laser
 
 import com.k_int.kbplus.*
 import com.k_int.kbplus.auth.User
+import de.laser.helper.DateUtil
 import grails.util.Holders
 import org.codehaus.groovy.grails.plugins.web.taglib.ApplicationTagLib
+
+import java.text.SimpleDateFormat
 
 class DataConsistencyService {
 
@@ -127,30 +130,57 @@ class DataConsistencyService {
     def ajaxQuery(String key1, String key2, String value) {
 
         def result = []
+        SimpleDateFormat sdfA = DateUtil.getSimpleDateFormat_NoTime()
+        SimpleDateFormat sdfB = DateUtil.getSimpleDateFormat_NoZ()
 
         if (key1 == 'Org') {
-            result = Org.findAllWhere( "${key2}": value ).collect{ it ->
-                [id: it.id, name: it.name, link: g.createLink(controller:'organisation', action:'show', id: it.id)]
+            result = Org.findAllWhere( "${key2}": value ).collect{ it -> [
+                    id: it.id,
+                    name: it.name,
+                    link: g.createLink(controller:'organisation', action:'show', id: it.id),
+                    created: sdfA.format( it.dateCreated ),
+                    updated: sdfB.format( it.lastUpdated )
+                ]
             }
         }
         if (key1 == 'Package') {
-            result = Package.findAllWhere( "${key2}": value ).collect{ it ->
-                [id: it.id, name: it.name, link: g.createLink(controller:'package', action:'show', id: it.id)]
+            result = Package.findAllWhere( "${key2}": value ).collect{ it -> [
+                    id: it.id,
+                    name: it.name,
+                    link: g.createLink(controller:'package', action:'show', id: it.id),
+                    created: sdfA.format( it.dateCreated ),
+                    updated: sdfB.format( it.lastUpdated )
+                ]
             }
         }
         if (key1 == 'Platform') {
-            result = Platform.findAllWhere( "${key2}": value ).collect{ it ->
-                [id: it.id, name: it.name, link: g.createLink(controller:'platform', action:'show', id: it.id)]
+            result = Platform.findAllWhere( "${key2}": value ).collect{ it -> [
+                    id: it.id,
+                    name: it.name,
+                    link: g.createLink(controller:'platform', action:'show', id: it.id),
+                    created: sdfA.format( it.dateCreated ),
+                    updated: sdfB.format( it.lastUpdated )
+                ]
             }
         }
         if (key1 == 'TitleInstance') {
-            result = TitleInstance.findAllWhere( "${key2}": value ).collect{ it ->
-                [id: it.id, name: it.title, link: g.createLink(controller:'title', action:'show', id: it.id)]
+            result = TitleInstance.findAllWhere( "${key2}": value ).collect{ it -> [
+                    id: it.id,
+                    name: it.title,
+                    link: g.createLink(controller:'title', action:'show', id: it.id),
+                    created: sdfA.format( it.dateCreated ),
+                    updated: sdfB.format( it.lastUpdated )
+                ]
             }
         }
         if (key1 == 'TitleInstancePackagePlatform') {
-            result = TitleInstancePackagePlatform.findAllWhere( "${key2}": value ).collect{ it ->
-                [id: it.id, name: 'TitleInstancePackagePlatform', link: g.createLink(controller:'tipp', action:'show', id: it.id)]
+            result = TitleInstancePackagePlatform.findAllWhere( "${key2}": value ).collect{ it -> [
+                    id: it.id,
+                    name: 'TitleInstancePackagePlatform',
+                    link: g.createLink(controller:'tipp', action:'show', id: it.id),
+                    created: '',
+                    updated: ''
+                ]
             }
         }
 
