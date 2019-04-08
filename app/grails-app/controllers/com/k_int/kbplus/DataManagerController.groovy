@@ -12,6 +12,7 @@ class DataManagerController extends AbstractDebugController {
 
   def springSecurityService
   def GOKbService
+  def contextService
 
   @Secured(['ROLE_DATAMANAGER'])
   def index() { 
