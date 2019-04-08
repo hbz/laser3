@@ -174,13 +174,13 @@
         <semui:paginate mapping="subfinance" params="${params+[view:'subscr']}"
                         next="${message(code: 'default.paginate.next', default: 'Next')}"
                         prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
-                        max="${max}" offset="${subscrOffset ? subscrOffset : 1}" total="${data.count}"/>
+                        max="${max}" offset="${subscrOffset ? subscrOffset : 0}" total="${data.count}"/>
     </g:if>
     <g:else>
         <semui:paginate action="finance" controller="myInstitution" params="${params+[view:'subscr']}"
                         next="${message(code: 'default.paginate.next', default: 'Next')}"
                         prev="${message(code: 'default.paginate.prev', default: 'Prev')}"
-                        max="${max}" offset="${subscrOffset ? subscrOffset : 1}" total="${data.count}"/>
+                        max="${max}" offset="${subscrOffset ? subscrOffset : 0}" total="${data.count}"/>
     </g:else>
 </g:if>
 <!-- _result_tab_subscr.gsp -->
