@@ -282,7 +282,7 @@ class SemanticUiTagLib {
                 break
             case 'EBook':
                 out << '<div class="la-inline-flexbox" data-tooltip="' + message(code: 'spotlight.ebooktitle') + '" data-position="left center" data-variation="tiny">'
-                out << '    <i class="icon tablet alternate outline la-list-icon"></i>'
+                out << '    <i class="icon tablet alternate la-list-icon"></i>'
                 out << '</div>'
                 break
             default:
