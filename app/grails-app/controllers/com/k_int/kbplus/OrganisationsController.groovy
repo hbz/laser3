@@ -11,6 +11,7 @@ import com.k_int.kbplus.auth.*;
 import grails.plugin.springsecurity.SpringSecurityUtils
 import com.k_int.properties.*
 
+import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
@@ -172,22 +173,24 @@ class OrganisationsController extends AbstractDebugController {
             fsq = filterService.getOrgQuery([constraint_orgIds: orgIdList] << params)
             fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
         }
-        params.max          = params.max ?: result.user?.getDefaultPageSizeTMP()
-        result.orgList      = Org.findAll(fsq.query, fsq.queryParams, params)
-        result.orgListTotal = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams).size()
+        result.max          = params.max ? Integer.parseInt(params.max) : result.user?.getDefaultPageSizeTMP()
+        result.offset       = params.offset ? Integer.parseInt(params.offset) : 0
+        List orgListTotal   = Org.findAll(fsq.query, fsq.queryParams)
+        result.orgListTotal = orgListTotal.size()
+        result.orgList      = orgListTotal.drop((int) result.offset).take((int) result.max)
 
-        if ( params.exportXLS=='yes' ) {
+        def message = g.message(code: 'export.all.providers')
+        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+        String filename = message+"_${datetoday}"
+
+        if ( params.exportXLS) {
             params.remove('max')
-            def orgs = Org.findAll(fsq.query, fsq.queryParams, params)
-            def message = g.message(code: 'export.all.providers')
-            SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
             try {
-                SXSSFWorkbook wb = organisationService.exportOrg(orgs, message, false)
+                SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(orgListTotal, message, false, "xls")
                 // Write the output to a file
-                String file = message+"_${datetoday}.xlsx"
 
-                response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb.write(response.outputStream)
                 response.outputStream.flush()
@@ -201,8 +204,20 @@ class OrganisationsController extends AbstractDebugController {
                 response.sendError(500)
             }
         }
-
-        result
+        withFormat {
+            html {
+                result
+            }
+            csv {
+                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+                response.contentType = "text/csv"
+                ServletOutputStream out = response.outputStream
+                out.withWriter { writer ->
+                    writer.write(organisationService.exportOrg(orgListTotal,message,true,"csv"))
+                }
+                out.close()
+            }
+        }
     }
 
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])

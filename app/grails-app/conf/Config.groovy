@@ -455,7 +455,7 @@ subscriptionTransforms = [
     'oclc':[name:'OCLC Resolver', xsl:'oclc.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
     'ss':[name:'Serials Solutions Resolver', xsl:'serialssolutions.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
     'sfx':[name:'SFX Resolver', xsl:'SFX.xslt', returnFileExtention:'txt', returnMime:'text/plain'],
-    'kbplus':[name:'KBPlus (CSV)', xsl:'kbplusimp.xsl', returnFileExtention:'txt', returnMime:'text/plain'],
+    //'kbplus':[name:'KBPlus (CSV)', xsl:'kbplusimp.xsl', returnFileExtention:'txt', returnMime:'text/plain'],
     'kbart2':[name:'KBART II', xsl:'kbartii.xsl', returnFileExtention:'tsv', returnMime:'text/tab-separated-values']
 ]
 
@@ -468,7 +468,7 @@ titlelistTransforms = [
 ]
 
 packageTransforms = [
-    'kbplus':[name:'KBPlus(CSV)', xsl:'kbplusimp.xsl', returnFileExtention:'csv', returnMime:'text/csv'],
+    //'kbplus':[name:'KBPlus(CSV)', xsl:'kbplusimp.xsl', returnFileExtention:'csv', returnMime:'text/csv'],
     'kbart2':[name:'KBART II', xsl:'kbartii.xsl', returnFileExtention:'tsv', returnMime:'text/tab-separated-values']
 ]
 licenseTransforms = [

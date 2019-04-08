@@ -26,6 +26,7 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 
+import javax.servlet.ServletOutputStream
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 
@@ -235,9 +236,8 @@ class SubscriptionController extends AbstractDebugController {
             csv {
                 response.setHeader("Content-disposition", "attachment; filename=\"${result.subscriptionInstance.identifier}.csv\"")
                 response.contentType = "text/csv"
-                def out = response.outputStream
-                def header = (params.omitHeader == null) || (params.omitHeader != 'Y')
-                exportService.StreamOutSubsCSV(out, result.subscriptionInstance, result.entitlements, header)
+                ServletOutputStream out = response.outputStream
+                //exportService.StreamOutSubsCSV(out, result.subscriptionInstance, result.entitlements, header)
                 out.close()
                 exportService.printDuration(verystarttime, "Overall Time")
             }
@@ -873,9 +873,9 @@ class SubscriptionController extends AbstractDebugController {
                     org.privateProperties = subscr.privateProperties
                     String generalContacts = ""
                     if(publicContacts.get(subscr))
-                        generalContacts += publicContacts.get(subscr).join(";")+";"
+                        generalContacts += publicContacts.get(subscr).join(", ")+"; "
                     if(privateContacts.get(subscr))
-                        generalContacts += privateContacts.get(subscr).join(";")
+                        generalContacts += privateContacts.get(subscr).join(", ")
                     org.generalContacts = generalContacts
                     orgs << org
                 }

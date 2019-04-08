@@ -1,18 +1,28 @@
 package com.k_int.kbplus
 
-import java.io.File;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
+import org.apache.poi.ss.usermodel.Cell
+import org.apache.poi.ss.usermodel.FillPatternType
+import org.apache.poi.ss.usermodel.Row
+import org.apache.poi.ss.usermodel.Sheet
+import org.apache.poi.ss.usermodel.Workbook
+import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.apache.poi.xssf.usermodel.XSSFCellStyle
+import org.apache.poi.xssf.usermodel.XSSFColor
+import org.apache.poi.xssf.usermodel.XSSFWorkbook
+
+import java.awt.Color
+import javax.xml.parsers.DocumentBuilder
+import javax.xml.parsers.DocumentBuilderFactory
+import javax.xml.transform.Transformer
+import javax.xml.transform.TransformerFactory
+import javax.xml.transform.dom.DOMSource
+import javax.xml.transform.stream.StreamResult
 import javax.xml.transform.OutputKeys
-import org.w3c.dom.Attr;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.w3c.dom.Attr
+import org.w3c.dom.Document
+import org.w3c.dom.Element
+
+import java.text.SimpleDateFormat
 
 /**
  * This service should contain the methods required to build the different exported files.
@@ -26,16 +36,19 @@ import org.w3c.dom.Element;
  * @author agalffy
  */
 class ExportService {
-	def formatter = new java.text.SimpleDateFormat("yyyy-MM-dd")
+	def formatter = new SimpleDateFormat("yyyy-MM-dd")
 
-	/*
+	/**
 		new CSV export interface - should subsequently replace StreamOutLicenseCSV, StreamOutSubsCSV and StreamOutTitlesCSV
-		continue:
-		create structure for each point using this export point:
-			- title [colHeader1, colHeader2, ..., colHeaderN]
-			- columnData [
-				[field1, field2, ..., fieldN]
-			]
+		expect data in structure:
+		@param titleRow - {@link List} of column headers [header1,header2,...,headerN]
+		@param columnData - {@link List} of the rows, each row is itself a {@link List}:
+	 	[
+		 	[column1, column2, ..., columnN], //for row 1
+		 	[column1, column2, ..., columnN], //for row 2
+		 	...
+		 	[column1, column2, ..., columnN]  //for row N
+		]
 	 */
 	String generateCSVString(List titleRow, List columnData) {
 		List output = []
@@ -46,8 +59,72 @@ class ExportService {
 		output.join("\n")
 	}
 
+	/**
+		new XSLX export interface - should subsequently collect the Excel export points
+		expect data in structure:
+	 	@param input - {@link XSSFWorkbook} to which the sheet is going to be added
+	 	@param sheetTitle - the title of the sheet
+	 	@param titleRow - {@link List} of column headers [colHeader1, colHeader2, ..., colHeaderN]
+		@param columnData - {@link List} of the rows, each row is a list of {@link Map}s containing the cell value and style to apply (of null if no style has to be applied):
+		 [
+			[
+				[field:field1,style:style1], //for row 1
+				[field:field2,style:style2], //for row 2
+				...,
+				[field:fieldN,style:styleN]  //for row N
+			]
+		 ]
+	 */
+    SXSSFWorkbook generateXLSXWorkbook(title, List titleRow, List columnData) {
+		XSSFWorkbook wb = new XSSFWorkbook()
+		XSSFCellStyle csPositive = wb.createCellStyle()
+		csPositive.setFillForegroundColor(new XSSFColor(new Color(198,239,206)))
+		csPositive.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+		XSSFCellStyle csNegative = wb.createCellStyle()
+		csNegative.setFillForegroundColor(new XSSFColor(new Color(255,199,206)))
+		csNegative.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+		XSSFCellStyle csNeutral = wb.createCellStyle()
+		csNeutral.setFillForegroundColor(new XSSFColor(new Color(255,235,156)))
+		csNeutral.setFillPattern(FillPatternType.SOLID_FOREGROUND)
+		SXSSFWorkbook output = new SXSSFWorkbook(wb,50,true)
+		output.setCompressTempFiles(true)
+		Sheet sheet = output.createSheet(title)
+		sheet.setAutobreaks(true)
+		int rownum = 0
+		Row headerRow = sheet.createRow(rownum++)
+		headerRow.setHeightInPoints(16.75f)
+		titleRow.eachWithIndex{ colHeader, int i ->
+			Cell cell = headerRow.createCell(i)
+			cell.setCellValue(colHeader)
+		}
+		sheet.createFreezePane(0,1)
+		Row row
+		Cell cell
+		columnData.each { rowData ->
+			int cellnum = 0
+			row = sheet.createRow(rownum)
+			rowData.each { cellData ->
+				cell = row.createCell(cellnum++)
+				cell.setCellValue(cellData.field)
+				switch(cellData.style) {
+					case 'positive': cell.setCellStyle(csPositive)
+						break
+					case 'neutral': cell.setCellStyle(csNeutral)
+						break
+					case 'negative': cell.setCellStyle(csNegative)
+						break
+				}
+			}
+			rownum++
+		}
+		for(int i = 0;i < titleRow.size(); i++) {
+			sheet.autoSizeColumn(i)
+		}
+        output
+    }
+
 	/* *************
-	 *  CSV Exports 
+	 * legacy CSV Exports
 	 */
 
     def HQLCoreDates = "SELECT ca.startDate, ca.endDate FROM TitleInstitutionProvider as tip join tip.coreDates as ca WHERE tip.title.id= :ie_title AND tip.institution.id= :ie_institution AND tip.provider.id= :ie_provider"
@@ -98,6 +175,8 @@ class ExportService {
 		}
 	}
 	*/
+
+
 
 	def addLicenseSubPkgXML(Document doc, Element into_elem, List licenses){
 		log.debug("addLicenseSubPkgXML - ${licenses}")
@@ -177,6 +256,9 @@ class ExportService {
 			}
 		}
 	}
+
+    /*
+    legacy, code is already now unreachable
 	def StreamOutSubsCSV(out, sub, entitlements, header){
 		def jc_id = sub.getSubscriber()?.getIdentifierByType('JC')?.value
 		out.withWriter { writer ->
@@ -204,12 +286,13 @@ class ExportService {
 			writer.close()
 		}
 	}
+    */
 	
 	/**
 	 * This function will stream out the list of titles in a CSV format.
 	 * 
-	 * @param out - the {@link #java.io.OutputStream OutputStream}
-	 * @param entitlements - the list of {@link #com.k_int.kbplus.IssueEntitlement IssueEntitlement}
+	 * @param out - the {@link OutputStream}
+	 * @param entitlements - the list of {@link IssueEntitlement}
 	 */
 	def StreamOutTitlesCSV(out, entitlements){
  		def starttime = printStart("Get Namespaces and max IE")
@@ -340,8 +423,8 @@ class ExportService {
 	/**
 	 * Create the document and with the root Element of the XML file
 	 * 
-	 * @param root - the name of the root {@link #org.w3c.dom.Element Element}
-	 * @return the {@link #org.w3c.dom.Document Document} created
+	 * @param root - the name of the root {@link Element}
+	 * @return the {@link Document} created
 	 */
 	def buildDocXML(root) {
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -373,9 +456,9 @@ class ExportService {
 	/**
 	 * Add a list of titles from a given entitlement list into a given Element
 	 * 
-	 * @param doc - the {@link #org.w3c.dom.Document Document}
-	 * @param into_elem - the {@link #org.w3c.dom.Element Element} into which we want to insert the list of titles
-	 * @param entries - the list of {@link com.k_int.kbplus.IssueEntitlement} or {@link com.k_int.kbplus.TitleInstancePackagePlatform}
+	 * @param doc - the {@link Document}
+	 * @param into_elem - the {@link Element} into which we want to insert the list of titles
+	 * @param entries - the list of {@link IssueEntitlement} or {@link TitleInstancePackagePlatform}
 	 * @param type -  either "TIPP" or default "Issue Entitlement"
 	 */
     def addTitleListXML(Document doc, Element into_elem, List entries, String type = "Issue Entitlement") {
@@ -462,8 +545,8 @@ class ExportService {
 	/**
 	 * Add the licenses of a given list into a given XML element.
 	 * 
-	 * @param doc - the {@link #org.w3c.dom.Document Document} to update
-	 * @param into_elem - the {@link #org.w3c.dom.Element Element} we want to put the list of license(s) in.
+	 * @param doc - the {@link Document} to update
+	 * @param into_elem - the {@link Element} we want to put the list of license(s) in.
 	 * @param lics - the {@link com.k_int.kbplus.License} list
 	 */
 	def addLicensesIntoXML(Document doc, Element into_elem, List lics) {
@@ -501,10 +584,10 @@ class ExportService {
 	 * Add a subscription into a XML file
 	 * It will also add the License (owner) and Titles of that subscription
 	 * 
-	 * @param doc - the {@link #org.w3c.dom.Document Document} to update
-	 * @param into_elem - the {@link #org.w3c.dom.Element Element} we want to put the list of license(s) in.
-	 * @param sub - the {@link com.k_int.kbplus.Subscription}
-	 * @param entitlements - the list of {@link com.k_int.kbplus.IssueEntitlement}
+	 * @param doc - the {@link Document} to update
+	 * @param into_elem - the {@link Element} we want to put the list of license(s) in.
+	 * @param sub - the {@link Subscription}
+	 * @param entitlements - the list of {@link IssueEntitlement}
 	 */
 	def addSubIntoXML(Document doc, Element into_elem, sub, entitlements) {
 		def subElem = addXMLElementInto(doc, into_elem, "Subscription", null)
@@ -525,10 +608,10 @@ class ExportService {
 	 * Add a package into a XML file
 	 * It will also add the License and the Titles of that subscription
 	 * 
-	 * @param doc - the {@link #org.w3c.dom.Document Document} to update
-	 * @param into_elem - the {@link #org.w3c.dom.Element Element} we want to put the list of license(s) in.
-	 * @param pck - the {@link com.k_int.kbplus.Package}
-	 * @param tipps - the list of {@link com.k_int.kbplus.TitleInstancePackagePlatform}
+	 * @param doc - the {@link Document} to update
+	 * @param into_elem - the {@link Element} we want to put the list of license(s) in.
+	 * @param pck - the {@link Package}
+	 * @param tipps - the list of {@link TitleInstancePackagePlatform}
 	 */
 	def addPackageIntoXML(Document doc, Element into_elem, pck, tipps) {
 		def subElem = addXMLElementInto(doc, into_elem, "Package", null)
@@ -548,9 +631,9 @@ class ExportService {
 	/**
 	 * Add Organisation into a given Element.
 	 * 
-	 * @param doc - the {@link #org.w3c.dom.Document Document} to update
-	 * @param into_elem - the {@link #org.w3c.dom.Element Element} we want to put the list of license(s) in.
-	 * @param orgs - list of {@link com.k_int.kbplus.Organisations}
+	 * @param doc - the {@link Document} to update
+	 * @param into_elem - the {@link Element} we want to put the list of license(s) in.
+	 * @param orgs - list of {@link Org}
 	 */
 	private addRelatedOrgsIntoXML(Document doc, Element into_elem, orgs){
 		orgs.each { or ->
@@ -574,9 +657,9 @@ class ExportService {
 	 * This function is using TransformerFactory to create the XML output.
 	 * It will use UTF-8 and add line break and space to get a readable XML architecture.
 	 * 
-	 * @param doc - the {@link #org.w3c.dom.Document Document} to stream
-	 * @param out - the {@link java.io.OutputStream}
-	 * @return - the {@link javax.xml.transform.stream.StreamResult} created
+	 * @param doc - the {@link Document} to stream
+	 * @param out - the {@link OutputStream}
+	 * @return - the {@link StreamResult} created
 	 */
 	def streamOutXML(doc, out) {
 		TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -601,8 +684,8 @@ class ExportService {
 	/**
 	 * Add an attribute into a given Element
 	 * 
-	 * @param doc - the {@link #org.w3c.dom.Document Document}
-	 * @param e - the {@link #org.w3c.dom.Element Element} to update
+	 * @param doc - the {@link Document}
+	 * @param e - the {@link Element} to update
 	 * @param name - name of the attribute
 	 * @param val - value of the attribute
 	 */
@@ -615,11 +698,11 @@ class ExportService {
 	/**
 	 * Add XML Element into another given Element
 	 * 
-	 * @param doc - the {@link #org.w3c.dom.Document Document}
-	 * @param p - parent {@link #org.w3c.dom.Element Element}
+	 * @param doc - the {@link Document}
+	 * @param p - parent {@link Element}
 	 * @param name - name of the element
 	 * @param content - text content of the element 
-	 * @return the {@link #org.w3c.dom.Element Element} created
+	 * @return the {@link Element} created
 	 */
 	private Element addXMLElementInto(def doc, Element p, String name, def content){
 		Element e = doc.createElement(name);

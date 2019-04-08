@@ -21,6 +21,7 @@ import org.apache.poi.ss.usermodel.Drawing
 import org.apache.poi.ss.usermodel.FillPatternType
 import org.apache.poi.ss.usermodel.RichTextString
 import org.apache.poi.ss.usermodel.Row
+import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.xssf.streaming.SXSSFSheet
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.apache.poi.xssf.usermodel.XSSFCellStyle
@@ -299,13 +300,64 @@ from License as l where (
             base_qry += " order by lower(trim(l.reference)) asc"
         }
 
+        result.filterSet = params.filterSet ? true : false
+
         //log.debug("query = ${base_qry}");
         //log.debug("params = ${qry_params}");
 
-        result.licenseCount = License.executeQuery("select l.id ${base_qry}", qry_params).size()
-        result.licenses = License.executeQuery("select l ${base_qry}", qry_params, [max: result.max, offset: result.offset])
+        List totalLicenses = License.executeQuery("select l ${base_qry}", qry_params)
+        result.licenseCount = totalLicenses.size()
+        result.licenses = totalLicenses.drop((int) result.offset).take((int) result.max)
 
         def filename = "${g.message(code: 'export.my.currentLicenses')}_${sdf.format(new Date(System.currentTimeMillis()))}"
+        if(params.exportXLS) {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            List titles = [
+                    g.message(code:'license.details.reference'),
+                    g.message(code:'license.details.linked_subs'),
+                    g.message(code:'consortium'),
+                    g.message(code:'license.licensor.label'),
+                    g.message(code:'license.startDate'),
+                    g.message(code:'license.endDate'),
+                    g.message(code:'license.properties'),
+                    g.message(code:'license.properties.private')+" "+result.institution.name
+            ]
+            List rows = []
+            totalLicenses.each { licObj ->
+                License license = (License) licObj
+                List row = [[field:license.reference.replaceAll(',',' '),style:null]]
+                List linkedSubs = license.subscriptions.collect { sub ->
+                    sub.name
+                }
+                row.add([field:linkedSubs.join(", "),style:null])
+                row.add([field:license.licensingConsortium ? license.licensingConsortium.name : '',style:null])
+                row.add([field:license.licensor ? license.licensor.name : '',style:null])
+                row.add([field:license.startDate ? sdf.format(license.startDate) : '',style:null])
+                row.add([field:license.endDate ? sdf.format(license.endDate) : '',style:null])
+                List customProps = license.customProperties.collect { customProp ->
+                    if(customProp.type.type == RefdataValue.toString() && customProp.refValue)
+                        "${customProp.type.getI10n('name')}: ${customProp.refValue.getI10n('value')}"
+                    else
+                        "${customProp.type.getI10n('name')}: ${customProp.getValue()}"
+                }
+                row.add([field:customProps.join(", "),style:null])
+                List privateProps = license.privateProperties.collect { privateProp ->
+                    if(privateProp.type.type == RefdataValue.toString() && privateProp.refValue)
+                        "${privateProp.type.getI10n('name')}: ${privateProp.refValue.getI10n('value')}"
+                    else
+                        "${privateProp.type.getI10n('name')}: ${privateProp.getValue()}"
+                }
+                row.add([field:privateProps.join(", "),style:null])
+                rows.add(row)
+            }
+            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(g.message(code:'menu.my.licenses'),titles,rows)
+            workbook.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            workbook.dispose()
+            return
+        }
         withFormat {
             html result
 
@@ -317,17 +369,6 @@ from License as l where (
             csv {
                 response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
                 response.contentType = "text/csv"
-                /*
-                    to get (in pseudocode):
-                    license.reference
-                    license.subscriptions
-                    license.consortium
-                    license.licensor
-                    license.startDate
-                    license.endDate
-                    license.customProperties
-                    license.privateProperties
-                */
                 ServletOutputStream out = response.outputStream
                 List titles = [
                         g.message(code:'license.details.reference'),
@@ -340,9 +381,9 @@ from License as l where (
                         g.message(code:'license.properties.private')+" "+result.institution.name
                 ]
                 List rows = []
-                result.licenses.each { licObj ->
+                totalLicenses.each { licObj ->
                     License license = (License) licObj
-                    List row = [license.reference]
+                    List row = [license.reference.replaceAll(',',' ')]
                     List linkedSubs = license.subscriptions.collect { sub ->
                         sub.name
                     }
@@ -352,16 +393,24 @@ from License as l where (
                     row.add(license.startDate ? sdf.format(license.startDate) : '')
                     row.add(license.endDate ? sdf.format(license.endDate) : '')
                     List customProps = license.customProperties.collect { customProp ->
-                        "${customProp.type.getI10n('value')}: ${customProp.getValue()}"
+                        if(customProp.type.type == RefdataValue.toString() && customProp.refValue)
+                            "${customProp.type.getI10n('name')}: ${customProp.refValue.getI10n('value')}"
+                        else
+                            "${customProp.type.getI10n('name')}: ${customProp.getValue()}"
                     }
                     row.add(customProps.join("; "))
                     List privateProps = license.privateProperties.collect { privateProp ->
-                        "${privateProp.type.getI10n('value')}: ${privateProp.getValue()}"
+                        if(privateProp.type.type == RefdataValue.toString() && privateProp.refValue)
+                            "${privateProp.type.getI10n('name')}: ${privateProp.refValue.getI10n('value')}"
+                        else
+                            "${privateProp.type.getI10n('name')}: ${privateProp.getValue()}"
                     }
                     row.add(privateProps.join("; "))
                     rows.add(row)
                 }
-                out.write(exportService.generateCSVString(titles,rows))
+                out.withWriter { writer ->
+                    writer.write(exportService.generateCSVString(titles,rows))
+                }
                 out.close()
             }
             xml {
@@ -526,25 +575,28 @@ from License as l where (
 
 //        result.user = User.get(springSecurityService.principal.id)
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
-        params.max  = params.max ?: result.user?.getDefaultPageSizeTMP()
+        result.max  = params.max ? Integer.parseInt(params.max) : result.user?.getDefaultPageSizeTMP()
+        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
 
         def fsq  = filterService.getOrgQuery([constraint_orgIds: orgIds] << params)
         result.filterSet = params.filterSet ? true : false
         if (params.filterPropDef) {
             fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
         }
+        List orgListTotal = Org.findAll(fsq.query, fsq.queryParams)
+        result.orgListTotal = orgListTotal.size()
+        result.orgList = orgListTotal.drop((int) result.offset).take((int) result.max)
 
-        if ( params.exportXLS=='yes' ) {
-            params.remove('max')
-            def message = g.message(code: 'export.my.currentProviders')
-            SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+        def message = g.message(code: 'export.my.currentProviders')
+        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime', default:'yyyy-MM-dd'))
+        String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+        String filename = message+"_${datetoday}"
+        if ( params.exportXLS ) {
             try {
-                SXSSFWorkbook wb = organisationService.exportOrg(Org.findAll(fsq.query, fsq.queryParams, params), message, true)
+                SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(orgListTotal, message, true, "xls")
                 // Write the output to a file
-                String file = message+"_${datetoday}.xlsx"
 
-                response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb.write(response.outputStream)
                 response.outputStream.flush()
@@ -558,12 +610,21 @@ from License as l where (
                 response.sendError(500)
             }
         }
-        else {
-            result.orgList      = Org.findAll(fsq.query, fsq.queryParams, params)
-            result.orgListTotal = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams).size()
-        }
 
-        result
+        withFormat {
+            html {
+                result
+            }
+            csv {
+                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+                response.contentType = "text/csv"
+                ServletOutputStream out = response.outputStream
+                out.withWriter { writer ->
+                    writer.write(organisationService.exportOrg(orgListTotal,message,true,"csv"))
+                }
+                out.close()
+            }
+        }
     }
 
 
@@ -639,8 +700,22 @@ from License as l where (
 
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
 
+        // Write the output to a file
+        sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notimenopoint'));
+        String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+        String filename = "${datetoday}_" + g.message(code: "export.my.currentSubscriptions")
+
         if ( params.exportXLS ) {
-            exportcurrentSubscription(subscriptions)
+
+            //if(wb instanceof XSSFWorkbook) file += "x";
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}\".xlsx"
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportcurrentSubscription(subscriptions, "xls")
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+
             return
         }
 
@@ -648,91 +723,92 @@ from License as l where (
             html {
                 result
             }
+            csv {
+                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+                response.contentType = "text/csv"
+                ServletOutputStream out = response.outputStream
+                out.withWriter { writer ->
+                    writer.write((String) exportcurrentSubscription(subscriptions,"csv"))
+                }
+                out.close()
+            }
         }
     }
 
 
-    private def exportcurrentSubscription(subscriptions) {
-        String[] titles = ['Name', g.message(code: 'subscription.owner.label'), g.message(code: 'subscription.packages.label'), g.message(code: 'consortium.label'), g.message(code: 'default.provider.label'), g.message(code: 'default.agency.label'), g.message(code: 'subscription.startDate.label'), g.message(code: 'subscription.endDate.label'), 'Status', 'Typ']
-        def sdf = new SimpleDateFormat(g.message(code: 'default.date.format.notimenopoint', default: 'ddMMyyyy'));
-        def datetoday = sdf.format(new Date(System.currentTimeMillis()))
-        XSSFWorkbook workbook = new XSSFWorkbook()
-        SXSSFWorkbook wb = new SXSSFWorkbook(workbook,2)
-        wb.setCompressTempFiles(true)
-        SXSSFSheet sheet = wb.createSheet(g.message(code: "myinst.currentSubscriptions.label", default: "Current Subscriptions"))
-        sheet.setAutobreaks(true)
-        //the header row: centered text in 48pt font
-        Row headerRow = sheet.createRow(0)
-        headerRow.setHeightInPoints(16.75f)
-        titles.eachWithIndex { titlesName, index ->
-            Cell cell = headerRow.createCell(index)
-            cell.setCellValue(titlesName)
+    private def exportcurrentSubscription(subscriptions, String format) {
+        SimpleDateFormat sdf = new SimpleDateFormat(g.message(code:'default.date.format.notime'))
+        List titles = ['Name', g.message(code: 'subscription.owner.label'), g.message(code: 'subscription.packages.label'), g.message(code: 'consortium.label'), g.message(code: 'default.provider.label'), g.message(code: 'default.agency.label'), g.message(code: 'subscription.startDate.label'), g.message(code: 'subscription.endDate.label'), 'Status', 'Typ']
+        Map<Subscription,Set> providers = [:]
+        Map<Subscription,Set> agencies = [:]
+        List allProviders = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_PROVIDER)
+        List allAgencies = OrgRole.findAllByRoleTypeAndSubIsNotNull(RDStore.OR_AGENCY)
+        allProviders.each { provider ->
+            Set subProviders
+            if(providers.get(provider.sub)) {
+                subProviders = providers.get(provider.sub)
+            }
+            else subProviders = new TreeSet()
+            subProviders.add(provider.org.name)
+            providers.put(provider.sub,subProviders)
         }
-        //freeze the first row
-        sheet.createFreezePane(0, 1)
-        Row row
-        Cell cell
-        int rownum = 1
-        //subscriptions.sort{it.name} obsolete as it is included in the query
-        subscriptions.each { sub ->
-            int cellnum = 0
-            row = sheet.createRow(rownum)
-            cell = row.createCell(cellnum++)
-            cell.setCellValue(sub.name ?: "")
-            cell = row.createCell(cellnum++)
-            //sub.owner.sort{it.reference}
-            sub.owner?.each {
-                cell.setCellValue(it.reference ?: "")
+        allAgencies.each { agency ->
+            Set subAgencies
+            if(agencies.get(agency.sub)) {
+                subAgencies = agencies.get(agency.sub)
             }
-            cell = row.createCell(cellnum++)
-            sub.packages.sort { it.pkg.name }
-            String packages = ""
-            sub.packages.each {
-                packages += (it == sub.packages.last()) ? it.pkg.name : it.pkg.name + ', '
-            }
-            cell.setCellValue(packages)
-            cell = row.createCell(cellnum++)
-            cell.setCellValue(sub.getConsortia()?.name ?: '')
-            cell = row.createCell(cellnum++)
-            def providername = ""
-            def provider = OrgRole.findAllBySubAndRoleType(sub, RDStore.OR_PROVIDER)
-            provider.each {
-                providername += (it == provider.last()) ? it.org.name : it.org.name + ", "
-            }
-            cell.setCellValue(providername)
-            cell = row.createCell(cellnum++)
-            def agencyname = ""
-            def agency = OrgRole.findAllBySubAndRoleType(sub, RDStore.OR_AGENCY)
-            agency.each {
-                agencyname += (it == agency.last()) ? it.org.name : it.org.name + ", "
-            }
-            cell.setCellValue(agencyname)
-            cell = row.createCell(cellnum++)
-            if (sub.startDate) {
-                cell.setCellValue(sdf.format(sub.startDate))
-            }
-            cell = row.createCell(cellnum++)
-            if (sub.endDate) {
-                cell.setCellValue(sdf.format(sub.endDate))
-            }
-            cell = row.createCell(cellnum++)
-            cell.setCellValue(sub.status?.getI10n("value"))
-            cell = row.createCell(cellnum++)
-            cell.setCellValue(sub.type?.getI10n("value"))
-            rownum++
+            else subAgencies = new TreeSet()
+            subAgencies.add(agency.org.name)
+            agencies.put(agency.sub,subAgencies)
         }
-        for (int i = 0; i < 22; i++) {
-            sheet.autoSizeColumn(i)
+        List subscriptionData = []
+        switch(format) {
+            case "xls":
+            case "xlsx":
+                subscriptions.each { sub ->
+                    List row = []
+                    row.add([field: sub.name ?: "",style: null])
+                    List ownerReferences = sub.owner?.collect {
+                        it.reference
+                    }
+                    row.add([field: ownerReferences ? ownerReferences.join(", ") : '',style:null])
+                    List packageNames = sub.packages.collect {
+                        it.pkg.name
+                    }
+                    row.add([field: packageNames ? packageNames.join(", ") : '',style: null])
+                    row.add([field: sub.getConsortia()?.name ?: '',style: null])
+                    row.add([field: providers.get(sub) ? providers.get(sub).join(", ") : '',style: null])
+                    row.add([field: agencies.get(sub) ? agencies.get(sub).join(", ") : '',style: null])
+                    row.add([field: sub.startDate ? sdf.format(sub.startDate) : '',style: null])
+                    row.add([field: sub.endDate ? sdf.format(sub.endDate) : '',style: null])
+                    row.add([field: sub.status?.getI10n("value"),style: null])
+                    row.add([field: sub.type?.getI10n("value"),style: null])
+                    subscriptionData.add(row)
+                }
+                return exportService.generateXLSXWorkbook(g.message(code:'menu.my.subscriptions'),titles,subscriptionData)
+            case "csv":
+                subscriptions.each { sub ->
+                    List row = []
+                    row.add(sub.name ?: "")
+                    List ownerReferences = sub.owner?.collect {
+                        it.reference
+                    }
+                    row.add(ownerReferences ? ownerReferences.join("; ") : '')
+                    List packageNames = sub.packages.collect {
+                        it.pkg.name
+                    }
+                    row.add(packageNames ? packageNames.join("; ") : '')
+                    row.add(sub.getConsortia()?.name ?: '')
+                    row.add(providers.get(sub) ? providers.get(sub).join("; ") : '')
+                    row.add(agencies.get(sub) ? agencies.get(sub).join("; ") : '')
+                    row.add(sub.startDate ? sdf.format(sub.startDate) : '')
+                    row.add(sub.endDate ? sdf.format(sub.endDate) : '')
+                    row.add(sub.status?.getI10n("value"))
+                    row.add(sub.type?.getI10n("value"))
+                    subscriptionData.add(row)
+                }
+                return exportService.generateCSVString(titles,subscriptionData)
         }
-        // Write the output to a file
-        String file = "${datetoday}_" + g.message(code: "export.my.currentSubscriptions", default: "Current Subscriptions").replaceAll(' ', '_') + ".xlsx"
-        //if(wb instanceof XSSFWorkbook) file += "x";
-        response.setHeader "Content-disposition", "attachment; filename=\"${file}\""
-        response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        wb.write(response.outputStream)
-        response.outputStream.flush()
-        response.outputStream.close()
-        wb.dispose()
     }
 
     @Deprecated
@@ -3349,15 +3425,12 @@ SELECT pr FROM p.roleLinks AS pr WHERE (LOWER(pr.org.name) LIKE :orgName OR LOWE
             if ( params.exportXLS=='yes' ) {
 
                 def orgs = result.availableOrgs
-
-            def message = g.message(code: 'export.all.orgs')
-
+                def message = g.message(code: 'export.all.orgs')
                 exportOrg(orgs, message, true)
                 return
             }
 
-            result
-        }
+        result
 
     }
 

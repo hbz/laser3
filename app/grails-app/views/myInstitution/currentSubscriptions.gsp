@@ -18,19 +18,32 @@
 
         <semui:controlButtons>
             <semui:exportDropdown>
-                <semui:exportDropdownItem>
-                    <g:if test="${filterSet || defaultSet}">
+                <g:if test="${filterSet || defaultSet}">
+                    <semui:exportDropdownItem>
                         <g:link class="item js-open-confirm-modal"
                                 data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
                                 data-confirm-term-how="ok" controller="myInstitution" action="currentSubscriptions"
                                 params="${params+[exportXLS:true]}">
                             ${message(code:'default.button.exports.xls')}
                         </g:link>
-                    </g:if>
-                    <g:else>
+                    </semui:exportDropdownItem>
+                    <semui:exportDropdownItem>
+                        <g:link class="item js-open-confirm-modal"
+                                data-confirm-term-content = "${message(code: 'confirmation.content.exportPartial')}"
+                                data-confirm-term-how="ok" controller="myInstitution" action="currentSubscriptions"
+                                params="${params+[format:'csv']}">
+                            ${message(code:'default.button.exports.csv')}
+                        </g:link>
+                    </semui:exportDropdownItem>
+                </g:if>
+                <g:else>
+                    <semui:exportDropdownItem>
                         <g:link class="item" controller="myInstitution" action="currentSubscriptions" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
-                    </g:else>
-                </semui:exportDropdownItem>
+                    </semui:exportDropdownItem>
+                    <semui:exportDropdownItem>
+                        <g:link class="item" controller="myInstitution" action="currentSubscriptions" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
+                    </semui:exportDropdownItem>
+                </g:else>
             </semui:exportDropdown>
             <g:render template="actions" />
         </semui:controlButtons>
