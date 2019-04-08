@@ -360,7 +360,7 @@ aside.ui.accordion .title:not(.ui) {
     margin-left: -3px;
 }
 .editable-container.editable-inline {
-    //position: absolute;
+    position: absolute;
     z-index: 100;
     margin-top: -20px;
     margin-left: -3px;
