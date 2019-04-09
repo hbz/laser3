@@ -81,8 +81,7 @@
             </g:if>
             <g:else>
                 <td>
-                    <i class="window minimize icon"></i>
-                    %{--<g:message code="default.compare.propertyNotSet"/>--}%
+                    <a class="ui red circular label la-popup-tooltip la-delay" data-content="<g:message code="default.compare.propertyNotSet"/>"><strong>X</strong></a>
                 </td>
             </g:else>
         </g:each>
