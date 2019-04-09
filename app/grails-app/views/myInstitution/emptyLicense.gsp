@@ -40,9 +40,9 @@
             </div>
 
             <div class="two fields">
-                <semui:datepicker label="license.startDate" name="licenseStartDate" value="${params.licenseStartDate?:defaultStartYear}" />
+                <semui:datepicker label="license.startDate" id="licenseStartDate" name="licenseStartDate" value="${params.licenseStartDate?:defaultStartYear}" />
 
-                <semui:datepicker label="license.endDate" name="licenseEndDate" value="${params.licenseEndDate?:defaultEndYear}"/>
+                <semui:datepicker label="license.endDate" id="licenseEndDate" name="licenseEndDate" value="${params.licenseEndDate?:defaultEndYear}"/>
             </div>
 
             <g:if test="${(com.k_int.kbplus.RefdataValue.getByValueAndCategory('Consortium', 'OrgRoleType')?.id in  orgType)}">

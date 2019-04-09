@@ -29,9 +29,9 @@
                         </div>
                     </div>
 
-                    <semui:datepicker label="task.endDate.from.label" name="endDateFrom" placeholder="default.date.label" value="${params.endDateFrom}" />
+                    <semui:datepicker label="task.endDate.from.label" id="endDateFrom" name="endDateFrom" placeholder="default.date.label" value="${params.endDateFrom}" />
 
-                    <semui:datepicker label="task.endDate.to.label" name="endDateTo" placeholder="default.date.label" value="${params.endDateTo}" />
+                    <semui:datepicker label="task.endDate.to.label" id="endDateTo" name="endDateTo" placeholder="default.date.label" value="${params.endDateTo}" />
 
                     <div class="field">
                         <label>${message(code: 'task.status.label', default: 'Status')}</label>

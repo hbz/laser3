@@ -405,21 +405,21 @@
         <div class="three fields">
             <fieldset class="field la-modal-fieldset-no-margin">
                 <div class="two fields">
-                    <semui:datepicker label="financials.datePaid" name="newDatePaid" placeholder="financials.datePaid" value="${costItem?.datePaid}" />
+                    <semui:datepicker label="financials.datePaid" id="newDatePaid" name="newDatePaid" placeholder="financials.datePaid" value="${costItem?.datePaid}" />
 
                     <%-- to restrict upon year: https://jsbin.com/ruqakehefa/1/edit?html,js,output , cf. example 8! --%>
-                    <semui:datepicker label="financials.financialYear" name="newFinancialYear" placeholder="financials.financialYear" value="${costItem?.financialYear}" />
+                    <semui:datepicker label="financials.financialYear" id="newFinancialYear" name="newFinancialYear" placeholder="financials.financialYear" value="${costItem?.financialYear}" />
                 </div>
                 <div class="two fields">
-                    <semui:datepicker label="financials.dateFrom" name="newStartDate" placeholder="default.date.label" value="${costItem?.startDate}" />
+                    <semui:datepicker label="financials.dateFrom" id="newStartDate" name="newStartDate" placeholder="default.date.label" value="${costItem?.startDate}" />
 
-                    <semui:datepicker label="financials.dateTo" name="newEndDate" placeholder="default.date.label" value="${costItem?.endDate}" />
+                    <semui:datepicker label="financials.dateTo" id="newEndDate" name="newEndDate" placeholder="default.date.label" value="${costItem?.endDate}" />
                 </div>
             </fieldset> <!-- 1/3 field -->
 
             <fieldset class="field la-modal-fieldset-margin">
                 <div class="field">
-                    <semui:datepicker label="financials.invoiceDate" name="newInvoiceDate" placeholder="financials.invoiceDate" value="${costItem?.invoiceDate}" />
+                    <semui:datepicker label="financials.invoiceDate" id="newInvoiceDate" name="newInvoiceDate" placeholder="financials.invoiceDate" value="${costItem?.invoiceDate}" />
 
                     <label>${message(code:'financials.newCosts.description')}</label>
                     <input type="text" name="newDescription" id="newDescription"

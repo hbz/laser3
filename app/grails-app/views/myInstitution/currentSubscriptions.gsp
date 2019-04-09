@@ -37,32 +37,32 @@
         <div class="three fields">
             <!-- 1-1 -->
             <div class="field">
-                <label>${message(code: 'default.search.text', default: 'Search text')}
+                <label for="q">${message(code: 'default.search.text', default: 'Search text')}
                     <span data-position="right center" data-variation="tiny" data-tooltip="${message(code:'default.search.tooltip.subscription')}">
                         <i class="question circle icon"></i>
                     </span>
                 </label>
 
                 <div class="ui input">
-                    <input type="text" name="q"
+                    <input type="text" id="q" name="q"
                            placeholder="${message(code: 'default.search.ph', default: 'enter search term...')}"
                            value="${params.q}"/>
                 </div>
             </div>
             <!-- 1-2 -->
             <div class="field fieldcontain">
-                <semui:datepicker label="default.valid_on.label" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
+                <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
             </div>
             <% /*
             <!-- 1-3 -->
             <div class="field disabled fieldcontain">
-                <semui:datepicker label="myinst.currentSubscriptions.filter.renewalDate.label" name="renewalDate"
+                <semui:datepicker label="myinst.currentSubscriptions.filter.renewalDate.label"  id="renewalDate" name="renewalDate"
                                   placeholder="filter.placeholder" value="${params.renewalDate}"/>
             </div>
             <!-- 1-4 -->
             <div class="field disabled fieldcontain">
                 <semui:datepicker label="myinst.currentSubscriptions.filter.durationDateEnd.label"
-                                  name="durationDate" placeholder="filter.placeholder" value="${params.durationDate}"/>
+                                  id="durationDate" name="durationDate" placeholder="filter.placeholder" value="${params.durationDate}"/>
             </div>
             */ %>
 

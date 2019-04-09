@@ -64,11 +64,11 @@
 				<tr>
 					<td>${message(code:'package.compare.snapshot', default:'Package On date')}</td>
 					<td>
-						<semui:datepicker name="dateA" placeholder ="default.date.label" value="${params.dateA}" >
+						<semui:datepicker id="dateA" name="dateA" placeholder ="default.date.label" value="${params.dateA}" >
 						</semui:datepicker>
 					</td>
 					<td>
-						<semui:datepicker name="dateB" placeholder ="default.date.label" value="${params.dateB}" >
+						<semui:datepicker id="dateB" name="dateB" placeholder ="default.date.label" value="${params.dateB}" >
 						</semui:datepicker>
 					</td>
 				</tr>
