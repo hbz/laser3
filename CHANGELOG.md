@@ -1,3 +1,10 @@
+0.15.1
+
+- added admin function for deleting property definitions
+- bugfix: missing service
+- bugfix: faulty ebook icons
+- bugfix: null pointer
+
 0.15
 
 - added improved document management for institutions
