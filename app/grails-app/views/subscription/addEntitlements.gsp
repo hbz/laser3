@@ -54,12 +54,12 @@ ${message(code: 'subscription.details.availableTitles', default: 'Available Titl
 
         <div class="three fields">
             <div class="field">
-                <semui:datepicker label="default.startsBefore.label" name="startsBefore"
+                <semui:datepicker label="default.startsBefore.label" id="startsBefore" name="startsBefore"
                                   value="${params.startsBefore}"/>
             </div>
 
             <div class="field">
-                <semui:datepicker label="default.endsAfter.label" name="endsAfter" value="${params.endsAfter}"/>
+                <semui:datepicker label="default.endsAfter.label" id="endsAfter" name="endsAfter" value="${params.endsAfter}"/>
             </div>
 
             <div class="field la-field-right-aligned">

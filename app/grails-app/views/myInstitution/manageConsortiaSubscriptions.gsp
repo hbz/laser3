@@ -54,7 +54,7 @@
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
             <div class="field fieldcontain">
-                <semui:datepicker label="default.valid_on.label" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
+                <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
             </div>
 
             <div class="field fieldcontain">

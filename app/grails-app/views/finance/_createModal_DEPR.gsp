@@ -143,11 +143,11 @@
             <div class="three fields">
                 <fieldset class="field la-modal-fieldset-no-margin">
 
-                    <semui:datepicker label="financials.datePaid" name="newDatePaid" placeholder="financials.datePaid" value="${params.newDatePaid}" />
+                    <semui:datepicker label="financials.datePaid" id="newDatePaid" name="newDatePaid" placeholder="financials.datePaid" value="${params.newDatePaid}" />
 
-                    <semui:datepicker label="financials.dateFrom" name="newStartDate" placeholder="default.date.label" value="${params.newStartDate}" />
+                    <semui:datepicker label="financials.dateFrom" id="newStartDate" name="newStartDate" placeholder="default.date.label" value="${params.newStartDate}" />
 
-                    <semui:datepicker label="financials.dateTo" name="newEndDate" placeholder="default.date.label" value ="${params.newEndDate}" />
+                    <semui:datepicker label="financials.dateTo" id="newEndDate" name="newEndDate" placeholder="default.date.label" value ="${params.newEndDate}" />
 
                 </fieldset> <!-- 1/3 field -->
 
